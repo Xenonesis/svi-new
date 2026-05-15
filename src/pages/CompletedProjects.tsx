@@ -1,7 +1,40 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Download, ArrowRight, MapPin } from 'lucide-react';
+
+const HoverZoomImage = ({ src, alt }: { src: string; alt: string }) => {
+  const [backgroundPosition, setBackgroundPosition] = useState('50% 50%');
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setBackgroundPosition(`${x}% ${y}%`);
+  };
+
+  return (
+    <div 
+      className="w-full h-full relative cursor-zoom-in overflow-hidden group/zoom"
+      onMouseMove={handleMouseMove}
+      onMouseLeave={() => setBackgroundPosition('50% 50%')}
+    >
+      <img
+        src={src}
+        alt={alt}
+        className="w-full h-full object-cover transition-opacity duration-300 group-hover/zoom:opacity-0 relative z-0"
+      />
+      <div 
+        className="absolute inset-0 bg-no-repeat pointer-events-none opacity-0 group-hover/zoom:opacity-100 z-10 transition-opacity duration-300 bg-gray-100"
+        style={{
+          backgroundImage: `url(${src})`,
+          backgroundPosition,
+          backgroundSize: '200%',
+        }}
+      />
+    </div>
+  );
+};
 
 const completedProjectsData = [
   {
@@ -86,13 +119,9 @@ export default function CompletedProjects() {
                 className="bg-white group overflow-hidden border border-gray-200 flex flex-col h-full hover:shadow-2xl transition-shadow duration-500"
               >
                 <div className="relative h-64 overflow-hidden bg-gray-100 flex items-center justify-center">
-                  <div className="absolute inset-0 bg-brand-navy/10 z-10"></div>
-                  <img 
-                    src={project.img} 
-                    alt={project.title} 
-                    className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700 relative z-0"
-                  />
-                  <div className="absolute top-4 right-4 z-20 text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-white text-brand-navy shadow-sm">
+                  <div className="absolute inset-0 bg-brand-navy/10 z-10 pointer-events-none group-hover:opacity-0 transition-opacity duration-500"></div>
+                  <HoverZoomImage src={project.img} alt={project.title} />
+                  <div className="absolute top-4 right-4 z-20 text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-white text-brand-navy shadow-sm pointer-events-none">
                     {project.status}
                   </div>
                 </div>
