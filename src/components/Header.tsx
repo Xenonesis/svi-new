@@ -39,15 +39,13 @@ export default function Header() {
     >
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
-          <Link to="/" className="flex items-center gap-2 z-50">
-            <div className="w-10 h-10 bg-brand-navy dark:bg-brand-gold flex items-center justify-center rounded-sm">
-              <span className="text-brand-gold dark:text-brand-navy font-bold text-xl">SVI</span>
-            </div>
-            <div className="hidden sm:flex flex-col">
-              <span className="font-bold tracking-tight leading-none text-brand-navy dark:text-gray-100">SVI INFRA SOLUTIONS</span>
-              <span className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Pvt. Ltd. — Since 2009</span>
-            </div>
-          </Link>
+<Link to="/" className="flex items-center gap-2 z-50">
+  <img src="/logo.png" alt="SVI Infra Solutions Logo" className="w-10 h-10" />
+  <div className="hidden sm:flex flex-col">
+    <span className="font-bold tracking-tight leading-none text-brand-navy dark:text-gray-100">SVI INFRA SOLUTIONS</span>
+    <span className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Pvt. Ltd. — Since 2009</span>
+  </div>
+</Link>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-8">
