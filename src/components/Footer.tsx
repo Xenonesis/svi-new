@@ -1,10 +1,22 @@
-import { memo } from 'react';
+import { useCallback, memo, useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
-import { Facebook, Twitter, Youtube, Instagram, MapPin, Phone, Mail } from 'lucide-react';
+import { Facebook, Twitter, Youtube, Instagram, MapPin, Phone, Mail, Send } from 'lucide-react';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
 const Footer = memo(function Footer() {
+  const [email, setEmail] = useState('');
+  const [subscribed, setSubscribed] = useState(false);
+
+  const handleNewsletterSubmit = useCallback((e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (email && email.includes('@')) {
+      setSubscribed(true);
+      setEmail('');
+      setTimeout(() => setSubscribed(false), 3000);
+    }
+  }, [email]);
+
   return (
     <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 pt-16 pb-8">
       <div className="container mx-auto px-4 lg:px-8">
@@ -86,13 +98,40 @@ const Footer = memo(function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-gray-200 dark:border-gray-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+        {/* Newsletter Signup */}
+        <div className="border-t border-b border-gray-200 dark:border-gray-800 py-8 mb-8">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div>
+              <h4 className="text-sm font-bold uppercase tracking-widest text-brand-navy dark:text-gray-100 mb-1">Stay Updated</h4>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Get the latest property updates and exclusive offers in your inbox.</p>
+            </div>
+            <form onSubmit={handleNewsletterSubmit} className="flex w-full md:w-auto">
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email"
+                className="flex-1 md:w-64 px-4 py-3 border border-r-0 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-brand-navy dark:text-gray-100 focus:outline-none focus:border-brand-gold"
+                required
+              />
+              <button
+                type="submit"
+                className="bg-brand-gold text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-navy hover:text-brand-gold border border-brand-gold transition-colors flex items-center gap-2"
+              >
+                <Send size={14} />
+                {subscribed ? 'Subscribed!' : 'Subscribe'}
+              </button>
+            </form>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-gray-400 dark:text-gray-500 text-xs font-bold uppercase tracking-widest text-center md:text-left">
             &copy; {CURRENT_YEAR} SVI Infra Solutions.
           </p>
           <div className="flex gap-6 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-            <Link to="#" className="hover:text-brand-navy dark:hover:text-gray-300 transition-colors">Privacy</Link>
-            <Link to="#" className="hover:text-brand-navy dark:hover:text-gray-300 transition-colors">Terms</Link>
+            <Link to="/privacy-policy" className="hover:text-brand-gold transition-colors">Privacy</Link>
+            <Link to="/terms-conditions" className="hover:text-brand-gold transition-colors">Terms</Link>
           </div>
         </div>
       </div>
