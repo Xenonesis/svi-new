@@ -50,13 +50,13 @@ export default function Header() {
   return (
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white dark:bg-gray-900 shadow-md py-4' : 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-sm py-5'
+        isScrolled ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-md py-4' : 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-md py-5'
       }`}
     >
       <div ref={sentinelRef} className="absolute top-0 left-0 w-px h-px pointer-events-none" aria-hidden="true" />
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
-<Link to="/" className="flex items-center gap-3 z-50">
+<Link to="/" className="flex items-center gap-3 z-50 transition-transform duration-300 hover:scale-105">
   <img src="/logo.png" alt="SVI Infra Solutions Logo" className="h-10 sm:h-12 w-auto object-contain" />
   <div className="hidden sm:flex flex-col">
     <span className="font-bold tracking-tight leading-none text-brand-navy dark:text-gray-100">SVI INFRA SOLUTIONS</span>
@@ -69,7 +69,7 @@ export default function Header() {
               <Link
                 key={link.name}
                 to={link.path}
-                className={`text-xs font-bold uppercase tracking-widest transition-colors hover:text-brand-gold ${
+                className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
                   location.pathname === link.path ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
@@ -83,7 +83,7 @@ export default function Header() {
               onMouseLeave={handleMouseLeave}
             >
               <span
-                className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-colors hover:text-brand-gold ${
+                className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
                   location.pathname.includes('/projects') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
@@ -97,17 +97,17 @@ export default function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
                     transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-2 w-48 bg-white dark:bg-gray-800 shadow-lg rounded-sm overflow-hidden border border-gray-100 dark:border-gray-700"
+                    className="absolute top-full left-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-lg rounded-sm overflow-hidden border border-gray-100 dark:border-gray-700"
                   >
                     <Link
                       to="/projects/current"
-                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
+                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
                     >
                       Current Projects
                     </Link>
                     <Link
                       to="/projects/completed"
-                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
+                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
                     >
                       Completed Projects
                     </Link>
@@ -118,7 +118,7 @@ export default function Header() {
 
             <Link
               to="/contact"
-              className={`text-xs font-bold uppercase tracking-widest transition-colors hover:text-brand-gold ${
+              className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
                 location.pathname === '/contact' ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
               }`}
             >
@@ -127,7 +127,7 @@ export default function Header() {
 
             <Link
               to="/registration"
-              className="px-5 py-2 text-[10px] font-bold uppercase tracking-wider border border-brand-navy dark:border-gray-200 hover:bg-brand-navy dark:hover:bg-gray-200 dark:text-gray-200 hover:text-white dark:hover:text-brand-navy transition-colors"
+              className="px-5 py-2 text-[10px] font-bold uppercase tracking-wider border border-brand-navy dark:border-gray-200 hover:bg-brand-navy dark:hover:bg-gray-200 dark:text-gray-200 hover:text-white dark:hover:text-brand-navy transition-all duration-300 hover:scale-105 hover:shadow-lg"
             >
               Register Now
             </Link>

@@ -1,4 +1,6 @@
 import { memo, type ReactNode } from 'react';
+import { useLocation } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
 import WhatsAppChat from './common/WhatsAppChat';
@@ -11,11 +13,24 @@ interface LayoutProps {
 }
 
 const Layout = memo(function Layout({ children }: LayoutProps) {
+  const location = useLocation();
+
   return (
     <div className="flex flex-col min-h-screen">
       <Analytics />
       <Header />
-      <main className="flex-grow">{children}</main>
+      <AnimatePresence mode="wait">
+        <motion.main
+          key={location.pathname}
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -15 }}
+          transition={{ duration: 0.4, ease: "easeOut" }}
+          className="flex-grow flex flex-col"
+        >
+          {children}
+        </motion.main>
+      </AnimatePresence>
       <Footer />
       <WhatsAppChat />
       <BackToTop />

@@ -1,6 +1,7 @@
-import { motion } from 'motion/react';
+import { motion, useScroll, useTransform, AnimatePresence } from 'motion/react';
+import { useRef, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Building2, Shield, TrendingUp, CheckCircle, ArrowRight } from 'lucide-react';
+import { Building2, Shield, TrendingUp, CheckCircle, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import StatsCounter from '../components/common/StatsCounter';
 
 const GRADIENT_STYLE = { backgroundImage: 'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)', backgroundSize: '40px 40px' };
@@ -9,6 +10,12 @@ const COMPLETED_PROJECTS = [
   { title: 'Shree Shyam Residency', loc: 'Jaipur', type: '3BHK/4BHK' },
   { title: 'Shivani City', loc: 'Manpura Machedi', type: 'Premier Residential' },
   { title: 'Shyam Aangan', loc: 'Basri Khurd, Jaipur', type: 'Integrated Township' },
+];
+
+const HERO_IMAGES = [
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+  "https://images.unsplash.com/photo-1600607687931-cecebd802404?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
+  "https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80",
 ];
 
 const HOME_FEATURES = [
@@ -24,10 +31,78 @@ const HOME_CHECKLIST = [
 ];
 
 export default function Home() {
+  const heroRef = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: heroRef,
+    offset: ["start start", "end start"],
+  });
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+
+  const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextHeroSlide = () => {
+    setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+  };
+
+  const prevHeroSlide = () => {
+    setCurrentHeroIndex((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length);
+  };
+
   return (
     <div className="flex flex-col w-full">
-      <section className="relative min-h-[700px] flex items-center justify-center bg-brand-navy overflow-hidden py-20 lg:py-32">
-        <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style={GRADIENT_STYLE}></div>
+      <section ref={heroRef} className="relative min-h-[80vh] md:min-h-[900px] flex items-center justify-center overflow-hidden py-20 lg:py-32">
+        <motion.div 
+          className="absolute inset-0 z-0"
+          style={{ y: backgroundY }}
+        >
+          <div className="absolute inset-0 bg-brand-navy/70 z-10"></div>
+          <div className="absolute top-0 left-0 w-full h-full opacity-30 z-20 pointer-events-none" style={GRADIENT_STYLE}></div>
+          <AnimatePresence mode="wait">
+            <motion.img 
+              key={currentHeroIndex}
+              src={HERO_IMAGES[currentHeroIndex]}
+              alt="Luxury Real Estate" 
+              initial={{ opacity: 0, scale: 1.05 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 1 }}
+              className="w-full h-full object-cover absolute inset-0"
+            />
+          </AnimatePresence>
+        </motion.div>
+
+        <button 
+          onClick={prevHeroSlide}
+          className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 transition-all hover:scale-110"
+          aria-label="Previous image"
+        >
+          <ChevronLeft size={24} />
+        </button>
+        <button 
+          onClick={nextHeroSlide}
+          className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 backdrop-blur-sm text-white border border-white/20 transition-all hover:scale-110"
+          aria-label="Next image"
+        >
+          <ChevronRight size={24} />
+        </button>
+
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+          {HERO_IMAGES.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => setCurrentHeroIndex(idx)}
+              aria-label={`Go to slide ${idx + 1}`}
+              className={`w-2.5 h-2.5 rounded-full transition-all duration-300 ${idx === currentHeroIndex ? 'bg-brand-gold scale-125' : 'bg-white/50 hover:bg-white/80'}`}
+            />
+          ))}
+        </div>
 
         <div className="z-10 container mx-auto px-4 text-center flex flex-col items-center">
           <span className="inline-block px-3 py-1 bg-brand-gold/20 text-brand-gold text-[10px] font-bold uppercase tracking-[0.2em] mb-6 rounded-sm">Legacy of Excellence</span>
@@ -173,11 +248,11 @@ export default function Home() {
             {COMPLETED_PROJECTS.map((project, idx) => (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, scale: 0.95 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.15 }}
-                className="group border border-gray-200 dark:border-gray-700 block overflow-hidden"
+                initial={{ opacity: 0, scale: 0.95, y: 30 }}
+                whileInView={{ opacity: 1, scale: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.6, delay: idx * 0.15, ease: "easeOut" }}
+                className="group border border-gray-200 dark:border-gray-700 block overflow-hidden bg-white dark:bg-gray-800 hover:-translate-y-2 hover:shadow-2xl transition-all duration-400"
               >
                 <div className="relative h-72 overflow-hidden bg-brand-navy">
                   <div className="absolute inset-0 bg-brand-navy/10 group-hover:bg-transparent transition-colors z-10"></div>

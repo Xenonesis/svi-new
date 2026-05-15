@@ -159,11 +159,11 @@ export default function CompletedProjects() {
               <motion.div
                 key={idx}
                 id={`project-${project.id}`}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 40 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: idx * 0.1 }}
-                className={`bg-white dark:bg-gray-800 group overflow-hidden border ${highlightedProject === project.id ? 'border-brand-gold shadow-2xl scale-[1.02] dark:shadow-brand-gold/20' : 'border-gray-200 dark:border-gray-700 hover:shadow-2xl dark:hover:shadow-brand-gold/20 hover:border-brand-gold hover:-translate-y-2 hover:scale-[1.02]'} flex flex-col h-full transition-all duration-300`}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: idx * 0.1, ease: "easeOut" }}
+                className={`bg-white dark:bg-gray-800 group overflow-hidden border ${highlightedProject === project.id ? 'border-brand-gold shadow-2xl scale-[1.02] dark:shadow-brand-gold/20' : 'border-gray-200 dark:border-gray-700 hover:shadow-2xl dark:hover:shadow-brand-gold/20 hover:border-brand-gold hover:-translate-y-2 hover:scale-[1.02]'} flex flex-col h-full transition-all duration-400`}
               >
                 <div className="relative h-64 overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer" onClick={() => openModal(project)}>
                   <div className="absolute inset-0 bg-brand-navy/10 z-10 pointer-events-none group-hover:opacity-0 transition-opacity duration-500"></div>

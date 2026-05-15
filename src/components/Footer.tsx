@@ -22,14 +22,8 @@ const Footer = memo(function Footer() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div>
-            <Link to="/" className="inline-block mb-6 flex items-center gap-2">
-              <div className="w-10 h-10 bg-brand-navy dark:bg-brand-gold flex items-center justify-center rounded-sm">
-                <span className="text-brand-gold dark:text-brand-navy font-bold text-xl">SVI</span>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-bold tracking-tight leading-none text-brand-navy dark:text-gray-100">SVI INFRA SOLUTIONS</span>
-                <span className="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-medium">Pvt. Ltd.</span>
-              </div>
+            <Link to="/" className="inline-block mb-6">
+              <img src="/logo.png" alt="SVI Infra Solutions Pvt. Ltd." className="h-10 w-auto" />
             </Link>
             <p className="text-gray-500 dark:text-gray-400 mb-6 leading-relaxed text-sm">
               Where Dreams Take Address. Building trust and delivering excellence in real estate for over 15 years.
