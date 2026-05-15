@@ -1,5 +1,7 @@
+"use client";
+
 import { useCallback, memo, useState, type FormEvent } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { Facebook, Twitter, Youtube, Instagram, MapPin, Phone, Mail, Send } from 'lucide-react';
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -22,7 +24,7 @@ const Footer = memo(function Footer() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div>
-            <Link to="/" className="inline-block mb-6">
+            <Link href="/" className="inline-block mb-6">
               <img src="/logo.png" alt="SVI Infra Solutions Pvt. Ltd." className="h-10 w-auto" />
             </Link>
             <p className="text-gray-500 dark:text-gray-400 mb-6 leading-relaxed text-sm">
@@ -49,13 +51,13 @@ const Footer = memo(function Footer() {
               Quick Links
             </h4>
             <ul className="flex flex-col gap-4">
-              <li><Link to="/" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Home</Link></li>
-              <li><Link to="/about" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">About Us</Link></li>
-              <li><Link to="/leadership" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Leadership</Link></li>
-              <li><Link to="/#faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">FAQ</Link></li>
-              <li><Link to="/projects/completed" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Completed Projects</Link></li>
-              <li><Link to="/registration" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Register</Link></li>
-              <li><Link to="/contact" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Contact Us</Link></li>
+              <li><Link href="/" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Home</Link></li>
+              <li><Link href="/about" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">About Us</Link></li>
+              <li><Link href="/leadership" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Leadership</Link></li>
+              <li><Link href="/#faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">FAQ</Link></li>
+              <li><Link href="/projects/completed" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Completed Projects</Link></li>
+              <li><Link href="/registration" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Register</Link></li>
+              <li><Link href="/contact" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -64,8 +66,8 @@ const Footer = memo(function Footer() {
               Services & Support
             </h4>
             <ul className="flex flex-col gap-4">
-              <li><Link to="/payment" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold transition-colors">Pay Online</Link></li>
-              <li><Link to="/grievance" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold transition-colors">Raise a Grievance</Link></li>
+              <li><Link href="/payment" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold transition-colors">Pay Online</Link></li>
+              <li><Link href="/grievance" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold transition-colors">Raise a Grievance</Link></li>
               <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">Residential Properties</li>
               <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">Commercial Properties</li>
               <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">Property Management</li>
@@ -93,7 +95,6 @@ const Footer = memo(function Footer() {
           </div>
         </div>
 
-        {/* Newsletter Signup */}
         <div className="border-t border-b border-gray-200 dark:border-gray-800 py-8 mb-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
@@ -125,8 +126,8 @@ const Footer = memo(function Footer() {
             &copy; {CURRENT_YEAR} SVI Infra Solutions.
           </p>
           <div className="flex gap-6 text-xs font-bold uppercase tracking-widest text-gray-400 dark:text-gray-500">
-            <Link to="/privacy-policy" className="hover:text-brand-gold transition-colors">Privacy</Link>
-            <Link to="/terms-conditions" className="hover:text-brand-gold transition-colors">Terms</Link>
+            <Link href="/privacy-policy" className="hover:text-brand-gold transition-colors">Privacy</Link>
+            <Link href="/terms-conditions" className="hover:text-brand-gold transition-colors">Terms</Link>
           </div>
         </div>
       </div>

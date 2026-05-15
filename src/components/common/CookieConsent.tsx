@@ -1,5 +1,7 @@
+"use client";
+
 import { useCallback, useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import Link from 'next/link';
 import { X } from 'lucide-react';
 
 const CONSENT_KEY = 'svi-cookie-consent-v1';
@@ -42,7 +44,7 @@ export default function CookieConsent() {
             <p className="text-sm text-gray-700 dark:text-gray-300">
               We use cookies to enhance your browsing experience and analyze website traffic. By clicking "Accept", you consent to our use of cookies.
             </p>
-            <Link to="/privacy-policy" className="text-xs text-brand-gold hover:underline mt-1 inline-block">
+            <Link href="/privacy-policy" className="text-xs text-brand-gold hover:underline mt-1 inline-block">
               Learn more in our Privacy Policy
             </Link>
           </div>

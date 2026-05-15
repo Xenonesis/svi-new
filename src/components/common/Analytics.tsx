@@ -1,20 +1,16 @@
+"use client";
+
 import { useEffect } from 'react';
 
 declare global {
   interface Window {
     dataLayer: unknown[];
   }
-  interface ImportMetaEnv {
-    readonly VITE_ANALYTICS_ID?: string;
-  }
-  interface ImportMeta {
-    readonly env: ImportMetaEnv;
-  }
 }
 
 export default function Analytics() {
   useEffect(() => {
-    const trackingId = import.meta.env.VITE_ANALYTICS_ID;
+    const trackingId = process.env.NEXT_PUBLIC_ANALYTICS_ID;
     if (!trackingId) return;
 
     const script = document.createElement('script');

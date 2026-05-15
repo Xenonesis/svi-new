@@ -1,5 +1,8 @@
+"use client";
+
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Menu, X, ChevronDown, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTheme } from './ThemeProvider';
@@ -17,7 +20,7 @@ export default function Header() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -36,8 +39,7 @@ export default function Header() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsProjectsOpen(false);
-    setIsSupportOpen(false);
-  }, [location]);
+  }, [pathname]);
 
   const toggleTheme = useCallback(() => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
@@ -61,7 +63,7 @@ export default function Header() {
       <div ref={sentinelRef} className="absolute top-0 left-0 w-px h-px pointer-events-none" aria-hidden="true" />
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
-<Link to="/" className="flex items-center gap-3 z-50 transition-transform duration-300 hover:scale-105">
+<Link href="/" className="flex items-center gap-3 z-50 transition-transform duration-300 hover:scale-105">
   <img src="/logo.png" alt="SVI Infra Solutions Logo" className="h-10 sm:h-14 w-auto object-contain" />
 </Link>
 
@@ -69,9 +71,9 @@ export default function Header() {
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.name}
-                to={link.path}
+                href={link.path}
                 className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                  location.pathname === link.path ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+                  pathname === link.path ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
                 {link.name}
@@ -85,7 +87,7 @@ export default function Header() {
             >
               <span
                 className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                  location.pathname.includes('/projects') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+                  pathname.includes('/projects') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
                 Projects <ChevronDown size={16} />
@@ -101,13 +103,13 @@ export default function Header() {
                     className="absolute top-full left-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-lg rounded-sm overflow-hidden border border-gray-100 dark:border-gray-700"
                   >
                     <Link
-                      to="/projects/current"
+                      href="/projects/current"
                       className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
                     >
                       Current Projects
                     </Link>
                     <Link
-                      to="/projects/completed"
+                      href="/projects/completed"
                       className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
                     >
                       Completed Projects
@@ -124,7 +126,7 @@ export default function Header() {
             >
               <span
                 className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                  (location.pathname === '/payment' || location.pathname === '/grievance') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+                  (pathname === '/payment' || pathname === '/grievance') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
                 Support <ChevronDown size={16} />
@@ -140,13 +142,13 @@ export default function Header() {
                     className="absolute top-full left-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-lg rounded-sm overflow-hidden border border-gray-100 dark:border-gray-700"
                   >
                     <Link
-                      to="/payment"
+                      href="/payment"
                       className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
                     >
                       Pay Online
                     </Link>
                     <Link
-                      to="/grievance"
+                      href="/grievance"
                       className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
                     >
                       Raise Grievance
@@ -157,9 +159,9 @@ export default function Header() {
             </div>
 
             <Link
-              to="/contact"
+              href="/contact"
               className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                location.pathname === '/contact' ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+                pathname === '/contact' ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
               }`}
             >
               Contact
@@ -167,13 +169,13 @@ export default function Header() {
 
             <div className="flex items-center gap-3">
               <Link
-                to="/login"
+                href="/login"
                 className="text-[10px] font-bold uppercase tracking-wider text-brand-navy dark:text-gray-200 hover:text-brand-gold transition-colors"
               >
                 Client Login
               </Link>
               <Link
-                to="/registration"
+                href="/registration"
                 className="px-5 py-2 text-[10px] font-bold uppercase tracking-wider border border-brand-navy dark:border-gray-200 hover:bg-brand-navy dark:hover:bg-gray-200 dark:text-gray-200 hover:text-white dark:hover:text-brand-navy transition-all duration-300 hover:scale-105 hover:shadow-lg"
               >
                 Register Now
@@ -220,7 +222,7 @@ export default function Header() {
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.name}
-                  to={link.path}
+                  href={link.path}
                   className="text-2xl font-serif text-brand-navy dark:text-gray-100"
                 >
                   {link.name}
@@ -231,13 +233,13 @@ export default function Header() {
                 <span className="text-2xl font-serif text-brand-navy dark:text-gray-100">Projects</span>
                 <div className="flex flex-col gap-3 pl-4 border-l-2 border-brand-gold/30">
                   <Link
-                    to="/projects/current"
+                    href="/projects/current"
                     className="text-lg text-gray-600 dark:text-gray-400 hover:text-brand-gold"
                   >
                     Current Projects
                   </Link>
                   <Link
-                    to="/projects/completed"
+                    href="/projects/completed"
                     className="text-lg text-gray-600 dark:text-gray-400 hover:text-brand-gold"
                   >
                     Completed Projects
@@ -249,13 +251,13 @@ export default function Header() {
                 <span className="text-2xl font-serif text-brand-navy dark:text-gray-100">Support</span>
                 <div className="flex flex-col gap-3 pl-4 border-l-2 border-brand-gold/30">
                   <Link
-                    to="/payment"
+                    href="/payment"
                     className="text-lg text-gray-600 dark:text-gray-400 hover:text-brand-gold"
                   >
                     Pay Online
                   </Link>
                   <Link
-                    to="/grievance"
+                    href="/grievance"
                     className="text-lg text-gray-600 dark:text-gray-400 hover:text-brand-gold"
                   >
                     Raise Grievance
@@ -264,7 +266,7 @@ export default function Header() {
               </div>
 
               <Link
-                to="/contact"
+                href="/contact"
                 className="text-2xl font-serif text-brand-navy dark:text-gray-100"
               >
                 Contact Us
@@ -272,13 +274,13 @@ export default function Header() {
 
               <div className="mt-8 flex flex-col gap-4">
                 <Link
-                  to="/login"
+                  href="/login"
                   className="inline-block w-full text-center border-2 border-brand-navy dark:border-brand-gold text-brand-navy dark:text-brand-gold text-lg font-semibold px-6 py-4 rounded-md hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
                 >
                   Client Login
                 </Link>
                 <Link
-                  to="/registration"
+                  href="/registration"
                   className="inline-block w-full text-center bg-brand-navy dark:bg-brand-gold text-white dark:text-brand-navy text-lg font-semibold px-6 py-4 rounded-md"
                 >
                   Register Now

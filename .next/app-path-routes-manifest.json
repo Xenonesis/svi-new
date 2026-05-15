@@ -1,0 +1,22 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/about/page": "/about",
+  "/blog/page": "/blog",
+  "/careers/page": "/careers",
+  "/contact/page": "/contact",
+  "/faq/page": "/faq",
+  "/grievance/page": "/grievance",
+  "/leadership/page": "/leadership",
+  "/login/page": "/login",
+  "/page": "/",
+  "/payment/page": "/payment",
+  "/privacy-policy/page": "/privacy-policy",
+  "/projects/completed/page": "/projects/completed",
+  "/projects/current/page": "/projects/current",
+  "/registration/page": "/registration",
+  "/robots.txt/route": "/robots.txt",
+  "/sitemap.xml/route": "/sitemap.xml",
+  "/terms-conditions/page": "/terms-conditions",
+  "/thank-you/page": "/thank-you"
+}

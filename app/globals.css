@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-serif), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+
+  --color-brand-navy: #1a2744;
+  --color-brand-navy-light: #2a3b61;
+  --color-brand-gold: #c9a84c;
+  --color-brand-gold-light: #dec070;
+  --color-brand-gold-dark: #b08f36;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply font-sans bg-gray-50 text-gray-800 antialiased dark:bg-gray-900 dark:text-gray-100;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif text-brand-navy dark:text-gray-100;
+  }
+}

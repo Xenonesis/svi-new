@@ -1,11 +1,9 @@
+"use client";
+
 import { memo, useState } from 'react';
 import { APIProvider, Map, AdvancedMarker, Pin, InfoWindow, useAdvancedMarkerRef } from '@vis.gl/react-google-maps';
 
-const API_KEY =
-  process.env.GOOGLE_MAPS_PLATFORM_KEY ||
-  (import.meta as any).env?.VITE_GOOGLE_MAPS_PLATFORM_KEY ||
-  (globalThis as any).GOOGLE_MAPS_PLATFORM_KEY ||
-  '';
+const API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_PLATFORM_KEY || '';
 const hasValidKey = Boolean(API_KEY) && API_KEY !== 'YOUR_API_KEY';
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
@@ -25,6 +23,9 @@ interface Project {
   description: string;
   status: string;
   img: string;
+  fullDescription?: string;
+  gallery?: string[];
+  pdf?: boolean;
 }
 
 interface Props {

@@ -1,5 +1,7 @@
+"use client";
+
 import { memo, type ReactNode } from 'react';
-import { useLocation } from 'react-router-dom';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from './Header';
 import Footer from './Footer';
@@ -13,7 +15,7 @@ interface LayoutProps {
 }
 
 const Layout = memo(function Layout({ children }: LayoutProps) {
-  const location = useLocation();
+  const pathname = usePathname();
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -21,7 +23,7 @@ const Layout = memo(function Layout({ children }: LayoutProps) {
       <Header />
       <AnimatePresence mode="wait">
         <motion.main
-          key={location.pathname}
+          key={pathname}
           initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -15 }}

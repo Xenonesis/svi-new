@@ -1,0 +1,13 @@
+{
+  "pages": {
+    "/_app": []
+  },
+  "devFiles": [],
+  "polyfillFiles": [],
+  "lowPriorityFiles": [
+    "static/TtsM75cDI_gOEMZCg36ks/_buildManifest.js",
+    "static/TtsM75cDI_gOEMZCg36ks/_ssgManifest.js",
+    "static/TtsM75cDI_gOEMZCg36ks/_clientMiddlewareManifest.js"
+  ],
+  "rootMainFiles": []
+}
