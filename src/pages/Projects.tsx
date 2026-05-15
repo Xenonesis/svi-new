@@ -1,7 +1,7 @@
 import React from 'react';
 import { motion } from 'motion/react';
 import { Link } from 'react-router-dom';
-import { MapPin } from 'lucide-react';
+import { MapPin, Construction } from 'lucide-react';
 
 const currentProjectsData = [
   {
@@ -45,29 +45,43 @@ export default function Projects() {
         <div className="absolute top-0 left-0 w-full h-full opacity-5 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #1a2744 0, #1a2744 1px, transparent 0, transparent 50%)', backgroundSize: '40px 40px' }}></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           {currentProjectsData.map((project, idx) => (
-            <motion.div 
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              className="bg-white dark:bg-gray-800 p-8 max-w-2xl mx-auto shadow-sm border border-gray-200 dark:border-gray-700 mb-6"
-            >
-              <div className="flex flex-col md:flex-row items-start">
-                <div className="w-20 h-20 border border-brand-gold text-brand-navy dark:text-brand-gold flex items-center justify-center mx-auto mb-4 md:mb-0 md:mr-6">
-                  <MapPin size={24} />
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white dark:bg-gray-800 group overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full transition-all duration-300"
+              >
+              <div className="relative h-64 overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer">
+                <div className="absolute inset-0 bg-brand-navy/10 z-10 pointer-events-none group-hover:opacity-0 transition-opacity duration-500"></div>
+                <img 
+                  src={project.img + '&fm=webp'}
+                  alt={project.title}
+                  loading="lazy"
+                  decoding="async"
+                  className="w-full h-full object-cover absolute inset-0"
+                />
+                <div className="absolute top-4 left-4 z-20 text-[10px] font-bold uppercase tracking-widest px-3 py-1 bg-white text-brand-navy shadow-sm pointer-events-none">
+                  {project.status}
                 </div>
-                <div className="flex-1">
-                  <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 dark:text-gray-500 mb-2">{project.status}</h4>
-                  <h2 className="text-3xl font-serif text-brand-navy dark:text-gray-100 mb-4">{project.title}</h2>
-                  <p className="text-gray-600 dark:text-gray-400 text-sm mb-4">{project.location}</p>
-                  <p className="text-gray-600 dark:text-gray-400 text-base mb-6 leading-relaxed">
-                    {project.description}
-                  </p>
-                  <Link to="/registration" className="bg-brand-navy dark:bg-gray-700 hover:bg-brand-gold text-brand-gold hover:text-brand-navy font-bold uppercase text-xs tracking-widest px-6 py-3 transition-colors inline-flex items-center justify-center gap-2 border border-brand-navy dark:border-gray-600">
-                    Get Notified First <span aria-hidden="true">→</span>
-                  </Link>
+              </div>
+              
+              <div className="p-8 flex flex-col flex-grow z-20 bg-white dark:bg-gray-800 cursor-pointer">
+                <div className="flex flex-col mb-4">
+                  <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{project.location}</span>
+                  <span className="text-xs font-bold text-brand-gold uppercase tracking-widest mt-1">{project.type}</span>
                 </div>
+                
+                <h3 className="text-2xl font-serif text-brand-navy dark:text-gray-100 mb-4 group-hover:text-brand-gold transition-colors">{project.title}</h3>
+                
+                <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-8 flex-grow">
+                  {project.description}
+                </p>
+                
+                <Link to="/registration" className="text-xs font-bold uppercase tracking-widest text-brand-gold inline-flex items-center gap-2 mb-6 group-hover:gap-3 transition-all">
+                  Get Notified First <span aria-hidden="true">→</span>
+                </Link>
               </div>
             </motion.div>
           ))}
