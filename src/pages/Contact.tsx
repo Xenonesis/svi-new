@@ -1,19 +1,67 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { MapPin, Phone, Mail, Clock } from 'lucide-react';
+import { MapPin, PhoneIcon, Mail, Clock, AlertCircle } from 'lucide-react';
 
 export default function Contact() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    message: ''
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    else if (formData.name.length < 2) newErrors.name = 'Name must be at least 2 characters';
+    else if (!/^[a-zA-Z\s]+$/.test(formData.name)) newErrors.name = 'Name can only contain letters and spaces';
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!emailRegex.test(formData.email)) newErrors.email = 'Please enter a valid email address';
+
+    // Allow optional +, followed by 10-15 digits, ignoring spaces and dashes
+    const phoneRegex = /^\+?[\d\s-]{10,15}$/;
+    const digitCount = (formData.phone.match(/\d/g) || []).length;
+    if (!formData.phone) newErrors.phone = 'Phone number is required';
+    else if (!phoneRegex.test(formData.phone) || digitCount < 10 || digitCount > 15) {
+      newErrors.phone = 'Please enter a valid phone number (10-15 digits)';
+    }
+
+    if (!formData.subject.trim()) newErrors.subject = 'Subject is required';
+    else if (formData.subject.length < 3) newErrors.subject = 'Subject must be at least 3 characters';
+
+    if (!formData.message.trim()) newErrors.message = 'Message is required';
+    else if (formData.message.length < 10) newErrors.message = 'Message must be at least 10 characters';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
       navigate('/thank-you');
     }, 1500);
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
   };
 
   return (
@@ -60,7 +108,7 @@ export default function Contact() {
                   
                   <div className="flex items-start gap-5">
                     <div className="w-10 h-10 border border-brand-gold text-brand-gold flex flex-shrink-0 items-center justify-center rounded-sm">
-                      <Phone size={20} />
+                      <PhoneIcon size={20} />
                     </div>
                     <div>
                       <h4 className="text-[10px] uppercase tracking-widest font-bold text-gray-400 mb-2">Phone</h4>
@@ -100,23 +148,33 @@ export default function Contact() {
               <div className="bg-white p-10 border border-gray-200 shadow-sm">
                 <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 mb-4">Inquiries</h4>
                 <h3 className="text-3xl font-serif text-brand-navy mb-8">Send a Message</h3>
-                <form onSubmit={handleSubmit} className="space-y-6">
+                <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Your Name</label>
                       <input 
                         type="text" 
-                        required 
-                        className="w-full px-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
+                        name="name"
+                        value={formData.name}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       />
+                      {errors.name && (
+                        <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.name}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Email Address</label>
                       <input 
                         type="email" 
-                        required 
-                        className="w-full px-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
+                        name="email"
+                        value={formData.email}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       />
+                      {errors.email && (
+                        <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.email}</p>
+                      )}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -124,26 +182,50 @@ export default function Contact() {
                       <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Phone Number</label>
                       <input 
                         type="tel" 
-                        required 
-                        className="w-full px-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
+                        name="phone"
+                        value={formData.phone}
+                        onChange={handleChange}
+                        className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.phone ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
+                        placeholder="+91"
                       />
+                      {errors.phone && (
+                        <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.phone}</p>
+                      )}
                     </div>
                     <div>
                       <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Subject</label>
                       <input 
                         type="text" 
-                        required 
-                        className="w-full px-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
+                        name="subject"
+                        value={formData.subject}
+                        onChange={handleChange}
+                        maxLength={100}
+                        className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.subject ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       />
+                      <div className="flex justify-between items-center mt-1">
+                        {errors.subject ? (
+                          <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.subject}</p>
+                        ) : <span></span>}
+                        <span className="text-gray-400 text-[10px]">{formData.subject.length}/100</span>
+                      </div>
                     </div>
                   </div>
                   <div>
                     <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Message</label>
                     <textarea 
                       rows={5}
-                      required
-                      className="w-full px-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 resize-none"
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      maxLength={1000}
+                      className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 resize-none ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                     ></textarea>
+                    <div className="flex justify-between items-center mt-1">
+                      {errors.message ? (
+                        <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.message}</p>
+                      ) : <span></span>}
+                      <span className="text-gray-400 text-[10px]">{formData.message.length}/1000</span>
+                    </div>
                   </div>
                   <button 
                     type="submit" 

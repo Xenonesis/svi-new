@@ -1,14 +1,60 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { useNavigate } from 'react-router-dom';
-import { Building2, User, Phone, Mail, MessageSquare } from 'lucide-react';
+import { Building2, User, Phone, Mail, MessageSquare, AlertCircle } from 'lucide-react';
 
 export default function Registration() {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    propertyInterest: '',
+    message: ''
+  });
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = () => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!formData.name.trim()) newErrors.name = 'Name is required';
+    else if (formData.name.length < 2) newErrors.name = 'Name must be at least 2 characters';
+    else if (!/^[a-zA-Z\s]+$/.test(formData.name)) newErrors.name = 'Name can only contain letters and spaces';
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email) newErrors.email = 'Email is required';
+    else if (!emailRegex.test(formData.email)) newErrors.email = 'Please enter a valid email address';
+
+    const phoneRegex = /^\+?[\d\s-]{10,15}$/;
+    const digitCount = (formData.phone.match(/\d/g) || []).length;
+    if (!formData.phone) newErrors.phone = 'Phone number is required';
+    else if (!phoneRegex.test(formData.phone) || digitCount < 10 || digitCount > 15) {
+      newErrors.phone = 'Please enter a valid phone number (10-15 digits)';
+    }
+
+    if (!formData.propertyInterest) newErrors.propertyInterest = 'Please select a property interest';
+
+    if (formData.message && formData.message.length > 500) {
+       newErrors.message = 'Message cannot exceed 500 characters';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: '' }));
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!validateForm()) return;
+    
     setIsSubmitting(true);
     // Simulate API call
     setTimeout(() => {
@@ -62,7 +108,7 @@ export default function Registration() {
           <div className="md:w-7/12 p-12 lg:p-16">
             <h3 className="text-2xl font-serif text-brand-navy mb-8">Your Details</h3>
             
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <div className="space-y-2">
                 <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500">Full Name</label>
                 <div className="relative">
@@ -71,11 +117,16 @@ export default function Registration() {
                   </div>
                   <input 
                     type="text" 
-                    required 
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className={`w-full pl-12 pr-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                     placeholder="John Doe"
                   />
                 </div>
+                {errors.name && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.name}</p>
+                )}
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -87,11 +138,16 @@ export default function Registration() {
                     </div>
                     <input 
                       type="email" 
-                      required 
-                      className="w-full pl-12 pr-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       placeholder="john@example.com"
                     />
                   </div>
+                  {errors.email && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.email}</p>
+                  )}
                 </div>
                 <div className="space-y-2">
                   <label className="text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500">Phone Number</label>
@@ -101,11 +157,16 @@ export default function Registration() {
                     </div>
                     <input 
                       type="tel" 
-                      required 
-                      className="w-full pl-12 pr-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50"
-                      placeholder="+91 xxxxx xxxxx"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleChange}
+                      className={`w-full pl-12 pr-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.phone ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
+                      placeholder="+91"
                     />
                   </div>
+                  {errors.phone && (
+                    <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.phone}</p>
+                  )}
                 </div>
               </div>
 
@@ -116,9 +177,10 @@ export default function Registration() {
                     <Building2 size={16} />
                   </div>
                   <select 
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 appearance-none rounded-none"
-                    required
-                    defaultValue=""
+                    name="propertyInterest"
+                    value={formData.propertyInterest}
+                    onChange={handleChange}
+                    className={`w-full pl-12 pr-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 appearance-none rounded-none ${errors.propertyInterest ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                   >
                     <option value="" disabled>Select an option</option>
                     <option value="residential_3bhk">Residential 3BHK</option>
@@ -128,6 +190,9 @@ export default function Registration() {
                     <option value="investment">Investment / General Inquiry</option>
                   </select>
                 </div>
+                {errors.propertyInterest && (
+                  <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.propertyInterest}</p>
+                )}
               </div>
 
               <div className="space-y-2">
@@ -138,9 +203,19 @@ export default function Registration() {
                   </div>
                   <textarea 
                     rows={4}
-                    className="w-full pl-12 pr-4 py-3 border border-gray-200 focus:border-brand-gold focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 resize-none"
-                    placeholder="Tell us about your requirements..."
+                    name="message"
+                    value={formData.message}
+                    onChange={handleChange}
+                    maxLength={500}
+                    className={`w-full pl-12 pr-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 resize-none ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
+                    placeholder="Tell us about your requirements... (optional)"
                   ></textarea>
+                </div>
+                <div className="flex justify-between items-center mt-1">
+                  {errors.message ? (
+                    <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.message}</p>
+                  ) : <span></span>}
+                  <span className="text-gray-400 text-[10px]">{formData.message.length}/500</span>
                 </div>
               </div>
 

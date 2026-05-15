@@ -178,7 +178,7 @@ export default function CompletedProjects() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-white group overflow-hidden border border-gray-200 flex flex-col h-full hover:shadow-2xl hover:border-brand-gold hover:-translate-y-2 transition-all duration-500"
+                className="bg-white dark:bg-gray-800 group overflow-hidden border border-gray-200 dark:border-gray-700 flex flex-col h-full hover:shadow-2xl dark:hover:shadow-brand-gold/20 hover:border-brand-gold hover:-translate-y-2 hover:scale-[1.02] transition-all duration-300"
               >
                 <div className="relative h-64 overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer" onClick={() => openModal(project)}>
                   <div className="absolute inset-0 bg-brand-navy/10 z-10 pointer-events-none group-hover:opacity-0 transition-opacity duration-500"></div>
@@ -188,15 +188,15 @@ export default function CompletedProjects() {
                   </div>
                 </div>
                 
-                <div className="p-8 flex flex-col flex-grow z-20 bg-white cursor-pointer" onClick={() => openModal(project)}>
+                <div className="p-8 flex flex-col flex-grow z-20 bg-white dark:bg-gray-800 cursor-pointer" onClick={() => openModal(project)}>
                   <div className="flex flex-col mb-4">
                     <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">{project.location}</span>
                     <span className="text-xs font-bold text-brand-gold uppercase tracking-widest mt-1">{project.type}</span>
                   </div>
                   
-                  <h3 className="text-2xl font-serif text-brand-navy mb-4 group-hover:text-brand-gold transition-colors">{project.title}</h3>
+                  <h3 className="text-2xl font-serif text-brand-navy dark:text-gray-100 mb-4 group-hover:text-brand-gold transition-colors">{project.title}</h3>
                   
-                  <p className="text-gray-600 text-sm leading-relaxed mb-8 flex-grow">
+                  <p className="text-gray-600 dark:text-gray-400 text-sm leading-relaxed mb-8 flex-grow">
                     {project.description}
                   </p>
                   
@@ -205,18 +205,18 @@ export default function CompletedProjects() {
                   </button>
                   
                   {project.pdf ? (
-                    <div className="pt-6 border-t border-gray-100 flex items-center justify-between mt-auto bg-white" onClick={(e) => e.stopPropagation()}>
+                    <div className="pt-6 border-t border-gray-100 dark:border-gray-700 flex items-center justify-between mt-auto bg-white dark:bg-gray-800" onClick={(e) => e.stopPropagation()}>
                       <div className="flex flex-col cursor-default">
                         <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Status</span>
                         <span className="text-xs font-bold text-brand-gold uppercase tracking-widest mt-1">{project.status}</span>
                       </div>
-                      <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest border-b border-brand-gold pb-1 text-brand-navy hover:text-brand-gold transition-colors cursor-pointer">
+                      <button className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest border-b border-brand-gold pb-1 text-brand-navy dark:text-gray-200 hover:text-brand-gold transition-colors cursor-pointer">
                         <Download size={14} />
                         Download PDF
                       </button>
                     </div>
                   ) : (
-                    <div className="pt-6 border-t border-gray-100 mt-auto bg-white">
+                    <div className="pt-6 border-t border-gray-100 dark:border-gray-700 mt-auto bg-white dark:bg-gray-800">
                       <div className="flex flex-col">
                         <span className="text-[10px] text-gray-400 uppercase font-bold tracking-widest">Status</span>
                         <span className="text-xs font-bold text-brand-gold uppercase tracking-widest mt-1">{project.status}</span>
