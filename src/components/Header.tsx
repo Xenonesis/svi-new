@@ -56,11 +56,11 @@ export default function Header() {
       <div ref={sentinelRef} className="absolute top-0 left-0 w-px h-px pointer-events-none" aria-hidden="true" />
       <div className="container mx-auto px-4 lg:px-8">
         <div className="flex items-center justify-between">
-<Link to="/" className="flex items-center gap-2 z-50">
-  <img src="/logo.png" alt="SVI Infra Solutions Logo" className="w-10 h-10" />
+<Link to="/" className="flex items-center gap-3 z-50">
+  <img src="/logo.png" alt="SVI Infra Solutions Logo" className="h-10 sm:h-12 w-auto object-contain" />
   <div className="hidden sm:flex flex-col">
     <span className="font-bold tracking-tight leading-none text-brand-navy dark:text-gray-100">SVI INFRA SOLUTIONS</span>
-    <span className="text-[10px] uppercase tracking-widest text-gray-400 font-medium">Pvt. Ltd. — Since 2009</span>
+    <span className="text-[10px] uppercase tracking-widest text-gray-400 font-medium mt-1">Pvt. Ltd. — Since 2009</span>
   </div>
 </Link>
 
