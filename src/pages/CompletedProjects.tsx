@@ -271,20 +271,22 @@ export default function CompletedProjects() {
                     />
                     
                     {selectedProject.gallery.length > 1 && (
-                      <div className="absolute inset-0 flex items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <>
                         <button 
                           onClick={prevImage}
-                          className="w-10 h-10 bg-white/80 backdrop-blur border border-white flex items-center justify-center hover:bg-white hover:text-brand-gold transition-colors shadow-sm"
+                          className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/95 backdrop-blur-sm border border-gray-200 flex items-center justify-center hover:bg-white hover:text-brand-gold hover:scale-105 transition-all shadow-lg z-30"
+                          aria-label="Previous image"
                         >
                           <ChevronLeft size={20} />
                         </button>
                         <button 
                           onClick={nextImage}
-                          className="w-10 h-10 bg-white/80 backdrop-blur border border-white flex items-center justify-center hover:bg-white hover:text-brand-gold transition-colors shadow-sm"
+                          className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/95 backdrop-blur-sm border border-gray-200 flex items-center justify-center hover:bg-white hover:text-brand-gold hover:scale-105 transition-all shadow-lg z-30"
+                          aria-label="Next image"
                         >
                           <ChevronRight size={20} />
                         </button>
-                      </div>
+                      </>
                     )}
                     
                     <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-2 z-20">
