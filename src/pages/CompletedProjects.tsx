@@ -251,13 +251,15 @@ export default function CompletedProjects() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.3, ease: 'easeInOut' }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-brand-navy/90 backdrop-blur-sm overflow-y-auto"
             onClick={closeModal}
           >
             <motion.div
-              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              initial={{ scale: 0.95, opacity: 0, y: 30 }}
               animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              exit={{ scale: 0.95, opacity: 0, y: 30 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300, mass: 1 }}
               className="bg-white w-full max-w-5xl my-8 relative overflow-hidden shadow-2xl flex flex-col md:flex-row"
               onClick={(e) => e.stopPropagation()}
             >
@@ -280,10 +282,10 @@ export default function CompletedProjects() {
                         alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
                         className="w-full h-full object-cover absolute inset-0 cursor-grab active:cursor-grabbing"
                         custom={direction}
-                        initial={{ opacity: 0, x: direction > 0 ? 100 : -100 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: direction > 0 ? -100 : 100 }}
-                        transition={{ duration: 0.4, ease: "easeInOut" }}
+                        initial={{ opacity: 0, x: direction > 0 ? 200 : -200, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: direction > 0 ? -200 : 200, scale: 0.9 }}
+                        transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 1 }}
                         drag="x"
                         dragConstraints={{ left: 0, right: 0 }}
                         dragElastic={1}
