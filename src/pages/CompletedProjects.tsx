@@ -76,23 +76,6 @@ const completedProjectsData = [
     pdf: true
   },
   {
-    id: 'shyam-aangan',
-    title: 'Shyam Aangan',
-    location: 'Basri Khurd near Jaipur',
-    lat: 26.6500,
-    lng: 75.8500,
-    type: 'Integrated Township',
-    description: 'JDA-approved integrated township on NH-12 (Tonk Road), perfectly positioned near the upcoming Inner Ring Road, IT corridors, and SEZs. Offers affordable pricing and flexible plans.',
-    fullDescription: 'Shyam Aangan is a sprawling, JDA-approved integrated township situated strategically on NH-12 (Tonk Road). It provides unparalleled connectivity to the upcoming Inner Ring Road, key IT corridors, and Special Economic Zones (SEZs). Designed to cater to diverse residential needs, the project blends affordable pricing with world-class facilities, paving the way for substantial future appreciation and a thriving community atmosphere.',
-    status: 'Completed',
-    img: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    gallery: [
-      'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-      'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
-    ],
-    pdf: true
-  },
-  {
     id: 'shivani-vatika',
     title: 'Shivani Vatika',
     location: 'Nayla',
