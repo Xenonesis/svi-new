@@ -51,7 +51,7 @@ const Footer = memo(function Footer() {
             <ul className="flex flex-col gap-4">
               <li><Link to="/" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Home</Link></li>
               <li><Link to="/about" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">About Us</Link></li>
-              <li><Link to="/faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">FAQ</Link></li>
+              <li><Link to="/#faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">FAQ</Link></li>
               <li><Link to="/projects/completed" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Completed Projects</Link></li>
               <li><Link to="/registration" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Register</Link></li>
               <li><Link to="/contact" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Contact Us</Link></li>

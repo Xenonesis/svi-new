@@ -8,7 +8,6 @@ const NAV_LINKS = [
   { name: 'Home', path: '/' },
   { name: 'About Us', path: '/about' },
   { name: 'Careers', path: '/careers' },
-  { name: 'FAQ', path: '/faq' },
 ];
 
 export default function Header() {
