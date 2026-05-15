@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Link } from 'react-router-dom';
 import { Download, ArrowRight, MapPin, X, ChevronLeft, ChevronRight, Facebook, Twitter, Linkedin, Share2 } from 'lucide-react';
+import CompletedProjectsMap from '../components/CompletedProjectsMap';
 
 const HoverZoomImage = ({ src, alt }: { src: string; alt: string }) => {
   const [backgroundPosition, setBackgroundPosition] = useState('50% 50%');
@@ -38,8 +39,11 @@ const HoverZoomImage = ({ src, alt }: { src: string; alt: string }) => {
 
 const completedProjectsData = [
   {
+    id: 'shree-shyam-residency',
     title: 'Shree Shyam Residency',
     location: 'Jaipur (near Hope Farm Junction)',
+    lat: 26.9124,
+    lng: 75.7873,
     type: '3BHK/4BHK (Ready-to-move)',
     description: 'A premium residential complex offering spacious 3BHK and 4BHK apartments with modern amenities, designed for those who appreciate luxury and comfort.',
     fullDescription: 'Shree Shyam Residency is a hallmark of luxury living strategically positioned near Jaipur\'s Hope Farm Junction. Boasting meticulously designed 3BHK and 4BHK apartments, this ready-to-move complex offers an unparalleled lifestyle. Residents enjoy premium amenities including a state-of-the-art clubhouse, landscaped gardens, 24/7 security, and seamless connectivity to major city hubs. Every detail reflects our commitment to superior craftsmanship and architectural excellence.',
@@ -53,8 +57,11 @@ const completedProjectsData = [
     pdf: true
   },
   {
+    id: 'shivani-city',
     title: 'Shivani City',
     location: 'Manpura Machedi',
+    lat: 27.0500,
+    lng: 75.8000,
     type: 'Premier Residential Development',
     description: 'An elegantly planned residential development that completely sold out due to its unmatched quality, strategic location, and lifestyle offerings.',
     fullDescription: 'Shivani City at Manpura Machedi stands as a premier residential development offering intricately planned plots and bespoke home designs. Selling out completely shortly after its launch, it proves high market demand and customer trust. The project integrates green parks, expansive walkways, and robust infrastructure, creating a wholesome environment tailored for modern families.',
@@ -67,8 +74,11 @@ const completedProjectsData = [
     pdf: true
   },
   {
+    id: 'shyam-aangan',
     title: 'Shyam Aangan',
     location: 'Basri Khurd near Jaipur',
+    lat: 26.6500,
+    lng: 75.8500,
     type: 'Integrated Township',
     description: 'JDA-approved integrated township on NH-12 (Tonk Road), perfectly positioned near the upcoming Inner Ring Road, IT corridors, and SEZs. Offers affordable pricing and flexible plans.',
     fullDescription: 'Shyam Aangan is a sprawling, JDA-approved integrated township situated strategically on NH-12 (Tonk Road). It provides unparalleled connectivity to the upcoming Inner Ring Road, key IT corridors, and Special Economic Zones (SEZs). Designed to cater to diverse residential needs, the project blends affordable pricing with world-class facilities, paving the way for substantial future appreciation and a thriving community atmosphere.',
@@ -81,8 +91,11 @@ const completedProjectsData = [
     pdf: true
   },
   {
+    id: 'shivani-vatika',
     title: 'Shivani Vatika',
     location: 'Nayla',
+    lat: 26.8500,
+    lng: 76.0000,
     type: 'Modern Living',
     description: 'A modern living space that redefines community living. A fully sold-out project that stands as a testament to our quality commitment.',
     fullDescription: 'Located in the serene landscapes of Nayla, Shivani Vatika redefined modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this widely acclaimed project sold out in record time. It reflects SVI Infra Solutions’ commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles.',
@@ -95,11 +108,14 @@ const completedProjectsData = [
     pdf: true
   },
   {
+    id: 'shivani-residency',
     title: 'Shivani Residency',
     location: 'Dobadi near Sambhar & Fulera, Jaipur district',
+    lat: 26.9000,
+    lng: 75.1800,
     type: 'Residential',
     description: 'Nestled in a peaceful environment near Sambhar Lake, offering competitive pricing and a serene lifestyle away from the city hustle.',
-    fullDescription: 'Shivani Residency lies in a uniquely peaceful environment in Dobadi, nestled close to the historic Sambhar Lake and Fulera in the Jaipur district. Designed as an escape from city congestion, this residential haven provides spacious plots, lush surroundings, and top-tier infrastructure at incredibly competitive prices, catering specifically to families desiring a balanced and tranquil lifestyle.',
+    fullDescription: 'Shivani Residency lies in a uniquely peaceful environment in Dobadi, nestled close to the historic Sambhar Lake and Fulera in the Jaipur district. Designed as an escape from city congestion, this residential haven provides spaciousplots, lush surroundings, and top-tier infrastructure at incredibly competitive prices, catering specifically to families desiring a balanced and tranquil lifestyle.',
     status: 'Completed',
     img: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
     gallery: [
@@ -167,8 +183,24 @@ export default function CompletedProjects() {
         </div>
       </section>
 
+      {/* Map Section */}
+      <section className="container mx-auto px-4 lg:px-8 py-12">
+        <motion.div
+           initial={{ opacity: 0, y: 20 }}
+           whileInView={{ opacity: 1, y: 0 }}
+           viewport={{ once: true }}
+           className="mb-12"
+        >
+          <div className="flex items-center gap-2 mb-6 text-brand-navy dark:text-brand-gold">
+            <MapPin size={24} />
+            <h2 className="text-2xl font-serif">Project Locations</h2>
+          </div>
+          <CompletedProjectsMap projects={completedProjectsData as any} onProjectClick={openModal} />
+        </motion.div>
+      </section>
+
       {/* Projects Grid */}
-      <section className="py-24">
+      <section className="pb-24 pt-8">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {completedProjectsData.map((project, idx) => (

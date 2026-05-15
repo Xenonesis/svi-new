@@ -50,6 +50,9 @@ export default function Footer() {
                 <Link to="/about" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">About Us</Link>
               </li>
               <li>
+                <Link to="/faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">FAQ</Link>
+              </li>
+              <li>
                 <Link to="/projects/completed" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Completed Projects</Link>
               </li>
               <li>
