@@ -10,7 +10,6 @@ import { useTheme } from './ThemeProvider';
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
   { name: 'About Us', path: '/about' },
-  { name: 'Leadership', path: '/leadership' },
   { name: 'Careers', path: '/careers' },
   { name: 'Blog', path: '/blog' },
 ];
@@ -19,7 +18,6 @@ export default function Header() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
-  const [isSupportOpen, setIsSupportOpen] = useState(false);
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
   const sentinelRef = useRef<HTMLDivElement>(null);
@@ -51,13 +49,11 @@ export default function Header() {
 
   const handleMouseEnter = useCallback(() => setIsProjectsOpen(true), []);
   const handleMouseLeave = useCallback(() => setIsProjectsOpen(false), []);
-  const handleSupportEnter = useCallback(() => setIsSupportOpen(true), []);
-  const handleSupportLeave = useCallback(() => setIsSupportOpen(false), []);
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? 'bg-white/95 dark:bg-gray-900/95 backdrop-blur-md shadow-md py-4' : 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-md py-5'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 ${
+        isScrolled ? 'bg-white/97 dark:bg-gray-900/97 backdrop-blur-xl shadow-lg py-4 border-b border-gray-100 dark:border-gray-800' : 'bg-white/70 dark:bg-gray-900/70 backdrop-blur-md py-5'
       }`}
     >
       <div ref={sentinelRef} className="absolute top-0 left-0 w-px h-px pointer-events-none" aria-hidden="true" />
@@ -72,11 +68,14 @@ export default function Header() {
               <Link
                 key={link.name}
                 href={link.path}
-                className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
+                className={`relative text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 group ${
                   pathname === link.path ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
                 {link.name}
+                <span className={`absolute -bottom-1 left-0 h-0.5 bg-brand-gold transition-all duration-300 ${
+                  pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
+                }`} />
               </Link>
             ))}
 
@@ -119,44 +118,14 @@ export default function Header() {
               </AnimatePresence>
             </div>
 
-            <div
-              className="relative group cursor-pointer py-2"
-              onMouseEnter={handleSupportEnter}
-              onMouseLeave={handleSupportLeave}
+            <Link
+              href="/payment"
+              className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
+                pathname === '/payment' ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+              }`}
             >
-              <span
-                className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                  (pathname === '/payment' || pathname === '/grievance') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
-                }`}
-              >
-                Support <ChevronDown size={16} />
-              </span>
-
-              <AnimatePresence>
-                {isSupportOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute top-full left-0 mt-2 w-48 bg-white/95 dark:bg-gray-800/95 backdrop-blur-md shadow-lg rounded-sm overflow-hidden border border-gray-100 dark:border-gray-700"
-                  >
-                    <Link
-                      href="/payment"
-                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
-                    >
-                      Pay Online
-                    </Link>
-                    <Link
-                      href="/grievance"
-                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
-                    >
-                      Raise Grievance
-                    </Link>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+              Payment
+            </Link>
 
             <Link
               href="/contact"
@@ -213,20 +182,31 @@ export default function Header() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: '100vh' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, x: '100%' }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: '100%' }}
+            transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 top-0 bg-white dark:bg-gray-900 z-40 md:hidden overflow-y-auto pt-24 pb-8 px-6"
           >
-            <div className="flex flex-col gap-6">
+            <motion.div
+              className="flex flex-col gap-6"
+              variants={{ visible: { transition: { staggerChildren: 0.07 } } }}
+              initial="hidden"
+              animate="visible"
+            >
               {NAV_LINKS.map((link) => (
-                <Link
+                <motion.div
                   key={link.name}
-                  href={link.path}
-                  className="text-2xl font-serif text-brand-navy dark:text-gray-100"
+                  variants={{ hidden: { opacity: 0, x: 30 }, visible: { opacity: 1, x: 0 } }}
+                  transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
                 >
-                  {link.name}
-                </Link>
+                  <Link
+                    href={link.path}
+                    className="text-2xl font-serif text-brand-navy dark:text-gray-100 hover:text-brand-gold transition-colors"
+                  >
+                    {link.name}
+                  </Link>
+                </motion.div>
               ))}
 
               <div className="flex flex-col gap-4">
@@ -247,23 +227,12 @@ export default function Header() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4">
-                <span className="text-2xl font-serif text-brand-navy dark:text-gray-100">Support</span>
-                <div className="flex flex-col gap-3 pl-4 border-l-2 border-brand-gold/30">
-                  <Link
-                    href="/payment"
-                    className="text-lg text-gray-600 dark:text-gray-400 hover:text-brand-gold"
-                  >
-                    Pay Online
-                  </Link>
-                  <Link
-                    href="/grievance"
-                    className="text-lg text-gray-600 dark:text-gray-400 hover:text-brand-gold"
-                  >
-                    Raise Grievance
-                  </Link>
-                </div>
-              </div>
+              <Link
+                href="/payment"
+                className="text-2xl font-serif text-brand-navy dark:text-gray-100"
+              >
+                Payment
+              </Link>
 
               <Link
                 href="/contact"
@@ -286,7 +255,7 @@ export default function Header() {
                   Register Now
                 </Link>
               </div>
-            </div>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>

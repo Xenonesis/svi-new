@@ -2,6 +2,7 @@
 
 import { useCallback, memo, useState, type FormEvent } from 'react';
 import Link from 'next/link';
+import { motion, AnimatePresence } from 'motion/react';
 import { Facebook, Twitter, Youtube, Instagram, MapPin, Phone, Mail, Send } from 'lucide-react';
 
 const CURRENT_YEAR = new Date().getFullYear();
@@ -31,18 +32,23 @@ const Footer = memo(function Footer() {
               Where Dreams Take Address. Building trust and delivering excellence in real estate for over 15 years.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:border-brand-gold dark:hover:border-brand-gold hover:text-brand-gold transition-colors text-brand-navy dark:text-gray-200">
-                <Facebook size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:border-brand-gold dark:hover:border-brand-gold hover:text-brand-gold transition-colors text-brand-navy dark:text-gray-200">
-                <Twitter size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:border-brand-gold dark:hover:border-brand-gold hover:text-brand-gold transition-colors text-brand-navy dark:text-gray-200">
-                <Instagram size={18} />
-              </a>
-              <a href="#" className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center hover:border-brand-gold dark:hover:border-brand-gold hover:text-brand-gold transition-colors text-brand-navy dark:text-gray-200">
-                <Youtube size={18} />
-              </a>
+              {[
+                { icon: <Facebook size={18} />, label: 'Facebook' },
+                { icon: <Twitter size={18} />, label: 'Twitter' },
+                { icon: <Instagram size={18} />, label: 'Instagram' },
+                { icon: <Youtube size={18} />, label: 'YouTube' },
+              ].map(({ icon, label }) => (
+                <motion.a
+                  key={label}
+                  href="#"
+                  aria-label={label}
+                  whileHover={{ scale: 1.2, borderColor: '#c9a84c', color: '#c9a84c' }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-brand-navy dark:text-gray-200 transition-colors"
+                >
+                  {icon}
+                </motion.a>
+              ))}
             </div>
           </div>
 
@@ -101,22 +107,31 @@ const Footer = memo(function Footer() {
               <h4 className="text-sm font-bold uppercase tracking-widest text-brand-navy dark:text-gray-100 mb-1">Stay Updated</h4>
               <p className="text-xs text-gray-500 dark:text-gray-400">Get the latest property updates and exclusive offers in your inbox.</p>
             </div>
-            <form onSubmit={handleNewsletterSubmit} className="flex w-full md:w-auto">
+            <form onSubmit={handleNewsletterSubmit} className="flex w-full md:w-auto relative">
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 md:w-64 px-4 py-3 border border-r-0 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-brand-navy dark:text-gray-100 focus:outline-none focus:border-brand-gold"
+                className="flex-1 md:w-64 px-4 py-3 border border-r-0 border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-sm text-brand-navy dark:text-gray-100 focus:outline-none focus:border-brand-gold transition-colors"
                 required
               />
-              <button
+              <motion.button
                 type="submit"
-                className="bg-brand-gold text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-navy hover:text-brand-gold border border-brand-gold transition-colors flex items-center gap-2"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.97 }}
+                className="bg-brand-gold text-brand-navy px-6 py-3 text-xs font-bold uppercase tracking-widest hover:bg-brand-navy hover:text-brand-gold border border-brand-gold transition-colors flex items-center gap-2 relative overflow-hidden"
               >
-                <Send size={14} />
-                {subscribed ? 'Subscribed!' : 'Subscribe'}
-              </button>
+                <AnimatePresence mode="wait">
+                  {subscribed ? (
+                    <motion.span key="ok" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>✓ Done!</motion.span>
+                  ) : (
+                    <motion.span key="sub" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center gap-2">
+                      <Send size={14} /> Subscribe
+                    </motion.span>
+                  )}
+                </AnimatePresence>
+              </motion.button>
             </form>
           </div>
         </div>
