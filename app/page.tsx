@@ -15,7 +15,11 @@ const COMPLETED_PROJECTS = [
   { title: 'Shyam Aangan', loc: 'Basri Khurd, Jaipur', type: 'Integrated Township' },
 ];
 
-const HERO_IMAGES = ["/images/hero1.png", "/images/hero2.png", "/images/hero3.png"];
+const HERO_IMAGES = [
+  { src: "/images/hero1.png", alt: "SVI Infra luxury residential property in Jaipur with modern architecture" },
+  { src: "/images/hero2.png", alt: "Premium commercial real estate development in Noida by SVI Infra" },
+  { src: "/images/hero3.png", alt: "Elegant apartment complex in Phulera Smart City Rajasthan" }
+];
 
 const HOME_FEATURES = [
   { icon: <Building2 size={32} />, title: "Expert Agents", desc: "Our experienced professionals guide you through every step of property selection and acquisition." },
@@ -74,15 +78,10 @@ export default function Home() {
   const [isPending, startTransition] = useTransition();
   const magnetic = useMagnetic(0.35);
 
-  useEffect(() => {
-    if (!isAutoPlaying) return;
-    const timer = setInterval(() => {
-      startTransition(() => {
-        setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
-      });
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [isAutoPlaying]);
+  // Check for reduced motion preference
+  const prefersReducedMotion = typeof window !== 'undefined' 
+    ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    : false;
 
   const nextHeroSlide = useCallback(() => {
     setIsAutoPlaying(false);
@@ -94,22 +93,48 @@ export default function Home() {
     setCurrentHeroIndex((prev) => (prev - 1 + HERO_IMAGES.length) % HERO_IMAGES.length);
   }, []);
 
+  useEffect(() => {
+    if (!isAutoPlaying || prefersReducedMotion) return;
+    const timer = setInterval(() => {
+      startTransition(() => {
+        setCurrentHeroIndex((prev) => (prev + 1) % HERO_IMAGES.length);
+      });
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isAutoPlaying, prefersReducedMotion]);
+
+  // Keyboard navigation for carousel
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowLeft') {
+        prevHeroSlide();
+      } else if (e.key === 'ArrowRight') {
+        nextHeroSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [nextHeroSlide, prevHeroSlide]);
+
   return (
     <div className="flex flex-col w-full page-transition">
-      <section ref={heroRef} className="relative min-h-[80vh] md:min-h-[900px] flex items-center justify-center overflow-hidden py-20 lg:py-32">
+      <section ref={heroRef} className="relative min-h-[80vh] md:min-h-[900px] flex items-center justify-center overflow-hidden py-20 lg:py-32" role="region" aria-label="Hero section">
         <motion.div className="absolute inset-0 z-0" style={{ y: backgroundY, scale: heroScale }}>
           <div className="absolute inset-0 bg-gradient-to-b from-brand-navy/80 via-brand-navy/60 to-brand-navy/80 z-10" />
           <div className="absolute top-0 left-0 w-full h-full opacity-20 z-20 pointer-events-none" style={GRADIENT_STYLE} />
           <AnimatePresence mode="wait">
             <motion.img
               key={currentHeroIndex}
-              src={HERO_IMAGES[currentHeroIndex]}
-              alt="Luxury Real Estate"
+              src={HERO_IMAGES[currentHeroIndex].src}
+              alt={HERO_IMAGES[currentHeroIndex].alt}
               initial={{ opacity: 0, scale: 1.06 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.98 }}
               transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               className="w-full h-full object-cover absolute inset-0"
+              width={1920}
+              height={1080}
             />
           </AnimatePresence>
         </motion.div>
@@ -119,7 +144,7 @@ export default function Home() {
           whileHover={{ scale: 1.15, backgroundColor: 'rgba(201,168,76,0.2)' }}
           whileTap={{ scale: 0.9 }}
           className="absolute left-4 md:left-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm text-white border border-white/20 transition-colors"
-          aria-label="Previous image"
+          aria-label="Previous slide"
         >
           <ChevronLeft size={24} />
         </motion.button>
@@ -128,17 +153,19 @@ export default function Home() {
           whileHover={{ scale: 1.15, backgroundColor: 'rgba(201,168,76,0.2)' }}
           whileTap={{ scale: 0.9 }}
           className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 z-30 w-12 h-12 flex items-center justify-center rounded-full bg-white/10 backdrop-blur-sm text-white border border-white/20 transition-colors"
-          aria-label="Next image"
+          aria-label="Next slide"
         >
           <ChevronRight size={24} />
         </motion.button>
 
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3">
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 flex gap-3" role="tablist" aria-label="Hero slide navigation">
           {HERO_IMAGES.map((_, idx) => (
             <motion.button
               key={idx}
               onClick={() => { setIsAutoPlaying(false); setCurrentHeroIndex(idx); }}
               aria-label={`Go to slide ${idx + 1}`}
+              aria-selected={idx === currentHeroIndex}
+              role="tab"
               animate={{ width: idx === currentHeroIndex ? 28 : 10, backgroundColor: idx === currentHeroIndex ? '#c9a84c' : 'rgba(255,255,255,0.5)' }}
               transition={{ duration: 0.3 }}
               className="h-2.5 rounded-full"
@@ -229,7 +256,7 @@ export default function Home() {
         </motion.div>
       </section>
 
-      <section className="py-24 md:py-32 bg-white dark:bg-gray-900">
+      <section className="py-24 md:py-32 bg-white dark:bg-gray-900" role="region" aria-label="About SVI Infra Solutions">
         <div className="container mx-auto px-4">
           <div className="flex flex-col lg:flex-row gap-16 items-center">
             <AnimatedSection type="fadeLeft" className="lg:w-1/2">
@@ -274,9 +301,11 @@ export default function Home() {
               <div className="img-zoom-container relative z-10 shadow-2xl">
                 <img
                   src="/images/house1.png"
-                  alt="Modern House exterior"
+                  alt="Modern luxury home exterior showcasing SVI Infra architectural design quality"
                   loading="lazy"
                   decoding="async"
+                  width={800}
+                  height={500}
                   className="w-full h-[500px] object-cover"
                 />
               </div>
@@ -296,12 +325,12 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="bg-brand-navy border-y border-brand-gold border-opacity-30 relative overflow-hidden">
+      <section className="bg-brand-navy border-y border-brand-gold border-opacity-30 relative overflow-hidden" role="region" aria-label="Company statistics">
         <div className="absolute inset-0 opacity-5 pointer-events-none" style={GRADIENT_STYLE} />
         <StatsCounter />
       </section>
 
-      <section className="py-24 bg-gray-50 dark:bg-gray-800" style={{ contentVisibility: 'auto' }}>
+      <section className="py-24 bg-gray-50 dark:bg-gray-800" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 600px' }} role="region" aria-label="Why invest with us">
         <div className="container mx-auto px-4">
           <AnimatedSection type="fadeUp" className="text-center max-w-3xl mx-auto mb-20">
             <h4 className="text-[10px] uppercase tracking-[0.3em] font-bold text-gray-400 dark:text-gray-500 mb-6">Why Invest With Us</h4>
@@ -340,7 +369,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 bg-white dark:bg-gray-900" style={{ contentVisibility: 'auto' }}>
+      <section className="py-24 bg-white dark:bg-gray-900" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }} role="region" aria-label="Featured projects portfolio">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-end mb-16 border-b border-gray-200 dark:border-gray-700 pb-8">
             <AnimatedSection type="fadeLeft">
@@ -369,9 +398,11 @@ export default function Home() {
                     <div className="absolute inset-0 bg-gradient-to-t from-brand-navy/60 via-transparent to-transparent z-10 group-hover:opacity-70 transition-opacity" />
                     <img
                       src={idx === 0 ? "/images/project1.png" : idx === 1 ? "/images/project2.png" : "/images/house1.png"}
-                      alt={project.title}
+                      alt={`${project.title} - ${project.type} in ${project.loc} by SVI Infra Solutions`}
                       loading="lazy"
                       decoding="async"
+                      width={600}
+                      height={400}
                       className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                     />
                     <motion.div
@@ -412,7 +443,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-24 bg-brand-navy relative overflow-hidden" style={{ contentVisibility: 'auto' }}>
+      <section className="py-24 bg-brand-navy relative overflow-hidden" style={{ contentVisibility: 'auto', containIntrinsicSize: '0 400px' }} role="region" aria-label="Call to action">
         <div className="absolute top-0 right-0 w-full h-full opacity-10 pointer-events-none" style={GRADIENT_STYLE} />
         <motion.div
           className="absolute -top-32 -right-32 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl"

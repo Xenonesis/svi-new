@@ -33,15 +33,15 @@ const Footer = memo(function Footer() {
             </p>
             <div className="flex gap-4">
               {[
-                { icon: <Facebook size={18} />, label: 'Facebook' },
-                { icon: <Twitter size={18} />, label: 'Twitter' },
-                { icon: <Instagram size={18} />, label: 'Instagram' },
-                { icon: <Youtube size={18} />, label: 'YouTube' },
-              ].map(({ icon, label }) => (
+                { icon: <Facebook size={18} />, label: 'Facebook', href: '#' },
+                { icon: <Twitter size={18} />, label: 'Twitter', href: '#' },
+                { icon: <Instagram size={18} />, label: 'Instagram', href: '#' },
+                { icon: <Youtube size={18} />, label: 'YouTube', href: '#' },
+              ].map(({ icon, label, href }) => (
                 <motion.a
                   key={label}
-                  href="#"
-                  aria-label={label}
+                  href={href}
+                  aria-label={`Follow us on ${label}`}
                   whileHover={{ scale: 1.2, borderColor: '#c9a84c', color: '#c9a84c' }}
                   whileTap={{ scale: 0.9 }}
                   className="w-10 h-10 rounded-full border border-gray-200 dark:border-gray-700 flex items-center justify-center text-brand-navy dark:text-gray-200 transition-colors"
@@ -57,13 +57,13 @@ const Footer = memo(function Footer() {
               Quick Links
             </h4>
             <ul className="flex flex-col gap-4">
-              <li><Link href="/" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Home</Link></li>
-              <li><Link href="/about" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">About Us</Link></li>
-              <li><Link href="/leadership" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Leadership</Link></li>
-              <li><Link href="/#faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">FAQ</Link></li>
-              <li><Link href="/projects/completed" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Completed Projects</Link></li>
-              <li><Link href="/registration" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Register</Link></li>
-              <li><Link href="/contact" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold dark:hover:text-brand-gold transition-colors">Contact Us</Link></li>
+              <li><Link href="/" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">Home</Link></li>
+              <li><Link href="/about" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">About Us</Link></li>
+              <li><Link href="/leadership" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">Leadership</Link></li>
+              <li><Link href="/#faq" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">FAQ</Link></li>
+              <li><Link href="/projects/completed" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">Completed Projects</Link></li>
+              <li><Link href="/registration" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">Register</Link></li>
+              <li><Link href="/contact" className="text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors">Contact Us</Link></li>
             </ul>
           </div>
 
@@ -72,8 +72,8 @@ const Footer = memo(function Footer() {
               Services & Support
             </h4>
             <ul className="flex flex-col gap-4">
-              <li><Link href="/payment" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold transition-colors">Pay Online</Link></li>
-              <li><Link href="/grievance" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold transition-colors">Raise a Grievance</Link></li>
+              <li><Link href="/payment" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold-text transition-colors">Pay Online</Link></li>
+              <li><Link href="/grievance" className="text-sm font-semibold text-gray-600 dark:text-gray-400 hover:text-brand-gold-text transition-colors">Raise a Grievance</Link></li>
               <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">Residential Properties</li>
               <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">Commercial Properties</li>
               <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">Property Management</li>

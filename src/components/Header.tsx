@@ -68,9 +68,10 @@ export default function Header() {
               <Link
                 key={link.name}
                 href={link.path}
-                className={`relative text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 group ${
-                  pathname === link.path ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+                className={`relative text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold-text hover:-translate-y-0.5 group ${
+                  pathname === link.path ? 'text-brand-gold-text' : 'text-brand-navy dark:text-gray-200'
                 }`}
+                aria-current={pathname === link.path ? 'page' : undefined}
               >
                 {link.name}
                 <span className={`absolute -bottom-1 left-0 h-0.5 bg-brand-gold transition-all duration-300 ${
@@ -85,8 +86,8 @@ export default function Header() {
               onMouseLeave={handleMouseLeave}
             >
               <span
-                className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                  pathname.includes('/projects') ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+                className={`flex items-center gap-1 text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold-text hover:-translate-y-0.5 ${
+                  pathname.includes('/projects') ? 'text-brand-gold-text' : 'text-brand-navy dark:text-gray-200'
                 }`}
               >
                 Projects <ChevronDown size={16} />
@@ -103,13 +104,13 @@ export default function Header() {
                   >
                     <Link
                       href="/projects/current"
-                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
+                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors"
                     >
                       Current Projects
                     </Link>
                     <Link
                       href="/projects/completed"
-                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold dark:hover:text-brand-gold transition-colors"
+                      className="block px-4 py-3 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:bg-gray-50/50 dark:hover:bg-gray-700/50 hover:text-brand-gold-text dark:hover:text-brand-gold transition-colors"
                     >
                       Completed Projects
                     </Link>
@@ -120,8 +121,8 @@ export default function Header() {
 
             <Link
               href="/payment"
-              className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                pathname === '/payment' ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+              className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold-text hover:-translate-y-0.5 ${
+                pathname === '/payment' ? 'text-brand-gold-text' : 'text-brand-navy dark:text-gray-200'
               }`}
             >
               Payment
@@ -129,8 +130,8 @@ export default function Header() {
 
             <Link
               href="/contact"
-              className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold hover:-translate-y-0.5 ${
-                pathname === '/contact' ? 'text-brand-gold' : 'text-brand-navy dark:text-gray-200'
+              className={`text-xs font-bold uppercase tracking-widest transition-all duration-300 hover:text-brand-gold-text hover:-translate-y-0.5 ${
+                pathname === '/contact' ? 'text-brand-gold-text' : 'text-brand-navy dark:text-gray-200'
               }`}
             >
               Contact
@@ -153,8 +154,8 @@ export default function Header() {
 
             <button
               onClick={toggleTheme}
-              className="p-2 text-brand-navy dark:text-gray-200 hover:text-brand-gold transition-colors"
-              aria-label="Toggle theme"
+              className="p-2 text-brand-navy dark:text-gray-200 hover:text-brand-gold-text transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? <Sun size={20} /> : <Moon size={20} />}
             </button>
@@ -163,15 +164,17 @@ export default function Header() {
           <div className="flex md:hidden items-center gap-4">
             <button
               onClick={toggleTheme}
-              className="p-2 z-50 text-brand-navy dark:text-gray-200"
-              aria-label="Toggle theme"
+              className="p-2 z-50 text-brand-navy dark:text-gray-200 hover:text-brand-gold-text transition-colors"
+              aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
             >
               {theme === 'dark' ? <Sun size={24} /> : <Moon size={24} />}
             </button>
             <button
-              className="z-50 text-brand-navy dark:text-gray-200 p-2"
+              className="z-50 text-brand-navy dark:text-gray-200 p-2 hover:text-brand-gold-text transition-colors"
               onClick={toggleMobileMenu}
-              aria-label="Toggle menu"
+              aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -182,11 +185,15 @@ export default function Header() {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
+            id="mobile-menu"
             initial={{ opacity: 0, x: '100%' }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: '100%' }}
             transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             className="fixed inset-0 top-0 bg-white dark:bg-gray-900 z-40 md:hidden overflow-y-auto pt-24 pb-8 px-6"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Mobile navigation menu"
           >
             <motion.div
               className="flex flex-col gap-6"

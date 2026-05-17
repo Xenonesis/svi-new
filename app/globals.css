@@ -11,6 +11,7 @@
   --color-brand-gold: #c9a84c;
   --color-brand-gold-light: #dec070;
   --color-brand-gold-dark: #b08f36;
+  --color-brand-gold-text: #8b7332;
 }
 
 @layer base {
@@ -29,6 +30,34 @@
 
   h1, h2, h3, h4, h5, h6 {
     @apply font-serif text-brand-navy dark:text-gray-100;
+  }
+
+  /* Focus visible styles for accessibility */
+  *:focus-visible {
+    outline: 2px solid #c9a84c;
+    outline-offset: 2px;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: 2px solid #c9a84c;
+    outline-offset: 2px;
+    box-shadow: 0 0 0 4px rgba(201, 168, 76, 0.2);
+  }
+
+  /* Respect user's motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 

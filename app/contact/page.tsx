@@ -150,80 +150,95 @@ export default function Contact() {
                 <form onSubmit={handleSubmit} className="space-y-6" noValidate>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
-                      <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Your Name</label>
+                      <label htmlFor="name" className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Your Name</label>
                       <input
                         type="text"
+                        id="name"
                         name="name"
                         value={formData.name}
                         onChange={handleChange}
+                        aria-invalid={errors.name ? 'true' : 'false'}
+                        aria-describedby={errors.name ? 'name-error' : undefined}
                         className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.name ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       />
                       {errors.name && (
-                        <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.name}</p>
+                        <p id="name-error" className="text-red-500 text-xs mt-1 flex items-center gap-1" role="alert"><AlertCircle size={12} /> {errors.name}</p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Email Address</label>
+                      <label htmlFor="email" className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Email Address</label>
                       <input
                         type="email"
+                        id="email"
                         name="email"
                         value={formData.email}
                         onChange={handleChange}
+                        aria-invalid={errors.email ? 'true' : 'false'}
+                        aria-describedby={errors.email ? 'email-error' : undefined}
                         className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.email ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       />
                       {errors.email && (
-                        <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.email}</p>
+                        <p id="email-error" className="text-red-500 text-xs mt-1 flex items-center gap-1" role="alert"><AlertCircle size={12} /> {errors.email}</p>
                       )}
                     </div>
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                      <div>
-                      <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Phone Number</label>
+                      <label htmlFor="phone" className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Phone Number</label>
                       <input
                         type="tel"
+                        id="phone"
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
+                        aria-invalid={errors.phone ? 'true' : 'false'}
+                        aria-describedby={errors.phone ? 'phone-error' : undefined}
                         className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.phone ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                         placeholder="+91"
                       />
                       {errors.phone && (
-                        <p className="text-red-500 text-xs mt-1 flex items-center gap-1"><AlertCircle size={12} /> {errors.phone}</p>
+                        <p id="phone-error" className="text-red-500 text-xs mt-1 flex items-center gap-1" role="alert"><AlertCircle size={12} /> {errors.phone}</p>
                       )}
                     </div>
                     <div>
-                      <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Subject</label>
+                      <label htmlFor="subject" className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Subject</label>
                       <input
                         type="text"
+                        id="subject"
                         name="subject"
                         value={formData.subject}
                         onChange={handleChange}
                         maxLength={100}
+                        aria-invalid={errors.subject ? 'true' : 'false'}
+                        aria-describedby={errors.subject ? 'subject-error' : 'subject-count'}
                         className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 ${errors.subject ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                       />
                       <div className="flex justify-between items-center mt-1">
                         {errors.subject ? (
-                          <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.subject}</p>
+                          <p id="subject-error" className="text-red-500 text-xs flex items-center gap-1" role="alert"><AlertCircle size={12} /> {errors.subject}</p>
                         ) : <span></span>}
-                        <span className="text-gray-400 text-[10px]">{formData.subject.length}/100</span>
+                        <span id="subject-count" className="text-gray-400 text-[10px]">{formData.subject.length}/100</span>
                       </div>
                     </div>
                   </div>
                   <div>
-                    <label className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Message</label>
+                    <label htmlFor="message" className="block text-[10px] uppercase tracking-[0.2em] font-bold text-gray-500 mb-2">Message</label>
                     <textarea
+                      id="message"
                       rows={5}
                       name="message"
                       value={formData.message}
                       onChange={handleChange}
                       maxLength={1000}
+                      aria-invalid={errors.message ? 'true' : 'false'}
+                      aria-describedby={errors.message ? 'message-error' : 'message-count'}
                       className={`w-full px-4 py-3 border focus:ring-0 outline-none transition-colors text-sm bg-gray-50/50 resize-none ${errors.message ? 'border-red-500 focus:border-red-500' : 'border-gray-200 focus:border-brand-gold'}`}
                     ></textarea>
                     <div className="flex justify-between items-center mt-1">
                       {errors.message ? (
-                        <p className="text-red-500 text-xs flex items-center gap-1"><AlertCircle size={12} /> {errors.message}</p>
+                        <p id="message-error" className="text-red-500 text-xs flex items-center gap-1" role="alert"><AlertCircle size={12} /> {errors.message}</p>
                       ) : <span></span>}
-                      <span className="text-gray-400 text-[10px]">{formData.message.length}/1000</span>
+                      <span id="message-count" className="text-gray-400 text-[10px]">{formData.message.length}/1000</span>
                     </div>
                   </div>
                   <button

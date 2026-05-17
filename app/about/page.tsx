@@ -81,9 +81,11 @@ export default function About() {
              <div className="md:w-1/2">
                 <img 
                   src="/images/house1.png" 
-                  alt="Our Services" 
+                  alt="SVI Infra residential property showcasing quality construction and modern design"
                   loading="lazy"
                   decoding="async"
+                  width={800}
+                  height={600}
                   className="shadow-2xl dark:shadow-none border dark:border-gray-700"
                 />
              </div>
