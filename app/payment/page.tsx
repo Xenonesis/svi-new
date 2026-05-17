@@ -131,7 +131,7 @@ export default function Payment() {
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="bg-white rounded-[2rem] w-full max-w-[600px] overflow-hidden relative shadow-2xl p-8"
+            className="bg-white rounded-[2rem] w-full max-w-[660px] overflow-hidden relative shadow-2xl p-8"
           >
             <button 
               onClick={() => setIsModalOpen(false)}
@@ -140,27 +140,143 @@ export default function Payment() {
               <X size={20} className="text-gray-500" />
             </button>
 
-            <div className="mb-8 mt-2">
+            <div className="mb-6 mt-2">
               <h2 className="text-[28px] font-serif text-[#1e293b] mb-1">For Application Amount</h2>
               <p className="text-gray-500 text-sm">Payment Details</p>
             </div>
 
-            <div className="flex flex-col md:flex-row gap-6">
-              {/* Left Column: QR Code */}
-              <div className="md:w-5/12 flex flex-col items-center justify-start">
-                <div className="bg-[#fcfbf9] rounded-2xl p-5 w-full border border-gray-50 flex flex-col items-center justify-center mb-4 shadow-sm">
-                  {/* Dynamic QR code generated with the official SVI Infra Solutions UPI details */}
-                  <img 
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=1000221207001410.7300007643@idbi&pn=SVI%20INFRA%20SOLUTIONS%20PVT.%20LTD." 
-                    alt="UPI QR Code" 
-                    className="w-full h-auto aspect-square object-contain mix-blend-multiply"
-                  />
+            <div className="flex flex-col md:flex-row gap-8 items-start">
+              {/* Left Column: Beautiful Recreated 3D IDBI Bank Scanner Stand */}
+              <div className="md:w-[270px] w-full shrink-0 flex flex-col items-center">
+                {/* Main Stand Container */}
+                <div className="w-full relative group">
+                  {/* Subtle 3D shadow behind the stand */}
+                  <div className="absolute inset-0 bg-black/10 rounded-2xl blur-lg transform translate-y-2 translate-x-1 group-hover:translate-y-3 transition-transform duration-300"></div>
+                  
+                  {/* Green Card Body */}
+                  <div className="relative w-full bg-[#005c30] rounded-t-2xl p-3 border border-[#004d28] text-white flex flex-col overflow-hidden z-10 shadow-lg">
+                    {/* Glossy Acrylic Reflection Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/5 to-white/10 pointer-events-none"></div>
+                    <div className="absolute -inset-y-12 -inset-x-24 bg-gradient-to-r from-transparent via-white/10 to-transparent rotate-45 transform -translate-x-full group-hover:translate-x-full transition-transform duration-[1500ms] ease-out"></div>
+
+                    {/* IDBI Brand Header */}
+                    <div className="text-center text-[8px] tracking-widest uppercase opacity-95 font-bold mb-1.5 font-sans">
+                      Powered by
+                    </div>
+                    
+                    {/* Double Border IDBI Box */}
+                    <div className="p-[2px] border border-white/95 mb-3 bg-[#005c30]">
+                      <div className="border border-white/95 py-1.5 px-3 bg-[#005c30] flex items-center justify-center">
+                        <svg viewBox="0 0 100 100" className="w-5 h-5 mr-2 shrink-0">
+                          <circle cx="50" cy="50" r="46" fill="#e35205" />
+                          <circle cx="50" cy="30" r="7" fill="#ffffff" />
+                          <path d="M46 42h8v35h-8z" fill="#ffffff"/>
+                          <path d="M50 42c-10 0-16 6-16 16v17h6V58c0-6 4-10 10-10s10 4 10 10v17h6V58c0-10-6-16-16-16z" fill="#ffffff"/>
+                        </svg>
+                        <span className="font-serif font-bold text-[14px] tracking-wider text-white leading-none">IDBI BANK</span>
+                      </div>
+                    </div>
+
+                    {/* Inner White Container */}
+                    <div className="bg-white rounded-xl p-3 text-black flex flex-col items-center shadow-inner">
+                      {/* BHIM / UPI Logos Row */}
+                      <div className="flex justify-between w-full items-center px-0.5 mb-2.5">
+                        {/* BHIM SVG Logo */}
+                        <svg viewBox="0 0 100 28" className="h-6 w-[45%] shrink-0">
+                          <g transform="skewX(-10)">
+                            <text x="2" y="16" font-family="sans-serif" font-weight="900" font-size="16" fill="#1b365d">BHIM</text>
+                          </g>
+                          <g transform="translate(48, 2)">
+                            <path d="M0 0 L8 5.5 L0 11 Z" fill="#005c30" />
+                            <path d="M0 0 L8 5.5 L2.5 2.5 Z" fill="#e35205" />
+                          </g>
+                          <text x="2" y="24" font-family="sans-serif" font-weight="700" font-size="3.5" fill="#6B7280" letter-spacing="0.3">SMART INTERFACE FOR MONEY</text>
+                        </svg>
+                        
+                        {/* Vertical Separator */}
+                        <div className="h-6 w-[1px] bg-gray-200"></div>
+                        
+                        {/* UPI SVG Logo */}
+                        <svg viewBox="0 0 100 28" className="h-6 w-[45%] shrink-0">
+                          <g transform="skewX(-10)">
+                            <text x="2" y="16" font-family="sans-serif" font-weight="900" font-size="16" fill="#1E293B">UPI</text>
+                          </g>
+                          <g transform="translate(36, 2)">
+                            <path d="M0 0 L8 5.5 L0 11 Z" fill="#09733c" />
+                            <path d="M0 0 L8 5.5 L2.5 2.5 Z" fill="#e35205" />
+                            <path d="M0 0 L2.5 1.7 L0 3.4 Z" fill="#1b365d" />
+                          </g>
+                          <text x="2" y="24" font-family="sans-serif" font-weight="700" font-size="4" fill="#6B7280" letter-spacing="0.1">UNIFIED PAYMENTS INTERFACE</text>
+                        </svg>
+                      </div>
+
+                      {/* SCAN & PAY Label */}
+                      <div className="text-[10px] font-extrabold tracking-widest text-[#1e293b] mb-1.5 uppercase font-sans">
+                        SCAN & PAY
+                      </div>
+
+                      {/* QR Code Container */}
+                      <div className="bg-white p-1.5 border border-gray-150 rounded-lg mb-2 shadow-sm w-full aspect-square flex items-center justify-center">
+                        <img 
+                          src="https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=upi://pay?pa=1000221207001410.7300007643@idbi&pn=SVI%20INFRA%20SOLUTIONS%20PVT.%20LTD." 
+                          alt="UPI QR Code" 
+                          className="w-full h-auto aspect-square object-contain"
+                        />
+                      </div>
+
+                      {/* UPI VPA (Ochre Gold Color, Centered, No background card) */}
+                      <div className="text-[9px] font-bold text-[#9b722d] mb-2.5 text-center tracking-wide break-all font-mono">
+                        1000221207001410.7300007643@idbi
+                      </div>
+
+                      {/* Company Green Bar (Sharp-edged, exact match) */}
+                      <div className="bg-[#005c30] text-white w-full text-center py-1.5 px-2 rounded-sm font-bold text-[9px] tracking-wide mb-2.5 uppercase font-sans">
+                        SVI INFRA SOLUTIONS PVT. LTD.
+                      </div>
+
+                      {/* Bilingual Acceptance Subtext */}
+                      <div className="text-center space-y-1 mb-2.5">
+                        <div className="text-[8px] font-extrabold text-[#1e293b] leading-tight font-sans">
+                          Payment Accepted from all UPI Apps.
+                        </div>
+                        <div className="text-[8.5px] font-bold text-gray-700 leading-tight">
+                          सभी UPI Apps से भुगतान स्वीकृत किया जाता है।
+                        </div>
+                      </div>
+
+                      {/* Bottom Badges Row */}
+                      <div className="flex justify-between w-full mt-1.5 pt-2 border-t border-gray-150 px-0.5">
+                        {/* IDBI GO Mobile Badge */}
+                        <div className="border border-[#b89551] rounded-sm p-[1px] flex items-center bg-[#005c30] w-[46%] h-6 justify-center shrink-0 scale-[0.9] origin-left">
+                          <div className="flex flex-col text-center text-white leading-none font-sans justify-center items-center">
+                            <span className="text-[3px] font-semibold tracking-tighter opacity-90 uppercase">IDBI BANK</span>
+                            <span className="text-white text-[7px] font-black tracking-wide my-[0.5px]">GO</span>
+                            <span className="text-[3px] font-semibold tracking-tighter opacity-90">Mobile</span>
+                          </div>
+                        </div>
+
+                        {/* IDBI BANK PayWiz Badge */}
+                        <div className="border border-[#b89551] rounded-sm p-[1px] flex items-center bg-black w-[46%] h-6 justify-center shrink-0 scale-[0.9] origin-right">
+                          <div className="flex flex-col text-center leading-none font-sans justify-center items-center">
+                            <span className="text-[3px] font-semibold text-white tracking-tighter opacity-80 uppercase leading-none">IDBI BANK</span>
+                            <span className="text-[#b89551] text-[6.5px] font-extrabold italic tracking-tight mt-[1px]">PayWiz</span>
+                          </div>
+                        </div>
+                      </div>
+
+                    </div>
+                  </div>
+
+                  {/* 3D Acrylic Base Stand Foot */}
+                  <div className="w-full flex flex-col items-center">
+                    <div className="w-[94%] h-3 bg-gradient-to-r from-gray-800 via-gray-700 to-gray-900 rounded-b-xl shadow-md border-t border-gray-600/50 z-0"></div>
+                    <div className="w-[84%] h-1.5 bg-black/25 blur-[1.5px] rounded-full mt-0.5"></div>
+                  </div>
                 </div>
-                <p className="text-sm text-gray-500 font-medium text-center">Scan to pay with any UPI app</p>
               </div>
 
               {/* Right Column: Bank Details */}
-              <div className="md:w-7/12 flex flex-col space-y-4">
+              <div className="flex-1 flex flex-col space-y-4 w-full">
                 <div className="flex flex-col space-y-1.5">
                   <span className="text-sm text-gray-500 font-medium">Account Name</span>
                   <div className="bg-[#f8fafc] rounded-xl p-3.5 flex justify-between items-center border border-gray-100">
