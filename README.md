@@ -1,4 +1,4 @@
-# SVI - Next.js Web Application
+# SVI - Next.js Web Application 1
 
 A modern web application built with Next.js 16, React 19, TypeScript, and Tailwind CSS v4.
 
