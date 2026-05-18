@@ -4,8 +4,33 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export default function TermsConditions() {
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Terms & Conditions',
+        item: 'https://sviiinfrasolutions.com/terms-conditions',
+      },
+    ],
+  };
+
   return (
     <div className="pt-24 pb-20 bg-brand-bg dark:bg-gray-900 min-h-screen">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <div className="container mx-auto px-4 max-w-4xl">
         <Link href="/" className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-brand-navy dark:text-gray-200 hover:text-brand-gold transition-colors mb-12">
           <ArrowLeft size={16} />

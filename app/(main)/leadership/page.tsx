@@ -17,9 +17,58 @@ const TEAM_MEMBERS = [
   }
 ];
 
+// Structured Data for Person (Leadership Team)
+const personSchema = {
+  '@context': 'https://schema.org',
+  '@graph': TEAM_MEMBERS.map((member) => ({
+    '@type': 'Person',
+    name: member.name,
+    jobTitle: member.role,
+    description: member.bio,
+    worksFor: {
+      '@type': 'Organization',
+      name: 'SVI Infra Solutions Private Limited',
+      url: 'https://sviiinfrasolutions.com',
+    },
+    url: 'https://sviiinfrasolutions.com/leadership',
+  })),
+};
+
 export default function Leadership() {
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Leadership Team',
+        item: 'https://sviiinfrasolutions.com/leadership',
+      },
+    ],
+  };
+
   return (
     <div className="pt-20 pb-16 bg-gray-50 dark:bg-[#0C0C0C] min-h-screen page-transition">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      
+      {/* Person Schema - Leadership Team */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(personSchema) }}
+      />
+      
       <section className="bg-brand-navy py-14 md:py-24 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)', backgroundSize: '40px 40px' }} />
         {/* Animated orbs */}

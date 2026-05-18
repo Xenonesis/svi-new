@@ -42,6 +42,35 @@ const currentProjectsData = [
   }
 ];
 
+// Structured Data for RealEstateListing
+const realEstateListingsSchema = {
+  '@context': 'https://schema.org',
+  '@graph': currentProjectsData.map((project) => ({
+    '@type': 'RealEstateListing',
+    name: project.title,
+    description: project.fullDescription || project.description,
+    listingType: 'ForSale',
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: project.location,
+      addressRegion: 'Rajasthan',
+      addressCountry: 'IN',
+    },
+    geo: {
+      '@type': 'GeoCoordinates',
+      latitude: project.lat,
+      longitude: project.lng,
+    },
+    offers: {
+      '@type': 'Offer',
+      availability: 'https://schema.org/PreOrderAction',
+      priceStatus: 'https://schema.org/InquirePrice',
+    },
+    image: `https://sviiinfrasolutions.com${project.img}`,
+    url: `https://sviiinfrasolutions.com/projects/current#${project.id}`,
+  })),
+};
+
 const CompletedProjectsMap = lazy(() => import('@/src/components/CompletedProjectsMap').then(m => ({ default: m.default })));
 
 export default function Projects() {
@@ -49,6 +78,32 @@ export default function Projects() {
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [highlightedProject, setHighlightedProject] = useState<string | null>(null);
+
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Projects',
+        item: 'https://sviiinfrasolutions.com/projects',
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: 'Current Projects',
+        item: 'https://sviiinfrasolutions.com/projects/current',
+      },
+    ],
+  };
 
   const openModal = useCallback((project: typeof currentProjectsData[0]) => {
     setSelectedProject(project);
@@ -91,6 +146,18 @@ export default function Projects() {
 
   return (
     <div className="pt-20 pb-16 bg-gray-50 dark:bg-[#0C0C0C] min-h-screen">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      
+      {/* RealEstateListing Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateListingsSchema) }}
+      />
+      
       <section className="bg-brand-bg dark:bg-gray-900 py-14 md:py-20 text-center border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-brand-navy dark:text-gray-100 leading-tight mb-6 animate-hero-h1">

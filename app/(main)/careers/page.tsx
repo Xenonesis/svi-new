@@ -1,19 +1,8 @@
-import type { Metadata } from 'next';
+"use client";
+
 import { motion } from 'motion/react';
 import { DollarSign, Laptop, Star, Send, Briefcase, Users, Target, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'Careers at SVI Infra Solutions | Join Our Real Estate Team',
-  description: 'Explore career opportunities at SVI Infra Solutions. Join our team as BDM, BDE, or Team Lead in Noida. Competitive salaries up to 60k INR plus commissions.',
-  keywords: ['real estate careers', 'SVI Infra jobs', 'property sales jobs Noida', 'business development jobs', 'real estate commission jobs'],
-  openGraph: {
-    title: 'Join Our Team | Careers at SVI Infra Solutions',
-    description: 'Build your career in real estate with attractive commissions and growth opportunities.',
-    url: 'https://sviiinfrasolutions.com/careers',
-    type: 'website',
-  },
-};
 
 const GRADIENT_STYLE = { backgroundImage: 'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)', backgroundSize: '40px 40px' };
 
@@ -30,8 +19,33 @@ const ONSITE_ROLES = [
 ];
 
 export default function Careers() {
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Careers',
+        item: 'https://sviiinfrasolutions.com/careers',
+      },
+    ],
+  };
+
   return (
     <div className="pt-20 pb-16">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <section className="bg-brand-bg dark:bg-gray-900 py-14 md:py-24 text-center border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-brand-navy dark:text-gray-100 mb-6 animate-hero-h1">

@@ -1,20 +1,9 @@
-import type { Metadata } from 'next';
+"use client";
+
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { ArrowRight, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
-
-export const metadata: Metadata = {
-  title: 'Real Estate Blog & Insights | SVI Infra Solutions',
-  description: 'Stay updated with the latest real estate market trends, investment guides, property buying tips, and SVI Infra project updates in Jaipur, Noida, and Phulera Smart City.',
-  keywords: ['real estate blog', 'property investment tips', 'Jaipur real estate news', 'Phulera Smart City updates', 'home buying guide India'],
-  openGraph: {
-    title: 'Real Estate Insights & Market Trends | SVI Infra Blog',
-    description: 'Expert insights on real estate investing, market analysis, and property development updates.',
-    url: 'https://sviiinfrasolutions.com/blog',
-    type: 'website',
-  },
-};
 
 const BLOG_POSTS = [
   {
@@ -47,8 +36,33 @@ const BLOG_POSTS = [
 ];
 
 export default function Blog() {
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Blog',
+        item: 'https://sviiinfrasolutions.com/blog',
+      },
+    ],
+  };
+
   return (
     <div className="pt-24 pb-20 bg-gray-50 dark:bg-[#0C0C0C] min-h-screen">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
       <section className="bg-brand-navy dark:bg-gray-900 py-20 text-center relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none" style={{ backgroundImage: 'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)', backgroundSize: '40px 40px' }}></div>
         <div className="container mx-auto px-4 relative z-10">
@@ -83,10 +97,12 @@ export default function Blog() {
               className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:-translate-y-2 hover:shadow-2xl transition-all duration-400 flex flex-col group overflow-hidden"
             >
               <div className="relative h-60 overflow-hidden">
-                <img 
+                <Image 
                   src={post.image} 
-                  alt={post.title} 
-                  className="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                  alt={post.title}
+                  fill
+                  quality={85}
+                  className="object-cover transform group-hover:scale-105 transition-transform duration-700"
                 />
                 <div className="absolute top-4 left-4 bg-brand-gold text-brand-navy text-[10px] font-bold uppercase tracking-widest px-3 py-1 shadow-sm">
                   {post.category}

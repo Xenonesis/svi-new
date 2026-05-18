@@ -1,23 +1,38 @@
-import type { Metadata } from 'next';
+"use client";
+
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { Target, Heart, Lightbulb, Award, CheckCircle } from 'lucide-react';
 
-export const metadata: Metadata = {
-  title: 'About SVI Infra Solutions | 15+ Years of Real Estate Excellence',
-  description: 'Learn about SVI Infra Solutions - a trusted real estate developer with 15+ years of experience in Jaipur, Noida, and Phulera Smart City. Discover our mission, values, and commitment to quality.',
-  keywords: ['about SVI Infra', 'real estate developer history', 'SVI Infra mission', 'Jaipur property developers', 'Noida real estate company'],
-  openGraph: {
-    title: 'About SVI Infra Solutions | Building Trust Since 2009',
-    description: 'Discover our journey of delivering excellence in residential and commercial real estate across Rajasthan and Uttar Pradesh.',
-    url: 'https://sviiinfrasolutions.com/about',
-    type: 'website',
-  },
-};
-
 export default function About() {
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'About Us',
+        item: 'https://sviiinfrasolutions.com/about',
+      },
+    ],
+  };
+
   return (
     <div className="pt-20 pb-20 bg-white dark:bg-gray-900 min-h-screen">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      
       <section className="bg-brand-bg dark:bg-gray-800 py-16 md:py-24 text-center border-b border-gray-200 dark:border-gray-700">
         <div className="container mx-auto px-4">
           <h1 className="text-3xl sm:text-4xl md:text-6xl font-serif text-brand-navy dark:text-gray-100 mb-6 px-2 animate-hero-h1">

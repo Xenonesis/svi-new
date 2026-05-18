@@ -1,20 +1,9 @@
-import type { Metadata } from 'next';
+"use client";
+
 import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { MapPin, PhoneIcon, Mail, Clock, AlertCircle } from 'lucide-react';
-
-export const metadata: Metadata = {
-  title: 'Contact SVI Infra Solutions | Get in Touch for Property Inquiries',
-  description: 'Contact SVI Infra Solutions for property inquiries, site visits, and investment consultations. Visit our Noida office or reach us at +91 73000 07643. Mon-Sun business hours available.',
-  keywords: ['contact SVI Infra', 'real estate inquiry', 'property site visit', 'Jaipur property contact', 'Noida real estate office'],
-  openGraph: {
-    title: 'Contact Us | SVI Infra Solutions',
-    description: 'Get in touch with our real estate experts for personalized property consultation and investment guidance.',
-    url: 'https://sviiinfrasolutions.com/contact',
-    type: 'website',
-  },
-};
 
 const DIGIT_REGEX = /\d/g;
 
@@ -29,6 +18,26 @@ export default function Contact() {
     message: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+
+  // BreadcrumbList Structured Data
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://sviiinfrasolutions.com/',
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Contact Us',
+        item: 'https://sviiinfrasolutions.com/contact',
+      },
+    ],
+  };
 
   // LocalBusiness structured data
   const localBusinessJsonLd = {
@@ -138,6 +147,13 @@ export default function Contact() {
 
   return (
     <div className="pt-20 pb-16 bg-brand-bg dark:bg-gray-900 relative">
+      {/* BreadcrumbList Structured Data */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      
+      {/* LocalBusiness Structured Data */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessJsonLd) }}
