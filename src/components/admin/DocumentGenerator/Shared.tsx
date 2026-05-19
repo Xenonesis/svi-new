@@ -1,8 +1,8 @@
 'use client';
 
-import { Download, Image as ImageIcon } from 'lucide-react';
+import { Download, Image as ImageIcon, Maximize2, X } from 'lucide-react';
 
-import { ReactNode } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 
 interface DownloadOptionsProps {
   onDownloadPDF: () => void;

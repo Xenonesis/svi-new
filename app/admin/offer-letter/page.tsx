@@ -254,9 +254,37 @@ export default function OfferLetterPage() {
         <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/8 dark:bg-[#0e0e14]">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 
-          <h2 className="mb-4 border-b border-gray-100 pb-4 text-lg font-bold text-gray-900 dark:border-white/10 dark:text-white">
-            Live Preview
-          </h2>
+          <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+              Live Preview
+            </h2>
+            {preview && (
+              <button
+                onClick={() => {
+                  const previewElement = document.getElementById('offerLetterPreview');
+                  if (previewElement) {
+                    if (document.fullscreenElement) {
+                      document.exitFullscreen();
+                    } else {
+                      previewElement.requestFullscreen().catch(err => {
+                        console.error('Error attempting to enable fullscreen:', err);
+                      });
+                    }
+                  }
+                }}
+                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                title="Toggle Fullscreen"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M8 3H5a2 2 0 0 0-2 2v3" />
+                  <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
+                  <path d="M3 16v3a2 2 0 0 0 2 2h3" />
+                  <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
+                </svg>
+                <span className="hidden sm:inline">Fullscreen</span>
+              </button>
+            )}
+          </div>
 
           <PreviewContainer previewId="offerPreview" hasPreview={preview}>
             <div className="bg-white text-black p-8 font-sans text-[13px] leading-relaxed">
