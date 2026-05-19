@@ -87,39 +87,159 @@ export default function AllotmentLetterPage() {
   const handleDownloadPDF = async () => {
     const element = document.getElementById('allotmentPreview');
     if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('Allotment_Letter.pdf');
 
-    // Update document status to completed
-    if (documentId && token) {
-      try {
-        await fetch(`/api/admin/documents/${documentId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: 'completed' }),
-        });
-      } catch (error) {
-        console.error('Failed to update document status:', error);
+    // Clone the element to avoid modifying the original
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    // Set a proper width for better text layout (A4-like proportions)
+    clone.style.backgroundColor = 'white';
+    clone.style.color = 'black';
+    clone.style.width = '210mm'; // A4 width
+    clone.style.minHeight = element.offsetHeight + 'px';
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.padding = '32px'; // Match original padding
+    clone.style.boxSizing = 'border-box';
+
+    // Wait for all images in the clone to load
+    const images = clone.querySelectorAll('img');
+    const imagePromises = Array.from(images).map((img) => {
+      return new Promise<void>((resolve) => {
+        if (img.complete) {
+          resolve();
+        } else {
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // Resolve even on error to not block
+        }
+      });
+    });
+
+    document.body.appendChild(clone);
+
+    try {
+      // Wait for images to load
+      await Promise.all(imagePromises);
+
+      // Use high-quality settings for perfect capture
+      const canvas = await html2canvas(clone, {
+        scale: 3, // Higher scale for better quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 15000, // Increased timeout for image loading
+        removeContainer: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
+        windowHeight: clone.scrollHeight,
+      });
+
+      // Create PDF with exact dimensions
+      const pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4',
+        compress: true,
+      });
+
+      const pdfWidth = pdf.internal.pageSize.getWidth();
+      const pdfHeight = pdf.internal.pageSize.getHeight();
+      const imgWidth = canvas.width;
+      const imgHeight = canvas.height;
+      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
+
+      const imgX = (pdfWidth - imgWidth * ratio) / 2;
+      const imgY = 0;
+
+      // Use PNG for better quality (no JPEG compression artifacts)
+      const imgData = canvas.toDataURL('image/png', 1.0);
+      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
+      pdf.save('Allotment_Letter.pdf');
+
+      // Update document status to completed
+      if (documentId && token) {
+        try {
+          await fetch(`/api/admin/documents/${documentId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: 'completed' }),
+          });
+        } catch (error) {
+          console.error('Failed to update document status:', error);
+        }
       }
+    } finally {
+      // Clean up cloned element
+      document.body.removeChild(clone);
     }
   };
 
   const handleDownloadImage = async () => {
     const element = document.getElementById('allotmentPreview');
     if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const link = document.createElement('a');
-    link.download = 'Allotment_Letter.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+
+    // Clone the element to avoid modifying the original
+    const clone = element.cloneNode(true) as HTMLElement;
+
+    // Set a proper width for better text layout (A4-like proportions)
+    clone.style.backgroundColor = 'white';
+    clone.style.color = 'black';
+    clone.style.width = '210mm'; // A4 width
+    clone.style.minHeight = element.offsetHeight + 'px';
+    clone.style.position = 'absolute';
+    clone.style.left = '-9999px';
+    clone.style.top = '0';
+    clone.style.padding = '32px'; // Match original padding
+    clone.style.boxSizing = 'border-box';
+
+    // Wait for all images in the clone to load
+    const images = clone.querySelectorAll('img');
+    const imagePromises = Array.from(images).map((img) => {
+      return new Promise<void>((resolve) => {
+        if (img.complete) {
+          resolve();
+        } else {
+          img.onload = () => resolve();
+          img.onerror = () => resolve(); // Resolve even on error to not block
+        }
+      });
+    });
+
+    document.body.appendChild(clone);
+
+    try {
+      // Wait for images to load
+      await Promise.all(imagePromises);
+
+      // Use high-quality settings for perfect capture
+      const canvas = await html2canvas(clone, {
+        scale: 3, // Higher scale for better quality
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: '#ffffff',
+        logging: false,
+        imageTimeout: 15000, // Increased timeout for image loading
+        removeContainer: true,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
+        windowHeight: clone.scrollHeight,
+      });
+
+      // Download as PNG with maximum quality
+      const link = document.createElement('a');
+      link.download = 'Allotment_Letter.png';
+      link.href = canvas.toDataURL('image/png', 1.0);
+      link.click();
+    } finally {
+      // Clean up cloned element
+      document.body.removeChild(clone);
+    }
   };
 
   return (
@@ -303,10 +423,8 @@ export default function AllotmentLetterPage() {
         <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/8 dark:bg-[#0e0e14]">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 
-          <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-              Live Preview
-            </h2>
+          <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Live Preview</h2>
             {preview && (
               <button
                 onClick={() => {
@@ -315,16 +433,26 @@ export default function AllotmentLetterPage() {
                     if (document.fullscreenElement) {
                       document.exitFullscreen();
                     } else {
-                      previewElement.requestFullscreen().catch(err => {
+                      previewElement.requestFullscreen().catch((err) => {
                         console.error('Error attempting to enable fullscreen:', err);
                       });
                     }
                   }
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
                 title="Toggle Fullscreen"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M8 3H5a2 2 0 0 0-2 2v3" />
                   <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
                   <path d="M3 16v3a2 2 0 0 0 2 2h3" />
@@ -336,32 +464,51 @@ export default function AllotmentLetterPage() {
           </div>
 
           <PreviewContainer previewId="allotmentPreview" hasPreview={preview}>
-            <div className="relative bg-white text-black p-8 font-sans text-[13px] leading-relaxed">
+            <div className="relative bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
               {/* Watermark */}
-              <div className="absolute inset-0 z-0 flex items-center justify-center opacity-5 pointer-events-none">
-                <img src="/logo.png" alt="Watermark" className="w-[80%] max-w-3xl object-contain grayscale" onError={(e) => (e.currentTarget.style.display = 'none')} />
+              <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-5">
+                <img
+                  src="/logo.png"
+                  alt="Watermark"
+                  className="w-[80%] max-w-3xl object-contain grayscale"
+                  onError={(e) => (e.currentTarget.style.display = 'none')}
+                />
               </div>
 
               <div className="relative z-10">
                 {/* Header */}
-                <div className="flex justify-between items-start pb-4 mb-6 border-b-2 border-[#1e3a8a]">
+                <div className="mb-6 flex items-start justify-between border-b-2 border-[#1e3a8a] pb-4">
                   <div>
-                    <h1 className="text-[#1e3a8a] text-2xl font-bold mb-2 tracking-wide uppercase">
+                    <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
                       SVI INFRA SOLUTIONS PVT. LTD
                     </h1>
-                    <p className="text-gray-700">Cell: +91 9216014579 | Email: info@sviinfrasolutions.com</p>
-                    <p className="text-gray-700">Website: www.sviinfrasolutions.in | www.sviinfrasolutions.com</p>
-                    <p className="text-gray-700">Office Address : A-61 Sector 65 Noida Uttar Pradesh 201309</p>
+                    <p className="text-gray-700">
+                      Cell: +91 9216014579 | Email: info@sviinfrasolutions.com
+                    </p>
+                    <p className="text-gray-700">
+                      Website: www.sviinfrasolutions.in | www.sviinfrasolutions.com
+                    </p>
+                    <p className="text-gray-700">
+                      Office Address : A-61 Sector 65 Noida Uttar Pradesh 201309
+                    </p>
                   </div>
                   <div className="w-48">
-                    <img src="/logo.png" alt="SVI Infra Solutions" className="w-full h-auto object-contain" onError={(e) => (e.currentTarget.style.display = 'none')} />
+                    <img
+                      src="/logo.png"
+                      alt="SVI Infra Solutions"
+                      className="h-auto w-full object-contain"
+                      onError={(e) => (e.currentTarget.style.display = 'none')}
+                    />
                   </div>
                 </div>
 
                 {/* Date & To */}
                 <div className="mb-6">
-                  <p className="font-bold mb-4">
-                    Dated: {formData.bookingDate ? formData.bookingDate.split('-').reverse().join('-') : new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
+                  <p className="mb-4 font-bold">
+                    Dated:{' '}
+                    {formData.bookingDate
+                      ? formData.bookingDate.split('-').reverse().join('-')
+                      : new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
                   </p>
                   <p className="font-bold">To,</p>
                   <p className="font-bold">{formData.clientName || '[Client Name]'}</p>
@@ -371,57 +518,96 @@ export default function AllotmentLetterPage() {
                 {/* Body */}
                 <div className="mb-6">
                   <p className="mb-2">
-                    Dear Mr./Mrs./Ms. <span className="font-bold">{formData.clientName || '[Client Name]'}</span>
+                    Dear Mr./Mrs./Ms.{' '}
+                    <span className="font-bold">{formData.clientName || '[Client Name]'}</span>
                   </p>
                   <p className="mb-1 text-justify">
-                    Congratulations from Svi Infra Solutions Pvt. Ltd. on your new investment in {formData.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect choice and you are one of the few lucky ones to get unit at such reasonable rates.
+                    Congratulations from Svi Infra Solutions Pvt. Ltd. on your new investment in{' '}
+                    {formData.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect
+                    choice and you are one of the few lucky ones to get unit at such reasonable
+                    rates.
                   </p>
                   <p className="mb-4 text-justify">
-                    We at Svi Infra Solutions Pvt. Ltd. feel privileged to be part of your great investment. We thank you for giving us an opportunity to assist you in making this very investment. We sincerely hope that you are satisfied with our services and will refer us in your circle.
+                    We at Svi Infra Solutions Pvt. Ltd. feel privileged to be part of your great
+                    investment. We thank you for giving us an opportunity to assist you in making
+                    this very investment. We sincerely hope that you are satisfied with our services
+                    and will refer us in your circle.
                   </p>
 
-                  <p className="font-bold mb-2">Your Allotment is as Follows:</p>
-                  <p>Ticket Id : <span className="font-bold">{formData.ticketId}</span></p>
-                  <p>Project Name : <span className="font-bold">{formData.projectName}</span></p>
-                  <p>Unit Number : <span className="font-bold">{formData.unitNumber}</span></p>
-                  
-                  <p className="mt-4 mb-2">Brief details about the total cost of the unit and payment plan are as follows:</p>
+                  <p className="mb-2 font-bold">Your Allotment is as Follows:</p>
+                  <p>
+                    Ticket Id : <span className="font-bold">{formData.ticketId}</span>
+                  </p>
+                  <p>
+                    Project Name : <span className="font-bold">{formData.projectName}</span>
+                  </p>
+                  <p>
+                    Unit Number : <span className="font-bold">{formData.unitNumber}</span>
+                  </p>
+
+                  <p className="mt-4 mb-2">
+                    Brief details about the total cost of the unit and payment plan are as follows:
+                  </p>
                 </div>
 
                 {/* Details Table */}
                 <div className="mb-6 overflow-hidden border border-gray-400">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full border-collapse text-left">
                     <thead>
-                      <tr className="bg-[#00b0f0] text-black text-xs">
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">Client Name</th>
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">Allotted Unit</th>
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">Area (Sq. Yds.)</th>
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">Payment Plan</th>
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">BSP (PSq.Yd)</th>
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">PLC (in %)</th>
-                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">Total Cost</th>
+                      <tr className="bg-[#00b0f0] text-xs text-black">
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          Client Name
+                        </th>
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          Allotted Unit
+                        </th>
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          Area (Sq. Yds.)
+                        </th>
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          Payment Plan
+                        </th>
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          BSP (PSq.Yd)
+                        </th>
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          PLC (in %)
+                        </th>
+                        <th className="border border-gray-400 p-2 font-bold whitespace-nowrap">
+                          Total Cost
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="text-xs">
                       <tr>
-                        <td className="border border-gray-400 p-2 font-bold">{formData.clientName}</td>
-                        <td className="border border-gray-400 p-2 font-bold">{formData.unitNumber}</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {formData.clientName}
+                        </td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {formData.unitNumber}
+                        </td>
                         <td className="border border-gray-400 p-2 font-bold">{formData.area}</td>
-                        <td className="border border-gray-400 p-2 font-bold">{formData.paymentPlan} Months</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {formData.paymentPlan} Months
+                        </td>
                         <td className="border border-gray-400 p-2 font-bold">{formData.bsp}</td>
-                        <td className="border border-gray-400 p-2 font-bold">{formData.plc || '0'}</td>
-                        <td className="border border-gray-400 p-2 font-bold">{totalCost.toFixed(2)}</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {formData.plc || '0'}
+                        </td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {totalCost.toFixed(2)}
+                        </td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
 
                 {/* Payment Schedule Table */}
-                <h3 className="font-bold text-lg mb-2 text-gray-800">Payment Schedule</h3>
+                <h3 className="mb-2 text-lg font-bold text-gray-800">Payment Schedule</h3>
                 <div className="mb-6 overflow-hidden border border-gray-400">
-                  <table className="w-full text-left border-collapse">
+                  <table className="w-full border-collapse text-left">
                     <thead>
-                      <tr className="bg-[#00b0f0] text-black text-xs">
+                      <tr className="bg-[#00b0f0] text-xs text-black">
                         <th className="border border-gray-400 p-2 font-bold">SNO</th>
                         <th className="border border-gray-400 p-2 font-bold">Date</th>
                         <th className="border border-gray-400 p-2 font-bold">Particulars</th>
@@ -433,10 +619,16 @@ export default function AllotmentLetterPage() {
                       {/* Booking (10%) */}
                       <tr>
                         <td className="border border-gray-400 p-2 font-bold">1</td>
-                        <td className="border border-gray-400 p-2 font-bold">{formData.bookingDate ? formData.bookingDate.split('-').reverse().join('-') : '-'}</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {formData.bookingDate
+                            ? formData.bookingDate.split('-').reverse().join('-')
+                            : '-'}
+                        </td>
                         <td className="border border-gray-400 p-2 font-bold">On Booking</td>
                         <td className="border border-gray-400 p-2">10%</td>
-                        <td className="border border-gray-400 p-2 font-bold">Rs. {initialPayment.toFixed(2)}</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          Rs. {initialPayment.toFixed(2)}
+                        </td>
                       </tr>
                       {/* Second Payment (20%) */}
                       <tr>
@@ -449,9 +641,13 @@ export default function AllotmentLetterPage() {
                             return d.toISOString().split('T')[0].split('-').reverse().join('-');
                           })()}
                         </td>
-                        <td className="border border-gray-400 p-2 font-bold">{formData.secondPaymentDays} days</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {formData.secondPaymentDays} days
+                        </td>
                         <td className="border border-gray-400 p-2">20%</td>
-                        <td className="border border-gray-400 p-2 font-bold">Rs. {(totalCost * 0.2).toFixed(2)}</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          Rs. {(totalCost * 0.2).toFixed(2)}
+                        </td>
                       </tr>
                       {/* EMIs */}
                       {(() => {
@@ -459,7 +655,7 @@ export default function AllotmentLetterPage() {
                         const months = parseInt(formData.paymentPlan || '12');
                         const emiAmount = remainingCost / months;
                         const emiPercent = 70 / months;
-                        
+
                         return Array.from({ length: months }).map((_, i) => {
                           let emiDate = '-';
                           if (formData.bookingDate) {
@@ -467,14 +663,18 @@ export default function AllotmentLetterPage() {
                             d.setMonth(d.getMonth() + i + 2);
                             emiDate = d.toISOString().split('T')[0].split('-').reverse().join('-');
                           }
-                          
+
                           return (
                             <tr key={i}>
                               <td className="border border-gray-400 p-2 font-bold">{i + 3}</td>
                               <td className="border border-gray-400 p-2 font-bold">{emiDate}</td>
                               <td className="border border-gray-400 p-2 font-bold">{i + 1} EMI</td>
-                              <td className="border border-gray-400 p-2">{emiPercent.toFixed(1)}%</td>
-                              <td className="border border-gray-400 p-2 font-bold">Rs. {emiAmount.toFixed(2)}</td>
+                              <td className="border border-gray-400 p-2">
+                                {emiPercent.toFixed(1)}%
+                              </td>
+                              <td className="border border-gray-400 p-2 font-bold">
+                                Rs. {emiAmount.toFixed(2)}
+                              </td>
                             </tr>
                           );
                         });
@@ -484,35 +684,66 @@ export default function AllotmentLetterPage() {
                 </div>
 
                 {/* Terms Box */}
-                <div className="bg-[#f0f8ff] p-4 rounded-lg mb-8 text-gray-800 italic border-l-4 border-[#00b0f0] text-xs">
+                <div className="mb-8 rounded-lg border-l-4 border-[#00b0f0] bg-[#f0f8ff] p-4 text-xs text-gray-800 italic">
                   <p className="mb-2">
-                    Please transfer the initial amount of 10% (Rs. {initialPayment.toFixed(2)}) by {formData.bookingDate ? formData.bookingDate.split('-').reverse().join('-') : '[Date]'} to confirm allotment under {formData.projectName}, and the second instalment of 20% (Rs. {(totalCost * 0.2).toFixed(2)}) by {
-                      (() => {
-                        if (!formData.bookingDate) return '[Date]';
-                        const d = new Date(formData.bookingDate);
-                        d.setDate(d.getDate() + parseInt(formData.secondPaymentDays || '15'));
-                        return d.toISOString().split('T')[0].split('-').reverse().join('-');
-                      })()
-                    }.
+                    Please transfer the initial amount of 10% (Rs. {initialPayment.toFixed(2)}) by{' '}
+                    {formData.bookingDate
+                      ? formData.bookingDate.split('-').reverse().join('-')
+                      : '[Date]'}{' '}
+                    to confirm allotment under {formData.projectName}, and the second instalment of
+                    20% (Rs. {(totalCost * 0.2).toFixed(2)}) by{' '}
+                    {(() => {
+                      if (!formData.bookingDate) return '[Date]';
+                      const d = new Date(formData.bookingDate);
+                      d.setDate(d.getDate() + parseInt(formData.secondPaymentDays || '15'));
+                      return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                    })()}
+                    .
                   </p>
-                  <p className="mb-2">The remaining 70% will be paid as per the selected payment plan and is scheduled to complete accordingly.</p>
-                  <p className="mb-2">Note: Allotment under {formData.projectName} will only be confirmed upon receipt of the initial 10% (Rs. {initialPayment.toFixed(2)}) by {formData.bookingDate ? formData.bookingDate.split('-').reverse().join('-') : '[Date]'}.</p>
-                  <p>In the event you fail to make the payments as per the payment plan chosen by you, the allotment of these plots will be automatically cancelled.</p>
+                  <p className="mb-2">
+                    The remaining 70% will be paid as per the selected payment plan and is scheduled
+                    to complete accordingly.
+                  </p>
+                  <p className="mb-2">
+                    Note: Allotment under {formData.projectName} will only be confirmed upon receipt
+                    of the initial 10% (Rs. {initialPayment.toFixed(2)}) by{' '}
+                    {formData.bookingDate
+                      ? formData.bookingDate.split('-').reverse().join('-')
+                      : '[Date]'}
+                    .
+                  </p>
+                  <p>
+                    In the event you fail to make the payments as per the payment plan chosen by
+                    you, the allotment of these plots will be automatically cancelled.
+                  </p>
                 </div>
 
                 {/* Footer details */}
-                <div className="flex justify-between items-end pb-8">
+                <div className="flex items-end justify-between pb-8">
                   <div>
-                    <p className="font-bold mb-2">Payment can be transferred online using the following details:</p>
-                    <p><span className="font-bold">Account Name:</span> Svi Infra Solutions Pvt. Ltd</p>
-                    <p><span className="font-bold">Account Number:</span> 0894102000013837</p>
-                    <p><span className="font-bold">Bank:</span> IDBI BANK</p>
-                    <p><span className="font-bold">IFSC CODE:</span> IBKL0000894</p>
+                    <p className="mb-2 font-bold">
+                      Payment can be transferred online using the following details:
+                    </p>
+                    <p>
+                      <span className="font-bold">Account Name:</span> Svi Infra Solutions Pvt. Ltd
+                    </p>
+                    <p>
+                      <span className="font-bold">Account Number:</span> 0894102000013837
+                    </p>
+                    <p>
+                      <span className="font-bold">Bank:</span> IDBI BANK
+                    </p>
+                    <p>
+                      <span className="font-bold">IFSC CODE:</span> IBKL0000894
+                    </p>
                     <p className="mt-4">
-                      Your account manager is <span className="font-bold">{formData.advisorName}</span> and will be reachable on <span className="font-bold">{formData.advisorNumber}</span> for any queries.
+                      Your account manager is{' '}
+                      <span className="font-bold">{formData.advisorName}</span> and will be
+                      reachable on <span className="font-bold">{formData.advisorNumber}</span> for
+                      any queries.
                     </p>
                   </div>
-                  <div className="text-right flex flex-col items-end">
+                  <div className="flex flex-col items-end text-right">
                     <img
                       src="/signature.png"
                       alt="Signature"
