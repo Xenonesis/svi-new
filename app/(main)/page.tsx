@@ -1,6 +1,6 @@
 'use client';
 
-import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'motion/react';
+import { motion, useScroll, useTransform, useSpring } from 'motion/react';
 import { useRef, useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -119,7 +119,7 @@ export default function Home() {
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
-  const [isPending, startTransition] = useTransition();
+  const [_isPending, startTransition] = useTransition();
   const magnetic = useMagnetic(0.35);
 
   // Check for reduced motion preference

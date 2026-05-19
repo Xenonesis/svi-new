@@ -15,10 +15,10 @@ const hasValidKey = Boolean(API_KEY) && API_KEY !== 'YOUR_API_KEY';
 
 const MAP_CONTAINER_STYLE = { width: '100%', height: '100%' };
 
-interface Location {
-  lat: number;
-  lng: number;
-}
+// interface Location {
+//   lat: number;
+//   lng: number;
+// }
 
 interface Project {
   id: string;

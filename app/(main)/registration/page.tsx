@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
-import { motion } from 'motion/react';
+// import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { Building2, User, Phone, Mail, MessageSquare, AlertCircle } from 'lucide-react';
 

@@ -1,7 +1,7 @@
 'use client';
 
 import { Inter, Playfair_Display } from 'next/font/google';
-import { Moon, Sun } from 'lucide-react';
+// import { Moon, Sun } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 import AdminHeader from '@/src/components/admin/AdminHeader';

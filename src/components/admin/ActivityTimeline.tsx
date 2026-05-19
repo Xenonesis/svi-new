@@ -1,8 +1,8 @@
 'use client';
 
-import { Clock, Download, FileText, Settings, UserPlus } from 'lucide-react';
-
+import { Clock } from 'lucide-react';
 import { motion } from 'motion/react';
+// import { Download, FileText, Settings, UserPlus } from 'lucide-react';
 
 interface Activity {
   id: string;
@@ -17,7 +17,7 @@ interface ActivityTimelineProps {
   activities: Activity[];
 }
 
-const getActivityIcon = (type: Activity['type']) => {
+/* const getActivityIcon = (type: Activity['type']) => {
   switch (type) {
     case 'document':
       return FileText;
@@ -30,7 +30,7 @@ const getActivityIcon = (type: Activity['type']) => {
     default:
       return Clock;
   }
-};
+}; */
 
 const getActivityColor = (type: Activity['type']) => {
   switch (type) {
@@ -65,7 +65,7 @@ export default function ActivityTimeline({ activities }: ActivityTimelineProps) 
           </div>
         ) : (
           activities.map((activity, index) => {
-            const Icon = getActivityIcon(activity.type);
+            // const Icon = getActivityIcon(activity.type);
             const colorClass = getActivityColor(activity.type);
 
             return (

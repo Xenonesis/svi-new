@@ -1,12 +1,12 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 import { ArrowUp } from 'lucide-react';
 
 export default function BackToTop() {
   const [isVisible, setIsVisible] = useState(false);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  // const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sentinel = document.createElement('div');

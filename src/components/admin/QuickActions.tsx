@@ -1,22 +1,13 @@
 'use client';
 
-import {
-  Calculator,
-  Download,
-  FileText,
-  Plus,
-  Receipt,
-  Settings,
-  TrendingUp,
-  Users,
-} from 'lucide-react';
+import { Calculator, FileText, Plus, Receipt, Settings, TrendingUp } from 'lucide-react';
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
 
 interface QuickAction {
   label: string;
-  icon: any;
+  icon: React.ComponentType<{ className?: string }>;
   href: string;
   color: string;
 }

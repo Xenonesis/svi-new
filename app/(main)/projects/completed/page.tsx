@@ -230,7 +230,7 @@ export default function CompletedProjects() {
             }
           >
             <CompletedProjectsMap
-              projects={completedProjectsData as any}
+              projects={completedProjectsData}
               onProjectClick={scrollToProject}
             />
           </Suspense>

@@ -1,6 +1,5 @@
 'use client';
 
-import { Calculator, Map } from 'lucide-react';
 import {
   DownloadOptions,
   FormField,
@@ -8,6 +7,7 @@ import {
   PreviewContainer,
 } from '@/src/components/admin/DocumentGenerator/Shared';
 
+import { Calculator } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 import { useState } from 'react';
@@ -24,7 +24,9 @@ export default function PaymentPlanPage() {
   });
 
   const [preview, setPreview] = useState(false);
-  const [schedule, setSchedule] = useState<any[]>([]);
+  const [schedule, setSchedule] = useState<Array<{ month: number; date: string; amount: string }>>(
+    []
+  );
   const [totals, setTotals] = useState({ totalCost: 0, balance: 0, emiAmount: 0 });
 
   const handleChange = (

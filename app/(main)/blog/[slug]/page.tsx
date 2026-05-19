@@ -6,7 +6,7 @@ import { BLOG_POST_MAP, BLOG_POSTS as SHARED_BLOG_POSTS } from '@/src/lib/blog';
 import { absoluteUrl } from '@/src/lib/seo';
 
 // Sample blog posts data (in production, this would come from a CMS or database)
-const BLOG_POSTS = {
+/* const BLOG_POSTS = {
   'top-5-real-estate-investment-tips': {
     title: 'Top 5 Real Estate Investment Tips for First-Time Buyers',
     slug: 'top-5-real-estate-investment-tips',
@@ -157,7 +157,7 @@ const BLOG_POSTS = {
     tags: ['smart home', 'technology', 'modern living'],
     readTime: '6 min read',
   },
-};
+}; */
 
 type Props = {
   params: Promise<{ slug: string }>;

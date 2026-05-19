@@ -1,9 +1,9 @@
 'use client';
 
 import { Bell, Moon, Search, Sun } from 'lucide-react';
-import { usePathname, useRouter } from 'next/navigation';
 
-import { supabase } from '@/src/lib/supabase/client';
+import { usePathname } from 'next/navigation';
+// import { supabase } from '@/src/lib/supabase/client';
 import { useState } from 'react';
 
 interface AdminHeaderProps {
@@ -18,7 +18,7 @@ export default function AdminHeader({
   adminName = 'Admin',
 }: AdminHeaderProps) {
   const pathname = usePathname();
-  const router = useRouter();
+  // const router = useRouter();
 
   // Format pathname for breadcrumb (e.g., /admin/payment-receipt -> Payment Receipt)
   const pathParts = pathname.split('/').filter(Boolean);
@@ -31,13 +31,13 @@ export default function AdminHeader({
       .join(' ');
   }
 
-  const [loggingOut, setLoggingOut] = useState(false);
+  const [_loggingOut, _setLoggingOut] = useState(false);
 
-  const handleLogout = async () => {
-    setLoggingOut(true);
-    await supabase.auth.signOut();
-    router.replace('/admin');
-  };
+  // const handleLogout = async () => {
+  //   setLoggingOut(true);
+  //   await supabase.auth.signOut();
+  //   router.replace('/admin');
+  // };
 
   return (
     <header className="dark:border-brand-gold/15 relative sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur-xl transition-colors duration-300 dark:bg-[#0d0d14]/75">

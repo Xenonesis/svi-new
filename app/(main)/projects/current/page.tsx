@@ -17,11 +17,11 @@ import {
 } from 'lucide-react';
 import HoverZoomImage from '@/src/components/common/HoverZoomImage';
 
-const GRADIENT_STYLE = {
-  backgroundImage:
-    'repeating-linear-gradient(45deg, #1a2744 0, #1a2744 1px, transparent 0, transparent 50%)',
-  backgroundSize: '40px 40px',
-};
+// const GRADIENT_STYLE = {
+//   backgroundImage:
+//     'repeating-linear-gradient(45deg, #1a2744 0, #1a2744 1px, transparent 0, transparent 50%)',
+//   backgroundSize: '40px 40px',
+// };
 
 const currentProjectsData = [
   {
@@ -218,7 +218,7 @@ export default function Projects() {
               }
             >
               <CompletedProjectsMap
-                projects={currentProjectsData as any}
+                projects={currentProjectsData}
                 onProjectClick={scrollToProject}
               />
             </Suspense>
