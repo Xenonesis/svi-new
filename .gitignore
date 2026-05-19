@@ -1,10 +1,27 @@
+# Dependencies
 node_modules/
+
+# Build outputs
+.next/
 build/
 dist/
-coverage/
-.DS_Store
-*.log
+
+# Vercel
+.vercel
+
+# Environment variables
 .env*
 !.env.example
-.next/
-.vercel
+
+# OS files
+.DS_Store
+*.log
+
+# Testing
+coverage/
+
+# PWA generated files
+public/sw.js
+public/workbox-*.js
+public/icons/
+public/screenshots/
