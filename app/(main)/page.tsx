@@ -174,7 +174,7 @@ export default function Home() {
           className="bg-brand-navy absolute inset-0 z-0"
           style={{ y: backgroundY, scale: heroScale }}
         >
-          <div className="from-brand-navy/80 via-brand-navy/60 to-brand-navy/80 absolute inset-0 z-10 bg-gradient-to-b" />
+          <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/90 via-black/75 to-black/85" />
           <div
             className="pointer-events-none absolute top-0 left-0 z-20 h-full w-full opacity-20"
             style={GRADIENT_STYLE}
@@ -243,7 +243,7 @@ export default function Home() {
         </div>
 
         <motion.div
-          className="z-10 container mx-auto flex flex-col items-center px-14 text-center sm:px-8 md:px-4"
+          className="z-30 container mx-auto flex flex-col items-center px-14 text-center drop-shadow-2xl sm:px-8 md:px-4"
           style={{ opacity: heroOpacity }}
         >
           <span className="bg-brand-gold/20 text-brand-gold border-brand-gold/30 animate-hero-1 mb-6 inline-block rounded-sm border px-4 py-1.5 text-[10px] font-bold tracking-[0.3em] uppercase backdrop-blur-sm">
@@ -265,7 +265,7 @@ export default function Home() {
             </span>
           </h1>
 
-          <p className="animate-hero-3 mb-10 max-w-2xl px-2 text-center text-sm leading-relaxed text-gray-300 md:text-xl">
+          <p className="animate-hero-3 mb-10 max-w-2xl px-2 text-center text-sm leading-relaxed text-white/90 md:text-xl">
             Specializing in premium residential flats and strategic plot investments across Jaipur
             and Noida.
           </p>
