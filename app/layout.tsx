@@ -86,7 +86,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -163,6 +162,7 @@ export default function RootLayout({
         <link rel="preload" as="image" href="/images/hero3.png" />
       </head>
       <body className={`${inter.variable} ${playfair.variable}`}>
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
         <Analytics />
         <SpeedInsights />
