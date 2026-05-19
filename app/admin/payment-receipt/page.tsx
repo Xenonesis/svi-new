@@ -18,6 +18,7 @@ export default function PaymentReceiptPage() {
   const [formData, setFormData] = useState({
     receiptNo: '',
     date: '',
+    salutation: 'Mr.', // Default salutation
     name: '',
     refId: '',
     amount: '',
@@ -263,13 +264,24 @@ export default function PaymentReceiptPage() {
                 required
               />
 
+              <FormSelect
+                label="Salutation"
+                name="salutation"
+                value={formData.salutation}
+                onChange={handleChange}
+                options={[
+                  { value: 'Mr.', label: 'Mr.' },
+                  { value: 'Mrs.', label: 'Mrs.' },
+                  { value: 'Ms.', label: 'Ms.' },
+                  { value: 'M/s', label: 'M/s' },
+                ]}
+              />
               <FormField
-                label="Name (Mr./Mrs./M/s)"
+                label="Name"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="md:col-span-2"
               />
               <FormField
                 label="Ref. Id"
@@ -459,7 +471,7 @@ export default function PaymentReceiptPage() {
 
                 <div className="relative z-10 flex items-end">
                   <span className="mr-2 whitespace-nowrap">
-                    Received with thanks from Mr. / Mrs. / M/s :
+                    Received with thanks from {formData.salutation} :
                   </span>
                   <span className="flex-1 border-b border-gray-400 pb-0.5 font-bold text-[#1e3a8a] italic">
                     {formData.name}
