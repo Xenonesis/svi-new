@@ -1,27 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
-
-// Helper: verify the caller is an authenticated admin
-async function verifyAdmin(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return null;
-
-  // Look up user profile to confirm role = admin
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role === 'admin' ? user : null;
-}
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 export async function GET(request: NextRequest) {
   const admin = await verifyAdmin(request);
@@ -61,7 +40,9 @@ export async function GET(request: NextRequest) {
     })
   );
 
-  return NextResponse.json({ activities });
+  const response = NextResponse.json({ activities });
+  response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
+  return response;
 }
 
 function getActivityType(actionType: string): 'user' | 'document' | 'settings' | 'download' {

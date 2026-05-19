@@ -1,27 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
-
-// Helper: verify the caller is an authenticated admin
-async function verifyAdmin(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return null;
-
-  // Look up user profile to confirm role = admin
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role === 'admin' ? user : null;
-}
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 // GET /api/admin/documents — list documents with optional filters
 export async function GET(request: NextRequest) {
@@ -85,5 +64,3 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json({ document: data }, { status: 201 });
 }
-
-

@@ -1,26 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import type { AttendanceReportRow } from '@/src/lib/supabase/types';
-
-async function verifyAdmin(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return null;
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role === 'admin' ? user : null;
-}
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 // GET /api/admin/attendance/report — get attendance summary report
 export async function GET(request: NextRequest) {
@@ -34,7 +15,11 @@ export async function GET(request: NextRequest) {
   const from = searchParams.get('from');
   const to = searchParams.get('to');
 
-  // Get all attendance records for the filter
+  // Default to last 30 days if no date range specified to prevent unbounded queries
+  const defaultFrom = new Date();
+  defaultFrom.setDate(defaultFrom.getDate() - 30);
+  const effectiveFrom = from || defaultFrom.toISOString().split('T')[0];
+
   let query = supabaseAdmin.from('attendance_records').select(`
       user_id,
       status,
@@ -42,7 +27,7 @@ export async function GET(request: NextRequest) {
     `);
 
   if (teamId) query = query.eq('team_id', teamId);
-  if (from) query = query.gte('date', from);
+  query = query.gte('date', effectiveFrom);
   if (to) query = query.lte('date', to);
 
   const { data: records, error } = await query;

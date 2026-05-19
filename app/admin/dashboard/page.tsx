@@ -390,6 +390,7 @@ export default function AdminDashboard() {
     setLoading(false);
   }, []);
 
+  // Consolidated: auth check + parallel data fetch (users, analytics, activities)
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) {
@@ -408,11 +409,32 @@ export default function AdminDashboard() {
         return;
       }
 
-      setToken(session.access_token);
+      const tkn = session.access_token;
+      setToken(tkn);
       setAdminName(profile?.full_name || session.user.email || 'Admin');
-      fetchUsers(session.access_token);
+
+      // Fetch all dashboard data in parallel instead of sequentially
+      const authHeaders = { Authorization: `Bearer ${tkn}` };
+      const [usersRes, analyticsRes, activitiesRes] = await Promise.all([
+        fetch('/api/admin/users', { headers: authHeaders }),
+        fetch('/api/admin/analytics', { headers: authHeaders }),
+        fetch('/api/admin/activities?limit=10', { headers: authHeaders }),
+      ]);
+
+      if (usersRes.ok) {
+        const json = await usersRes.json();
+        setUsers(json.users);
+      }
+      if (analyticsRes.ok) {
+        setAnalytics(await analyticsRes.json());
+      }
+      if (activitiesRes.ok) {
+        const data = await activitiesRes.json();
+        setActivities(data.activities || []);
+      }
+      setLoading(false);
     });
-  }, [router, fetchUsers]);
+  }, [router]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -449,30 +471,6 @@ export default function AdminDashboard() {
   );
 
   const clientCount = users.filter((u) => u.role === 'client').length;
-
-  // Fetch real analytics data
-  useEffect(() => {
-    if (!token) return;
-
-    fetch('/api/admin/analytics', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setAnalytics(data))
-      .catch(console.error);
-  }, [token]);
-
-  // Fetch real activity logs
-  useEffect(() => {
-    if (!token) return;
-
-    fetch('/api/admin/activities?limit=10', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => setActivities(data.activities || []))
-      .catch(console.error);
-  }, [token]);
 
   // Use real data or fallback to empty arrays
   const userGrowthData = analytics?.userGrowth || [];

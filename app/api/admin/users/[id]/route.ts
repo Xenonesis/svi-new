@@ -1,34 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 // DELETE /api/admin/users/[id]
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
+  const admin = await verifyAdmin(request);
+  if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const { id } = await params;
@@ -52,7 +34,6 @@ export async function DELETE(
       await NotificationHelper.userDeleted(userProfile.full_name);
     } catch (notifError) {
       console.error('Failed to create notification:', notifError);
-      // Don't fail the request if notification fails
     }
   }
 
@@ -61,28 +42,9 @@ export async function DELETE(
 
 // PATCH /api/admin/users/[id] — update profile fields
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) {
+  const admin = await verifyAdmin(request);
+  if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error: authErr,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (authErr || !user) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  if (profile?.role !== 'admin') {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
   }
 
   const { id } = await params;

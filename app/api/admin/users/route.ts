@@ -3,46 +3,44 @@ import { NextRequest, NextResponse } from 'next/server';
 import type { CreateUserPayload } from '@/src/lib/supabase/types';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
-// Helper: verify the caller is an authenticated admin
-async function verifyAdmin(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return null;
-
-  // Look up user profile to confirm role = admin
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role === 'admin' ? user : null;
-}
-
-// GET /api/admin/users — list all client users
+// GET /api/admin/users — list client users with pagination and search
 export async function GET(request: NextRequest) {
   const admin = await verifyAdmin(request);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  const { data, error } = await supabaseAdmin
+  const { searchParams } = new URL(request.url);
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50')));
+  const search = searchParams.get('search') || '';
+  const offset = (page - 1) * limit;
+
+  let query = supabaseAdmin
     .from('profiles')
-    .select('*')
-    .order('created_at', { ascending: false });
+    .select('*', { count: 'exact' })
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (search) {
+    query = query.or(`full_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%`);
+  }
+
+  const { data, error, count } = await query;
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ users: data });
+  return NextResponse.json({
+    users: data,
+    total: count || 0,
+    page,
+    limit,
+    hasMore: (count || 0) > offset + limit,
+  });
 }
 
 // POST /api/admin/users — create a new client user

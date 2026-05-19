@@ -1,25 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
-
-async function verifyAdmin(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return null;
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role === 'admin' ? user : null;
-}
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 // GET /api/admin/attendance/teams — list all teams with member counts
 export async function GET(request: NextRequest) {
@@ -37,18 +18,22 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  // Get member counts for each team
-  const teamsWithCounts = await Promise.all(
-    (teams || []).map(async (team) => {
-      const { count } = await supabaseAdmin
-        .from('team_members')
-        .select('*', { count: 'exact', head: true })
-        .eq('team_id', team.id);
-      return { ...team, member_count: count || 0 };
-    })
-  );
+  // Get member counts for all teams in a single query instead of N+1
+  const { data: allMembers } = await supabaseAdmin.from('team_members').select('team_id');
 
-  return NextResponse.json({ teams: teamsWithCounts });
+  const memberCounts = new Map<string, number>();
+  for (const m of allMembers || []) {
+    memberCounts.set(m.team_id, (memberCounts.get(m.team_id) || 0) + 1);
+  }
+
+  const teamsWithCounts = (teams || []).map((team) => ({
+    ...team,
+    member_count: memberCounts.get(team.id) || 0,
+  }));
+
+  const response = NextResponse.json({ teams: teamsWithCounts });
+  response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
+  return response;
 }
 
 // POST /api/admin/attendance/teams — create a new team

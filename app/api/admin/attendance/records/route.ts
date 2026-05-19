@@ -1,26 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import type { AttendanceStatus } from '@/src/lib/supabase/types';
-
-async function verifyAdmin(request: NextRequest) {
-  const authHeader = request.headers.get('Authorization');
-  if (!authHeader?.startsWith('Bearer ')) return null;
-
-  const token = authHeader.replace('Bearer ', '');
-  const {
-    data: { user },
-    error,
-  } = await supabaseAdmin.auth.getUser(token);
-  if (error || !user) return null;
-
-  const { data: profile } = await supabaseAdmin
-    .from('profiles')
-    .select('role')
-    .eq('id', user.id)
-    .single();
-
-  return profile?.role === 'admin' ? user : null;
-}
+import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 // GET /api/admin/attendance/records — get attendance records
 export async function GET(request: NextRequest) {
@@ -34,6 +15,7 @@ export async function GET(request: NextRequest) {
   const date = searchParams.get('date');
   const from = searchParams.get('from');
   const to = searchParams.get('to');
+  const limit = Math.min(1000, Math.max(1, parseInt(searchParams.get('limit') || '500')));
 
   let query = supabaseAdmin
     .from('attendance_records')
@@ -43,7 +25,8 @@ export async function GET(request: NextRequest) {
       profiles!inner(full_name, email)
     `
     )
-    .order('date', { ascending: false });
+    .order('date', { ascending: false })
+    .limit(limit);
 
   if (teamId) query = query.eq('team_id', teamId);
   if (date) query = query.eq('date', date);
