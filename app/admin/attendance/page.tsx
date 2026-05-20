@@ -9,7 +9,7 @@ import {
   Users,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 import AttendanceDashboard from '@/src/components/admin/attendance/AttendanceDashboard';
@@ -17,6 +17,7 @@ import AttendanceReport from '@/src/components/admin/attendance/AttendanceReport
 import MarkAttendance from '@/src/components/admin/attendance/MarkAttendance';
 import TeamsManager from '@/src/components/admin/attendance/TeamsManager';
 import { supabase } from '@/src/lib/supabase/client';
+import type { Team } from '@/src/lib/supabase/types';
 
 type Tab = 'dashboard' | 'teams' | 'mark' | 'report';
 
@@ -43,13 +44,22 @@ function AttendanceContent() {
   });
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
-  const showToast = (type: 'success' | 'error', msg: string) => {
+  // Shared teams state — fetched once at page level
+  const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
+  const [teamsLoading, setTeamsLoading] = useState(true);
+  const fetchingRef = useRef(false);
+  const tokenRef = useRef('');
+
+  const showToast = useCallback((type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
     setTimeout(() => setToast(null), 3500);
-  };
+  }, []);
 
+  // Auth check
   useEffect(() => {
+    const controller = new AbortController();
     supabase.auth.getSession().then(async ({ data: { session } }) => {
+      if (controller.signal.aborted) return;
       if (!session) {
         router.replace('/admin');
         return;
@@ -61,14 +71,48 @@ function AttendanceContent() {
         .eq('id', session.user.id)
         .single();
 
+      if (controller.signal.aborted) return;
       if (profile?.role !== 'admin') {
         router.replace('/admin');
         return;
       }
 
+      tokenRef.current = session.access_token;
       setToken(session.access_token);
     });
+    return () => controller.abort();
   }, [router]);
+
+  // Fetch teams once when token is available
+  const fetchTeams = useCallback(async () => {
+    if (!tokenRef.current || fetchingRef.current) return;
+    fetchingRef.current = true;
+    setTeamsLoading(true);
+    try {
+      const res = await fetch('/api/admin/attendance/teams', {
+        headers: { Authorization: `Bearer ${tokenRef.current}` },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setTeams(json.teams || []);
+      }
+    } catch {
+      // silent fail, user can retry
+    } finally {
+      setTeamsLoading(false);
+      fetchingRef.current = false;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (token) fetchTeams();
+  }, [token, fetchTeams]);
+
+  // Allow children to trigger a teams refresh (e.g. after create/delete)
+  const refreshTeams = useCallback(() => {
+    fetchingRef.current = false;
+    fetchTeams();
+  }, [fetchTeams]);
 
   return (
     <div className="relative w-full font-sans">
@@ -123,15 +167,35 @@ function AttendanceContent() {
         </div>
 
         {/* Tab Content */}
-        <div className="rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+        <div className="relative rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
           {activeTab === 'dashboard' && token && (
             <AttendanceDashboard token={token} showToast={showToast} />
           )}
-          {activeTab === 'teams' && token && <TeamsManager token={token} showToast={showToast} />}
-          {activeTab === 'mark' && token && <MarkAttendance token={token} showToast={showToast} />}
+          {activeTab === 'teams' && token && (
+            <TeamsManager
+              token={token}
+              showToast={showToast}
+              teams={teams}
+              teamsLoading={teamsLoading}
+              onTeamsChange={refreshTeams}
+            />
+          )}
+          {activeTab === 'mark' && token && (
+            <MarkAttendance
+              token={token}
+              showToast={showToast}
+              teams={teams}
+              teamsLoading={teamsLoading}
+            />
+          )}
           {activeTab === 'report' && token && (
-            <AttendanceReport token={token} showToast={showToast} />
+            <AttendanceReport
+              token={token}
+              showToast={showToast}
+              teams={teams}
+              teamsLoading={teamsLoading}
+            />
           )}
         </div>
       </div>

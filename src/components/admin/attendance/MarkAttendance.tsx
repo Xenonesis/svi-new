@@ -9,6 +9,8 @@ import type { AttendanceStatus, Team, TeamMember } from '@/src/lib/supabase/type
 interface MarkAttendanceProps {
   token: string;
   showToast: (type: 'success' | 'error', msg: string) => void;
+  teams: (Team & { member_count: number })[];
+  teamsLoading: boolean;
 }
 
 const STATUS_CONFIG: Record<
@@ -51,8 +53,12 @@ const STATUS_CONFIG: Record<
   },
 };
 
-export default function MarkAttendance({ token, showToast }: MarkAttendanceProps) {
-  const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
+export default function MarkAttendance({
+  token,
+  showToast,
+  teams,
+  teamsLoading,
+}: MarkAttendanceProps) {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -62,17 +68,6 @@ export default function MarkAttendance({ token, showToast }: MarkAttendanceProps
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [membersLoaded, setMembersLoaded] = useState(false);
-
-  useEffect(() => {
-    if (token) {
-      fetch('/api/admin/attendance/teams', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setTeams(data.teams || []))
-        .catch(console.error);
-    }
-  }, [token]);
 
   const loadAttendance = async () => {
     if (!selectedTeam || !selectedDate) return;

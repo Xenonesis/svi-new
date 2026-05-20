@@ -19,6 +19,9 @@ import type { Team, TeamMember, UserProfile } from '@/src/lib/supabase/types';
 interface TeamsManagerProps {
   token: string;
   showToast: (type: 'success' | 'error', msg: string) => void;
+  teams: (Team & { member_count: number })[];
+  teamsLoading: boolean;
+  onTeamsChange: () => void;
 }
 
 const inputCls =
@@ -203,9 +206,13 @@ function DeleteConfirm({
   );
 }
 
-export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
-  const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
-  const [loading, setLoading] = useState(true);
+export default function TeamsManager({
+  token,
+  showToast,
+  teams,
+  teamsLoading,
+  onTeamsChange,
+}: TeamsManagerProps) {
   const [showCreate, setShowCreate] = useState(false);
   const [editTeam, setEditTeam] = useState<Team | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Team | null>(null);
@@ -214,18 +221,6 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
   const [members, setMembers] = useState<Record<string, TeamMember[]>>({});
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [addMemberLoading, setAddMemberLoading] = useState(false);
-
-  const fetchTeams = async () => {
-    setLoading(true);
-    const res = await fetch('/api/admin/attendance/teams', {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    if (res.ok) {
-      const json = await res.json();
-      setTeams(json.teams);
-    }
-    setLoading(false);
-  };
 
   const fetchMembers = async (teamId: string) => {
     const res = await fetch(`/api/admin/attendance/teams/${teamId}/members`, {
@@ -249,7 +244,6 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
 
   useEffect(() => {
     if (token) {
-      fetchTeams();
       fetchUsers();
     }
   }, [token]);
@@ -279,9 +273,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
       const json = await res.json();
       if (!res.ok) throw new Error(json.error);
       await fetchMembers(teamId);
-      setTeams((prev) =>
-        prev.map((t) => (t.id === teamId ? { ...t, member_count: t.member_count + 1 } : t))
-      );
+      onTeamsChange();
       showToast('success', 'Member added to team.');
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Failed to add member');
@@ -301,11 +293,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
         throw new Error(json.error);
       }
       await fetchMembers(teamId);
-      setTeams((prev) =>
-        prev.map((t) =>
-          t.id === teamId ? { ...t, member_count: Math.max(0, t.member_count - 1) } : t
-        )
-      );
+      onTeamsChange();
       showToast('success', `${name} removed from team.`);
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Failed to remove member');
@@ -324,7 +312,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
         const json = await res.json();
         throw new Error(json.error);
       }
-      setTeams((prev) => prev.filter((t) => t.id !== deleteTarget.id));
+      onTeamsChange();
       showToast('success', `${deleteTarget.name} has been deleted.`);
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Delete failed');
@@ -352,7 +340,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
         </div>
         <div className="flex gap-3">
           <button
-            onClick={fetchTeams}
+            onClick={onTeamsChange}
             className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
           >
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
@@ -366,7 +354,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
         </div>
       </div>
 
-      {loading ? (
+      {teamsLoading ? (
         <div className="space-y-3">
           {[1, 2, 3].map((i) => (
             <div
@@ -531,7 +519,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
             token={token}
             onClose={() => setShowCreate(false)}
             onSuccess={() => {
-              fetchTeams();
+              onTeamsChange();
               showToast('success', 'Team created successfully!');
             }}
           />
@@ -542,7 +530,7 @@ export default function TeamsManager({ token, showToast }: TeamsManagerProps) {
             token={token}
             onClose={() => setEditTeam(null)}
             onSuccess={() => {
-              fetchTeams();
+              onTeamsChange();
               showToast('success', 'Team updated successfully!');
             }}
           />

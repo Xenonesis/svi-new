@@ -9,27 +9,17 @@ import type { AttendanceReportRow, Team } from '@/src/lib/supabase/types';
 interface AttendanceReportProps {
   token: string;
   showToast: (type: 'success' | 'error', msg: string) => void;
+  teams: (Team & { member_count: number })[];
+  teamsLoading: boolean;
 }
 
-export default function AttendanceReport({ token, showToast }: AttendanceReportProps) {
-  const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
+export default function AttendanceReport({ token, showToast, teams }: AttendanceReportProps) {
   const [selectedTeam, setSelectedTeam] = useState('');
   const [dateFrom, setDateFrom] = useState('');
   const [dateTo, setDateTo] = useState('');
   const [report, setReport] = useState<AttendanceReportRow[]>([]);
   const [loading, setLoading] = useState(false);
   const [hasSearched, setHasSearched] = useState(false);
-
-  useEffect(() => {
-    if (token) {
-      fetch('/api/admin/attendance/teams', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-        .then((res) => res.json())
-        .then((data) => setTeams(data.teams || []))
-        .catch(console.error);
-    }
-  }, [token]);
 
   const fetchReport = async () => {
     setLoading(true);
