@@ -201,9 +201,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" as="image" href="/images/hero2.png" />
         <link rel="preload" as="image" href="/images/hero3.png" />
         <link rel="manifest" href="/manifest.json" />
+        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
       </head>
       <body className={`${inter.variable} ${playfair.variable}`}>
-        <script dangerouslySetInnerHTML={{ __html: THEME_SCRIPT }} />
         {children}
         <Analytics />
         <SpeedInsights />
