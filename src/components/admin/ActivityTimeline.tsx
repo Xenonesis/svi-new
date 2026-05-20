@@ -6,7 +6,7 @@ import { motion } from 'motion/react';
 
 interface Activity {
   id: string;
-  type: 'document' | 'user' | 'settings' | 'download';
+  type: 'document' | 'user' | 'settings' | 'download' | 'attendance';
   title: string;
   description: string;
   timestamp: string;
@@ -42,6 +42,8 @@ const getActivityColor = (type: Activity['type']) => {
       return 'bg-purple-500/20 text-purple-400 border-purple-500/30';
     case 'download':
       return 'bg-brand-gold/20 text-brand-gold border-brand-gold/30';
+    case 'attendance':
+      return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
     default:
       return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
   }

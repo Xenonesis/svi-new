@@ -45,7 +45,10 @@ export async function GET(request: NextRequest) {
   return response;
 }
 
-function getActivityType(actionType: string): 'user' | 'document' | 'settings' | 'download' {
+function getActivityType(
+  actionType: string
+): 'user' | 'document' | 'settings' | 'download' | 'attendance' {
+  if (actionType.includes('attendance') || actionType.includes('team_')) return 'attendance';
   if (actionType.includes('user')) return 'user';
   if (actionType.includes('download')) return 'download';
   if (actionType.includes('document')) return 'document';
@@ -60,6 +63,9 @@ function getActionTitle(actionType: string): string {
     document_downloaded: 'Document downloaded',
     settings_updated: 'Settings updated',
     profile_updated: 'Profile updated',
+    team_created: 'Team created',
+    team_deleted: 'Team deleted',
+    attendance_marked: 'Attendance marked',
   };
   return titles[actionType] || actionType;
 }

@@ -1,6 +1,15 @@
 'use client';
 
-import { Calculator, FileText, Plus, Receipt, Settings, TrendingUp } from 'lucide-react';
+import {
+  BarChart3,
+  Calculator,
+  CheckSquare,
+  FileText,
+  Plus,
+  Receipt,
+  Settings,
+  TrendingUp,
+} from 'lucide-react';
 
 import Link from 'next/link';
 import { motion } from 'motion/react';
@@ -42,6 +51,18 @@ const actions: QuickAction[] = [
     icon: TrendingUp,
     href: '/admin/dashboard?tab=analytics',
     color: 'bg-brand-gold/20 text-brand-gold hover:bg-brand-gold/30',
+  },
+  {
+    label: 'Mark Attendance',
+    icon: CheckSquare,
+    href: '/admin/attendance?tab=mark',
+    color: 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30',
+  },
+  {
+    label: 'Attendance Report',
+    icon: BarChart3,
+    href: '/admin/attendance?tab=report',
+    color: 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30',
   },
   {
     label: 'Settings',

@@ -56,7 +56,9 @@ export default function MarkAttendance({ token, showToast }: MarkAttendanceProps
   const [selectedTeam, setSelectedTeam] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date().toISOString().split('T')[0]);
   const [members, setMembers] = useState<TeamMember[]>([]);
-  const [attendance, setAttendance] = useState<Record<string, AttendanceStatus>>({});
+  const [attendance, setAttendance] = useState<
+    Record<string, { status: AttendanceStatus; notes: string }>
+  >({});
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [membersLoaded, setMembersLoaded] = useState(false);
@@ -93,9 +95,9 @@ export default function MarkAttendance({ token, showToast }: MarkAttendanceProps
       const recordsData = await recordsRes.json();
 
       // Populate attendance state
-      const existingAttendance: Record<string, AttendanceStatus> = {};
+      const existingAttendance: Record<string, { status: AttendanceStatus; notes: string }> = {};
       for (const r of recordsData.records || []) {
-        existingAttendance[r.user_id] = r.status;
+        existingAttendance[r.user_id] = { status: r.status, notes: r.notes || '' };
       }
       setAttendance(existingAttendance);
       setMembersLoaded(true);
@@ -117,18 +119,29 @@ export default function MarkAttendance({ token, showToast }: MarkAttendanceProps
   }, [selectedTeam, selectedDate]);
 
   const setStatus = (userId: string, status: AttendanceStatus) => {
-    setAttendance((prev) => ({ ...prev, [userId]: status }));
+    setAttendance((prev) => ({
+      ...prev,
+      [userId]: { status, notes: prev[userId]?.notes || '' },
+    }));
+  };
+
+  const setNotes = (userId: string, notes: string) => {
+    setAttendance((prev) => ({
+      ...prev,
+      [userId]: { status: prev[userId]?.status || 'present', notes },
+    }));
   };
 
   const handleSave = async () => {
     if (!selectedTeam || !selectedDate || Object.keys(attendance).length === 0) return;
     setSaving(true);
     try {
-      const records = Object.entries(attendance).map(([userId, status]) => ({
+      const records = Object.entries(attendance).map(([userId, entry]) => ({
         team_id: selectedTeam,
         user_id: userId,
         date: selectedDate,
-        status,
+        status: entry.status,
+        notes: entry.notes || undefined,
       }));
 
       const res = await fetch('/api/admin/attendance/records', {
@@ -244,7 +257,7 @@ export default function MarkAttendance({ token, showToast }: MarkAttendanceProps
                     ][]
                   ).map(([status, config]) => {
                     const Icon = config.icon;
-                    const isActive = attendance[m.user_id] === status;
+                    const isActive = attendance[m.user_id]?.status === status;
                     return (
                       <button
                         key={status}
@@ -261,6 +274,15 @@ export default function MarkAttendance({ token, showToast }: MarkAttendanceProps
                     );
                   })}
                 </div>
+                {attendance[m.user_id]?.status && (
+                  <input
+                    type="text"
+                    value={attendance[m.user_id]?.notes || ''}
+                    onChange={(e) => setNotes(m.user_id, e.target.value)}
+                    placeholder="Optional notes..."
+                    className="focus:border-brand-gold mt-2 w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 transition-all focus:outline-none sm:mt-0 sm:ml-4 sm:w-48 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
+                  />
+                )}
               </motion.div>
             ))}
           </div>

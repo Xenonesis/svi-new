@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
+import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import type { AttendanceStatus } from '@/src/lib/supabase/types';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
@@ -119,6 +120,33 @@ export async function POST(request: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Log activity and notify
+  const teamId = body.records[0].team_id;
+  const { data: teamData } = await supabaseAdmin
+    .from('teams')
+    .select('name')
+    .eq('id', teamId)
+    .single();
+
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('full_name')
+    .eq('id', admin.id)
+    .single();
+
+  await supabaseAdmin.from('activity_logs').insert({
+    user_id: admin.id,
+    action_type: 'attendance_marked',
+    description: `Attendance marked for ${body.records.length} member(s) in ${teamData?.name || 'team'} on ${body.records[0].date}`,
+  });
+
+  NotificationHelper.attendanceMarked(
+    teamData?.name || 'team',
+    body.records[0].date,
+    body.records.length,
+    profile?.full_name || 'Admin'
+  ).catch(() => {});
 
   return NextResponse.json({ records: data }, { status: 201 });
 }

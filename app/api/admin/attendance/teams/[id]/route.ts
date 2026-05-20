@@ -54,7 +54,19 @@ export async function DELETE(
   }
 
   const { id } = await params;
+
+  // Fetch team name for logging before delete
+  const { data: team } = await supabaseAdmin.from('teams').select('name').eq('id', id).single();
+
   const { error } = await supabaseAdmin.from('teams').delete().eq('id', id);
+
+  if (!error && team) {
+    await supabaseAdmin.from('activity_logs').insert({
+      user_id: admin.id,
+      action_type: 'team_deleted',
+      description: `Team "${team.name}" was deleted`,
+    });
+  }
 
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });

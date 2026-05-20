@@ -54,7 +54,9 @@ export async function createNotification(params: CreateNotificationParams) {
 /**
  * Create notifications for all admin users
  */
-export async function createNotificationForAllAdmins(params: Omit<CreateNotificationParams, 'user_id'>) {
+export async function createNotificationForAllAdmins(
+  params: Omit<CreateNotificationParams, 'user_id'>
+) {
   try {
     // Get all admin users
     const { data: admins, error: fetchError } = await supabaseAdmin
@@ -82,7 +84,10 @@ export async function createNotificationForAllAdmins(params: Omit<CreateNotifica
       metadata: params.metadata || {},
     }));
 
-    const { data, error } = await supabaseAdmin.from('notifications').insert(notifications).select();
+    const { data, error } = await supabaseAdmin
+      .from('notifications')
+      .insert(notifications)
+      .select();
 
     if (error) {
       console.error('Error creating notifications for admins:', error);
@@ -169,5 +174,35 @@ export const NotificationHelper = {
       metadata: { event: 'system_error' },
     });
   },
-};
 
+  /**
+   * Attendance marked notification
+   */
+  attendanceMarked: async (
+    teamName: string,
+    date: string,
+    memberCount: number,
+    adminName: string
+  ) => {
+    return createNotificationForAllAdmins({
+      title: 'Attendance Marked',
+      message: `${adminName} marked attendance for ${memberCount} member(s) in ${teamName} on ${date}.`,
+      type: 'success',
+      action_url: '/admin/attendance?tab=report',
+      metadata: { event: 'attendance_marked', teamName, date },
+    });
+  },
+
+  /**
+   * Team created notification
+   */
+  teamCreated: async (teamName: string, adminName: string) => {
+    return createNotificationForAllAdmins({
+      title: 'Team Created',
+      message: `${adminName} created a new team: "${teamName}".`,
+      type: 'info',
+      action_url: '/admin/attendance?tab=teams',
+      metadata: { event: 'team_created', teamName },
+    });
+  },
+};

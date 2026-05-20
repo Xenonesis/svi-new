@@ -1,18 +1,27 @@
 'use client';
 
-import { AlertCircle, BarChart3, CalendarCheck, CheckCircle2, Users } from 'lucide-react';
+import {
+  AlertCircle,
+  BarChart3,
+  CalendarCheck,
+  CheckCircle2,
+  LayoutDashboard,
+  Users,
+} from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
+import { useSearchParams, useRouter } from 'next/navigation';
 
+import AttendanceDashboard from '@/src/components/admin/attendance/AttendanceDashboard';
 import AttendanceReport from '@/src/components/admin/attendance/AttendanceReport';
 import MarkAttendance from '@/src/components/admin/attendance/MarkAttendance';
 import TeamsManager from '@/src/components/admin/attendance/TeamsManager';
 import { supabase } from '@/src/lib/supabase/client';
-import { useRouter } from 'next/navigation';
 
-type Tab = 'teams' | 'mark' | 'report';
+type Tab = 'dashboard' | 'teams' | 'mark' | 'report';
 
 const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
+  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'teams', label: 'Teams', icon: Users },
   { id: 'mark', label: 'Mark Attendance', icon: CalendarCheck },
   { id: 'report', label: 'Reports', icon: BarChart3 },
@@ -24,10 +33,14 @@ const GRID_STYLE = {
   backgroundSize: '24px 24px',
 };
 
-export default function AttendancePage() {
+function AttendanceContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [token, setToken] = useState('');
-  const [activeTab, setActiveTab] = useState<Tab>('teams');
+  const [activeTab, setActiveTab] = useState<Tab>(() => {
+    const tab = searchParams.get('tab') as Tab | null;
+    return tab && ['dashboard', 'teams', 'mark', 'report'].includes(tab) ? tab : 'dashboard';
+  });
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
@@ -112,6 +125,9 @@ export default function AttendancePage() {
         {/* Tab Content */}
         <div className="rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
+          {activeTab === 'dashboard' && token && (
+            <AttendanceDashboard token={token} showToast={showToast} />
+          )}
           {activeTab === 'teams' && token && <TeamsManager token={token} showToast={showToast} />}
           {activeTab === 'mark' && token && <MarkAttendance token={token} showToast={showToast} />}
           {activeTab === 'report' && token && (
@@ -143,5 +159,13 @@ export default function AttendancePage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function AttendancePage() {
+  return (
+    <Suspense>
+      <AttendanceContent />
+    </Suspense>
   );
 }

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
+import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
 // GET /api/admin/attendance/teams — list all teams with member counts
@@ -67,6 +68,21 @@ export async function POST(request: NextRequest) {
   if (error) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
+
+  // Log activity and notify
+  const { data: profile } = await supabaseAdmin
+    .from('profiles')
+    .select('full_name')
+    .eq('id', admin.id)
+    .single();
+
+  await supabaseAdmin.from('activity_logs').insert({
+    user_id: admin.id,
+    action_type: 'team_created',
+    description: `Team "${body.name.trim()}" was created`,
+  });
+
+  NotificationHelper.teamCreated(body.name.trim(), profile?.full_name || 'Admin').catch(() => {});
 
   return NextResponse.json({ team }, { status: 201 });
 }
