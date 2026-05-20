@@ -51,7 +51,10 @@ export default function AdminLogin() {
       return;
     }
 
-    router.replace('/admin/dashboard');
+    // Wait a brief moment to ensure cookies are set, then navigate
+    setTimeout(() => {
+      router.replace('/admin/dashboard');
+    }, 100);
   };
 
   return (

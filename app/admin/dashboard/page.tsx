@@ -398,13 +398,22 @@ export default function AdminDashboard() {
         return;
       }
 
-      const { data: profile } = await supabase
+      const { data: profile, error } = await supabase
         .from('profiles')
         .select('role, full_name')
         .eq('id', session.user.id)
         .single();
 
-      if (profile?.role !== 'admin') {
+      // DEBUG: Log what we're getting
+      console.log('Dashboard Auth Check:', {
+        userId: session.user.id,
+        profile,
+        error,
+        roleCheck: profile?.role !== 'admin'
+      });
+
+      if (error || !profile || profile?.role !== 'admin') {
+        console.error('Authorization failed:', { error, profile });
         router.replace('/admin');
         return;
       }
