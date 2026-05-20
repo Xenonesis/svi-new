@@ -65,7 +65,7 @@ const MarkerWithInfoWindow = memo(function MarkerWithInfoWindow({
             <div className="mb-1 font-bold text-gray-900">{project.title}</div>
             <div className="mb-2 text-xs text-gray-500">{project.location}</div>
             <img
-              src={project.img + '&fm=webp'}
+              src={project.img}
               alt={project.title}
               loading="lazy"
               decoding="async"

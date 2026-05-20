@@ -110,7 +110,7 @@ export default function Header() {
               ))}
 
               <div
-                className="group relative cursor-pointer py-2"
+                className="group relative cursor-pointer py-2 pb-4"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
@@ -125,10 +125,10 @@ export default function Header() {
                 </span>
 
                 <div
-                  className={`absolute top-full left-0 mt-2 w-48 overflow-hidden rounded-sm border border-gray-100 bg-white/95 shadow-lg backdrop-blur-md transition-all duration-200 dark:border-gray-700 dark:bg-gray-800/95 ${
+                  className={`absolute top-full left-0 w-48 overflow-hidden rounded-sm border border-gray-100 bg-white/95 shadow-lg backdrop-blur-md transition-all duration-200 dark:border-gray-700 dark:bg-gray-800/95 ${
                     isProjectsOpen
-                      ? 'pointer-events-auto translate-y-0 opacity-100'
-                      : 'pointer-events-none translate-y-2 opacity-0'
+                      ? 'pointer-events-auto translate-y-0 pt-2 opacity-100'
+                      : 'pointer-events-none translate-y-2 pt-0 opacity-0'
                   }`}
                 >
                   <Link

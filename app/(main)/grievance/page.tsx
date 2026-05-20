@@ -1,20 +1,42 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { MessageSquareWarning, FileText, Send } from 'lucide-react';
+import { MessageSquareWarning, FileText, Send, AlertCircle } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 
 export default function Grievance() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [ticketId, setTicketId] = useState('');
+  const [submitError, setSubmitError] = useState('');
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    subject: '',
+    category: '',
+    description: '',
+  });
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
+    setSubmitError('');
+    try {
+      const res = await fetch('/api/grievance', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) throw new Error('Submission failed');
+      const data = await res.json();
+      setTicketId(data.ticket_id);
       setSubmitted(true);
-    }, 1000);
+    } catch {
+      setSubmitError('Failed to submit. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -51,10 +73,8 @@ export default function Grievance() {
             </h2>
             <p className="mb-8 text-gray-600 dark:text-gray-400">
               Your grievance has been registered with Ticket ID:{' '}
-              <strong className="text-brand-navy dark:text-white">
-                #SVI-{Math.floor(1000 + Math.random() * 9000)}
-              </strong>
-              . Our support team will get back to you within 24-48 business hours.
+              <strong className="text-brand-navy dark:text-white">#{ticketId}</strong>. Our support
+              team will get back to you within 24-48 business hours.
             </p>
             <button
               onClick={() => setSubmitted(false)}
@@ -78,16 +98,22 @@ export default function Grievance() {
                   </label>
                   <input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                     required
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
-                    Registered Phone
+                    Email Address
                   </label>
                   <input
-                    type="tel"
+                    type="email"
+                    name="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, email: e.target.value }))}
                     required
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   />
@@ -97,19 +123,41 @@ export default function Grievance() {
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
-                    Project Name
+                    Registered Phone
                   </label>
                   <input
-                    type="text"
+                    type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, phone: e.target.value }))}
                     required
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   />
                 </div>
                 <div className="space-y-2">
                   <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                    Project Name
+                  </label>
+                  <input
+                    type="text"
+                    name="subject"
+                    value={formData.subject}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, subject: e.target.value }))}
+                    required
+                    className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
                     Category
                   </label>
                   <select
+                    name="category"
+                    value={formData.category}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, category: e.target.value }))}
                     required
                     className="focus:border-brand-gold w-full appearance-none border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   >
@@ -127,12 +175,23 @@ export default function Grievance() {
                   Grievance Description
                 </label>
                 <textarea
+                  name="description"
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, description: e.target.value }))
+                  }
                   required
                   rows={5}
                   className="focus:border-brand-gold w-full resize-none border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   placeholder="Please describe your issue in detail..."
                 ></textarea>
               </div>
+
+              {submitError && (
+                <p className="flex items-center gap-1 text-xs text-red-500">
+                  <AlertCircle size={12} /> {submitError}
+                </p>
+              )}
 
               <button
                 type="submit"

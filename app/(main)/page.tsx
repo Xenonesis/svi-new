@@ -123,10 +123,10 @@ export default function Home() {
   const magnetic = useMagnetic(0.35);
 
   // Check for reduced motion preference
-  const prefersReducedMotion =
-    typeof window !== 'undefined'
-      ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-      : false;
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  useEffect(() => {
+    setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  }, []);
 
   const nextHeroSlide = useCallback(() => {
     setIsAutoPlaying(false);

@@ -20,11 +20,16 @@ export async function verifyAdmin(request: NextRequest): Promise<User | null> {
   } = await supabaseAdmin.auth.getUser(token);
   if (error || !user) return null;
 
-  const { data: profile } = await supabaseAdmin
+  const { data: profile, error: profileError } = await supabaseAdmin
     .from('profiles')
     .select('role')
     .eq('id', user.id)
     .single();
+
+  if (profileError) {
+    console.error('verifyAdmin DB error:', profileError);
+    return null;
+  }
 
   return profile?.role === 'admin' ? user : null;
 }

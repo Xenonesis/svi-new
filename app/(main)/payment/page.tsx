@@ -71,22 +71,30 @@ export default function Payment() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                  <label
+                    htmlFor="pay-name"
+                    className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300"
+                  >
                     Full Name
                   </label>
                   <input
                     type="text"
+                    id="pay-name"
                     required
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     placeholder="As per records"
                   />
                 </div>
                 <div className="space-y-2">
-                  <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                  <label
+                    htmlFor="pay-phone"
+                    className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300"
+                  >
                     Phone Number
                   </label>
                   <input
                     type="tel"
+                    id="pay-phone"
                     required
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     placeholder="+91"
@@ -95,11 +103,15 @@ export default function Payment() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                <label
+                  htmlFor="pay-email"
+                  className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300"
+                >
                   Email Address
                 </label>
                 <input
                   type="email"
+                  id="pay-email"
                   required
                   className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   placeholder="For payment receipt"
@@ -108,10 +120,14 @@ export default function Payment() {
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                  <label
+                    htmlFor="pay-project"
+                    className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300"
+                  >
                     Project Name
                   </label>
                   <select
+                    id="pay-project"
                     required
                     className="focus:border-brand-gold w-full appearance-none border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   >
@@ -122,11 +138,15 @@ export default function Payment() {
                   </select>
                 </div>
                 <div className="space-y-2">
-                  <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                  <label
+                    htmlFor="pay-unit"
+                    className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300"
+                  >
                     Unit / Plot Number
                   </label>
                   <input
                     type="text"
+                    id="pay-unit"
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                     placeholder="If known"
                   />
@@ -134,7 +154,10 @@ export default function Payment() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300">
+                <label
+                  htmlFor="pay-amount"
+                  className="text-brand-navy text-xs font-bold tracking-widest uppercase dark:text-gray-300"
+                >
                   Payment Amount (INR)
                 </label>
                 <div className="relative">
@@ -143,6 +166,7 @@ export default function Payment() {
                   </span>
                   <input
                     type="number"
+                    id="pay-amount"
                     required
                     min="1"
                     className="focus:border-brand-gold w-full border border-gray-200 bg-gray-50 py-3 pr-4 pl-8 text-lg text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"

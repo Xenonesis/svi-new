@@ -5,8 +5,8 @@ import path from 'path';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Load env variables from .env.local in the workspace root (3 levels up from src/lib/supabase/)
-dotenv.config({ path: path.resolve(__dirname, '../../../.env.local') });
+// Load env variables from .env.local in the workspace root
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 async function runDiagnostics() {
   console.log('--- Database Diagnostics ---');
@@ -21,7 +21,7 @@ async function runDiagnostics() {
   );
 
   // Dynamically import client.ts AFTER dotenv has loaded the env variables
-  const { supabase } = await import('./client.js');
+  const { supabase } = await import('../src/lib/supabase/client.js');
 
   try {
     // 1. Try to query public.profiles

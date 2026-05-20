@@ -9,8 +9,9 @@ export async function GET(request: NextRequest) {
     if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const url = new URL(request.url);
-    const limit = parseInt(url.searchParams.get('limit') || '50');
+    const limit = Math.max(1, parseInt(url.searchParams.get('limit') || '50') || 50);
     const unreadOnly = url.searchParams.get('unreadOnly') === 'true';
+    const userId = url.searchParams.get('userId');
 
     let query = supabaseAdmin
       .from('notifications')
@@ -22,12 +23,19 @@ export async function GET(request: NextRequest) {
       query = query.eq('is_read', false);
     }
 
+    let countQuery = supabaseAdmin
+      .from('notifications')
+      .select('*', { count: 'exact', head: true })
+      .eq('is_read', false);
+
+    if (userId) {
+      query = query.or(`user_id.eq.${userId},user_id.is.null`);
+      countQuery = countQuery.or(`user_id.eq.${userId},user_id.is.null`);
+    }
+
     const [{ data: notifications, error }, { count: unreadCount }] = await Promise.all([
       query,
-      supabaseAdmin
-        .from('notifications')
-        .select('*', { count: 'exact', head: true })
-        .eq('is_read', false),
+      countQuery,
     ]);
 
     if (error) {

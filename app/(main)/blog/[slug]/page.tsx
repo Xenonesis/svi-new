@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Calendar, User, Tag } from 'lucide-react';
 import { BLOG_POST_MAP, BLOG_POSTS as SHARED_BLOG_POSTS } from '@/src/lib/blog';
 import { absoluteUrl } from '@/src/lib/seo';
@@ -261,7 +262,13 @@ export default async function BlogPost({ params }: Props) {
 
         {/* Featured Image */}
         <div className="relative mb-8 h-[400px] overflow-hidden rounded-lg bg-gray-200 md:h-[500px] dark:bg-gray-800">
-          <img src={post.image} alt={post.title} className="h-full w-full object-cover" />
+          <Image
+            src={post.image}
+            alt={post.title}
+            fill
+            className="object-cover"
+            sizes="(max-width: 768px) 100vw, 50vw"
+          />
         </div>
 
         {/* Article Header */}

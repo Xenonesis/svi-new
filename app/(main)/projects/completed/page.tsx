@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, lazy, useCallback, useState, type MouseEvent } from 'react';
+import { Suspense, lazy, useCallback, useState, useEffect, type MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import {
@@ -116,32 +116,6 @@ export default function CompletedProjects() {
   const [direction, setDirection] = useState(0);
   const [highlightedProject, setHighlightedProject] = useState<string | null>(null);
 
-  // BreadcrumbList Structured Data
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://sviiinfrasolutions.com/',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Projects',
-        item: 'https://sviiinfrasolutions.com/projects',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: 'Completed Projects',
-        item: 'https://sviiinfrasolutions.com/projects/completed',
-      },
-    ],
-  };
-
   const openModal = useCallback((project: (typeof completedProjectsData)[0]) => {
     setSelectedProject(project);
     setCurrentGalleryIndex(0);
@@ -187,16 +161,13 @@ export default function CompletedProjects() {
     [selectedProject]
   );
 
-  const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
+  const [currentUrl, setCurrentUrl] = useState('');
+  useEffect(() => {
+    setCurrentUrl(window.location.href);
+  }, []);
 
   return (
     <div className="min-h-screen bg-gray-50 pt-20 pb-16 dark:bg-[#0C0C0C]">
-      {/* BreadcrumbList Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-
       {/* RealEstateListing Structured Data */}
       <script
         type="application/ld+json"
@@ -426,7 +397,7 @@ export default function CompletedProjects() {
                   </>
                 ) : (
                   <img
-                    src={selectedProject.img + '?fm=webp'}
+                    src={selectedProject.img}
                     alt={selectedProject.title}
                     loading="lazy"
                     decoding="async"

@@ -8,7 +8,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { id } = await params;
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const { status, pdf_url, image_url } = body;
 
   const updateData: Record<string, unknown> = {};
@@ -30,7 +35,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     await supabaseAdmin.from('activity_logs').insert({
       user_id: admin.id,
       action_type: 'document_downloaded',
-      description: `${data.document_type.replace(/_/g, ' ')} downloaded`,
+      description: `${(data.document_type ?? 'document').replace(/_/g, ' ')} downloaded`,
       target_id: data.id,
       target_type: 'document',
     });

@@ -4,33 +4,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export default function TermsConditions() {
-  // BreadcrumbList Structured Data
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://sviiinfrasolutions.com/',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Terms & Conditions',
-        item: 'https://sviiinfrasolutions.com/terms-conditions',
-      },
-    ],
-  };
-
   return (
     <div className="bg-brand-bg min-h-screen pt-24 pb-20 dark:bg-gray-900">
-      {/* BreadcrumbList Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
       <div className="container mx-auto max-w-4xl px-4">
         <Link
           href="/"

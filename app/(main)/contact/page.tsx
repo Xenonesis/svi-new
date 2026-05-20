@@ -4,6 +4,7 @@ import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
 // import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { MapPin, PhoneIcon, Mail, Clock, AlertCircle } from 'lucide-react';
+import { SITE_URL } from '@/src/lib/seo';
 
 const DIGIT_REGEX = /\d/g;
 
@@ -19,33 +20,13 @@ export default function Contact() {
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
-  // BreadcrumbList Structured Data
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://sviiinfrasolutions.com/',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Contact Us',
-        item: 'https://sviiinfrasolutions.com/contact',
-      },
-    ],
-  };
-
   // LocalBusiness structured data
   const localBusinessJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'RealEstateAgent',
     name: 'SVI Infra Solutions Pvt. Ltd.',
-    image: 'https://sviiinfrasolutions.com/logo.png',
-    url: 'https://sviiinfrasolutions.com/contact',
+    image: `${SITE_URL}/logo.png`,
+    url: `${SITE_URL}/contact`,
     telephone: '+91-73000-07643',
     email: 'info@sviinfrasolutions.com',
     address: {
@@ -130,18 +111,29 @@ export default function Contact() {
     return Object.keys(newErrors).length === 0;
   }, [formData]);
 
+  const [submitError, setSubmitError] = useState('');
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault();
       if (!validateForm()) return;
 
       setIsSubmitting(true);
-      setTimeout(() => {
-        setIsSubmitting(false);
+      setSubmitError('');
+      try {
+        const res = await fetch('/api/contact', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData),
+        });
+        if (!res.ok) throw new Error('Submission failed');
         router.push('/thank-you');
-      }, 1500);
+      } catch {
+        setSubmitError('Failed to submit. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [validateForm, router]
+    [validateForm, formData, router]
   );
 
   const handleChange = useCallback(
@@ -157,12 +149,6 @@ export default function Contact() {
 
   return (
     <div className="bg-brand-bg relative pt-20 pb-16 dark:bg-gray-900">
-      {/* BreadcrumbList Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
-
       {/* LocalBusiness Structured Data */}
       <script
         type="application/ld+json"
@@ -434,6 +420,11 @@ export default function Contact() {
                       </span>
                     </div>
                   </div>
+                  {submitError && (
+                    <p className="flex items-center gap-1 text-xs text-red-500">
+                      <AlertCircle size={12} /> {submitError}
+                    </p>
+                  )}
                   <button
                     type="submit"
                     disabled={isSubmitting}
@@ -456,6 +447,7 @@ export default function Contact() {
                   style={{ border: 0 }}
                   allowFullScreen={true}
                   loading="lazy"
+                  title="Google Maps - SVI Infra Solutions Office Location"
                 ></iframe>
               </div>
             </div>

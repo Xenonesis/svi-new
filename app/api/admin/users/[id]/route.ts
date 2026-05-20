@@ -15,6 +15,10 @@ export async function DELETE(
 
   const { id } = await params;
 
+  if (id === admin.id) {
+    return NextResponse.json({ error: 'Cannot delete your own account' }, { status: 400 });
+  }
+
   // Get user info before deletion for notification
   const { data: userProfile } = await supabaseAdmin
     .from('profiles')
@@ -48,7 +52,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   }
 
   const { id } = await params;
-  const body = await request.json();
+  let body;
+  try {
+    body = await request.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
   const allowedFields = ['full_name', 'phone', 'property_interest', 'notes'];
   const updates: Record<string, string> = {};
   for (const key of allowedFields) {

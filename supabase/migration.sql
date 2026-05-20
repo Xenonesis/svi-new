@@ -107,7 +107,7 @@ INSERT INTO auth.users (
   'authenticated',
   'authenticated',
   'admin@sviinfra.com',
-  crypt('AdminPass123!', gen_salt('bf')),
+  crypt('REPLACE_WITH_STRONG_PASSWORD', gen_salt('bf')),
   now(),
   '{"provider":"email","providers":["email"]}',
   '{}',

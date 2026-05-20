@@ -13,6 +13,9 @@ dist/
 .env*
 !.env.example
 
+# OpenClaude
+.openclaude/
+
 # OS files
 .DS_Store
 *.log
@@ -25,3 +28,9 @@ public/sw.js
 public/workbox-*.js
 public/icons/
 public/screenshots/
+
+# Build artifacts
+*.tsbuildinfo
+supabase/.temp/
+*.tmp
+vitest.config.ts.timestamp-*

@@ -6,12 +6,12 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // Load env variables from .env.local
-dotenv.config({ path: path.resolve(__dirname, '../../../.env.local') });
+dotenv.config({ path: path.resolve(__dirname, '../.env.local') });
 
 async function seedNotifications() {
   console.log('=== Seeding Sample Notifications ===\n');
 
-  const { supabaseAdmin } = await import('../../../src/lib/supabase/admin.js');
+  const { supabaseAdmin } = await import('../src/lib/supabase/admin.js');
 
   // Get all admin users
   const { data: admins, error: fetchError } = await supabaseAdmin
@@ -35,22 +35,26 @@ async function seedNotifications() {
   const sampleNotifications = [
     {
       title: 'Welcome to SVI Admin Portal',
-      message: 'Your admin account has been successfully created. You can now manage users and generate documents.',
+      message:
+        'Your admin account has been successfully created. You can now manage users and generate documents.',
       type: 'success',
     },
     {
       title: 'New Feature Available',
-      message: 'Real-time notifications are now enabled. You will receive updates about user activities and system events.',
+      message:
+        'Real-time notifications are now enabled. You will receive updates about user activities and system events.',
       type: 'info',
     },
     {
       title: 'Security Reminder',
-      message: 'Please ensure you use strong passwords and enable two-factor authentication for enhanced security.',
+      message:
+        'Please ensure you use strong passwords and enable two-factor authentication for enhanced security.',
       type: 'warning',
     },
     {
       title: 'System Maintenance Scheduled',
-      message: 'Scheduled maintenance will occur on Sunday at 2 AM IST. The system may be temporarily unavailable.',
+      message:
+        'Scheduled maintenance will occur on Sunday at 2 AM IST. The system may be temporarily unavailable.',
       type: 'info',
     },
   ];

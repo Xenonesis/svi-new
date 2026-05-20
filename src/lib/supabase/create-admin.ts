@@ -15,7 +15,13 @@ async function createAdmin() {
   const { supabase } = await import('./client.js');
 
   const email = 'admin@sviinfra.com';
-  const password = 'AdminPass123!';
+  const password = process.env.ADMIN_PASSWORD;
+
+  if (!password) {
+    console.error('\n❌ ADMIN_PASSWORD environment variable is not set.');
+    console.log('Set it in .env.local before running this script.');
+    process.exit(1);
+  }
 
   console.log(`\nRegistering user ${email} via official Supabase Auth API...`);
 

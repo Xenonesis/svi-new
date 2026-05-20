@@ -66,18 +66,35 @@ export default function Registration() {
     [errors]
   );
 
+  const [submitError, setSubmitError] = useState('');
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    async (e: FormEvent) => {
       e.preventDefault();
       if (!validateForm()) return;
 
       setIsSubmitting(true);
-      setTimeout(() => {
-        setIsSubmitting(false);
+      setSubmitError('');
+      try {
+        const res = await fetch('/api/registration', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            property_interest: formData.propertyInterest,
+            message: formData.message || null,
+          }),
+        });
+        if (!res.ok) throw new Error('Submission failed');
         router.push('/thank-you');
-      }, 1500);
+      } catch {
+        setSubmitError('Failed to submit. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     },
-    [validateForm, router]
+    [validateForm, formData, router]
   );
 
   return (
@@ -143,7 +160,10 @@ export default function Registration() {
 
             <form onSubmit={handleSubmit} className="space-y-6" noValidate>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+                <label
+                  htmlFor="reg-name"
+                  className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase"
+                >
                   Full Name
                 </label>
                 <div className="relative">
@@ -152,6 +172,7 @@ export default function Registration() {
                   </div>
                   <input
                     type="text"
+                    id="reg-name"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
@@ -168,7 +189,10 @@ export default function Registration() {
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+                  <label
+                    htmlFor="reg-email"
+                    className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase"
+                  >
                     Email Address
                   </label>
                   <div className="relative">
@@ -177,6 +201,7 @@ export default function Registration() {
                     </div>
                     <input
                       type="email"
+                      id="reg-email"
                       name="email"
                       value={formData.email}
                       onChange={handleChange}
@@ -191,7 +216,10 @@ export default function Registration() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+                  <label
+                    htmlFor="reg-phone"
+                    className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase"
+                  >
                     Phone Number
                   </label>
                   <div className="relative">
@@ -200,6 +228,7 @@ export default function Registration() {
                     </div>
                     <input
                       type="tel"
+                      id="reg-phone"
                       name="phone"
                       value={formData.phone}
                       onChange={handleChange}
@@ -216,7 +245,10 @@ export default function Registration() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+                <label
+                  htmlFor="reg-propertyInterest"
+                  className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase"
+                >
                   Property Interest
                 </label>
                 <div className="relative">
@@ -225,6 +257,7 @@ export default function Registration() {
                   </div>
                   <select
                     name="propertyInterest"
+                    id="reg-propertyInterest"
                     value={formData.propertyInterest}
                     onChange={handleChange}
                     className={`w-full appearance-none rounded-none border bg-gray-50/50 py-3 pr-4 pl-12 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white ${errors.propertyInterest ? 'border-red-500 focus:border-red-500' : 'focus:border-brand-gold dark:focus:border-brand-gold border-gray-200 dark:border-gray-700'}`}
@@ -247,7 +280,10 @@ export default function Registration() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+                <label
+                  htmlFor="reg-message"
+                  className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase"
+                >
                   Additional Message
                 </label>
                 <div className="relative">
@@ -256,6 +292,7 @@ export default function Registration() {
                   </div>
                   <textarea
                     rows={4}
+                    id="reg-message"
                     name="message"
                     value={formData.message}
                     onChange={handleChange}
@@ -277,6 +314,11 @@ export default function Registration() {
               </div>
 
               <div className="pt-6">
+                {submitError && (
+                  <p className="mb-4 flex items-center gap-1 text-xs text-red-500">
+                    <AlertCircle size={12} /> {submitError}
+                  </p>
+                )}
                 <button
                   type="submit"
                   disabled={isSubmitting}

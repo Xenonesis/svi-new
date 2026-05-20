@@ -4,6 +4,7 @@ import { ChevronRight, Home } from 'lucide-react';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { SITE_URL } from '@/src/lib/seo';
 
 interface BreadcrumbItem {
   label: string;
@@ -55,7 +56,7 @@ export default function Breadcrumbs() {
       '@type': 'ListItem',
       position: index + 1,
       name: item.label,
-      item: `https://sviiinfrasolutions.com${item.href}`,
+      item: `${SITE_URL}${item.href}`,
     })),
   };
 

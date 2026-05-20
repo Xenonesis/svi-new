@@ -7,33 +7,8 @@ import Link from 'next/link';
 import { BLOG_POSTS } from '@/src/lib/blog';
 
 export default function Blog() {
-  // BreadcrumbList Structured Data
-  const breadcrumbJsonLd = {
-    '@context': 'https://schema.org',
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
-        '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://sviiinfrasolutions.com/',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Blog',
-        item: 'https://sviiinfrasolutions.com/blog',
-      },
-    ],
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-20 dark:bg-[#0C0C0C]">
-      {/* BreadcrumbList Structured Data */}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
-      />
       <section className="bg-brand-navy relative overflow-hidden py-20 text-center dark:bg-gray-900">
         <div
           className="pointer-events-none absolute top-0 left-0 h-full w-full opacity-10"

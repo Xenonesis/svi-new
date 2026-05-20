@@ -10,6 +10,20 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
 
     const { id } = await params;
 
+    // Verify ownership (allow if notification has no user_id, i.e. global)
+    const { data: notification } = await supabaseAdmin
+      .from('notifications')
+      .select('user_id')
+      .eq('id', id)
+      .single();
+
+    if (!notification) {
+      return NextResponse.json({ error: 'Notification not found' }, { status: 404 });
+    }
+    if (notification.user_id && notification.user_id !== admin.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
+
     const { error } = await supabaseAdmin
       .from('notifications')
       .update({ is_read: true })
@@ -37,6 +51,20 @@ export async function DELETE(
     if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
     const { id } = await params;
+
+    // Verify ownership (allow if notification has no user_id, i.e. global)
+    const { data: notification } = await supabaseAdmin
+      .from('notifications')
+      .select('user_id')
+      .eq('id', id)
+      .single();
+
+    if (!notification) {
+      return NextResponse.json({ error: 'Notification not found' }, { status: 404 });
+    }
+    if (notification.user_id && notification.user_id !== admin.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { error } = await supabaseAdmin.from('notifications').delete().eq('id', id);
 

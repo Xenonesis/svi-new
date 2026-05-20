@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { Facebook, Instagram, Mail, MapPin, Phone, Send, Twitter, Youtube } from 'lucide-react';
+import { Facebook, Instagram, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { type FormEvent, memo, useCallback, useState } from 'react';
 
 import Link from 'next/link';
@@ -15,7 +15,7 @@ const Footer = memo(function Footer() {
   const handleNewsletterSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      if (email && email.includes('@')) {
+      if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setSubscribed(true);
         setEmail('');
         setTimeout(() => setSubscribed(false), 3000);
@@ -47,13 +47,11 @@ const Footer = memo(function Footer() {
                   label: 'Facebook',
                   href: 'https://www.facebook.com/profile.php?id=61574028993364',
                 },
-                { icon: <Twitter size={18} />, label: 'Twitter', href: '#' },
                 {
                   icon: <Instagram size={18} />,
                   label: 'Instagram',
                   href: 'https://www.instagram.com/sviinfrasolution/?hl=en',
                 },
-                { icon: <Youtube size={18} />, label: 'YouTube', href: '#' },
               ].map(({ icon, label, href }) => (
                 <motion.a
                   key={label}
