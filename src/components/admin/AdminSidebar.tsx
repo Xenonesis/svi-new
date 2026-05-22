@@ -9,6 +9,7 @@ import {
   FileText,
   LayoutDashboard,
   LogOut,
+  Mail,
   Receipt,
   Settings,
   X,
@@ -36,6 +37,7 @@ const documentItems = [
 const managementItems = [
   { name: 'Attendance', path: '/admin/attendance', icon: CheckSquare },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
+  { name: 'Email Center', path: '/admin/email', icon: Mail },
 ];
 
 // ─── Shared sidebar content ────────────────────────────────────────────────────
