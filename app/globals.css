@@ -159,6 +159,15 @@
   .img-zoom-container:hover img {
     transform: scale(1.07);
   }
+
+  /* Custom Hover Zoom Image component rules */
+  .hover-zoom-container {
+    overflow: hidden;
+  }
+  .hover-zoom-container:hover .hover-zoom-img,
+  .group:hover .hover-zoom-img {
+    transform: scale(1.1);
+  }
 }
 
 @keyframes shimmer {

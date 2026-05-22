@@ -12,11 +12,7 @@ import {
   Share2,
   Construction,
 } from 'lucide-react';
-import {
-  FacebookIcon,
-  TwitterIcon,
-  LinkedinIcon,
-} from '@/src/components/common/social-icons';
+import { FacebookIcon, TwitterIcon, LinkedinIcon } from '@/src/components/common/social-icons';
 import HoverZoomImage from '@/src/components/common/HoverZoomImage';
 
 // const GRADIENT_STYLE = {
@@ -58,46 +54,75 @@ const currentProjectsData = [
   },
 ];
 
-// Structured Data for RealEstateListing
-const realEstateListingsSchema = {
-  '@context': 'https://schema.org',
-  '@graph': currentProjectsData.map((project) => ({
-    '@type': 'RealEstateListing',
-    name: project.title,
-    description: project.fullDescription || project.description,
-    listingType: 'ForSale',
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: project.location,
-      addressRegion: 'Rajasthan',
-      addressCountry: 'IN',
-    },
-    geo: {
-      '@type': 'GeoCoordinates',
-      latitude: project.lat,
-      longitude: project.lng,
-    },
-    offers: {
-      '@type': 'Offer',
-      availability: 'https://schema.org/PreOrderAction',
-      priceStatus: 'https://schema.org/InquirePrice',
-    },
-    image: `https://sviiinfrasolutions.com${project.img}`,
-    url: `https://sviiinfrasolutions.com/projects/current#${project.id}`,
-  })),
-};
-
 const CompletedProjectsMap = lazy(() =>
   import('@/src/components/CompletedProjectsMap').then((m) => ({ default: m.default }))
 );
 
 export default function Projects() {
+  const [projects, setProjects] = useState(currentProjectsData);
   const [selectedProject, setSelectedProject] = useState<(typeof currentProjectsData)[0] | null>(
     null
   );
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [highlightedProject, setHighlightedProject] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function fetchImages() {
+      try {
+        const res = await fetch('/api/project-images');
+        if (!res.ok) throw new Error('Failed to fetch project images');
+        const data = (await res.json()) as Record<string, string[]>;
+
+        setProjects((prevProjects) =>
+          prevProjects.map((project) => {
+            const dynamicImages = data[project.id];
+            if (dynamicImages && dynamicImages.length > 0) {
+              return {
+                ...project,
+                img: dynamicImages[0],
+                gallery: dynamicImages,
+              };
+            }
+            return project;
+          })
+        );
+      } catch (err) {
+        console.error('Error loading project images dynamically:', err);
+      }
+    }
+
+    fetchImages();
+  }, []);
+
+  // Structured Data for RealEstateListing
+  const realEstateListingsSchema = {
+    '@context': 'https://schema.org',
+    '@graph': projects.map((project) => ({
+      '@type': 'RealEstateListing',
+      name: project.title,
+      description: project.fullDescription || project.description,
+      listingType: 'ForSale',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: project.location,
+        addressRegion: 'Rajasthan',
+        addressCountry: 'IN',
+      },
+      geo: {
+        '@type': 'GeoCoordinates',
+        latitude: project.lat,
+        longitude: project.lng,
+      },
+      offers: {
+        '@type': 'Offer',
+        availability: 'https://schema.org/PreOrderAction',
+        priceStatus: 'https://schema.org/InquirePrice',
+      },
+      image: `https://sviiinfrasolutions.com${project.img}`,
+      url: `https://sviiinfrasolutions.com/projects/current#${project.id}`,
+    })),
+  };
 
   const openModal = useCallback((project: (typeof currentProjectsData)[0]) => {
     setSelectedProject(project);
@@ -171,7 +196,7 @@ export default function Projects() {
         </div>
       </section>
 
-      {currentProjectsData.length > 0 ? (
+      {projects.length > 0 ? (
         <section className="container mx-auto px-4 py-12 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -190,20 +215,17 @@ export default function Projects() {
                 </div>
               }
             >
-              <CompletedProjectsMap
-                projects={currentProjectsData}
-                onProjectClick={scrollToProject}
-              />
+              <CompletedProjectsMap projects={projects} onProjectClick={scrollToProject} />
             </Suspense>
           </motion.div>
         </section>
       ) : null}
 
-      <section className={`pb-24 ${currentProjectsData.length > 0 ? 'pt-8' : 'pt-24'}`}>
+      <section className={`pb-24 ${projects.length > 0 ? 'pt-8' : 'pt-24'}`}>
         <div className="container mx-auto px-4 lg:px-8">
-          {currentProjectsData.length > 0 ? (
+          {projects.length > 0 ? (
             <div className="grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-3">
-              {currentProjectsData.map((project, idx) => (
+              {projects.map((project, idx) => (
                 <motion.div
                   key={idx}
                   id={`project-${project.id}`}
@@ -333,11 +355,9 @@ export default function Projects() {
                 {selectedProject.gallery && selectedProject.gallery.length > 0 ? (
                   <>
                     <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                      <motion.img
+                      <motion.div
                         key={currentGalleryIndex}
-                        src={selectedProject.gallery[currentGalleryIndex]}
-                        alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
-                        className="absolute inset-0 h-full w-full cursor-grab object-cover active:cursor-grabbing"
+                        className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing"
                         custom={direction}
                         initial={{ opacity: 0, x: direction > 0 ? 200 : -200, scale: 0.9 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -350,7 +370,12 @@ export default function Projects() {
                           if (offset.x < -50 || velocity.x < -500) nextImage();
                           else if (offset.x > 50 || velocity.x > 500) prevImage();
                         }}
-                      />
+                      >
+                        <HoverZoomImage
+                          src={selectedProject.gallery[currentGalleryIndex]}
+                          alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
+                        />
+                      </motion.div>
                     </AnimatePresence>
 
                     {selectedProject.gallery.length > 1 && (
@@ -384,13 +409,7 @@ export default function Projects() {
                     )}
                   </>
                 ) : (
-                  <img
-                    src={selectedProject.img}
-                    alt={selectedProject.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+                  <HoverZoomImage src={selectedProject.img} alt={selectedProject.title} />
                 )}
                 <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
                   {selectedProject.status}

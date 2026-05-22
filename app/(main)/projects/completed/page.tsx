@@ -3,20 +3,8 @@
 import { Suspense, lazy, useCallback, useState, useEffect, type MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
-import {
-  Download,
-  ArrowRight,
-  MapPin,
-  X,
-  ChevronLeft,
-  ChevronRight,
-  Share2,
-} from 'lucide-react';
-import {
-  FacebookIcon,
-  TwitterIcon,
-  LinkedinIcon,
-} from '@/src/components/common/social-icons';
+import { Download, ArrowRight, MapPin, X, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
+import { FacebookIcon, TwitterIcon, LinkedinIcon } from '@/src/components/common/social-icons';
 import HoverZoomImage from '@/src/components/common/HoverZoomImage';
 
 const GRADIENT_STYLE = {
@@ -349,11 +337,9 @@ export default function CompletedProjects() {
                 {selectedProject.gallery && selectedProject.gallery.length > 0 ? (
                   <>
                     <AnimatePresence initial={false} custom={direction} mode="popLayout">
-                      <motion.img
+                      <motion.div
                         key={currentGalleryIndex}
-                        src={selectedProject.gallery[currentGalleryIndex]}
-                        alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
-                        className="absolute inset-0 h-full w-full cursor-grab object-cover active:cursor-grabbing"
+                        className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing"
                         custom={direction}
                         initial={{ opacity: 0, x: direction > 0 ? 200 : -200, scale: 0.9 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -366,7 +352,12 @@ export default function CompletedProjects() {
                           if (offset.x < -50 || velocity.x < -500) nextImage();
                           else if (offset.x > 50 || velocity.x > 500) prevImage();
                         }}
-                      />
+                      >
+                        <HoverZoomImage
+                          src={selectedProject.gallery[currentGalleryIndex]}
+                          alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
+                        />
+                      </motion.div>
                     </AnimatePresence>
 
                     {selectedProject.gallery.length > 1 && (
@@ -398,13 +389,7 @@ export default function CompletedProjects() {
                     </div>
                   </>
                 ) : (
-                  <img
-                    src={selectedProject.img}
-                    alt={selectedProject.title}
-                    loading="lazy"
-                    decoding="async"
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
+                  <HoverZoomImage src={selectedProject.img} alt={selectedProject.title} />
                 )}
                 <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
                   {selectedProject.status}
