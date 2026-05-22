@@ -11,10 +11,39 @@ import { FileText, RefreshCw } from 'lucide-react';
 
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function BbaPage() {
   const { token } = useAdminSession();
+  const [companyInfo, setCompanyInfo] = useState({
+    company_name: 'SVI Infra Solutions Pvt. Ltd.',
+    company_address: 'A-61 Sector 65 Noida Uttar Pradesh 201309',
+    company_email: 'info@sviinfrasolutions.com',
+    company_phone: '+91 9216014579',
+    company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
+    bank_account_name: 'Svi Infra Solutions Pvt. Ltd',
+    bank_account_no: '0894102000013837',
+    bank_name: 'IDBI BANK',
+    bank_ifsc: 'IBKL0000894',
+  });
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/admin/settings?key=company_info', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch settings');
+        return res.json();
+      })
+      .then((json) => {
+        if (json.value) {
+          setCompanyInfo(json.value);
+        }
+      })
+      .catch((err) => console.error('Error fetching company info:', err));
+  }, [token]);
+
   const [formData, setFormData] = useState({
     clientName: '',
     address: '',
@@ -403,27 +432,22 @@ export default function BbaPage() {
 
           <PreviewContainer previewId="bbaPreview" hasPreview={preview}>
             <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
-              {/* Header */}
               <div className="mb-8 flex items-start justify-between">
                 <div>
                   <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-                    SVI INFRA SOLUTIONS PVT. LTD
+                    {companyInfo.company_name}
                   </h1>
                   <p className="text-gray-700">
-                    Cell: +91 9216014579 | Email: info@sviinfrasolutions.com
+                    Cell: {companyInfo.company_phone} | Email: {companyInfo.company_email}
                   </p>
-                  <p className="text-gray-700">
-                    Website: www.sviinfrasolutions.in | www.sviinfrasolutions.com
-                  </p>
-                  <p className="text-gray-700">
-                    Office Address : A-61 Sector 65 Noida Uttar Pradesh 201309
-                  </p>
+                  <p className="text-gray-700">Website: {companyInfo.company_website}</p>
+                  <p className="text-gray-700">Office Address : {companyInfo.company_address}</p>
                 </div>
                 <div className="w-48">
                   {/* We can use a standard logo image here, or text fallback. The user's pdf had a logo on the right. */}
                   <img
                     src="/logo.png"
-                    alt="SVI Infra Solutions"
+                    alt={companyInfo.company_name}
                     className="h-auto w-full object-contain"
                     onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
@@ -449,12 +473,12 @@ export default function BbaPage() {
                   <span className="font-bold">{formData.clientName || '[Client Name]'}</span>
                 </p>
                 <p className="mb-1 text-justify">
-                  Congratulations from Svi Infra Solutions Pvt. Ltd. on your new investment in{' '}
+                  Congratulations from {companyInfo.company_name} on your new investment in{' '}
                   {formData.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect
                   choice and you are one of the few lucky ones to get unit at such reasonable rates.
                 </p>
                 <p className="mb-4 text-justify">
-                  We at Svi Infra Solutions Pvt. Ltd. feel privileged to be part of your great
+                  We at {companyInfo.company_name} feel privileged to be part of your great
                   investment. We thank you for giving us an opportunity to assist you in making this
                   very investment. We sincerely hope that you are satisfied with our services and
                   will refer us in your circle.
@@ -628,16 +652,19 @@ export default function BbaPage() {
                     Payment can be transferred online using the following details:
                   </p>
                   <p>
-                    <span className="font-bold">Account Name:</span> Svi Infra Solutions Pvt. Ltd
+                    <span className="font-bold">Account Name:</span>{' '}
+                    {companyInfo.bank_account_name || 'Svi Infra Solutions Pvt. Ltd'}
                   </p>
                   <p>
-                    <span className="font-bold">Account Number:</span> 0894102000013837
+                    <span className="font-bold">Account Number:</span>{' '}
+                    {companyInfo.bank_account_no || '0894102000013837'}
                   </p>
                   <p>
-                    <span className="font-bold">Bank:</span> IDBI BANK
+                    <span className="font-bold">Bank:</span> {companyInfo.bank_name || 'IDBI BANK'}
                   </p>
                   <p>
-                    <span className="font-bold">IFSC CODE:</span> IBKL0000894
+                    <span className="font-bold">IFSC CODE:</span>{' '}
+                    {companyInfo.bank_ifsc || 'IBKL0000894'}
                   </p>
                   <p className="mt-4">
                     Your account manager is{' '}
@@ -647,7 +674,7 @@ export default function BbaPage() {
                 </div>
                 <div className="flex flex-col items-end text-right">
                   <p className="mb-2">With Best Regards</p>
-                  <p className="mb-16">For SVI Infra Solutions Pvt. Ltd</p>
+                  <p className="mb-16">For {companyInfo.company_name}</p>
                   <div className="w-48 border-t border-black pt-2 text-center">
                     <p>Director</p>
                   </div>

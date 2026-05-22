@@ -16,6 +16,9 @@ dist/
 # OpenClaude
 .openclaude/
 
+# IDE/Tool configs
+.refact/
+
 # OS files
 .DS_Store
 *.log

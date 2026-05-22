@@ -16,7 +16,8 @@
       "Bash(git add:*)",
       "Bash(npm outdated:*)",
       "Bash(npm info:*)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(git commit:*)"
     ]
   }
 }

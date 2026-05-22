@@ -10,10 +10,35 @@ import { FileSignature, RefreshCw } from 'lucide-react';
 
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function OfferLetterPage() {
   const { token } = useAdminSession();
+  const [companyInfo, setCompanyInfo] = useState({
+    company_name: 'SVI Infra Solutions Pvt. Ltd.',
+    company_address: 'A-61 Sector 65 Noida Uttar Pradesh 201309',
+    company_email: 'info@sviinfrasolutions.com',
+    company_phone: '+91 9216014579',
+    company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
+  });
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/admin/settings?key=company_info', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch settings');
+        return res.json();
+      })
+      .then((json) => {
+        if (json.value) {
+          setCompanyInfo(json.value);
+        }
+      })
+      .catch((err) => console.error('Error fetching company info:', err));
+  }, [token]);
+
   const [formData, setFormData] = useState({
     date: '',
     name: '',
@@ -300,22 +325,18 @@ export default function OfferLetterPage() {
               <div className="mb-8 flex items-start justify-between">
                 <div>
                   <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-                    SVI INFRA SOLUTIONS PVT. LTD
+                    {companyInfo.company_name}
                   </h1>
                   <p className="text-gray-700">
-                    Cell: +91 9216014579 | Email: info@sviinfrasolutions.com
+                    Cell: {companyInfo.company_phone} | Email: {companyInfo.company_email}
                   </p>
-                  <p className="text-gray-700">
-                    Website: www.sviinfrasolutions.in | www.sviinfrasolutions.com
-                  </p>
-                  <p className="text-gray-700">
-                    Office Address : A-61 Sector 65 Noida Uttar Pradesh 201309
-                  </p>
+                  <p className="text-gray-700">Website: {companyInfo.company_website}</p>
+                  <p className="text-gray-700">Office Address : {companyInfo.company_address}</p>
                 </div>
                 <div className="w-48">
                   <img
                     src="/logo.png"
-                    alt="SVI Infra Solutions"
+                    alt={companyInfo.company_name}
                     className="h-auto w-full object-contain"
                     onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
@@ -351,7 +372,7 @@ export default function OfferLetterPage() {
                   <span className="font-bold">{formData.designation || '[Designation]'}</span> in
                   the
                   <span className="font-bold"> {formData.department || '[Department]'}</span>{' '}
-                  department at SVI Infra Solutions Pvt. Ltd. You will report to{' '}
+                  department at {companyInfo.company_name}. You will report to{' '}
                   <span className="font-bold">{formData.reportingTo || '[Reporting To]'}</span> and
                   be based at
                   <span className="font-bold"> {formData.location || '[Location]'}</span>.
@@ -383,8 +404,7 @@ export default function OfferLetterPage() {
               <div className="mt-12 flex items-end justify-between">
                 <div>
                   <p className="mb-2">
-                    For{' '}
-                    <span className="font-bold text-[#1e3a8a]">SVI Infra Solutions Pvt. Ltd</span>
+                    For <span className="font-bold text-[#1e3a8a]">{companyInfo.company_name}</span>
                   </p>
                   <img
                     src="/images/signature.png"

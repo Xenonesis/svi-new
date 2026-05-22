@@ -11,7 +11,7 @@ import { Receipt, RefreshCw } from 'lucide-react';
 
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 export default function PaymentReceiptPage() {
   const { token } = useAdminSession();
@@ -34,6 +34,31 @@ export default function PaymentReceiptPage() {
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
   const [termsAccepted, setTermsAccepted] = useState(false);
+
+  const [companyInfo, setCompanyInfo] = useState({
+    company_name: 'SVI INFRA SOLUTIONS PVT. LTD',
+    company_address: 'A-61 Sector 65 Noida Uttar Pradesh 201309',
+    company_email: 'info@sviinfrasolutions.com',
+    company_phone: '+91 9216014579',
+    company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
+  });
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/admin/settings?key=company_info', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch settings');
+        return res.json();
+      })
+      .then((json) => {
+        if (json.value) {
+          setCompanyInfo(json.value);
+        }
+      })
+      .catch((err) => console.error('Error fetching company info:', err));
+  }, [token]);
 
   // Function to convert number to words (Indian numbering system)
   const numberToWords = (num: string): string => {
@@ -576,16 +601,16 @@ export default function PaymentReceiptPage() {
               <div className="border-brand-gold mb-6 flex items-start justify-between border-b-2 pb-6">
                 <div>
                   <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-                    SVI INFRA SOLUTIONS PVT. LTD
+                    {companyInfo.company_name}
                   </h1>
                   <p className="text-[13px] text-gray-700">
-                    Cell: +91 9216014579 | Email: info@sviinfrasolutions.com
+                    Cell: {companyInfo.company_phone} | Email: {companyInfo.company_email}
                   </p>
                   <p className="text-[13px] text-gray-700">
-                    Website: www.sviinfrasolutions.in | www.sviinfrasolutions.com
+                    Website: {companyInfo.company_website}
                   </p>
                   <p className="text-[13px] text-gray-700">
-                    Office Address : A-61 Sector 65 Noida Uttar Pradesh 201309
+                    Office Address : {companyInfo.company_address}
                   </p>
                 </div>
                 <div className="w-48">
@@ -735,7 +760,7 @@ export default function PaymentReceiptPage() {
                   />
                   <div className="relative z-10 w-56 border-t-2 border-black pt-2">
                     <p className="text-sm font-bold text-[#1e3a8a]">
-                      For SVI Infra Solutions Pvt. Ltd
+                      For {companyInfo.company_name}
                     </p>
                     <p className="mt-1 text-xs font-bold text-gray-700">Authorized Signatory</p>
                   </div>
