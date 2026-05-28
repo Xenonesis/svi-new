@@ -45,24 +45,30 @@ export default function AdminEmailPage() {
                 Email Center
               </h1>
               <p className="mt-1 font-sans text-sm text-gray-500 dark:text-gray-400">
-                Manage emails via Resend · Compose, send & track
+                {process.env.NODE_ENV === 'development' &&
+                process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false'
+                  ? 'Manage emails via Resend · Compose, send & track'
+                  : 'Manage administrative emails, system alerts & communications.'}
               </p>
             </div>
           </div>
 
           {/* Resend badge */}
-          <a
-            href="https://resend.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:shadow-md dark:border-gray-700 dark:bg-[#0e0e14] dark:text-gray-300 dark:hover:border-gray-600"
-          >
-            <div className="flex h-5 w-5 items-center justify-center rounded bg-black">
-              <Hash className="h-3 w-3 text-white" />
-            </div>
-            Powered by Resend
-            <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
-          </a>
+          {process.env.NODE_ENV === 'development' &&
+            process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false' && (
+              <a
+                href="https://resend.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-300 hover:shadow-md dark:border-gray-700 dark:bg-[#0e0e14] dark:text-gray-300 dark:hover:border-gray-600"
+              >
+                <div className="flex h-5 w-5 items-center justify-center rounded bg-black">
+                  <Hash className="h-3 w-3 text-white" />
+                </div>
+                Powered by Resend
+                <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
+              </a>
+            )}
         </div>
       </div>
 

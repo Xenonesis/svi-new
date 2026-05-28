@@ -24,10 +24,22 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
   const [sending, setSending] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
+  const isDev =
+    process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false';
+
   const sendTest = async () => {
     if (!testTo.trim()) return;
     setSending(true);
     setTestResult(null);
+
+    const testSubject = isDev
+      ? '✅ SVI Admin – Resend Test Email'
+      : '✅ SVI Admin – Connection Test Email';
+
+    const testHtml = isDev
+      ? `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#1a2744;margin:0 0 16px;">Resend Test Successful 🎉</h2><p style="color:#555;">This test email confirms that your Resend integration is working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`
+      : `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#1a2744;margin:0 0 16px;">Connection Test Successful 🎉</h2><p style="color:#555;">This test email confirms that your admin portal email connection is active and working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`;
+
     try {
       const token = await getToken();
       const res = await fetch('/api/admin/email', {
@@ -36,8 +48,8 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
         body: JSON.stringify({
           action: 'send',
           to: testTo,
-          subject: '✅ SVI Admin – Resend Test Email',
-          html: `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#1a2744;margin:0 0 16px;">Resend Test Successful 🎉</h2><p style="color:#555;">This test email confirms that your Resend integration is working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`,
+          subject: testSubject,
+          html: testHtml,
         }),
       });
       const data = await res.json();
@@ -58,7 +70,9 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
       label: 'API Key',
       value: process.env.RESEND_API_KEY
         ? '••••••••' + (process.env.RESEND_API_KEY?.slice(-4) || '')
-        : 're_••••••••',
+        : isDev
+          ? 're_••••••••'
+          : '••••••••',
       icon: Shield,
       status: 'configured',
     },
@@ -73,12 +87,14 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
   ];
 
   return (
-    <div className="grid grid-cols-1 gap-6 font-sans lg:grid-cols-2">
+    <div
+      className={`grid grid-cols-1 gap-6 font-sans ${isDev ? 'lg:grid-cols-2' : 'lg:grid-cols-5'}`}
+    >
       {/* Config overview */}
-      <div className="space-y-4">
+      <div className={`space-y-4 ${isDev ? '' : 'lg:col-span-3'}`}>
         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[#0e0e14]">
           <h3 className="mb-5 font-sans font-semibold text-gray-900 dark:text-white">
-            Resend Configuration
+            {isDev ? 'Resend Configuration' : 'Connection Configuration'}
           </h3>
           <div className="space-y-3">
             {configItems.map((item) => {
@@ -106,52 +122,56 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
               );
             })}
           </div>
-          <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800/50 dark:bg-amber-900/10">
-            <p className="font-sans text-xs text-amber-700 dark:text-amber-400">
-              <strong>Note:</strong> API key is stored in <code>.env.local</code> as{' '}
-              <code>RESEND_API_KEY</code>. Update it in your environment for production.
-            </p>
-          </div>
+          {isDev && (
+            <div className="mt-4 rounded-lg border border-amber-200 bg-amber-50 p-3 dark:border-amber-800/50 dark:bg-amber-900/10">
+              <p className="font-sans text-xs text-amber-700 dark:text-amber-400">
+                <strong>Note:</strong> API key is stored in <code>.env.local</code> as{' '}
+                <code>RESEND_API_KEY</code>. Update it in your environment for production.
+              </p>
+            </div>
+          )}
         </div>
 
-        {/* Quick links */}
-        <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[#0e0e14]">
-          <h3 className="mb-4 font-sans font-semibold text-gray-900 dark:text-white">
-            Resend Resources
-          </h3>
-          <div className="space-y-2">
-            {[
-              { label: 'Dashboard', url: 'https://resend.com/overview', icon: BarChart3 },
-              { label: 'Email Logs', url: 'https://resend.com/emails', icon: Inbox },
-              { label: 'Domains', url: 'https://resend.com/domains', icon: Globe },
-              { label: 'API Keys', url: 'https://resend.com/api-keys', icon: Shield },
-              { label: 'Documentation', url: 'https://resend.com/docs', icon: FileText },
-            ].map((link) => {
-              const LinkIcon = link.icon;
-              return (
-                <a
-                  key={link.label}
-                  href={link.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between rounded-lg px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5"
-                >
-                  <div className="flex items-center gap-3">
-                    <LinkIcon className="h-4 w-4 text-gray-400" />
-                    <span className="font-sans text-sm text-gray-700 dark:text-gray-300">
-                      {link.label}
-                    </span>
-                  </div>
-                  <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
-                </a>
-              );
-            })}
+        {/* Quick links - Only visible in Dev */}
+        {isDev && (
+          <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[#0e0e14]">
+            <h3 className="mb-4 font-sans font-semibold text-gray-900 dark:text-white">
+              Resend Resources
+            </h3>
+            <div className="space-y-2">
+              {[
+                { label: 'Dashboard', url: 'https://resend.com/overview', icon: BarChart3 },
+                { label: 'Email Logs', url: 'https://resend.com/emails', icon: Inbox },
+                { label: 'Domains', url: 'https://resend.com/domains', icon: Globe },
+                { label: 'API Keys', url: 'https://resend.com/api-keys', icon: Shield },
+                { label: 'Documentation', url: 'https://resend.com/docs', icon: FileText },
+              ].map((link) => {
+                const LinkIcon = link.icon;
+                return (
+                  <a
+                    key={link.label}
+                    href={link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between rounded-lg px-4 py-3 transition-colors hover:bg-gray-50 dark:hover:bg-white/5"
+                  >
+                    <div className="flex items-center gap-3">
+                      <LinkIcon className="h-4 w-4 text-gray-400" />
+                      <span className="font-sans text-sm text-gray-700 dark:text-gray-300">
+                        {link.label}
+                      </span>
+                    </div>
+                    <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
+                  </a>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
-      {/* Test email */}
-      <div>
+      {/* Test email & Limits */}
+      <div className={isDev ? 'space-y-4' : 'space-y-4 lg:col-span-2'}>
         <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[#0e0e14]">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-50 dark:bg-blue-500/10">
@@ -161,7 +181,11 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
               <h3 className="font-sans font-semibold text-gray-900 dark:text-white">
                 Send Test Email
               </h3>
-              <p className="font-sans text-xs text-gray-400">Verify your Resend setup is working</p>
+              <p className="font-sans text-xs text-gray-400">
+                {isDev
+                  ? 'Verify your Resend setup is working'
+                  : 'Verify your portal email connection'}
+              </p>
             </div>
           </div>
 
@@ -216,44 +240,46 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
           </div>
         </div>
 
-        {/* Rate limits info */}
-        <div className="mt-4 rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[#0e0e14]">
-          <h3 className="mb-4 font-sans font-semibold text-gray-900 dark:text-white">
-            Resend Free Plan Limits
-          </h3>
-          <div className="space-y-3">
-            {[
-              { label: 'Emails per month', value: '3,000', max: 3000, current: 0 },
-              { label: 'Emails per day', value: '100', max: 100, current: 0 },
-              { label: 'Domains', value: '1', max: 1, current: 1 },
-            ].map((item) => (
-              <div key={item.label}>
-                <div className="mb-1 flex justify-between font-sans text-xs text-gray-600 dark:text-gray-400">
-                  <span>{item.label}</span>
-                  <span className="font-medium text-gray-900 dark:text-white">{item.value}</span>
+        {/* Rate limits info - Only visible in Dev */}
+        {isDev && (
+          <div className="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-[#0e0e14]">
+            <h3 className="mb-4 font-sans font-semibold text-gray-900 dark:text-white">
+              Resend Free Plan Limits
+            </h3>
+            <div className="space-y-3">
+              {[
+                { label: 'Emails per month', value: '3,000', max: 3000, current: 0 },
+                { label: 'Emails per day', value: '100', max: 100, current: 0 },
+                { label: 'Domains', value: '1', max: 1, current: 1 },
+              ].map((item) => (
+                <div key={item.label}>
+                  <div className="mb-1 flex justify-between font-sans text-xs text-gray-600 dark:text-gray-400">
+                    <span>{item.label}</span>
+                    <span className="font-medium text-gray-900 dark:text-white">{item.value}</span>
+                  </div>
+                  <div className="h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
+                    <div
+                      className="bg-brand-gold h-full rounded-full"
+                      style={{ width: `${(item.current / item.max) * 100}%` }}
+                    />
+                  </div>
                 </div>
-                <div className="h-1.5 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-800">
-                  <div
-                    className="bg-brand-gold h-full rounded-full"
-                    style={{ width: `${(item.current / item.max) * 100}%` }}
-                  />
-                </div>
-              </div>
-            ))}
+              ))}
+            </div>
+            <p className="mt-4 font-sans text-xs text-gray-400">
+              Upgrade on{' '}
+              <a
+                href="https://resend.com/pricing"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-gold underline"
+              >
+                resend.com/pricing
+              </a>{' '}
+              for higher limits.
+            </p>
           </div>
-          <p className="mt-4 font-sans text-xs text-gray-400">
-            Upgrade on{' '}
-            <a
-              href="https://resend.com/pricing"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-gold underline"
-            >
-              resend.com/pricing
-            </a>{' '}
-            for higher limits.
-          </p>
-        </div>
+        )}
       </div>
     </div>
   );

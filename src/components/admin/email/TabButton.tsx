@@ -1,3 +1,4 @@
+import { motion } from 'motion/react';
 import { Tab } from './types';
 
 export function TabButton({
@@ -18,16 +19,23 @@ export function TabButton({
   return (
     <button
       onClick={onClick}
-      className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-all ${
+      className={`relative flex items-center gap-2 rounded-xl px-4 py-2.5 text-sm font-medium transition-colors ${
         active
-          ? 'bg-brand-gold/10 text-brand-gold'
-          : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200'
+          ? 'text-brand-gold font-bold'
+          : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-gray-200'
       }`}
     >
-      <Icon className="h-4 w-4" />
-      <span className="hidden sm:inline">{label}</span>
+      {active && (
+        <motion.div
+          layoutId="activeEmailTab"
+          className="bg-brand-gold/10 border-brand-gold/20 absolute inset-0 rounded-xl border"
+          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+        />
+      )}
+      <Icon className="relative z-10 h-4 w-4" />
+      <span className="relative z-10 hidden sm:inline">{label}</span>
       {badge !== undefined && badge > 0 && (
-        <span className="bg-brand-gold text-brand-navy flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold">
+        <span className="bg-brand-gold text-brand-navy relative z-10 flex h-5 min-w-5 items-center justify-center rounded-full px-1 text-[10px] font-bold">
           {badge}
         </span>
       )}

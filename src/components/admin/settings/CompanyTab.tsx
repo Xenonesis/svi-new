@@ -1,6 +1,7 @@
 'use client';
 
 import { RefreshCw } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface Company {
   company_name: string;
@@ -41,7 +42,11 @@ export function CompanyTab({
 
   return (
     <form onSubmit={handleSaveCompany} className={densitySecSpacing}>
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <h2 className="text-brand-navy mb-1 font-sans font-serif text-xl font-bold dark:text-white">
           Company Metadata Settings
         </h2>
@@ -49,9 +54,14 @@ export function CompanyTab({
           Configure SVI Infra metadata injected dynamically into payment plans, receipts and
           letters.
         </p>
-      </div>
+      </motion.div>
 
-      <div className={`grid gap-5 md:grid-cols-2 ${densityGridGap}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.05 }}
+        className={`grid gap-5 md:grid-cols-2 ${densityGridGap}`}
+      >
         <div className="md:col-span-2">
           <label className={labelClass}>Company Registered Name</label>
           <input
@@ -130,68 +140,87 @@ export function CompanyTab({
             className={inputClass}
           />
         </div>
+      </motion.div>
 
-        {/* Bank Account Details */}
-        <div className="border-gray-150 mt-4 border-t pt-4 md:col-span-2 dark:border-white/5">
-          <h3 className="text-brand-gold font-sans text-xs font-bold tracking-widest uppercase">
+      {/* Bank Account Details Grouped Container */}
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="border-brand-gold/15 bg-brand-gold/[0.015] dark:border-brand-gold/25 dark:bg-brand-gold/[0.005] rounded-2xl border p-5 shadow-[0_4px_20px_rgba(201,168,76,0.03)]"
+      >
+        <div className="mb-4">
+          <h3 className="text-brand-gold font-sans text-xs font-extrabold tracking-widest uppercase">
             Bank Account Details (For Documents)
           </h3>
+          <p className="mt-0.5 font-sans text-[10px] text-gray-400">
+            Billing details automatically added to invoices and plan layouts.
+          </p>
         </div>
 
-        <div>
-          <label className={labelClass}>Bank Account Name</label>
-          <input
-            type="text"
-            value={company.bank_account_name || ''}
-            onChange={(e) => setCompany({ ...company, bank_account_name: e.target.value })}
-            placeholder="Svi Infra Solutions Pvt. Ltd"
-            className={inputClass}
-          />
-        </div>
+        <div className={`grid gap-4 md:grid-cols-2 ${densityGridGap}`}>
+          <div>
+            <label className={labelClass}>Bank Account Name</label>
+            <input
+              type="text"
+              value={company.bank_account_name || ''}
+              onChange={(e) => setCompany({ ...company, bank_account_name: e.target.value })}
+              placeholder="Svi Infra Solutions Pvt. Ltd"
+              className={inputClass}
+            />
+          </div>
 
-        <div>
-          <label className={labelClass}>Bank Account Number</label>
-          <input
-            type="text"
-            value={company.bank_account_no || ''}
-            onChange={(e) => setCompany({ ...company, bank_account_no: e.target.value })}
-            placeholder="0894102000013837"
-            className={inputClass}
-          />
-        </div>
+          <div>
+            <label className={labelClass}>Bank Account Number</label>
+            <input
+              type="text"
+              value={company.bank_account_no || ''}
+              onChange={(e) => setCompany({ ...company, bank_account_no: e.target.value })}
+              placeholder="0894102000013837"
+              className={inputClass}
+            />
+          </div>
 
-        <div>
-          <label className={labelClass}>Bank Name</label>
-          <input
-            type="text"
-            value={company.bank_name || ''}
-            onChange={(e) => setCompany({ ...company, bank_name: e.target.value })}
-            placeholder="IDBI BANK"
-            className={inputClass}
-          />
-        </div>
+          <div>
+            <label className={labelClass}>Bank Name</label>
+            <input
+              type="text"
+              value={company.bank_name || ''}
+              onChange={(e) => setCompany({ ...company, bank_name: e.target.value })}
+              placeholder="IDBI BANK"
+              className={inputClass}
+            />
+          </div>
 
-        <div>
-          <label className={labelClass}>IFSC Code</label>
-          <input
-            type="text"
-            value={company.bank_ifsc || ''}
-            onChange={(e) => setCompany({ ...company, bank_ifsc: e.target.value })}
-            placeholder="IBKL0000894"
-            className={inputClass}
-          />
+          <div>
+            <label className={labelClass}>IFSC Code</label>
+            <input
+              type="text"
+              value={company.bank_ifsc || ''}
+              onChange={(e) => setCompany({ ...company, bank_ifsc: e.target.value })}
+              placeholder="IBKL0000894"
+              className={inputClass}
+            />
+          </div>
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex justify-end pt-4">
-        <button
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.15 }}
+        className="flex justify-end pt-4"
+      >
+        <motion.button
           type="submit"
           disabled={saveLoading}
+          whileHover={{ scale: 1.015 }}
+          whileTap={{ scale: 0.985 }}
           className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-lg px-6 py-3.5 font-sans text-xs font-bold tracking-widest uppercase shadow-md transition-all disabled:opacity-60"
         >
           {saveLoading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : 'Save Company Info'}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     </form>
   );
 }

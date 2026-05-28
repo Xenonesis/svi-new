@@ -1,6 +1,7 @@
 'use client';
 
 import { Shield, RefreshCw } from 'lucide-react';
+import { motion } from 'motion/react';
 
 interface Profile {
   fullName: string;
@@ -35,16 +36,25 @@ export function ProfileTab({
 
   return (
     <form onSubmit={handleSaveProfile} className={densitySecSpacing}>
-      <div>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+      >
         <h2 className="text-brand-navy mb-1 font-sans font-serif text-xl font-bold dark:text-white">
           Profile Information
         </h2>
         <p className="font-sans text-xs text-gray-500 dark:text-gray-400">
           Update your system details, personal records and communication accounts.
         </p>
-      </div>
+      </motion.div>
 
-      <div className={`grid gap-5 md:grid-cols-2 ${densityGridGap}`}>
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.05 }}
+        className={`grid gap-5 md:grid-cols-2 ${densityGridGap}`}
+      >
         <div className="flex items-center gap-4 py-2 md:col-span-2">
           <div className="border-brand-gold/20 bg-brand-gold/5 text-brand-gold relative flex h-16 w-16 items-center justify-center rounded-2xl border text-2xl font-bold shadow-inner">
             {profile.fullName.slice(0, 2).toUpperCase() || 'AD'}
@@ -111,17 +121,24 @@ export function ProfileTab({
             readOnly
           />
         </div>
-      </div>
+      </motion.div>
 
-      <div className="flex justify-end pt-4">
-        <button
+      <motion.div
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="flex justify-end pt-4"
+      >
+        <motion.button
           type="submit"
           disabled={saveLoading}
+          whileHover={{ scale: 1.015 }}
+          whileTap={{ scale: 0.985 }}
           className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-lg px-6 py-3.5 font-sans text-xs font-bold tracking-widest uppercase shadow-md transition-all disabled:opacity-60"
         >
           {saveLoading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : 'Save Changes'}
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
     </form>
   );
 }

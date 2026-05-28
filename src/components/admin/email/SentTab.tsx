@@ -14,7 +14,23 @@ import {
   X,
 } from 'lucide-react';
 import { SentEmail, EmailDetail } from './types';
-import { formatTime, getStatusColor, getToken } from './helpers';
+import { formatTime, getToken } from './helpers';
+
+// Stagger Animation Variants
+const containerVariants = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 10 },
+  show: { opacity: 1, y: 0, transition: { type: 'spring' as const, stiffness: 300, damping: 24 } },
+};
 
 export function SentTab() {
   const [emails, setEmails] = useState<SentEmail[]>([]);
@@ -75,10 +91,31 @@ export function SentTab() {
       e.to?.join(',').toLowerCase().includes(search.toLowerCase())
   );
 
+  const getPremiumStatusStyle = (status: string) => {
+    const s = status?.toLowerCase() || 'sent';
+    switch (s) {
+      case 'delivered':
+        return 'border-emerald-500/20 bg-gradient-to-r from-emerald-500/10 to-emerald-500/5 text-emerald-600 dark:text-emerald-400 dark:border-emerald-500/30';
+      case 'opened':
+        return 'border-violet-500/20 bg-gradient-to-r from-violet-500/10 to-violet-500/5 text-violet-600 dark:text-violet-400 dark:border-violet-500/30';
+      case 'clicked':
+        return 'border-indigo-500/20 bg-gradient-to-r from-indigo-500/10 to-indigo-500/5 text-indigo-600 dark:text-indigo-400 dark:border-indigo-500/30';
+      case 'bounced':
+      case 'failed':
+        return 'border-red-500/20 bg-gradient-to-r from-red-500/10 to-red-500/5 text-red-600 dark:text-red-400 dark:border-red-500/30';
+      case 'complained':
+        return 'border-amber-500/20 bg-gradient-to-r from-amber-500/10 to-amber-500/5 text-amber-600 dark:text-amber-400 dark:border-amber-500/30';
+      default:
+        return 'border-blue-500/20 bg-gradient-to-r from-blue-500/10 to-blue-500/5 text-blue-600 dark:text-blue-400 dark:border-blue-500/30';
+    }
+  };
+
   return (
     <div className="grid grid-cols-1 gap-6 font-sans lg:grid-cols-5">
       {/* List */}
-      <div className={`${selected ? 'lg:col-span-3' : 'lg:col-span-5'}`}>
+      <div
+        className={`${selected ? 'lg:col-span-3' : 'lg:col-span-5'} transition-all duration-300`}
+      >
         <div className="rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-[#0e0e14]">
           {/* Toolbar */}
           <div className="flex items-center justify-between gap-3 border-b border-gray-100 px-5 py-4 dark:border-gray-700">
@@ -106,7 +143,12 @@ export function SentTab() {
           {loading ? (
             <div className="flex flex-col items-center justify-center py-20">
               <Loader2 className="text-brand-gold mb-3 h-7 w-7 animate-spin" />
-              <p className="text-sm text-gray-500">Loading emails from Resend…</p>
+              <p className="text-sm text-gray-500">
+                {process.env.NODE_ENV === 'development' &&
+                process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false'
+                  ? 'Loading emails from Resend…'
+                  : 'Loading sent history…'}
+              </p>
             </div>
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
@@ -125,43 +167,55 @@ export function SentTab() {
               <p className="text-sm text-gray-500">No sent emails found</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100 dark:divide-gray-700">
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="divide-y divide-gray-100 dark:divide-gray-700"
+            >
               {filtered.map((email) => {
-                const statusStyle = getStatusColor(email.last_event);
+                const statusStyleClass = getPremiumStatusStyle(email.last_event);
+                const isCurrent = selected?.id === email.id;
                 return (
-                  <button
-                    key={email.id}
-                    onClick={() => fetchDetail(email.id)}
-                    className={`group w-full px-5 py-4 text-left transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.03] ${
-                      selected?.id === email.id ? 'bg-brand-gold/5' : ''
-                    }`}
-                  >
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                            {email.subject || '(no subject)'}
+                  <motion.div variants={itemVariants} key={email.id}>
+                    <button
+                      onClick={() => fetchDetail(email.id)}
+                      className={`group relative w-full px-5 py-4 text-left transition-all duration-300 hover:bg-gray-50/80 dark:hover:bg-white/[0.02] ${
+                        isCurrent ? 'bg-brand-gold/[0.04]' : ''
+                      }`}
+                    >
+                      {/* Active indicator bar */}
+                      {isCurrent && (
+                        <div className="bg-brand-gold absolute top-0 bottom-0 left-0 w-1" />
+                      )}
+
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-2">
+                            <p className="group-hover:text-brand-gold truncate text-sm font-semibold text-gray-900 transition-colors dark:text-white">
+                              {email.subject || '(no subject)'}
+                            </p>
+                          </div>
+                          <p className="mt-1 truncate text-xs text-gray-500">
+                            To: {email.to?.join(', ')}
                           </p>
                         </div>
-                        <p className="mt-1 truncate text-xs text-gray-500">
-                          To: {email.to?.join(', ')}
-                        </p>
+                        <div className="flex shrink-0 flex-col items-end gap-1.5">
+                          <span
+                            className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase shadow-sm transition-all duration-300 ${statusStyleClass}`}
+                          >
+                            {email.last_event || 'sent'}
+                          </span>
+                          <span className="text-[10px] text-gray-400">
+                            {formatTime(email.created_at)}
+                          </span>
+                        </div>
                       </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1.5">
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${statusStyle.bg} ${statusStyle.text}`}
-                        >
-                          {email.last_event || 'sent'}
-                        </span>
-                        <span className="text-[10px] text-gray-400">
-                          {formatTime(email.created_at)}
-                        </span>
-                      </div>
-                    </div>
-                  </button>
+                    </button>
+                  </motion.div>
                 );
               })}
-            </div>
+            </motion.div>
           )}
         </div>
       </div>
@@ -170,16 +224,20 @@ export function SentTab() {
       <AnimatePresence>
         {selected && (
           <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
+            initial={{ opacity: 0, x: 24, scale: 0.98 }}
+            animate={{ opacity: 1, x: 0, scale: 1 }}
+            exit={{ opacity: 0, x: 24, scale: 0.98 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 28 }}
             className="lg:col-span-2"
           >
-            <div className="sticky top-4 rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-[#0e0e14]">
+            <div className="sticky top-4 overflow-hidden rounded-xl border border-gray-200 bg-white/95 shadow-xl backdrop-blur-xl dark:border-gray-700 dark:bg-[#0e0e14]/95">
+              {/* Gold Top Highlight */}
+              <div className="from-brand-gold/30 via-brand-gold to-brand-gold/30 h-[3px] w-full bg-gradient-to-r" />
+
               {/* Header */}
               <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-700">
                 <div className="flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-gray-400" />
+                  <Mail className="text-brand-gold h-4 w-4" />
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">
                     Email Detail
                   </span>
@@ -201,16 +259,16 @@ export function SentTab() {
                   {/* Meta */}
                   <div className="mb-5 space-y-3">
                     <div>
-                      <p className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                      <p className="mb-0.5 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                         Subject
                       </p>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                      <p className="text-sm font-bold text-gray-900 dark:text-white">
                         {selected.subject}
                       </p>
                     </div>
                     <div className="grid grid-cols-2 gap-3">
                       <div>
-                        <p className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                        <p className="mb-0.5 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                           From
                         </p>
                         <p className="truncate text-xs text-gray-600 dark:text-gray-300">
@@ -218,25 +276,25 @@ export function SentTab() {
                         </p>
                       </div>
                       <div>
-                        <p className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                        <p className="mb-0.5 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                           Status
                         </p>
                         <span
-                          className={`inline-block rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${getStatusColor(selected.last_event).bg} ${getStatusColor(selected.last_event).text}`}
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[9px] font-extrabold tracking-wider uppercase shadow-sm ${getPremiumStatusStyle(selected.last_event)}`}
                         >
                           {selected.last_event || 'sent'}
                         </span>
                       </div>
                     </div>
                     <div>
-                      <p className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                      <p className="mb-0.5 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                         To
                       </p>
                       <div className="flex flex-wrap gap-1">
                         {selected.to?.map((addr) => (
                           <span
                             key={addr}
-                            className="rounded bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                            className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                           >
                             {addr}
                           </span>
@@ -244,7 +302,7 @@ export function SentTab() {
                       </div>
                     </div>
                     <div>
-                      <p className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                      <p className="mb-0.5 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                         Email ID
                       </p>
                       <div className="flex items-center gap-2">
@@ -264,7 +322,7 @@ export function SentTab() {
                       </div>
                     </div>
                     <div>
-                      <p className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                      <p className="mb-0.5 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                         Sent
                       </p>
                       <p className="text-xs text-gray-600 dark:text-gray-300">
@@ -276,11 +334,11 @@ export function SentTab() {
                   {/* Body preview */}
                   {selected.html && (
                     <div>
-                      <p className="mb-2 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                      <p className="mb-2 text-[9px] font-extrabold tracking-widest text-gray-400 uppercase">
                         Preview
                       </p>
                       <div
-                        className="max-h-80 overflow-y-auto rounded-lg border border-gray-100 bg-gray-50 p-3 text-xs dark:border-gray-700 dark:bg-gray-900/30"
+                        className="max-h-80 overflow-y-auto rounded-lg border border-gray-100 bg-gray-50/50 p-3 text-xs dark:border-gray-700 dark:bg-gray-900/30"
                         dangerouslySetInnerHTML={{ __html: selected.html }}
                       />
                     </div>

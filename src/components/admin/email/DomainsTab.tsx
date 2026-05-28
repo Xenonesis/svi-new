@@ -42,19 +42,25 @@ export function DomainsTab() {
               Verified Domains
             </h3>
             <p className="mt-1 font-sans text-sm text-gray-500">
-              Domains verified in your Resend account for sending emails.
+              {process.env.NODE_ENV === 'development' &&
+              process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false'
+                ? 'Domains verified in your Resend account for sending emails.'
+                : 'Domains verified in your system account for sending emails.'}
             </p>
           </div>
           <div className="flex items-center gap-2">
-            <a
-              href="https://resend.com/domains"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 font-sans text-xs font-medium text-gray-600 transition-all hover:border-gray-300 dark:border-gray-600 dark:text-gray-400"
-            >
-              <ExternalLink className="h-3.5 w-3.5" />
-              Resend Dashboard
-            </a>
+            {process.env.NODE_ENV === 'development' &&
+              process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false' && (
+                <a
+                  href="https://resend.com/domains"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 font-sans text-xs font-medium text-gray-600 transition-all hover:border-gray-300 dark:border-gray-600 dark:text-gray-400"
+                >
+                  <ExternalLink className="h-3.5 w-3.5" />
+                  Resend Dashboard
+                </a>
+              )}
             <button
               onClick={fetchDomains}
               disabled={loading}
@@ -83,17 +89,24 @@ export function DomainsTab() {
         <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 py-16 text-center font-sans dark:border-gray-700">
           <Globe className="mb-3 h-8 w-8 text-gray-300" />
           <p className="font-sans text-sm font-medium text-gray-500">No domains found</p>
-          <p className="mt-1 font-sans text-xs text-gray-400">
-            Add a domain in your{' '}
-            <a
-              href="https://resend.com/domains"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-brand-gold underline"
-            >
-              Resend Dashboard
-            </a>
-          </p>
+          {process.env.NODE_ENV === 'development' &&
+          process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false' ? (
+            <p className="mt-1 font-sans text-xs text-gray-400">
+              Add a domain in your{' '}
+              <a
+                href="https://resend.com/domains"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-brand-gold underline"
+              >
+                Resend Dashboard
+              </a>
+            </p>
+          ) : (
+            <p className="mt-1 font-sans text-xs text-gray-400">
+              Contact your system administrator to add a domain.
+            </p>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-4 font-sans sm:grid-cols-2 lg:grid-cols-3">

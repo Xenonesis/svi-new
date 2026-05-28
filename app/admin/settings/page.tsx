@@ -427,13 +427,20 @@ export default function AdminSettings() {
                     <button
                       key={tab.id}
                       onClick={() => setActiveTab(tab.id)}
-                      className={`group flex cursor-pointer items-center justify-between rounded-xl px-4 py-3.5 font-sans whitespace-nowrap transition-all duration-300 md:w-full ${
+                      className={`group relative flex cursor-pointer items-center justify-between rounded-xl px-4 py-3.5 font-sans whitespace-nowrap transition-colors duration-300 md:w-full ${
                         isActive
-                          ? 'bg-brand-gold text-brand-navy shadow-brand-gold/15 font-sans font-bold shadow-md'
-                          : 'font-sans font-semibold text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5'
+                          ? 'text-brand-navy shadow-brand-gold/15 font-bold shadow-sm'
+                          : 'hover:text-brand-gold font-semibold text-gray-600 dark:text-gray-400 dark:hover:text-white'
                       }`}
                     >
-                      <div className="flex items-center gap-3">
+                      {isActive && (
+                        <motion.div
+                          layoutId="activeSettingsTab"
+                          className="bg-brand-gold absolute inset-0 rounded-xl"
+                          transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                        />
+                      )}
+                      <div className="relative z-10 flex items-center gap-3">
                         <tab.icon
                           className={`h-4.5 w-4.5 transition-colors ${
                             isActive
@@ -441,10 +448,10 @@ export default function AdminSettings() {
                               : 'group-hover:text-brand-gold text-gray-500 dark:text-gray-500'
                           }`}
                         />
-                        <span className="font-sans text-sm">{tab.label}</span>
+                        <span className="text-sm">{tab.label}</span>
                       </div>
                       <ChevronRight
-                        className={`hidden h-3.5 w-3.5 transition-transform duration-300 md:block ${
+                        className={`relative z-10 hidden h-3.5 w-3.5 transition-transform duration-300 md:block ${
                           isActive
                             ? 'text-brand-navy translate-x-0.5'
                             : 'text-gray-400 opacity-0 group-hover:opacity-100 dark:text-gray-600'
