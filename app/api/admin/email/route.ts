@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
         subject,
         html: html || undefined,
         text: text || undefined,
-        reply_to: replyTo || undefined,
+        replyTo: replyTo || undefined,
         cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
         bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
       });

@@ -275,9 +275,9 @@ export default function Payment() {
                             <text
                               x="2"
                               y="16"
-                              font-family="sans-serif"
-                              font-weight="900"
-                              font-size="16"
+                              fontFamily="sans-serif"
+                              fontWeight="900"
+                              fontSize="16"
                               fill="#1b365d"
                             >
                               BHIM
@@ -290,11 +290,11 @@ export default function Payment() {
                           <text
                             x="2"
                             y="24"
-                            font-family="sans-serif"
-                            font-weight="700"
-                            font-size="3.5"
+                            fontFamily="sans-serif"
+                            fontWeight="700"
+                            fontSize="3.5"
                             fill="#6B7280"
-                            letter-spacing="0.3"
+                            letterSpacing="0.3"
                           >
                             SMART INTERFACE FOR MONEY
                           </text>
@@ -309,9 +309,9 @@ export default function Payment() {
                             <text
                               x="2"
                               y="16"
-                              font-family="sans-serif"
-                              font-weight="900"
-                              font-size="16"
+                              fontFamily="sans-serif"
+                              fontWeight="900"
+                              fontSize="16"
                               fill="#1E293B"
                             >
                               UPI
@@ -325,11 +325,11 @@ export default function Payment() {
                           <text
                             x="2"
                             y="24"
-                            font-family="sans-serif"
-                            font-weight="700"
-                            font-size="4"
+                            fontFamily="sans-serif"
+                            fontWeight="700"
+                            fontSize="4"
                             fill="#6B7280"
-                            letter-spacing="0.1"
+                            letterSpacing="0.1"
                           >
                             UNIFIED PAYMENTS INTERFACE
                           </text>
