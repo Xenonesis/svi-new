@@ -5,10 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle, Upload, X } from 'lucide-react';
 import Captcha from '@/src/components/Captcha';
 
-const PROJECTS = [
-  { value: 'shyam-aangan-phase-1', label: 'Shyam Aangan Phase 1' },
-  { value: 'shyam-aangan-farm-house', label: 'Shyam Aangan Farm House' },
-];
+// Projects are fetched dynamically from the database
 
 const PROPERTY_SIZES = [
   { value: '50-100', label: '50 to 100 (Sq.Yrd)' },
@@ -108,9 +105,12 @@ export default function Registration() {
   const [captchaValid, setCaptchaValid] = useState(false);
   const [captchaError, setCaptchaError] = useState('');
   const [advisors, setAdvisors] = useState<string[]>([]);
+  const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
 
   useEffect(() => {
     let active = true;
+
+    // Fetch advisors
     fetch('/api/registration')
       .then((res) => res.json())
       .then((data) => {
@@ -121,6 +121,23 @@ export default function Registration() {
       .catch((err) => {
         console.error('Failed to fetch advisors list:', err);
       });
+
+    // Fetch projects from database
+    fetch('/api/properties')
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.properties) {
+          const mapped = data.properties.map((p: any) => ({
+            value: p.slug,
+            label: p.name,
+          }));
+          setProjects(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch projects list:', err);
+      });
+
     return () => {
       active = false;
     };
@@ -478,7 +495,7 @@ export default function Registration() {
               {renderInput('address', 'Address', 'text', 'Enter full address')}
               {renderSelect('advisorName', 'Advisor Name', advisors, 'Select advisor')}
 
-              {renderSelect('project', 'Select Projects', PROJECTS, 'Select project')}
+              {renderSelect('project', 'Select Projects', projects, 'Select project')}
               {renderSelect('propertySize', 'Property Size', PROPERTY_SIZES, 'Select size')}
 
               {renderSelect('propertyType', 'Property Type', PROPERTY_TYPES, 'Select type')}

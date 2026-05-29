@@ -21,6 +21,7 @@ import { supabase } from '@/src/lib/supabase/client';
 
 import { ProfileTab } from '@/src/components/admin/settings/ProfileTab';
 import { CompanyTab } from '@/src/components/admin/settings/CompanyTab';
+import { PropertiesTab } from '@/src/components/admin/settings/PropertiesTab';
 import { NotificationsTab } from '@/src/components/admin/settings/NotificationsTab';
 import { SecurityTab } from '@/src/components/admin/settings/SecurityTab';
 import { AppearanceTab, ACCENTS } from '@/src/components/admin/settings/AppearanceTab';
@@ -29,6 +30,7 @@ import { getUserAgentInfo } from '@/src/components/admin/settings/helpers';
 const TABS = [
   { id: 'profile', label: 'Profile Settings', icon: User },
   { id: 'company', label: 'Company Info', icon: Building2 },
+  { id: 'properties', label: 'Property List', icon: Building2 },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Paintbrush },
@@ -587,6 +589,11 @@ export default function AdminSettings() {
                         uiDensity={uiDensity}
                         handleSelectDensity={handleSelectDensity}
                       />
+                    )}
+
+                    {/* TAB F: PROPERTIES SETTINGS */}
+                    {activeTab === 'properties' && (
+                      <PropertiesTab token={token} isCompact={isCompact} showToast={showToast} />
                     )}
                   </motion.div>
                 </AnimatePresence>

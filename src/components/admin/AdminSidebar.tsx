@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  Building2,
   Calculator,
   CheckSquare,
   ChevronLeft,
@@ -41,6 +42,7 @@ const documentItems = [
 const managementItems = [
   { name: 'Registrations', path: '/admin/registrations', icon: ClipboardList },
   { name: 'Attendance', path: '/admin/attendance', icon: CheckSquare },
+  { name: 'Properties', path: '/admin/properties', icon: Building2 },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
   { name: 'Email Center', path: '/admin/email', icon: Mail },
   { name: 'Lottery Manager', path: '/admin/lottery', icon: Gift },

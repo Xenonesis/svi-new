@@ -46,6 +46,26 @@ const PROPERTY_LABELS: Record<string, string> = {
   investment: 'Investment / General',
 };
 
+const renderPropertyInterest = (
+  interest: string | null,
+  properties: Array<{ name: string; slug: string }> = []
+) => {
+  if (!interest) return '—';
+  return interest
+    .split(',')
+    .map((item) => {
+      const trimmed = item.trim();
+      const found = properties.find((p) => p.slug === trimmed);
+      if (found) return found.name;
+      if (PROPERTY_LABELS[trimmed]) return PROPERTY_LABELS[trimmed];
+      return trimmed
+        .split('-')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(' ');
+    })
+    .join(', ');
+};
+
 function Badge({ role }: { role: string }) {
   return (
     <span
@@ -60,7 +80,7 @@ function Badge({ role }: { role: string }) {
       ) : (
         <Users className="h-2.5 w-2.5 text-gray-500 transition-colors duration-300 dark:text-gray-400" />
       )}
-      {role}
+      {role === 'admin' ? 'Admin' : 'User'}
     </span>
   );
 }
@@ -70,9 +90,10 @@ interface CreateUserModalProps {
   onClose: () => void;
   onSuccess: () => void;
   token: string;
+  properties: Array<{ name: string; slug: string }>;
 }
 
-function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
+function CreateUserModal({ onClose, onSuccess, token, properties }: CreateUserModalProps) {
   const [form, setForm] = useState({
     full_name: '',
     email: '',
@@ -82,6 +103,23 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
     property_interest: '',
     notes: '',
   });
+
+  const displayProperties =
+    properties.length > 0
+      ? properties
+      : Object.entries(PROPERTY_LABELS).map(([slug, name]) => ({ name, slug }));
+
+  const selectedProperties = form.property_interest ? form.property_interest.split(',') : [];
+
+  const handlePropertyToggle = (slug: string) => {
+    let updated;
+    if (selectedProperties.includes(slug)) {
+      updated = selectedProperties.filter((s) => s !== slug);
+    } else {
+      updated = [...selectedProperties, slug];
+    }
+    setForm((p) => ({ ...p, property_interest: updated.join(',') }));
+  };
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -144,7 +182,7 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
               <Plus className="text-brand-gold h-4 w-4" />
             </div>
             <h2 className="text-brand-navy font-serif text-lg font-semibold tracking-tight transition-colors duration-300 dark:text-white">
-              Create Client User
+              Create User
             </h2>
           </div>
           <button
@@ -245,24 +283,28 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
               </div>
             </div>
 
-            <div>
-              <label className={labelCls}>Property Interest</label>
-              <div className="relative">
-                <Building2 className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
-                <select
-                  name="property_interest"
-                  value={form.property_interest}
-                  onChange={handleChange}
-                  className={`${inputCls} appearance-none rounded-none pr-8 pl-9`}
-                >
-                  <option value="">Select option</option>
-                  <option value="residential_3bhk">3BHK Residential</option>
-                  <option value="residential_4bhk">4BHK Residential</option>
-                  <option value="residential_plot">Residential Plot</option>
-                  <option value="commercial">Commercial Property</option>
-                  <option value="investment">Investment / General</option>
-                </select>
+            <div className="col-span-2">
+              <label className={labelCls}>Property Interest (Select Multiple)</label>
+              <div className="grid max-h-36 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-gray-200 bg-gray-50/50 p-3 dark:border-white/10 dark:bg-[#111118]">
+                {displayProperties.map((p) => {
+                  const isChecked = selectedProperties.includes(p.slug);
+                  return (
+                    <label
+                      key={p.slug}
+                      className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1 hover:bg-gray-100 dark:hover:bg-white/5"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handlePropertyToggle(p.slug)}
+                        className="text-brand-gold focus:ring-brand-gold border-gray-250 h-4 w-4 rounded dark:border-gray-700"
+                      />
+                      <span className="truncate text-xs text-gray-700 dark:text-gray-300">
+                        {p.name}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
@@ -316,9 +358,10 @@ interface EditUserModalProps {
   onClose: () => void;
   onSuccess: () => void;
   token: string;
+  properties: Array<{ name: string; slug: string }>;
 }
 
-function EditUserModal({ user, onClose, onSuccess, token }: EditUserModalProps) {
+function EditUserModal({ user, onClose, onSuccess, token, properties }: EditUserModalProps) {
   const [form, setForm] = useState({
     full_name: user.full_name || '',
     real_email: user.real_email || '',
@@ -327,6 +370,23 @@ function EditUserModal({ user, onClose, onSuccess, token }: EditUserModalProps) 
     notes: user.notes || '',
     role: user.role || 'client',
   });
+
+  const displayProperties =
+    properties.length > 0
+      ? properties
+      : Object.entries(PROPERTY_LABELS).map(([slug, name]) => ({ name, slug }));
+
+  const selectedProperties = form.property_interest ? form.property_interest.split(',') : [];
+
+  const handlePropertyToggle = (slug: string) => {
+    let updated;
+    if (selectedProperties.includes(slug)) {
+      updated = selectedProperties.filter((s) => s !== slug);
+    } else {
+      updated = [...selectedProperties, slug];
+    }
+    setForm((p) => ({ ...p, property_interest: updated.join(',') }));
+  };
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -447,24 +507,28 @@ function EditUserModal({ user, onClose, onSuccess, token }: EditUserModalProps) 
               </div>
             </div>
 
-            <div className="col-span-2 sm:col-span-1">
-              <label className={labelCls}>Property Interest</label>
-              <div className="relative">
-                <Building2 className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
-                <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
-                <select
-                  name="property_interest"
-                  value={form.property_interest}
-                  onChange={handleChange}
-                  className={`${inputCls} appearance-none rounded-none pr-8 pl-9`}
-                >
-                  <option value="">Select option</option>
-                  <option value="residential_3bhk">3BHK Residential</option>
-                  <option value="residential_4bhk">4BHK Residential</option>
-                  <option value="residential_plot">Residential Plot</option>
-                  <option value="commercial">Commercial Property</option>
-                  <option value="investment">Investment / General</option>
-                </select>
+            <div className="col-span-2">
+              <label className={labelCls}>Property Interest (Select Multiple)</label>
+              <div className="grid max-h-36 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-gray-200 bg-gray-50/50 p-3 dark:border-white/10 dark:bg-[#111118]">
+                {displayProperties.map((p) => {
+                  const isChecked = selectedProperties.includes(p.slug);
+                  return (
+                    <label
+                      key={p.slug}
+                      className="flex cursor-pointer items-center gap-2.5 rounded-md px-2 py-1 hover:bg-gray-100 dark:hover:bg-white/5"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isChecked}
+                        onChange={() => handlePropertyToggle(p.slug)}
+                        className="text-brand-gold focus:ring-brand-gold border-gray-250 h-4 w-4 rounded dark:border-gray-700"
+                      />
+                      <span className="truncate text-xs text-gray-700 dark:text-gray-300">
+                        {p.name}
+                      </span>
+                    </label>
+                  );
+                })}
               </div>
             </div>
 
@@ -479,7 +543,7 @@ function EditUserModal({ user, onClose, onSuccess, token }: EditUserModalProps) 
                   onChange={handleChange}
                   className={`${inputCls} appearance-none rounded-none pr-8 pl-9`}
                 >
-                  <option value="client">Client</option>
+                  <option value="client">User</option>
                   <option value="admin">Admin</option>
                 </select>
               </div>
@@ -611,6 +675,7 @@ export default function AdminDashboard() {
       user: string;
     }>
   >([]);
+  const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -642,16 +707,7 @@ export default function AdminDashboard() {
         .eq('id', session.user.id)
         .single();
 
-      // DEBUG: Log what we're getting
-      console.log('Dashboard Auth Check:', {
-        userId: session.user.id,
-        profile,
-        error,
-        roleCheck: profile?.role !== 'admin',
-      });
-
       if (error || !profile || profile?.role !== 'admin') {
-        console.error('Authorization failed:', { error, profile });
         router.replace('/admin');
         return;
       }
@@ -661,12 +717,16 @@ export default function AdminDashboard() {
       setCurrentAdminId(session.user.id);
       setAdminName(profile?.full_name || session.user.email || 'Admin');
 
-      // Fetch all dashboard data in parallel instead of sequentially
       const authHeaders = { Authorization: `Bearer ${tkn}` };
-      const [usersRes, analyticsRes, activitiesRes] = await Promise.all([
+      const [usersRes, analyticsRes, activitiesRes, propertiesRes] = await Promise.all([
         fetch('/api/admin/users', { headers: authHeaders }),
         fetch('/api/admin/analytics', { headers: authHeaders }),
         fetch('/api/admin/activities?limit=10', { headers: authHeaders }),
+        supabase
+          .from('properties')
+          .select('name, slug')
+          .eq('active', true)
+          .order('name', { ascending: true }),
       ]);
 
       if (usersRes.ok) {
@@ -679,6 +739,9 @@ export default function AdminDashboard() {
       if (activitiesRes.ok) {
         const data = await activitiesRes.json();
         setActivities(data.activities || []);
+      }
+      if (propertiesRes && !propertiesRes.error && propertiesRes.data) {
+        setProperties(propertiesRes.data);
       }
       setLoading(false);
     });
@@ -753,7 +816,7 @@ export default function AdminDashboard() {
               </span>
             </h1>
             <p className="text-xs tracking-wide text-gray-600 transition-colors duration-300 dark:text-gray-400">
-              Manage authorized client accounts and monitor administrative access permissions.
+              Manage authorized user accounts and monitor administrative access permissions.
             </p>
           </div>
         </div>
@@ -773,7 +836,7 @@ export default function AdminDashboard() {
               trend: analytics?.trends?.userGrowth || '+0%',
             },
             {
-              label: 'Client Profiles',
+              label: 'User Profiles',
               value: clientCount,
               icon: Building2,
               bgCls:
@@ -877,7 +940,7 @@ export default function AdminDashboard() {
 
           {loading ? (
             <div className="flex items-center justify-center py-24 font-sans text-gray-500 transition-colors duration-300 dark:text-gray-400">
-              <RefreshCw className="text-brand-gold mr-3 h-5 w-5 animate-spin" /> Loading client
+              <RefreshCw className="text-brand-gold mr-3 h-5 w-5 animate-spin" /> Loading user
               database...
             </div>
           ) : filtered.length === 0 ? (
@@ -951,7 +1014,7 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4.5 text-gray-700 transition-colors duration-300 dark:text-gray-300">
                         {u.property_interest ? (
                           <span className="text-brand-gold/90 font-semibold">
-                            {PROPERTY_LABELS[u.property_interest] || u.property_interest}
+                            {renderPropertyInterest(u.property_interest, properties)}
                           </span>
                         ) : (
                           <span className="text-gray-400 transition-colors duration-300 dark:text-gray-600">
@@ -999,6 +1062,7 @@ export default function AdminDashboard() {
         {showCreate && (
           <CreateUserModal
             token={token}
+            properties={properties}
             onClose={() => setShowCreate(false)}
             onSuccess={() => {
               fetchUsers(token);
@@ -1010,6 +1074,7 @@ export default function AdminDashboard() {
           <EditUserModal
             user={editTarget}
             token={token}
+            properties={properties}
             onClose={() => setEditTarget(null)}
             onSuccess={() => {
               fetchUsers(token);

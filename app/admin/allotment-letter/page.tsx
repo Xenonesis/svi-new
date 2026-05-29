@@ -12,9 +12,113 @@ import { FileText, RefreshCw } from 'lucide-react';
 import html2canvas from 'html2canvas-pro';
 import jsPDF from 'jspdf';
 import { useEffect, useState } from 'react';
+import { supabase } from '@/src/lib/supabase/client';
 
 export default function AllotmentLetterPage() {
   const { token } = useAdminSession();
+
+  interface Advisor {
+    full_name: string;
+    phone: string | null;
+    email: string | null;
+  }
+
+  const [advisors, setAdvisors] = useState<Advisor[]>([]);
+  const [isCustomAdvisor, setIsCustomAdvisor] = useState(false);
+  const [projects, setProjects] = useState<{ value: string; label: string }[]>([
+    { value: 'Shyam Aangan', label: 'Shyam Aangan' },
+    { value: 'Shyam Aangan Farm House', label: 'Shyam Aangan Farm House' },
+  ]);
+
+  useEffect(() => {
+    async function loadProjects() {
+      try {
+        const { data, error } = await supabase
+          .from('properties')
+          .select('name')
+          .eq('active', true)
+          .order('name', { ascending: true });
+
+        if (error) throw error;
+        if (data && data.length > 0) {
+          setProjects(
+            data.map((p) => ({
+              value: p.name,
+              label: p.name,
+            }))
+          );
+        }
+      } catch (err) {
+        console.error('Error loading projects:', err);
+      }
+    }
+    loadProjects();
+  }, []);
+
+  useEffect(() => {
+    async function loadAdvisors() {
+      try {
+        const { data: settingData } = await supabase
+          .from('portal_settings')
+          .select('value')
+          .eq('key', 'active_advisors')
+          .maybeSingle();
+
+        let advisorIds: string[] = [];
+        if (settingData?.value?.ids && Array.isArray(settingData.value.ids)) {
+          advisorIds = settingData.value.ids;
+        }
+
+        let query = supabase
+          .from('profiles')
+          .select('full_name, phone, email')
+          .order('full_name', { ascending: true });
+
+        if (advisorIds.length > 0) {
+          query = query.in('id', advisorIds);
+        }
+
+        const { data: profiles, error } = await query;
+        if (error) throw error;
+
+        if (profiles) {
+          setAdvisors(
+            profiles.map((p) => ({
+              full_name: p.full_name,
+              phone: p.phone || '',
+              email: p.email || '',
+            }))
+          );
+        }
+      } catch (err) {
+        console.error('Error loading advisors:', err);
+      }
+    }
+    loadAdvisors();
+  }, []);
+
+  const handleAdvisorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const name = e.target.value;
+    if (name === 'custom') {
+      setIsCustomAdvisor(true);
+      setFormData((prev) => ({
+        ...prev,
+        advisorName: '',
+        advisorNumber: '',
+        advisorEmail: '',
+      }));
+    } else {
+      setIsCustomAdvisor(false);
+      const selected = advisors.find((adv) => adv.full_name === name);
+      setFormData((prev) => ({
+        ...prev,
+        advisorName: name,
+        advisorNumber: selected?.phone || '',
+        advisorEmail: selected?.email || '',
+      }));
+    }
+  };
+
   const [companyInfo, setCompanyInfo] = useState({
     company_name: 'SVI Infra Solutions Pvt. Ltd.',
     company_address: 'A-61 Sector 65 Noida Uttar Pradesh 201309',
@@ -59,6 +163,7 @@ export default function AllotmentLetterPage() {
     secondPaymentDays: '15',
     advisorName: '',
     advisorNumber: '',
+    advisorEmail: '',
   });
 
   const [preview, setPreview] = useState(false);
@@ -75,7 +180,7 @@ export default function AllotmentLetterPage() {
   };
 
   const totalCost = calculateTotalCost();
-  const initialPayment = totalCost * 0.1;
+  const initialPayment = totalCost * 0.05;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -338,10 +443,7 @@ export default function AllotmentLetterPage() {
                 name="projectName"
                 value={formData.projectName}
                 onChange={handleChange}
-                options={[
-                  { value: 'Shyam Aangan', label: 'Shyam Aangan' },
-                  { value: 'Shyam Aangan Farm House', label: 'Shyam Aangan Farm House' },
-                ]}
+                options={projects}
               />
 
               <FormField
@@ -409,19 +511,52 @@ export default function AllotmentLetterPage() {
                 ]}
               />
 
-              <FormField
-                label="Advisor Name"
-                name="advisorName"
-                value={formData.advisorName}
-                onChange={handleChange}
-                required
-              />
+              {isCustomAdvisor ? (
+                <div className="relative">
+                  <FormField
+                    label="Advisor Name"
+                    name="advisorName"
+                    value={formData.advisorName}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setIsCustomAdvisor(false)}
+                    className="text-brand-gold absolute top-0 right-0 text-[10px] font-bold tracking-wider uppercase hover:underline"
+                  >
+                    Use Dropdown
+                  </button>
+                </div>
+              ) : (
+                <FormSelect
+                  label="Advisor Name"
+                  name="advisorName"
+                  value={formData.advisorName}
+                  onChange={handleAdvisorChange}
+                  options={[
+                    { value: '', label: 'Select Advisor' },
+                    ...advisors.map((adv) => ({ value: adv.full_name, label: adv.full_name })),
+                    { value: 'custom', label: 'Other / Custom...' },
+                  ]}
+                />
+              )}
               <FormField
                 label="Advisor Number"
                 name="advisorNumber"
                 value={formData.advisorNumber}
                 onChange={handleChange}
                 required
+                disabled={!isCustomAdvisor}
+              />
+              <FormField
+                label="Advisor Email"
+                name="advisorEmail"
+                type="email"
+                value={formData.advisorEmail}
+                onChange={handleChange}
+                required
+                disabled={!isCustomAdvisor}
               />
             </div>
 
@@ -440,7 +575,7 @@ export default function AllotmentLetterPage() {
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-                  Initial Payment (10%)
+                  Booking Payment (5%)
                 </p>
                 <p className="text-brand-gold text-lg font-bold">
                   ₹
@@ -654,45 +789,69 @@ export default function AllotmentLetterPage() {
                       </tr>
                     </thead>
                     <tbody className="text-xs">
-                      {/* Booking (10%) */}
+                      {/* First Instalment (5%) */}
                       <tr>
                         <td className="border border-gray-400 p-2 font-bold">1</td>
                         <td className="border border-gray-400 p-2 font-bold">
-                          {formData.bookingDate
-                            ? formData.bookingDate.split('-').reverse().join('-')
-                            : '-'}
+                          {(() => {
+                            if (!formData.bookingDate) return '-';
+                            const d = new Date(formData.bookingDate);
+                            d.setDate(d.getDate() + 3);
+                            return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                          })()}
                         </td>
-                        <td className="border border-gray-400 p-2 font-bold">On Booking</td>
-                        <td className="border border-gray-400 p-2">10%</td>
                         <td className="border border-gray-400 p-2 font-bold">
-                          Rs. {initialPayment.toFixed(2)}
+                          On Booking (First 3 Days)
+                        </td>
+                        <td className="border border-gray-400 p-2">5%</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          Rs. {(totalCost * 0.05).toFixed(2)}
                         </td>
                       </tr>
-                      {/* Second Payment (20%) */}
+                      {/* Second Instalment (5%) */}
                       <tr>
                         <td className="border border-gray-400 p-2 font-bold">2</td>
                         <td className="border border-gray-400 p-2 font-bold">
                           {(() => {
                             if (!formData.bookingDate) return '-';
                             const d = new Date(formData.bookingDate);
-                            d.setDate(d.getDate() + parseInt(formData.secondPaymentDays || '15'));
+                            d.setDate(d.getDate() + 10);
                             return d.toISOString().split('T')[0].split('-').reverse().join('-');
                           })()}
                         </td>
                         <td className="border border-gray-400 p-2 font-bold">
-                          {formData.secondPaymentDays} days
+                          Second Instalment (Next 7 Days)
                         </td>
-                        <td className="border border-gray-400 p-2">20%</td>
+                        <td className="border border-gray-400 p-2">5%</td>
                         <td className="border border-gray-400 p-2 font-bold">
-                          Rs. {(totalCost * 0.2).toFixed(2)}
+                          Rs. {(totalCost * 0.05).toFixed(2)}
                         </td>
                       </tr>
-                      {/* EMIs */}
+                      {/* Third Instalment (30%) */}
+                      <tr>
+                        <td className="border border-gray-400 p-2 font-bold">3</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          {(() => {
+                            if (!formData.bookingDate) return '-';
+                            const d = new Date(formData.bookingDate);
+                            d.setDate(d.getDate() + 25);
+                            return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                          })()}
+                        </td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          Third Instalment (Next 15 Days)
+                        </td>
+                        <td className="border border-gray-400 p-2">30%</td>
+                        <td className="border border-gray-400 p-2 font-bold">
+                          Rs. {(totalCost * 0.3).toFixed(2)}
+                        </td>
+                      </tr>
+                      {/* EMIs (Remaining 60%) */}
                       {(() => {
-                        const remainingCost = totalCost * 0.7;
+                        const remainingCost = totalCost * 0.6;
                         const months = parseInt(formData.paymentPlan || '12');
                         const emiAmount = remainingCost / months;
-                        const emiPercent = 70 / months;
+                        const emiPercent = 60 / months;
 
                         return Array.from({ length: months }).map((_, i) => {
                           let emiDate = '-';
@@ -704,7 +863,7 @@ export default function AllotmentLetterPage() {
 
                           return (
                             <tr key={i}>
-                              <td className="border border-gray-400 p-2 font-bold">{i + 3}</td>
+                              <td className="border border-gray-400 p-2 font-bold">{i + 4}</td>
                               <td className="border border-gray-400 p-2 font-bold">{emiDate}</td>
                               <td className="border border-gray-400 p-2 font-bold">{i + 1} EMI</td>
                               <td className="border border-gray-400 p-2">
@@ -724,31 +883,42 @@ export default function AllotmentLetterPage() {
                 {/* Terms Box */}
                 <div className="mb-8 rounded-lg border-l-4 border-[#00b0f0] bg-[#f0f8ff] p-4 text-xs text-gray-800 italic">
                   <p className="mb-2">
-                    Please transfer the initial amount of 10% (Rs. {initialPayment.toFixed(2)}) by{' '}
-                    {formData.bookingDate
-                      ? formData.bookingDate.split('-').reverse().join('-')
-                      : '[Date]'}{' '}
-                    to confirm allotment under {formData.projectName}, and the second instalment of
-                    20% (Rs. {(totalCost * 0.2).toFixed(2)}) by{' '}
+                    Please transfer the initial amount of 5% (Rs. {(totalCost * 0.05).toFixed(2)})
+                    within the first 3 days (by{' '}
                     {(() => {
                       if (!formData.bookingDate) return '[Date]';
                       const d = new Date(formData.bookingDate);
-                      d.setDate(d.getDate() + parseInt(formData.secondPaymentDays || '15'));
+                      d.setDate(d.getDate() + 3);
                       return d.toISOString().split('T')[0].split('-').reverse().join('-');
                     })()}
-                    .
+                    ) to confirm allotment under {formData.projectName}.
                   </p>
                   <p className="mb-2">
-                    The remaining 70% will be paid as per the selected payment plan and is scheduled
-                    to complete accordingly.
+                    The second instalment of 5% (Rs. {(totalCost * 0.05).toFixed(2)}) must be paid
+                    in the next 7 days (by{' '}
+                    {(() => {
+                      if (!formData.bookingDate) return '[Date]';
+                      const d = new Date(formData.bookingDate);
+                      d.setDate(d.getDate() + 10);
+                      return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                    })()}
+                    ), and the third instalment of 30% (Rs. {(totalCost * 0.3).toFixed(2)}) in the
+                    next 15 days (by{' '}
+                    {(() => {
+                      if (!formData.bookingDate) return '[Date]';
+                      const d = new Date(formData.bookingDate);
+                      d.setDate(d.getDate() + 25);
+                      return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                    })()}
+                    ).
+                  </p>
+                  <p className="mb-2">
+                    The remaining 60% will be paid as per the selected payment plan EMIs and is
+                    scheduled to complete accordingly.
                   </p>
                   <p className="mb-2">
                     Note: Allotment under {formData.projectName} will only be confirmed upon receipt
-                    of the initial 10% (Rs. {initialPayment.toFixed(2)}) by{' '}
-                    {formData.bookingDate
-                      ? formData.bookingDate.split('-').reverse().join('-')
-                      : '[Date]'}
-                    .
+                    of the initial 5% (Rs. {(totalCost * 0.05).toFixed(2)}) by the due date.
                   </p>
                   <p>
                     In the event you fail to make the payments as per the payment plan chosen by
@@ -781,8 +951,16 @@ export default function AllotmentLetterPage() {
                     <p className="mt-4">
                       Your account manager is{' '}
                       <span className="font-bold">{formData.advisorName}</span> and will be
-                      reachable on <span className="font-bold">{formData.advisorNumber}</span> for
-                      any queries.
+                      reachable on <span className="font-bold">{formData.advisorNumber}</span>
+                      {formData.advisorEmail ? (
+                        <>
+                          {' '}
+                          (Email: <span className="font-bold">{formData.advisorEmail}</span>)
+                        </>
+                      ) : (
+                        ''
+                      )}{' '}
+                      for any queries.
                     </p>
                   </div>
                   <div className="flex flex-col items-end text-right">

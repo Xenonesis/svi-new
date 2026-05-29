@@ -2,12 +2,34 @@
 
 import { motion } from 'motion/react';
 import { ShieldCheck, CreditCard, Landmark, X, Copy, Check } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
+import { useState, useEffect, type FormEvent } from 'react';
 
 export default function Payment() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
+
+  useEffect(() => {
+    let active = true;
+    fetch('/api/properties')
+      .then((res) => res.json())
+      .then((data) => {
+        if (active && data.properties) {
+          const mapped = data.properties.map((p: any) => ({
+            value: p.slug,
+            label: p.name,
+          }));
+          setProjects(mapped);
+        }
+      })
+      .catch((err) => {
+        console.error('Failed to fetch projects list for payment:', err);
+      });
+    return () => {
+      active = false;
+    };
+  }, []);
 
   const handleCopy = (text: string, fieldId: string) => {
     navigator.clipboard.writeText(text);
@@ -132,8 +154,11 @@ export default function Payment() {
                     className="focus:border-brand-gold w-full appearance-none border border-gray-200 bg-gray-50 px-4 py-3 text-gray-900 transition-colors focus:outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-white"
                   >
                     <option value="">Select Project</option>
-                    <option value="shyam-aangan">Shyam Aangan</option>
-                    <option value="shivani-vatika">Shivani Vatika</option>
+                    {projects.map((proj) => (
+                      <option key={proj.value} value={proj.value}>
+                        {proj.label}
+                      </option>
+                    ))}
                     <option value="other">Other</option>
                   </select>
                 </div>
