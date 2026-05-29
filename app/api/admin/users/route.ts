@@ -57,7 +57,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { email, password, full_name, phone, property_interest, notes } = body;
+  const { email, password, full_name, phone, property_interest, notes, real_email } = body;
 
   if (!email || !password || !full_name) {
     return NextResponse.json(
@@ -91,6 +91,7 @@ export async function POST(request: NextRequest) {
       notes: notes || null,
       role: 'client',
       created_by: admin.id,
+      real_email: real_email || null,
     })
     .select()
     .single();
@@ -99,6 +100,51 @@ export async function POST(request: NextRequest) {
     // Rollback: delete the auth user we just created
     await supabaseAdmin.auth.admin.deleteUser(newUserId);
     return NextResponse.json({ error: profileError.message }, { status: 500 });
+  }
+
+  // 3. Send automated notification to client's real email address if enabled in settings
+  if (real_email) {
+    try {
+      let isSharingEnabled = true;
+      const { data: sharingSetting } = await supabaseAdmin
+        .from('portal_settings')
+        .select('value')
+        .eq('key', 'global_email_sharing')
+        .single();
+      if (sharingSetting?.value) {
+        isSharingEnabled = sharingSetting.value.enabled !== false;
+      }
+
+      if (isSharingEnabled) {
+        const resendApiKey = process.env.RESEND_API_KEY;
+        if (resendApiKey) {
+          const { Resend } = await import('resend');
+          const resend = new Resend(resendApiKey);
+          await resend.emails.send({
+            from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
+            to: real_email,
+            subject: 'Your SVI Infra Portal Account is Ready',
+            html: `
+              <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; rounded-corners: 10px;">
+                <h2 style="color: #c9a84c; font-family: serif;">Welcome to SVI Infra Solutions</h2>
+                <p>Hello <strong>${full_name}</strong>,</p>
+                <p>Your authorized client portal account has been successfully created. You can now log in using the details below:</p>
+                <div style="background-color: #f9f9f9; padding: 15px; border-radius: 8px; margin: 20px 0;">
+                  <p style="margin: 5px 0;"><strong>SVI Email Address:</strong> ${email}</p>
+                  <p style="margin: 5px 0;"><strong>Password:</strong> <em>(The password set by your system administrator)</em></p>
+                </div>
+                <p>Please log in to your SVI Client Portal to access your allotment details, payment history, and documents.</p>
+                <br>
+                <hr style="border: none; border-top: 1px solid #eaeaea;" />
+                <p style="font-size: 11px; color: #888;">This is an automated administrative notification. Please contact SVI Support for help.</p>
+              </div>
+            `,
+          });
+        }
+      }
+    } catch (emailErr) {
+      console.error('Failed to dispatch welcome email to client real email address:', emailErr);
+    }
   }
 
   // Create notification for all admins about new user registration

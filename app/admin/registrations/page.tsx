@@ -1,6 +1,17 @@
 'use client';
 
-import { Eye, FileText, RefreshCw, Search, Users, X } from 'lucide-react';
+import {
+  ArrowDown,
+  ArrowUp,
+  ChevronDown,
+  Eye,
+  FileText,
+  Filter,
+  RefreshCw,
+  Search,
+  Users,
+  X,
+} from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '@/src/lib/supabase/client';
@@ -40,6 +51,71 @@ interface Registration {
   created_at: string;
 }
 
+interface FilterOptions {
+  projects: string[];
+  advisors: string[];
+  propertyTypes: string[];
+  propertySizes: string[];
+  plotPreferences: string[];
+  paymentPlans: string[];
+  paymentModes: string[];
+}
+
+interface Filters {
+  project: string;
+  advisor: string;
+  propertyType: string;
+  propertySize: string;
+  plotPreference: string;
+  paymentPlan: string;
+  paymentMode: string;
+  dateFrom: string;
+  dateTo: string;
+}
+
+const SORT_OPTIONS = [
+  { value: 'created_at', label: 'Date' },
+  { value: 'name', label: 'Name' },
+  { value: 'project', label: 'Project' },
+  { value: 'advisor_name', label: 'Advisor' },
+  { value: 'property_type', label: 'Property Type' },
+  { value: 'scheme_amount', label: 'Scheme Amount' },
+];
+
+function FilterDropdown({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: string;
+  options: string[];
+  onChange: (v: string) => void;
+}) {
+  if (options.length === 0) return null;
+
+  return (
+    <div className="min-w-0 flex-1">
+      <label className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">
+        {label}
+      </label>
+      <select
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        className="focus:border-brand-gold mt-1 w-full appearance-none truncate rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 transition-colors outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+      >
+        <option value="">All</option>
+        {options.map((opt) => (
+          <option key={opt} value={opt}>
+            {opt}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+}
+
 function DetailModal({ reg, onClose }: { reg: Registration; onClose: () => void }) {
   const field = (label: string, value: string | null | undefined) =>
     value ? (
@@ -75,7 +151,6 @@ function DetailModal({ reg, onClose }: { reg: Registration; onClose: () => void 
         </div>
 
         <div className="space-y-6 p-6">
-          {/* Personal Details */}
           <div>
             <h3 className="text-brand-gold mb-3 text-xs font-bold tracking-widest uppercase">
               Personal Details
@@ -90,7 +165,6 @@ function DetailModal({ reg, onClose }: { reg: Registration; onClose: () => void 
             </div>
           </div>
 
-          {/* Documents */}
           <div>
             <h3 className="text-brand-gold mb-3 text-xs font-bold tracking-widest uppercase">
               Documents
@@ -131,7 +205,6 @@ function DetailModal({ reg, onClose }: { reg: Registration; onClose: () => void 
             </div>
           </div>
 
-          {/* Address */}
           <div>
             <h3 className="text-brand-gold mb-3 text-xs font-bold tracking-widest uppercase">
               Address
@@ -143,7 +216,6 @@ function DetailModal({ reg, onClose }: { reg: Registration; onClose: () => void 
             </div>
           </div>
 
-          {/* Property & Payment */}
           <div>
             <h3 className="text-brand-gold mb-3 text-xs font-bold tracking-widest uppercase">
               Property & Payment
@@ -160,10 +232,8 @@ function DetailModal({ reg, onClose }: { reg: Registration; onClose: () => void 
             </div>
           </div>
 
-          {/* Message */}
           {field('Message', reg.message)}
 
-          {/* Timestamp */}
           <p className="border-t border-gray-100 pt-4 text-xs text-gray-400 dark:border-white/8">
             Submitted on{' '}
             {new Date(reg.created_at).toLocaleString('en-IN', {
@@ -188,22 +258,83 @@ export default function AdminRegistrations() {
   const [search, setSearch] = useState('');
   const [selectedReg, setSelectedReg] = useState<Registration | null>(null);
   const [total, setTotal] = useState(0);
+  const [showFilters, setShowFilters] = useState(false);
+  const [sortBy, setSortBy] = useState('created_at');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [filters, setFilters] = useState<Filters>({
+    project: '',
+    advisor: '',
+    propertyType: '',
+    propertySize: '',
+    plotPreference: '',
+    paymentPlan: '',
+    paymentMode: '',
+    dateFrom: '',
+    dateTo: '',
+  });
+  const [filterOptions, setFilterOptions] = useState<FilterOptions>({
+    projects: [],
+    advisors: [],
+    propertyTypes: [],
+    propertySizes: [],
+    plotPreferences: [],
+    paymentPlans: [],
+    paymentModes: [],
+  });
 
-  const fetchRegistrations = useCallback(async (tkn: string, q: string = '') => {
-    setLoading(true);
-    const params = new URLSearchParams({ limit: '50' });
-    if (q) params.set('search', q);
+  const activeFilterCount = Object.values(filters).filter((v) => v !== '').length;
 
-    const res = await fetch(`/api/admin/registrations?${params}`, {
+  const fetchFilterOptions = useCallback(async (tkn: string) => {
+    const res = await fetch('/api/admin/registrations?limit=1000', {
       headers: { Authorization: `Bearer ${tkn}` },
     });
-    if (res.ok) {
-      const json = await res.json();
-      setRegistrations(json.registrations);
-      setTotal(json.total);
-    }
-    setLoading(false);
+    if (!res.ok) return;
+    const json = await res.json();
+    const regs: Registration[] = json.registrations || [];
+
+    const unique = (arr: (string | null | undefined)[]) =>
+      [...new Set(arr.filter(Boolean) as string[])].sort();
+
+    setFilterOptions({
+      projects: unique(regs.map((r) => r.project)),
+      advisors: unique(regs.map((r) => r.advisor_name)),
+      propertyTypes: unique(regs.map((r) => r.property_type)),
+      propertySizes: unique(regs.map((r) => r.property_size)),
+      plotPreferences: unique(regs.map((r) => r.plot_preference)),
+      paymentPlans: unique(regs.map((r) => r.payment_plan)),
+      paymentModes: unique(regs.map((r) => r.payment_mode)),
+    });
   }, []);
+
+  const fetchRegistrations = useCallback(
+    async (tkn: string, q: string = '') => {
+      setLoading(true);
+      const params = new URLSearchParams({ limit: '50' });
+      if (q) params.set('search', q);
+      params.set('sortBy', sortBy);
+      params.set('sortOrder', sortOrder);
+      if (filters.project) params.set('project', filters.project);
+      if (filters.advisor) params.set('advisor', filters.advisor);
+      if (filters.propertyType) params.set('propertyType', filters.propertyType);
+      if (filters.propertySize) params.set('propertySize', filters.propertySize);
+      if (filters.plotPreference) params.set('plotPreference', filters.plotPreference);
+      if (filters.paymentPlan) params.set('paymentPlan', filters.paymentPlan);
+      if (filters.paymentMode) params.set('paymentMode', filters.paymentMode);
+      if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
+      if (filters.dateTo) params.set('dateTo', filters.dateTo);
+
+      const res = await fetch(`/api/admin/registrations?${params}`, {
+        headers: { Authorization: `Bearer ${tkn}` },
+      });
+      if (res.ok) {
+        const json = await res.json();
+        setRegistrations(json.registrations);
+        setTotal(json.total);
+      }
+      setLoading(false);
+    },
+    [sortBy, sortOrder, filters]
+  );
 
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -226,13 +357,37 @@ export default function AdminRegistrations() {
       const tkn = session.access_token;
       setToken(tkn);
       fetchRegistrations(tkn);
+      fetchFilterOptions(tkn);
     });
-  }, [router, fetchRegistrations]);
+  }, [router, fetchRegistrations, fetchFilterOptions]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     fetchRegistrations(token, search);
   };
+
+  const updateFilter = (key: keyof Filters, value: string) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const clearFilters = () => {
+    setFilters({
+      project: '',
+      advisor: '',
+      propertyType: '',
+      propertySize: '',
+      plotPreference: '',
+      paymentPlan: '',
+      paymentMode: '',
+      dateFrom: '',
+      dateTo: '',
+    });
+  };
+
+  // Refetch when filters/sort change
+  useEffect(() => {
+    if (token) fetchRegistrations(token, search);
+  }, [filters, sortBy, sortOrder]);
 
   return (
     <div className="relative w-full font-sans">
@@ -282,7 +437,7 @@ export default function AdminRegistrations() {
         </div>
 
         {/* Toolbar */}
-        <div className="mb-6 flex flex-col gap-3 sm:flex-row">
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row">
           <form onSubmit={handleSearch} className="relative flex-1">
             <Search className="text-brand-gold absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
             <input
@@ -305,6 +460,50 @@ export default function AdminRegistrations() {
               </button>
             )}
           </form>
+
+          {/* Sort */}
+          <div className="flex items-center gap-2">
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="focus:border-brand-gold appearance-none rounded-lg border border-gray-200 bg-white px-3 py-3 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300"
+            >
+              {SORT_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  Sort: {opt.label}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+              className="hover:border-brand-gold hover:text-brand-gold flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors dark:border-white/10 dark:bg-[#0e0e14]/85"
+              title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+            >
+              {sortOrder === 'asc' ? (
+                <ArrowUp className="h-4 w-4" />
+              ) : (
+                <ArrowDown className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+
+          {/* Filter toggle */}
+          <button
+            onClick={() => setShowFilters(!showFilters)}
+            className={`flex cursor-pointer items-center gap-2 rounded-lg border px-5 py-3 text-xs font-bold tracking-widest uppercase transition-all ${
+              showFilters || activeFilterCount > 0
+                ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
+                : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5'
+            }`}
+          >
+            <Filter className="h-3.5 w-3.5" /> Filters
+            {activeFilterCount > 0 && (
+              <span className="bg-brand-gold text-brand-navy flex h-5 w-5 items-center justify-center rounded-full text-[9px] font-bold">
+                {activeFilterCount}
+              </span>
+            )}
+          </button>
+
           <button
             onClick={() => fetchRegistrations(token, search)}
             className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
@@ -312,6 +511,180 @@ export default function AdminRegistrations() {
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </button>
         </div>
+
+        {/* Filter panel */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              className="mb-6 overflow-hidden"
+            >
+              <div className="dark:border-brand-gold/15 rounded-xl border border-gray-200 bg-white/80 p-5 backdrop-blur-xl dark:bg-[#0e0e14]/65">
+                <div className="mb-4 flex items-center justify-between">
+                  <h3 className="text-brand-navy text-xs font-bold tracking-widest dark:text-white">
+                    FILTER BY
+                  </h3>
+                  {activeFilterCount > 0 && (
+                    <button
+                      onClick={clearFilters}
+                      className="text-brand-gold hover:text-brand-gold/80 cursor-pointer text-xs font-semibold"
+                    >
+                      Clear all
+                    </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+                  <FilterDropdown
+                    label="Project"
+                    value={filters.project}
+                    options={filterOptions.projects}
+                    onChange={(v) => updateFilter('project', v)}
+                  />
+                  <FilterDropdown
+                    label="Advisor"
+                    value={filters.advisor}
+                    options={filterOptions.advisors}
+                    onChange={(v) => updateFilter('advisor', v)}
+                  />
+                  <FilterDropdown
+                    label="Property Type"
+                    value={filters.propertyType}
+                    options={filterOptions.propertyTypes}
+                    onChange={(v) => updateFilter('propertyType', v)}
+                  />
+                  <FilterDropdown
+                    label="Property Size"
+                    value={filters.propertySize}
+                    options={filterOptions.propertySizes}
+                    onChange={(v) => updateFilter('propertySize', v)}
+                  />
+                  <FilterDropdown
+                    label="Plot Preference"
+                    value={filters.plotPreference}
+                    options={filterOptions.plotPreferences}
+                    onChange={(v) => updateFilter('plotPreference', v)}
+                  />
+                  <FilterDropdown
+                    label="Payment Plan"
+                    value={filters.paymentPlan}
+                    options={filterOptions.paymentPlans}
+                    onChange={(v) => updateFilter('paymentPlan', v)}
+                  />
+                  <FilterDropdown
+                    label="Payment Mode"
+                    value={filters.paymentMode}
+                    options={filterOptions.paymentModes}
+                    onChange={(v) => updateFilter('paymentMode', v)}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <label className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">
+                      From Date
+                    </label>
+                    <input
+                      type="date"
+                      value={filters.dateFrom}
+                      onChange={(e) => updateFilter('dateFrom', e.target.value)}
+                      className="focus:border-brand-gold mt-1 w-full rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+                    />
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <label className="text-[9px] font-bold tracking-widest text-gray-400 uppercase">
+                      To Date
+                    </label>
+                    <input
+                      type="date"
+                      value={filters.dateTo}
+                      onChange={(e) => updateFilter('dateTo', e.target.value)}
+                      className="focus:border-brand-gold mt-1 w-full rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+                    />
+                  </div>
+                </div>
+
+                {/* Active filter chips */}
+                {activeFilterCount > 0 && (
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {filters.project && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Project: {filters.project}
+                        <button onClick={() => updateFilter('project', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.advisor && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Advisor: {filters.advisor}
+                        <button onClick={() => updateFilter('advisor', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.propertyType && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Type: {filters.propertyType}
+                        <button onClick={() => updateFilter('propertyType', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.propertySize && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Size: {filters.propertySize}
+                        <button onClick={() => updateFilter('propertySize', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.plotPreference && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Plot: {filters.plotPreference}
+                        <button onClick={() => updateFilter('plotPreference', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.paymentPlan && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Plan: {filters.paymentPlan}
+                        <button onClick={() => updateFilter('paymentPlan', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.paymentMode && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        Mode: {filters.paymentMode}
+                        <button onClick={() => updateFilter('paymentMode', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.dateFrom && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        From: {filters.dateFrom}
+                        <button onClick={() => updateFilter('dateFrom', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                    {filters.dateTo && (
+                      <span className="bg-brand-gold/10 text-brand-gold flex items-center gap-1 rounded-full px-3 py-1 text-[10px] font-semibold">
+                        To: {filters.dateTo}
+                        <button onClick={() => updateFilter('dateTo', '')}>
+                          <X className="h-3 w-3" />
+                        </button>
+                      </span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Table */}
         <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-2xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
@@ -326,7 +699,7 @@ export default function AdminRegistrations() {
             <div className="py-24 text-center">
               <Users className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-700" />
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-                {search ? 'No matches found.' : 'No registrations yet.'}
+                {search || activeFilterCount > 0 ? 'No matches found.' : 'No registrations yet.'}
               </p>
             </div>
           ) : (
@@ -399,7 +772,6 @@ export default function AdminRegistrations() {
         </div>
       </div>
 
-      {/* Detail Modal */}
       <AnimatePresence>
         {selectedReg && <DetailModal reg={selectedReg} onClose={() => setSelectedReg(null)} />}
       </AnimatePresence>

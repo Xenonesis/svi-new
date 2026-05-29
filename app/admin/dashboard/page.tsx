@@ -12,6 +12,7 @@ import {
   Mail,
   Phone,
   Plus,
+  Pencil,
   RefreshCw,
   Search,
   Shield,
@@ -75,6 +76,7 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
   const [form, setForm] = useState({
     full_name: '',
     email: '',
+    real_email: '',
     password: '',
     phone: '',
     property_interest: '',
@@ -176,7 +178,7 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
             </div>
 
             <div>
-              <label className={labelCls}>Email Address *</label>
+              <label className={labelCls}>SVI Email Address *</label>
               <div className="relative">
                 <Mail className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
                 <input
@@ -185,6 +187,21 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
                   value={form.email}
                   onChange={handleChange}
                   required
+                  placeholder="client@sviinfra.com"
+                  className={`${inputCls} pl-9`}
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className={labelCls}>Real Email Address</label>
+              <div className="relative">
+                <Mail className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
+                <input
+                  name="real_email"
+                  type="email"
+                  value={form.real_email}
+                  onChange={handleChange}
                   placeholder="client@example.com"
                   className={`${inputCls} pl-9`}
                 />
@@ -293,6 +310,225 @@ function CreateUserModal({ onClose, onSuccess, token }: CreateUserModalProps) {
   );
 }
 
+// ── Edit User Modal ──────────────────────────────────────────────────────────
+interface EditUserModalProps {
+  user: UserProfile;
+  onClose: () => void;
+  onSuccess: () => void;
+  token: string;
+}
+
+function EditUserModal({ user, onClose, onSuccess, token }: EditUserModalProps) {
+  const [form, setForm] = useState({
+    full_name: user.full_name || '',
+    real_email: user.real_email || '',
+    phone: user.phone || '',
+    property_interest: user.property_interest || '',
+    notes: user.notes || '',
+    role: user.role || 'client',
+  });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+    if (error) setError('');
+  };
+
+  const handleSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!form.full_name) {
+      setError('Name is required.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify(form),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to update user');
+      onSuccess();
+      onClose();
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Something went wrong');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const inputCls =
+    'w-full bg-white dark:bg-[#111118] border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/15 transition-all font-sans';
+  const labelCls =
+    'text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400 mb-1.5 block transition-colors duration-300';
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85">
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        exit={{ opacity: 0, scale: 0.95 }}
+        className="dark:border-brand-gold/20 relative w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl transition-colors duration-300 dark:bg-[#0e0e14]"
+      >
+        {/* Subtle gold line on top of the modal */}
+        <div className="via-brand-gold/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
+
+        {/* Header */}
+        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-white/8">
+          <div className="flex items-center gap-3">
+            <div className="bg-brand-gold/10 border-brand-gold/20 flex h-8 w-8 items-center justify-center rounded-lg border">
+              <Pencil className="text-brand-gold h-4 w-4" />
+            </div>
+            <h2 className="text-brand-navy font-serif text-lg font-semibold tracking-tight transition-colors duration-300 dark:text-white">
+              Edit User Settings
+            </h2>
+          </div>
+          <button
+            onClick={onClose}
+            className="hover:text-brand-gold cursor-pointer text-gray-500 transition-colors"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Body */}
+        <form onSubmit={handleSubmit} className="space-y-4 p-6 font-sans">
+          {error && (
+            <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
+              <AlertCircle className="h-4 w-4 flex-shrink-0" />
+              {error}
+            </div>
+          )}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="col-span-2">
+              <label className={labelCls}>Full Name *</label>
+              <input
+                name="full_name"
+                value={form.full_name}
+                onChange={handleChange}
+                required
+                placeholder="Rajesh Kumar"
+                className={inputCls}
+              />
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>Real Email Address</label>
+              <div className="relative">
+                <Mail className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
+                <input
+                  name="real_email"
+                  type="email"
+                  value={form.real_email}
+                  onChange={handleChange}
+                  placeholder="client@example.com"
+                  className={`${inputCls} pl-9`}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>Phone Number</label>
+              <div className="relative">
+                <Phone className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
+                <input
+                  name="phone"
+                  type="tel"
+                  value={form.phone}
+                  onChange={handleChange}
+                  placeholder="+91 98000 00000"
+                  className={`${inputCls} pl-9`}
+                />
+              </div>
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>Property Interest</label>
+              <div className="relative">
+                <Building2 className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+                <select
+                  name="property_interest"
+                  value={form.property_interest}
+                  onChange={handleChange}
+                  className={`${inputCls} appearance-none rounded-none pr-8 pl-9`}
+                >
+                  <option value="">Select option</option>
+                  <option value="residential_3bhk">3BHK Residential</option>
+                  <option value="residential_4bhk">4BHK Residential</option>
+                  <option value="residential_plot">Residential Plot</option>
+                  <option value="commercial">Commercial Property</option>
+                  <option value="investment">Investment / General</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>Access Role</label>
+              <div className="relative">
+                <Shield className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
+                <ChevronDown className="pointer-events-none absolute top-1/2 right-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-500" />
+                <select
+                  name="role"
+                  value={form.role}
+                  onChange={handleChange}
+                  className={`${inputCls} appearance-none rounded-none pr-8 pl-9`}
+                >
+                  <option value="client">Client</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="col-span-2">
+              <label className={labelCls}>Notes (Internal)</label>
+              <div className="relative">
+                <FileText className="text-brand-gold absolute top-3 left-3 h-3.5 w-3.5" />
+                <textarea
+                  name="notes"
+                  rows={2}
+                  value={form.notes}
+                  onChange={handleChange}
+                  placeholder="Internal notes..."
+                  className={`${inputCls} resize-none pl-9`}
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3 pt-4">
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex-1 cursor-pointer rounded-lg border border-gray-200 bg-gray-100 py-3.5 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              disabled={loading}
+              className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-60"
+            >
+              {loading ? (
+                <span className="border-brand-navy/45 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
+              ) : (
+                <>
+                  <Pencil className="h-4 w-4" /> Save Changes
+                </>
+              )}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── Delete Confirm ───────────────────────────────────────────────────────────
 interface DeleteConfirmProps {
   user: UserProfile;
@@ -355,8 +591,10 @@ export default function AdminDashboard() {
   const [adminName, setAdminName] = useState('');
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [editTarget, setEditTarget] = useState<UserProfile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [currentAdminId, setCurrentAdminId] = useState('');
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [analytics, setAnalytics] = useState<{
     userGrowth: Array<{ date: string; users: number }>;
@@ -409,7 +647,7 @@ export default function AdminDashboard() {
         userId: session.user.id,
         profile,
         error,
-        roleCheck: profile?.role !== 'admin'
+        roleCheck: profile?.role !== 'admin',
       });
 
       if (error || !profile || profile?.role !== 'admin') {
@@ -420,6 +658,7 @@ export default function AdminDashboard() {
 
       const tkn = session.access_token;
       setToken(tkn);
+      setCurrentAdminId(session.user.id);
       setAdminName(profile?.full_name || session.user.email || 'Admin');
 
       // Fetch all dashboard data in parallel instead of sequentially
@@ -476,6 +715,7 @@ export default function AdminDashboard() {
     (u) =>
       u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
       u.email?.toLowerCase().includes(search.toLowerCase()) ||
+      u.real_email?.toLowerCase().includes(search.toLowerCase()) ||
       u.phone?.includes(search)
   );
 
@@ -654,6 +894,7 @@ export default function AdminDashboard() {
                   <tr className="dark:border-brand-gold/15 border-b border-gray-200 bg-gray-50/50 transition-colors duration-300 dark:bg-white/2">
                     {[
                       'Name & Notes',
+                      'SVI Email Address',
                       'Email Address',
                       'Phone Number',
                       'Property Interest',
@@ -699,6 +940,11 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4.5 font-medium text-gray-700 transition-colors duration-300 dark:text-gray-300">
                         {u.email}
                       </td>
+                      <td className="px-6 py-4.5 font-medium text-gray-700 transition-colors duration-300 dark:text-gray-300">
+                        {u.real_email || (
+                          <span className="text-gray-400 dark:text-gray-600">—</span>
+                        )}
+                      </td>
                       <td className="px-6 py-4.5 text-gray-700 transition-colors duration-300 dark:text-gray-300">
                         {u.phone || <span className="text-gray-400 dark:text-gray-600">—</span>}
                       </td>
@@ -723,8 +969,14 @@ export default function AdminDashboard() {
                           year: 'numeric',
                         })}
                       </td>
-                      <td className="px-6 py-4.5">
-                        {u.role !== 'admin' && (
+                      <td className="flex items-center gap-2.5 px-6 py-4.5">
+                        <button
+                          onClick={() => setEditTarget(u)}
+                          className="animate-hero-fade-in border-brand-gold/20 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 hover:text-brand-gold-light flex cursor-pointer items-center gap-1.5 rounded border px-3 py-1.5 text-[9px] font-bold tracking-wider uppercase opacity-0 transition-all group-hover:opacity-100"
+                        >
+                          <Pencil className="h-3 w-3" /> Edit
+                        </button>
+                        {u.id !== currentAdminId && (
                           <button
                             onClick={() => setDeleteTarget(u)}
                             className="animate-hero-fade-in flex cursor-pointer items-center gap-1.5 rounded border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-[9px] font-bold tracking-wider text-red-400 uppercase opacity-0 transition-all group-hover:opacity-100 hover:bg-red-500/20 hover:text-red-300"
@@ -751,6 +1003,17 @@ export default function AdminDashboard() {
             onSuccess={() => {
               fetchUsers(token);
               showToast('success', 'User created successfully!');
+            }}
+          />
+        )}
+        {editTarget && (
+          <EditUserModal
+            user={editTarget}
+            token={token}
+            onClose={() => setEditTarget(null)}
+            onSuccess={() => {
+              fetchUsers(token);
+              showToast('success', 'User updated successfully!');
             }}
           />
         )}

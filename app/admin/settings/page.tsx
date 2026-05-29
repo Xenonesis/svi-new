@@ -81,6 +81,10 @@ export default function AdminSettings() {
     weeklyDigest: false,
   });
 
+  const [globalEmailSharing, setGlobalEmailSharing] = useState({
+    enabled: true,
+  });
+
   // Password Update States
   const [security, setSecurity] = useState({
     currentPassword: '',
@@ -125,11 +129,12 @@ export default function AdminSettings() {
       try {
         const authHeaders = { Authorization: `Bearer ${token}` };
 
-        // Parallel Fetch Profile, Company settings, and Notification preferences
-        const [profileRes, companyRes, notifRes] = await Promise.all([
+        // Parallel Fetch Profile, Company settings, Notification preferences, and Global email sharing settings
+        const [profileRes, companyRes, notifRes, sharingRes] = await Promise.all([
           supabase.from('profiles').select('*').eq('id', userId).single(),
           fetch('/api/admin/settings?key=company_info', { headers: authHeaders }),
           fetch(`/api/admin/settings?key=notifications_${userId}`, { headers: authHeaders }),
+          fetch('/api/admin/settings?key=global_email_sharing', { headers: authHeaders }),
         ]);
 
         // Load Profile
@@ -155,6 +160,14 @@ export default function AdminSettings() {
           const json = await notifRes.json();
           if (json.value && Object.keys(json.value).length > 0) {
             setNotifications(json.value);
+          }
+        }
+
+        // Load Global Email Sharing
+        if (sharingRes.ok) {
+          const json = await sharingRes.json();
+          if (json.value && Object.keys(json.value).length > 0) {
+            setGlobalEmailSharing(json.value);
           }
         }
 
@@ -312,6 +325,36 @@ export default function AdminSettings() {
       // Revert in case of failure
       setNotifications(notifications);
       showToast('error', 'Failed to save notification preferences.');
+    }
+  };
+
+  // 6b. Global Email Sharing Toggle Saver Handler
+  const handleToggleGlobalEmailSharing = async () => {
+    const updated = {
+      enabled: !globalEmailSharing.enabled,
+    };
+    setGlobalEmailSharing(updated);
+
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          key: 'global_email_sharing',
+          value: updated,
+        }),
+      });
+
+      if (!res.ok) throw new Error('API reported rejection.');
+      showToast('success', 'Global email sharing settings updated!');
+    } catch (err) {
+      console.error('Failed to auto-save global email sharing settings:', err);
+      // Revert in case of failure
+      setGlobalEmailSharing(globalEmailSharing);
+      showToast('error', 'Failed to save global settings.');
     }
   };
 
@@ -504,6 +547,8 @@ export default function AdminSettings() {
                       <NotificationsTab
                         notifications={notifications}
                         handleToggleNotification={handleToggleNotification}
+                        globalEmailSharing={globalEmailSharing}
+                        handleToggleGlobalEmailSharing={handleToggleGlobalEmailSharing}
                         isCompact={isCompact}
                       />
                     )}

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 
-// GET /api/admin/registrations — list all registrations with pagination and search
+// GET /api/admin/registrations — list all registrations with pagination, search, filters, sort
 export async function GET(request: NextRequest) {
   const admin = await verifyAdmin(request);
   if (!admin) {
@@ -10,22 +10,59 @@ export async function GET(request: NextRequest) {
   }
 
   const { searchParams } = new URL(request.url);
-  const page = Math.max(1, parseInt(searchParams.get('page') || '1'));
-  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50')));
+  const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50') || 50));
   const search = searchParams.get('search') || '';
+  const sortBy = searchParams.get('sortBy') || 'created_at';
+  const sortOrder = searchParams.get('sortOrder') || 'desc';
   const offset = (page - 1) * limit;
+
+  // Filter params
+  const project = searchParams.get('project') || '';
+  const advisor = searchParams.get('advisor') || '';
+  const propertyType = searchParams.get('propertyType') || '';
+  const propertySize = searchParams.get('propertySize') || '';
+  const plotPreference = searchParams.get('plotPreference') || '';
+  const paymentPlan = searchParams.get('paymentPlan') || '';
+  const paymentMode = searchParams.get('paymentMode') || '';
+  const dateFrom = searchParams.get('dateFrom') || '';
+  const dateTo = searchParams.get('dateTo') || '';
+
+  // Whitelist sort columns
+  const allowedSort = new Set([
+    'created_at',
+    'name',
+    'project',
+    'advisor_name',
+    'property_type',
+    'scheme_amount',
+  ]);
+  const sortCol = allowedSort.has(sortBy) ? sortBy : 'created_at';
+  const ascending = sortOrder === 'asc';
 
   let query = supabaseAdmin
     .from('registrations')
     .select('*', { count: 'exact' })
-    .order('created_at', { ascending: false })
+    .order(sortCol, { ascending })
     .range(offset, offset + limit - 1);
 
+  // Text search
   if (search) {
     query = query.or(
       `name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,phone.ilike.%${search}%,aadhar_number.ilike.%${search}%,advisor_name.ilike.%${search}%,project.ilike.%${search}%`
     );
   }
+
+  // Filters
+  if (project) query = query.eq('project', project);
+  if (advisor) query = query.eq('advisor_name', advisor);
+  if (propertyType) query = query.eq('property_type', propertyType);
+  if (propertySize) query = query.eq('property_size', propertySize);
+  if (plotPreference) query = query.eq('plot_preference', plotPreference);
+  if (paymentPlan) query = query.eq('payment_plan', paymentPlan);
+  if (paymentMode) query = query.eq('payment_mode', paymentMode);
+  if (dateFrom) query = query.gte('created_at', dateFrom);
+  if (dateTo) query = query.lte('created_at', dateTo + 'T23:59:59');
 
   const { data, error, count } = await query;
 

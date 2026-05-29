@@ -58,7 +58,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
-  const allowedFields = ['full_name', 'phone', 'property_interest', 'notes'];
+  const allowedFields = ['full_name', 'phone', 'property_interest', 'notes', 'real_email', 'role'];
   const updates: Record<string, string> = {};
   for (const key of allowedFields) {
     if (body[key] !== undefined) updates[key] = body[key];

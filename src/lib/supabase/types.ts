@@ -10,6 +10,7 @@ export interface UserProfile {
   created_at: string;
   created_by: string | null;
   notes: string | null;
+  real_email?: string | null;
 }
 
 export interface CreateUserPayload {
@@ -19,6 +20,7 @@ export interface CreateUserPayload {
   phone?: string;
   property_interest?: string;
   notes?: string;
+  real_email?: string;
 }
 
 // ── Attendance System ────────────────────────────────────────

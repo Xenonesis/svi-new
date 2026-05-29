@@ -206,15 +206,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preload" as="image" href="/images/hero2.png" />
         <link rel="preload" as="image" href="/images/hero3.png" />
         <link rel="manifest" href="/manifest.json" />
-      </head>
-      <body className={`${inter.variable} ${playfair.variable}`}>
-        <Script
+        <script
           id="theme-init"
-          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `(function(){try{var t=document.documentElement,e=localStorage.getItem('svi-theme-v1');if(e==='dark'||e==='light')t.classList.add(e);else if(window.matchMedia('(prefers-color-scheme:dark)').matches)t.classList.add('dark');else t.classList.add('light')}catch(e){}})();`,
           }}
         />
+      </head>
+      <body className={`${inter.variable} ${playfair.variable}`}>
         {children}
         <Analytics />
         <SpeedInsights />
