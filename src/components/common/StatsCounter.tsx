@@ -55,12 +55,12 @@ const StatItem = memo(function StatItem({ end, label, suffix = '', duration = 20
   }, [end, duration]);
 
   return (
-    <div ref={nodeRef} className="p-4 text-center md:p-6">
-      <div className="text-brand-gold mb-2 font-serif text-3xl font-bold sm:text-4xl md:text-5xl">
+    <div ref={nodeRef} className="p-5 text-center md:p-8">
+      <div className="text-brand-gold mb-3 font-serif text-3xl font-bold sm:text-4xl md:text-5xl">
         {count}
         {suffix}
       </div>
-      <div className="text-xs font-medium tracking-wide text-gray-300 uppercase sm:text-sm">
+      <div className="text-[10px] font-semibold tracking-[0.15em] text-gray-400 uppercase sm:text-xs">
         {label}
       </div>
     </div>

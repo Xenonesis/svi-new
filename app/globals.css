@@ -77,7 +77,7 @@
     background-clip: text;
   }
 
-  /* Shimmer effect */
+  /* Shimmer effect — subtle, single-pass on hover only */
   .shimmer {
     position: relative;
     overflow: hidden;
@@ -89,8 +89,11 @@
     left: -100%;
     width: 60%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
-    animation: shimmer 2.5s infinite;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.08), transparent);
+    animation: none;
+  }
+  .shimmer:hover::after {
+    animation: shimmer 1.2s ease-out 1;
   }
 
   /* Gold underline hover effect */
@@ -119,16 +122,16 @@
     animation: float 4s ease-in-out infinite;
   }
 
-  /* Glow effect */
+  /* Glow effect — soft, not neon */
   .glow-gold {
     box-shadow:
-      0 0 20px rgba(201, 168, 76, 0.3),
-      0 0 60px rgba(201, 168, 76, 0.1);
+      0 0 12px rgba(201, 168, 76, 0.15),
+      0 4px 16px rgba(0, 0, 0, 0.08);
   }
   .glow-gold:hover {
     box-shadow:
-      0 0 30px rgba(201, 168, 76, 0.5),
-      0 0 80px rgba(201, 168, 76, 0.2);
+      0 0 20px rgba(201, 168, 76, 0.25),
+      0 8px 24px rgba(0, 0, 0, 0.1);
   }
 
   /* Card depth shadow */
@@ -143,10 +146,9 @@
   }
   .card-shadow:hover {
     box-shadow:
-      0 4px 8px rgba(0, 0, 0, 0.08),
-      0 16px 32px rgba(0, 0, 0, 0.1),
-      0 32px 64px rgba(0, 0, 0, 0.08);
-    transform: translateY(-6px);
+      0 4px 12px rgba(0, 0, 0, 0.06),
+      0 16px 32px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
   }
 
   /* Image hover zoom */
@@ -306,7 +308,7 @@
   }
 }
 .animate-bg-pan {
-  animation: bg-pan 5s linear infinite;
+  animation: bg-pan 8s ease-in-out infinite;
 }
 
 /* ─── Scroll-reveal utility (mobile-safe IntersectionObserver CSS alternative) ─── */

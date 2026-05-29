@@ -100,7 +100,7 @@ export default function Header() {
                 <Link
                   key={link.name}
                   href={link.path}
-                  className={`hover:text-brand-gold-text group relative text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 ${
+                  className={`hover:text-brand-gold-text group relative text-[11px] font-semibold tracking-wider uppercase transition-colors duration-200 ${
                     pathname === link.path
                       ? 'text-brand-gold-text'
                       : 'text-brand-navy dark:text-gray-200'
@@ -122,7 +122,7 @@ export default function Header() {
                 onMouseLeave={handleMouseLeave}
               >
                 <span
-                  className={`hover:text-brand-gold-text flex items-center gap-1 text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 ${
+                  className={`hover:text-brand-gold-text flex items-center gap-1 text-[11px] font-semibold tracking-wider uppercase transition-colors duration-200 ${
                     pathname.includes('/projects')
                       ? 'text-brand-gold-text'
                       : 'text-brand-navy dark:text-gray-200'
@@ -155,7 +155,7 @@ export default function Header() {
 
               <Link
                 href="/payment"
-                className={`hover:text-brand-gold-text text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 ${
+                className={`hover:text-brand-gold-text text-[11px] font-semibold tracking-wider uppercase transition-colors duration-200 ${
                   pathname === '/payment'
                     ? 'text-brand-gold-text'
                     : 'text-brand-navy dark:text-gray-200'
@@ -166,7 +166,7 @@ export default function Header() {
 
               <Link
                 href="/contact"
-                className={`hover:text-brand-gold-text text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 ${
+                className={`hover:text-brand-gold-text text-[11px] font-semibold tracking-wider uppercase transition-colors duration-200 ${
                   pathname === '/contact'
                     ? 'text-brand-gold-text'
                     : 'text-brand-navy dark:text-gray-200'
@@ -179,20 +179,14 @@ export default function Header() {
               {lotteryVisible && (
                 <Link
                   href="/lottery"
-                  className={`relative flex items-center gap-1.5 text-xs font-bold tracking-widest uppercase transition-all duration-300 hover:-translate-y-0.5 ${
+                  className={`text-[11px] font-semibold tracking-wider uppercase transition-colors duration-200 ${
                     pathname === '/lottery'
                       ? 'text-brand-gold'
-                      : 'text-brand-gold/80 hover:text-brand-gold'
+                      : 'text-brand-gold/70 hover:text-brand-gold'
                   }`}
                   aria-label="Lucky Draw"
                 >
-                  <span className="animate-pulse text-[10px]">🎰</span>
                   Lucky Draw
-                  {pathname !== '/lottery' && (
-                    <span className="bg-brand-gold text-brand-navy absolute -top-2 -right-3 rounded-full px-1 py-px text-[7px] leading-none font-black uppercase">
-                      LIVE
-                    </span>
-                  )}
                 </Link>
               )}
 
@@ -205,9 +199,9 @@ export default function Header() {
                 </Link>
                 <Link
                   href="/registration"
-                  className="border-brand-navy hover:bg-brand-navy dark:hover:text-brand-navy border px-5 py-2 text-[10px] font-bold tracking-wider uppercase transition-all duration-300 hover:scale-105 hover:text-white hover:shadow-lg dark:border-gray-200 dark:text-gray-200 dark:hover:bg-gray-200"
+                  className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy px-5 py-2 text-[10px] font-semibold tracking-wider uppercase text-white transition-all duration-200 hover:opacity-90"
                 >
-                  Register Now
+                  Register
                 </Link>
               </div>
 
@@ -286,7 +280,7 @@ export default function Header() {
             <div key={link.name}>
               <Link
                 href={link.path}
-                className="text-brand-navy hover:text-brand-gold block font-serif text-2xl transition-colors dark:text-gray-100"
+                className="text-brand-navy hover:text-brand-gold block text-xl font-semibold transition-colors dark:text-gray-100"
               >
                 {link.name}
               </Link>
@@ -294,7 +288,7 @@ export default function Header() {
           ))}
 
           <div className="flex flex-col gap-4">
-            <span className="text-brand-navy font-serif text-2xl dark:text-gray-100">Projects</span>
+            <span className="text-brand-navy text-xl font-semibold dark:text-gray-100">Projects</span>
             <div className="border-brand-gold/30 flex flex-col gap-3 border-l-2 pl-4">
               <Link
                 href="/projects/current"
@@ -313,14 +307,14 @@ export default function Header() {
 
           <Link
             href="/payment"
-            className="text-brand-navy block font-serif text-2xl dark:text-gray-100"
+            className="text-brand-navy block text-xl font-semibold dark:text-gray-100"
           >
             Payment
           </Link>
 
           <Link
             href="/contact"
-            className="text-brand-navy block font-serif text-2xl dark:text-gray-100"
+            className="text-brand-navy block text-xl font-semibold dark:text-gray-100"
           >
             Contact Us
           </Link>
@@ -329,12 +323,9 @@ export default function Header() {
           {lotteryVisible && (
             <Link
               href="/lottery"
-              className="text-brand-gold flex items-center gap-2 font-serif text-2xl"
+              className="text-brand-gold text-xl font-semibold"
             >
-              <span>🎰</span> Lucky Draw
-              <span className="bg-brand-gold text-brand-navy rounded-full px-2 py-0.5 text-xs font-black uppercase">
-                LIVE
-              </span>
+              Lucky Draw
             </Link>
           )}
 

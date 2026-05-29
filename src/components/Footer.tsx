@@ -58,8 +58,8 @@ const Footer = memo(function Footer() {
                   key={label}
                   href={href}
                   aria-label={`Follow us on ${label}`}
-                  whileHover={{ scale: 1.2, borderColor: '#c9a84c', color: '#c9a84c' }}
-                  whileTap={{ scale: 0.9 }}
+                  whileHover={{ scale: 1.1, borderColor: '#c9a84c', color: '#c9a84c' }}
+                  whileTap={{ scale: 0.95 }}
                   className="text-brand-navy flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 transition-colors dark:border-gray-700 dark:text-gray-200"
                 >
                   {icon}
@@ -69,14 +69,14 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-6 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
+            <h4 className="mb-5 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
               Quick Links
             </h4>
             <ul className="flex flex-col gap-4">
               <li>
                 <Link
                   href="/"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Home
                 </Link>
@@ -84,7 +84,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/about"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   About Us
                 </Link>
@@ -92,7 +92,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/leadership"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Leadership
                 </Link>
@@ -100,7 +100,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/faq"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   FAQ
                 </Link>
@@ -108,7 +108,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/projects/completed"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Completed Projects
                 </Link>
@@ -116,7 +116,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/registration"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Register
                 </Link>
@@ -124,7 +124,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/contact"
-                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Contact Us
                 </Link>
@@ -133,14 +133,14 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="mb-6 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
+            <h4 className="mb-5 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
               Services & Support
             </h4>
             <ul className="flex flex-col gap-4">
               <li>
                 <Link
                   href="/payment"
-                  className="hover:text-brand-gold-text text-sm font-semibold text-gray-600 transition-colors dark:text-gray-400"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Pay Online
                 </Link>
@@ -148,25 +148,25 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/grievance"
-                  className="hover:text-brand-gold-text text-sm font-semibold text-gray-600 transition-colors dark:text-gray-400"
+                  className="text-brand-navy hover:text-brand-gold-text dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   Raise a Grievance
                 </Link>
               </li>
-              <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <li className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                 Residential Properties
               </li>
-              <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <li className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                 Commercial Properties
               </li>
-              <li className="text-sm font-semibold text-gray-600 dark:text-gray-400">
+              <li className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                 Property Management
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="mb-6 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
+            <h4 className="mb-5 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
               Contact Info
             </h4>
             <ul className="flex flex-col gap-5">
@@ -194,10 +194,10 @@ const Footer = memo(function Footer() {
           </div>
         </div>
 
-        <div className="mb-8 border-t border-b border-gray-200 py-8 dark:border-gray-800">
+        <div className="mb-8 border-t border-gray-200 py-8 dark:border-gray-800">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div>
-              <h4 className="text-brand-navy mb-1 text-sm font-bold tracking-widest uppercase dark:text-gray-100">
+              <h4 className="text-brand-navy mb-1 text-sm font-semibold tracking-wider uppercase dark:text-gray-100">
                 Stay Updated
               </h4>
               <p className="text-xs text-gray-500 dark:text-gray-400">
@@ -246,10 +246,10 @@ const Footer = memo(function Footer() {
         </div>
 
         <div className="flex flex-col items-center justify-between gap-4 md:flex-row">
-          <p className="text-center text-xs font-bold tracking-widest text-gray-400 uppercase md:text-left dark:text-gray-500">
+          <p className="text-center text-[10px] font-semibold tracking-wider text-gray-400 uppercase md:text-left dark:text-gray-500">
             &copy; {CURRENT_YEAR} SVI Infra Solutions.
           </p>
-          <div className="flex gap-6 text-xs font-bold tracking-widest text-gray-400 uppercase dark:text-gray-500">
+          <div className="flex gap-6 text-[10px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
             <Link href="/privacy-policy" className="hover:text-brand-gold transition-colors">
               Privacy
             </Link>
