@@ -1,6 +1,17 @@
 'use client';
 
-import { ChevronDown, Menu, Moon, Sun, X, Building2, CheckSquare, Phone, Mail } from 'lucide-react';
+import {
+  ChevronDown,
+  Menu,
+  Moon,
+  Sun,
+  X,
+  Building2,
+  CheckSquare,
+  Phone,
+  Mail,
+  Monitor,
+} from 'lucide-react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 import Link from 'next/link';
@@ -66,7 +77,11 @@ export default function Header() {
   }, [isMobileMenuOpen]);
 
   const toggleTheme = useCallback(() => {
-    setTheme((prev: 'dark' | 'light') => (prev === 'dark' ? 'light' : 'dark'));
+    setTheme((prev: 'dark' | 'light' | 'system') => {
+      if (prev === 'light') return 'dark';
+      if (prev === 'dark') return 'system';
+      return 'light';
+    });
   }, [setTheme]);
 
   const toggleMobileMenu = useCallback(() => {
@@ -269,18 +284,25 @@ export default function Header() {
                 aria-label={
                   mounted
                     ? theme === 'dark'
-                      ? 'Switch to light mode'
-                      : 'Switch to dark mode'
+                      ? 'Switch to system mode'
+                      : theme === 'light'
+                        ? 'Switch to dark mode'
+                        : 'Switch to light mode'
                     : 'Toggle theme'
                 }
               >
                 {mounted ? (
                   theme === 'dark' ? (
                     <Sun size={16} className="transition-transform duration-500 hover:rotate-45" />
-                  ) : (
+                  ) : theme === 'light' ? (
                     <Moon
                       size={16}
                       className="transition-transform duration-500 hover:-rotate-12"
+                    />
+                  ) : (
+                    <Monitor
+                      size={16}
+                      className="transition-transform duration-500 hover:scale-105"
                     />
                   )
                 ) : (
@@ -347,16 +369,20 @@ export default function Header() {
               aria-label={
                 mounted
                   ? theme === 'dark'
-                    ? 'Switch to light mode'
-                    : 'Switch to dark mode'
+                    ? 'Switch to system mode'
+                    : theme === 'light'
+                      ? 'Switch to dark mode'
+                      : 'Switch to light mode'
                   : 'Toggle theme'
               }
             >
               {mounted ? (
                 theme === 'dark' ? (
                   <Sun size={15} />
-                ) : (
+                ) : theme === 'light' ? (
                   <Moon size={15} />
+                ) : (
+                  <Monitor size={15} />
                 )
               ) : (
                 <Moon size={15} />

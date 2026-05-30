@@ -4,8 +4,12 @@
     var t = document.documentElement,
       e = localStorage.getItem('svi-theme-v1');
     if (e === 'dark' || e === 'light') t.classList.add(e);
-    else if (window.matchMedia('(prefers-color-scheme:dark)').matches) t.classList.add('dark');
-    else t.classList.add('light');
+    else if (e === 'system' || !e) {
+      if (window.matchMedia('(prefers-color-scheme:dark)').matches) t.classList.add('dark');
+      else t.classList.add('light');
+    } else {
+      t.classList.add('light');
+    }
   } catch (e) {
     /* ignore */
   }

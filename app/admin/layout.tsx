@@ -9,22 +9,18 @@ import { AdminSessionProvider } from '@/src/components/admin/AdminSessionProvide
 import { supabase } from '@/src/lib/supabase/client';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
+import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
 
-export default function AdminLayout({ children }: { children: ReactNode }) {
+function AdminLayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const [mounted, setMounted] = useState(false);
-  const [isDark, setIsDark] = useState(true);
+  const { theme, setTheme } = useTheme();
+  const [isDark, setIsDark] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [adminName, setAdminName] = useState('Admin');
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem('svi-theme-v1');
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const dark = stored === 'dark' || (stored !== 'light' && prefersDark);
-    setIsDark(dark);
-    document.documentElement.classList.toggle('dark', dark);
-    document.documentElement.classList.toggle('light', !dark);
     setMounted(true);
 
     // Get current user session
@@ -46,12 +42,41 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
     });
   }, []);
 
+  // Update isDark based on theme and media query
+  useEffect(() => {
+    const updateIsDark = () => {
+      if (theme === 'system') {
+        setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+      } else {
+        setIsDark(theme === 'dark');
+      }
+    };
+
+    updateIsDark();
+
+    if (theme === 'system') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      if (mediaQuery.addEventListener) {
+        mediaQuery.addEventListener('change', updateIsDark);
+      } else {
+        mediaQuery.addListener(updateIsDark);
+      }
+      return () => {
+        if (mediaQuery.removeEventListener) {
+          mediaQuery.removeEventListener('change', updateIsDark);
+        } else {
+          mediaQuery.removeListener(updateIsDark);
+        }
+      };
+    }
+  }, [theme]);
+
   const toggleTheme = () => {
-    const next = !isDark;
-    setIsDark(next);
-    document.documentElement.classList.toggle('dark', next);
-    document.documentElement.classList.toggle('light', !next);
-    localStorage.setItem('svi-theme-v1', next ? 'dark' : 'light');
+    setTheme((prev) => {
+      if (prev === 'light') return 'dark';
+      if (prev === 'dark') return 'system';
+      return 'light';
+    });
   };
 
   // If on the admin login page, completely bypass the admin panel outer frame (header & sidebar)
@@ -88,5 +113,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         </div>
       </div>
     </AdminSessionProvider>
+  );
+}
+
+export default function AdminLayout({ children }: { children: ReactNode }) {
+  return (
+    <ThemeProvider>
+      <AdminLayoutInner>{children}</AdminLayoutInner>
+    </ThemeProvider>
   );
 }

@@ -10,8 +10,8 @@ export const ACCENTS = [
 ];
 
 interface AppearanceTabProps {
-  theme: 'light' | 'dark';
-  setTheme: (theme: 'light' | 'dark') => void;
+  theme: 'light' | 'dark' | 'system';
+  setTheme: (theme: 'light' | 'dark' | 'system') => void;
   accentColor: string;
   handleSelectAccent: (accentId: string) => void;
   uiDensity: string;
@@ -44,20 +44,21 @@ export function AppearanceTab({
             Visual Mode (Theme)
           </h3>
           <p className="font-sans text-xs text-gray-500 dark:text-gray-400">
-            Choose between light and deep premium dark color schemes.
+            Choose between light, deep premium dark, or OS system theme preferences.
           </p>
         </div>
         <div className="flex gap-2">
           {[
             { id: 'light', label: 'Light' },
             { id: 'dark', label: 'Dark' },
+            { id: 'system', label: 'System' },
           ].map((mode) => {
             const isSelected = theme === mode.id;
             return (
               <button
                 key={mode.id}
                 type="button"
-                onClick={() => setTheme(mode.id as 'light' | 'dark')}
+                onClick={() => setTheme(mode.id as 'light' | 'dark' | 'system')}
                 className={`cursor-pointer rounded-lg border px-4 py-2 text-xs font-bold uppercase transition-all duration-300 ${
                   isSelected
                     ? 'border-brand-gold bg-brand-gold/10 text-brand-gold font-sans'
