@@ -91,7 +91,26 @@ async function sendGrievanceResponse(
     if (resendApiKey) {
       const { Resend } = await import('resend');
       const resend = new Resend(resendApiKey);
-      const adminEmail = process.env.ADMIN_EMAIL || 'admin@sviinfra.com';
+
+      // Fetch dynamic admin email setting from database
+      let adminEmail = process.env.ADMIN_EMAIL || 'admin@sviinfra.com';
+      try {
+        const { data: emailSetting } = await supabaseAdmin
+          .from('portal_settings')
+          .select('value')
+          .eq('key', 'email_settings')
+          .single();
+
+        if (emailSetting?.value && typeof emailSetting.value === 'object') {
+          const val = emailSetting.value as any;
+          if (val.admin_email) adminEmail = val.admin_email;
+        }
+      } catch (settingsErr) {
+        console.warn(
+          'Failed to load email settings from DB for grievance form, using fallback:',
+          settingsErr
+        );
+      }
 
       await resend.emails.send({
         from: 'SVI Infra <noreply@sviiinfrasolutions.com>',

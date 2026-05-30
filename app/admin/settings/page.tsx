@@ -6,6 +6,7 @@ import {
   Building2,
   CheckCircle2,
   ChevronRight,
+  Mail,
   Paintbrush,
   RefreshCw,
   Shield,
@@ -25,12 +26,14 @@ import { PropertiesTab } from '@/src/components/admin/settings/PropertiesTab';
 import { NotificationsTab } from '@/src/components/admin/settings/NotificationsTab';
 import { SecurityTab } from '@/src/components/admin/settings/SecurityTab';
 import { AppearanceTab, ACCENTS } from '@/src/components/admin/settings/AppearanceTab';
+import { EmailTab } from '@/src/components/admin/settings/EmailTab';
 import { getUserAgentInfo } from '@/src/components/admin/settings/helpers';
 
 const TABS = [
   { id: 'profile', label: 'Profile Settings', icon: User },
   { id: 'company', label: 'Company Info', icon: Building2 },
   { id: 'properties', label: 'Property List', icon: Building2 },
+  { id: 'email', label: 'Email Settings', icon: Mail },
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Paintbrush },
@@ -87,6 +90,11 @@ export default function AdminSettings() {
     enabled: true,
   });
 
+  const [emailSettings, setEmailSettings] = useState({
+    admin_email: 'hr.sviinfrasolutions@gmail.com',
+    send_user_copy: false,
+  });
+
   // Password Update States
   const [security, setSecurity] = useState({
     currentPassword: '',
@@ -131,12 +139,13 @@ export default function AdminSettings() {
       try {
         const authHeaders = { Authorization: `Bearer ${token}` };
 
-        // Parallel Fetch Profile, Company settings, Notification preferences, and Global email sharing settings
-        const [profileRes, companyRes, notifRes, sharingRes] = await Promise.all([
+        // Parallel Fetch Profile, Company settings, Notification preferences, Global email sharing, and Email settings
+        const [profileRes, companyRes, notifRes, sharingRes, emailSettingsRes] = await Promise.all([
           supabase.from('profiles').select('*').eq('id', userId).single(),
           fetch('/api/admin/settings?key=company_info', { headers: authHeaders }),
           fetch(`/api/admin/settings?key=notifications_${userId}`, { headers: authHeaders }),
           fetch('/api/admin/settings?key=global_email_sharing', { headers: authHeaders }),
+          fetch('/api/admin/settings?key=email_settings', { headers: authHeaders }),
         ]);
 
         // Load Profile
@@ -170,6 +179,17 @@ export default function AdminSettings() {
           const json = await sharingRes.json();
           if (json.value && Object.keys(json.value).length > 0) {
             setGlobalEmailSharing(json.value);
+          }
+        }
+
+        // Load Email Settings
+        if (emailSettingsRes.ok) {
+          const json = await emailSettingsRes.json();
+          if (json.value && Object.keys(json.value).length > 0) {
+            setEmailSettings({
+              admin_email: json.value.admin_email || 'hr.sviinfrasolutions@gmail.com',
+              send_user_copy: !!json.value.send_user_copy,
+            });
           }
         }
 
@@ -357,6 +377,39 @@ export default function AdminSettings() {
       // Revert in case of failure
       setGlobalEmailSharing(globalEmailSharing);
       showToast('error', 'Failed to save global settings.');
+    }
+  };
+
+  // 6c. Email Settings Saver Handler
+  const handleSaveEmailSettings = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailSettings.admin_email.trim()) {
+      showToast('error', 'Admin recipient email is required.');
+      return;
+    }
+
+    setSaveLoading(true);
+    try {
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          key: 'email_settings',
+          value: emailSettings,
+        }),
+      });
+
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error || 'Failed to save email settings.');
+
+      showToast('success', 'Email settings updated successfully!');
+    } catch (err: any) {
+      showToast('error', err.message || 'An error occurred while saving email settings.');
+    } finally {
+      setSaveLoading(false);
     }
   };
 
@@ -551,6 +604,17 @@ export default function AdminSettings() {
                         handleToggleNotification={handleToggleNotification}
                         globalEmailSharing={globalEmailSharing}
                         handleToggleGlobalEmailSharing={handleToggleGlobalEmailSharing}
+                        isCompact={isCompact}
+                      />
+                    )}
+
+                    {/* TAB G: EMAIL SETTINGS */}
+                    {activeTab === 'email' && (
+                      <EmailTab
+                        emailSettings={emailSettings}
+                        setEmailSettings={setEmailSettings}
+                        saveLoading={saveLoading}
+                        handleSaveEmailSettings={handleSaveEmailSettings}
                         isCompact={isCompact}
                       />
                     )}

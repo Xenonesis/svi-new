@@ -12,6 +12,42 @@ function escapeHtml(str: string): string {
     .replace(/'/g, '&#039;');
 }
 
+function isValidEmail(emailStr: string): boolean {
+  if (!emailStr) return false;
+  const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return regex.test(emailStr);
+}
+
+async function sendEmailWithRetry(
+  resend: any,
+  payload: any,
+  maxRetries = 3,
+  initialDelay = 1000
+): Promise<any> {
+  let attempt = 0;
+  while (attempt < maxRetries) {
+    try {
+      attempt++;
+      const result = await resend.emails.send(payload);
+      if (result.error) {
+        throw new Error(result.error.message || 'Resend API returned an error');
+      }
+      console.log(
+        `[Email Audit] Email sent successfully on attempt ${attempt} (ID: ${result.data?.id})`
+      );
+      return result;
+    } catch (err: any) {
+      console.error(`[Email Audit Error] Attempt ${attempt} failed: ${err.message || err}`);
+      if (attempt >= maxRetries) {
+        throw err;
+      }
+      const delay = initialDelay * Math.pow(2, attempt - 1);
+      console.log(`[Email Audit] Retrying in ${delay}ms...`);
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+  }
+}
+
 async function uploadFile(
   file: File,
   folder: string
@@ -209,6 +245,7 @@ export async function POST(request: NextRequest) {
   );
 
   // Send email notification (non-blocking)
+  const emailStatus = { sent: false, error: null as string | null };
   try {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
@@ -217,8 +254,6 @@ export async function POST(request: NextRequest) {
 
       // Fetch dynamic email settings from database
       let adminEmail = process.env.ADMIN_EMAIL || 'admin@sviinfra.com';
-      let sendUserCopy = false;
-
       try {
         const { data: emailSetting } = await supabaseAdmin
           .from('portal_settings')
@@ -229,85 +264,160 @@ export async function POST(request: NextRequest) {
         if (emailSetting?.value && typeof emailSetting.value === 'object') {
           const val = emailSetting.value as any;
           if (val.admin_email) adminEmail = val.admin_email;
-          if (val.send_user_copy !== undefined) sendUserCopy = !!val.send_user_copy;
         }
       } catch (settingsErr) {
         console.warn('Failed to load email settings from DB, using fallback:', settingsErr);
       }
 
-      // 1. Send admin notification email
-      await resend.emails.send({
-        from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
-        to: adminEmail,
-        subject: `New Registration: ${firstName} ${lastName || ''} - ${project}`,
-        html: `
-          <h2>New Property Registration</h2>
-          <table style="border-collapse:collapse;width:100%">
-            <tr><td style="padding:8px;font-weight:bold">Name:</td><td style="padding:8px">${escapeHtml(firstName)} ${escapeHtml(lastName || '')}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Email:</td><td style="padding:8px">${escapeHtml(email)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Mobile:</td><td style="padding:8px">${escapeHtml(mobileNo)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">S/O, W/O, D/O:</td><td style="padding:8px">${escapeHtml(soWoDo)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Date of Birth:</td><td style="padding:8px">${escapeHtml(dob)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Aadhar Number:</td><td style="padding:8px">${escapeHtml(aadharNumber)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">PAN Number:</td><td style="padding:8px">${escapeHtml(panNumber || 'N/A')}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">State:</td><td style="padding:8px">${escapeHtml(state)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">City:</td><td style="padding:8px">${escapeHtml(city)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Address:</td><td style="padding:8px">${escapeHtml(address)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Advisor:</td><td style="padding:8px">${escapeHtml(advisorName)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Project:</td><td style="padding:8px">${escapeHtml(project)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Property Size:</td><td style="padding:8px">${escapeHtml(propertySize)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Property Type:</td><td style="padding:8px">${escapeHtml(propertyType)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Plot Preference:</td><td style="padding:8px">${escapeHtml(plotPreference)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Payment Plan:</td><td style="padding:8px">${escapeHtml(paymentPlan)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Payment Mode:</td><td style="padding:8px">${escapeHtml(paymentMode)}</td></tr>
-            <tr><td style="padding:8px;font-weight:bold">Scheme Amount:</td><td style="padding:8px">${escapeHtml(schemeAmount)}</td></tr>
-          </table>
-          ${photoUrl ? `<p><a href="${photoUrl}">View Photo</a></p>` : ''}
-          ${panCardFileUrl ? `<p><a href="${panCardFileUrl}">View PAN Card</a></p>` : ''}
-        `,
-      });
+      // Fetch dynamic advisor profile to retrieve advisor email/real_email
+      let advisorEmail: string | null = null;
+      if (advisorName) {
+        try {
+          const { data: advProfile } = await supabaseAdmin
+            .from('profiles')
+            .select('email, real_email')
+            .eq('full_name', advisorName)
+            .limit(1);
 
-      // 2. If user copy is enabled, dispatch a styled copy/confirmation email to the applicant
-      if (sendUserCopy && email) {
-        await resend.emails.send({
-          from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
-          to: email,
-          subject: `Registration Received: ${firstName} ${lastName || ''} - Submission ${data.submission_id}`,
-          html: `
-            <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
-              <h2 style="color: #c9a84c; font-family: serif; border-bottom: 2px solid #f0d080; padding-bottom: 10px;">Registration Acknowledgment</h2>
-              <p>Dear <strong>${escapeHtml(firstName)} ${escapeHtml(lastName || '')}</strong>,</p>
-              <p>Thank you for registering with SVI Infra Solutions. We are pleased to acknowledge receipt of your property registration inquiry details.</p>
-              
-              <div style="background-color: #f9f9f9; color: #333333; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #c9a84c;">
-                <h3 style="margin-top: 0; color: #111; font-size: 14px;">Submission Details</h3>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Submission ID:</strong> ${data.submission_id}</p>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Project Name:</strong> ${escapeHtml(project)}</p>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Property Details:</strong> ${escapeHtml(propertyType)} (${escapeHtml(propertySize)})</p>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Advisor:</strong> ${escapeHtml(advisorName)}</p>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Payment Plan:</strong> ${escapeHtml(paymentPlan)}</p>
-                <p style="margin: 5px 0; font-size: 13px;"><strong>Scheme Registration Amount:</strong> INR ${escapeHtml(schemeAmount)}</p>
-              </div>
-              
-              <p>Our dedicated property advisor will review your preferences and get in touch with you shortly to assist with the next steps.</p>
-              <p>If you have any questions or require modifications to your submission, feel free to contact us at <a href="mailto:${adminEmail}" style="color: #c9a84c; text-decoration: none;">${adminEmail}</a>.</p>
-              
-              <br>
-              <hr style="border: none; border-top: 1px solid #eaeaea;" />
-              <p style="font-size: 11px; color: #888; text-align: center; margin-top: 15px;">
-                This is an automated administrative notification. Please do not reply directly to this message.<br>
-                <strong>SVI Infra Solutions Pvt. Ltd.</strong>
-              </p>
-            </div>
-          `,
-        });
+          if (advProfile && advProfile.length > 0) {
+            advisorEmail = advProfile[0].real_email || advProfile[0].email || null;
+            console.log(`[Email Audit] Advisor profile found: ${advisorName} -> ${advisorEmail}`);
+          } else {
+            console.warn(`[Email Audit] No advisor profile found with name: ${advisorName}`);
+          }
+        } catch (advisorErr) {
+          console.error('[Email Audit] Failed to lookup advisor profile:', advisorErr);
+        }
       }
+
+      // Multi-recipient distribution list construction
+      const bccList: string[] = [];
+
+      // Add admin to distribution list if valid
+      if (isValidEmail(adminEmail)) {
+        bccList.push(adminEmail);
+      } else {
+        console.warn(`[Email Audit] Admin email is invalid: ${adminEmail}`);
+      }
+
+      // Add advisor to distribution list if valid
+      if (advisorEmail && isValidEmail(advisorEmail)) {
+        bccList.push(advisorEmail);
+      } else if (advisorEmail) {
+        console.warn(`[Email Audit] Advisor email is invalid: ${advisorEmail}`);
+      }
+
+      // Primary Recipient: Applicant (default) or fallback to Admin if applicant email is invalid/missing
+      let primaryRecipient = email;
+      let isFallbackRoute = false;
+
+      if (!isValidEmail(email)) {
+        console.warn(
+          `[Email Audit] Applicant email is missing or invalid: ${email}. Routing primary delivery to Admin instead.`
+        );
+        primaryRecipient = adminEmail;
+        isFallbackRoute = true;
+      }
+
+      // Generate customized HTML content containing all registration details
+      const emailHtmlContent = `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
+          <h2 style="color: #c9a84c; font-family: serif; border-bottom: 2px solid #f0d080; padding-bottom: 10px; margin-bottom: 20px;">
+            ${isFallbackRoute ? 'Administrative Record: Property Registration' : 'Registration Acknowledgment'}
+          </h2>
+          
+          <p>Dear <strong>${escapeHtml(firstName)} ${escapeHtml(lastName || '')}</strong>,</p>
+          <p>Thank you for registering with SVI Infra Solutions. We are pleased to acknowledge receipt of your property registration inquiry details.</p>
+          
+          <div style="background-color: #f9f9f9; color: #333333; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #c9a84c;">
+            <h3 style="margin-top: 0; color: #111; font-size: 14px; border-bottom: 1px solid #eaeaea; padding-bottom: 5px;">Submission Details</h3>
+            <table style="border-collapse:collapse;width:100%;font-size:13px;">
+              <tr><td style="padding:6px 0;font-weight:bold;width:40%">Submission ID:</td><td style="padding:6px 0">${data.submission_id}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Project Name:</td><td style="padding:6px 0">${escapeHtml(project)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Property Type & Size:</td><td style="padding:6px 0">${escapeHtml(propertyType)} (${escapeHtml(propertySize)})</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Plot Preference:</td><td style="padding:6px 0">${escapeHtml(plotPreference)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Assigned Advisor:</td><td style="padding:6px 0">${escapeHtml(advisorName)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Payment Plan:</td><td style="padding:6px 0">${escapeHtml(paymentPlan)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Payment Mode:</td><td style="padding:6px 0">${escapeHtml(paymentMode)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Scheme Registration Amount:</td><td style="padding:6px 0">INR ${escapeHtml(schemeAmount)}</td></tr>
+            </table>
+          </div>
+
+          <div style="background-color: #f9f9f9; color: #333333; padding: 15px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #333;">
+            <h3 style="margin-top: 0; color: #111; font-size: 14px; border-bottom: 1px solid #eaeaea; padding-bottom: 5px;">Applicant Contact Information</h3>
+            <table style="border-collapse:collapse;width:100%;font-size:13px;">
+              <tr><td style="padding:6px 0;font-weight:bold;width:40%">Mobile No:</td><td style="padding:6px 0">${escapeHtml(mobileNo)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Email:</td><td style="padding:6px 0">${escapeHtml(email)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Date of Birth:</td><td style="padding:6px 0">${escapeHtml(dob)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Aadhaar Number:</td><td style="padding:6px 0">${escapeHtml(aadharNumber)}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">PAN Number:</td><td style="padding:6px 0">${escapeHtml(panNumber || 'N/A')}</td></tr>
+              <tr><td style="padding:6px 0;font-weight:bold">Address:</td><td style="padding:6px 0">${escapeHtml(address)}, ${escapeHtml(city)}, ${escapeHtml(state)}</td></tr>
+            </table>
+          </div>
+
+          ${
+            photoUrl || panCardFileUrl
+              ? `
+            <div style="margin: 20px 0;">
+              <h3 style="color: #111; font-size: 14px;">Submitted Documents</h3>
+              <ul style="padding-left: 20px; font-size: 13px;">
+                ${photoUrl ? `<li><a href="${photoUrl}" style="color: #c9a84c; text-decoration: none;">View Applicant Photo</a></li>` : ''}
+                ${panCardFileUrl ? `<li><a href="${panCardFileUrl}" style="color: #c9a84c; text-decoration: none;">View PAN Card File</a></li>` : ''}
+              </ul>
+            </div>
+          `
+              : ''
+          }
+          
+          <p style="font-size: 13px;">Our dedicated property advisor will review your preferences and get in touch with you shortly to assist with the next steps.</p>
+          <p style="font-size: 13px;">If you have any questions or require modifications to your submission, feel free to contact us at <a href="mailto:${adminEmail}" style="color: #c9a84c; text-decoration: none;">${adminEmail}</a>.</p>
+          
+          <br>
+          <hr style="border: none; border-top: 1px solid #eaeaea;" />
+          <p style="font-size: 11px; color: #888; text-align: center; margin-top: 15px;">
+            This is an automated administrative notification copy sent simultaneously to the applicant, assigned advisor, and support administration.<br>
+            <strong>SVI Infra Solutions Pvt. Ltd.</strong>
+          </p>
+        </div>
+      `;
+
+      // Single-recipient check: If there's no BCC list and we are falling back, or sending normally
+      const emailPayload: any = {
+        from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
+        to: primaryRecipient,
+        subject: `Property Registration Received: ${firstName} ${lastName || ''} - Submission ${data.submission_id}`,
+        html: emailHtmlContent,
+      };
+
+      // Add BCC list if populated
+      if (bccList.length > 0) {
+        // Filter out primary recipient to avoid duplicates
+        const uniqueBcc = bccList.filter(
+          (addr) => addr.toLowerCase() !== primaryRecipient.toLowerCase()
+        );
+        if (uniqueBcc.length > 0) {
+          emailPayload.bcc = uniqueBcc;
+        }
+      }
+
+      // Dispatch using backoff retry handler
+      await sendEmailWithRetry(resend, emailPayload);
+      emailStatus.sent = true;
     }
-  } catch (emailErr) {
-    console.error('Email notification failed:', emailErr);
+  } catch (emailErr: any) {
+    console.error(
+      '[Email Notification Failure] Registration completed but notification delivery failed:',
+      emailErr
+    );
+    emailStatus.error = emailErr.message || String(emailErr);
   }
 
-  return NextResponse.json({ success: true, id: data.id, submissionId: data.submission_id });
+  return NextResponse.json({
+    success: true,
+    id: data.id,
+    submissionId: data.submission_id,
+    emailStatus,
+  });
 }
 
 // GET /api/registration — retrieve active advisor names
