@@ -95,7 +95,7 @@ export default function Careers() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '0px', amount: 0.05 }}
                 transition={{ delay: idx * 0.08 }}
-                className="hover:border-brand-gold dark:hover:border-brand-gold border border-white/10 bg-white/5 p-8 text-center transition-colors md:p-10 dark:border-gray-700 dark:bg-gray-800/50"
+                className="hover:border-brand-gold dark:hover:border-brand-gold border border-white/10 bg-white/5 p-6 text-center transition-colors sm:p-8 md:p-10 dark:border-gray-700 dark:bg-gray-800/50"
               >
                 <div className="bg-brand-gold/10 text-brand-gold mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full">
                   {val.icon}
@@ -147,7 +147,7 @@ export default function Careers() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="hover:border-brand-gold dark:hover:border-brand-gold group border border-gray-100 bg-white p-10 text-center shadow-lg transition-all duration-300 hover:-translate-y-2 dark:border-gray-700 dark:bg-gray-900 dark:shadow-none"
+                className="hover:border-brand-gold dark:hover:border-brand-gold group border border-gray-100 bg-white p-6 text-center shadow-lg transition-all duration-300 hover:-translate-y-2 sm:p-10 dark:border-gray-700 dark:bg-gray-900 dark:shadow-none"
               >
                 <div className="text-brand-navy group-hover:text-brand-gold dark:group-hover:text-brand-gold group-hover:border-brand-gold mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gray-100 bg-gray-50 transition-colors dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300">
                   {job.icon}

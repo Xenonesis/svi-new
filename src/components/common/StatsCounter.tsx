@@ -70,7 +70,7 @@ const StatItem = memo(function StatItem({ end, label, suffix = '', duration = 20
 export default function StatsCounter() {
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
-      <div className="grid grid-cols-2 gap-4 divide-x divide-white/10 md:grid-cols-4 md:gap-8">
+      <div className="grid grid-cols-2 gap-4 divide-white/10 md:grid-cols-4 md:gap-8 md:divide-x">
         <StatItem end={5000} suffix="+" label="Properties Sold" />
         <StatItem end={5000} suffix="+" label="Happy Clients" />
         <StatItem end={15} suffix="+" label="Years Experience" />

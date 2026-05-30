@@ -322,7 +322,7 @@ export default function CompletedProjects() {
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300, mass: 1 }}
-              className="relative my-8 flex w-full max-w-5xl flex-col overflow-hidden bg-white shadow-2xl md:flex-row"
+              className="relative my-8 flex w-full max-w-5xl flex-col overflow-hidden bg-white shadow-2xl md:h-[600px] md:max-h-[85vh] md:flex-row"
               onClick={(e) => e.stopPropagation()}
             >
               <button
@@ -333,7 +333,7 @@ export default function CompletedProjects() {
                 <X size={20} className="text-brand-navy" />
               </button>
 
-              <div className="group relative flex min-h-[300px] items-center justify-center overflow-hidden bg-gray-100 md:min-h-auto md:w-1/2">
+              <div className="group relative flex min-h-[300px] items-center justify-center overflow-hidden bg-gray-100 md:h-full md:min-h-0 md:w-1/2">
                 {selectedProject.gallery && selectedProject.gallery.length > 0 ? (
                   <>
                     <AnimatePresence initial={false} custom={direction} mode="popLayout">
@@ -396,7 +396,7 @@ export default function CompletedProjects() {
                 </div>
               </div>
 
-              <div className="max-h-[80vh] overflow-y-auto p-8 md:w-1/2 md:p-12">
+              <div className="p-8 md:h-full md:w-1/2 md:overflow-y-auto md:p-12">
                 <div className="mb-6 flex flex-col">
                   <div className="mb-2 flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
                     <MapPin size={12} className="text-brand-gold" />

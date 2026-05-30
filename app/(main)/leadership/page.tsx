@@ -119,7 +119,7 @@ export default function Leadership() {
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.7, delay: idx * 0.15, ease: [0.22, 1, 0.36, 1] }}
                 whileHover={{ y: -10, boxShadow: '0 24px 64px rgba(0,0,0,0.14)' }}
-                className="group hover:border-brand-gold relative flex flex-col overflow-hidden border border-gray-200 bg-white p-8 text-center transition-all duration-400 dark:border-gray-700 dark:bg-gray-900"
+                className="group hover:border-brand-gold relative flex flex-col overflow-hidden border border-gray-200 bg-white p-6 text-center transition-all duration-400 sm:p-8 dark:border-gray-700 dark:bg-gray-900"
               >
                 <div className="from-brand-gold/40 via-brand-gold to-brand-gold/40 absolute top-0 left-0 h-1 w-full bg-gradient-to-r" />
                 <motion.div
@@ -163,7 +163,7 @@ export default function Leadership() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.5, delay: idx * 0.1 }}
                       whileHover={{ scale: 1.03, boxShadow: '0 10px 30px rgba(0,0,0,0.1)' }}
-                      className="border-brand-gold/30 hover:border-brand-gold relative flex flex-col items-center rounded-xl border bg-white p-8 shadow-md transition-all duration-300 dark:border-gray-700 dark:bg-gray-800"
+                      className="border-brand-gold/30 hover:border-brand-gold relative flex flex-col items-center rounded-xl border bg-white p-6 shadow-md transition-all duration-300 sm:p-8 dark:border-gray-700 dark:bg-gray-800"
                     >
                       <div className="bg-brand-gold/10 absolute -top-5 flex h-10 w-10 items-center justify-center rounded-full border border-white shadow-sm dark:border-gray-800">
                         <Award size={20} className="text-brand-gold" />
@@ -198,7 +198,7 @@ export default function Leadership() {
                   animate={{ opacity: 1, scale: 1 }}
                   transition={{ duration: 0.4 }}
                   whileHover={{ scale: 1.05 }}
-                  className="border-brand-gold/20 relative w-full max-w-md rounded-xl border bg-white p-8 text-center shadow-md dark:border-gray-700 dark:bg-gray-800"
+                  className="border-brand-gold/20 relative w-full max-w-md rounded-xl border bg-white p-6 text-center shadow-md sm:p-8 dark:border-gray-700 dark:bg-gray-800"
                 >
                   <div className="bg-brand-navy absolute -top-5 left-1/2 flex h-10 w-10 -translate-x-1/2 transform items-center justify-center rounded-full border-2 border-white shadow-sm dark:border-gray-800">
                     <Briefcase size={18} className="text-white" />

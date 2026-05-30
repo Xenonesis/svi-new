@@ -88,7 +88,7 @@ export default function About() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '0px', amount: 0.05 }}
                 transition={{ delay: idx * 0.08 }}
-                className="hover:border-brand-gold dark:hover:border-brand-gold border border-white/10 bg-white/5 p-8 text-center transition-colors md:p-10 dark:border-gray-700 dark:bg-gray-800/50"
+                className="hover:border-brand-gold dark:hover:border-brand-gold border border-white/10 bg-white/5 p-6 text-center transition-colors sm:p-8 md:p-10 dark:border-gray-700 dark:bg-gray-800/50"
               >
                 <div className="bg-brand-gold/10 text-brand-gold mx-auto mb-8 flex h-16 w-16 items-center justify-center rounded-full">
                   {val.icon}

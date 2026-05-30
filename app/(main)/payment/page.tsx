@@ -232,12 +232,12 @@ export default function Payment() {
 
       {/* Payment Details Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+        <div className="xs:p-4 fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 backdrop-blur-sm">
           <motion.div
             initial={{ opacity: 0, scale: 0.95, y: 10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 10 }}
-            className="relative max-h-[90vh] w-full max-w-[660px] overflow-y-auto rounded-[2rem] border bg-white p-6 shadow-2xl md:p-8 dark:border-gray-700 dark:bg-gray-900"
+            className="xs:p-6 relative max-h-[90vh] w-full max-w-[660px] overflow-y-auto rounded-[2rem] border bg-white p-4 shadow-2xl md:p-8 dark:border-gray-700 dark:bg-gray-900"
           >
             <button
               onClick={() => setIsModalOpen(false)}
@@ -255,7 +255,7 @@ export default function Payment() {
 
             <div className="flex flex-col items-start gap-8 md:flex-row">
               {/* Left Column: Beautiful Recreated 3D IDBI Bank Scanner Stand */}
-              <div className="mx-auto flex w-full max-w-[280px] shrink-0 flex-col items-center md:w-[270px] md:max-w-none">
+              <div className="mx-auto flex w-full max-w-[240px] shrink-0 flex-col items-center min-[380px]:max-w-[280px] md:w-[270px] md:max-w-none">
                 {/* Main Stand Container */}
                 <div className="group relative w-full">
                   {/* Subtle 3D shadow behind the stand */}

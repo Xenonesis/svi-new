@@ -167,7 +167,7 @@ export default function Contact() {
         <div className="container mx-auto px-4">
           <div className="mx-auto flex max-w-6xl flex-col gap-8 lg:flex-row">
             <div className="lg:w-1/3">
-              <div className="h-full border border-gray-200 bg-white p-6 shadow-sm transition-shadow duration-500 hover:shadow-xl md:p-10 dark:border-gray-700 dark:bg-gray-800">
+              <div className="xs:p-6 h-full border border-gray-200 bg-white p-5 shadow-sm transition-shadow duration-500 hover:shadow-xl md:p-10 dark:border-gray-700 dark:bg-gray-800">
                 <h4 className="mb-4 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
                   Reach Out
                 </h4>
