@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useTransition } from 'react';
+import { useEffect, useState, useTransition, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Upload,
@@ -19,6 +19,11 @@ import {
   Eye,
   EyeOff,
   Globe,
+  Settings,
+  Users,
+  Trophy,
+  ChevronRight,
+  ChevronLeft,
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import ExcelJS from 'exceljs';
@@ -49,8 +54,10 @@ export default function AdminLotteryPage() {
   const { token } = useAdminSession();
   const [isPending, startTransition] = useTransition();
 
-  // Active views: 'list' (dashboard/history), 'create' (upload/preview), 'draw' (run live draw)
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'create' | 'active-draw'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'create'>('dashboard');
+
+  // Wizard State
+  const [wizardStep, setWizardStep] = useState(1); // 1: Details, 2: Participants, 3: Review
 
   // New Lottery Form States
   const [title, setTitle] = useState('');
@@ -86,7 +93,8 @@ export default function AdminLotteryPage() {
   const [visibilityLoading, setVisibilityLoading] = useState(true);
   const [visibilityPending, setVisibilityPending] = useState(false);
 
-  // Fetch initial data from DB
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   useEffect(() => {
     fetchLotteries();
     fetchLotteryVisibility();
@@ -135,7 +143,6 @@ export default function AdminLotteryPage() {
 
   const fetchLotteries = async () => {
     try {
-      // 1. Fetch all lotteries
       const { data: lotteriesData, error: lError } = await supabase
         .from('lotteries')
         .select('*')
@@ -143,7 +150,6 @@ export default function AdminLotteryPage() {
 
       if (lError) throw lError;
 
-      // 2. Fetch winners for completed lotteries
       const { data: participantsData, error: pError } = await supabase
         .from('lottery_participants')
         .select('*')
@@ -172,11 +178,9 @@ export default function AdminLotteryPage() {
 
       setLotteries(formattedLotteries);
 
-      // Find active lottery
       const active = formattedLotteries.find((l) => l.status === 'active');
       if (active) {
         setActiveLottery(active);
-        // Fetch count of participants for the active lottery
         const { count, error: cError } = await supabase
           .from('lottery_participants')
           .select('*', { count: 'exact', head: true })
@@ -186,7 +190,6 @@ export default function AdminLotteryPage() {
           setActiveParticipantsCount(count || 0);
         }
 
-        // Fetch winners if any are already drawn
         const { data: activeWinnersData, error: wError } = await supabase
           .from('lottery_participants')
           .select('*')
@@ -207,11 +210,9 @@ export default function AdminLotteryPage() {
     }
   };
 
-  // CSV/Excel drag & drop/upload handler
   const handleFileUpload = (file: File) => {
     setErrorMessage(null);
     setSuccessMessage(null);
-
     const reader = new FileReader();
 
     if (file.name.endsWith('.csv')) {
@@ -258,7 +259,6 @@ export default function AdminLotteryPage() {
         return;
       }
 
-      // Simple CSV header parse
       const headers = lines[0].split(',').map((h) =>
         h
           .trim()
@@ -288,7 +288,6 @@ export default function AdminLotteryPage() {
         const line = lines[i].trim();
         if (!line) continue;
 
-        // Custom split that respects commas inside quotes
         const cols = line
           .split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/)
           .map((c) => c.trim().replace(/^["']|["']$/g, ''));
@@ -378,7 +377,6 @@ export default function AdminLotteryPage() {
       ? manualTicket.trim()
       : `SVI-${1000 + participants.length + 1}`;
 
-    // Check if ticket number is unique in current list
     if (participants.some((p) => p.ticketNumber.toLowerCase() === newTicket.toLowerCase())) {
       setErrorMessage(`Ticket number "${newTicket}" is already taken.`);
       return;
@@ -392,8 +390,6 @@ export default function AdminLotteryPage() {
     };
 
     setParticipants([...participants, newParticipant]);
-
-    // Reset form fields
     setManualName('');
     setManualPhone('');
     setManualEmail('');
@@ -402,7 +398,6 @@ export default function AdminLotteryPage() {
     setSuccessMessage(`Added participant "${newParticipant.name}" manually.`);
   };
 
-  // Submit parsed lottery and participants to DB
   const saveLotteryToDB = async () => {
     if (!title.trim()) {
       setErrorMessage('Please enter a title for the lottery.');
@@ -418,18 +413,14 @@ export default function AdminLotteryPage() {
         setErrorMessage(null);
         setSuccessMessage(null);
 
-        // 1. Check if there is an active lottery. Only one active lottery is allowed at a time.
         if (activeLottery) {
-          // Deactivate the current active lottery first (set to 'inactive')
           const { error: deactivateError } = await supabase
             .from('lotteries')
             .update({ status: 'inactive' })
             .eq('id', activeLottery.id);
-
           if (deactivateError) throw deactivateError;
         }
 
-        // 2. Create the new lottery
         const { data: newLottery, error: createError } = await supabase
           .from('lotteries')
           .insert({
@@ -442,7 +433,6 @@ export default function AdminLotteryPage() {
 
         if (createError) throw createError;
 
-        // 3. Batch insert participants
         const participantsData = participants.map((p) => ({
           lottery_id: newLottery.id,
           name: p.name,
@@ -452,21 +442,18 @@ export default function AdminLotteryPage() {
           is_winner: false,
         }));
 
-        // Break into chunks of 100 to avoid request body limits if database is large
         const chunkSize = 100;
         for (let i = 0; i < participantsData.length; i += chunkSize) {
           const chunk = participantsData.slice(i, i + chunkSize);
           const { error: insertError } = await supabase.from('lottery_participants').insert(chunk);
-
           if (insertError) throw insertError;
         }
 
         setTitle('');
         setDescription('');
         setParticipants([]);
-        setSuccessMessage(
-          'New active lottery created successfully! Shuffling is now live on the homepage.'
-        );
+        setWizardStep(1);
+        setSuccessMessage('New active lottery created successfully! Live drawing is ready.');
         setActiveTab('dashboard');
         fetchLotteries();
       } catch (error: any) {
@@ -476,7 +463,6 @@ export default function AdminLotteryPage() {
     });
   };
 
-  // Draw Winner Randomly in DB
   const drawWinnerRandomly = async () => {
     if (!activeLottery) return;
 
@@ -501,7 +487,6 @@ export default function AdminLotteryPage() {
         }
 
         const winner = data.winner;
-
         setSuccessMessage(
           `Winner Drawn! Congratulations to ${winner.name} (${winner.ticket_number})!`
         );
@@ -513,27 +498,22 @@ export default function AdminLotteryPage() {
     });
   };
 
-  // Reset the completed lottery back to active for testing / re-draw
   const resetDraw = async (lotteryId: string) => {
     startTransition(async () => {
       try {
         setErrorMessage(null);
         setSuccessMessage(null);
 
-        // Reset winner status for this lottery's participants
         const { error: pResetError } = await supabase
           .from('lottery_participants')
           .update({ is_winner: false, prize_rank: null })
           .eq('lottery_id', lotteryId);
-
         if (pResetError) throw pResetError;
 
-        // Set lottery status back to active
         const { error: lResetError } = await supabase
           .from('lotteries')
           .update({ status: 'active' })
           .eq('id', lotteryId);
-
         if (lResetError) throw lResetError;
 
         setSuccessMessage('Lottery reset to active state. You can draw again!');
@@ -545,7 +525,6 @@ export default function AdminLotteryPage() {
     });
   };
 
-  // Filter parsed items for searching in preview
   const filteredParticipants = participants.filter(
     (p) =>
       p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -560,341 +539,331 @@ export default function AdminLotteryPage() {
 
   const totalPages = Math.ceil(filteredParticipants.length / itemsPerPage);
 
+  const handleNextWizardStep = () => {
+    if (wizardStep === 1 && !title.trim()) {
+      setErrorMessage('Title is required to proceed.');
+      return;
+    }
+    setErrorMessage(null);
+    setWizardStep((s) => Math.min(s + 1, 3));
+  };
+
+  const handlePrevWizardStep = () => {
+    setWizardStep((s) => Math.max(s - 1, 1));
+  };
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-12">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-gray-100 pb-5 sm:flex-row sm:items-center dark:border-white/5">
+      <div className="flex flex-col justify-between gap-4 border-b border-white/5 pb-6 sm:flex-row sm:items-end">
         <div>
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-gray-900 dark:text-white">
-            Lottery Manager
+          <h1 className="font-serif text-3xl font-bold tracking-tight text-white">
+            Command Center: <span className="text-brand-gold italic">Lottery</span>
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Upload participant databases, configure lucky draws, and announce winners live.
+          <p className="mt-2 text-sm text-gray-400">
+            Launch massive lucky draws, manage high-stakes prizes, and broadcast live winner
+            reveals.
           </p>
         </div>
         <div className="flex gap-3">
           <button
             onClick={() => setActiveTab('dashboard')}
-            className={`cursor-pointer rounded-lg border px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-all duration-200 ${
+            className={`cursor-pointer rounded-xl border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all duration-300 ${
               activeTab === 'dashboard'
-                ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/20'
-                : 'border-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5'
+                ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30 shadow-[0_0_15px_rgba(201,168,76,0.1)]'
+                : 'border-white/5 text-gray-400 hover:bg-white/5 hover:text-white'
             }`}
           >
             Dashboard
           </button>
           <button
-            onClick={() => setActiveTab('create')}
-            className={`flex cursor-pointer items-center gap-1.5 rounded-lg border px-4 py-2 text-xs font-semibold tracking-wider uppercase transition-all duration-200 ${
+            onClick={() => {
+              setActiveTab('create');
+              setWizardStep(1);
+            }}
+            className={`flex cursor-pointer items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all duration-300 ${
               activeTab === 'create'
-                ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/20'
-                : 'border-transparent text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5'
+                ? 'bg-brand-gold text-brand-navy border-brand-gold shadow-[0_0_20px_rgba(201,168,76,0.3)]'
+                : 'bg-brand-gold/10 text-brand-gold border-brand-gold/20 hover:bg-brand-gold/20'
             }`}
           >
-            <Plus className="h-3.5 w-3.5" /> New Draw
+            <Plus className="h-4 w-4" /> New Lottery
           </button>
         </div>
       </div>
 
       {/* Messages */}
-      {errorMessage && (
-        <div className="flex items-center gap-3 rounded-xl border border-red-500/20 bg-red-500/5 p-4 text-sm text-red-500 dark:border-red-500/10">
-          <AlertCircle className="h-5 w-5 shrink-0" />
-          <span>{errorMessage}</span>
-        </div>
-      )}
-      {successMessage && (
-        <div className="flex items-center justify-between gap-3 rounded-xl border border-green-500/20 bg-green-500/5 p-4 text-sm text-green-500 dark:border-green-500/10">
-          <div className="flex items-center gap-3">
-            <CheckCircle2 className="h-5 w-5 shrink-0" />
-            <span>{successMessage}</span>
-          </div>
-          {successMessage.toLowerCase().includes('created') && (
-            <a
-              href="/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-green-500/30 bg-green-500/15 px-3 py-1.5 text-xs font-bold text-green-500 transition-all hover:bg-green-500/20"
+      <AnimatePresence>
+        {errorMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm font-medium text-red-400 shadow-lg backdrop-blur-sm"
+          >
+            <AlertCircle className="h-5 w-5 shrink-0" />
+            <span>{errorMessage}</span>
+            <button
+              onClick={() => setErrorMessage(null)}
+              className="ml-auto text-red-400 hover:text-white"
             >
-              Open Live Draw Arena ↗
-            </a>
-          )}
-        </div>
-      )}
+              ✕
+            </button>
+          </motion.div>
+        )}
+        {successMessage && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0 }}
+            className="flex items-center justify-between gap-3 rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-sm font-medium text-green-400 shadow-lg backdrop-blur-sm"
+          >
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="h-5 w-5 shrink-0" />
+              <span>{successMessage}</span>
+            </div>
+            {successMessage.toLowerCase().includes('created') && (
+              <a
+                href="/lottery"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-green-500/40 bg-green-500/20 px-4 py-2 text-xs font-bold tracking-wide text-green-300 transition-all hover:bg-green-500/30"
+              >
+                Launch Arena ↗
+              </a>
+            )}
+            <button
+              onClick={() => setSuccessMessage(null)}
+              className="ml-4 text-green-400 hover:text-white"
+            >
+              ✕
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      {/* ─── VISIBILITY CONTROL CARD ─── */}
+      {/* Visibility Control Card */}
       <div
-        className={`relative overflow-hidden rounded-2xl border p-6 transition-all duration-500 ${
-          lotteryVisible
-            ? 'border-brand-gold/30 bg-brand-gold/5 dark:bg-brand-gold/5'
-            : 'border-gray-200 bg-white dark:border-white/5 dark:bg-[#0e0e14]/50'
-        }`}
+        className={`relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 ${lotteryVisible ? 'border-brand-gold/40 to-brand-gold/5 bg-gradient-to-br from-[#0e0e14] shadow-[0_0_30px_rgba(201,168,76,0.1)]' : 'border-white/10 bg-[#0e0e14]/50'}`}
       >
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-5">
             <div
-              className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl transition-colors ${
-                lotteryVisible
-                  ? 'bg-brand-gold/15 text-brand-gold'
-                  : 'bg-gray-100 text-gray-400 dark:bg-white/5'
-              }`}
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-colors ${lotteryVisible ? 'bg-brand-gold/20 text-brand-gold' : 'bg-white/5 text-gray-500'}`}
             >
-              <Globe className="h-6 w-6" />
+              <Globe className="h-7 w-7" />
             </div>
             <div>
-              <h3 className="font-serif text-lg font-bold text-gray-900 dark:text-white">
-                Public Lottery Page Visibility
-              </h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
+              <h3 className="font-serif text-xl font-bold text-white">Public Live Broadcast</h3>
+              <p className="mt-1 text-sm text-gray-400">
                 {lotteryVisible
-                  ? 'Lucky Draw is LIVE — visible on the site navbar and homepage.'
-                  : 'Lucky Draw is HIDDEN — not visible to public users.'}
+                  ? 'The Lottery Arena is LIVE and broadcasting to all public visitors.'
+                  : 'The Arena is offline. Public visitors cannot see the drawing.'}
               </p>
             </div>
           </div>
 
           <div className="flex items-center gap-4 sm:shrink-0">
-            {/* Status badge */}
             <span
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold tracking-wider uppercase ${
-                lotteryVisible
-                  ? 'border border-green-500/20 bg-green-500/10 text-green-500'
-                  : 'bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400'
-              }`}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase ${lotteryVisible ? 'border border-green-500/30 bg-green-500/15 text-green-400' : 'border border-white/5 bg-white/5 text-gray-500'}`}
             >
               <span
-                className={`h-1.5 w-1.5 rounded-full ${
-                  lotteryVisible ? 'animate-pulse bg-green-500' : 'bg-gray-400'
-                }`}
+                className={`h-2 w-2 rounded-full ${lotteryVisible ? 'animate-pulse bg-green-400 shadow-[0_0_10px_#4ade80]' : 'bg-gray-500'}`}
               />
-              {visibilityLoading ? 'Checking…' : lotteryVisible ? 'Live' : 'Hidden'}
+              {visibilityLoading ? 'Checking…' : lotteryVisible ? 'Broadcasting Live' : 'Offline'}
             </span>
-
-            {/* Toggle button */}
             <button
-              id="lottery-visibility-toggle"
               onClick={() => toggleLotteryVisibility(!lotteryVisible)}
               disabled={visibilityLoading || visibilityPending}
-              className={`focus-visible:ring-brand-gold relative inline-flex h-8 w-[4.5rem] shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${
-                lotteryVisible
-                  ? 'border-brand-gold bg-brand-gold'
-                  : 'border-gray-300 bg-gray-200 dark:border-white/10 dark:bg-white/5'
-              }`}
-              role="switch"
-              aria-checked={lotteryVisible}
-              aria-label="Toggle lottery page visibility"
+              className={`focus-visible:ring-brand-gold relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${lotteryVisible ? 'border-brand-gold bg-brand-gold shadow-[0_0_15px_rgba(201,168,76,0.5)]' : 'border-white/10 bg-white/5'}`}
             >
               <span
-                className={`inline-block h-5 w-5 rounded-full shadow-md transition-all duration-300 ${
-                  lotteryVisible
-                    ? 'bg-brand-navy translate-x-9'
-                    : 'translate-x-1 bg-white dark:bg-gray-400'
-                }`}
+                className={`inline-block h-6 w-6 rounded-full shadow-md transition-all duration-300 ${lotteryVisible ? 'translate-x-8 bg-[#0a0a0f]' : 'translate-x-1 bg-gray-500'}`}
               />
             </button>
-
-            {/* Eye icon indicator */}
-            {lotteryVisible ? (
-              <Eye className="text-brand-gold h-5 w-5" />
-            ) : (
-              <EyeOff className="h-5 w-5 text-gray-400" />
-            )}
           </div>
-        </div>
-
-        {/* Helper text */}
-        <div className="mt-4 rounded-lg bg-black/5 p-3 text-xs text-gray-500 dark:bg-white/5 dark:text-gray-400">
-          <strong className="text-gray-700 dark:text-gray-300">How it works:</strong> When{' '}
-          <span className="font-semibold text-green-500">enabled</span>, the Lucky Draw link appears
-          in the navbar and the homepage CTA banner is shown. When{' '}
-          <span className="font-semibold text-gray-500">disabled</span>, the page is hidden from the
-          public; direct URL visits will redirect to the homepage.
         </div>
       </div>
 
-      {/* Main Tab Views */}
       {activeTab === 'dashboard' && (
-        <div className="space-y-6">
+        <div className="space-y-8">
           {/* Active Lottery Section */}
           {activeLottery ? (
-            <div className="border-brand-gold/20 relative overflow-hidden rounded-2xl border bg-white p-6 shadow-xl dark:bg-[#0e0e14]/70">
-              {/* Background gradient embellishments */}
-              <div className="bg-brand-gold/5 absolute -top-16 -right-16 h-48 w-48 rounded-full blur-2xl" />
-              <div className="relative flex flex-col justify-between gap-6 md:flex-row md:items-center">
-                <div className="space-y-2">
-                  <span className="bg-brand-gold/20 text-brand-gold inline-flex items-center gap-1 rounded px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase">
-                    <Clock className="h-3 w-3" /> Live Draw Ready
-                  </span>
-                  <h2 className="font-serif text-2xl font-bold text-gray-900 dark:text-white">
+            <div className="border-brand-gold/30 relative overflow-hidden rounded-3xl border bg-[#0a0a0f] p-8 shadow-[0_0_40px_rgba(201,168,76,0.15)]">
+              {/* Decorative backgrounds */}
+              <div className="bg-brand-gold/10 pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full blur-[100px]" />
+              <div className="bg-brand-gold/5 pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full blur-[100px]" />
+
+              <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
+                <div className="space-y-4">
+                  <div className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center gap-2 rounded-full border px-3 py-1 text-xs font-bold tracking-widest uppercase backdrop-blur-md">
+                    <span className="bg-brand-gold h-2 w-2 animate-pulse rounded-full"></span> Ready
+                    for Draw
+                  </div>
+                  <h2 className="font-serif text-4xl font-bold text-white">
                     {activeLottery.title}
                   </h2>
-                  <p className="max-w-xl text-sm text-gray-500 dark:text-gray-400">
+                  <p className="max-w-2xl text-base text-gray-400">
                     {activeLottery.description || 'No description provided.'}
                   </p>
-                  <div className="flex flex-wrap items-center gap-4 pt-2 text-xs font-medium text-gray-600 dark:text-gray-400">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-brand-gold text-base font-bold">
-                        {activeParticipantsCount}
-                      </span>
-                      <span>Total Participants</span>
+
+                  <div className="flex flex-wrap items-center gap-6 pt-4 text-sm font-medium text-gray-400">
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4">
+                      <div className="bg-brand-gold/20 text-brand-gold flex h-10 w-10 items-center justify-center rounded-xl">
+                        <Users className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-white">
+                          {activeParticipantsCount}
+                        </div>
+                        <div className="text-[10px] tracking-wider text-gray-500 uppercase">
+                          Participants
+                        </div>
+                      </div>
                     </div>
-                    <div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-gray-400">Created:</span>
-                      <span>{new Date(activeLottery.created_at).toLocaleDateString()}</span>
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white">
+                        <Clock className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <div className="text-xl font-bold text-white">
+                          {new Date(activeLottery.created_at).toLocaleDateString()}
+                        </div>
+                        <div className="text-[10px] tracking-wider text-gray-500 uppercase">
+                          Creation Date
+                        </div>
+                      </div>
                     </div>
-                    <div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
-                    <a
-                      href="/"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-brand-gold flex items-center gap-1 font-bold hover:underline"
-                    >
-                      🔗 Live Page: /
-                    </a>
                   </div>
                 </div>
 
-                <div className="flex flex-col gap-3 sm:flex-row">
+                <div className="flex shrink-0 flex-col gap-4">
                   {activeWinners.length > 0 ? (
-                    <div className="border-brand-gold/15 bg-brand-gold/5 flex items-center gap-3 rounded-xl border p-4">
-                      <Award className="text-brand-gold h-6 w-6" />
-                      <div>
-                        <div className="text-brand-gold text-[10px] font-bold tracking-widest uppercase">
-                          Winner drawn
+                    <div className="border-brand-gold/30 flex flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-b from-[#1a1a24] to-[#0a0a0f] p-8 shadow-2xl">
+                      <div className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold flex h-16 w-16 items-center justify-center rounded-full border shadow-[0_0_20px_rgba(201,168,76,0.3)]">
+                        <Trophy className="h-8 w-8" />
+                      </div>
+                      <div className="text-center">
+                        <div className="text-brand-gold mb-1 text-[10px] font-bold tracking-widest uppercase">
+                          Winner Declared
                         </div>
-                        <div className="font-semibold text-gray-900 dark:text-white">
+                        <div className="font-serif text-3xl font-bold text-white">
                           {activeWinners[0].name}
                         </div>
-                        <div className="text-xs text-gray-500 dark:text-gray-400">
+                        <div className="mt-2 inline-block rounded bg-white/10 px-3 py-1 font-mono text-sm font-bold text-gray-300">
                           {activeWinners[0].ticket_number}
                         </div>
                       </div>
                       <button
                         onClick={() => resetDraw(activeLottery.id)}
                         disabled={isPending}
-                        className="hover:text-brand-gold ml-3 cursor-pointer rounded-lg p-1.5 text-gray-500 transition-colors hover:bg-black/5 dark:hover:bg-white/5"
-                        title="Re-draw / Reset"
+                        className="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-2.5 text-xs font-bold tracking-wider text-gray-300 uppercase transition-all hover:bg-white/10 hover:text-white"
                       >
-                        <RefreshCw className={`h-4 w-4 ${isPending ? 'animate-spin' : ''}`} />
+                        <RefreshCw className={`h-4 w-4 ${isPending ? 'animate-spin' : ''}`} /> Reset
+                        Draw
                       </button>
                     </div>
                   ) : (
                     <button
                       onClick={drawWinnerRandomly}
                       disabled={isPending}
-                      className="shadow-gold bg-brand-gold hover:bg-brand-gold/90 text-brand-navy flex transform cursor-pointer items-center justify-center gap-2 rounded-xl px-6 py-3.5 text-sm font-bold tracking-wider uppercase transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0"
+                      className="group bg-brand-gold text-brand-navy relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-2xl px-10 py-6 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(201,168,76,0.6)]"
                     >
-                      <Play className="fill-brand-navy h-4 w-4" /> Draw Winner Now
+                      <div className="absolute inset-0 flex h-full w-full [transform:skew(-12deg)_translateX(-100%)] justify-center group-hover:[transform:skew(-12deg)_translateX(100%)] group-hover:duration-1000">
+                        <div className="relative h-full w-8 bg-white/30" />
+                      </div>
+                      <Play className="fill-brand-navy h-6 w-6" /> Execute Live Draw
                     </button>
                   )}
                 </div>
               </div>
             </div>
           ) : (
-            <div className="rounded-2xl border border-dashed border-gray-200 p-12 text-center dark:border-white/10">
-              <Award className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-600" />
-              <h3 className="mb-1 font-serif text-lg font-bold text-gray-900 dark:text-white">
-                No Active Lottery Draw
-              </h3>
-              <p className="mx-auto mb-6 max-w-sm text-sm text-gray-500 dark:text-gray-400">
-                Create a new lottery draw session by uploading customer spreadsheet files.
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/20 bg-[#0e0e14]/30 p-16 text-center">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-gray-600">
+                <Award className="h-10 w-10" />
+              </div>
+              <h3 className="mb-2 font-serif text-2xl font-bold text-white">No Active Campaigns</h3>
+              <p className="mb-8 max-w-md text-sm text-gray-400">
+                You don't have any active lotteries running. Start a new campaign to thrill your
+                participants and award prizes.
               </p>
               <button
-                onClick={() => setActiveTab('create')}
-                className="bg-brand-gold hover:bg-brand-gold/90 text-brand-navy cursor-pointer rounded-lg px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-colors"
+                onClick={() => {
+                  setActiveTab('create');
+                  setWizardStep(1);
+                }}
+                className="bg-brand-gold text-brand-navy flex cursor-pointer items-center gap-2 rounded-xl px-8 py-3.5 text-xs font-bold tracking-wider uppercase transition-transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(201,168,76,0.2)]"
               >
-                Create Lottery Draw
+                <Plus className="h-4 w-4" /> Start New Campaign
               </button>
             </div>
           )}
 
           {/* Historical draws table */}
-          <div className="space-y-4">
-            <h3 className="font-serif text-xl font-bold text-gray-900 dark:text-white">
-              Draw History & Completed Lotteries
-            </h3>
-            <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-white/5 dark:bg-[#0e0e14]/50">
+          <div className="space-y-6">
+            <h3 className="font-serif text-2xl font-bold text-white">Archive & History</h3>
+            <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#0e0e14]/60 backdrop-blur-md">
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-sm text-gray-600 dark:text-gray-300">
-                  <thead className="bg-gray-50 text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:bg-white/5 dark:text-gray-400">
+                <table className="w-full border-collapse text-left text-sm text-gray-300">
+                  <thead className="border-b border-white/10 bg-black/40 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
                     <tr>
-                      <th className="px-6 py-4">Lottery Title</th>
-                      <th className="px-6 py-4">Created Date</th>
-                      <th className="px-6 py-4">Status</th>
-                      <th className="px-6 py-4">Grand Prize Winner</th>
-                      <th className="px-6 py-4">Ticket Number</th>
-                      <th className="px-6 py-4 text-right">Actions</th>
+                      <th className="px-8 py-5">Campaign Name</th>
+                      <th className="px-8 py-5">Date</th>
+                      <th className="px-8 py-5">Status</th>
+                      <th className="px-8 py-5">Winner Details</th>
+                      <th className="px-8 py-5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                  <tbody className="divide-y divide-white/5">
                     {lotteries.map((l) => (
-                      <tr
-                        key={l.id}
-                        className="transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5"
-                      >
-                        <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
-                          <div className="flex items-center gap-2">
-                            <span>{l.title}</span>
-                            <a
-                              href="/"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="text-brand-gold inline-flex items-center gap-0.5 text-[10px] hover:underline"
-                              title="View drawing on main page"
-                            >
-                              (view) ↗
-                            </a>
-                          </div>
+                      <tr key={l.id} className="transition-colors hover:bg-white/5">
+                        <td className="px-8 py-5 font-bold text-white">{l.title}</td>
+                        <td className="px-8 py-5 text-gray-400">
+                          {new Date(l.created_at).toLocaleDateString()}
                         </td>
-                        <td className="px-6 py-4">{new Date(l.created_at).toLocaleDateString()}</td>
-                        <td className="px-6 py-4">
+                        <td className="px-8 py-5">
                           <span
-                            className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
+                            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold tracking-wider uppercase ${
                               l.status === 'active'
-                                ? 'bg-green-500/10 text-green-500'
+                                ? 'border-green-500/30 bg-green-500/10 text-green-400'
                                 : l.status === 'completed'
-                                  ? 'bg-brand-gold/10 text-brand-gold'
-                                  : 'bg-gray-500/10 text-gray-500'
+                                  ? 'border-brand-gold/30 bg-brand-gold/10 text-brand-gold'
+                                  : 'border-white/10 bg-white/5 text-gray-400'
                             }`}
                           >
                             {l.status}
                           </span>
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
+                        <td className="px-8 py-5">
                           {l.winner ? (
-                            <div className="text-brand-gold flex items-center gap-1.5 font-bold">
-                              <Award className="h-4 w-4 shrink-0" />
-                              {l.winner.name}
+                            <div>
+                              <div className="text-brand-gold flex items-center gap-2 font-bold">
+                                <Award className="h-4 w-4 shrink-0" /> {l.winner.name}
+                              </div>
+                              <div className="mt-1 font-mono text-[10px] text-gray-500">
+                                Ticket: {l.winner.ticket_number}
+                              </div>
                             </div>
                           ) : (
-                            <span className="text-gray-400 italic">No winner drawn</span>
+                            <span className="text-xs text-gray-500 italic">Pending Draw</span>
                           )}
                         </td>
-                        <td className="px-6 py-4">
-                          {l.winner ? (
-                            <code className="rounded bg-gray-100 px-2 py-1 font-mono text-xs font-bold dark:bg-white/5">
-                              {l.winner.ticket_number}
-                            </code>
-                          ) : (
-                            '-'
-                          )}
-                        </td>
-                        <td className="px-6 py-4 text-right">
+                        <td className="px-8 py-5 text-right">
                           <button
                             onClick={() => resetDraw(l.id)}
                             disabled={isPending}
-                            className="hover:border-brand-gold/20 hover:bg-brand-gold/5 text-brand-gold cursor-pointer rounded-lg border border-transparent px-3 py-1.5 text-xs font-semibold tracking-wider transition-all"
+                            className="hover:border-brand-gold/40 hover:bg-brand-gold/10 hover:text-brand-gold inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-gray-300 transition-all"
                           >
-                            Reset / Re-draw
+                            <RefreshCw className="h-3 w-3" /> Re-open
                           </button>
                         </td>
                       </tr>
                     ))}
                     {lotteries.length === 0 && (
                       <tr>
-                        <td colSpan={6} className="px-6 py-8 text-center text-gray-400 italic">
-                          No history found. Create your first lucky draw!
+                        <td colSpan={5} className="px-8 py-12 text-center text-gray-500 italic">
+                          No archived campaigns.
                         </td>
                       </tr>
                     )}
@@ -907,409 +876,356 @@ export default function AdminLotteryPage() {
       )}
 
       {activeTab === 'create' && (
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-          {/* Settings Card */}
-          <div className="space-y-6 lg:col-span-1">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#0e0e14]/50">
-              <h3 className="mb-4 font-serif text-lg font-bold text-gray-900 dark:text-white">
-                Draw Configuration
-              </h3>
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                    Lottery Draw Title
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g., Mega Plot Lucky Draw"
-                    className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 transition-all outline-none focus:ring-1 dark:border-white/10 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="mb-2 block text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                    Description / Subtitle
-                  </label>
-                  <textarea
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Describe prizes, eligibility terms, or timing..."
-                    rows={3}
-                    className="focus:border-brand-gold focus:ring-brand-gold w-full resize-none rounded-xl border border-gray-200 bg-transparent px-4 py-3 text-sm text-gray-900 transition-all outline-none focus:ring-1 dark:border-white/10 dark:text-white"
-                  />
-                </div>
+        <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-[#0e0e14]/80 p-8 shadow-2xl backdrop-blur-xl md:p-12">
+          {/* Wizard Progress Bar */}
+          <div className="mb-12">
+            <div className="relative flex items-center justify-between">
+              <div className="absolute top-1/2 right-0 left-0 h-0.5 -translate-y-1/2 bg-white/10" />
+              <div
+                className="bg-brand-gold absolute top-1/2 left-0 h-0.5 -translate-y-1/2 transition-all duration-500"
+                style={{ width: `${(wizardStep - 1) * 50}%` }}
+              />
 
-                <div className="space-y-2 rounded-xl bg-gray-50 p-4 text-xs text-gray-500 dark:bg-white/5 dark:text-gray-400">
-                  <div className="flex gap-2 font-semibold text-gray-800 dark:text-gray-300">
-                    <HelpCircle className="text-brand-gold h-4 w-4 shrink-0" />
-                    <span>Parsing Requirements</span>
+              {[1, 2, 3].map((step) => (
+                <div key={step} className="relative z-10 flex flex-col items-center gap-3">
+                  <div
+                    className={`flex h-12 w-12 items-center justify-center rounded-full border-2 font-bold transition-all duration-500 ${
+                      wizardStep >= step
+                        ? 'border-brand-gold bg-brand-gold text-brand-navy shadow-[0_0_15px_rgba(201,168,76,0.4)]'
+                        : 'border-white/20 bg-[#0e0e14] text-gray-500'
+                    }`}
+                  >
+                    {wizardStep > step ? <CheckCircle2 className="h-6 w-6" /> : step}
                   </div>
-                  <p>
-                    Spreadsheet headers must contain a column named: <strong>"Name"</strong>{' '}
-                    (case-insensitive).
-                  </p>
-                  <p>
-                    Optionally supports columns: <strong>"Phone"</strong>, <strong>"Email"</strong>,
-                    and <strong>"Ticket Number"</strong>.
-                  </p>
-                  <p>
-                    If ticket numbers are missing, we will auto-generate them in sequential
-                    sequence.
-                  </p>
+                  <span
+                    className={`text-[10px] font-bold tracking-widest uppercase ${wizardStep >= step ? 'text-brand-gold' : 'text-gray-500'}`}
+                  >
+                    {step === 1 ? 'Details' : step === 2 ? 'Participants' : 'Launch'}
+                  </span>
                 </div>
-
-                <button
-                  onClick={saveLotteryToDB}
-                  disabled={isPending || !title.trim() || participants.length === 0}
-                  className="shadow-gold bg-brand-gold hover:bg-brand-gold/90 text-brand-navy flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3.5 text-xs font-bold tracking-wider uppercase transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:shadow-none disabled:dark:bg-white/5"
-                >
-                  {isPending ? 'Syncing with DB...' : 'Create & Launch Lottery'}{' '}
-                  <ArrowRight className="h-4 w-4" />
-                </button>
-              </div>
+              ))}
             </div>
           </div>
 
-          {/* Upload Area & Preview */}
-          <div className="space-y-6 lg:col-span-2">
-            <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-white/5 dark:bg-[#0e0e14]/50">
-              {participants.length === 0 ? (
-                <>
-                  <div className="mb-6 flex border-b border-gray-100 dark:border-white/5">
-                    <button
-                      type="button"
-                      onClick={() => setEntryMethod('upload')}
-                      className={`flex-1 cursor-pointer border-b-2 pb-3 text-center text-xs font-bold tracking-widest uppercase transition-all ${
-                        entryMethod === 'upload'
-                          ? 'border-brand-gold text-brand-gold'
-                          : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
-                      }`}
-                    >
-                      📂 Upload Spreadsheet
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setEntryMethod('manual')}
-                      className={`flex-1 cursor-pointer border-b-2 pb-3 text-center text-xs font-bold tracking-widest uppercase transition-all ${
-                        entryMethod === 'manual'
-                          ? 'border-brand-gold text-brand-gold'
-                          : 'border-transparent text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
-                      }`}
-                    >
-                      ✍️ Manual Entry
-                    </button>
+          {/* Wizard Steps */}
+          <div className="min-h-[400px]">
+            <AnimatePresence mode="wait">
+              {/* STEP 1: Details */}
+              {wizardStep === 1 && (
+                <motion.div
+                  key="step1"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
+                  <div className="text-center">
+                    <h3 className="font-serif text-3xl font-bold text-white">Campaign Details</h3>
+                    <p className="mt-2 text-sm text-gray-400">
+                      Give your lucky draw a grand title and exciting description.
+                    </p>
                   </div>
 
-                  {entryMethod === 'upload' ? (
-                    <div
-                      onDragOver={(e) => {
-                        e.preventDefault();
-                        setDragOver(true);
-                      }}
-                      onDragLeave={() => setDragOver(false)}
-                      onDrop={(e) => {
-                        e.preventDefault();
-                        setDragOver(false);
-                        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
-                          handleFileUpload(e.dataTransfer.files[0]);
-                        }
-                      }}
-                      className={`cursor-pointer rounded-2xl border-2 border-dashed p-12 text-center transition-all ${
-                        dragOver
-                          ? 'border-brand-gold bg-brand-gold/5'
-                          : 'hover:border-brand-gold/40 dark:hover:border-brand-gold/30 border-gray-200 dark:border-white/10'
-                      }`}
-                      onClick={() => {
-                        const el = document.getElementById('file-upload-input');
-                        if (el) el.click();
-                      }}
-                    >
+                  <div className="mx-auto max-w-2xl space-y-6">
+                    <div>
+                      <label className="mb-2 block text-xs font-bold tracking-wider text-gray-300 uppercase">
+                        Lottery Title <span className="text-brand-gold">*</span>
+                      </label>
                       <input
-                        id="file-upload-input"
-                        type="file"
-                        accept=".csv, .xlsx, .xls"
-                        className="hidden"
-                        onChange={(e) => {
-                          if (e.target.files && e.target.files[0]) {
-                            handleFileUpload(e.target.files[0]);
-                          }
-                        }}
+                        type="text"
+                        value={title}
+                        onChange={(e) => setTitle(e.target.value)}
+                        placeholder="e.g., Summer Villa Mega Giveaway"
+                        className="focus:border-brand-gold/50 w-full rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-lg font-bold text-white transition-all outline-none focus:bg-white/10"
                       />
-                      <div className="bg-brand-gold/10 text-brand-gold mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full">
-                        <Upload className="h-6 w-6" />
-                      </div>
-                      <h4 className="mb-1 font-semibold text-gray-900 dark:text-white">
-                        Drag & drop file here
-                      </h4>
-                      <p className="mb-4 text-xs text-gray-500 dark:text-gray-400">
-                        Supports Excel (.xlsx, .xls) and CSV files up to 10MB
-                      </p>
-                      <span className="hover:border-brand-gold/30 inline-flex rounded-lg border border-gray-200 bg-white/5 px-4 py-2 text-xs font-semibold text-gray-700 transition-colors dark:border-white/10 dark:text-gray-300">
-                        Browse Files
-                      </span>
                     </div>
-                  ) : (
-                    <form onSubmit={handleManualAdd} className="space-y-4 pt-2">
-                      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                        <div>
-                          <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                            Full Name <span className="text-red-500">*</span>
-                          </label>
-                          <input
-                            type="text"
-                            required
-                            value={manualName}
-                            onChange={(e) => setManualName(e.target.value)}
-                            placeholder="Enter participant name..."
-                            className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-transparent px-4 py-2.5 text-xs text-gray-900 transition-all outline-none dark:border-white/10 dark:text-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                            Ticket Number (Optional)
-                          </label>
-                          <input
-                            type="text"
-                            value={manualTicket}
-                            onChange={(e) => setManualTicket(e.target.value)}
-                            placeholder="Auto-generated if left blank"
-                            className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-transparent px-4 py-2.5 text-xs text-gray-900 transition-all outline-none dark:border-white/10 dark:text-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                            Phone Number (Optional)
-                          </label>
-                          <input
-                            type="tel"
-                            value={manualPhone}
-                            onChange={(e) => setManualPhone(e.target.value)}
-                            placeholder="e.g. +91 98765 43210"
-                            className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-transparent px-4 py-2.5 text-xs text-gray-900 transition-all outline-none dark:border-white/10 dark:text-white"
-                          />
-                        </div>
-                        <div>
-                          <label className="mb-1.5 block text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                            Email Address (Optional)
-                          </label>
-                          <input
-                            type="email"
-                            value={manualEmail}
-                            onChange={(e) => setManualEmail(e.target.value)}
-                            placeholder="e.g. client@example.com"
-                            className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-transparent px-4 py-2.5 text-xs text-gray-900 transition-all outline-none dark:border-white/10 dark:text-white"
-                          />
-                        </div>
-                      </div>
-                      <div className="flex justify-end pt-2">
-                        <button
-                          type="submit"
-                          className="shadow-gold bg-brand-gold hover:bg-brand-gold/90 text-brand-navy flex cursor-pointer items-center justify-center gap-1.5 rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all"
-                        >
-                          <Plus className="h-4 w-4" /> Add Participant
-                        </button>
-                      </div>
-                    </form>
-                  )}
-                </>
-              ) : (
-                <div className="space-y-4">
-                  {/* File status */}
-                  <div className="flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 dark:bg-white/5">
-                    <div className="flex items-center gap-3">
-                      <FileSpreadsheet className="text-brand-gold h-5 w-5" />
-                      <div>
-                        <div className="text-xs font-bold text-gray-900 dark:text-white">
-                          Active Participant List
-                        </div>
-                        <div className="text-[10px] text-gray-400">
-                          {participants.length} valid rows loaded
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => setShowInlineManualForm(!showInlineManualForm)}
-                        className="text-brand-gold hover:bg-brand-gold/10 flex cursor-pointer items-center gap-1 rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors"
-                      >
-                        <Plus className="h-3.5 w-3.5" /> Manual Add
-                      </button>
-                      <button
-                        onClick={() => {
-                          setParticipants([]);
-                          setShowInlineManualForm(false);
-                        }}
-                        className="cursor-pointer rounded-lg px-3 py-1.5 text-xs font-semibold text-red-500 transition-colors hover:bg-red-500/10 hover:text-red-600"
-                      >
-                        Clear List
-                      </button>
+                    <div>
+                      <label className="mb-2 block text-xs font-bold tracking-wider text-gray-300 uppercase">
+                        Description / Prizes
+                      </label>
+                      <textarea
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        placeholder="Describe the grand prize and rules..."
+                        rows={4}
+                        className="focus:border-brand-gold/50 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-white transition-all outline-none focus:bg-white/10"
+                      />
                     </div>
                   </div>
+                </motion.div>
+              )}
 
-                  {/* Inline Manual Form inside table preview card */}
-                  <AnimatePresence>
-                    {showInlineManualForm && (
-                      <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="border-brand-gold/20 bg-brand-gold/5 space-y-3 overflow-hidden rounded-xl border p-4"
-                      >
-                        <h4 className="text-brand-gold text-[10px] font-bold tracking-wider uppercase">
-                          Append Participant Manually
-                        </h4>
-                        <form
-                          onSubmit={handleManualAdd}
-                          className="grid grid-cols-1 gap-3 md:grid-cols-2"
-                        >
-                          <div>
+              {/* STEP 2: Participants */}
+              {wizardStep === 2 && (
+                <motion.div
+                  key="step2"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
+                  <div className="text-center">
+                    <h3 className="font-serif text-3xl font-bold text-white">Load Participants</h3>
+                    <p className="mt-2 text-sm text-gray-400">
+                      Upload your customer spreadsheet or add entries manually.
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
+                    <div className="lg:col-span-2">
+                      <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
+                        <div className="mb-6 flex gap-2 rounded-xl bg-black/40 p-1">
+                          <button
+                            type="button"
+                            onClick={() => setEntryMethod('upload')}
+                            className={`flex-1 rounded-lg py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all ${entryMethod === 'upload' ? 'text-brand-gold bg-white/10 shadow-sm' : 'text-gray-500 hover:text-white'}`}
+                          >
+                            Upload File
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setEntryMethod('manual')}
+                            className={`flex-1 rounded-lg py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all ${entryMethod === 'manual' ? 'text-brand-gold bg-white/10 shadow-sm' : 'text-gray-500 hover:text-white'}`}
+                          >
+                            Manual
+                          </button>
+                        </div>
+
+                        {entryMethod === 'upload' ? (
+                          <div
+                            onDragOver={(e) => {
+                              e.preventDefault();
+                              setDragOver(true);
+                            }}
+                            onDragLeave={() => setDragOver(false)}
+                            onDrop={(e) => {
+                              e.preventDefault();
+                              setDragOver(false);
+                              if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+                                handleFileUpload(e.dataTransfer.files[0]);
+                              }
+                            }}
+                            onClick={() => fileInputRef.current?.click()}
+                            className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 ${dragOver ? 'border-brand-gold bg-brand-gold/10 scale-105' : 'hover:border-brand-gold/50 border-white/20 bg-transparent hover:bg-white/5'}`}
+                          >
+                            <input
+                              ref={fileInputRef}
+                              type="file"
+                              accept=".csv, .xlsx, .xls"
+                              className="hidden"
+                              onChange={(e) => {
+                                if (e.target.files && e.target.files[0])
+                                  handleFileUpload(e.target.files[0]);
+                              }}
+                            />
+                            <div className="bg-brand-gold/10 text-brand-gold mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                              <Upload className="h-8 w-8" />
+                            </div>
+                            <div className="mb-1 font-bold text-white">Click or Drop File Here</div>
+                            <div className="text-xs text-gray-500">CSV, XLSX supported</div>
+                          </div>
+                        ) : (
+                          <form onSubmit={handleManualAdd} className="space-y-4">
                             <input
                               type="text"
                               required
                               value={manualName}
                               onChange={(e) => setManualName(e.target.value)}
                               placeholder="Full Name *"
-                              className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 outline-none dark:border-white/10 dark:bg-[#07070b] dark:text-white"
+                              className="focus:border-brand-gold/50 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs text-white outline-none"
                             />
-                          </div>
-                          <div>
                             <input
                               type="text"
                               value={manualTicket}
                               onChange={(e) => setManualTicket(e.target.value)}
-                              placeholder="Ticket (e.g. SVI-1005)"
-                              className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 outline-none dark:border-white/10 dark:bg-[#07070b] dark:text-white"
-                            />
-                          </div>
-                          <div>
-                            <input
-                              type="tel"
-                              value={manualPhone}
-                              onChange={(e) => setManualPhone(e.target.value)}
-                              placeholder="Phone (Optional)"
-                              className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 outline-none dark:border-white/10 dark:bg-[#07070b] dark:text-white"
-                            />
-                          </div>
-                          <div className="flex gap-2">
-                            <input
-                              type="email"
-                              value={manualEmail}
-                              onChange={(e) => setManualEmail(e.target.value)}
-                              placeholder="Email (Optional)"
-                              className="focus:border-brand-gold w-full flex-1 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 outline-none dark:border-white/10 dark:bg-[#07070b] dark:text-white"
+                              placeholder="Ticket # (Auto if blank)"
+                              className="focus:border-brand-gold/50 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs text-white outline-none"
                             />
                             <button
                               type="submit"
-                              className="bg-brand-gold hover:bg-brand-gold/90 text-brand-navy cursor-pointer rounded-xl px-4 py-2 text-xs font-bold uppercase transition-all"
+                              className="bg-brand-gold/20 text-brand-gold hover:bg-brand-gold hover:text-brand-navy w-full cursor-pointer rounded-xl py-3 text-xs font-bold uppercase transition-colors"
                             >
-                              Add
+                              Add Entry
                             </button>
-                          </div>
-                        </form>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Search filter in preview */}
-                  <div className="relative">
-                    <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Search parsed preview names, tickets, or emails..."
-                      className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-xl border border-gray-200 bg-transparent py-2.5 pr-4 pl-10 text-xs text-gray-900 transition-all outline-none focus:ring-1 dark:border-white/10 dark:text-white"
-                    />
-                  </div>
-
-                  {/* Preview table */}
-                  <div className="overflow-hidden rounded-xl border border-gray-100 dark:border-white/5">
-                    <table className="w-full border-collapse text-left text-xs text-gray-600 dark:text-gray-300">
-                      <thead className="bg-gray-50 text-[10px] font-bold text-gray-500 uppercase dark:bg-white/5 dark:text-gray-400">
-                        <tr>
-                          <th className="px-4 py-3">#</th>
-                          <th className="px-4 py-3">Name</th>
-                          <th className="px-4 py-3">Ticket</th>
-                          <th className="px-4 py-3">Phone</th>
-                          <th className="px-4 py-3">Email</th>
-                          <th className="px-4 py-3 text-right">Action</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                        {paginatedParticipants.map((p, idx) => {
-                          const originalIdx = (currentPage - 1) * itemsPerPage + idx;
-                          return (
-                            <tr
-                              key={originalIdx}
-                              className="hover:bg-gray-50/50 dark:hover:bg-white/5"
-                            >
-                              <td className="px-4 py-3.5 text-gray-400">{originalIdx + 1}</td>
-                              <td className="px-4 py-3.5 font-bold text-gray-900 dark:text-white">
-                                {p.name}
-                              </td>
-                              <td className="px-4 py-3.5">
-                                <code className="rounded bg-gray-100 px-2 py-0.5 font-mono text-[10px] dark:bg-white/5">
-                                  {p.ticketNumber}
-                                </code>
-                              </td>
-                              <td className="px-4 py-3.5">{p.phone || '-'}</td>
-                              <td className="px-4 py-3.5">{p.email || '-'}</td>
-                              <td className="px-4 py-3.5 text-right">
-                                <button
-                                  onClick={() => removeParticipant(originalIdx)}
-                                  className="cursor-pointer rounded p-1 text-gray-400 transition-colors hover:bg-red-500/10 hover:text-red-500"
-                                  title="Remove raw row"
-                                >
-                                  <Trash2 className="h-3.5 w-3.5" />
-                                </button>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                        {filteredParticipants.length === 0 && (
-                          <tr>
-                            <td colSpan={6} className="px-4 py-6 text-center text-gray-400 italic">
-                              No records match your search filter
-                            </td>
-                          </tr>
+                          </form>
                         )}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  {/* Pagination footer */}
-                  {totalPages > 1 && (
-                    <div className="flex items-center justify-between pt-2 text-xs text-gray-500">
-                      <div>
-                        Showing {(currentPage - 1) * itemsPerPage + 1} to{' '}
-                        {Math.min(currentPage * itemsPerPage, filteredParticipants.length)} of{' '}
-                        {filteredParticipants.length} parsed items
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          disabled={currentPage === 1}
-                          onClick={() => setCurrentPage((c) => Math.max(1, c - 1))}
-                          className="cursor-pointer rounded-lg border border-gray-200 px-3 py-1.5 transition-colors hover:bg-gray-50 disabled:opacity-40 dark:border-white/10 dark:hover:bg-white/5"
-                        >
-                          Prev
-                        </button>
-                        <button
-                          disabled={currentPage === totalPages}
-                          onClick={() => setCurrentPage((c) => Math.min(totalPages, c + 1))}
-                          className="cursor-pointer rounded-lg border border-gray-200 px-3 py-1.5 transition-colors hover:bg-gray-50 disabled:opacity-40 dark:border-white/10 dark:hover:bg-white/5"
-                        >
-                          Next
-                        </button>
                       </div>
                     </div>
-                  )}
-                </div>
+
+                    <div className="lg:col-span-3">
+                      <div className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-6">
+                        <div className="mb-6 flex items-center justify-between">
+                          <div>
+                            <h4 className="font-bold text-white">Participants List</h4>
+                            <p className="text-xs text-gray-400">
+                              {participants.length} valid entries
+                            </p>
+                          </div>
+                          {participants.length > 0 && (
+                            <button
+                              onClick={() => setParticipants([])}
+                              className="cursor-pointer rounded-lg px-3 py-1.5 text-[10px] font-bold text-red-400 uppercase transition-colors hover:bg-red-400/10"
+                            >
+                              Clear All
+                            </button>
+                          )}
+                        </div>
+
+                        {participants.length === 0 ? (
+                          <div className="flex flex-1 flex-col items-center justify-center text-center text-gray-500">
+                            <FileSpreadsheet className="mb-3 h-12 w-12 opacity-20" />
+                            <p className="text-sm">No participants loaded yet.</p>
+                          </div>
+                        ) : (
+                          <div className="flex flex-1 flex-col">
+                            <div className="mb-4">
+                              <input
+                                type="text"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                placeholder="Search names..."
+                                className="focus:border-brand-gold/50 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-xs text-white outline-none"
+                              />
+                            </div>
+                            <div className="flex-1 overflow-y-auto">
+                              <div className="space-y-2">
+                                {paginatedParticipants.map((p, idx) => {
+                                  const originalIdx = (currentPage - 1) * itemsPerPage + idx;
+                                  return (
+                                    <div
+                                      key={originalIdx}
+                                      className="flex items-center justify-between rounded-xl border border-white/5 bg-black/20 p-3 hover:border-white/10"
+                                    >
+                                      <div>
+                                        <div className="text-sm font-bold text-white">{p.name}</div>
+                                        <div className="text-brand-gold font-mono text-[10px]">
+                                          {p.ticketNumber}
+                                        </div>
+                                      </div>
+                                      <button
+                                        onClick={() => removeParticipant(originalIdx)}
+                                        className="cursor-pointer p-2 text-gray-500 hover:text-red-400"
+                                      >
+                                        <Trash2 className="h-4 w-4" />
+                                      </button>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                            {totalPages > 1 && (
+                              <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-4">
+                                <button
+                                  disabled={currentPage === 1}
+                                  onClick={() => setCurrentPage((c) => Math.max(1, c - 1))}
+                                  className="cursor-pointer text-xs font-bold text-gray-400 hover:text-white disabled:opacity-30"
+                                >
+                                  Prev
+                                </button>
+                                <span className="text-xs text-gray-500">
+                                  {currentPage} / {totalPages}
+                                </span>
+                                <button
+                                  disabled={currentPage === totalPages}
+                                  onClick={() => setCurrentPage((c) => Math.min(totalPages, c + 1))}
+                                  className="cursor-pointer text-xs font-bold text-gray-400 hover:text-white disabled:opacity-30"
+                                >
+                                  Next
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
               )}
-            </div>
+
+              {/* STEP 3: Review */}
+              {wizardStep === 3 && (
+                <motion.div
+                  key="step3"
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  className="space-y-8"
+                >
+                  <div className="text-center">
+                    <h3 className="font-serif text-3xl font-bold text-white">Review & Launch</h3>
+                    <p className="mt-2 text-sm text-gray-400">
+                      Verify details before pushing the campaign live.
+                    </p>
+                  </div>
+
+                  <div className="border-brand-gold/30 mx-auto max-w-2xl overflow-hidden rounded-3xl border bg-[#0a0a0f] shadow-[0_0_40px_rgba(201,168,76,0.15)]">
+                    <div className="border-b border-white/10 bg-white/5 p-8 text-center">
+                      <div className="bg-brand-gold/20 text-brand-gold mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
+                        <Sparkles className="h-8 w-8" />
+                      </div>
+                      <h4 className="font-serif text-3xl font-bold text-white">{title}</h4>
+                      <p className="mt-2 text-sm text-gray-400">{description}</p>
+                    </div>
+                    <div className="p-8">
+                      <div className="flex justify-around">
+                        <div className="text-center">
+                          <div className="text-brand-gold text-3xl font-bold">
+                            {participants.length}
+                          </div>
+                          <div className="mt-1 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                            Total Entries
+                          </div>
+                        </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-green-400">1</div>
+                          <div className="mt-1 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                            Grand Prize
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
+
+          {/* Wizard Controls */}
+          <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-8">
+            <button
+              onClick={handlePrevWizardStep}
+              disabled={wizardStep === 1}
+              className="flex cursor-pointer items-center gap-2 rounded-xl px-6 py-3 text-xs font-bold tracking-wider text-gray-400 uppercase transition-colors hover:bg-white/5 hover:text-white disabled:invisible"
+            >
+              <ChevronLeft className="h-4 w-4" /> Back
+            </button>
+
+            {wizardStep < 3 ? (
+              <button
+                onClick={handleNextWizardStep}
+                className="bg-brand-gold text-brand-navy flex cursor-pointer items-center gap-2 rounded-xl px-8 py-3 text-xs font-bold tracking-wider uppercase transition-transform hover:-translate-y-1 hover:shadow-lg"
+              >
+                Continue <ChevronRight className="h-4 w-4" />
+              </button>
+            ) : (
+              <button
+                onClick={saveLotteryToDB}
+                disabled={isPending || participants.length === 0}
+                className="group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-xl bg-green-500 px-10 py-3.5 text-xs font-bold tracking-widest text-black uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(74,222,128,0.4)] disabled:bg-gray-700 disabled:text-gray-500"
+              >
+                <div className="absolute inset-0 flex h-full w-full [transform:skew(-12deg)_translateX(-100%)] justify-center group-hover:[transform:skew(-12deg)_translateX(100%)] group-hover:duration-1000">
+                  <div className="relative h-full w-8 bg-white/30" />
+                </div>
+                {isPending ? 'Launching...' : 'Deploy Campaign'}{' '}
+                <Play className="h-4 w-4 fill-black" />
+              </button>
+            )}
           </div>
         </div>
       )}
     </div>
   );
 }
+
+// Ensure Sparkles icon is imported
+import { Sparkles } from 'lucide-react';
