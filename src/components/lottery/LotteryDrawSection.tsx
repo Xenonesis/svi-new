@@ -280,21 +280,25 @@ export default function LotteryDrawSection() {
 
   if (error) {
     return (
-      <section className="relative overflow-hidden bg-[#F8FAFC] py-24">
+      <section className="relative overflow-hidden bg-slate-50 py-24 dark:bg-slate-950">
         <div className="relative z-10 container mx-auto max-w-md px-4 text-center">
-          <div className="rounded-2xl border border-red-200 bg-white p-8 shadow-xl">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500">
+          <div className="rounded-2xl border border-red-200 bg-white p-8 shadow-xl dark:border-red-900/50 dark:bg-slate-900">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400">
               <AlertCircle className="h-8 w-8" />
             </div>
-            <h3 className="mb-2 font-serif text-xl font-bold text-slate-900">System Offline</h3>
-            <p className="mb-6 text-sm leading-relaxed text-slate-500">{error}</p>
+            <h3 className="mb-2 font-serif text-xl font-bold text-slate-900 dark:text-white">
+              System Offline
+            </h3>
+            <p className="mb-6 text-sm leading-relaxed text-slate-500 dark:text-slate-400">
+              {error}
+            </p>
             <button
               onClick={() => {
                 setError(null);
                 fetchActiveLottery();
                 fetchPastWinners();
               }}
-              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-xs font-bold tracking-wider text-white uppercase transition-all hover:bg-slate-800"
+              className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-xs font-bold tracking-wider text-white uppercase transition-all hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
             >
               🔄 Reconnect
             </button>
@@ -307,10 +311,10 @@ export default function LotteryDrawSection() {
   if (!activeLottery) return null;
 
   return (
-    <section className="relative overflow-hidden bg-[#020617] py-24 text-slate-200">
+    <section className="relative overflow-hidden bg-slate-50 py-24 text-slate-800 transition-colors duration-500 dark:bg-[#020617] dark:text-slate-200">
       {/* Refined corporate background */}
-      <div className="pointer-events-none absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay" />
-      <div className="pointer-events-none absolute -top-[500px] left-1/2 h-[1000px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#D4AF37]/5 to-transparent blur-3xl" />
+      <div className="pointer-events-none absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay dark:opacity-[0.05]" />
+      <div className="pointer-events-none absolute -top-[500px] left-1/2 h-[1000px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#D4AF37]/10 to-transparent blur-3xl dark:from-[#D4AF37]/5" />
 
       <div className="relative z-10 container mx-auto max-w-7xl px-4">
         <div className="mx-auto mb-16 max-w-4xl text-center">
@@ -318,7 +322,7 @@ export default function LotteryDrawSection() {
             initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-5 py-2 text-xs font-semibold tracking-widest text-[#D4AF37] uppercase backdrop-blur-sm"
+            className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-5 py-2 text-xs font-semibold tracking-widest text-[#B38728] uppercase backdrop-blur-sm dark:text-[#D4AF37]"
           >
             <Sparkles className="h-3.5 w-3.5" /> Official Live Event
           </motion.div>
@@ -327,7 +331,7 @@ export default function LotteryDrawSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="font-serif text-4xl font-light tracking-tight text-white md:text-5xl lg:text-6xl"
+            className="font-serif text-4xl font-light tracking-tight text-slate-900 md:text-5xl lg:text-6xl dark:text-white"
           >
             {activeLottery.title}
           </motion.h2>
@@ -336,7 +340,7 @@ export default function LotteryDrawSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-400"
+            className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-600 dark:text-slate-400"
           >
             {activeLottery.description ||
               'The ultimate giveaway for our premium clients. Winners are selected through a provably fair, cryptographically secure algorithm.'}
@@ -350,47 +354,52 @@ export default function LotteryDrawSection() {
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[2rem] border border-white/5 bg-white/[0.02] p-8 shadow-2xl backdrop-blur-xl md:p-12"
+              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 md:p-12 dark:border-white/5 dark:bg-white/[0.02] dark:shadow-2xl"
             >
               <div className="relative space-y-8">
-                <div className="flex items-center justify-between border-b border-white/10 pb-6">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-6 transition-colors duration-500 dark:border-white/10">
                   <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#AA8222] text-[#020617] shadow-lg">
+                    <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-[#D4AF37] to-[#AA8222] text-white shadow-lg dark:text-[#020617]">
                       <Trophy className="h-6 w-6" />
                     </div>
                     <div>
-                      <h3 className="font-serif text-2xl text-white">Grand Prize Draw</h3>
-                      <div className="mt-1 text-[11px] font-medium tracking-widest text-[#D4AF37] uppercase">
+                      <h3 className="font-serif text-2xl text-slate-900 dark:text-white">
+                        Grand Prize Draw
+                      </h3>
+                      <div className="mt-1 text-[11px] font-medium tracking-widest text-[#B38728] uppercase dark:text-[#D4AF37]">
                         Session Active
                       </div>
                     </div>
                   </div>
                   <button
                     onClick={() => setSoundEnabled(!soundEnabled)}
-                    className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/5 text-slate-400 transition-all hover:bg-white/10 hover:text-white"
+                    className="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-slate-400 transition-all hover:bg-slate-100 hover:text-slate-600 dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10 dark:hover:text-white"
                     title={soundEnabled ? 'Mute audio' : 'Unmute audio'}
                   >
                     {soundEnabled ? (
                       <Volume2 className="h-4 w-4" />
                     ) : (
-                      <VolumeX className="h-4 w-4 text-red-400" />
+                      <VolumeX className="h-4 w-4 text-red-500 dark:text-red-400" />
                     )}
                   </button>
                 </div>
 
-                <div className="flex items-center gap-8 text-sm font-medium text-slate-300">
+                <div className="flex items-center gap-8 text-sm font-medium text-slate-600 dark:text-slate-300">
                   <div className="flex flex-col">
-                    <span className="text-3xl font-light text-white">{participants.length}</span>
-                    <span className="mt-1 text-[10px] tracking-widest text-slate-500 uppercase">
+                    <span className="text-3xl font-light text-slate-900 dark:text-white">
+                      {participants.length}
+                    </span>
+                    <span className="mt-1 text-[10px] tracking-widest text-slate-400 uppercase dark:text-slate-500">
                       Total Entries
                     </span>
                   </div>
-                  <div className="h-12 w-px bg-white/10" />
+                  <div className="h-12 w-px bg-slate-200 dark:bg-white/10" />
                   <div className="flex flex-col">
-                    <span className="flex items-center gap-2 text-lg font-light text-white">
-                      <ShieldCheck className="h-5 w-5 text-emerald-400" /> Secure
+                    <span className="flex items-center gap-2 text-lg font-light text-slate-900 dark:text-white">
+                      <ShieldCheck className="h-5 w-5 text-emerald-500 dark:text-emerald-400" />{' '}
+                      Secure
                     </span>
-                    <span className="mt-1 text-[10px] tracking-widest text-slate-500 uppercase">
+                    <span className="mt-1 text-[10px] tracking-widest text-slate-400 uppercase dark:text-slate-500">
                       Database Verified
                     </span>
                   </div>
@@ -404,23 +413,28 @@ export default function LotteryDrawSection() {
                     animate={{ opacity: 1, y: 0 }}
                     className="w-full space-y-6 text-center"
                   >
-                    <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5 text-[#D4AF37]">
+                    <div className="mx-auto flex h-24 w-24 items-center justify-center rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 text-[#B38728] dark:text-[#D4AF37]">
                       <Award className="h-10 w-10" />
                     </div>
                     <div>
-                      <div className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-[#D4AF37] uppercase">
+                      <div className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-[#B38728] uppercase dark:text-[#D4AF37]">
                         Official Winner
                       </div>
-                      <h4 className="font-serif text-4xl text-white md:text-5xl">{winner.name}</h4>
-                      <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-white/10 bg-white/5 px-6 py-2.5 font-mono text-sm text-slate-300">
-                        <Ticket className="h-4 w-4 text-[#D4AF37]" /> {winner.ticket_number}
+                      <h4 className="font-serif text-4xl text-slate-900 md:text-5xl dark:text-white">
+                        {winner.name}
+                      </h4>
+                      <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-6 py-2.5 font-mono text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                        <Ticket className="h-4 w-4 text-[#B38728] dark:text-[#D4AF37]" />{' '}
+                        {winner.ticket_number}
                       </div>
                     </div>
                   </motion.div>
                 ) : participants.length === 0 ? (
-                  <div className="w-full rounded-2xl border border-rose-500/20 bg-rose-500/5 p-8 text-center">
-                    <AlertCircle className="mx-auto mb-4 h-8 w-8 text-rose-400" />
-                    <div className="text-sm font-medium text-rose-400">Waiting for Data</div>
+                  <div className="w-full rounded-2xl border border-rose-500/20 bg-rose-50 p-8 text-center dark:bg-rose-500/5">
+                    <AlertCircle className="mx-auto mb-4 h-8 w-8 text-rose-500 dark:text-rose-400" />
+                    <div className="text-sm font-medium text-rose-600 dark:text-rose-400">
+                      Waiting for Data
+                    </div>
                     <div className="mx-auto mt-2 text-xs text-slate-500">
                       The admin has not uploaded the participant pool yet. Please wait.
                     </div>
@@ -429,14 +443,16 @@ export default function LotteryDrawSection() {
                   <div className="w-full space-y-8 text-center">
                     <div className="relative flex flex-col items-center justify-center py-4">
                       <Gift className="mb-4 h-12 w-12 text-[#D4AF37] opacity-80" />
-                      <div className="text-xl font-light text-white">Winner Pre-computed</div>
-                      <div className="mt-1 text-[10px] font-medium tracking-widest text-slate-400 uppercase">
+                      <div className="text-xl font-light text-slate-900 dark:text-white">
+                        Winner Pre-computed
+                      </div>
+                      <div className="mt-1 text-[10px] font-medium tracking-widest text-slate-500 uppercase dark:text-slate-400">
                         Ready for reveal
                       </div>
                     </div>
                     <button
                       onClick={() => setIsDrawArenaOpen(true)}
-                      className="group relative mx-auto w-full max-w-sm cursor-pointer overflow-hidden rounded-full bg-white px-8 py-4 text-xs font-semibold tracking-[0.15em] text-slate-900 uppercase transition-all duration-300 hover:bg-gray-100 hover:shadow-lg"
+                      className="group relative mx-auto w-full max-w-sm cursor-pointer overflow-hidden rounded-full bg-slate-900 px-8 py-4 text-xs font-semibold tracking-[0.15em] text-white uppercase transition-all duration-300 hover:bg-slate-800 hover:shadow-lg dark:bg-white dark:text-slate-900 dark:hover:bg-gray-100"
                     >
                       <span className="relative z-10 flex items-center justify-center gap-2">
                         Enter Live Arena <Sparkles className="h-3.5 w-3.5" />
@@ -455,9 +471,9 @@ export default function LotteryDrawSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-white/5 bg-white/[0.01] p-8 backdrop-blur-xl"
+              className="relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 dark:border-white/5 dark:bg-white/[0.01] dark:shadow-none"
             >
-              <h3 className="mb-8 flex items-center gap-3 font-serif text-2xl text-white">
+              <h3 className="mb-8 flex items-center gap-3 font-serif text-2xl text-slate-900 dark:text-white">
                 Hall of Fame
               </h3>
 
@@ -468,28 +484,30 @@ export default function LotteryDrawSection() {
                     initial={{ y: 10, opacity: 0 }}
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ delay: idx * 0.1 }}
-                    className="group relative flex items-center gap-4 rounded-2xl border border-white/5 bg-white/5 p-4 transition-all hover:bg-white/10"
+                    className="group relative flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all hover:bg-slate-100 dark:border-white/5 dark:bg-white/5 dark:hover:bg-white/10"
                   >
                     <div
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-sm shadow-sm ${idx === 0 ? 'bg-[#D4AF37] text-black' : idx === 1 ? 'bg-slate-300 text-slate-900' : 'bg-[#CD7F32] text-white'}`}
+                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-sm shadow-sm ${idx === 0 ? 'bg-[#D4AF37] text-white dark:text-black' : idx === 1 ? 'bg-slate-300 text-slate-800 dark:text-slate-900' : 'bg-[#CD7F32] text-white'}`}
                     >
                       #{idx + 1}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium text-white">{hw.name}</div>
+                      <div className="truncate text-sm font-medium text-slate-900 dark:text-white">
+                        {hw.name}
+                      </div>
                       <div className="mt-1 truncate text-[10px] tracking-wider text-slate-500 uppercase">
                         {hw.lotteries?.title || 'SVI Lucky Draw'}
                       </div>
                     </div>
                     <div className="text-right">
-                      <div className="font-mono text-[10px] font-medium text-[#D4AF37]">
+                      <div className="font-mono text-[10px] font-medium text-[#B38728] dark:text-[#D4AF37]">
                         {hw.ticket_number}
                       </div>
                     </div>
                   </motion.div>
                 ))}
                 {historicalWinners.length === 0 && (
-                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 p-10 text-center text-slate-500">
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 p-10 text-center text-slate-500 dark:border-white/10">
                     <Trophy className="mb-3 h-6 w-6 opacity-40" />
                     <div className="text-[10px] font-medium tracking-widest uppercase">
                       No Champions Yet
@@ -509,19 +527,19 @@ export default function LotteryDrawSection() {
             initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
             animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
             exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#020617]/90 p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-white/90 p-4 transition-colors duration-500 dark:bg-[#020617]/90"
           >
             <motion.div
               initial={{ scale: 0.95, y: 20, opacity: 0 }}
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.95, y: 20, opacity: 0 }}
               transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#0B1120] p-10 text-center shadow-2xl md:p-16"
+              className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-slate-200 bg-slate-50 p-10 text-center shadow-2xl transition-colors duration-500 md:p-16 dark:border-white/10 dark:bg-[#0B1120]"
             >
               {!isShuffling && (
                 <button
                   onClick={() => setIsDrawArenaOpen(false)}
-                  className="absolute top-6 right-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-white/10 hover:text-white"
+                  className="absolute top-6 right-6 flex h-8 w-8 cursor-pointer items-center justify-center rounded-full text-slate-500 transition-colors hover:bg-slate-200 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
                 >
                   ✕
                 </button>
@@ -529,20 +547,20 @@ export default function LotteryDrawSection() {
 
               <div className="mx-auto max-w-xl space-y-10">
                 <div>
-                  <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/5 px-4 py-1.5 text-[10px] font-medium tracking-[0.2em] text-[#D4AF37] uppercase">
+                  <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/5 px-4 py-1.5 text-[10px] font-medium tracking-[0.2em] text-[#B38728] uppercase dark:text-[#D4AF37]">
                     <div className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#D4AF37]" /> SECURE
                     ARENA
                   </div>
-                  <h3 className="font-serif text-3xl font-light text-white md:text-5xl">
+                  <h3 className="font-serif text-3xl font-light text-slate-900 md:text-5xl dark:text-white">
                     {activeLottery.title}
                   </h3>
                 </div>
 
                 {/* Sleek Mechanical Shuffling Cylinder */}
-                <div className="relative mx-auto my-12 h-40 w-full max-w-sm overflow-hidden rounded-2xl border border-white/5 bg-[#020617] shadow-inner">
+                <div className="relative mx-auto my-12 h-40 w-full max-w-sm overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-inner transition-colors duration-500 dark:border-white/5 dark:bg-[#020617]">
                   {/* Glass highlight overlay */}
                   <div
-                    className="pointer-events-none absolute inset-0 z-20 rounded-2xl border border-white/5"
+                    className="pointer-events-none absolute inset-0 z-20 rounded-2xl border border-slate-200 dark:border-white/5"
                     style={{
                       background:
                         'linear-gradient(180deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 80%, rgba(255,255,255,0.05) 100%)',
@@ -553,8 +571,8 @@ export default function LotteryDrawSection() {
                   <div className="pointer-events-none absolute top-1/2 right-4 left-4 z-20 h-px -translate-y-1/2 bg-[#D4AF37]/50" />
 
                   {/* Inner fade shadows */}
-                  <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-[#020617] to-transparent" />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-[#020617] to-transparent" />
+                  <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-white to-transparent transition-colors duration-500 dark:from-[#020617]" />
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-white to-transparent transition-colors duration-500 dark:from-[#020617]" />
 
                   {/* Scrolling Content */}
                   <div
@@ -568,14 +586,14 @@ export default function LotteryDrawSection() {
                           className="flex h-[80px] items-center justify-center px-6 text-center"
                         >
                           <span
-                            className={`block truncate ${idx === shuffledNames.length - 1 ? 'scale-110 font-serif text-3xl font-medium text-[#D4AF37] transition-all duration-500' : 'text-2xl font-light text-white/30'}`}
+                            className={`block truncate ${idx === shuffledNames.length - 1 ? 'scale-110 font-serif text-3xl font-medium text-[#B38728] transition-all duration-500 dark:text-[#D4AF37]' : 'text-2xl font-light text-slate-400 dark:text-white/30'}`}
                           >
                             {name}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <div className="flex h-[80px] items-center justify-center text-xs font-medium tracking-widest text-slate-600 uppercase">
+                      <div className="flex h-[80px] items-center justify-center text-xs font-medium tracking-widest text-slate-400 uppercase dark:text-slate-600">
                         Awaiting Command
                       </div>
                     )}
@@ -590,12 +608,12 @@ export default function LotteryDrawSection() {
                     transition={{ delay: 0.2 }}
                     className="space-y-6"
                   >
-                    <h4 className="font-serif text-4xl text-white md:text-5xl">
+                    <h4 className="font-serif text-4xl text-slate-900 md:text-5xl dark:text-white">
                       {revealedWinner.name}
                     </h4>
-                    <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/5 px-6 py-2">
-                      <Ticket className="h-4 w-4 text-[#D4AF37]" />
-                      <span className="font-mono text-lg tracking-widest text-[#D4AF37]">
+                    <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-6 py-2">
+                      <Ticket className="h-4 w-4 text-[#B38728] dark:text-[#D4AF37]" />
+                      <span className="font-mono text-lg tracking-widest text-[#B38728] dark:text-[#D4AF37]">
                         {revealedWinner.ticket_number}
                       </span>
                     </div>
@@ -611,7 +629,7 @@ export default function LotteryDrawSection() {
                   {revealedWinner ? (
                     <button
                       onClick={() => setIsDrawArenaOpen(false)}
-                      className="mx-auto block w-full max-w-sm cursor-pointer rounded-full bg-white px-8 py-4 text-xs font-semibold tracking-[0.15em] text-slate-900 uppercase transition-all hover:bg-gray-100"
+                      className="mx-auto block w-full max-w-sm cursor-pointer rounded-full bg-slate-900 px-8 py-4 text-xs font-semibold tracking-[0.15em] text-white uppercase transition-all hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-gray-100"
                     >
                       Acknowledge Winner
                     </button>
@@ -619,11 +637,11 @@ export default function LotteryDrawSection() {
                     <button
                       disabled={isShuffling || participants.length === 0}
                       onClick={startShuffleAnimation}
-                      className="group relative mx-auto block w-full max-w-sm cursor-pointer overflow-hidden rounded-full bg-[#D4AF37] px-8 py-4 text-xs font-semibold tracking-[0.15em] text-slate-900 uppercase transition-all duration-300 hover:bg-[#E5C158] disabled:bg-slate-800 disabled:text-slate-500"
+                      className="group relative mx-auto block w-full max-w-sm cursor-pointer overflow-hidden rounded-full bg-[#D4AF37] px-8 py-4 text-xs font-semibold tracking-[0.15em] text-white uppercase transition-all duration-300 hover:bg-[#B38728] disabled:bg-slate-200 disabled:text-slate-400 dark:text-slate-900 dark:hover:bg-[#E5C158] dark:disabled:bg-slate-800 dark:disabled:text-slate-500"
                     >
                       <span className="relative z-10 flex items-center justify-center gap-2">
                         {isShuffling ? 'Encrypting & Shuffling...' : 'Initiate Sequence'}{' '}
-                        <Play className="h-3.5 w-3.5 fill-slate-900" />
+                        <Play className="h-3.5 w-3.5 fill-white dark:fill-slate-900" />
                       </span>
                     </button>
                   )}
@@ -639,15 +657,26 @@ export default function LotteryDrawSection() {
           width: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255, 255, 255, 0.02);
+          background: rgba(100, 100, 100, 0.05);
           border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255, 255, 255, 0.1);
+          background: rgba(100, 100, 100, 0.2);
           border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255, 255, 255, 0.2);
+          background: rgba(100, 100, 100, 0.3);
+        }
+        @media (prefers-color-scheme: dark) {
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.1);
+          }
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.2);
+          }
         }
       `}</style>
     </section>
