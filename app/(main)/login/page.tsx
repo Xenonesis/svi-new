@@ -6,7 +6,6 @@ import { useState, useRef, type FormEvent } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
 import { useTheme } from '@/src/components/ThemeProvider';
 
 export default function Login() {
@@ -26,7 +25,6 @@ export default function Login() {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [otpTouched, setOtpTouched] = useState(false);
   const [shake, setShake] = useState(false);
-  const [captchaShake, setCaptchaShake] = useState(false);
 
   const identifierIsValid = identifier ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) : true;
   const passwordIsValid = password ? password.length >= 6 : true;
@@ -35,12 +33,6 @@ export default function Login() {
   const showIdentifierError = identifierTouched && !identifierIsValid;
   const showPasswordError = passwordTouched && !passwordIsValid;
   const showOtpError = otpTouched && !otpIsValid;
-
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaRef = useRef<HCaptcha>(null);
-
-  const captchaDisabled = process.env.NEXT_PUBLIC_DISABLE_CAPTCHA === 'true';
-  const resolvedTheme = theme;
 
   const handlePasswordLogin = async (e: FormEvent) => {
     e.preventDefault();
@@ -60,21 +52,11 @@ export default function Login() {
       return;
     }
 
-    if (!captchaDisabled && !captchaToken) {
-      setError('Captcha verification is required to log in.');
-      setCaptchaShake(true);
-      setShake(true);
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const { error: authError } = await supabase.auth.signInWithPassword({
         email: identifier,
         password,
-        options: {
-          captchaToken: captchaToken || undefined,
-        },
       });
       if (authError) throw authError;
 
@@ -85,8 +67,6 @@ export default function Login() {
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed. Please check your credentials.');
       setShake(true);
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -102,29 +82,16 @@ export default function Login() {
       return;
     }
 
-    if (!captchaDisabled && !captchaToken) {
-      setError('Captcha verification is required to send OTP.');
-      setCaptchaShake(true);
-      setShake(true);
-      return;
-    }
-
     setIsSubmitting(true);
     try {
       const { error: otpError } = await supabase.auth.signInWithOtp({
         email: identifier,
-        options: {
-          captchaToken: captchaToken || undefined,
-        },
       });
       if (otpError) throw otpError;
       setOtpSent(true);
-      setCaptchaToken(null);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to send OTP.');
       setShake(true);
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
     } finally {
       setIsSubmitting(false);
     }
@@ -239,8 +206,6 @@ export default function Login() {
                 setIdentifierTouched(false);
                 setPasswordTouched(false);
                 setOtpTouched(false);
-                captchaRef.current?.resetCaptcha();
-                setCaptchaToken(null);
               }}
               className={`flex-1 pb-3 text-xs font-bold tracking-widest uppercase transition-colors ${loginMethod === 'password' ? 'text-brand-navy dark:text-brand-gold border-brand-navy dark:border-brand-gold border-b-2' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
             >
@@ -254,8 +219,6 @@ export default function Login() {
                 setIdentifierTouched(false);
                 setPasswordTouched(false);
                 setOtpTouched(false);
-                captchaRef.current?.resetCaptcha();
-                setCaptchaToken(null);
               }}
               className={`flex-1 pb-3 text-xs font-bold tracking-widest uppercase transition-colors ${loginMethod === 'otp' ? 'text-brand-navy dark:text-brand-gold border-brand-navy dark:border-brand-gold border-b-2' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
             >
@@ -342,31 +305,6 @@ export default function Login() {
                 />
               </div>
 
-              {/* hCaptcha Widget for Password login */}
-              {!captchaDisabled && (
-                <motion.div
-                  animate={captchaShake ? { x: [0, -6, 6, -4, 4, 0] } : {}}
-                  onAnimationComplete={() => setCaptchaShake(false)}
-                  className={`flex flex-col items-center justify-center rounded-lg py-2 transition-all duration-300 ${
-                    captchaShake ? 'bg-red-500/5 p-1 ring-2 ring-red-500/30' : ''
-                  }`}
-                >
-                  <HCaptcha
-                    ref={captchaRef}
-                    sitekey={
-                      process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY ||
-                      '10000000-ffff-ffff-ffff-000000000001'
-                    }
-                    onVerify={(token) => {
-                      setCaptchaToken(token);
-                      setError('');
-                    }}
-                    onExpire={() => setCaptchaToken(null)}
-                    theme={resolvedTheme}
-                  />
-                </motion.div>
-              )}
-
               <button
                 type="submit"
                 disabled={isSubmitting}
@@ -418,31 +356,6 @@ export default function Login() {
 
               {!otpSent ? (
                 <>
-                  {/* hCaptcha Widget for sending OTP */}
-                  {!captchaDisabled && (
-                    <motion.div
-                      animate={captchaShake ? { x: [0, -6, 6, -4, 4, 0] } : {}}
-                      onAnimationComplete={() => setCaptchaShake(false)}
-                      className={`flex flex-col items-center justify-center rounded-lg py-2 transition-all duration-300 ${
-                        captchaShake ? 'bg-red-500/5 p-1 ring-2 ring-red-500/30' : ''
-                      }`}
-                    >
-                      <HCaptcha
-                        ref={captchaRef}
-                        sitekey={
-                          process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY ||
-                          '10000000-ffff-ffff-ffff-000000000001'
-                        }
-                        onVerify={(token) => {
-                          setCaptchaToken(token);
-                          setError('');
-                        }}
-                        onExpire={() => setCaptchaToken(null)}
-                        theme={resolvedTheme}
-                      />
-                    </motion.div>
-                  )}
-
                   <button
                     type="button"
                     onClick={handleSendOtp}

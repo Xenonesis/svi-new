@@ -11,6 +11,24 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
+  // ── Auto-cleanup of registrations older than 30 days, unless marked important ──
+  try {
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const { error: cleanupError } = await supabaseAdmin
+      .from('registrations')
+      .delete()
+      .lt('created_at', thirtyDaysAgo.toISOString())
+      .or('is_important.eq.false,is_important.is.null');
+
+    if (cleanupError) {
+      console.error('[Registration Cleanup Error]:', cleanupError.message);
+    }
+  } catch (cleanupErr) {
+    console.error('[Registration Cleanup Exception]:', cleanupErr);
+  }
+
   const { searchParams } = new URL(request.url);
   const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
   const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50') || 50));
@@ -85,36 +103,47 @@ export async function GET(request: NextRequest) {
   });
 }
 
-// PATCH /api/admin/registrations — update registration status
+// PATCH /api/admin/registrations — update registration status or importance
 export async function PATCH(request: NextRequest) {
   const admin = await verifyAdmin(request);
   if (!admin) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  let body: { id?: string; status?: string };
+  let body: { id?: string; status?: string; is_important?: boolean };
   try {
     body = await request.json();
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { id, status: newStatus } = body;
+  const { id, status: newStatus, is_important } = body;
 
-  if (!id || !newStatus) {
-    return NextResponse.json({ error: 'id and status are required' }, { status: 400 });
+  if (!id) {
+    return NextResponse.json({ error: 'id is required' }, { status: 400 });
   }
 
-  if (!VALID_STATUSES.includes(newStatus)) {
-    return NextResponse.json(
-      { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` },
-      { status: 400 }
-    );
+  const updatePayload: any = {};
+  if (newStatus !== undefined) {
+    if (!VALID_STATUSES.includes(newStatus)) {
+      return NextResponse.json(
+        { error: `Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}` },
+        { status: 400 }
+      );
+    }
+    updatePayload.status = newStatus;
+  }
+  if (is_important !== undefined) {
+    updatePayload.is_important = is_important;
+  }
+
+  if (Object.keys(updatePayload).length === 0) {
+    return NextResponse.json({ error: 'No update parameters provided' }, { status: 400 });
   }
 
   const { data, error } = await supabaseAdmin
     .from('registrations')
-    .update({ status: newStatus })
+    .update(updatePayload)
     .eq('id', id)
     .select()
     .single();

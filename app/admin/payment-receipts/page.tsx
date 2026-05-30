@@ -15,8 +15,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
 interface SavedReceipt {
   id: string;
@@ -104,122 +103,31 @@ export default function ReceiptRecordsPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('modalReceiptPreview');
-    if (!element) return;
-
     setPdfLoading(true);
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // A4 format dimensions
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px';
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for images
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) resolve();
-        else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      await Promise.all(imagePromises);
-      const canvas = await html2canvas(clone, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000,
-        windowWidth: 794,
-        windowHeight: clone.scrollHeight,
+      const filename = `Receipt_${selectedReceipt?.form_data?.receiptNo || 'Record'}.pdf`;
+      await exportToPDF({
+        elementId: 'modalReceiptPreview',
+        filename,
       });
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save(`Receipt_${selectedReceipt?.form_data?.receiptNo || 'Record'}.pdf`);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     } finally {
-      document.body.removeChild(clone);
       setPdfLoading(false);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('modalReceiptPreview');
-    if (!element) return;
-
     setImageLoading(true);
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px';
-    clone.style.boxSizing = 'border-box';
-
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) resolve();
-        else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      await Promise.all(imagePromises);
-      const canvas = await html2canvas(clone, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000,
-        windowWidth: 794,
-        windowHeight: clone.scrollHeight,
+      const filename = `Receipt_${selectedReceipt?.form_data?.receiptNo || 'Record'}.png`;
+      await exportToImage({
+        elementId: 'modalReceiptPreview',
+        filename,
       });
-
-      const link = document.createElement('a');
-      link.download = `Receipt_${selectedReceipt?.form_data?.receiptNo || 'Record'}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
+    } catch (error) {
+      console.error('Error generating Image:', error);
     } finally {
-      document.body.removeChild(clone);
       setImageLoading(false);
     }
   };

@@ -265,9 +265,9 @@ export default function Registration() {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      // File Size limit: 5MB
-      if (file.size > 5 * 1024 * 1024) {
-        setErrors((prev) => ({ ...prev, [type]: 'File size must be under 5MB' }));
+      // File Size limit: 150KB
+      if (file.size > 150 * 1024) {
+        setErrors((prev) => ({ ...prev, [type]: 'File size must be under 150KB' }));
         return;
       }
 

@@ -9,8 +9,7 @@ import {
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 import { Receipt, RefreshCw, Trash2, Eye, Download, Search } from 'lucide-react';
 
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { useEffect, useState } from 'react';
 
 export default function PaymentReceiptPage() {
@@ -246,78 +245,11 @@ export default function PaymentReceiptPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('receiptPreview');
-    if (!element) return;
-
-    // Clone the element to avoid modifying the original
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Set a proper width for better text layout (A4-like proportions)
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm'; // A4 width
-    clone.style.minHeight = element.offsetHeight + 'px';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px'; // Match original padding
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for all images in the clone to load
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) {
-          resolve();
-        } else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // Resolve even on error to not block
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      // Wait for images to load
-      await Promise.all(imagePromises);
-
-      // Use high-quality settings for perfect capture
-      const canvas = await html2canvas(clone, {
-        scale: 3, // Higher scale for better quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000, // Increased timeout for image loading
-        removeContainer: true,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
-        windowHeight: clone.scrollHeight,
+      await exportToPDF({
+        elementId: 'receiptPreview',
+        filename: 'Payment_Receipt.pdf',
       });
-
-      // Create PDF with exact dimensions
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-
-      // Use PNG for better quality (no JPEG compression artifacts)
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save('Payment_Receipt.pdf');
 
       // Update document status to completed
       if (documentId && token) {
@@ -335,72 +267,19 @@ export default function PaymentReceiptPage() {
           console.error('Failed to update document status:', error);
         }
       }
-    } finally {
-      // Clean up cloned element
-      document.body.removeChild(clone);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('receiptPreview');
-    if (!element) return;
-
-    // Clone the element to avoid modifying the original
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Set a proper width for better text layout (A4-like proportions)
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm'; // A4 width
-    clone.style.minHeight = element.offsetHeight + 'px';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px'; // Match original padding
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for all images in the clone to load
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) {
-          resolve();
-        } else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // Resolve even on error to not block
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      // Wait for images to load
-      await Promise.all(imagePromises);
-
-      // Use high-quality settings for perfect capture
-      const canvas = await html2canvas(clone, {
-        scale: 3, // Higher scale for better quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000, // Increased timeout for image loading
-        removeContainer: true,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
-        windowHeight: clone.scrollHeight,
+      await exportToImage({
+        elementId: 'receiptPreview',
+        filename: 'Payment_Receipt.png',
       });
-
-      // Download as PNG with maximum quality
-      const link = document.createElement('a');
-      link.download = 'Payment_Receipt.png';
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-    } finally {
-      // Clean up cloned element
-      document.body.removeChild(clone);
+    } catch (error) {
+      console.error('Error generating Image:', error);
     }
   };
 
@@ -806,151 +685,6 @@ export default function PaymentReceiptPage() {
             onDownloadImage={handleDownloadImage}
             disabled={!preview}
           />
-        </div>
-      </div>
-
-      {/* Receipt History Section */}
-      <div className="mt-12 overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
-        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div>
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white">Receipts History</h2>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Manage, view, and delete dynamically saved payment receipts.
-            </p>
-          </div>
-          <div className="relative w-full max-w-xs">
-            <Search className="text-brand-gold absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search by name or receipt no..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:bg-[#0e0e14] dark:text-white"
-            />
-          </div>
-        </div>
-
-        <div className="overflow-x-auto">
-          <table className="w-full border-collapse text-left">
-            <thead>
-              <tr className="border-b border-gray-100 text-[11px] font-bold tracking-widest text-gray-400 uppercase dark:border-white/8">
-                <th className="px-4 py-3">Receipt No</th>
-                <th className="px-4 py-3">Client Name</th>
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Amount</th>
-                <th className="px-4 py-3">Payment Method</th>
-                <th className="px-4 py-3">Status</th>
-                <th className="px-4 py-3 text-right">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 text-xs text-gray-700 dark:divide-white/5 dark:text-gray-300">
-              {receipts
-                .filter((r) => {
-                  const query = searchQuery.toLowerCase();
-                  const name = (r.form_data?.name || '').toLowerCase();
-                  const no = (r.form_data?.receiptNo || '').toLowerCase();
-                  return name.includes(query) || no.includes(query);
-                })
-                .map((receipt) => {
-                  const amountVal = parseFloat(receipt.form_data?.amount || '0');
-                  const formattedAmount = amountVal.toLocaleString('en-IN', {
-                    style: 'currency',
-                    currency: 'INR',
-                  });
-
-                  return (
-                    <tr key={receipt.id} className="hover:bg-gray-50/50 dark:hover:bg-white/2">
-                      <td className="px-4 py-3.5 font-bold text-red-600 dark:text-red-500">
-                        {receipt.form_data?.receiptNo || 'N/A'}
-                      </td>
-                      <td className="px-4 py-3.5 font-semibold text-gray-900 dark:text-white">
-                        {receipt.form_data?.name || 'N/A'}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        {receipt.form_data?.date
-                          ? new Date(receipt.form_data.date).toLocaleDateString('en-GB')
-                          : 'N/A'}
-                      </td>
-                      <td className="px-4 py-3.5 font-bold text-gray-900 dark:text-white">
-                        {formattedAmount}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span className="bg-brand-gold/10 border-brand-gold/20 text-brand-gold rounded border px-2 py-0.5 text-[10px] font-bold">
-                          {receipt.form_data?.paymentMethod || 'UPI'}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <span
-                          className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase ${
-                            receipt.status === 'completed'
-                              ? 'border-emerald-200 bg-emerald-100 text-emerald-700 dark:border-emerald-500/30 dark:bg-emerald-950/30 dark:text-emerald-400'
-                              : 'border-amber-200 bg-amber-100 text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-400'
-                          }`}
-                        >
-                          {receipt.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3.5 text-right">
-                        <div className="flex justify-end gap-2">
-                          <button
-                            onClick={() => {
-                              setFormData({
-                                ...formData,
-                                ...receipt.form_data,
-                              });
-                              setDocumentId(receipt.id);
-                              setPreview(true);
-                              if (parseFloat(receipt.form_data?.amount || '0') === 2100) {
-                                setTermsAccepted(true);
-                              }
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
-                            }}
-                            className="bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold flex items-center justify-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-all"
-                            title="Load receipt to view and print"
-                          >
-                            <Eye className="h-3.5 w-3.5" /> View & Print
-                          </button>
-                          <button
-                            onClick={async () => {
-                              if (!confirm('Are you sure you want to delete this receipt?')) return;
-                              setDeleteLoading(receipt.id);
-                              try {
-                                const response = await fetch(`/api/admin/documents/${receipt.id}`, {
-                                  method: 'DELETE',
-                                  headers: { Authorization: `Bearer ${token}` },
-                                });
-                                if (response.ok) {
-                                  fetchReceipts();
-                                } else {
-                                  alert('Failed to delete receipt');
-                                }
-                              } catch (err) {
-                                console.error(err);
-                                alert('Error deleting receipt');
-                              } finally {
-                                setDeleteLoading(null);
-                              }
-                            }}
-                            disabled={deleteLoading === receipt.id}
-                            className="flex items-center justify-center gap-1 rounded-lg bg-red-500/10 px-2.5 py-1.5 font-bold text-red-500 transition-all hover:bg-red-500/20 disabled:opacity-50"
-                            title="Delete receipt"
-                          >
-                            <Trash2 className="h-3.5 w-3.5" /> Delete
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })}
-              {receipts.length === 0 && (
-                <tr>
-                  <td colSpan={7} className="py-8 text-center text-gray-500 dark:text-gray-400">
-                    No generated receipts found. Fill form above to generate one.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
         </div>
       </div>
     </div>

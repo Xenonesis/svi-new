@@ -9,8 +9,7 @@ import {
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 import { FileText, RefreshCw } from 'lucide-react';
 
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
@@ -220,74 +219,11 @@ export default function BbaPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('bbaPreview');
-    if (!element) return;
-
-    // Clone the element to avoid modifying the original
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Set a proper width for better text layout (A4-like proportions)
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm'; // A4 width
-    clone.style.minHeight = element.offsetHeight + 'px';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px';
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for all images in the clone to load
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) {
-          resolve();
-        } else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      await Promise.all(imagePromises);
-
-      const canvas = await html2canvas(clone, {
-        scale: 3, // Higher scale for better quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000,
-        removeContainer: true,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
-        windowHeight: clone.scrollHeight,
+      await exportToPDF({
+        elementId: 'bbaPreview',
+        filename: 'BBA_Document.pdf',
       });
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save('BBA_Document.pdf');
 
       // Update document status to completed
       if (documentId && token) {
@@ -300,19 +236,20 @@ export default function BbaPage() {
           body: JSON.stringify({ status: 'completed' }),
         });
       }
-    } finally {
-      document.body.removeChild(clone);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('bbaPreview');
-    if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const link = document.createElement('a');
-    link.download = 'BBA_Document.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    try {
+      await exportToImage({
+        elementId: 'bbaPreview',
+        filename: 'BBA_Document.png',
+      });
+    } catch (error) {
+      console.error('Error generating Image:', error);
+    }
   };
 
   return (

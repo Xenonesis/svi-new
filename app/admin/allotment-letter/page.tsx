@@ -9,8 +9,7 @@ import {
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 import { FileText, RefreshCw } from 'lucide-react';
 
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
@@ -221,78 +220,11 @@ export default function AllotmentLetterPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('allotmentPreview');
-    if (!element) return;
-
-    // Clone the element to avoid modifying the original
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Set a proper width for better text layout (A4-like proportions)
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm'; // A4 width
-    clone.style.minHeight = element.offsetHeight + 'px';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px'; // Match original padding
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for all images in the clone to load
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) {
-          resolve();
-        } else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // Resolve even on error to not block
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      // Wait for images to load
-      await Promise.all(imagePromises);
-
-      // Use high-quality settings for perfect capture
-      const canvas = await html2canvas(clone, {
-        scale: 3, // Higher scale for better quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000, // Increased timeout for image loading
-        removeContainer: true,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
-        windowHeight: clone.scrollHeight,
+      await exportToPDF({
+        elementId: 'allotmentPreview',
+        filename: 'Allotment_Letter.pdf',
       });
-
-      // Create PDF with exact dimensions
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-
-      // Use PNG for better quality (no JPEG compression artifacts)
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-      pdf.save('Allotment_Letter.pdf');
 
       // Update document status to completed
       if (documentId && token) {
@@ -309,72 +241,19 @@ export default function AllotmentLetterPage() {
           console.error('Failed to update document status:', error);
         }
       }
-    } finally {
-      // Clean up cloned element
-      document.body.removeChild(clone);
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('allotmentPreview');
-    if (!element) return;
-
-    // Clone the element to avoid modifying the original
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // Set a proper width for better text layout (A4-like proportions)
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm'; // A4 width
-    clone.style.minHeight = element.offsetHeight + 'px';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px'; // Match original padding
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for all images in the clone to load
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) {
-          resolve();
-        } else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve(); // Resolve even on error to not block
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      // Wait for images to load
-      await Promise.all(imagePromises);
-
-      // Use high-quality settings for perfect capture
-      const canvas = await html2canvas(clone, {
-        scale: 3, // Higher scale for better quality
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000, // Increased timeout for image loading
-        removeContainer: true,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: 794, // A4 width in pixels at 96 DPI (210mm)
-        windowHeight: clone.scrollHeight,
+      await exportToImage({
+        elementId: 'allotmentPreview',
+        filename: 'Allotment_Letter.png',
       });
-
-      // Download as PNG with maximum quality
-      const link = document.createElement('a');
-      link.download = 'Allotment_Letter.png';
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
-    } finally {
-      // Clean up cloned element
-      document.body.removeChild(clone);
+    } catch (error) {
+      console.error('Error generating Image:', error);
     }
   };
 

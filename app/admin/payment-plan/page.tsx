@@ -9,8 +9,7 @@ import {
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 
 import { Calculator } from 'lucide-react';
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { useState } from 'react';
 
 export default function PaymentPlanPage() {
@@ -100,41 +99,41 @@ export default function PaymentPlanPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('planPreview');
-    if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('Payment_Plan.pdf');
+    try {
+      await exportToPDF({
+        elementId: 'planPreview',
+        filename: 'Payment_Plan.pdf',
+      });
 
-    // Update document status to completed
-    if (documentId && token) {
-      try {
-        await fetch(`/api/admin/documents/${documentId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: 'completed' }),
-        });
-      } catch (error) {
-        console.error('Failed to update document status:', error);
+      // Update document status to completed
+      if (documentId && token) {
+        try {
+          await fetch(`/api/admin/documents/${documentId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: 'completed' }),
+          });
+        } catch (error) {
+          console.error('Failed to update document status:', error);
+        }
       }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('planPreview');
-    if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const link = document.createElement('a');
-    link.download = 'Payment_Plan.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    try {
+      await exportToImage({
+        elementId: 'planPreview',
+        filename: 'Payment_Plan.png',
+      });
+    } catch (error) {
+      console.error('Error generating Image:', error);
+    }
   };
 
   return (
@@ -240,10 +239,8 @@ export default function PaymentPlanPage() {
         <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 
-          <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-              Live Preview
-            </h2>
+          <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Live Preview</h2>
             {preview && (
               <button
                 onClick={() => {
@@ -252,16 +249,26 @@ export default function PaymentPlanPage() {
                     if (document.fullscreenElement) {
                       document.exitFullscreen();
                     } else {
-                      previewElement.requestFullscreen().catch(err => {
+                      previewElement.requestFullscreen().catch((err) => {
                         console.error('Error attempting to enable fullscreen:', err);
                       });
                     }
                   }
                 }}
-                className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-gray-600 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white transition-colors rounded-lg hover:bg-gray-100 dark:hover:bg-white/10"
+                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
                 title="Toggle Fullscreen"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
                   <path d="M8 3H5a2 2 0 0 0-2 2v3" />
                   <path d="M21 8V5a2 2 0 0 0-2-2h-3" />
                   <path d="M3 16v3a2 2 0 0 0 2 2h3" />
@@ -273,62 +280,104 @@ export default function PaymentPlanPage() {
           </div>
 
           <PreviewContainer previewId="planPreview" hasPreview={preview}>
-            <div className="bg-white text-black p-8 font-sans">
+            <div className="bg-white p-8 font-sans text-black">
               <div className="border-brand-gold mb-8 border-b-2 pb-6 text-center">
-                <h1 className="text-brand-navy font-serif text-3xl font-bold">Payment Plan ({formData.emis} Months)</h1>
-                <p className="mt-2 font-sans font-semibold text-gray-600 text-lg uppercase tracking-wider">{formData.propertyType}</p>
+                <h1 className="text-brand-navy font-serif text-3xl font-bold">
+                  Payment Plan ({formData.emis} Months)
+                </h1>
+                <p className="mt-2 font-sans text-lg font-semibold tracking-wider text-gray-600 uppercase">
+                  {formData.propertyType}
+                </p>
               </div>
 
-              <div className="mb-10 grid grid-cols-2 md:grid-cols-3 gap-6 rounded-xl bg-gray-50 p-6 border border-gray-200">
+              <div className="mb-10 grid grid-cols-2 gap-6 rounded-xl border border-gray-200 bg-gray-50 p-6 md:grid-cols-3">
                 <div>
-                  <span className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-1">Unit Number</span> 
+                  <span className="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Unit Number
+                  </span>
                   <span className="text-lg font-semibold">{formData.unitNo || '-'}</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-1">Plot Size</span> 
+                  <span className="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Plot Size
+                  </span>
                   <span className="text-lg font-semibold">{formData.plotSize || '0'} Sq. Yds.</span>
                 </div>
                 <div>
-                  <span className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-1">Cost/Sq.Yd</span> 
-                  <span className="text-lg font-semibold">₹ {parseFloat(formData.costPerSqYd || '0').toLocaleString('en-IN')}</span>
+                  <span className="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Cost/Sq.Yd
+                  </span>
+                  <span className="text-lg font-semibold">
+                    ₹ {parseFloat(formData.costPerSqYd || '0').toLocaleString('en-IN')}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-1">Total Cost</span> 
-                  <span className="text-lg font-semibold text-brand-navy">₹ {totals.totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                  <span className="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Total Cost
+                  </span>
+                  <span className="text-brand-navy text-lg font-semibold">
+                    ₹ {totals.totalCost.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-1">Booking Amount</span> 
-                  <span className="text-lg font-semibold text-green-600">₹ {parseFloat(formData.bookingAmount || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                  <span className="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Booking Amount
+                  </span>
+                  <span className="text-lg font-semibold text-green-600">
+                    ₹{' '}
+                    {parseFloat(formData.bookingAmount || '0').toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                    })}
+                  </span>
                 </div>
                 <div>
-                  <span className="text-gray-500 text-xs font-bold uppercase tracking-wider block mb-1">Balance Amount</span> 
-                  <span className="text-lg font-semibold text-orange-600">₹ {totals.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
+                  <span className="mb-1 block text-xs font-bold tracking-wider text-gray-500 uppercase">
+                    Balance Amount
+                  </span>
+                  <span className="text-lg font-semibold text-orange-600">
+                    ₹ {totals.balance.toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                  </span>
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-6 text-gray-800 border-b pb-2">Installment Schedule</h3>
+              <h3 className="mb-6 border-b pb-2 text-xl font-bold text-gray-800">
+                Installment Schedule
+              </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
                 {/* Initial Payment Card */}
-                <div className="bg-green-50 border border-green-200 rounded-xl p-5 shadow-sm relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
-                  <h4 className="font-bold text-green-800 mb-1 text-sm uppercase tracking-wide">Initial Payment</h4>
-                  <p className="text-xs text-green-600 mb-3">{new Date(formData.startDate).toLocaleDateString('en-GB')}</p>
+                <div className="relative overflow-hidden rounded-xl border border-green-200 bg-green-50 p-5 shadow-sm">
+                  <div className="absolute top-0 left-0 h-full w-1 bg-green-500"></div>
+                  <h4 className="mb-1 text-sm font-bold tracking-wide text-green-800 uppercase">
+                    Initial Payment
+                  </h4>
+                  <p className="mb-3 text-xs text-green-600">
+                    {new Date(formData.startDate).toLocaleDateString('en-GB')}
+                  </p>
                   <p className="text-xl font-bold text-gray-900">
-                    ₹ {parseFloat(formData.bookingAmount || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                    ₹{' '}
+                    {parseFloat(formData.bookingAmount || '0').toLocaleString('en-IN', {
+                      minimumFractionDigits: 2,
+                    })}
                   </p>
                 </div>
 
                 {/* EMI Cards */}
                 {schedule.map((row) => (
-                  <div key={row.month} className="bg-white border border-gray-200 rounded-xl p-5 shadow-sm relative overflow-hidden group hover:border-brand-gold/50 transition-colors">
-                    <div className="absolute top-0 left-0 w-1 h-full bg-blue-400"></div>
-                    <div className="flex justify-between items-start mb-1">
-                      <h4 className="font-bold text-gray-700 text-sm uppercase tracking-wide">EMI {row.month}</h4>
+                  <div
+                    key={row.month}
+                    className="group hover:border-brand-gold/50 relative overflow-hidden rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-colors"
+                  >
+                    <div className="absolute top-0 left-0 h-full w-1 bg-blue-400"></div>
+                    <div className="mb-1 flex items-start justify-between">
+                      <h4 className="text-sm font-bold tracking-wide text-gray-700 uppercase">
+                        EMI {row.month}
+                      </h4>
                     </div>
-                    <p className="text-xs text-gray-500 mb-3">{row.date}</p>
+                    <p className="mb-3 text-xs text-gray-500">{row.date}</p>
                     <p className="text-xl font-bold text-gray-900">
-                      ₹ {parseFloat(row.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
+                      ₹{' '}
+                      {parseFloat(row.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}
                     </p>
                   </div>
                 ))}

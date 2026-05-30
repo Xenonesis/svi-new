@@ -124,9 +124,45 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'All required fields must be filled' }, { status: 400 });
   }
 
-  // Handle file uploads
+  // Handle file uploads with strict server-side validation (max 150KB, safe formats)
   const photoFile = formData.get('photo') as File | null;
   const panCardFile = formData.get('panCard') as File | null;
+
+  const MAX_FILE_SIZE = 150 * 1024; // 150KB
+  const ALLOWED_MIME_TYPES = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'application/pdf',
+  ];
+
+  if (photoFile && photoFile.size > 0) {
+    if (photoFile.size > MAX_FILE_SIZE) {
+      return NextResponse.json({ error: 'Photo file size must be under 150KB' }, { status: 400 });
+    }
+    if (!ALLOWED_MIME_TYPES.includes(photoFile.type)) {
+      return NextResponse.json(
+        { error: 'Only JPG, PNG, WEBP, or PDF files are allowed for photos' },
+        { status: 400 }
+      );
+    }
+  }
+
+  if (panCardFile && panCardFile.size > 0) {
+    if (panCardFile.size > MAX_FILE_SIZE) {
+      return NextResponse.json(
+        { error: 'PAN Card file size must be under 150KB' },
+        { status: 400 }
+      );
+    }
+    if (!ALLOWED_MIME_TYPES.includes(panCardFile.type)) {
+      return NextResponse.json(
+        { error: 'Only JPG, PNG, WEBP, or PDF files are allowed for PAN Card' },
+        { status: 400 }
+      );
+    }
+  }
 
   let photoUrl: string | null = null;
   let panCardFileUrl: string | null = null;
@@ -247,6 +283,7 @@ export async function POST(request: NextRequest) {
 
   // Send email notification (non-blocking)
   const emailStatus = { sent: false, error: null as string | null };
+  let primaryRecipient = email;
   try {
     const resendApiKey = process.env.RESEND_API_KEY;
     if (resendApiKey) {
@@ -309,7 +346,6 @@ export async function POST(request: NextRequest) {
       }
 
       // Primary Recipient: Applicant (default) or fallback to Admin if applicant email is invalid/missing
-      let primaryRecipient = email;
       let isFallbackRoute = false;
 
       if (!isValidEmail(email)) {

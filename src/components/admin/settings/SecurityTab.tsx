@@ -1,7 +1,6 @@
 'use client';
 
 import { Lock, Eye, EyeOff, RefreshCw, Key, Smartphone, Laptop } from 'lucide-react';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 interface Security {
   currentPassword: string;
@@ -27,11 +26,6 @@ interface SecurityTabProps {
   showConfirmPass: boolean;
   setShowConfirmPass: React.Dispatch<React.SetStateAction<boolean>>;
   saveLoading: boolean;
-  captchaDisabled: boolean;
-  captchaToken: string | null;
-  setCaptchaToken: React.Dispatch<React.SetStateAction<string | null>>;
-  captchaRef: React.RefObject<HCaptcha | null>;
-  resolvedTheme: 'light' | 'dark';
   handleUpdatePassword: (e: React.FormEvent) => Promise<void>;
   sessionDetails: SessionDetails;
   showToast: (type: 'success' | 'error', msg: string) => void;
@@ -48,11 +42,6 @@ export function SecurityTab({
   showConfirmPass,
   setShowConfirmPass,
   saveLoading,
-  captchaDisabled,
-  captchaToken,
-  setCaptchaToken,
-  captchaRef,
-  resolvedTheme,
   handleUpdatePassword,
   sessionDetails,
   showToast,
@@ -149,25 +138,10 @@ export function SecurityTab({
           </div>
         </div>
 
-        {/* hCaptcha Widget */}
-        {!captchaDisabled && (
-          <div className="flex justify-center py-2">
-            <HCaptcha
-              ref={captchaRef}
-              sitekey={
-                process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY || '10000000-ffff-ffff-ffff-000000000001'
-              }
-              onVerify={(token) => setCaptchaToken(token)}
-              onExpire={() => setCaptchaToken(null)}
-              theme={resolvedTheme}
-            />
-          </div>
-        )}
-
         <div className="flex justify-end pt-2 font-sans">
           <button
             type="submit"
-            disabled={saveLoading || (!captchaDisabled && !captchaToken)}
+            disabled={saveLoading}
             className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-lg px-6 py-3.5 font-sans text-xs font-bold tracking-widest uppercase shadow-md transition-all disabled:opacity-60"
           >
             {saveLoading ? <RefreshCw className="h-3.5 w-3.5 animate-spin" /> : 'Update Password'}

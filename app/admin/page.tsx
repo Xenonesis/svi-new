@@ -1,12 +1,11 @@
 'use client';
 
 import { AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
-import { type FormEvent, useState, useRef, useEffect } from 'react';
+import { type FormEvent, useState, useEffect } from 'react';
 
 import { motion } from 'motion/react';
 import { supabase } from '@/src/lib/supabase/client';
 import { useRouter } from 'next/navigation';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
 
 const GRID_STYLE = {
   backgroundImage:
@@ -27,23 +26,12 @@ export default function AdminLogin() {
   const [emailTouched, setEmailTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [shake, setShake] = useState(false);
-  const [captchaShake, setCaptchaShake] = useState(false);
 
   const emailIsValid = email ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) : true;
   const passwordIsValid = password ? password.length >= 6 : true;
 
   const showEmailError = emailTouched && !emailIsValid;
   const showPasswordError = passwordTouched && !passwordIsValid;
-
-  const captchaDisabled = process.env.NEXT_PUBLIC_DISABLE_CAPTCHA === 'true';
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaRef = useRef<HCaptcha>(null);
-  const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
-
-  useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark');
-    setResolvedTheme(isDark ? 'dark' : 'light');
-  }, []);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -65,29 +53,16 @@ export default function AdminLogin() {
       return;
     }
 
-    // Interactive Captcha reminder feedback
-    if (!captchaDisabled && !captchaToken) {
-      setError('Captcha verification is required to proceed.');
-      setCaptchaShake(true);
-      setShake(true);
-      return;
-    }
-
     setLoading(true);
 
     const { data, error: authError } = await supabase.auth.signInWithPassword({
       email,
       password,
-      options: {
-        captchaToken: captchaToken || undefined,
-      },
     });
 
     if (authError || !data.session) {
       setError(authError?.message || 'Login failed. Please verify your credentials.');
       setShake(true);
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
       setLoading(false);
       return;
     }
@@ -288,31 +263,6 @@ export default function AdminLogin() {
                 </button>
               </div>
             </div>
-
-            {/* hCaptcha Widget */}
-            {!captchaDisabled && (
-              <motion.div
-                animate={captchaShake ? { x: [0, -6, 6, -4, 4, 0] } : {}}
-                onAnimationComplete={() => setCaptchaShake(false)}
-                className={`flex flex-col items-center justify-center rounded-lg py-2 transition-all duration-300 ${
-                  captchaShake ? 'bg-red-500/5 p-1 ring-2 ring-red-500/30' : ''
-                }`}
-              >
-                <HCaptcha
-                  ref={captchaRef}
-                  sitekey={
-                    process.env.NEXT_PUBLIC_HCAPTCHA_SITE_KEY ||
-                    '10000000-ffff-ffff-ffff-000000000001'
-                  }
-                  onVerify={(token) => {
-                    setCaptchaToken(token);
-                    setError('');
-                  }}
-                  onExpire={() => setCaptchaToken(null)}
-                  theme={resolvedTheme}
-                />
-              </motion.div>
-            )}
 
             <button
               type="submit"

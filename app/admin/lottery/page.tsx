@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import ExcelJS from 'exceljs';
+import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 
 interface Participant {
   name: string;
@@ -45,6 +46,7 @@ interface Lottery {
 }
 
 export default function AdminLotteryPage() {
+  const { token } = useAdminSession();
   const [isPending, startTransition] = useTransition();
 
   // Active views: 'list' (dashboard/history), 'create' (upload/preview), 'draw' (run live draw)
@@ -483,37 +485,22 @@ export default function AdminLotteryPage() {
         setErrorMessage(null);
         setSuccessMessage(null);
 
-        // 1. Fetch all participants for this lottery that are not winners yet
-        const { data: candidates, error: fError } = await supabase
-          .from('lottery_participants')
-          .select('id, name, ticket_number')
-          .eq('lottery_id', activeLottery.id);
+        const response = await fetch('/api/admin/lottery/draw', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ lotteryId: activeLottery.id }),
+        });
 
-        if (fError) throw fError;
-        if (!candidates || candidates.length === 0) {
-          setErrorMessage('No participants found in database for this lottery.');
-          return;
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Failed to draw winner.');
         }
 
-        // 2. Select a random index
-        const randomIndex = Math.floor(Math.random() * candidates.length);
-        const winner = candidates[randomIndex];
-
-        // 3. Update participant to is_winner = true
-        const { error: winnerError } = await supabase
-          .from('lottery_participants')
-          .update({ is_winner: true, prize_rank: 1 })
-          .eq('id', winner.id);
-
-        if (winnerError) throw winnerError;
-
-        // 4. Update lottery status to 'completed'
-        const { error: lUpdateError } = await supabase
-          .from('lotteries')
-          .update({ status: 'completed' })
-          .eq('id', activeLottery.id);
-
-        if (lUpdateError) throw lUpdateError;
+        const winner = data.winner;
 
         setSuccessMessage(
           `Winner Drawn! Congratulations to ${winner.name} (${winner.ticket_number})!`

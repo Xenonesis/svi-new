@@ -8,8 +8,7 @@ import {
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 import { FileSignature, RefreshCw } from 'lucide-react';
 
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { useEffect, useState } from 'react';
 
 export default function OfferLetterPage() {
@@ -97,41 +96,41 @@ export default function OfferLetterPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('offerPreview');
-    if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const imgData = canvas.toDataURL('image/jpeg', 1.0);
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const pdfWidth = pdf.internal.pageSize.getWidth();
-    const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-    pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-    pdf.save('Offer_Letter.pdf');
+    try {
+      await exportToPDF({
+        elementId: 'offerPreview',
+        filename: 'Offer_Letter.pdf',
+      });
 
-    // Update document status to completed
-    if (documentId && token) {
-      try {
-        await fetch(`/api/admin/documents/${documentId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ status: 'completed' }),
-        });
-      } catch (error) {
-        console.error('Failed to update document status:', error);
+      // Update document status to completed
+      if (documentId && token) {
+        try {
+          await fetch(`/api/admin/documents/${documentId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: 'completed' }),
+          });
+        } catch (error) {
+          console.error('Failed to update document status:', error);
+        }
       }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('offerPreview');
-    if (!element) return;
-    const canvas = await html2canvas(element, { scale: 2 });
-    const link = document.createElement('a');
-    link.download = 'Offer_Letter.png';
-    link.href = canvas.toDataURL('image/png');
-    link.click();
+    try {
+      await exportToImage({
+        elementId: 'offerPreview',
+        filename: 'Offer_Letter.png',
+      });
+    } catch (error) {
+      console.error('Error generating Image:', error);
+    }
   };
 
   return (

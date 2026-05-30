@@ -16,8 +16,7 @@ import {
   Image as ImageIcon,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import html2canvas from 'html2canvas-pro';
-import jsPDF from 'jspdf';
+import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { supabase } from '@/src/lib/supabase/client';
 
 interface SavedAllotment {
@@ -180,70 +179,14 @@ export default function AllotmentRecordsPage() {
   };
 
   const handleDownloadPDF = async () => {
-    const element = document.getElementById('modalAllotmentPreview');
-    if (!element) return;
-
     setPdfLoading(true);
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    // A4 format dimensions setup
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px';
-    clone.style.boxSizing = 'border-box';
-
-    // Wait for images inside clone
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) resolve();
-        else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      await Promise.all(imagePromises);
-      const canvas = await html2canvas(clone, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000,
-        windowWidth: 794,
-        windowHeight: clone.scrollHeight,
-      });
-
-      const pdf = new jsPDF({
-        orientation: 'portrait',
-        unit: 'mm',
-        format: 'a4',
-        compress: true,
-      });
-
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      const imgWidth = canvas.width;
-      const imgHeight = canvas.height;
-      const ratio = Math.min(pdfWidth / imgWidth, pdfHeight / imgHeight);
-
-      const imgX = (pdfWidth - imgWidth * ratio) / 2;
-      const imgY = 0;
-
-      const imgData = canvas.toDataURL('image/png', 1.0);
-      pdf.addImage(imgData, 'PNG', imgX, imgY, imgWidth * ratio, imgHeight * ratio);
-
       const clientName = selectedAllotment?.form_data?.clientName || 'Record';
-      pdf.save(`Allotment_Letter_${clientName.replace(/\s+/g, '_')}.pdf`);
+      const filename = `Allotment_Letter_${clientName.replace(/\s+/g, '_')}.pdf`;
+      await exportToPDF({
+        elementId: 'modalAllotmentPreview',
+        filename,
+      });
 
       // Update status to completed in db
       if (selectedAllotment && token) {
@@ -260,61 +203,25 @@ export default function AllotmentRecordsPage() {
           console.error('Failed to update document status:', error);
         }
       }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
     } finally {
-      document.body.removeChild(clone);
       setPdfLoading(false);
     }
   };
 
   const handleDownloadImage = async () => {
-    const element = document.getElementById('modalAllotmentPreview');
-    if (!element) return;
-
     setImageLoading(true);
-    const clone = element.cloneNode(true) as HTMLElement;
-
-    clone.style.backgroundColor = 'white';
-    clone.style.color = 'black';
-    clone.style.width = '210mm';
-    clone.style.position = 'absolute';
-    clone.style.left = '-9999px';
-    clone.style.top = '0';
-    clone.style.padding = '32px';
-    clone.style.boxSizing = 'border-box';
-
-    const images = clone.querySelectorAll('img');
-    const imagePromises = Array.from(images).map((img) => {
-      return new Promise<void>((resolve) => {
-        if (img.complete) resolve();
-        else {
-          img.onload = () => resolve();
-          img.onerror = () => resolve();
-        }
-      });
-    });
-
-    document.body.appendChild(clone);
-
     try {
-      await Promise.all(imagePromises);
-      const canvas = await html2canvas(clone, {
-        scale: 3,
-        useCORS: true,
-        allowTaint: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-        imageTimeout: 15000,
-        windowWidth: 794,
-        windowHeight: clone.scrollHeight,
-      });
-
-      const link = document.createElement('a');
       const clientName = selectedAllotment?.form_data?.clientName || 'Record';
-      link.download = `Allotment_Letter_${clientName.replace(/\s+/g, '_')}.png`;
-      link.href = canvas.toDataURL('image/png', 1.0);
-      link.click();
+      const filename = `Allotment_Letter_${clientName.replace(/\s+/g, '_')}.png`;
+      await exportToImage({
+        elementId: 'modalAllotmentPreview',
+        filename,
+      });
+    } catch (error) {
+      console.error('Error generating Image:', error);
     } finally {
-      document.body.removeChild(clone);
       setImageLoading(false);
     }
   };

@@ -16,6 +16,7 @@ import {
   Trash2,
   Users,
   X,
+  Star,
 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -84,6 +85,7 @@ interface Registration {
   property_interest: string | null;
   message: string | null;
   status: string;
+  is_important?: boolean;
   created_at: string;
 }
 
@@ -1274,6 +1276,7 @@ export default function AdminRegistrations() {
               <table className="w-full text-sm">
                 <thead>
                   <tr className="dark:border-brand-gold/15 border-b border-gray-200 bg-gray-50/50 dark:bg-white/2">
+                    <th className="w-10 px-4 py-4"></th>
                     {[
                       'Submission ID',
                       'Name',
@@ -1303,6 +1306,53 @@ export default function AdminRegistrations() {
                       transition={{ delay: i * 0.02, duration: 0.4 }}
                       className="group border-b border-gray-100 transition-colors hover:bg-gray-50 dark:border-white/5 dark:hover:bg-[#111118]/60"
                     >
+                      <td className="px-4 py-4.5 text-center">
+                        <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            const nextVal = !reg.is_important;
+                            // Optimistic UI update
+                            setRegistrations((prev) =>
+                              prev.map((r) =>
+                                r.id === reg.id ? { ...r, is_important: nextVal } : r
+                              )
+                            );
+                            try {
+                              const res = await fetch('/api/admin/registrations', {
+                                method: 'PATCH',
+                                headers: {
+                                  'Content-Type': 'application/json',
+                                  Authorization: `Bearer ${token}`,
+                                },
+                                body: JSON.stringify({ id: reg.id, is_important: nextVal }),
+                              });
+                              if (!res.ok) throw new Error();
+                              showToast(
+                                'success',
+                                nextVal ? 'Marked as important' : 'Unmarked from important'
+                              );
+                            } catch {
+                              // Rollback on error
+                              setRegistrations((prev) =>
+                                prev.map((r) =>
+                                  r.id === reg.id ? { ...r, is_important: !nextVal } : r
+                                )
+                              );
+                              showToast('error', 'Failed to update status');
+                            }
+                          }}
+                          className="flex items-center justify-center text-gray-300 transition-colors hover:text-amber-500"
+                          title={reg.is_important ? 'Important (starred)' : 'Mark as important'}
+                        >
+                          <Star
+                            className={`h-4.5 w-4.5 transition-all ${
+                              reg.is_important
+                                ? 'scale-110 fill-amber-500 text-amber-500'
+                                : 'hover:scale-110 hover:text-amber-400'
+                            }`}
+                          />
+                        </button>
+                      </td>
                       <td className="px-6 py-4.5">
                         {reg.submission_id ? (
                           <span className="bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md px-2 py-0.5 font-mono text-xs font-bold tracking-wider">

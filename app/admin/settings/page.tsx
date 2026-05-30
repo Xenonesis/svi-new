@@ -13,8 +13,7 @@ import {
   User,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useEffect, useState, useRef } from 'react';
-import HCaptcha from '@hcaptcha/react-hcaptcha';
+import { useEffect, useState } from 'react';
 
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 import { useTheme } from '@/src/components/ThemeProvider';
@@ -42,12 +41,6 @@ const TABS = [
 export default function AdminSettings() {
   const { token, userId, loading: sessionLoading } = useAdminSession();
   const { theme, setTheme } = useTheme();
-
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const captchaRef = useRef<HCaptcha>(null);
-
-  const captchaDisabled = process.env.NEXT_PUBLIC_DISABLE_CAPTCHA === 'true';
-  const resolvedTheme = theme;
 
   // Tab State
   const [activeTab, setActiveTab] = useState('profile');
@@ -435,9 +428,6 @@ export default function AdminSettings() {
       const { error: signInErr } = await supabase.auth.signInWithPassword({
         email: profile.email,
         password: security.currentPassword,
-        options: {
-          captchaToken: captchaToken || undefined,
-        },
       });
 
       if (signInErr) {
@@ -457,8 +447,6 @@ export default function AdminSettings() {
     } catch (err: any) {
       showToast('error', err.message || 'Failed to update security credentials.');
     } finally {
-      captchaRef.current?.resetCaptcha();
-      setCaptchaToken(null);
       setSaveLoading(false);
     }
   };
@@ -631,11 +619,6 @@ export default function AdminSettings() {
                         showConfirmPass={showConfirmPass}
                         setShowConfirmPass={setShowConfirmPass}
                         saveLoading={saveLoading}
-                        captchaDisabled={captchaDisabled}
-                        captchaToken={captchaToken}
-                        setCaptchaToken={setCaptchaToken}
-                        captchaRef={captchaRef}
-                        resolvedTheme={resolvedTheme}
                         handleUpdatePassword={handleUpdatePassword}
                         sessionDetails={sessionDetails}
                         showToast={showToast}
