@@ -12,18 +12,14 @@ import {
   Award,
   CheckCircle2,
   Clock,
-  ArrowRight,
   FileSpreadsheet,
   AlertCircle,
-  HelpCircle,
-  Eye,
-  EyeOff,
   Globe,
-  Settings,
   Users,
   Trophy,
   ChevronRight,
   ChevronLeft,
+  Sparkles,
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import ExcelJS from 'exceljs';
@@ -72,7 +68,6 @@ export default function AdminLotteryPage() {
   const [manualEmail, setManualEmail] = useState('');
   const [manualTicket, setManualTicket] = useState('');
   const [entryMethod, setEntryMethod] = useState<'upload' | 'manual'>('upload');
-  const [showInlineManualForm, setShowInlineManualForm] = useState(false);
 
   // Pagination for parsed data
   const [currentPage, setCurrentPage] = useState(1);
@@ -241,7 +236,7 @@ export default function AdminLotteryPage() {
             jsonData.push(rowData);
           });
           parseExcelData(jsonData);
-        } catch (error) {
+        } catch {
           setErrorMessage('Error reading Excel file. Make sure it is not corrupted.');
         }
       };
@@ -306,7 +301,7 @@ export default function AdminLotteryPage() {
       setParticipants(parsed);
       setCurrentPage(1);
       setSuccessMessage(`Successfully loaded ${parsed.length} rows from CSV!`);
-    } catch (err) {
+    } catch {
       setErrorMessage('Failed to parse CSV file. Please verify CSV formatting.');
     }
   };
@@ -357,7 +352,7 @@ export default function AdminLotteryPage() {
       setParticipants(parsed);
       setCurrentPage(1);
       setSuccessMessage(`Successfully loaded ${parsed.length} rows from Excel!`);
-    } catch (err) {
+    } catch {
       setErrorMessage('Failed to parse Excel file.');
     }
   };
@@ -553,14 +548,14 @@ export default function AdminLotteryPage() {
   };
 
   return (
-    <div className="space-y-8 pb-12">
+    <div className="space-y-8 pb-12 text-slate-900 transition-colors duration-300 dark:text-slate-100">
       {/* Header */}
-      <div className="flex flex-col justify-between gap-4 border-b border-white/5 pb-6 sm:flex-row sm:items-end">
+      <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end dark:border-white/5">
         <div>
-          <h1 className="font-serif text-3xl font-bold tracking-tight text-white">
+          <h1 className="font-serif text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
             Command Center: <span className="text-brand-gold italic">Lottery</span>
           </h1>
-          <p className="mt-2 text-sm text-gray-400">
+          <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">
             Launch massive lucky draws, manage high-stakes prizes, and broadcast live winner
             reveals.
           </p>
@@ -571,7 +566,7 @@ export default function AdminLotteryPage() {
             className={`cursor-pointer rounded-xl border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all duration-300 ${
               activeTab === 'dashboard'
                 ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30 shadow-[0_0_15px_rgba(201,168,76,0.1)]'
-                : 'border-white/5 text-gray-400 hover:bg-white/5 hover:text-white'
+                : 'border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:border-white/5 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
             }`}
           >
             Dashboard
@@ -599,13 +594,13 @@ export default function AdminLotteryPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-center gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 p-4 text-sm font-medium text-red-400 shadow-lg backdrop-blur-sm"
+            className="flex items-center gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm font-medium text-red-600 shadow-lg backdrop-blur-sm dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-400"
           >
             <AlertCircle className="h-5 w-5 shrink-0" />
             <span>{errorMessage}</span>
             <button
               onClick={() => setErrorMessage(null)}
-              className="ml-auto text-red-400 hover:text-white"
+              className="ml-auto text-red-400 hover:text-red-600 dark:hover:text-white"
             >
               ✕
             </button>
@@ -616,7 +611,7 @@ export default function AdminLotteryPage() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0 }}
-            className="flex items-center justify-between gap-3 rounded-2xl border border-green-500/30 bg-green-500/10 p-4 text-sm font-medium text-green-400 shadow-lg backdrop-blur-sm"
+            className="flex items-center justify-between gap-3 rounded-2xl border border-green-200 bg-green-50 p-4 text-sm font-medium text-green-700 shadow-lg backdrop-blur-sm dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-400"
           >
             <div className="flex items-center gap-3">
               <CheckCircle2 className="h-5 w-5 shrink-0" />
@@ -627,14 +622,14 @@ export default function AdminLotteryPage() {
                 href="/lottery"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-green-500/40 bg-green-500/20 px-4 py-2 text-xs font-bold tracking-wide text-green-300 transition-all hover:bg-green-500/30"
+                className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-green-300 bg-green-100 px-4 py-2 text-xs font-bold tracking-wide text-green-800 transition-all hover:bg-green-200 dark:border-green-500/40 dark:bg-green-500/20 dark:text-green-300 dark:hover:bg-green-500/30"
               >
                 Launch Arena ↗
               </a>
             )}
             <button
               onClick={() => setSuccessMessage(null)}
-              className="ml-4 text-green-400 hover:text-white"
+              className="ml-4 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-white"
             >
               ✕
             </button>
@@ -644,18 +639,20 @@ export default function AdminLotteryPage() {
 
       {/* Visibility Control Card */}
       <div
-        className={`relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 ${lotteryVisible ? 'border-brand-gold/40 to-brand-gold/5 bg-gradient-to-br from-[#0e0e14] shadow-[0_0_30px_rgba(201,168,76,0.1)]' : 'border-white/10 bg-[#0e0e14]/50'}`}
+        className={`relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 ${lotteryVisible ? 'border-brand-gold/40 to-brand-gold/5 bg-gradient-to-br from-white shadow-[0_0_30px_rgba(201,168,76,0.1)] dark:from-[#0e0e14]' : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e0e14]/50'}`}
       >
         <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-5">
             <div
-              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-colors ${lotteryVisible ? 'bg-brand-gold/20 text-brand-gold' : 'bg-white/5 text-gray-500'}`}
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-colors ${lotteryVisible ? 'bg-brand-gold/20 text-brand-gold' : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-gray-500'}`}
             >
               <Globe className="h-7 w-7" />
             </div>
             <div>
-              <h3 className="font-serif text-xl font-bold text-white">Public Live Broadcast</h3>
-              <p className="mt-1 text-sm text-gray-400">
+              <h3 className="font-serif text-xl font-bold text-slate-900 dark:text-white">
+                Public Live Broadcast
+              </h3>
+              <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
                 {lotteryVisible
                   ? 'The Lottery Arena is LIVE and broadcasting to all public visitors.'
                   : 'The Arena is offline. Public visitors cannot see the drawing.'}
@@ -665,20 +662,20 @@ export default function AdminLotteryPage() {
 
           <div className="flex items-center gap-4 sm:shrink-0">
             <span
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase ${lotteryVisible ? 'border border-green-500/30 bg-green-500/15 text-green-400' : 'border border-white/5 bg-white/5 text-gray-500'}`}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase ${lotteryVisible ? 'border border-green-200 bg-green-50 text-green-600 dark:border-green-500/30 dark:bg-green-500/15 dark:text-green-400' : 'border border-slate-200 bg-slate-50 text-slate-500 dark:border-white/5 dark:bg-white/5 dark:text-gray-500'}`}
             >
               <span
-                className={`h-2 w-2 rounded-full ${lotteryVisible ? 'animate-pulse bg-green-400 shadow-[0_0_10px_#4ade80]' : 'bg-gray-500'}`}
+                className={`h-2 w-2 rounded-full ${lotteryVisible ? 'animate-pulse bg-green-500 shadow-[0_0_10px_#4ade80] dark:bg-green-400' : 'bg-slate-400 dark:bg-gray-500'}`}
               />
               {visibilityLoading ? 'Checking…' : lotteryVisible ? 'Broadcasting Live' : 'Offline'}
             </span>
             <button
               onClick={() => toggleLotteryVisibility(!lotteryVisible)}
               disabled={visibilityLoading || visibilityPending}
-              className={`focus-visible:ring-brand-gold relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${lotteryVisible ? 'border-brand-gold bg-brand-gold shadow-[0_0_15px_rgba(201,168,76,0.5)]' : 'border-white/10 bg-white/5'}`}
+              className={`focus-visible:ring-brand-gold relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${lotteryVisible ? 'border-brand-gold bg-brand-gold shadow-[0_0_15px_rgba(201,168,76,0.5)]' : 'border-slate-300 bg-slate-200 dark:border-white/10 dark:bg-white/5'}`}
             >
               <span
-                className={`inline-block h-6 w-6 rounded-full shadow-md transition-all duration-300 ${lotteryVisible ? 'translate-x-8 bg-[#0a0a0f]' : 'translate-x-1 bg-gray-500'}`}
+                className={`inline-block h-6 w-6 rounded-full shadow-md transition-all duration-300 ${lotteryVisible ? 'translate-x-8 bg-white dark:bg-[#0a0a0f]' : 'translate-x-1 bg-white dark:bg-gray-500'}`}
               />
             </button>
           </div>
@@ -689,7 +686,7 @@ export default function AdminLotteryPage() {
         <div className="space-y-8">
           {/* Active Lottery Section */}
           {activeLottery ? (
-            <div className="border-brand-gold/30 relative overflow-hidden rounded-3xl border bg-[#0a0a0f] p-8 shadow-[0_0_40px_rgba(201,168,76,0.15)]">
+            <div className="border-brand-gold/30 relative overflow-hidden rounded-3xl border bg-white p-8 shadow-[0_0_40px_rgba(201,168,76,0.15)] dark:bg-[#0a0a0f]">
               {/* Decorative backgrounds */}
               <div className="bg-brand-gold/10 pointer-events-none absolute -top-32 -right-32 h-96 w-96 rounded-full blur-[100px]" />
               <div className="bg-brand-gold/5 pointer-events-none absolute -bottom-32 -left-32 h-96 w-96 rounded-full blur-[100px]" />
@@ -700,36 +697,36 @@ export default function AdminLotteryPage() {
                     <span className="bg-brand-gold h-2 w-2 animate-pulse rounded-full"></span> Ready
                     for Draw
                   </div>
-                  <h2 className="font-serif text-4xl font-bold text-white">
+                  <h2 className="font-serif text-4xl font-bold text-slate-900 dark:text-white">
                     {activeLottery.title}
                   </h2>
-                  <p className="max-w-2xl text-base text-gray-400">
+                  <p className="max-w-2xl text-base text-slate-600 dark:text-gray-400">
                     {activeLottery.description || 'No description provided.'}
                   </p>
 
-                  <div className="flex flex-wrap items-center gap-6 pt-4 text-sm font-medium text-gray-400">
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4">
+                  <div className="flex flex-wrap items-center gap-6 pt-4 text-sm font-medium text-slate-600 dark:text-gray-400">
+                    <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-white/5 dark:bg-white/5">
                       <div className="bg-brand-gold/20 text-brand-gold flex h-10 w-10 items-center justify-center rounded-xl">
                         <Users className="h-5 w-5" />
                       </div>
                       <div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="text-xl font-bold text-slate-900 dark:text-white">
                           {activeParticipantsCount}
                         </div>
-                        <div className="text-[10px] tracking-wider text-gray-500 uppercase">
+                        <div className="text-[10px] tracking-wider text-slate-500 uppercase dark:text-gray-500">
                           Participants
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center gap-3 rounded-2xl border border-white/5 bg-white/5 p-4">
-                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/10 text-white">
+                    <div className="flex items-center gap-3 rounded-2xl border border-slate-100 bg-slate-50 p-4 dark:border-white/5 dark:bg-white/5">
+                      <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-white">
                         <Clock className="h-5 w-5" />
                       </div>
                       <div>
-                        <div className="text-xl font-bold text-white">
+                        <div className="text-xl font-bold text-slate-900 dark:text-white">
                           {new Date(activeLottery.created_at).toLocaleDateString()}
                         </div>
-                        <div className="text-[10px] tracking-wider text-gray-500 uppercase">
+                        <div className="text-[10px] tracking-wider text-slate-500 uppercase dark:text-gray-500">
                           Creation Date
                         </div>
                       </div>
@@ -739,7 +736,7 @@ export default function AdminLotteryPage() {
 
                 <div className="flex shrink-0 flex-col gap-4">
                   {activeWinners.length > 0 ? (
-                    <div className="border-brand-gold/30 flex flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-b from-[#1a1a24] to-[#0a0a0f] p-8 shadow-2xl">
+                    <div className="border-brand-gold/30 flex flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-b from-slate-50 to-white p-8 shadow-2xl dark:from-[#1a1a24] dark:to-[#0a0a0f]">
                       <div className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold flex h-16 w-16 items-center justify-center rounded-full border shadow-[0_0_20px_rgba(201,168,76,0.3)]">
                         <Trophy className="h-8 w-8" />
                       </div>
@@ -747,17 +744,17 @@ export default function AdminLotteryPage() {
                         <div className="text-brand-gold mb-1 text-[10px] font-bold tracking-widest uppercase">
                           Winner Declared
                         </div>
-                        <div className="font-serif text-3xl font-bold text-white">
+                        <div className="font-serif text-3xl font-bold text-slate-900 dark:text-white">
                           {activeWinners[0].name}
                         </div>
-                        <div className="mt-2 inline-block rounded bg-white/10 px-3 py-1 font-mono text-sm font-bold text-gray-300">
+                        <div className="mt-2 inline-block rounded bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-600 dark:bg-white/10 dark:text-gray-300">
                           {activeWinners[0].ticket_number}
                         </div>
                       </div>
                       <button
                         onClick={() => resetDraw(activeLottery.id)}
                         disabled={isPending}
-                        className="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-2.5 text-xs font-bold tracking-wider text-gray-300 uppercase transition-all hover:bg-white/10 hover:text-white"
+                        className="mt-2 flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-6 py-2.5 text-xs font-bold tracking-wider text-slate-600 uppercase transition-all hover:bg-slate-200 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10 dark:hover:text-white"
                       >
                         <RefreshCw className={`h-4 w-4 ${isPending ? 'animate-spin' : ''}`} /> Reset
                         Draw
@@ -779,12 +776,14 @@ export default function AdminLotteryPage() {
               </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-white/20 bg-[#0e0e14]/30 p-16 text-center">
-              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-white/5 text-gray-600">
+            <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-16 text-center dark:border-white/20 dark:bg-[#0e0e14]/30">
+              <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-gray-600">
                 <Award className="h-10 w-10" />
               </div>
-              <h3 className="mb-2 font-serif text-2xl font-bold text-white">No Active Campaigns</h3>
-              <p className="mb-8 max-w-md text-sm text-gray-400">
+              <h3 className="mb-2 font-serif text-2xl font-bold text-slate-900 dark:text-white">
+                No Active Campaigns
+              </h3>
+              <p className="mb-8 max-w-md text-sm text-slate-500 dark:text-gray-400">
                 You don't have any active lotteries running. Start a new campaign to thrill your
                 participants and award prizes.
               </p>
@@ -802,11 +801,13 @@ export default function AdminLotteryPage() {
 
           {/* Historical draws table */}
           <div className="space-y-6">
-            <h3 className="font-serif text-2xl font-bold text-white">Archive & History</h3>
-            <div className="overflow-hidden rounded-3xl border border-white/10 bg-[#0e0e14]/60 backdrop-blur-md">
+            <h3 className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
+              Archive & History
+            </h3>
+            <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white backdrop-blur-md dark:border-white/10 dark:bg-[#0e0e14]/60">
               <div className="overflow-x-auto">
-                <table className="w-full border-collapse text-left text-sm text-gray-300">
-                  <thead className="border-b border-white/10 bg-black/40 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                <table className="w-full border-collapse text-left text-sm text-slate-600 dark:text-gray-300">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:border-white/10 dark:bg-black/40 dark:text-gray-400">
                     <tr>
                       <th className="px-8 py-5">Campaign Name</th>
                       <th className="px-8 py-5">Date</th>
@@ -815,21 +816,26 @@ export default function AdminLotteryPage() {
                       <th className="px-8 py-5 text-right">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-white/5">
+                  <tbody className="divide-y divide-slate-100 dark:divide-white/5">
                     {lotteries.map((l) => (
-                      <tr key={l.id} className="transition-colors hover:bg-white/5">
-                        <td className="px-8 py-5 font-bold text-white">{l.title}</td>
-                        <td className="px-8 py-5 text-gray-400">
+                      <tr
+                        key={l.id}
+                        className="transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
+                      >
+                        <td className="px-8 py-5 font-bold text-slate-900 dark:text-white">
+                          {l.title}
+                        </td>
+                        <td className="px-8 py-5 text-slate-500 dark:text-gray-400">
                           {new Date(l.created_at).toLocaleDateString()}
                         </td>
                         <td className="px-8 py-5">
                           <span
                             className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold tracking-wider uppercase ${
                               l.status === 'active'
-                                ? 'border-green-500/30 bg-green-500/10 text-green-400'
+                                ? 'border-green-200 bg-green-50 text-green-600 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-400'
                                 : l.status === 'completed'
                                   ? 'border-brand-gold/30 bg-brand-gold/10 text-brand-gold'
-                                  : 'border-white/10 bg-white/5 text-gray-400'
+                                  : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
                             }`}
                           >
                             {l.status}
@@ -841,19 +847,21 @@ export default function AdminLotteryPage() {
                               <div className="text-brand-gold flex items-center gap-2 font-bold">
                                 <Award className="h-4 w-4 shrink-0" /> {l.winner.name}
                               </div>
-                              <div className="mt-1 font-mono text-[10px] text-gray-500">
+                              <div className="mt-1 font-mono text-[10px] text-slate-500 dark:text-gray-500">
                                 Ticket: {l.winner.ticket_number}
                               </div>
                             </div>
                           ) : (
-                            <span className="text-xs text-gray-500 italic">Pending Draw</span>
+                            <span className="text-xs text-slate-400 italic dark:text-gray-500">
+                              Pending Draw
+                            </span>
                           )}
                         </td>
                         <td className="px-8 py-5 text-right">
                           <button
                             onClick={() => resetDraw(l.id)}
                             disabled={isPending}
-                            className="hover:border-brand-gold/40 hover:bg-brand-gold/10 hover:text-brand-gold inline-flex cursor-pointer items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold tracking-wider text-gray-300 transition-all"
+                            className="hover:border-brand-gold/40 hover:bg-brand-gold/10 hover:text-brand-gold inline-flex cursor-pointer items-center gap-2 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-semibold tracking-wider text-slate-600 transition-all dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
                           >
                             <RefreshCw className="h-3 w-3" /> Re-open
                           </button>
@@ -862,7 +870,10 @@ export default function AdminLotteryPage() {
                     ))}
                     {lotteries.length === 0 && (
                       <tr>
-                        <td colSpan={5} className="px-8 py-12 text-center text-gray-500 italic">
+                        <td
+                          colSpan={5}
+                          className="px-8 py-12 text-center text-slate-400 italic dark:text-gray-500"
+                        >
                           No archived campaigns.
                         </td>
                       </tr>
@@ -876,11 +887,11 @@ export default function AdminLotteryPage() {
       )}
 
       {activeTab === 'create' && (
-        <div className="mx-auto max-w-5xl rounded-3xl border border-white/10 bg-[#0e0e14]/80 p-8 shadow-2xl backdrop-blur-xl md:p-12">
+        <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl md:p-12 dark:border-white/10 dark:bg-[#0e0e14]/80 dark:shadow-2xl">
           {/* Wizard Progress Bar */}
           <div className="mb-12">
             <div className="relative flex items-center justify-between">
-              <div className="absolute top-1/2 right-0 left-0 h-0.5 -translate-y-1/2 bg-white/10" />
+              <div className="absolute top-1/2 right-0 left-0 h-0.5 -translate-y-1/2 bg-slate-200 dark:bg-white/10" />
               <div
                 className="bg-brand-gold absolute top-1/2 left-0 h-0.5 -translate-y-1/2 transition-all duration-500"
                 style={{ width: `${(wizardStep - 1) * 50}%` }}
@@ -892,13 +903,13 @@ export default function AdminLotteryPage() {
                     className={`flex h-12 w-12 items-center justify-center rounded-full border-2 font-bold transition-all duration-500 ${
                       wizardStep >= step
                         ? 'border-brand-gold bg-brand-gold text-brand-navy shadow-[0_0_15px_rgba(201,168,76,0.4)]'
-                        : 'border-white/20 bg-[#0e0e14] text-gray-500'
+                        : 'border-slate-200 bg-white text-slate-400 dark:border-white/20 dark:bg-[#0e0e14] dark:text-gray-500'
                     }`}
                   >
                     {wizardStep > step ? <CheckCircle2 className="h-6 w-6" /> : step}
                   </div>
                   <span
-                    className={`text-[10px] font-bold tracking-widest uppercase ${wizardStep >= step ? 'text-brand-gold' : 'text-gray-500'}`}
+                    className={`text-[10px] font-bold tracking-widest uppercase ${wizardStep >= step ? 'text-brand-gold' : 'text-slate-400 dark:text-gray-500'}`}
                   >
                     {step === 1 ? 'Details' : step === 2 ? 'Participants' : 'Launch'}
                   </span>
@@ -920,15 +931,17 @@ export default function AdminLotteryPage() {
                   className="space-y-8"
                 >
                   <div className="text-center">
-                    <h3 className="font-serif text-3xl font-bold text-white">Campaign Details</h3>
-                    <p className="mt-2 text-sm text-gray-400">
+                    <h3 className="font-serif text-3xl font-bold text-slate-900 dark:text-white">
+                      Campaign Details
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">
                       Give your lucky draw a grand title and exciting description.
                     </p>
                   </div>
 
                   <div className="mx-auto max-w-2xl space-y-6">
                     <div>
-                      <label className="mb-2 block text-xs font-bold tracking-wider text-gray-300 uppercase">
+                      <label className="mb-2 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-300">
                         Lottery Title <span className="text-brand-gold">*</span>
                       </label>
                       <input
@@ -936,11 +949,11 @@ export default function AdminLotteryPage() {
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
                         placeholder="e.g., Summer Villa Mega Giveaway"
-                        className="focus:border-brand-gold/50 w-full rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-lg font-bold text-white transition-all outline-none focus:bg-white/10"
+                        className="focus:border-brand-gold/50 w-full rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 text-lg font-bold text-slate-900 transition-all outline-none focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-white/10"
                       />
                     </div>
                     <div>
-                      <label className="mb-2 block text-xs font-bold tracking-wider text-gray-300 uppercase">
+                      <label className="mb-2 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-300">
                         Description / Prizes
                       </label>
                       <textarea
@@ -948,7 +961,7 @@ export default function AdminLotteryPage() {
                         onChange={(e) => setDescription(e.target.value)}
                         placeholder="Describe the grand prize and rules..."
                         rows={4}
-                        className="focus:border-brand-gold/50 w-full resize-none rounded-2xl border border-white/10 bg-white/5 px-6 py-4 text-sm text-white transition-all outline-none focus:bg-white/10"
+                        className="focus:border-brand-gold/50 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-6 py-4 text-sm text-slate-900 transition-all outline-none focus:bg-white dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-white/10"
                       />
                     </div>
                   </div>
@@ -965,27 +978,29 @@ export default function AdminLotteryPage() {
                   className="space-y-8"
                 >
                   <div className="text-center">
-                    <h3 className="font-serif text-3xl font-bold text-white">Load Participants</h3>
-                    <p className="mt-2 text-sm text-gray-400">
+                    <h3 className="font-serif text-3xl font-bold text-slate-900 dark:text-white">
+                      Load Participants
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">
                       Upload your customer spreadsheet or add entries manually.
                     </p>
                   </div>
 
                   <div className="grid grid-cols-1 gap-8 lg:grid-cols-5">
                     <div className="lg:col-span-2">
-                      <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                        <div className="mb-6 flex gap-2 rounded-xl bg-black/40 p-1">
+                      <div className="rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-white/5">
+                        <div className="mb-6 flex gap-2 rounded-xl bg-slate-200 p-1 dark:bg-black/40">
                           <button
                             type="button"
                             onClick={() => setEntryMethod('upload')}
-                            className={`flex-1 rounded-lg py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all ${entryMethod === 'upload' ? 'text-brand-gold bg-white/10 shadow-sm' : 'text-gray-500 hover:text-white'}`}
+                            className={`flex-1 rounded-lg py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all ${entryMethod === 'upload' ? 'text-brand-gold bg-white shadow-sm dark:bg-white/10' : 'text-slate-500 hover:text-slate-900 dark:text-gray-500 dark:hover:text-white'}`}
                           >
                             Upload File
                           </button>
                           <button
                             type="button"
                             onClick={() => setEntryMethod('manual')}
-                            className={`flex-1 rounded-lg py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all ${entryMethod === 'manual' ? 'text-brand-gold bg-white/10 shadow-sm' : 'text-gray-500 hover:text-white'}`}
+                            className={`flex-1 rounded-lg py-2.5 text-[10px] font-bold tracking-widest uppercase transition-all ${entryMethod === 'manual' ? 'text-brand-gold bg-white shadow-sm dark:bg-white/10' : 'text-slate-500 hover:text-slate-900 dark:text-gray-500 dark:hover:text-white'}`}
                           >
                             Manual
                           </button>
@@ -1006,7 +1021,7 @@ export default function AdminLotteryPage() {
                               }
                             }}
                             onClick={() => fileInputRef.current?.click()}
-                            className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 ${dragOver ? 'border-brand-gold bg-brand-gold/10 scale-105' : 'hover:border-brand-gold/50 border-white/20 bg-transparent hover:bg-white/5'}`}
+                            className={`flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed p-8 text-center transition-all duration-300 ${dragOver ? 'border-brand-gold bg-brand-gold/10 scale-105' : 'hover:border-brand-gold/50 border-slate-300 bg-transparent hover:bg-slate-100 dark:border-white/20 dark:hover:bg-white/5'}`}
                           >
                             <input
                               ref={fileInputRef}
@@ -1021,8 +1036,12 @@ export default function AdminLotteryPage() {
                             <div className="bg-brand-gold/10 text-brand-gold mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                               <Upload className="h-8 w-8" />
                             </div>
-                            <div className="mb-1 font-bold text-white">Click or Drop File Here</div>
-                            <div className="text-xs text-gray-500">CSV, XLSX supported</div>
+                            <div className="mb-1 font-bold text-slate-900 dark:text-white">
+                              Click or Drop File Here
+                            </div>
+                            <div className="text-xs text-slate-500 dark:text-gray-500">
+                              CSV, XLSX supported
+                            </div>
                           </div>
                         ) : (
                           <form onSubmit={handleManualAdd} className="space-y-4">
@@ -1032,14 +1051,14 @@ export default function AdminLotteryPage() {
                               value={manualName}
                               onChange={(e) => setManualName(e.target.value)}
                               placeholder="Full Name *"
-                              className="focus:border-brand-gold/50 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs text-white outline-none"
+                              className="focus:border-brand-gold/50 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-900 outline-none dark:border-white/10 dark:bg-black/40 dark:text-white"
                             />
                             <input
                               type="text"
                               value={manualTicket}
                               onChange={(e) => setManualTicket(e.target.value)}
                               placeholder="Ticket # (Auto if blank)"
-                              className="focus:border-brand-gold/50 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-3 text-xs text-white outline-none"
+                              className="focus:border-brand-gold/50 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs text-slate-900 outline-none dark:border-white/10 dark:bg-black/40 dark:text-white"
                             />
                             <button
                               type="submit"
@@ -1053,18 +1072,20 @@ export default function AdminLotteryPage() {
                     </div>
 
                     <div className="lg:col-span-3">
-                      <div className="flex h-full flex-col rounded-3xl border border-white/10 bg-white/5 p-6">
+                      <div className="flex h-full flex-col rounded-3xl border border-slate-200 bg-slate-50 p-6 dark:border-white/10 dark:bg-white/5">
                         <div className="mb-6 flex items-center justify-between">
                           <div>
-                            <h4 className="font-bold text-white">Participants List</h4>
-                            <p className="text-xs text-gray-400">
+                            <h4 className="font-bold text-slate-900 dark:text-white">
+                              Participants List
+                            </h4>
+                            <p className="text-xs text-slate-500 dark:text-gray-400">
                               {participants.length} valid entries
                             </p>
                           </div>
                           {participants.length > 0 && (
                             <button
                               onClick={() => setParticipants([])}
-                              className="cursor-pointer rounded-lg px-3 py-1.5 text-[10px] font-bold text-red-400 uppercase transition-colors hover:bg-red-400/10"
+                              className="cursor-pointer rounded-lg px-3 py-1.5 text-[10px] font-bold text-red-500 uppercase transition-colors hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-400/10"
                             >
                               Clear All
                             </button>
@@ -1072,7 +1093,7 @@ export default function AdminLotteryPage() {
                         </div>
 
                         {participants.length === 0 ? (
-                          <div className="flex flex-1 flex-col items-center justify-center text-center text-gray-500">
+                          <div className="flex flex-1 flex-col items-center justify-center text-center text-slate-400 dark:text-gray-500">
                             <FileSpreadsheet className="mb-3 h-12 w-12 opacity-20" />
                             <p className="text-sm">No participants loaded yet.</p>
                           </div>
@@ -1084,7 +1105,7 @@ export default function AdminLotteryPage() {
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                                 placeholder="Search names..."
-                                className="focus:border-brand-gold/50 w-full rounded-xl border border-white/10 bg-black/40 px-4 py-2.5 text-xs text-white outline-none"
+                                className="focus:border-brand-gold/50 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-xs text-slate-900 outline-none dark:border-white/10 dark:bg-black/40 dark:text-white"
                               />
                             </div>
                             <div className="flex-1 overflow-y-auto">
@@ -1094,17 +1115,19 @@ export default function AdminLotteryPage() {
                                   return (
                                     <div
                                       key={originalIdx}
-                                      className="flex items-center justify-between rounded-xl border border-white/5 bg-black/20 p-3 hover:border-white/10"
+                                      className="flex items-center justify-between rounded-xl border border-slate-200 bg-white p-3 hover:border-slate-300 dark:border-white/5 dark:bg-black/20 dark:hover:border-white/10"
                                     >
                                       <div>
-                                        <div className="text-sm font-bold text-white">{p.name}</div>
+                                        <div className="text-sm font-bold text-slate-900 dark:text-white">
+                                          {p.name}
+                                        </div>
                                         <div className="text-brand-gold font-mono text-[10px]">
                                           {p.ticketNumber}
                                         </div>
                                       </div>
                                       <button
                                         onClick={() => removeParticipant(originalIdx)}
-                                        className="cursor-pointer p-2 text-gray-500 hover:text-red-400"
+                                        className="cursor-pointer p-2 text-slate-400 hover:text-red-500 dark:text-gray-500 dark:hover:text-red-400"
                                       >
                                         <Trash2 className="h-4 w-4" />
                                       </button>
@@ -1114,21 +1137,21 @@ export default function AdminLotteryPage() {
                               </div>
                             </div>
                             {totalPages > 1 && (
-                              <div className="mt-4 flex items-center justify-between border-t border-white/5 pt-4">
+                              <div className="mt-4 flex items-center justify-between border-t border-slate-200 pt-4 dark:border-white/5">
                                 <button
                                   disabled={currentPage === 1}
                                   onClick={() => setCurrentPage((c) => Math.max(1, c - 1))}
-                                  className="cursor-pointer text-xs font-bold text-gray-400 hover:text-white disabled:opacity-30"
+                                  className="cursor-pointer text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-30 dark:text-gray-400 dark:hover:text-white"
                                 >
                                   Prev
                                 </button>
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-slate-500 dark:text-gray-500">
                                   {currentPage} / {totalPages}
                                 </span>
                                 <button
                                   disabled={currentPage === totalPages}
                                   onClick={() => setCurrentPage((c) => Math.min(totalPages, c + 1))}
-                                  className="cursor-pointer text-xs font-bold text-gray-400 hover:text-white disabled:opacity-30"
+                                  className="cursor-pointer text-xs font-bold text-slate-500 hover:text-slate-900 disabled:opacity-30 dark:text-gray-400 dark:hover:text-white"
                                 >
                                   Next
                                 </button>
@@ -1152,19 +1175,25 @@ export default function AdminLotteryPage() {
                   className="space-y-8"
                 >
                   <div className="text-center">
-                    <h3 className="font-serif text-3xl font-bold text-white">Review & Launch</h3>
-                    <p className="mt-2 text-sm text-gray-400">
+                    <h3 className="font-serif text-3xl font-bold text-slate-900 dark:text-white">
+                      Review & Launch
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">
                       Verify details before pushing the campaign live.
                     </p>
                   </div>
 
-                  <div className="border-brand-gold/30 mx-auto max-w-2xl overflow-hidden rounded-3xl border bg-[#0a0a0f] shadow-[0_0_40px_rgba(201,168,76,0.15)]">
-                    <div className="border-b border-white/10 bg-white/5 p-8 text-center">
+                  <div className="border-brand-gold/30 mx-auto max-w-2xl overflow-hidden rounded-3xl border bg-white shadow-[0_0_40px_rgba(201,168,76,0.15)] dark:bg-[#0a0a0f]">
+                    <div className="border-b border-slate-100 bg-slate-50 p-8 text-center dark:border-white/10 dark:bg-white/5">
                       <div className="bg-brand-gold/20 text-brand-gold mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full">
                         <Sparkles className="h-8 w-8" />
                       </div>
-                      <h4 className="font-serif text-3xl font-bold text-white">{title}</h4>
-                      <p className="mt-2 text-sm text-gray-400">{description}</p>
+                      <h4 className="font-serif text-3xl font-bold text-slate-900 dark:text-white">
+                        {title}
+                      </h4>
+                      <p className="mt-2 text-sm text-slate-500 dark:text-gray-400">
+                        {description}
+                      </p>
                     </div>
                     <div className="p-8">
                       <div className="flex justify-around">
@@ -1172,13 +1201,15 @@ export default function AdminLotteryPage() {
                           <div className="text-brand-gold text-3xl font-bold">
                             {participants.length}
                           </div>
-                          <div className="mt-1 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                          <div className="mt-1 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-gray-500">
                             Total Entries
                           </div>
                         </div>
                         <div className="text-center">
-                          <div className="text-3xl font-bold text-green-400">1</div>
-                          <div className="mt-1 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                          <div className="text-3xl font-bold text-green-500 dark:text-green-400">
+                            1
+                          </div>
+                          <div className="mt-1 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:text-gray-500">
                             Grand Prize
                           </div>
                         </div>
@@ -1191,11 +1222,11 @@ export default function AdminLotteryPage() {
           </div>
 
           {/* Wizard Controls */}
-          <div className="mt-12 flex items-center justify-between border-t border-white/10 pt-8">
+          <div className="mt-12 flex items-center justify-between border-t border-slate-200 pt-8 dark:border-white/10">
             <button
               onClick={handlePrevWizardStep}
               disabled={wizardStep === 1}
-              className="flex cursor-pointer items-center gap-2 rounded-xl px-6 py-3 text-xs font-bold tracking-wider text-gray-400 uppercase transition-colors hover:bg-white/5 hover:text-white disabled:invisible"
+              className="flex cursor-pointer items-center gap-2 rounded-xl px-6 py-3 text-xs font-bold tracking-wider text-slate-500 uppercase transition-colors hover:bg-slate-100 hover:text-slate-900 disabled:invisible dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white"
             >
               <ChevronLeft className="h-4 w-4" /> Back
             </button>
@@ -1211,13 +1242,13 @@ export default function AdminLotteryPage() {
               <button
                 onClick={saveLotteryToDB}
                 disabled={isPending || participants.length === 0}
-                className="group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-xl bg-green-500 px-10 py-3.5 text-xs font-bold tracking-widest text-black uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(74,222,128,0.4)] disabled:bg-gray-700 disabled:text-gray-500"
+                className="group relative flex cursor-pointer items-center gap-3 overflow-hidden rounded-xl bg-green-500 px-10 py-3.5 text-xs font-bold tracking-widest text-white uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(74,222,128,0.4)] disabled:bg-slate-200 disabled:text-slate-400 dark:text-black dark:disabled:bg-gray-700 dark:disabled:text-gray-500"
               >
                 <div className="absolute inset-0 flex h-full w-full [transform:skew(-12deg)_translateX(-100%)] justify-center group-hover:[transform:skew(-12deg)_translateX(100%)] group-hover:duration-1000">
                   <div className="relative h-full w-8 bg-white/30" />
                 </div>
                 {isPending ? 'Launching...' : 'Deploy Campaign'}{' '}
-                <Play className="h-4 w-4 fill-black" />
+                <Play className="h-4 w-4 fill-white dark:fill-black" />
               </button>
             )}
           </div>
@@ -1226,6 +1257,3 @@ export default function AdminLotteryPage() {
     </div>
   );
 }
-
-// Ensure Sparkles icon is imported
-import { Sparkles } from 'lucide-react';
