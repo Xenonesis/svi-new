@@ -563,14 +563,14 @@ export default function LotteryDrawSection() {
         </div>
 
         {/* ── Main Grid ──────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 items-stretch gap-8 lg:grid-cols-12">
+        <div className="grid grid-cols-1 items-start gap-8 lg:grid-cols-12">
           {/* ── Grand Prize Draw Card ────────────────────────────────────── */}
           <div className="flex flex-col lg:col-span-7 xl:col-span-8">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="group relative flex h-full flex-col justify-between overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 md:p-12 dark:border-[#D4AF37]/10 dark:bg-gradient-to-br dark:from-[#0B1120] dark:via-[#0d1526] dark:to-[#0B1120] dark:shadow-[0_0_80px_rgba(212,175,55,0.06)]"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 md:p-12 dark:border-[#D4AF37]/10 dark:bg-gradient-to-br dark:from-[#0B1120] dark:via-[#0d1526] dark:to-[#0B1120] dark:shadow-[0_0_80px_rgba(212,175,55,0.06)]"
             >
               {/* Gold glow accent */}
               <div className="pointer-events-none absolute -top-20 -right-20 h-60 w-60 rounded-full bg-[#D4AF37]/5 blur-3xl dark:bg-[#D4AF37]/8" />
@@ -783,7 +783,7 @@ export default function LotteryDrawSection() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 dark:border-[#D4AF37]/10 dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#0d1526] dark:shadow-[0_0_40px_rgba(212,175,55,0.04)]"
+              className="relative flex flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 dark:border-[#D4AF37]/10 dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#0d1526] dark:shadow-[0_0_40px_rgba(212,175,55,0.04)]"
             >
               <h3 className="mb-8 flex items-center gap-3 font-serif text-2xl text-slate-900 dark:text-white">
                 <Award className="h-6 w-6 text-[#D4AF37]" />
