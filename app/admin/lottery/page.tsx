@@ -808,23 +808,12 @@ export default function AdminLotteryPage() {
     if (!editingLottery || !editTitle.trim()) return;
     setEditSaving(true);
     try {
-      // Build winner object if provided
-      const winnerPayload = editWinnerName.trim()
-        ? {
-            name: editWinnerName.trim(),
-            ticket_number: editWinnerTicket.trim(),
-            phone: editWinnerPhone.trim() || null,
-            email: editWinnerEmail.trim() || null,
-          }
-        : null;
-
       const { error } = await supabase
         .from('lotteries')
         .update({
           title: editTitle.trim(),
           description: editDescription.trim() || null,
           status: editStatus,
-          winner: winnerPayload,
         })
         .eq('id', editingLottery.id);
       if (error) throw error;

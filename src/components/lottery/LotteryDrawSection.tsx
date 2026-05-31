@@ -37,13 +37,13 @@ interface ActiveLottery {
 export default function LotteryDrawSection() {
   const [activeLottery, setActiveLottery] = useState<ActiveLottery | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
-  const [winner, setWinner] = useState<Participant | null>(null);
+  const [winners, setWinners] = useState<Participant[]>([]);
 
   // Animation & UI States
   const [isDrawArenaOpen, setIsDrawArenaOpen] = useState(false);
   const [isShuffling, setIsShuffling] = useState(false);
   const [shuffledNames, setShuffledNames] = useState<string[]>([]);
-  const [revealedWinner, setRevealedWinner] = useState<Participant | null>(null);
+  const [revealedWinners, setRevealedWinners] = useState<Participant[]>([]);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [historicalWinners, setHistoricalWinners] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -131,9 +131,9 @@ export default function LotteryDrawSection() {
         if (pError) throw pError;
         setParticipants(participantsData || []);
 
-        const dbWinner = participantsData?.find((p) => p.is_winner);
-        if (dbWinner) {
-          setWinner(dbWinner);
+        const dbWinners = participantsData?.filter((p) => p.is_winner) || [];
+        if (dbWinners.length > 0) {
+          setWinners(dbWinners);
         }
       }
     } catch (err: any) {
@@ -265,18 +265,14 @@ export default function LotteryDrawSection() {
   const startShuffleAnimation = () => {
     if (participants.length === 0 || isShuffling) return;
 
-    let drawWinner = winner;
-    if (!drawWinner) {
-      const dbWinners = participants.filter((p) => p.is_winner);
-      if (dbWinners.length > 0) {
-        drawWinner = dbWinners[0];
-      } else {
-        drawWinner = participants[Math.floor(Math.random() * participants.length)];
-      }
+    let drawWinners = winners.length > 0 ? winners : participants.filter((p) => p.is_winner);
+
+    if (drawWinners.length === 0) {
+      drawWinners = [participants[Math.floor(Math.random() * participants.length)]];
     }
 
     setIsShuffling(true);
-    setRevealedWinner(null);
+    setRevealedWinners([]);
 
     const namePool: string[] = [];
     const scrollRounds = 4;
@@ -286,7 +282,8 @@ export default function LotteryDrawSection() {
       namePool.push(...shuffledChunk);
     }
 
-    namePool.push(drawWinner.name);
+    // End with the first winner's name for the animation landing
+    namePool.push(drawWinners[0].name);
     setShuffledNames(namePool);
 
     let currentIndex = 0;
@@ -305,11 +302,11 @@ export default function LotteryDrawSection() {
 
       if (remaining <= 0) {
         setIsShuffling(false);
-        setRevealedWinner(drawWinner);
+        setRevealedWinners(drawWinners);
         playSuccessSound();
         triggerConfetti();
 
-        setWinner(drawWinner);
+        setWinners(drawWinners);
         fetchPastWinners();
       } else {
         if (remaining < 10) {
@@ -500,7 +497,7 @@ export default function LotteryDrawSection() {
                       {participants.length}
                     </span>
                     <span className="mt-1 text-[10px] tracking-widest text-slate-400 uppercase dark:text-slate-500">
-                      Total Entries
+                      Clients
                     </span>
                   </div>
                   <div className="h-12 w-px bg-slate-200 dark:bg-white/10" />
@@ -514,7 +511,7 @@ export default function LotteryDrawSection() {
               </div>
 
               <div className="relative mt-12 flex flex-col items-center pt-8">
-                {winner ? (
+                {winners.length > 0 ? (
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -525,14 +522,27 @@ export default function LotteryDrawSection() {
                     </div>
                     <div>
                       <div className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-[#B38728] uppercase dark:text-[#D4AF37]">
-                        Official Winner
+                        {winners.length === 1
+                          ? 'Official Winner'
+                          : `${winners.length} Official Winners`}
                       </div>
-                      <h4 className="font-serif text-4xl text-slate-900 md:text-5xl dark:text-white">
-                        {winner.name}
-                      </h4>
-                      <div className="mt-6 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-6 py-2.5 font-mono text-sm text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
-                        <Ticket className="h-4 w-4 text-[#B38728] dark:text-[#D4AF37]" />{' '}
-                        {winner.ticket_number}
+                      <div className="space-y-4">
+                        {winners.map((w, idx) => (
+                          <div key={w.id}>
+                            {winners.length > 1 && (
+                              <div className="mb-1 text-[9px] font-medium tracking-widest text-slate-400 uppercase dark:text-slate-500">
+                                Winner #{idx + 1}
+                              </div>
+                            )}
+                            <h4 className="font-serif text-3xl text-slate-900 md:text-4xl dark:text-white">
+                              {w.name}
+                            </h4>
+                            <div className="mt-2 inline-flex items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-5 py-2 font-mono text-xs text-slate-700 dark:border-white/10 dark:bg-white/5 dark:text-slate-300">
+                              <Ticket className="h-3.5 w-3.5 text-[#B38728] dark:text-[#D4AF37]" />{' '}
+                              {w.ticket_number}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
                   </motion.div>
@@ -708,22 +718,31 @@ export default function LotteryDrawSection() {
                 </div>
 
                 {/* Draw Results Details */}
-                {revealedWinner ? (
+                {revealedWinners.length > 0 ? (
                   <motion.div
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                     className="space-y-6"
                   >
-                    <h4 className="font-serif text-4xl text-slate-900 md:text-5xl dark:text-white">
-                      {revealedWinner.name}
-                    </h4>
-                    <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-6 py-2">
-                      <Ticket className="h-4 w-4 text-[#B38728] dark:text-[#D4AF37]" />
-                      <span className="font-mono text-lg tracking-widest text-[#B38728] dark:text-[#D4AF37]">
-                        {revealedWinner.ticket_number}
-                      </span>
-                    </div>
+                    {revealedWinners.map((w, idx) => (
+                      <div key={w.id} className="space-y-2">
+                        {revealedWinners.length > 1 && (
+                          <div className="text-[10px] font-semibold tracking-[0.2em] text-[#B38728] uppercase dark:text-[#D4AF37]">
+                            Winner #{idx + 1}
+                          </div>
+                        )}
+                        <h4 className="font-serif text-4xl text-slate-900 md:text-5xl dark:text-white">
+                          {w.name}
+                        </h4>
+                        <div className="mx-auto inline-flex items-center gap-3 rounded-full border border-[#D4AF37]/30 bg-[#D4AF37]/10 px-6 py-2">
+                          <Ticket className="h-4 w-4 text-[#B38728] dark:text-[#D4AF37]" />
+                          <span className="font-mono text-lg tracking-widest text-[#B38728] dark:text-[#D4AF37]">
+                            {w.ticket_number}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </motion.div>
                 ) : (
                   <p className="mx-auto max-w-sm text-xs leading-relaxed font-medium tracking-widest text-slate-500 uppercase">
@@ -733,12 +752,12 @@ export default function LotteryDrawSection() {
                 )}
 
                 <div className="pt-8">
-                  {revealedWinner ? (
+                  {revealedWinners.length > 0 ? (
                     <button
                       onClick={() => setIsDrawArenaOpen(false)}
                       className="mx-auto block w-full max-w-sm cursor-pointer rounded-full bg-slate-900 px-8 py-4 text-xs font-semibold tracking-[0.15em] text-white uppercase transition-all hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-gray-100"
                     >
-                      Acknowledge Winner
+                      Acknowledge Winner{revealedWinners.length > 1 ? 's' : ''}
                     </button>
                   ) : (
                     <button

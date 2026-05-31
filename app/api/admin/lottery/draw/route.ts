@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import crypto from 'crypto';
+import { Resend } from 'resend';
+import { winnerEmailHtml, nonWinnerEmailHtml } from '@/src/lib/email-templates';
 
 export async function POST(request: NextRequest) {
   const admin = await verifyAdmin(request);
@@ -110,8 +112,94 @@ export async function POST(request: NextRequest) {
       console.error('Failed to log lottery draw activity:', logErr);
     }
 
+    // 7. Send automated email notifications using Resend
+    const apiKey = process.env.RESEND_API_KEY;
+    let emailsSentCount = 0;
+
+    if (apiKey) {
+      try {
+        const resend = new Resend(apiKey);
+        const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
+        const now = new Date();
+
+        // 1. Send Winner Email
+        if (winner.email) {
+          try {
+            await resend.emails.send({
+              from: FROM_ADDRESS,
+              to: [winner.email],
+              subject: `🏆 Congratulations! You won the ${lottery.title}!`,
+              html: winnerEmailHtml({
+                participantName: winner.name,
+                lotteryTitle: lottery.title,
+                ticketNumber: winner.ticket_number,
+                drawnAt: now,
+              }),
+            });
+            console.log(`Manual draw: Winner email successfully sent to ${winner.email}`);
+            emailsSentCount++;
+          } catch (winnerEmailErr: any) {
+            console.error(
+              `Manual draw: Winner email failed for ${winner.email}:`,
+              winnerEmailErr.message
+            );
+          }
+        }
+
+        // 2. Send Runner-Up (Better Luck Next Time) Emails in batches
+        const runnerUps = (candidates || []).filter((c: any) => c.id !== winner.id && c.email);
+
+        if (runnerUps.length > 0) {
+          console.log(
+            `Manual draw: Dispatching results emails to ${runnerUps.length} runner-up participants...`
+          );
+          const BATCH_SIZE = 10;
+          for (let i = 0; i < runnerUps.length; i += BATCH_SIZE) {
+            const batch = runnerUps.slice(i, i + BATCH_SIZE);
+            await Promise.allSettled(
+              batch.map(async (p: any) => {
+                try {
+                  await resend.emails.send({
+                    from: FROM_ADDRESS,
+                    to: [p.email],
+                    subject: `Draw Results — ${lottery.title}`,
+                    html: nonWinnerEmailHtml({
+                      participantName: p.name,
+                      lotteryTitle: lottery.title,
+                      ticketNumber: p.ticket_number,
+                      winnerName: winner.name,
+                      drawnAt: now,
+                    }),
+                  });
+                  emailsSentCount++;
+                } catch (emailErr: any) {
+                  console.error(
+                    `Manual draw: Runner-up email failed for ${p.email}:`,
+                    emailErr.message
+                  );
+                }
+              })
+            );
+
+            // Introduce a short delay between batches if there are more emails left to send
+            if (i + BATCH_SIZE < runnerUps.length) {
+              await new Promise((res) => setTimeout(res, 500));
+            }
+          }
+        }
+        console.log(`Manual draw: Finished sending ${emailsSentCount} email notifications.`);
+      } catch (emailBlockErr) {
+        console.error('Manual draw: Unexpected error in email notification block:', emailBlockErr);
+      }
+    } else {
+      console.warn(
+        'Manual draw: RESEND_API_KEY environment variable is missing. Skipping email notifications.'
+      );
+    }
+
     return NextResponse.json({
       success: true,
+      emailsSent: emailsSentCount > 0,
       winner: {
         id: winner.id,
         name: winner.name,
