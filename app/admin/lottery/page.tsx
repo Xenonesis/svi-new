@@ -121,7 +121,23 @@ export default function AdminLotteryPage() {
   const [editingLottery, setEditingLottery] = useState<Lottery | null>(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editStatus, setEditStatus] = useState<'active' | 'completed' | 'inactive'>('active');
+  const [editWinnerName, setEditWinnerName] = useState('');
+  const [editWinnerTicket, setEditWinnerTicket] = useState('');
+  const [editWinnerPhone, setEditWinnerPhone] = useState('');
+  const [editWinnerEmail, setEditWinnerEmail] = useState('');
   const [editSaving, setEditSaving] = useState(false);
+  const [editTab, setEditTab] = useState<'details' | 'winner' | 'participants'>('details');
+  // Editable participants list inside the edit modal
+  const [editParticipants, setEditParticipants] = useState<any[]>([]);
+  const [editPartsLoading, setEditPartsLoading] = useState(false);
+  const [editPartsSearch, setEditPartsSearch] = useState('');
+  // Add participant inline
+  const [addPartName, setAddPartName] = useState('');
+  const [addPartPhone, setAddPartPhone] = useState('');
+  const [addPartEmail, setAddPartEmail] = useState('');
+  const [addPartTicket, setAddPartTicket] = useState('');
+  const [addPartSaving, setAddPartSaving] = useState(false);
 
   // ── Delete Confirm ───────────────────────────────────────────────────────
   const [deletingLotteryId, setDeletingLotteryId] = useState<string | null>(null);
@@ -765,19 +781,51 @@ export default function AdminLotteryPage() {
   };
 
   // ── Edit Lottery ──────────────────────────────────────────────────────────
-  const openEditModal = (l: Lottery) => {
+  const openEditModal = async (l: Lottery) => {
     setEditingLottery(l);
     setEditTitle(l.title);
     setEditDescription(l.description || '');
+    setEditStatus(l.status);
+    setEditWinnerName(l.winner?.name || '');
+    setEditWinnerTicket(l.winner?.ticket_number || '');
+    setEditWinnerPhone(l.winner?.phone || '');
+    setEditWinnerEmail(l.winner?.email || '');
+    setEditTab('details');
+    setEditPartsSearch('');
+    // Load participants
+    setEditPartsLoading(true);
+    const { data } = await supabase
+      .from('lottery_participants')
+      .select('id, name, ticket_number, phone, email, is_winner')
+      .eq('lottery_id', l.id)
+      .order('is_winner', { ascending: false })
+      .order('name');
+    setEditParticipants(data || []);
+    setEditPartsLoading(false);
   };
 
   const handleEditSave = async () => {
     if (!editingLottery || !editTitle.trim()) return;
     setEditSaving(true);
     try {
+      // Build winner object if provided
+      const winnerPayload = editWinnerName.trim()
+        ? {
+            name: editWinnerName.trim(),
+            ticket_number: editWinnerTicket.trim(),
+            phone: editWinnerPhone.trim() || null,
+            email: editWinnerEmail.trim() || null,
+          }
+        : null;
+
       const { error } = await supabase
         .from('lotteries')
-        .update({ title: editTitle.trim(), description: editDescription.trim() || null })
+        .update({
+          title: editTitle.trim(),
+          description: editDescription.trim() || null,
+          status: editStatus,
+          winner: winnerPayload,
+        })
         .eq('id', editingLottery.id);
       if (error) throw error;
       setSuccessMessage('Campaign updated successfully.');
@@ -787,6 +835,67 @@ export default function AdminLotteryPage() {
       setErrorMessage(err.message || 'Failed to update campaign.');
     } finally {
       setEditSaving(false);
+    }
+  };
+
+  /** Add a new participant to an existing lottery from within the edit modal */
+  const handleAddParticipant = async () => {
+    if (!editingLottery || !addPartName.trim() || !addPartTicket.trim()) return;
+    setAddPartSaving(true);
+    try {
+      const { data, error } = await supabase
+        .from('lottery_participants')
+        .insert({
+          lottery_id: editingLottery.id,
+          name: addPartName.trim(),
+          ticket_number: addPartTicket.trim(),
+          phone: addPartPhone.trim() || null,
+          email: addPartEmail.trim() || null,
+          is_winner: false,
+        })
+        .select('id, name, ticket_number, phone, email, is_winner')
+        .single();
+      if (error) throw error;
+      setEditParticipants((prev) => [...prev, data]);
+      setAddPartName('');
+      setAddPartTicket('');
+      setAddPartPhone('');
+      setAddPartEmail('');
+      setSuccessMessage('Participant added.');
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    } finally {
+      setAddPartSaving(false);
+    }
+  };
+
+  /** Remove a participant from an existing lottery */
+  const handleRemoveParticipant = async (participantId: string) => {
+    try {
+      const { error } = await supabase
+        .from('lottery_participants')
+        .delete()
+        .eq('id', participantId);
+      if (error) throw error;
+      setEditParticipants((prev) => prev.filter((p) => p.id !== participantId));
+    } catch (err: any) {
+      setErrorMessage(err.message);
+    }
+  };
+
+  /** Toggle winner flag on a participant */
+  const handleToggleWinner = async (participantId: string, current: boolean) => {
+    try {
+      const { error } = await supabase
+        .from('lottery_participants')
+        .update({ is_winner: !current })
+        .eq('id', participantId);
+      if (error) throw error;
+      setEditParticipants((prev) =>
+        prev.map((p) => (p.id === participantId ? { ...p, is_winner: !current } : p))
+      );
+    } catch (err: any) {
+      setErrorMessage(err.message);
     }
   };
 
@@ -2025,7 +2134,7 @@ export default function AdminLotteryPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
             onClick={() => setEditingLottery(null)}
           >
             <motion.div
@@ -2033,66 +2142,306 @@ export default function AdminLotteryPage() {
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-lg rounded-3xl border border-slate-200 bg-white p-8 shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]"
+              className="flex w-full max-w-2xl flex-col rounded-3xl border border-slate-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]"
+              style={{ maxHeight: '90vh' }}
             >
-              <div className="mb-6 flex items-center justify-between">
+              {/* Header */}
+              <div className="flex items-start justify-between border-b border-slate-100 p-6 dark:border-white/10">
                 <div>
                   <h3 className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
                     Edit Campaign
                   </h3>
-                  <p className="mt-1 text-xs text-slate-400">Update title and description.</p>
+                  <p className="mt-1 text-xs text-slate-400">
+                    Full control — details, status, winner & participants.
+                  </p>
                 </div>
                 <button
                   onClick={() => setEditingLottery(null)}
-                  className="cursor-pointer rounded-xl border border-slate-200 p-2 text-slate-400 hover:text-slate-600 dark:border-white/10 dark:hover:text-white"
+                  className="cursor-pointer rounded-xl border border-slate-200 p-2 text-slate-400 transition-colors hover:text-slate-700 dark:border-white/10 dark:hover:text-white"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-400">
-                    Campaign Title *
-                  </label>
-                  <input
-                    type="text"
-                    value={editTitle}
-                    onChange={(e) => setEditTitle(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
-                  />
-                </div>
-                <div>
-                  <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-400">
-                    Description
-                  </label>
-                  <textarea
-                    value={editDescription}
-                    onChange={(e) => setEditDescription(e.target.value)}
-                    rows={4}
-                    className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-                  />
-                </div>
+
+              {/* Tabs */}
+              <div className="flex border-b border-slate-100 dark:border-white/10">
+                {(['details', 'winner', 'participants'] as const).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setEditTab(tab)}
+                    className={`flex-1 cursor-pointer py-3 text-xs font-bold tracking-wider uppercase transition-colors ${
+                      editTab === tab
+                        ? 'border-b-2 border-violet-500 text-violet-600 dark:text-violet-400'
+                        : 'text-slate-400 hover:text-slate-600 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    {tab === 'details' && '📋 Details'}
+                    {tab === 'winner' && '🏆 Winner'}
+                    {tab === 'participants' && `👥 Participants (${editParticipants.length})`}
+                  </button>
+                ))}
               </div>
-              <div className="mt-6 flex gap-3">
-                <button
-                  onClick={() => setEditingLottery(null)}
-                  className="flex-1 cursor-pointer rounded-xl border border-slate-200 py-3 text-sm font-bold text-slate-600 transition-all hover:bg-slate-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-                >
-                  Cancel
-                </button>
-                <button
-                  onClick={handleEditSave}
-                  disabled={editSaving || !editTitle.trim()}
-                  className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white transition-all hover:bg-violet-700 disabled:opacity-50"
-                >
-                  {editSaving ? (
-                    <RefreshCw className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <CheckCircle2 className="h-4 w-4" />
-                  )}
-                  Save Changes
-                </button>
+
+              {/* Tab Body */}
+              <div className="flex-1 overflow-y-auto p-6">
+                {/* ── DETAILS TAB ──────────────────────────────────────── */}
+                {editTab === 'details' && (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-400">
+                        Campaign Title *
+                      </label>
+                      <input
+                        type="text"
+                        value={editTitle}
+                        onChange={(e) => setEditTitle(e.target.value)}
+                        className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 transition focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-400">
+                        Description
+                      </label>
+                      <textarea
+                        value={editDescription}
+                        onChange={(e) => setEditDescription(e.target.value)}
+                        rows={4}
+                        className="w-full resize-none rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700 transition focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                      />
+                    </div>
+                    <div>
+                      <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-400">
+                        Status
+                      </label>
+                      <select
+                        value={editStatus}
+                        onChange={(e) => setEditStatus(e.target.value as any)}
+                        className="w-full cursor-pointer rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 transition focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                      >
+                        <option value="active">🟢 Active</option>
+                        <option value="inactive">⚪ Inactive</option>
+                        <option value="completed">✅ Completed</option>
+                      </select>
+                    </div>
+                  </div>
+                )}
+
+                {/* ── WINNER TAB ───────────────────────────────────────── */}
+                {editTab === 'winner' && (
+                  <div className="space-y-4">
+                    <div className="rounded-2xl border border-amber-200/60 bg-amber-50/50 p-3 text-xs text-amber-700 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300">
+                      Manually set or override the winner details. Leave Name blank to remove any
+                      existing winner record.
+                    </div>
+                    {[
+                      {
+                        label: 'Winner Name',
+                        val: editWinnerName,
+                        set: setEditWinnerName,
+                        ph: 'Full Name',
+                      },
+                      {
+                        label: 'Ticket Number',
+                        val: editWinnerTicket,
+                        set: setEditWinnerTicket,
+                        ph: 'e.g. A-1042',
+                      },
+                      {
+                        label: 'Phone',
+                        val: editWinnerPhone,
+                        set: setEditWinnerPhone,
+                        ph: '+91 98765 43210',
+                      },
+                      {
+                        label: 'Email',
+                        val: editWinnerEmail,
+                        set: setEditWinnerEmail,
+                        ph: 'winner@email.com',
+                      },
+                    ].map(({ label, val, set, ph }) => (
+                      <div key={label}>
+                        <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-600 uppercase dark:text-gray-400">
+                          {label}
+                        </label>
+                        <input
+                          type="text"
+                          value={val}
+                          onChange={(e) => set(e.target.value)}
+                          placeholder={ph}
+                          className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 transition focus:border-amber-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-gray-500"
+                        />
+                      </div>
+                    ))}
+                    {editWinnerName.trim() && (
+                      <div className="mt-2 flex items-center gap-3 rounded-2xl border border-amber-200 bg-amber-50 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
+                        <span className="text-2xl">🏆</span>
+                        <div>
+                          <p className="text-sm font-bold text-amber-800 dark:text-amber-300">
+                            {editWinnerName}
+                          </p>
+                          <p className="text-xs text-amber-600 dark:text-amber-400">
+                            Ticket: {editWinnerTicket || '—'}
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {/* ── PARTICIPANTS TAB ─────────────────────────────────── */}
+                {editTab === 'participants' && (
+                  <div className="space-y-4">
+                    {/* Add new participant */}
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
+                      <p className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-gray-400">
+                        ➕ Add New Participant
+                      </p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <input
+                          type="text"
+                          placeholder="Full Name *"
+                          value={addPartName}
+                          onChange={(e) => setAddPartName(e.target.value)}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:placeholder-gray-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Ticket # *"
+                          value={addPartTicket}
+                          onChange={(e) => setAddPartTicket(e.target.value)}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:placeholder-gray-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Phone"
+                          value={addPartPhone}
+                          onChange={(e) => setAddPartPhone(e.target.value)}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:placeholder-gray-500"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Email"
+                          value={addPartEmail}
+                          onChange={(e) => setAddPartEmail(e.target.value)}
+                          className="rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:placeholder-gray-500"
+                        />
+                      </div>
+                      <button
+                        onClick={handleAddParticipant}
+                        disabled={addPartSaving || !addPartName.trim() || !addPartTicket.trim()}
+                        className="mt-3 flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 py-2.5 text-xs font-bold text-white transition hover:bg-violet-700 disabled:opacity-40"
+                      >
+                        {addPartSaving ? (
+                          <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                        ) : (
+                          <Plus className="h-3.5 w-3.5" />
+                        )}
+                        Add Participant
+                      </button>
+                    </div>
+
+                    {/* Search */}
+                    <input
+                      type="text"
+                      placeholder="Search name, ticket, email…"
+                      value={editPartsSearch}
+                      onChange={(e) => setEditPartsSearch(e.target.value)}
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-gray-500"
+                    />
+
+                    {/* Participant list */}
+                    {editPartsLoading ? (
+                      <div className="flex items-center justify-center py-8 text-slate-400">
+                        <RefreshCw className="mr-2 h-5 w-5 animate-spin" /> Loading…
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {editParticipants
+                          .filter(
+                            (p) =>
+                              !editPartsSearch ||
+                              p.name.toLowerCase().includes(editPartsSearch.toLowerCase()) ||
+                              p.ticket_number
+                                .toLowerCase()
+                                .includes(editPartsSearch.toLowerCase()) ||
+                              (p.email &&
+                                p.email.toLowerCase().includes(editPartsSearch.toLowerCase()))
+                          )
+                          .map((p) => (
+                            <div
+                              key={p.id}
+                              className={`flex items-center justify-between rounded-xl border px-3 py-2.5 ${p.is_winner ? 'border-amber-300 bg-amber-50 dark:border-amber-500/30 dark:bg-amber-500/10' : 'border-slate-200 bg-white dark:border-white/10 dark:bg-white/5'}`}
+                            >
+                              <div className="flex min-w-0 items-center gap-2">
+                                {p.is_winner && <span className="text-sm">🏆</span>}
+                                <div className="min-w-0">
+                                  <p className="truncate text-xs font-bold text-slate-900 dark:text-white">
+                                    {p.name}
+                                  </p>
+                                  <p className="text-[10px] text-slate-400">
+                                    #{p.ticket_number}
+                                    {p.email ? ` · ${p.email}` : ''}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex shrink-0 items-center gap-1 pl-2">
+                                <button
+                                  onClick={() => handleToggleWinner(p.id, p.is_winner)}
+                                  title={p.is_winner ? 'Remove winner flag' : 'Mark as winner'}
+                                  className={`rounded-lg px-2 py-1 text-[10px] font-bold transition ${p.is_winner ? 'bg-amber-100 text-amber-700 hover:bg-amber-200 dark:bg-amber-500/20 dark:text-amber-300' : 'bg-slate-100 text-slate-500 hover:bg-amber-100 hover:text-amber-700 dark:bg-white/10 dark:text-gray-400'}`}
+                                >
+                                  {p.is_winner ? '★ Winner' : '☆ Win'}
+                                </button>
+                                <button
+                                  onClick={() => handleRemoveParticipant(p.id)}
+                                  className="rounded-lg p-1 text-slate-400 transition hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
+                                >
+                                  <Trash2 className="h-3.5 w-3.5" />
+                                </button>
+                              </div>
+                            </div>
+                          ))}
+                        {editParticipants.length === 0 && (
+                          <p className="py-6 text-center text-sm text-slate-400">
+                            No participants yet.
+                          </p>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
+
+              {/* Footer — save & cancel (only shown on details/winner tabs) */}
+              {editTab !== 'participants' && (
+                <div className="flex gap-3 border-t border-slate-100 p-6 dark:border-white/10">
+                  <button
+                    onClick={() => setEditingLottery(null)}
+                    className="flex-1 cursor-pointer rounded-xl border border-slate-200 py-3 text-sm font-bold text-slate-600 transition hover:bg-slate-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    onClick={handleEditSave}
+                    disabled={editSaving || !editTitle.trim()}
+                    className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 py-3 text-sm font-bold text-white transition hover:bg-violet-700 disabled:opacity-50"
+                  >
+                    {editSaving ? (
+                      <RefreshCw className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <CheckCircle2 className="h-4 w-4" />
+                    )}
+                    Save Changes
+                  </button>
+                </div>
+              )}
+              {editTab === 'participants' && (
+                <div className="border-t border-slate-100 p-4 text-center dark:border-white/10">
+                  <p className="text-xs text-slate-400">
+                    Changes to participants are saved immediately above.
+                  </p>
+                </div>
+              )}
             </motion.div>
           </motion.div>
         )}
