@@ -18,10 +18,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const { lotteryId, winnerId } = body;
+  const { lotteryId, winnerId, winnerIds } = body;
   if (!lotteryId) {
     return NextResponse.json({ error: 'lotteryId is required' }, { status: 400 });
   }
+
+  // Normalize to array: support single winnerId or multiple winnerIds
+  const selectedWinnerIds: string[] = winnerIds
+    ? Array.isArray(winnerIds)
+      ? winnerIds
+      : [winnerIds]
+    : winnerId
+      ? [winnerId]
+      : [];
 
   try {
     // 1. Fetch active lottery
@@ -56,27 +65,27 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Select winner (either predetermined or cryptographically secure random index)
-    let winner;
-    if (winnerId) {
-      const selectedWinner = candidates.find((c) => c.id === winnerId);
-      if (!selectedWinner) {
+    // 3. Select winners (either predetermined or cryptographically secure random)
+    let winners: typeof candidates;
+    if (selectedWinnerIds.length > 0) {
+      winners = candidates.filter((c) => selectedWinnerIds.includes(c.id));
+      if (winners.length === 0) {
         return NextResponse.json(
-          { error: 'Selected predetermined winner is not a participant in this lottery' },
+          { error: 'None of the selected winner IDs match participants in this lottery' },
           { status: 400 }
         );
       }
-      winner = selectedWinner;
     } else {
       const randomIndex = crypto.randomInt(0, candidates.length);
-      winner = candidates[randomIndex];
+      winners = [candidates[randomIndex]];
     }
 
-    // 4. Update participant to is_winner = true
+    // 4. Update all winners to is_winner = true
+    const winnerIdList = winners.map((w) => w.id);
     const { error: winnerError } = await supabaseAdmin
       .from('lottery_participants')
       .update({ is_winner: true, prize_rank: 1 })
-      .eq('id', winner.id);
+      .in('id', winnerIdList);
 
     if (winnerError) throw winnerError;
 
@@ -97,15 +106,16 @@ export async function POST(request: NextRequest) {
         .single();
       const adminName = profile?.full_name || admin.email || 'Admin';
 
+      const winnerSummary = winners.map((w) => `${w.name} (${w.ticket_number})`).join(', ');
       await supabaseAdmin.from('activity_logs').insert({
         user_id: admin.id,
         action_type: 'lottery_drawn',
-        description: `${adminName} executed lottery drawing for "${lottery.title}". Winner: ${winner.name} (${winner.ticket_number}).`,
+        description: `${adminName} executed lottery drawing for "${lottery.title}". Winner${winners.length > 1 ? 's' : ''}: ${winnerSummary}.`,
         metadata: {
           event: 'lottery_drawn',
           lotteryId,
-          winnerName: winner.name,
-          ticketNumber: winner.ticket_number,
+          winnerNames: winners.map((w) => w.name),
+          ticketNumbers: winners.map((w) => w.ticket_number),
         },
       });
     } catch (logErr) {
@@ -122,32 +132,36 @@ export async function POST(request: NextRequest) {
         const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
         const now = new Date();
 
-        // 1. Send Winner Email
-        if (winner.email) {
-          try {
-            await resend.emails.send({
-              from: FROM_ADDRESS,
-              to: [winner.email],
-              subject: `🏆 Congratulations! You won the ${lottery.title}!`,
-              html: winnerEmailHtml({
-                participantName: winner.name,
-                lotteryTitle: lottery.title,
-                ticketNumber: winner.ticket_number,
-                drawnAt: now,
-              }),
-            });
-            console.log(`Manual draw: Winner email successfully sent to ${winner.email}`);
-            emailsSentCount++;
-          } catch (winnerEmailErr: any) {
-            console.error(
-              `Manual draw: Winner email failed for ${winner.email}:`,
-              winnerEmailErr.message
-            );
+        // 1. Send Winner Emails (all winners)
+        for (const w of winners) {
+          if (w.email) {
+            try {
+              await resend.emails.send({
+                from: FROM_ADDRESS,
+                to: [w.email],
+                subject: `🏆 Congratulations! You won the ${lottery.title}!`,
+                html: winnerEmailHtml({
+                  participantName: w.name,
+                  lotteryTitle: lottery.title,
+                  ticketNumber: w.ticket_number,
+                  drawnAt: now,
+                }),
+              });
+              console.log(`Manual draw: Winner email successfully sent to ${w.email}`);
+              emailsSentCount++;
+            } catch (winnerEmailErr: any) {
+              console.error(
+                `Manual draw: Winner email failed for ${w.email}:`,
+                winnerEmailErr.message
+              );
+            }
           }
         }
 
         // 2. Send Runner-Up (Better Luck Next Time) Emails in batches
-        const runnerUps = (candidates || []).filter((c: any) => c.id !== winner.id && c.email);
+        const runnerUps = (candidates || []).filter(
+          (c: any) => !winnerIdList.includes(c.id) && c.email
+        );
 
         if (runnerUps.length > 0) {
           console.log(
@@ -167,7 +181,7 @@ export async function POST(request: NextRequest) {
                       participantName: p.name,
                       lotteryTitle: lottery.title,
                       ticketNumber: p.ticket_number,
-                      winnerName: winner.name,
+                      winnerName: winners.map((w) => w.name).join(', '),
                       drawnAt: now,
                     }),
                   });
@@ -200,13 +214,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       emailsSent: emailsSentCount > 0,
-      winner: {
-        id: winner.id,
-        name: winner.name,
-        ticket_number: winner.ticket_number,
-        phone: winner.phone,
-        email: winner.email,
-      },
+      winners: winners.map((w) => ({
+        id: w.id,
+        name: w.name,
+        ticket_number: w.ticket_number,
+        phone: w.phone,
+        email: w.email,
+      })),
     });
   } catch (err: any) {
     console.error('Lottery draw server error:', err);

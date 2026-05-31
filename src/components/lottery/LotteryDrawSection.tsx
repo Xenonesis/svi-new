@@ -44,6 +44,7 @@ export default function LotteryDrawSection() {
   const [isShuffling, setIsShuffling] = useState(false);
   const [shuffledNames, setShuffledNames] = useState<string[]>([]);
   const [revealedWinners, setRevealedWinners] = useState<Participant[]>([]);
+  const [drawWinnerCount, setDrawWinnerCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [historicalWinners, setHistoricalWinners] = useState<any[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -58,7 +59,7 @@ export default function LotteryDrawSection() {
 
   useEffect(() => {
     fetchActiveLottery();
-    fetchPastWinners();
+    fetchHallOfFame();
     fetchScheduleCountdown();
     // Poll every 30 seconds for schedule updates
     const pollInterval = setInterval(fetchScheduleCountdown, 30_000);
@@ -144,27 +145,31 @@ export default function LotteryDrawSection() {
     }
   };
 
-  const fetchPastWinners = async () => {
+  const fetchHallOfFame = async () => {
     try {
+      // First get the most recent lottery (active or completed)
+      const { data: lotteryData } = await supabase
+        .from('lotteries')
+        .select('id, title')
+        .in('status', ['active', 'completed'])
+        .order('created_at', { ascending: false })
+        .limit(1);
+
+      if (!lotteryData || lotteryData.length === 0) return;
+
+      // Fetch ALL participants for that lottery
       const { data, error } = await supabase
         .from('lottery_participants')
-        .select(
-          `
-          name, 
-          ticket_number, 
-          created_at,
-          lotteries (title)
-        `
-        )
-        .eq('is_winner', true)
-        .order('created_at', { ascending: false })
-        .limit(5); // Increased to 5 for a better list
+        .select('name, ticket_number, is_winner, created_at')
+        .eq('lottery_id', lotteryData[0].id)
+        .order('is_winner', { ascending: false })
+        .order('created_at', { ascending: true });
 
       if (!error && data) {
         setHistoricalWinners(data);
       }
     } catch (err: any) {
-      console.error('Error fetching past winners:', err);
+      console.error('Error fetching hall of fame:', err);
     }
   };
 
@@ -282,12 +287,14 @@ export default function LotteryDrawSection() {
       namePool.push(...shuffledChunk);
     }
 
-    // End with the first winner's name for the animation landing
-    namePool.push(drawWinners[0].name);
+    // End with all winners' names so the animation cycles through each one
+    drawWinners.forEach((w) => namePool.push(w.name));
     setShuffledNames(namePool);
+    setDrawWinnerCount(drawWinners.length);
 
     let currentIndex = 0;
     let delay = 40;
+    const totalNames = namePool.length;
 
     const tick = () => {
       currentIndex++;
@@ -298,7 +305,7 @@ export default function LotteryDrawSection() {
         shuffleContainerRef.current.style.transform = `translateY(-${currentIndex * itemHeight}px)`;
       }
 
-      const remaining = namePool.length - 1 - currentIndex;
+      const remaining = totalNames - 1 - currentIndex;
 
       if (remaining <= 0) {
         setIsShuffling(false);
@@ -307,11 +314,15 @@ export default function LotteryDrawSection() {
         triggerConfetti();
 
         setWinners(drawWinners);
-        fetchPastWinners();
+        fetchHallOfFame();
       } else {
-        if (remaining < 10) {
+        // Slow down more as we approach each winner name (last N names)
+        const namesFromEnd = remaining;
+        if (namesFromEnd <= drawWinners.length + 2) {
+          delay += 50;
+        } else if (namesFromEnd < 10) {
           delay += 40;
-        } else if (remaining < 25) {
+        } else if (namesFromEnd < 25) {
           delay += 20;
         }
         shuffleTimerRef.current = setTimeout(tick, delay);
@@ -345,7 +356,7 @@ export default function LotteryDrawSection() {
               onClick={() => {
                 setError(null);
                 fetchActiveLottery();
-                fetchPastWinners();
+                fetchHallOfFame();
               }}
               className="inline-flex cursor-pointer items-center gap-2 rounded-xl bg-slate-900 px-6 py-3 text-xs font-bold tracking-wider text-white uppercase transition-all hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100"
             >
@@ -591,43 +602,77 @@ export default function LotteryDrawSection() {
               className="relative flex h-full flex-col overflow-hidden rounded-[2rem] border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl transition-colors duration-500 dark:border-white/5 dark:bg-white/[0.01] dark:shadow-none"
             >
               <h3 className="mb-8 flex items-center gap-3 font-serif text-2xl text-slate-900 dark:text-white">
-                Hall of Fame
+                Winners of{' '}
+                {new Date().toLocaleDateString('en-IN', {
+                  month: 'long',
+                  year: 'numeric',
+                  day: 'numeric',
+                })}
               </h3>
 
               <div className="custom-scrollbar flex-1 space-y-3 overflow-y-auto pr-2">
-                {historicalWinners.map((hw, idx) => (
-                  <motion.div
-                    key={idx}
-                    initial={{ y: 10, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    transition={{ delay: idx * 0.1 }}
-                    className="group relative flex items-center gap-4 rounded-2xl border border-slate-100 bg-slate-50 p-4 transition-all hover:bg-slate-100 dark:border-white/5 dark:bg-white/5 dark:hover:bg-white/10"
-                  >
-                    <div
-                      className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full font-serif text-sm shadow-sm ${idx === 0 ? 'bg-[#D4AF37] text-white dark:text-black' : idx === 1 ? 'bg-slate-300 text-slate-800 dark:text-slate-900' : 'bg-[#CD7F32] text-white'}`}
+                {historicalWinners.map((hw, idx) => {
+                  const isWinner = hw.is_winner;
+                  return (
+                    <motion.div
+                      key={idx}
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      transition={{ delay: idx * 0.05 }}
+                      className={`group relative flex items-center gap-4 rounded-2xl border p-4 transition-all ${
+                        isWinner
+                          ? 'border-[#D4AF37]/30 bg-[#D4AF37]/5 hover:bg-[#D4AF37]/10 dark:border-[#D4AF37]/20 dark:bg-[#D4AF37]/5 dark:hover:bg-[#D4AF37]/10'
+                          : 'border-slate-100 bg-slate-50 hover:bg-slate-100 dark:border-white/5 dark:bg-white/5 dark:hover:bg-white/10'
+                      }`}
                     >
-                      #{idx + 1}
-                    </div>
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium text-slate-900 dark:text-white">
-                        {hw.name}
+                      <div
+                        className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm shadow-sm ${
+                          isWinner
+                            ? 'bg-[#D4AF37] font-serif text-white dark:text-black'
+                            : 'bg-slate-200 text-slate-400 dark:bg-white/10 dark:text-slate-500'
+                        }`}
+                      >
+                        {isWinner ? <Award className="h-5 w-5" /> : <Ticket className="h-4 w-4" />}
                       </div>
-                      <div className="mt-1 truncate text-[10px] tracking-wider text-slate-500 uppercase">
-                        {hw.lotteries?.title || 'SVI Lucky Draw'}
+                      <div className="min-w-0 flex-1">
+                        <div
+                          className={`truncate text-sm font-medium ${
+                            isWinner
+                              ? 'text-slate-900 dark:text-white'
+                              : 'text-slate-600 dark:text-slate-400'
+                          }`}
+                        >
+                          {hw.name}
+                        </div>
+                        <div
+                          className={`mt-0.5 text-[10px] font-semibold tracking-widest uppercase ${
+                            isWinner
+                              ? 'text-[#B38728] dark:text-[#D4AF37]'
+                              : 'text-slate-400 dark:text-slate-500'
+                          }`}
+                        >
+                          {isWinner ? 'Winner' : 'Better luck next time'}
+                        </div>
                       </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-mono text-[10px] font-medium text-[#B38728] dark:text-[#D4AF37]">
-                        {hw.ticket_number}
+                      <div className="text-right">
+                        <div
+                          className={`font-mono text-[10px] font-medium ${
+                            isWinner
+                              ? 'text-[#B38728] dark:text-[#D4AF37]'
+                              : 'text-slate-400 dark:text-slate-500'
+                          }`}
+                        >
+                          {hw.ticket_number}
+                        </div>
                       </div>
-                    </div>
-                  </motion.div>
-                ))}
+                    </motion.div>
+                  );
+                })}
                 {historicalWinners.length === 0 && (
                   <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 p-10 text-center text-slate-500 dark:border-white/10">
                     <Trophy className="mb-3 h-6 w-6 opacity-40" />
                     <div className="text-[10px] font-medium tracking-widest uppercase">
-                      No Champions Yet
+                      No Participants Yet
                     </div>
                   </div>
                 )}
@@ -703,7 +748,7 @@ export default function LotteryDrawSection() {
                           className="flex h-[80px] items-center justify-center px-6 text-center"
                         >
                           <span
-                            className={`block truncate ${idx === shuffledNames.length - 1 ? 'scale-110 font-serif text-3xl font-medium text-[#B38728] transition-all duration-500 dark:text-[#D4AF37]' : 'text-2xl font-light text-slate-400 dark:text-white/30'}`}
+                            className={`block truncate ${drawWinnerCount > 0 && idx >= shuffledNames.length - drawWinnerCount ? 'scale-110 font-serif text-3xl font-medium text-[#B38728] transition-all duration-500 dark:text-[#D4AF37]' : 'text-2xl font-light text-slate-400 dark:text-white/30'}`}
                           >
                             {name}
                           </span>

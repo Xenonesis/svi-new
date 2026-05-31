@@ -110,7 +110,7 @@ export default function AdminLotteryPage() {
 
   // Manual Winner selection states
   const [drawMethod, setDrawMethod] = useState<'random' | 'manual'>('random');
-  const [selectedPredeterminedWinner, setSelectedPredeterminedWinner] = useState<any | null>(null);
+  const [selectedPredeterminedWinners, setSelectedPredeterminedWinners] = useState<any[]>([]);
   const [dbParticipants, setDbParticipants] = useState<any[]>([]);
   const [dbParticipantsSearch, setDbParticipantsSearch] = useState('');
   const [dbParticipantsLoading, setDbParticipantsLoading] = useState(false);
@@ -420,7 +420,7 @@ export default function AdminLotteryPage() {
   }, [activeLottery, drawMethod, dbParticipantsSearch]);
 
   useEffect(() => {
-    setSelectedPredeterminedWinner(null);
+    setSelectedPredeterminedWinners([]);
     setDbParticipantsSearch('');
   }, [activeLottery, drawMethod]);
 
@@ -677,7 +677,7 @@ export default function AdminLotteryPage() {
     });
   };
 
-  const drawWinner = async (winnerId?: string) => {
+  const drawWinner = async (winnerIds?: string[]) => {
     if (!activeLottery) return;
 
     startTransition(async () => {
@@ -693,7 +693,7 @@ export default function AdminLotteryPage() {
           },
           body: JSON.stringify({
             lotteryId: activeLottery.id,
-            winnerId: winnerId || undefined,
+            winnerIds: winnerIds && winnerIds.length > 0 ? winnerIds : undefined,
           }),
         });
 
@@ -703,11 +703,12 @@ export default function AdminLotteryPage() {
           throw new Error(data.error || 'Failed to draw winner.');
         }
 
-        const winner = data.winner;
+        const winners = data.winners;
+        const summary = winners.map((w: any) => `${w.name} (${w.ticket_number})`).join(', ');
         setSuccessMessage(
-          `Winner Drawn! Congratulations to ${winner.name} (${winner.ticket_number})!`
+          `Winner${winners.length > 1 ? 's' : ''} Drawn! Congratulations to ${summary}!`
         );
-        setSelectedPredeterminedWinner(null);
+        setSelectedPredeterminedWinners([]);
         setDbParticipantsSearch('');
         fetchLotteries();
       } catch (error: any) {
@@ -722,7 +723,7 @@ export default function AdminLotteryPage() {
       try {
         setErrorMessage(null);
         setSuccessMessage(null);
-        setSelectedPredeterminedWinner(null);
+        setSelectedPredeterminedWinners([]);
         setDbParticipantsSearch('');
 
         const { error: pResetError } = await supabase
@@ -1412,7 +1413,12 @@ export default function AdminLotteryPage() {
                                       key={participant.id}
                                       type="button"
                                       onClick={() => {
-                                        setSelectedPredeterminedWinner(participant);
+                                        setSelectedPredeterminedWinners((prev) => {
+                                          const exists = prev.find((w) => w.id === participant.id);
+                                          if (exists)
+                                            return prev.filter((w) => w.id !== participant.id);
+                                          return [...prev, participant];
+                                        });
                                         setDbParticipantsSearch('');
                                       }}
                                       className="flex w-full cursor-pointer items-center justify-between rounded-lg px-4 py-2.5 text-left text-sm transition-colors hover:bg-slate-50 dark:hover:bg-white/5"
@@ -1445,32 +1451,51 @@ export default function AdminLotteryPage() {
                                 </div>
                               )}
 
-                            {/* Selected Winner Badge */}
-                            {selectedPredeterminedWinner && (
-                              <div className="border-brand-gold/30 bg-brand-gold/5 flex items-center justify-between rounded-xl border p-4 backdrop-blur-sm">
-                                <div className="flex items-center gap-3">
-                                  <div className="bg-brand-gold/20 text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg">
-                                    <Trophy className="h-4 w-4" />
-                                  </div>
-                                  <div>
-                                    <div className="text-xs text-slate-500 dark:text-gray-400">
-                                      Selected Winner
+                            {/* Selected Winners Badge */}
+                            {selectedPredeterminedWinners.length > 0 && (
+                              <div className="border-brand-gold/30 bg-brand-gold/5 space-y-2 rounded-xl border p-4 backdrop-blur-sm">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center gap-3">
+                                    <div className="bg-brand-gold/20 text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg">
+                                      <Trophy className="h-4 w-4" />
                                     </div>
+                                    <div className="text-xs text-slate-500 dark:text-gray-400">
+                                      {selectedPredeterminedWinners.length} Selected Winner
+                                      {selectedPredeterminedWinners.length > 1 ? 's' : ''}
+                                    </div>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => setSelectedPredeterminedWinners([])}
+                                    className="cursor-pointer text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
+                                  >
+                                    <XCircle className="h-5 w-5" />
+                                  </button>
+                                </div>
+                                {selectedPredeterminedWinners.map((sw) => (
+                                  <div
+                                    key={sw.id}
+                                    className="flex items-center justify-between pl-11"
+                                  >
                                     <div className="text-sm font-bold text-slate-900 dark:text-white">
-                                      {selectedPredeterminedWinner.name}{' '}
+                                      {sw.name}{' '}
                                       <span className="font-mono text-xs font-semibold text-slate-400">
-                                        ({selectedPredeterminedWinner.ticket_number})
+                                        ({sw.ticket_number})
                                       </span>
                                     </div>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setSelectedPredeterminedWinners((prev) =>
+                                          prev.filter((w) => w.id !== sw.id)
+                                        )
+                                      }
+                                      className="cursor-pointer text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
+                                    >
+                                      <XCircle className="h-4 w-4" />
+                                    </button>
                                   </div>
-                                </div>
-                                <button
-                                  type="button"
-                                  onClick={() => setSelectedPredeterminedWinner(null)}
-                                  className="cursor-pointer text-slate-400 hover:text-slate-600 dark:text-gray-500 dark:hover:text-gray-300"
-                                >
-                                  <XCircle className="h-5 w-5" />
-                                </button>
+                                ))}
                               </div>
                             )}
                           </div>
@@ -1487,13 +1512,26 @@ export default function AdminLotteryPage() {
                         </div>
                         <div className="text-center">
                           <div className="text-brand-gold mb-1 text-[10px] font-bold tracking-widest uppercase">
-                            Winner Declared
+                            {activeWinners.length === 1
+                              ? 'Winner Declared'
+                              : `${activeWinners.length} Winners Declared`}
                           </div>
-                          <div className="font-serif text-3xl font-bold text-slate-900 dark:text-white">
-                            {activeWinners[0].name}
-                          </div>
-                          <div className="mt-2 inline-block rounded bg-slate-100 px-3 py-1 font-mono text-sm font-bold text-slate-600 dark:bg-white/10 dark:text-gray-300">
-                            {activeWinners[0].ticket_number}
+                          <div className="space-y-3">
+                            {activeWinners.map((w, idx) => (
+                              <div key={w.id}>
+                                {activeWinners.length > 1 && (
+                                  <div className="mb-0.5 text-[9px] font-medium tracking-widest text-slate-400 uppercase dark:text-slate-500">
+                                    Winner #{idx + 1}
+                                  </div>
+                                )}
+                                <div className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
+                                  {w.name}
+                                </div>
+                                <div className="mt-1 inline-block rounded bg-slate-100 px-3 py-1 font-mono text-xs font-bold text-slate-600 dark:bg-white/10 dark:text-gray-300">
+                                  {w.ticket_number}
+                                </div>
+                              </div>
+                            ))}
                           </div>
                         </div>
                         <button
@@ -1509,11 +1547,14 @@ export default function AdminLotteryPage() {
                       <button
                         onClick={() =>
                           drawWinner(
-                            drawMethod === 'manual' ? selectedPredeterminedWinner?.id : undefined
+                            drawMethod === 'manual'
+                              ? selectedPredeterminedWinners.map((w) => w.id)
+                              : undefined
                           )
                         }
                         disabled={
-                          isPending || (drawMethod === 'manual' && !selectedPredeterminedWinner)
+                          isPending ||
+                          (drawMethod === 'manual' && selectedPredeterminedWinners.length === 0)
                         }
                         className="group bg-brand-gold text-brand-navy relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-2xl px-10 py-6 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(201,168,76,0.6)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
                       >
