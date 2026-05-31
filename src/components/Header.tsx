@@ -36,6 +36,7 @@ export default function Header() {
   const { theme, setTheme } = useTheme();
   const sentinelRef = useRef<HTMLDivElement>(null);
   const { visible: lotteryVisible } = useLotteryVisibility();
+  const isHomeTransparent = pathname === '/' && !isScrolled;
 
   useEffect(() => {
     setMounted(true);
@@ -104,7 +105,9 @@ export default function Header() {
         className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
           isScrolled
             ? 'dark:border-zinc-850/50 border-b border-white/20 bg-white/75 py-3 shadow-lg shadow-zinc-950/5 backdrop-blur-xl dark:bg-zinc-950/75'
-            : 'border-b border-transparent bg-white/50 py-4.5 backdrop-blur-md dark:bg-zinc-950/40'
+            : pathname === '/'
+              ? 'border-b border-transparent bg-transparent py-4.5'
+              : 'border-gray-150/40 dark:border-zinc-850/30 border-b bg-white/75 py-4.5 backdrop-blur-md dark:bg-zinc-950/75'
         }`}
       >
         <div
@@ -122,31 +125,38 @@ export default function Header() {
               <img
                 src="/logo.png"
                 alt="SVI Infra Solutions Logo"
-                className="h-8.5 w-auto max-w-[130px] object-contain transition-all duration-300 min-[380px]:h-10 min-[380px]:max-w-[170px] sm:h-12 sm:max-w-none md:h-14"
+                className={`h-8.5 w-auto max-w-[130px] object-contain transition-all duration-300 min-[380px]:h-10 min-[380px]:max-w-[170px] sm:h-12 sm:max-w-none md:h-14 ${
+                  isHomeTransparent ? 'brightness-0 invert' : 'dark:brightness-0 dark:invert'
+                }`}
               />
             </Link>
 
             {/* Desktop Navigation */}
             <nav className="hidden items-center gap-8 md:flex">
-              {NAV_LINKS.map((link) => (
-                <Link
-                  key={link.name}
-                  href={link.path}
-                  className={`hover:text-brand-gold-text group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
-                    pathname === link.path
-                      ? 'text-brand-gold-text'
-                      : 'text-brand-navy dark:text-gray-200'
-                  }`}
-                  aria-current={pathname === link.path ? 'page' : undefined}
-                >
-                  {link.name}
-                  <span
-                    className={`bg-brand-gold absolute -bottom-0.5 left-1/2 h-[2px] -translate-x-1/2 transition-all duration-300 ease-out ${
-                      pathname === link.path ? 'w-full' : 'w-0 group-hover:w-full'
+              {NAV_LINKS.map((link) => {
+                const isActive = pathname === link.path;
+                return (
+                  <Link
+                    key={link.name}
+                    href={link.path}
+                    className={`group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
+                      isActive
+                        ? 'text-brand-gold'
+                        : isHomeTransparent
+                          ? 'hover:text-brand-gold text-white/95'
+                          : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
                     }`}
-                  />
-                </Link>
-              ))}
+                    aria-current={isActive ? 'page' : undefined}
+                  >
+                    {link.name}
+                    <span
+                      className={`bg-brand-gold absolute -bottom-0.5 left-1/2 h-[2px] -translate-x-1/2 transition-all duration-300 ease-out ${
+                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}
+                    />
+                  </Link>
+                );
+              })}
 
               {/* Projects Dropdown Menu */}
               <div
@@ -156,10 +166,12 @@ export default function Header() {
                 onClick={() => setIsProjectsOpen((prev) => !prev)}
               >
                 <span
-                  className={`hover:text-brand-gold-text flex items-center gap-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
+                  className={`flex items-center gap-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
                     pathname.includes('/projects')
-                      ? 'text-brand-gold-text'
-                      : 'text-brand-navy dark:text-gray-200'
+                      ? 'text-brand-gold'
+                      : isHomeTransparent
+                        ? 'hover:text-brand-gold text-white/95'
+                        : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
                   }`}
                 >
                   Projects{' '}
@@ -185,10 +197,10 @@ export default function Header() {
                         <Building2 size={18} />
                       </div>
                       <div>
-                        <div className="text-brand-navy group-hover/item:text-brand-gold-text text-xs font-bold tracking-wider uppercase transition-colors dark:text-gray-100">
+                        <div className="text-brand-navy group-hover/item:text-brand-gold text-xs font-bold tracking-wider uppercase transition-colors dark:text-gray-100">
                           Current Projects
                         </div>
-                        <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
+                        <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-300">
                           Ongoing developments & infrastructure mappings.
                         </div>
                       </div>
@@ -201,10 +213,10 @@ export default function Header() {
                         <CheckSquare size={18} />
                       </div>
                       <div>
-                        <div className="text-brand-navy group-hover/item:text-brand-gold-text text-xs font-bold tracking-wider uppercase transition-colors dark:text-gray-100">
+                        <div className="text-brand-navy group-hover/item:text-brand-gold text-xs font-bold tracking-wider uppercase transition-colors dark:text-gray-100">
                           Completed Projects
                         </div>
-                        <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
+                        <div className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-300">
                           Landmark properties successfully delivered.
                         </div>
                       </div>
@@ -215,10 +227,12 @@ export default function Header() {
 
               <Link
                 href="/payment"
-                className={`hover:text-brand-gold-text group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
+                className={`group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
                   pathname === '/payment'
-                    ? 'text-brand-gold-text'
-                    : 'text-brand-navy dark:text-gray-200'
+                    ? 'text-brand-gold'
+                    : isHomeTransparent
+                      ? 'hover:text-brand-gold text-white/95'
+                      : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
                 }`}
               >
                 Payment
@@ -231,10 +245,12 @@ export default function Header() {
 
               <Link
                 href="/contact"
-                className={`hover:text-brand-gold-text group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
+                className={`group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
                   pathname === '/contact'
-                    ? 'text-brand-gold-text'
-                    : 'text-brand-navy dark:text-gray-200'
+                    ? 'text-brand-gold'
+                    : isHomeTransparent
+                      ? 'hover:text-brand-gold text-white/95'
+                      : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
                 }`}
               >
                 Contact
@@ -264,7 +280,11 @@ export default function Header() {
               <div className="flex items-center gap-4 border-l border-gray-200 pl-6 dark:border-zinc-800">
                 <Link
                   href="/login"
-                  className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold group/login relative py-1 text-[11px] font-bold tracking-wider uppercase transition-all duration-200 dark:text-gray-200"
+                  className={`group/login relative py-1 text-[11px] font-bold tracking-wider uppercase transition-all duration-200 ${
+                    isHomeTransparent
+                      ? 'hover:text-brand-gold text-white/95'
+                      : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
+                  }`}
                 >
                   Client Login
                   <span className="bg-brand-gold absolute bottom-0 left-0 h-[1.5px] w-0 transition-all duration-300 group-hover/login:w-full" />
@@ -280,7 +300,11 @@ export default function Header() {
               {/* Theme Toggle Button */}
               <button
                 onClick={toggleTheme}
-                className="text-brand-navy hover:border-brand-gold hover:text-brand-gold-text dark:hover:border-brand-gold/70 dark:hover:text-brand-gold flex items-center justify-center rounded-full border border-gray-200/60 bg-gray-50/50 p-2 transition-all duration-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-gray-200"
+                className={`flex items-center justify-center rounded-full border p-2 transition-all duration-300 hover:shadow-sm ${
+                  isHomeTransparent
+                    ? 'hover:border-brand-gold hover:text-brand-gold border-white/20 bg-white/10 text-white/90'
+                    : 'text-brand-navy hover:border-brand-gold hover:text-brand-gold dark:hover:text-brand-gold border-gray-200/60 bg-gray-50/50 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-gray-200'
+                }`}
                 aria-label={
                   mounted
                     ? theme === 'dark'
@@ -358,7 +382,7 @@ export default function Header() {
             <img
               src="/logo.png"
               alt="SVI Infra Solutions Logo"
-              className="h-8.5 w-auto object-contain"
+              className="h-8.5 w-auto object-contain dark:brightness-0 dark:invert"
             />
           </Link>
           <div className="flex items-center gap-2.5">

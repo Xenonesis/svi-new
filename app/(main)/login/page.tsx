@@ -130,7 +130,7 @@ export default function Login() {
   };
 
   return (
-    <div className="bg-brand-navy relative flex min-h-screen items-center justify-center overflow-hidden pt-24 pb-20 dark:bg-[#0C0C0C]">
+    <div className="bg-brand-navy relative flex min-h-screen items-center justify-center pt-24 pb-20 dark:bg-[#0C0C0C]">
       <div
         className="pointer-events-none absolute top-0 left-0 h-full w-full opacity-10"
         style={{
