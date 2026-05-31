@@ -50,6 +50,7 @@ export default function LotteryDrawSection() {
   const [drawWinnerCount, setDrawWinnerCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [historicalWinners, setHistoricalWinners] = useState<any[]>([]);
+  const [visibleCount, setVisibleCount] = useState(10);
   const [error, setError] = useState<string | null>(null);
 
   // Countdown state
@@ -787,7 +788,7 @@ export default function LotteryDrawSection() {
             >
               <h3 className="mb-8 flex items-center gap-3 font-serif text-2xl text-slate-900 dark:text-white">
                 <Award className="h-6 w-6 text-[#D4AF37]" />
-                Winners of{' '}
+                Total Clients of{' '}
                 {new Date().toLocaleDateString('en-IN', {
                   month: 'long',
                   year: 'numeric',
@@ -796,7 +797,7 @@ export default function LotteryDrawSection() {
               </h3>
 
               <div className="custom-scrollbar flex-1 space-y-3 overflow-y-auto pr-2">
-                {historicalWinners.map((hw, idx) => {
+                {historicalWinners.slice(0, visibleCount).map((hw, idx) => {
                   const isWinner = hw.is_winner;
                   return (
                     <motion.div
@@ -859,6 +860,24 @@ export default function LotteryDrawSection() {
                     <div className="text-[10px] font-medium tracking-widest uppercase">
                       No Participants Yet
                     </div>
+                  </div>
+                )}
+
+                {/* Show More / Show Less button */}
+                {historicalWinners.length > 10 && (
+                  <div className="pt-2 text-center">
+                    <button
+                      onClick={() =>
+                        setVisibleCount((prev) =>
+                          prev >= historicalWinners.length ? 10 : historicalWinners.length
+                        )
+                      }
+                      className="cursor-pointer text-[10px] font-semibold tracking-widest text-[#B38728] uppercase transition-colors hover:text-[#D4AF37] dark:text-[#D4AF37] dark:hover:text-[#E5C158]"
+                    >
+                      {visibleCount >= historicalWinners.length
+                        ? '− Show Less'
+                        : `+ Show More (${historicalWinners.length - visibleCount} remaining)`}
+                    </button>
                   </div>
                 )}
               </div>
