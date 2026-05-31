@@ -291,9 +291,9 @@ export function SentTab() {
                         To
                       </p>
                       <div className="flex flex-wrap gap-1">
-                        {selected.to?.map((addr) => (
+                        {selected.to?.map((addr, i) => (
                           <span
-                            key={addr}
+                            key={`${addr}-${i}`}
                             className="rounded-lg bg-gray-100 px-2 py-0.5 text-xs text-gray-700 dark:bg-gray-800 dark:text-gray-300"
                           >
                             {addr}
