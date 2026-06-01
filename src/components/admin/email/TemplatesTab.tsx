@@ -2,10 +2,15 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Check, Copy, FileText, ArrowRight } from 'lucide-react';
+import { Check, Copy, FileText, ArrowRight, ExternalLink, Send } from 'lucide-react';
+import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
 
-export function TemplatesTab() {
+interface TemplatesTabProps {
+  onUseTemplate?: (subject: string, html: string) => void;
+}
+
+export function TemplatesTab({ onUseTemplate }: TemplatesTabProps) {
   const [selected, setSelected] = useState<(typeof EMAIL_TEMPLATES)[0] | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -13,7 +18,23 @@ export function TemplatesTab() {
     if (!selected) return;
     navigator.clipboard.writeText(selected.html);
     setCopied(true);
+    toast.success('Template HTML copied');
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const useTemplate = () => {
+    if (!selected || !onUseTemplate) return;
+    onUseTemplate(selected.subject, selected.html);
+    toast.success(`Using "${selected.name}" template`);
+  };
+
+  const openPreview = () => {
+    if (!selected) return;
+    const win = window.open('', '_blank');
+    if (win) {
+      win.document.write(selected.html);
+      win.document.close();
+    }
   };
 
   const categories = [...new Set(EMAIL_TEMPLATES.map((t) => t.category))];
@@ -104,17 +125,37 @@ export function TemplatesTab() {
                     <span className="text-gray-700 dark:text-gray-300">{selected.subject}</span>
                   </p>
                 </div>
-                <button
-                  onClick={copyHtml}
-                  className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600"
-                >
-                  {copied ? (
-                    <Check className="h-3.5 w-3.5 text-emerald-500" />
-                  ) : (
-                    <Copy className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-2">
+                  {onUseTemplate && (
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      onClick={useTemplate}
+                      className="bg-brand-gold text-brand-navy glow-gold flex items-center gap-1.5 rounded-lg px-3.5 py-2 text-xs font-bold transition-all hover:opacity-90"
+                    >
+                      <Send className="h-3.5 w-3.5" />
+                      Use Template
+                    </motion.button>
                   )}
-                  {copied ? 'Copied!' : 'Copy HTML'}
-                </button>
+                  <button
+                    onClick={openPreview}
+                    className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600"
+                  >
+                    <ExternalLink className="h-3.5 w-3.5" />
+                    Preview
+                  </button>
+                  <button
+                    onClick={copyHtml}
+                    className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-600 transition-all hover:border-gray-300 dark:border-gray-700 dark:text-gray-400 dark:hover:border-gray-600"
+                  >
+                    {copied ? (
+                      <Check className="h-3.5 w-3.5 text-emerald-500" />
+                    ) : (
+                      <Copy className="h-3.5 w-3.5" />
+                    )}
+                    {copied ? 'Copied!' : 'Copy HTML'}
+                  </button>
+                </div>
               </div>
 
               {/* Preview */}

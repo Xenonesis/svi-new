@@ -19,14 +19,16 @@ import {
   Search,
   LayoutTemplate,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
 import { getToken, saveDraft, loadDraft, clearDraft, fileToBase64 } from './helpers';
-import type { ForwardData, ReplyData, EmailAttachment } from './types';
+import type { ForwardData, ReplyData, EmailAttachment, TemplatePrefill } from './types';
 
 interface ComposeTabProps {
   adminEmail: string;
   forwardData?: ForwardData | null;
   replyData?: ReplyData | null;
+  templatePrefill?: TemplatePrefill | null;
   onClearPrefill?: () => void;
 }
 
@@ -34,6 +36,7 @@ export function ComposeTab({
   adminEmail,
   forwardData,
   replyData,
+  templatePrefill,
   onClearPrefill,
 }: ComposeTabProps) {
   const [to, setTo] = useState('');
@@ -98,6 +101,15 @@ export function ComposeTab({
       onClearPrefill?.();
     }
   }, [replyData, onClearPrefill]);
+
+  // Apply template prefill from TemplatesTab
+  useEffect(() => {
+    if (templatePrefill) {
+      setSubject(templatePrefill.subject);
+      setHtml(templatePrefill.html);
+      onClearPrefill?.();
+    }
+  }, [templatePrefill, onClearPrefill]);
 
   // Auto-save draft every 5s
   useEffect(() => {
@@ -202,9 +214,11 @@ export function ComposeTab({
       const data = await res.json();
       if (!res.ok || data.error) {
         setError(data.error || 'Failed to send email');
+        toast.error(data.error || 'Failed to send email');
       } else {
         setSent(true);
         clearDraft();
+        toast.success('Email sent successfully');
         setTimeout(() => {
           setSent(false);
           setTo('');
@@ -219,6 +233,7 @@ export function ComposeTab({
       }
     } catch {
       setError('Network error. Please try again.');
+      toast.error('Network error. Please try again.');
     } finally {
       setSending(false);
     }

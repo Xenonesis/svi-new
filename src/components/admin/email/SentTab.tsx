@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   AlertTriangle,
@@ -19,7 +19,9 @@ import {
   FileText,
   Code2,
   Users,
+  Filter,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { SentEmail, EmailDetail, ForwardData, ReplyData } from './types';
 import {
   formatTime,
@@ -29,6 +31,19 @@ import {
   buildCopyText,
   buildCopyHtml,
 } from './helpers';
+import { EmailListSkeleton } from './Skeletons';
+
+const PAGE_SIZE = 50;
+
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All Status' },
+  { value: 'delivered', label: 'Delivered' },
+  { value: 'sent', label: 'Sent' },
+  { value: 'opened', label: 'Opened' },
+  { value: 'clicked', label: 'Clicked' },
+  { value: 'bounced', label: 'Bounced' },
+  { value: 'failed', label: 'Failed' },
+];
 
 const containerVariants = {
   hidden: { opacity: 0 },
@@ -107,22 +122,47 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
   });
   const [showStarredOnly, setShowStarredOnly] = useState(false);
   const [copyMenuOpen, setCopyMenuOpen] = useState(false);
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [showStatusMenu, setShowStatusMenu] = useState(false);
+  const [hasMore, setHasMore] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+  const copyMenuRef = useRef<HTMLDivElement>(null);
+  const statusMenuRef = useRef<HTMLDivElement>(null);
 
-  const fetchEmails = useCallback(async () => {
-    setLoading(true);
+  // Close menus on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (copyMenuRef.current && !copyMenuRef.current.contains(e.target as Node)) {
+        setCopyMenuOpen(false);
+      }
+      if (statusMenuRef.current && !statusMenuRef.current.contains(e.target as Node)) {
+        setShowStatusMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const fetchEmails = useCallback(async (offset = 0) => {
+    if (offset === 0) setLoading(true);
+    else setLoadingMore(true);
     setError(null);
     try {
       const token = await getToken();
-      const res = await fetch('/api/admin/email?limit=100', {
+      const res = await fetch(`/api/admin/email?limit=${PAGE_SIZE}&offset=${offset}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch');
-      setEmails(data.emails || []);
+      const newEmails = data.emails || [];
+      if (offset === 0) setEmails(newEmails);
+      else setEmails((prev) => [...prev, ...newEmails]);
+      setHasMore(newEmails.length === PAGE_SIZE);
     } catch (e) {
       setError((e as Error).message);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   }, []);
 
@@ -142,9 +182,10 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to load email');
       setSelected(data.email);
-    } catch {
-      /* noop */
+    } catch (e) {
+      toast.error((e as Error).message);
     } finally {
       setLoadingDetail(false);
     }
@@ -165,12 +206,14 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
     setCopiedType(type);
     setTimeout(() => setCopiedType(null), 2000);
     setCopyMenuOpen(false);
+    toast.success('Copied to clipboard');
   };
 
   const copyId = (id: string) => {
     navigator.clipboard.writeText(id);
     setCopiedId(id);
     setTimeout(() => setCopiedId(null), 1500);
+    toast.success('Email ID copied');
   };
 
   const handleForward = () => {
@@ -203,7 +246,8 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
       e.subject?.toLowerCase().includes(search.toLowerCase()) ||
       e.to?.join(',').toLowerCase().includes(search.toLowerCase());
     const matchesStar = !showStarredOnly || starred.has(e.id);
-    return matchesSearch && matchesStar;
+    const matchesStatus = statusFilter === 'all' || e.last_event?.toLowerCase() === statusFilter;
+    return matchesSearch && matchesStar && matchesStatus;
   });
 
   const getStatusLabel = (status: string) => {
@@ -230,6 +274,45 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
             />
           </div>
           <div className="flex items-center gap-1.5">
+            {/* Status filter */}
+            <div ref={statusMenuRef} className="relative">
+              <button
+                onClick={() => setShowStatusMenu(!showStatusMenu)}
+                className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
+                  statusFilter !== 'all'
+                    ? 'text-brand-gold bg-brand-gold/5'
+                    : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5'
+                }`}
+              >
+                <Filter className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  {statusFilter === 'all'
+                    ? 'Status'
+                    : STATUS_OPTIONS.find((o) => o.value === statusFilter)?.label}
+                </span>
+              </button>
+              {showStatusMenu && (
+                <div className="absolute top-full right-0 z-50 mt-1 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-[#0e0e14]">
+                  {STATUS_OPTIONS.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => {
+                        setStatusFilter(opt.value);
+                        setShowStatusMenu(false);
+                      }}
+                      className={`flex w-full items-center gap-2 px-4 py-2.5 text-left text-xs transition-colors ${
+                        statusFilter === opt.value
+                          ? 'bg-brand-gold/5 text-brand-gold'
+                          : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
               onClick={() => setShowStarredOnly(!showStarredOnly)}
               className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
@@ -242,7 +325,7 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
               <span className="hidden sm:inline">{showStarredOnly ? 'Starred' : 'Star'}</span>
             </button>
             <button
-              onClick={fetchEmails}
+              onClick={() => fetchEmails(0)}
               disabled={loading}
               className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-gray-400 transition-all hover:bg-gray-50 hover:text-gray-600 disabled:opacity-50 dark:hover:bg-white/5"
             >
@@ -258,15 +341,15 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
           style={{ maxHeight: 'calc(100vh - 260px)' }}
         >
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20">
-              <Loader2 className="text-brand-gold mb-3 h-6 w-6 animate-spin" />
-              <p className="font-mono text-xs text-gray-400">Loading emails...</p>
-            </div>
+            <EmailListSkeleton />
           ) : error ? (
             <div className="flex flex-col items-center justify-center py-20 text-center">
               <AlertTriangle className="mb-3 h-7 w-7 text-red-400" />
               <p className="text-sm font-medium text-gray-700 dark:text-gray-300">{error}</p>
-              <button onClick={fetchEmails} className="text-brand-gold mt-3 text-xs underline">
+              <button
+                onClick={() => fetchEmails(0)}
+                className="text-brand-gold mt-3 text-xs underline"
+              >
                 Retry
               </button>
             </div>
@@ -354,6 +437,27 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
                 );
               })}
             </motion.div>
+          )}
+
+          {/* Load more */}
+          {hasMore && !search && statusFilter === 'all' && !showStarredOnly && !loading && (
+            <div className="border-t border-gray-100 p-4 text-center dark:border-gray-800">
+              <button
+                onClick={() => fetchEmails(emails.length)}
+                disabled={loadingMore}
+                className="text-brand-gold inline-flex items-center gap-2 text-xs font-medium underline transition-opacity hover:opacity-80 disabled:opacity-50"
+              >
+                {loadingMore ? (
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                ) : (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                )}
+                Load more
+              </button>
+              <span className="ml-3 font-mono text-[10px] text-gray-400">
+                Showing {filtered.length} emails
+              </span>
+            </div>
           )}
         </div>
       </div>
@@ -467,7 +571,7 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
                     </motion.button>
 
                     {/* Copy dropdown */}
-                    <div className="relative">
+                    <div ref={copyMenuRef} className="relative">
                       <motion.button
                         whileHover={{ scale: 1.03 }}
                         whileTap={{ scale: 0.97 }}

@@ -79,3 +79,23 @@ export interface EmailAttachment {
   size: number;
   base64: string;
 }
+
+export interface TemplatePrefill {
+  subject: string;
+  html: string;
+}
+
+export interface Campaign {
+  id: string;
+  title: string;
+  subject: string;
+  recipient_group: 'all_users' | 'lottery_participants' | 'custom';
+  custom_emails: string[] | null;
+  status: 'draft' | 'scheduled' | 'sent' | 'cancelled';
+  scheduled_at: string | null;
+  reminder_at: string | null;
+  reminder_sent_at: string | null;
+  sent_at: string | null;
+  recipient_count: number;
+  created_at: string;
+}

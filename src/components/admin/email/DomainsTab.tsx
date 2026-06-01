@@ -2,7 +2,17 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { ExternalLink, RefreshCw, Loader2, AlertTriangle, Globe, Shield } from 'lucide-react';
+import {
+  ExternalLink,
+  RefreshCw,
+  Loader2,
+  AlertTriangle,
+  Globe,
+  Shield,
+  Check,
+  Copy,
+} from 'lucide-react';
+import { toast } from 'sonner';
 import { Domain } from './types';
 import { getDomainStatusColor, getToken } from './helpers';
 
@@ -10,6 +20,14 @@ export function DomainsTab() {
   const [domains, setDomains] = useState<Domain[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copiedDns, setCopiedDns] = useState<string | null>(null);
+
+  const copyDnsValue = (value: string) => {
+    navigator.clipboard.writeText(value);
+    setCopiedDns(value);
+    toast.success('DNS value copied');
+    setTimeout(() => setCopiedDns(null), 2000);
+  };
 
   const fetchDomains = useCallback(async () => {
     setLoading(true);
@@ -159,9 +177,22 @@ export function DomainsTab() {
                             {rec.status}
                           </span>
                         </div>
-                        <p className="mt-1.5 font-mono text-[10px] break-all text-gray-500 dark:text-gray-400">
-                          {rec.value}
-                        </p>
+                        <div className="mt-1.5 flex items-start gap-2">
+                          <p className="min-w-0 flex-1 font-mono text-[10px] break-all text-gray-500 dark:text-gray-400">
+                            {rec.value}
+                          </p>
+                          <button
+                            onClick={() => copyDnsValue(rec.value)}
+                            aria-label="Copy DNS value"
+                            className="shrink-0 rounded p-1 text-gray-400 transition-colors hover:bg-gray-200 hover:text-gray-600 dark:hover:bg-gray-700 dark:hover:text-gray-300"
+                          >
+                            {copiedDns === rec.value ? (
+                              <Check className="h-3 w-3 text-emerald-500" />
+                            ) : (
+                              <Copy className="h-3 w-3" />
+                            )}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>

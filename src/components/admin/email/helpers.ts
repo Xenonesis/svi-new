@@ -92,11 +92,12 @@ export function saveDraft(draft: {
   html: string;
   replyTo: string;
   fromName: string;
-}): void {
+}): boolean {
   try {
     localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draft, savedAt: Date.now() }));
+    return true;
   } catch {
-    /* quota exceeded – silently ignore */
+    return false;
   }
 }
 

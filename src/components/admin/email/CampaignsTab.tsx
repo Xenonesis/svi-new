@@ -19,23 +19,13 @@ import {
   Eye,
   Users,
   FileText,
+  Copy,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { getToken } from './helpers';
-
-interface Campaign {
-  id: string;
-  title: string;
-  subject: string;
-  recipient_group: 'all_users' | 'lottery_participants' | 'custom';
-  custom_emails: string[] | null;
-  status: 'draft' | 'scheduled' | 'sent' | 'cancelled';
-  scheduled_at: string | null;
-  reminder_at: string | null;
-  reminder_sent_at: string | null;
-  sent_at: string | null;
-  recipient_count: number;
-  created_at: string;
-}
+import { ConfirmDialog } from './ConfirmDialog';
+import { EMAIL_TEMPLATES } from './constants';
+import type { Campaign } from './types';
 
 const statusConfig = {
   draft: {
@@ -82,6 +72,15 @@ export function CampaignsTab() {
   const [isPreviewMode, setIsPreviewMode] = useState(false);
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [confirmState, setConfirmState] = useState<{
+    open: boolean;
+    title: string;
+    message: string;
+    variant: 'danger' | 'default';
+    confirmLabel: string;
+    onConfirm: () => void;
+  } | null>(null);
+  const [showTemplateImport, setShowTemplateImport] = useState(false);
 
   const fetchCampaigns = useCallback(async () => {
     try {
@@ -230,13 +229,7 @@ export function CampaignsTab() {
     }
   };
 
-  const handleSendImmediately = async (id: string) => {
-    if (
-      !confirm(
-        'Are you sure you want to send this campaign immediately to all group members? This action is irreversible.'
-      )
-    )
-      return;
+  const doSendImmediately = async (id: string) => {
     try {
       const token = await getToken();
       const res = await fetch(`/api/admin/campaigns/${id}/send`, {
@@ -245,32 +238,103 @@ export function CampaignsTab() {
       });
       const data = await res.json();
       if (!res.ok) {
-        alert('Failed to send: ' + data.error);
+        toast.error('Failed to send: ' + data.error);
       } else {
-        alert(`Successfully sent immediately to ${data.sent} recipients!`);
+        toast.success(`Sent to ${data.sent} recipients`);
         fetchCampaigns();
       }
     } catch (err) {
       console.error(err);
-      alert('Error sending campaign');
+      toast.error('Error sending campaign');
     }
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete/cancel this campaign?')) return;
+  const handleSendImmediately = (id: string) => {
+    setConfirmState({
+      open: true,
+      title: 'Send campaign now?',
+      message:
+        'This will immediately send the email to all group members. This action cannot be undone.',
+      variant: 'danger',
+      confirmLabel: 'Send Now',
+      onConfirm: () => {
+        doSendImmediately(id);
+        setConfirmState(null);
+      },
+    });
+  };
+
+  const doDelete = async (id: string) => {
     try {
       const token = await getToken();
       const res = await fetch(`/api/admin/campaigns/${id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
       });
-      if (res.ok) fetchCampaigns();
-      else {
+      if (res.ok) {
+        toast.success('Campaign deleted');
+        fetchCampaigns();
+      } else {
         const data = await res.json();
-        alert('Failed to delete: ' + data.error);
+        toast.error('Failed to delete: ' + data.error);
       }
     } catch (err) {
       console.error(err);
+      toast.error('Error deleting campaign');
+    }
+  };
+
+  const handleDelete = (id: string) => {
+    setConfirmState({
+      open: true,
+      title: 'Delete campaign?',
+      message: 'This will permanently delete the campaign. This action cannot be undone.',
+      variant: 'danger',
+      confirmLabel: 'Delete',
+      onConfirm: () => {
+        doDelete(id);
+        setConfirmState(null);
+      },
+    });
+  };
+
+  const handleDuplicate = (campaign: Campaign) => {
+    setEditingCampaign(null);
+    setTitle(`${campaign.title} (Copy)`);
+    setSubject(campaign.subject);
+    setBodyHtml('');
+    setRecipientGroup(campaign.recipient_group);
+    setCustomEmailsInput(campaign.custom_emails ? campaign.custom_emails.join(', ') : '');
+    setScheduledAtInput('');
+    setReminderAtInput('');
+    setReminderSubject('');
+    setFormError('');
+    setIsPreviewMode(false);
+    setIsModalOpen(true);
+    toast.info('Duplicating campaign...');
+    (async () => {
+      try {
+        const token = await getToken();
+        const res = await fetch(`/api/admin/campaigns/${campaign.id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (data.campaign?.body_html) {
+          setBodyHtml(data.campaign.body_html);
+        }
+      } catch {
+        /* ignore */
+      }
+    })();
+  };
+
+  const importTemplate = (templateId: string) => {
+    const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId);
+    if (tpl) {
+      setBodyHtml(tpl.html);
+      if (!subject) setSubject(tpl.subject);
+      setShowTemplateImport(false);
+      toast.success(`Template "${tpl.name}" imported`);
     }
   };
 
@@ -489,13 +553,22 @@ export function CampaignsTab() {
                       </>
                     )}
                   </div>
-                  <button
-                    onClick={() => handleDelete(c.id)}
-                    className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
-                    title="Delete"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </button>
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={() => handleDuplicate(c)}
+                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
+                      title="Duplicate"
+                    >
+                      <Copy className="h-3.5 w-3.5" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c.id)}
+                      className="rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
+                      title="Delete"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
                 </div>
               </motion.div>
             );
@@ -679,14 +752,50 @@ export function CampaignsTab() {
                     <label className="font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
                       HTML Body
                     </label>
-                    <button
-                      type="button"
-                      onClick={() => setIsPreviewMode(!isPreviewMode)}
-                      className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
-                    >
-                      <Eye className="h-3 w-3" />
-                      {isPreviewMode ? 'Edit' : 'Preview'}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <div className="relative">
+                        <button
+                          type="button"
+                          onClick={() => setShowTemplateImport(!showTemplateImport)}
+                          className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                        >
+                          <FileText className="h-3 w-3" />
+                          Import Template
+                        </button>
+                        {showTemplateImport && (
+                          <div className="absolute top-full right-0 z-50 mt-1 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-[#0e0e14]">
+                            <div className="scrollbar-gold max-h-60 overflow-y-auto">
+                              {EMAIL_TEMPLATES.map((tpl) => (
+                                <button
+                                  key={tpl.id}
+                                  type="button"
+                                  onClick={() => importTemplate(tpl.id)}
+                                  className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                                >
+                                  <FileText className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                                  <div className="min-w-0 flex-1">
+                                    <p className="truncate text-xs font-medium text-gray-700 dark:text-gray-300">
+                                      {tpl.name}
+                                    </p>
+                                    <p className="truncate text-[10px] text-gray-400">
+                                      {tpl.category}
+                                    </p>
+                                  </div>
+                                </button>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setIsPreviewMode(!isPreviewMode)}
+                        className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-1 text-xs font-medium text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                      >
+                        <Eye className="h-3 w-3" />
+                        {isPreviewMode ? 'Edit' : 'Preview'}
+                      </button>
+                    </div>
                   </div>
                   {isPreviewMode ? (
                     <div className="min-h-[300px] overflow-auto rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-gray-700 dark:bg-gray-900/20">
@@ -731,6 +840,19 @@ export function CampaignsTab() {
           </div>
         )}
       </AnimatePresence>
+
+      {/* Confirm Dialog */}
+      {confirmState && (
+        <ConfirmDialog
+          open={confirmState.open}
+          title={confirmState.title}
+          message={confirmState.message}
+          variant={confirmState.variant}
+          confirmLabel={confirmState.confirmLabel}
+          onConfirm={confirmState.onConfirm}
+          onCancel={() => setConfirmState(null)}
+        />
+      )}
     </div>
   );
 }

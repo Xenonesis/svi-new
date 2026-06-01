@@ -1,11 +1,13 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, PenLine, Inbox, Megaphone, FileText, Globe, Settings } from 'lucide-react';
+import { Toaster } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Tab, ForwardData, ReplyData } from '@/src/components/admin/email/types';
+import { Tab, ForwardData, ReplyData, TemplatePrefill } from '@/src/components/admin/email/types';
 import { ComposeTab } from '@/src/components/admin/email/ComposeTab';
 import { SentTab } from '@/src/components/admin/email/SentTab';
 import { TemplatesTab } from '@/src/components/admin/email/TemplatesTab';
@@ -23,10 +25,21 @@ const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
 ];
 
 export default function AdminEmailPage() {
-  const [activeTab, setActiveTab] = useState<Tab>('compose');
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const tablistRef = useRef<HTMLDivElement>(null);
+
+  const initialTab = (() => {
+    const param = searchParams.get('tab');
+    if (param && tabs.some((t) => t.id === param)) return param as Tab;
+    return 'compose';
+  })();
+
+  const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [adminEmail, setAdminEmail] = useState('');
   const [forwardData, setForwardData] = useState<ForwardData | null>(null);
   const [replyData, setReplyData] = useState<ReplyData | null>(null);
+  const [templatePrefill, setTemplatePrefill] = useState<TemplatePrefill | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -34,25 +47,86 @@ export default function AdminEmailPage() {
     });
   }, []);
 
+  // Sync tab to URL
+  const switchTab = useCallback(
+    (tab: Tab) => {
+      setActiveTab(tab);
+      const params = new URLSearchParams(searchParams.toString());
+      params.set('tab', tab);
+      router.replace(`?${params.toString()}`, { scroll: false });
+    },
+    [router, searchParams]
+  );
+
   const handleForward = (data: ForwardData) => {
     setForwardData(data);
     setReplyData(null);
-    setActiveTab('compose');
+    switchTab('compose');
   };
 
   const handleReply = (data: ReplyData) => {
     setReplyData(data);
     setForwardData(null);
-    setActiveTab('compose');
+    switchTab('compose');
   };
 
   const clearPrefill = () => {
     setForwardData(null);
     setReplyData(null);
+    setTemplatePrefill(null);
   };
+
+  const handleUseTemplate = useCallback(
+    (subject: string, html: string) => {
+      setForwardData(null);
+      setReplyData(null);
+      setTemplatePrefill({ subject, html });
+      switchTab('compose');
+    },
+    [switchTab]
+  );
+
+  // Keyboard navigation for tabs
+  const handleTabKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      const currentIndex = tabs.findIndex((t) => t.id === activeTab);
+      let nextIndex: number | null = null;
+
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+        e.preventDefault();
+        nextIndex = (currentIndex + 1) % tabs.length;
+      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+        e.preventDefault();
+        nextIndex = (currentIndex - 1 + tabs.length) % tabs.length;
+      } else if (e.key === 'Home') {
+        e.preventDefault();
+        nextIndex = 0;
+      } else if (e.key === 'End') {
+        e.preventDefault();
+        nextIndex = tabs.length - 1;
+      }
+
+      if (nextIndex !== null) {
+        switchTab(tabs[nextIndex].id);
+        const buttons = tablistRef.current?.querySelectorAll('[role="tab"]');
+        (buttons?.[nextIndex] as HTMLElement)?.focus();
+      }
+    },
+    [activeTab, switchTab]
+  );
 
   return (
     <div className="min-h-screen">
+      <Toaster
+        position="top-right"
+        toastOptions={{
+          className: 'font-sans text-sm',
+          style: {
+            background: 'var(--toast-bg, #fff)',
+            border: '1px solid var(--toast-border, #e5e7eb)',
+          },
+        }}
+      />
       {/* ─── Page Header ─── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
@@ -103,7 +177,13 @@ export default function AdminEmailPage() {
 
       {/* ─── Tab Navigation ─── */}
       <div className="mb-6 border-b border-gray-200 dark:border-gray-800">
-        <nav className="flex gap-0.5 overflow-x-auto" role="tablist">
+        <nav
+          ref={tablistRef}
+          className="flex gap-0.5 overflow-x-auto"
+          role="tablist"
+          aria-label="Email center navigation"
+          onKeyDown={handleTabKeyDown}
+        >
           {tabs.map((tab, i) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -111,8 +191,11 @@ export default function AdminEmailPage() {
               <motion.button
                 key={tab.id}
                 role="tab"
+                id={`tab-${tab.id}`}
                 aria-selected={isActive}
-                onClick={() => setActiveTab(tab.id)}
+                aria-controls={`panel-${tab.id}`}
+                tabIndex={isActive ? 0 : -1}
+                onClick={() => switchTab(tab.id)}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.3 }}
@@ -143,6 +226,9 @@ export default function AdminEmailPage() {
       <AnimatePresence mode="wait">
         <motion.div
           key={activeTab}
+          role="tabpanel"
+          id={`panel-${activeTab}`}
+          aria-labelledby={`tab-${activeTab}`}
           initial={{ opacity: 0, y: 6 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -6 }}
@@ -153,12 +239,13 @@ export default function AdminEmailPage() {
               adminEmail={adminEmail}
               forwardData={forwardData}
               replyData={replyData}
+              templatePrefill={templatePrefill}
               onClearPrefill={clearPrefill}
             />
           )}
           {activeTab === 'sent' && <SentTab onForward={handleForward} onReply={handleReply} />}
           {activeTab === 'campaigns' && <CampaignsTab />}
-          {activeTab === 'templates' && <TemplatesTab />}
+          {activeTab === 'templates' && <TemplatesTab onUseTemplate={handleUseTemplate} />}
           {activeTab === 'domains' && <DomainsTab />}
           {activeTab === 'settings' && <SettingsTab adminEmail={adminEmail} />}
         </motion.div>
