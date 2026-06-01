@@ -42,3 +42,40 @@ export interface DnsRecord {
 }
 
 export type Tab = 'compose' | 'sent' | 'templates' | 'domains' | 'settings' | 'campaigns';
+
+export interface ForwardData {
+  subject: string;
+  html: string;
+  originalFrom: string;
+  originalTo: string[];
+  originalDate: string;
+  originalSubject: string;
+}
+
+export interface ReplyData {
+  to: string;
+  subject: string;
+  html: string;
+  originalFrom: string;
+  originalDate: string;
+  originalSubject: string;
+  cc?: string[];
+}
+
+export interface DraftData {
+  to: string;
+  cc: string;
+  bcc: string;
+  subject: string;
+  html: string;
+  replyTo: string;
+  fromName: string;
+  savedAt: number;
+}
+
+export interface EmailAttachment {
+  file: File;
+  name: string;
+  size: number;
+  base64: string;
+}

@@ -15,7 +15,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 
-import { Tab } from '@/src/components/admin/email/types';
+import { Tab, ForwardData, ReplyData } from '@/src/components/admin/email/types';
 import { TabButton } from '@/src/components/admin/email/TabButton';
 import { ComposeTab } from '@/src/components/admin/email/ComposeTab';
 import { SentTab } from '@/src/components/admin/email/SentTab';
@@ -27,6 +27,8 @@ import { CampaignsTab } from '@/src/components/admin/email/CampaignsTab';
 export default function AdminEmailPage() {
   const [activeTab, setActiveTab] = useState<Tab>('compose');
   const [adminEmail, setAdminEmail] = useState('');
+  const [forwardData, setForwardData] = useState<ForwardData | null>(null);
+  const [replyData, setReplyData] = useState<ReplyData | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -42,6 +44,23 @@ export default function AdminEmailPage() {
     { id: 'domains', label: 'Domains', icon: Globe },
     { id: 'settings', label: 'Settings', icon: Settings },
   ];
+
+  const handleForward = (data: ForwardData) => {
+    setForwardData(data);
+    setReplyData(null);
+    setActiveTab('compose');
+  };
+
+  const handleReply = (data: ReplyData) => {
+    setReplyData(data);
+    setForwardData(null);
+    setActiveTab('compose');
+  };
+
+  const clearPrefill = () => {
+    setForwardData(null);
+    setReplyData(null);
+  };
 
   return (
     <div className="min-h-screen font-sans">
@@ -107,8 +126,15 @@ export default function AdminEmailPage() {
           exit={{ opacity: 0, y: -8 }}
           transition={{ duration: 0.18 }}
         >
-          {activeTab === 'compose' && <ComposeTab adminEmail={adminEmail} />}
-          {activeTab === 'sent' && <SentTab />}
+          {activeTab === 'compose' && (
+            <ComposeTab
+              adminEmail={adminEmail}
+              forwardData={forwardData}
+              replyData={replyData}
+              onClearPrefill={clearPrefill}
+            />
+          )}
+          {activeTab === 'sent' && <SentTab onForward={handleForward} onReply={handleReply} />}
           {activeTab === 'campaigns' && <CampaignsTab />}
           {activeTab === 'templates' && <TemplatesTab />}
           {activeTab === 'domains' && <DomainsTab />}

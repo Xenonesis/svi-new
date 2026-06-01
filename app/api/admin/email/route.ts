@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
     const { action } = body;
 
     if (action === 'send') {
-      const { to, subject, html, from, replyTo, cc, bcc, text } = body;
+      const { to, subject, html, from, replyTo, cc, bcc, text, attachments } = body;
 
       if (!to || !subject || (!html && !text)) {
         return NextResponse.json(
@@ -62,6 +62,15 @@ export async function POST(request: NextRequest) {
 
       const fromAddress = from || 'SVI Infra <noreply@sviiinfrasolutions.com>';
 
+      // Build attachments array for Resend API
+      const resendAttachments =
+        Array.isArray(attachments) && attachments.length > 0
+          ? attachments.map((att: { filename: string; content: string }) => ({
+              filename: att.filename,
+              content: att.content, // base64 string (no data: prefix)
+            }))
+          : undefined;
+
       const result = await resend.emails.send({
         from: fromAddress,
         to: Array.isArray(to) ? to : [to],
@@ -71,6 +80,7 @@ export async function POST(request: NextRequest) {
         replyTo: replyTo || undefined,
         cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
         bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
+        attachments: resendAttachments,
       });
 
       if (result.error) {
