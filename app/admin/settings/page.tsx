@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Shield,
   User,
+  History,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
@@ -26,6 +27,7 @@ import { NotificationsTab } from '@/src/components/admin/settings/NotificationsT
 import { SecurityTab } from '@/src/components/admin/settings/SecurityTab';
 import { AppearanceTab, ACCENTS } from '@/src/components/admin/settings/AppearanceTab';
 import { EmailTab } from '@/src/components/admin/settings/EmailTab';
+import { LogsTab } from '@/src/components/admin/settings/LogsTab';
 import { getUserAgentInfo } from '@/src/components/admin/settings/helpers';
 
 const TABS = [
@@ -36,6 +38,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Paintbrush },
+  { id: 'logs', label: 'Activity Logs', icon: History },
 ];
 
 export default function AdminSettings() {
@@ -664,6 +667,11 @@ export default function AdminSettings() {
                     {/* TAB F: PROPERTIES SETTINGS */}
                     {activeTab === 'properties' && (
                       <PropertiesTab token={token} isCompact={isCompact} showToast={showToast} />
+                    )}
+
+                    {/* TAB H: ACTIVITY LOGS */}
+                    {activeTab === 'logs' && (
+                      <LogsTab token={token} isCompact={isCompact} showToast={showToast} />
                     )}
                   </motion.div>
                 </AnimatePresence>
