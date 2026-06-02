@@ -105,7 +105,19 @@ export default function ReceiptRecordsPage() {
   const handleDownloadPDF = async () => {
     setPdfLoading(true);
     try {
-      const filename = `Receipt_${selectedReceipt?.form_data?.receiptNo || 'Record'}.pdf`;
+      const clientName = (selectedReceipt?.form_data?.name || '')
+        .trim()
+        .replace(/[^a-zA-Z0-9\s]/g, '');
+      const receiptNo = (selectedReceipt?.form_data?.receiptNo || '')
+        .trim()
+        .replace(/[^a-zA-Z0-9]/g, '');
+      const filename =
+        clientName && receiptNo
+          ? `${clientName} ${receiptNo}.pdf`
+          : clientName
+            ? `${clientName}.pdf`
+            : 'Receipt.pdf';
+
       await exportToPDF({
         elementId: 'modalReceiptPreview',
         filename,
@@ -120,7 +132,19 @@ export default function ReceiptRecordsPage() {
   const handleDownloadImage = async () => {
     setImageLoading(true);
     try {
-      const filename = `Receipt_${selectedReceipt?.form_data?.receiptNo || 'Record'}.png`;
+      const clientName = (selectedReceipt?.form_data?.name || '')
+        .trim()
+        .replace(/[^a-zA-Z0-9\s]/g, '');
+      const receiptNo = (selectedReceipt?.form_data?.receiptNo || '')
+        .trim()
+        .replace(/[^a-zA-Z0-9]/g, '');
+      const filename =
+        clientName && receiptNo
+          ? `${clientName} ${receiptNo}.png`
+          : clientName
+            ? `${clientName}.png`
+            : 'Receipt.png';
+
       await exportToImage({
         elementId: 'modalReceiptPreview',
         filename,

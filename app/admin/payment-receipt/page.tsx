@@ -246,13 +246,15 @@ export default function PaymentReceiptPage() {
 
   const handleDownloadPDF = async () => {
     try {
-      const sanitizedName = formData.name
-        .trim()
-        .replace(/[^a-zA-Z0-9\s]/g, '')
-        .replace(/\s+/g, '_');
-      const filename = sanitizedName
-        ? `Payment_Receipt_${sanitizedName}.pdf`
-        : 'Payment_Receipt.pdf';
+      const clientName = formData.name.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+      const receiptNo = formData.receiptNo.trim().replace(/[^a-zA-Z0-9]/g, '');
+      const filename =
+        clientName && receiptNo
+          ? `${clientName} ${receiptNo}.pdf`
+          : clientName
+            ? `${clientName}.pdf`
+            : 'Receipt.pdf';
+
       await exportToPDF({
         elementId: 'receiptPreview',
         filename,
@@ -281,13 +283,15 @@ export default function PaymentReceiptPage() {
 
   const handleDownloadImage = async () => {
     try {
-      const sanitizedName = formData.name
-        .trim()
-        .replace(/[^a-zA-Z0-9\s]/g, '')
-        .replace(/\s+/g, '_');
-      const filename = sanitizedName
-        ? `Payment_Receipt_${sanitizedName}.png`
-        : 'Payment_Receipt.png';
+      const clientName = formData.name.trim().replace(/[^a-zA-Z0-9\s]/g, '');
+      const receiptNo = formData.receiptNo.trim().replace(/[^a-zA-Z0-9]/g, '');
+      const filename =
+        clientName && receiptNo
+          ? `${clientName} ${receiptNo}.png`
+          : clientName
+            ? `${clientName}.png`
+            : 'Receipt.png';
+
       await exportToImage({
         elementId: 'receiptPreview',
         filename,
