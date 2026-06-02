@@ -20,6 +20,8 @@ import {
   Users,
   FileText,
   Copy,
+  Trophy,
+  Ticket,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getToken } from './helpers';
@@ -343,7 +345,8 @@ export function CampaignsTab() {
       c.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       c.subject.toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusFilter === 'all' || c.status === statusFilter;
-    return matchesSearch && matchesStatus;
+    const matchesLottery = statusFilter !== 'lottery' || c.lottery_id !== null;
+    return matchesSearch && matchesStatus && (statusFilter === 'lottery' ? matchesLottery : true);
   });
 
   // Stats
@@ -407,7 +410,7 @@ export function CampaignsTab() {
           />
         </div>
         <div className="flex flex-wrap items-center gap-1.5">
-          {['all', 'draft', 'scheduled', 'sent', 'cancelled'].map((status) => (
+          {['all', 'draft', 'scheduled', 'sent', 'cancelled', 'lottery'].map((status) => (
             <button
               key={status}
               onClick={() => setStatusFilter(status)}
@@ -459,9 +462,20 @@ export function CampaignsTab() {
                   {/* Header */}
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
-                      <h3 className="truncate text-base font-bold text-gray-900 dark:text-white">
-                        {c.title}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <h3 className="truncate text-base font-bold text-gray-900 dark:text-white">
+                          {c.title}
+                        </h3>
+                        {c.lottery_id && (
+                          <span
+                            className="inline-flex shrink-0 items-center gap-1 rounded-md bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-700 dark:bg-amber-500/20 dark:text-amber-300"
+                            title={`Linked to lottery: ${c.lottery_title || c.lottery_id}`}
+                          >
+                            <Ticket className="h-3 w-3" />
+                            Lottery
+                          </span>
+                        )}
+                      </div>
                       <p className="mt-1 flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
                         <Mail className="text-brand-gold h-3 w-3" />
                         <span className="truncate">{c.subject}</span>
@@ -533,6 +547,16 @@ export function CampaignsTab() {
                 {/* Footer actions */}
                 <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 dark:border-gray-800">
                   <div className="flex items-center gap-1.5">
+                    {c.lottery_id && (
+                      <a
+                        href={`/admin/lottery`}
+                        title="Go to Lottery"
+                        className="inline-flex items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-1.5 text-[11px] font-bold text-amber-600 transition-colors hover:bg-amber-500 hover:text-white dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500 dark:hover:text-white"
+                      >
+                        <Trophy className="h-3 w-3" />
+                        Lottery
+                      </a>
+                    )}
                     {c.status !== 'sent' && c.status !== 'cancelled' && (
                       <>
                         <button

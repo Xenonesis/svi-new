@@ -164,6 +164,85 @@ export default function AdminLotteryPage() {
   const [emailBody, setEmailBody] = useState('');
   const [emailSending, setEmailSending] = useState(false);
 
+  // ── Sync Existing Lotteries → EmailCenter ─────────────────────────────────
+  const [syncing, setSyncing] = useState(false);
+  const [_syncResult, setSyncResult] = useState<{ created: number; skipped: number } | null>(null);
+
+  // ── Sync handler ───────────────────────────────────────────────────────────
+  const handleSyncExisting = async () => {
+    setSyncing(true);
+    setSyncResult(null);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+    try {
+      // 1. Fetch all lotteries
+      const { data: allLotteries, error: lotErr } = await supabase
+        .from('lotteries')
+        .select('id, title, description')
+        .order('created_at', { ascending: false });
+      if (lotErr) throw lotErr;
+      if (!allLotteries || allLotteries.length === 0) {
+        setSyncResult({ created: 0, skipped: 0 });
+        setSyncing(false);
+        return;
+      }
+
+      // 2. Fetch all campaigns that already have a lottery_id linked
+      const { data: linkedCampaigns, error: campErr } = await supabase
+        .from('email_campaigns')
+        .select('lottery_id')
+        .not('lottery_id', 'is', null);
+      if (campErr) throw campErr;
+
+      const linkedIds = new Set((linkedCampaigns || []).map((c: any) => c.lottery_id));
+
+      // 3. For each unlinked lottery, create a linked campaign
+      let created = 0;
+      let skipped = 0;
+      for (const lot of allLotteries) {
+        if (linkedIds.has(lot.id)) {
+          skipped++;
+          continue;
+        }
+        try {
+          const res = await fetch('/api/admin/campaigns', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              title: `Lottery — ${lot.title}`,
+              subject: `You're In! ${lot.title} — SVI Infra`,
+              body_html: `<div style="font-family:sans-serif;max-width:600px;margin:auto;padding:24px;">
+  <h2 style="color:#1a2744;border-bottom:2px solid #c9a84c;padding-bottom:10px;">${lot.title}</h2>
+  <p>Dear Participant,</p>
+  <p>You have been registered for our exclusive lucky draw <strong>${lot.title}</strong>.</p>
+  <p>${lot.description?.trim() || 'Stay tuned for the live draw. Best of luck!'}</p>
+  <p style="margin-top:30px;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:10px;">SVI Infra Solutions</p>
+</div>`,
+              recipient_group: 'lottery_participants',
+              lottery_id: lot.id,
+            }),
+          });
+          if (res.ok) created++;
+        } catch {
+          // skip individual failures
+        }
+      }
+
+      setSyncResult({ created, skipped });
+      setSuccessMessage(
+        `Sync complete! ${created} campaign(s) created, ${skipped} already linked.`
+      );
+      fetchLotteries();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Sync failed.');
+    } finally {
+      setSyncing(false);
+    }
+  };
+
   useEffect(() => {
     fetchLotteries();
     fetchLotteryVisibility();
@@ -678,6 +757,35 @@ export default function AdminLotteryPage() {
         setSuccessMessage('New active lottery created successfully! Live drawing is ready.');
         setActiveTab('dashboard');
         fetchLotteries();
+
+        // Auto-create linked email campaign in EmailCenter
+        try {
+          const campaignRes = await fetch('/api/admin/campaigns', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              title: `Lottery — ${newLottery.title}`,
+              subject: `You're In! ${newLottery.title} — SVI Infra`,
+              body_html: `<div style="font-family:sans-serif;max-width:600px;margin:auto;padding:24px;">
+  <h2 style="color:#1a2744;border-bottom:2px solid #c9a84c;padding-bottom:10px;">${newLottery.title}</h2>
+  <p>Dear Participant,</p>
+  <p>You have been registered for our exclusive lucky draw <strong>${newLottery.title}</strong>.</p>
+  <p>${description.trim() || 'Stay tuned for the live draw. Best of luck!'}</p>
+  <p style="margin-top:30px;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:10px;">SVI Infra Solutions</p>
+</div>`,
+              recipient_group: 'lottery_participants',
+              lottery_id: newLottery.id,
+            }),
+          });
+          if (campaignRes.ok) {
+            console.log('Linked email campaign created for lottery');
+          }
+        } catch (e) {
+          console.error('Failed to create linked campaign:', e);
+        }
       } catch (error: any) {
         console.error('Error saving lottery:', error);
         setErrorMessage(error.message || 'Failed to save the lottery draw.');
@@ -831,6 +939,26 @@ export default function AdminLotteryPage() {
         })
         .eq('id', editingLottery.id);
       if (error) throw error;
+      // Sync linked campaign title
+      try {
+        const { data: linkedCampaigns } = await supabase
+          .from('email_campaigns')
+          .select('id')
+          .eq('lottery_id', editingLottery.id);
+        if (linkedCampaigns && linkedCampaigns.length > 0) {
+          for (const lc of linkedCampaigns) {
+            await supabase
+              .from('email_campaigns')
+              .update({
+                title: `Lottery — ${editTitle.trim()}`,
+                subject: `You're In! ${editTitle.trim()} — SVI Infra`,
+              })
+              .eq('id', lc.id);
+          }
+        }
+      } catch (syncErr) {
+        console.error('Failed to sync campaign title:', syncErr);
+      }
       setSuccessMessage('Campaign updated successfully.');
       setEditingLottery(null);
       fetchLotteries();
@@ -962,6 +1090,8 @@ export default function AdminLotteryPage() {
     try {
       await supabase.from('lottery_participants').delete().eq('lottery_id', deletingLotteryId);
       await supabase.from('scheduled_draws').delete().eq('lottery_id', deletingLotteryId);
+      // Delete linked email campaigns
+      await supabase.from('email_campaigns').delete().eq('lottery_id', deletingLotteryId);
       const { error } = await supabase.from('lotteries').delete().eq('id', deletingLotteryId);
       if (error) throw error;
       setSuccessMessage('Campaign deleted permanently.');
@@ -1082,6 +1212,21 @@ export default function AdminLotteryPage() {
               }`}
             >
               <Plus className="h-4 w-4" /> New Lottery
+            </button>
+            <button
+              onClick={handleSyncExisting}
+              disabled={syncing}
+              className="flex cursor-pointer items-center gap-2 rounded-xl border border-blue-300 bg-blue-50 px-5 py-2.5 text-xs font-bold tracking-wider text-blue-700 uppercase transition-all duration-300 hover:bg-blue-100 disabled:opacity-50 dark:border-blue-500/30 dark:bg-blue-500/10 dark:text-blue-400 dark:hover:bg-blue-500/20"
+            >
+              {syncing ? (
+                <>
+                  <RefreshCw className="h-4 w-4 animate-spin" /> Syncing…
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-4 w-4" /> Sync to EmailCenter
+                </>
+              )}
             </button>
           </div>
         </div>

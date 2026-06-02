@@ -98,4 +98,6 @@ export interface Campaign {
   sent_at: string | null;
   recipient_count: number;
   created_at: string;
+  lottery_id: string | null;
+  lottery_title?: string | null;
 }

@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
 
   let query = supabaseAdmin
     .from('email_campaigns')
-    .select('id, title, subject, recipient_group, status, scheduled_at, reminder_at, reminder_sent_at, sent_at, recipient_count, created_at, created_by')
+    .select(
+      'id, title, subject, recipient_group, status, scheduled_at, reminder_at, reminder_sent_at, sent_at, recipient_count, created_at, created_by, lottery_id, lotteries:lotteries(title)'
+    )
     .order('created_at', { ascending: false });
 
   if (status) query = query.eq('status', status);
@@ -23,7 +25,14 @@ export async function GET(request: NextRequest) {
   const { data, error } = await query;
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ campaigns: data });
+  // Flatten lottery relation
+  const campaigns = (data || []).map((c: any) => ({
+    ...c,
+    lottery_title: c.lotteries?.title ?? null,
+    lotteries: undefined,
+  }));
+
+  return NextResponse.json({ campaigns });
 }
 
 /**
@@ -50,14 +59,21 @@ export async function POST(request: NextRequest) {
     scheduled_at,
     reminder_at,
     reminder_subject,
+    lottery_id,
   } = body;
 
   if (!title || !subject || !body_html) {
-    return NextResponse.json({ error: 'title, subject, and body_html are required' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'title, subject, and body_html are required' },
+      { status: 400 }
+    );
   }
 
   if (recipient_group === 'custom' && (!custom_emails || custom_emails.length === 0)) {
-    return NextResponse.json({ error: 'custom_emails required when recipient_group is custom' }, { status: 400 });
+    return NextResponse.json(
+      { error: 'custom_emails required when recipient_group is custom' },
+      { status: 400 }
+    );
   }
 
   const status = scheduled_at ? 'scheduled' : 'draft';
@@ -75,6 +91,7 @@ export async function POST(request: NextRequest) {
       reminder_at: reminder_at || null,
       reminder_subject: reminder_subject || null,
       created_by: admin.id,
+      lottery_id: lottery_id || null,
     })
     .select()
     .single();
@@ -89,7 +106,9 @@ export async function POST(request: NextRequest) {
       description: `Campaign "${title}" created (${status}).`,
       metadata: { campaignId: campaign.id, status },
     });
-  } catch {}
+  } catch {
+    // Audit logging is non-critical; silently ignore failures
+  }
 
   return NextResponse.json({ campaign });
 }
