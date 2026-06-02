@@ -210,8 +210,25 @@ export default function Projects() {
             </div>
             <Suspense
               fallback={
-                <div className="flex h-[500px] items-center justify-center bg-gray-100 dark:bg-gray-800">
-                  <div className="border-brand-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
+                <div className="flex h-[500px] flex-col items-center justify-center bg-gray-100 dark:bg-gray-900/60 border border-gray-200 dark:border-white/5 rounded-2xl relative overflow-hidden animate-pulse">
+                  <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+                    {/* Fake map grid pattern */}
+                    <div className="w-full h-full bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px]" />
+                  </div>
+                  {/* Fake map search and control tools */}
+                  <div className="absolute top-4 left-4 h-10 w-48 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
+                  <div className="absolute top-4 right-4 h-10 w-10 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
+                  <div className="absolute bottom-8 right-4 space-y-2">
+                    <div className="h-10 w-10 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
+                    <div className="h-10 w-10 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
+                  </div>
+                  {/* Map Center Pin Pulsing */}
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="h-12 w-12 rounded-full bg-brand-gold/15 flex items-center justify-center border border-brand-gold/30">
+                      <div className="h-4 w-4 rounded-full bg-brand-gold" />
+                    </div>
+                    <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">Initializing project locations map...</span>
+                  </div>
                 </div>
               }
             >

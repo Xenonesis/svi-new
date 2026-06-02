@@ -56,11 +56,24 @@ function PropertiesContent() {
 
   if (loading || !token) {
     return (
-      <div className="flex h-[60vh] flex-col items-center justify-center font-sans text-gray-500">
-        <div className="border-brand-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"></div>
-        <p className="mt-4 text-sm font-medium tracking-wide">
-          Verifying security authorization...
-        </p>
+      <div className="mx-auto w-full max-w-7xl relative z-10 animate-pulse font-sans">
+        <div className="rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+          {/* Header Skeleton */}
+          <div className="flex justify-between items-center mb-6">
+            <div className="space-y-2">
+              <div className="h-7 w-48 bg-gray-200 dark:bg-white/5 rounded" />
+              <div className="h-4 w-72 bg-gray-200 dark:bg-white/5 rounded" />
+            </div>
+            <div className="h-10 w-32 bg-gray-200 dark:bg-white/5 rounded-lg" />
+          </div>
+          {/* Search & Actions Bar Skeleton */}
+          <div className="flex justify-between items-center mb-6 gap-4">
+            <div className="h-10 w-64 bg-gray-200 dark:bg-white/5 rounded-lg" />
+            <div className="h-4 w-24 bg-gray-200 dark:bg-white/5 rounded" />
+          </div>
+          {/* Table Skeleton */}
+          <div className="border border-gray-150 dark:border-white/5 rounded-xl bg-white/40 dark:bg-black/20 overflow-hidden h-60" />
+        </div>
       </div>
     );
   }
@@ -112,9 +125,24 @@ export default function PropertiesPage() {
   return (
     <Suspense
       fallback={
-        <div className="flex h-[60vh] flex-col items-center justify-center font-sans text-gray-500">
-          <div className="border-brand-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent"></div>
-          <p className="mt-4 text-sm font-medium tracking-wide">Loading workspace...</p>
+        <div className="mx-auto w-full max-w-7xl relative z-10 animate-pulse font-sans">
+          <div className="rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+            {/* Header Skeleton */}
+            <div className="flex justify-between items-center mb-6">
+              <div className="space-y-2">
+                <div className="h-7 w-48 bg-gray-200 dark:bg-white/5 rounded" />
+                <div className="h-4 w-72 bg-gray-200 dark:bg-white/5 rounded" />
+              </div>
+              <div className="h-10 w-32 bg-gray-200 dark:bg-white/5 rounded-lg" />
+            </div>
+            {/* Search & Actions Bar Skeleton */}
+            <div className="flex justify-between items-center mb-6 gap-4">
+              <div className="h-10 w-64 bg-gray-200 dark:bg-white/5 rounded-lg" />
+              <div className="h-4 w-24 bg-gray-200 dark:bg-white/5 rounded" />
+            </div>
+            {/* Table Skeleton */}
+            <div className="border border-gray-150 dark:border-white/5 rounded-xl bg-white/40 dark:bg-black/20 overflow-hidden h-60" />
+          </div>
         </div>
       }
     >

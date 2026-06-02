@@ -279,10 +279,39 @@ export default function ReceiptRecordsPage() {
 
         <div className="overflow-x-auto">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-              <RefreshCw className="text-brand-gold mb-3 h-8 w-8 animate-spin" />
-              <p className="text-xs font-medium">Fetching receipt records...</p>
-            </div>
+            <table className="w-full border-collapse text-left text-xs animate-pulse">
+              <thead>
+                <tr className="border-b border-gray-100 text-[11px] font-bold tracking-widest text-gray-400 uppercase dark:border-white/8">
+                  <th className="px-4 py-3"><div className="h-3.5 w-16 bg-gray-250 dark:bg-white/5 rounded" /></th>
+                  <th className="px-4 py-3"><div className="h-3.5 w-24 bg-gray-250 dark:bg-white/5 rounded" /></th>
+                  <th className="px-4 py-3"><div className="h-3.5 w-16 bg-gray-250 dark:bg-white/5 rounded" /></th>
+                  <th className="px-4 py-3"><div className="h-3.5 w-20 bg-gray-250 dark:bg-white/5 rounded" /></th>
+                  <th className="px-4 py-3"><div className="h-3.5 w-16 bg-gray-250 dark:bg-white/5 rounded" /></th>
+                  <th className="px-4 py-3"><div className="h-3.5 w-32 bg-gray-250 dark:bg-white/5 rounded" /></th>
+                  <th className="px-4 py-3 text-right"><div className="h-3.5 w-24 bg-gray-250 dark:bg-white/5 rounded ml-auto" /></th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                {[...Array(6)].map((_, i) => (
+                  <tr key={i}>
+                    {/* Receipt No */}
+                    <td className="px-4 py-4"><div className="h-4 w-12 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    {/* Client Name */}
+                    <td className="px-4 py-4"><div className="h-4 w-28 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    {/* Date */}
+                    <td className="px-4 py-4"><div className="h-3.5 w-16 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    {/* Amount */}
+                    <td className="px-4 py-4"><div className="h-4 w-20 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    {/* Method */}
+                    <td className="px-4 py-4"><div className="h-5 w-12 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    {/* Plot Info */}
+                    <td className="px-4 py-4"><div className="h-4 w-40 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    {/* Actions */}
+                    <td className="px-4 py-4 text-right"><div className="h-8 w-28 bg-gray-200 dark:bg-white/5 rounded ml-auto" /></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <table className="w-full border-collapse text-left">
               <thead>
