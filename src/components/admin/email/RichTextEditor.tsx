@@ -9,7 +9,7 @@ import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import {
   Bold,
   Italic,
@@ -37,6 +37,8 @@ interface RichTextEditorProps {
   value: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  /** Unique key to force re-mount when content changes externally (e.g., template load) */
+  contentKey?: string | number;
 }
 
 const TOOLBAR_BUTTON_CLASS =
@@ -46,20 +48,28 @@ const ACTIVE_BUTTON_CLASS =
 
 const DIVIDER = <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700" />;
 
-export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorProps) {
+export function RichTextEditor({ value, onChange, placeholder, contentKey }: RichTextEditorProps) {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
+  const isInternalUpdate = useRef(false);
+  const lastSyncedValue = useRef<string | null>(null);
 
   const editor = useEditor({
+    immediatelyRender: true,
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
       }),
-      Underline,
+      Underline.configure({
+        HTMLAttributes: { class: 'underline' },
+      }),
       TextAlign.configure({ types: ['heading', 'paragraph'] }),
       Highlight.configure({ multicolor: true }),
-      Link.configure({ openOnClick: false }),
+      Link.configure({ 
+        openOnClick: false,
+        HTMLAttributes: { class: 'text-blue-500 underline' },
+      }),
       Image,
       TextStyle,
       Color,
@@ -68,19 +78,34 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
     editorProps: {
       attributes: {
         class:
-          'prose prose-sm dark:prose-invert max-w-none focus:outline-none min-h-[300px] px-4 py-3',
+          'focus:outline-none min-h-[300px] px-4 py-3 text-sm',
         'data-placeholder': placeholder || 'Write your email here...',
       },
     },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      isInternalUpdate.current = true;
+      const html = editor.getHTML();
+      lastSyncedValue.current = html;
+      onChange(html);
+      // Reset flag after a short delay
+      setTimeout(() => {
+        isInternalUpdate.current = false;
+      }, 0);
     },
   });
 
-  // Sync external value changes
+  // Sync external value changes (from templates, forward, reply, etc.)
   useEffect(() => {
-    if (editor && value !== editor.getHTML()) {
-      editor.commands.setContent(value || '', false);
+    if (!editor) return;
+    // Skip if this was an internal update (user typing)
+    if (isInternalUpdate.current) return;
+    // Skip if we already synced this value
+    if (lastSyncedValue.current === value) return;
+    // Only update if value is different from current editor content
+    const currentContent = editor.getHTML();
+    if (value && value !== currentContent && value !== lastSyncedValue.current) {
+      lastSyncedValue.current = value;
+      editor.commands.setContent(value, false);
     }
   }, [value, editor]);
 
@@ -359,14 +384,79 @@ export function RichTextEditor({ value, onChange, placeholder }: RichTextEditorP
       {/* Editor */}
       <EditorContent editor={editor} />
 
-      {/* Placeholder styling */}
+      {/* Placeholder styling and email content styles */}
       <style jsx global>{`
+        .tiptap {
+          min-height: 300px;
+        }
         .tiptap p.is-editor-empty:first-child::before {
           content: attr(data-placeholder);
           float: left;
           color: #9ca3af;
           pointer-events: none;
           height: 0;
+        }
+        .tiptap table {
+          border-collapse: collapse;
+          margin: 0;
+          width: 100%;
+        }
+        .tiptap td,
+        .tiptap th {
+          border: 1px solid #ddd;
+          padding: 8px;
+          text-align: left;
+        }
+        .tiptap img {
+          max-width: 100%;
+          height: auto;
+        }
+        .tiptap a {
+          color: #2563eb;
+          text-decoration: underline;
+        }
+        .tiptap h1 {
+          font-size: 2em;
+          font-weight: bold;
+          margin: 0.67em 0;
+        }
+        .tiptap h2 {
+          font-size: 1.5em;
+          font-weight: bold;
+          margin: 0.83em 0;
+        }
+        .tiptap h3 {
+          font-size: 1.17em;
+          font-weight: bold;
+          margin: 1em 0;
+        }
+        .tiptap ul,
+        .tiptap ol {
+          padding-left: 2em;
+          margin: 1em 0;
+        }
+        .tiptap blockquote {
+          border-left: 3px solid #ddd;
+          margin-left: 0;
+          margin-right: 0;
+          padding-left: 1em;
+          color: #666;
+        }
+        .tiptap pre {
+          background: #f4f4f4;
+          border-radius: 4px;
+          padding: 0.75em 1em;
+          font-family: monospace;
+        }
+        .tiptap code {
+          background: #f4f4f4;
+          border-radius: 3px;
+          padding: 0.2em 0.4em;
+          font-family: monospace;
+        }
+        .tiptap mark {
+          background-color: #fef08a;
+          padding: 0.1em 0;
         }
       `}</style>
     </div>

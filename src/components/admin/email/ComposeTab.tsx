@@ -54,6 +54,7 @@ export function ComposeTab({
   const [previewMode, setPreviewMode] = useState(false);
   const [editorMode, setEditorMode] = useState<'rich' | 'html'>('rich');
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
+  const [editorKey, setEditorKey] = useState(0);
   const [attachments, setAttachments] = useState<EmailAttachment[]>([]);
   const [draftSaved, setDraftSaved] = useState(false);
   const [hasDraft, setHasDraft] = useState(false);
@@ -88,6 +89,7 @@ export function ComposeTab({
       setSubject(forwardData.subject);
       setHtml(forwardData.html);
       setShowAdvanced(false);
+      setEditorKey((prev) => prev + 1);
       onClearPrefill?.();
     }
   }, [forwardData, onClearPrefill]);
@@ -100,6 +102,7 @@ export function ComposeTab({
       setSubject(replyData.subject);
       setHtml(replyData.html);
       setShowAdvanced(true);
+      setEditorKey((prev) => prev + 1);
       onClearPrefill?.();
     }
   }, [replyData, onClearPrefill]);
@@ -109,6 +112,7 @@ export function ComposeTab({
     if (templatePrefill) {
       setSubject(templatePrefill.subject);
       setHtml(templatePrefill.html);
+      setEditorKey((prev) => prev + 1);
       onClearPrefill?.();
     }
   }, [templatePrefill, onClearPrefill]);
@@ -146,6 +150,8 @@ export function ComposeTab({
     setSelectedTemplate(templateId);
     setShowTemplatePicker(false);
     setTemplateSearch('');
+    // Force editor re-mount to sync template content
+    setEditorKey((prev) => prev + 1);
   };
 
   // Attachments
@@ -560,6 +566,7 @@ export function ComposeTab({
             ) : editorMode === 'rich' ? (
               <div className="p-4">
                 <RichTextEditor
+                  key={editorKey}
                   value={html}
                   onChange={setHtml}
                   placeholder="Write your email here... Use the toolbar above to format text."
