@@ -15,14 +15,25 @@ export async function DELETE(request: NextRequest) {
     return NextResponse.json({ error: 'lottery_id query param required' }, { status: 400 });
   }
 
-  const { error } = await supabaseAdmin
+  const { data: existing, error: fetchErr } = await supabaseAdmin
     .from('email_campaigns')
-    .delete()
+    .select('id')
     .eq('lottery_id', lotteryId);
 
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 500 });
 
-  return NextResponse.json({ success: true });
+  const count = existing?.length ?? 0;
+
+  if (count > 0) {
+    const { error } = await supabaseAdmin
+      .from('email_campaigns')
+      .delete()
+      .eq('lottery_id', lotteryId);
+
+    if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true, deleted: count });
 }
 
 /**

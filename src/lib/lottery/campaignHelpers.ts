@@ -101,14 +101,16 @@ export async function syncLinkedCampaignTitle(
 export async function deleteLinkedCampaigns(
   token: string | null,
   lotteryId: string
-): Promise<boolean> {
+): Promise<number | false> {
   if (!token) return false;
   try {
     const res = await fetch(`/api/admin/campaigns?lottery_id=${lotteryId}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     });
-    return res.ok;
+    if (!res.ok) return false;
+    const data = await res.json();
+    return data.deleted ?? 0;
   } catch (err) {
     console.error('Failed to delete linked campaigns:', err);
     return false;
