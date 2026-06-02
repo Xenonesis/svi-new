@@ -56,6 +56,10 @@ export function ComposeTab({
   const [editorKey, setEditorKey] = useState(0);
   // Store raw template HTML separately (preserves full email HTML)
   const [templateHtml, setTemplateHtml] = useState<string | null>(null);
+  // Template variables (for {{name}}, {{amount}}, etc.)
+  const [templateVars, setTemplateVars] = useState<Record<string, string>>({});
+  // Track if user is editing template (converting to custom)
+  const [isEditingTemplate, setIsEditingTemplate] = useState(false);
   const [attachments, setAttachments] = useState<EmailAttachment[]>([]);
   const [draftSaved, setDraftSaved] = useState(false);
   const [hasDraft, setHasDraft] = useState(false);
@@ -149,15 +153,42 @@ export function ComposeTab({
     }
   };
 
+  // Extract {{variables}} from template HTML
+  const extractTemplateVars = (html: string): string[] => {
+    const matches = html.match(/\{\{([^}]+)\}\}/g);
+    if (!matches) return [];
+    return [...new Set(matches.map((m) => m.replace(/[{}]/g, '')))];
+  };
+
+  // Get preview HTML with variables replaced
+  const getPreviewHtml = (): string => {
+    const sourceHtml = templateHtml || html;
+    if (!sourceHtml) return '';
+    let result = sourceHtml;
+    // Replace template variables
+    Object.entries(templateVars).forEach(([key, value]) => {
+      result = result.replace(new RegExp(`\{\{${key}\}\}`, 'g'), value || `{{${key}}}`);
+    });
+    return result;
+  };
+
   const loadTemplate = (templateId: string) => {
     const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId);
     if (!tpl) return;
     setSubject(tpl.subject);
     // Store raw template HTML for preview/sending
     setTemplateHtml(tpl.html);
-    // Clear editor content (template uses stored HTML)
+    // Extract and initialize template variables
+    const vars = extractTemplateVars(tpl.html);
+    const initialVars: Record<string, string> = {};
+    vars.forEach((v) => {
+      initialVars[v] = templateVars[v] || '';
+    });
+    setTemplateVars(initialVars);
+    // Clear editor content
     setHtml('');
     setSelectedTemplate(templateId);
+    setIsEditingTemplate(false);
     setShowTemplatePicker(false);
     setTemplateSearch('');
     // Force preview mode when template is loaded
@@ -222,8 +253,8 @@ export function ComposeTab({
                 .filter(Boolean)
             : undefined,
           subject,
-          // Use template HTML if template is selected, otherwise use editor HTML
-          html: templateHtml || html,
+          // Use template with variables replaced, or editor HTML
+          html: getPreviewHtml() || html,
           replyTo: replyTo || undefined,
           from: `${fromName} <noreply@sviiinfrasolutions.com>`,
           attachments:
@@ -542,39 +573,59 @@ export function ComposeTab({
           </AnimatePresence>
 
           {/* Template Selected Banner */}
-          {selectedTemplate && templateHtml && (
-            <div className="flex items-center justify-between border-b border-gray-100 bg-blue-50/50 px-6 py-2.5 dark:border-gray-800 dark:bg-blue-900/10">
-              <div className="flex items-center gap-2">
-                <LayoutTemplate className="h-4 w-4 text-blue-500" />
-                <span className="text-xs font-medium text-blue-700 dark:text-blue-400">
-                  Template: {EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name}
-                </span>
+          {selectedTemplate && templateHtml && !isEditingTemplate && (
+            <div className="border-b border-gray-100 bg-blue-50/50 px-6 py-3 dark:border-gray-800 dark:bg-blue-900/10">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <LayoutTemplate className="h-4 w-4 text-blue-500" />
+                  <span className="text-xs font-medium text-blue-700 dark:text-blue-400">
+                    Template: {EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      setIsEditingTemplate(true);
+                      setPreviewMode(false);
+                    }}
+                    className="flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+                  >
+                    <PenLine className="h-3.5 w-3.5" />
+                    Edit Template
+                  </button>
+                  <button
+                    onClick={() => {
+                      setTemplateHtml(null);
+                      setSelectedTemplate(null);
+                      setTemplateVars({});
+                      setIsEditingTemplate(false);
+                      setPreviewMode(false);
+                    }}
+                    className="text-xs font-medium text-blue-500 hover:text-blue-700 dark:text-blue-300"
+                  >
+                    ✏️ Write Custom
+                  </button>
+                </div>
               </div>
-              <div className="flex items-center gap-2">
-                <button
-                  onClick={() => {
-                    // Load template into editor for editing
-                    setHtml(templateHtml);
-                    setTemplateHtml(null);
-                    setPreviewMode(false);
-                    setEditorKey((prev) => prev + 1);
-                  }}
-                  className="flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
-                >
-                  <PenLine className="h-3.5 w-3.5" />
-                  Edit Template
-                </button>
-                <button
-                  onClick={() => {
-                    setTemplateHtml(null);
-                    setSelectedTemplate(null);
-                    setPreviewMode(false);
-                  }}
-                  className="text-xs font-medium text-blue-500 hover:text-blue-700 dark:text-blue-300"
-                >
-                  ✏️ Write Custom
-                </button>
-              </div>
+              {/* Template Variables Form */}
+              {Object.keys(templateVars).length > 0 && (
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {Object.entries(templateVars).map(([key, value]) => (
+                    <div key={key} className="flex flex-col">
+                      <label className="mb-1 text-[10px] font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+                        {key.replace(/_/g, ' ')}
+                      </label>
+                      <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => setTemplateVars((prev) => ({ ...prev, [key]: e.target.value }))}
+                        placeholder={`Enter ${key.replace(/_/g, ' ')}...`}
+                        className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 outline-none transition-colors focus:border-blue-400 focus:ring-1 focus:ring-blue-400/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
@@ -590,8 +641,7 @@ export function ComposeTab({
                   <div
                     dangerouslySetInnerHTML={{
                       __html:
-                        templateHtml ||
-                        html ||
+                        getPreviewHtml() ||
                         '<div style="padding:40px;text-align:center;color:#999;font-family:sans-serif;">No content yet...<br>Select a template or write your email below.</div>',
                     }}
                   />
