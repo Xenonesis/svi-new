@@ -1260,9 +1260,57 @@ export default function AdminRegistrations() {
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
 
           {loading ? (
-            <div className="flex items-center justify-center py-24 text-gray-500 dark:text-gray-400">
-              <RefreshCw className="text-brand-gold mr-3 h-5 w-5 animate-spin" /> Loading
-              registrations...
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm animate-pulse">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50/50 dark:bg-white/2">
+                    <th className="w-10 px-4 py-4"></th>
+                    {[
+                      'Submission ID',
+                      'Name',
+                      'Email',
+                      'Phone',
+                      'Project',
+                      'Advisor',
+                      'Status',
+                      'Date',
+                      'Actions',
+                    ].map((h) => (
+                      <th
+                        key={h}
+                        className="px-6 py-4 text-left text-[9px] font-bold tracking-widest text-gray-400 uppercase"
+                      >
+                        <div className="h-3 w-16 bg-gray-250 dark:bg-white/5 rounded" />
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                  {[...Array(6)].map((_, i) => (
+                    <tr key={i}>
+                      <td className="px-4 py-4.5"></td>
+                      {/* Submission ID */}
+                      <td className="px-6 py-4.5"><div className="h-4 w-12 bg-gray-200 dark:bg-white/5 rounded font-mono" /></td>
+                      {/* Name */}
+                      <td className="px-6 py-4.5"><div className="h-4 w-28 bg-gray-200 dark:bg-white/5 rounded font-semibold" /></td>
+                      {/* Email */}
+                      <td className="px-6 py-4.5"><div className="h-3.5 w-32 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                      {/* Phone */}
+                      <td className="px-6 py-4.5"><div className="h-3.5 w-24 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                      {/* Project */}
+                      <td className="px-6 py-4.5"><div className="h-4 w-20 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                      {/* Advisor */}
+                      <td className="px-6 py-4.5"><div className="h-4 w-20 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                      {/* Status */}
+                      <td className="px-6 py-4.5"><div className="h-5 w-16 bg-gray-200 dark:bg-white/5 rounded-full" /></td>
+                      {/* Date */}
+                      <td className="px-6 py-4.5"><div className="h-3.5 w-16 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                      {/* Actions */}
+                      <td className="px-6 py-4.5"><div className="h-8 w-20 bg-gray-200 dark:bg-white/5 rounded-lg" /></td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           ) : registrations.length === 0 ? (
             <div className="py-24 text-center">
