@@ -243,10 +243,60 @@ export function LogsTab({ token, isCompact, showToast }: LogsTabProps) {
       >
         <div className="min-h-[350px] overflow-x-auto">
           {loading ? (
-            <div className="flex flex-col items-center justify-center py-24 text-gray-500">
-              <RefreshCw className="text-brand-gold mb-3 h-8 w-8 animate-spin" />
-              <p className="text-xs font-semibold tracking-wider">Fetching live database logs...</p>
-            </div>
+            <table className="w-full border-collapse animate-pulse text-left text-xs">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50/20 text-[10px] font-bold tracking-widest text-gray-400 uppercase dark:border-white/5 dark:bg-white/2">
+                  <th className="px-4 py-3.5">
+                    <div className="bg-gray-250 h-3 w-16 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3.5">
+                    <div className="bg-gray-250 h-3 w-12 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3.5">
+                    <div className="bg-gray-255 h-3 w-40 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3.5">
+                    <div className="bg-gray-250 h-3 w-20 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3.5">
+                    <div className="bg-gray-250 h-3 w-16 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3.5 text-right">
+                    <div className="bg-gray-250 ml-auto h-3 w-16 rounded dark:bg-white/5" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                {[...Array(10)].map((_, i) => (
+                  <tr key={i}>
+                    {/* Category Skeleton */}
+                    <td className="px-4 py-4">
+                      <div className="h-5 w-20 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* User Skeleton */}
+                    <td className="px-4 py-4">
+                      <div className="h-3.5 w-24 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Description Skeleton */}
+                    <td className="px-4 py-4">
+                      <div className="h-3.5 w-48 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Action Code Skeleton */}
+                    <td className="px-4 py-4">
+                      <div className="h-3 w-32 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Time Skeleton */}
+                    <td className="px-4 py-4">
+                      <div className="h-3 w-16 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Action button Skeleton */}
+                    <td className="px-4 py-4 text-right">
+                      <div className="ml-auto h-6 w-20 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : activities.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-24 text-gray-500">
               <History className="mb-3 h-10 w-10 text-gray-300 dark:text-gray-700" />

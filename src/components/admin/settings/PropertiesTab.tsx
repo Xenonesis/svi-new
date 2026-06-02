@@ -354,9 +354,54 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
         </div>
 
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 text-gray-500">
-            <RefreshCw className="text-brand-gold mb-3 h-6 w-6 animate-spin" />
-            <p className="text-xs">Fetching dynamic properties list...</p>
+          <div className="border-gray-150 overflow-hidden rounded-xl border bg-white/40 dark:border-white/5 dark:bg-black/20">
+            <table className="w-full border-collapse animate-pulse text-left text-sm">
+              <thead>
+                <tr className="border-gray-150 border-b bg-gray-50/70 font-sans text-xs font-bold tracking-wider text-gray-500 uppercase dark:border-white/5 dark:bg-[#14141d]/50 dark:text-gray-400">
+                  <th className="p-4">
+                    <div className="bg-gray-250 h-3 w-20 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="p-4">
+                    <div className="bg-gray-250 h-3 w-28 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="p-4">
+                    <div className="bg-gray-250 h-3 w-24 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="p-4 text-center">
+                    <div className="bg-gray-250 mx-auto h-3 w-16 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="p-4 text-right">
+                    <div className="bg-gray-250 ml-auto h-3 w-16 rounded dark:bg-white/5" />
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 font-sans dark:divide-white/5">
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i}>
+                    {/* Name */}
+                    <td className="p-4">
+                      <div className="h-4.5 w-36 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Slug */}
+                    <td className="p-4">
+                      <div className="h-4 w-40 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Created Date */}
+                    <td className="p-4">
+                      <div className="h-4 w-28 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Status */}
+                    <td className="p-4 text-center">
+                      <div className="mx-auto h-5 w-16 rounded-full bg-gray-200 dark:bg-white/5" />
+                    </td>
+                    {/* Actions */}
+                    <td className="p-4 text-right">
+                      <div className="ml-auto h-8 w-24 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         ) : filteredProperties.length === 0 ? (
           <div className="flex flex-col items-center justify-center rounded-xl border border-dashed border-gray-200 py-16 text-center dark:border-white/10">
