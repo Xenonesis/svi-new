@@ -42,3 +42,11 @@ vitest.config.ts.timestamp-*
 # Misc
 nul
 refactor.md
+
+# Helper scripts
+replace_bba.py
+replace_bba_2.py
+replace_bba_3.py
+
+# Extracted PDF pages
+/pdf_pages/

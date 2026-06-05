@@ -4,10 +4,12 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
   return (
     <div className="legal-pages text-[11px] leading-relaxed">
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">“SHYAM AANGAN”</p>
-        <p className="mb-3 text-justify">JAIPUR, RAJASTHAN</p>
-        <p className="mb-3 text-justify">Please read carefully..........</p>
-        <p className="mb-3 text-justify">Important Instructions to the Allottee(s)</p>
+        <p className="mb-2 text-center text-lg font-bold uppercase">“SHYAM AANGAN”</p>
+        <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
+        <p className="mb-4 text-left font-semibold italic">Please read carefully..........</p>
+        <p className="mb-6 text-left font-bold underline">
+          Important Instructions to the Allottee(s)
+        </p>
         <p className="mb-3 text-justify">
           The Allottee(s) states and confirms that the firm has made the Allottee(s) aware of the
           availability of the Builder Buyers’ Agreement (hereinafter defined) at the head office of
@@ -52,10 +54,13 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Agreement and undertake to faithfully abide by all the terms and conditions of this
           Agreement.
         </p>
-        <p className="mb-3 text-justify">{formData.clientName} (Allottee(s)</p>
+        <p className="mt-8 font-bold">{formData.clientName}</p>
+        <p className="mb-3">(Allottee(s))</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">Instructions for execution of the Agreement:</p>
+        <p className="mb-4 text-left text-sm font-bold underline">
+          Instructions for execution of the Agreement:
+        </p>
         <p className="mb-3 text-justify">
           1) Kindly sign along with joint allottee, if any, on every page of the Agreement including
           all annexures.
@@ -71,9 +76,9 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         <p className="mb-3 text-justify">
           5) Witnesses signatures to be done only on Witness space.
         </p>
-        <p className="mb-3 text-justify">“SHYAM AANGAN”</p>
-        <p className="mb-3 text-justify">JAIPUR, RAJASTHAN</p>
-        <p className="mb-3 text-justify">BUILDER-BUYER AGREEMENT</p>
+        <p className="mb-2 text-center text-lg font-bold uppercase">“SHYAM AANGAN”</p>
+        <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
+        <p className="mb-6 text-center text-xl font-bold underline">BUILDER-BUYER AGREEMENT</p>
         <p className="mb-3 text-justify">
           This Agreement (the ‘Agreement’) is made at Noida on this{' '}
           {new Date().toLocaleDateString('en-GB', {
@@ -83,7 +88,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           })}
           .
         </p>
-        <p className="mb-3 text-justify">BY AND BETWEEN</p>
+        <p className="my-4 text-center text-lg font-bold">BY AND BETWEEN</p>
         <p className="mb-3 text-justify">
           M/s. SVI INFRA SOLUTIONS PVT LTD, firm presently having its Registered Office at A-61
           Sector-65 Noida Uttar Pradesh 201309 (hereinafter referred to as the ‘Firm which
@@ -91,13 +96,13 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           include its executors, successors) acting through its Authorized Signatory of the FIRST
           PART.
         </p>
-        <p className="mb-3 text-justify">AND</p>
+        <p className="my-4 text-center text-lg font-bold">AND</p>
         <p className="mb-3 text-justify">(FOR INDIVIDUALS) 1st ALLOTTEE</p>
         <p className="mb-3 text-justify">
           Mr/Ms/Mrs : {formData.clientName} (Aadhar No : _________________) Son/Daughter/Wife of :
           _________________ H/No: {formData.address}
         </p>
-        <p className="mb-3 text-justify">AND</p>
+        <p className="my-4 text-center text-lg font-bold">AND</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-3 text-justify">
@@ -105,10 +110,10 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Son/Daughter/Wife of ……………………………………………………………………………………………….………………………
           R/o…………………………………………………………………………………………………………………………………………...….
         </p>
-        <p className="mb-3 text-justify">AND</p>
+        <p className="my-4 text-center text-lg font-bold">AND</p>
         <p className="mb-3 text-justify">Son/Daughter/</p>
         <p className="mb-3 text-justify">3rd ALLOTTEE Mr/Ms/Mrs. Wife of R/o</p>
-        <p className="mb-3 text-justify">OR</p>
+        <p className="my-4 text-center text-lg font-bold">OR</p>
         <p className="mb-3 text-justify">
           (FOR FIRMS) M/s. proprietorship firm duly registered and having its office at
         </p>
@@ -135,7 +140,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           The firm and Allottee are hereinafter individually referred to as the 'Party' and
           collectively referred to as the ‘Parties'.
         </p>
-        <p className="mb-3 text-justify">Firms Representation</p>
+        <p className="mb-3 text-justify font-bold">Firms Representation</p>
         <p className="mb-3 text-justify">
           WHEREAS the firm is bona fide purchaser of the land bearing “SHYAM AANGAN”, Village Basadi
           Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan (hereinafter referred to as the
@@ -152,7 +157,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           has been given with regard to the constructions that may take place on the land outside
           the Said Land.
         </p>
-        <p className="mb-3 text-justify">Allottee(s) Representations</p>
+        <p className="mb-3 text-justify font-bold">Allottee(s) Representations</p>
         <p className="mb-3 text-justify">
           AND WHEREAS the Allottee(s) vide Application Dated{' '}
           {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
