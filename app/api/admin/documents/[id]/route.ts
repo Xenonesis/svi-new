@@ -14,12 +14,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   } catch {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
-  const { status, pdf_url, image_url } = body;
+  const { status, pdf_url, image_url, form_data } = body;
 
   const updateData: Record<string, unknown> = {};
-  if (status) updateData.status = status;
-  if (pdf_url) updateData.pdf_url = pdf_url;
-  if (image_url) updateData.image_url = image_url;
+  if (status !== undefined) updateData.status = status;
+  if (pdf_url !== undefined) updateData.pdf_url = pdf_url;
+  if (image_url !== undefined) updateData.image_url = image_url;
+  if (form_data !== undefined) updateData.form_data = form_data;
 
   const { data, error } = await supabaseAdmin
     .from('documents')
