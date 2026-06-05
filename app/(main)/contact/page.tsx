@@ -5,6 +5,9 @@ import { useCallback, useState, type ChangeEvent, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { MapPin, PhoneIcon, Mail, Clock, AlertCircle } from 'lucide-react';
 import { SITE_URL } from '@/src/lib/seo';
+import dynamic from 'next/dynamic';
+
+const ContactFAQ = dynamic(() => import('@/src/components/common/ContactFAQ'), { ssr: false });
 
 const DIGIT_REGEX = /\d/g;
 
@@ -454,6 +457,7 @@ export default function Contact() {
           </div>
         </div>
       </section>
+      <ContactFAQ />
     </div>
   );
 }

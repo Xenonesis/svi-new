@@ -3,6 +3,9 @@
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import { Target, Heart, Lightbulb, Award, CheckCircle } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const AboutFAQ = dynamic(() => import('@/src/components/common/AboutFAQ'), { ssr: false });
 
 export default function About() {
   return (
@@ -154,6 +157,7 @@ export default function About() {
           </div>
         </div>
       </section>
+      <AboutFAQ />
     </div>
   );
 }

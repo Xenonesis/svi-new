@@ -4,43 +4,44 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
   return (
     <div className="legal-pages text-[11px] leading-relaxed">
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-2 text-center text-lg font-bold uppercase">“SHYAM AANGAN”</p>
+        <p className="mb-2 text-center text-lg font-bold uppercase">"SHYAM AANGAN"</p>
         <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
-        <p className="mb-4 text-left font-semibold italic">Please read carefully..........</p>
-        <p className="mb-6 text-left font-bold underline">
+        <p className="mb-4 text-left text-[10px] font-semibold italic">
+          Please read carefully..........
+        </p>
+        <p className="mb-6 text-left text-[11px] font-bold underline">
           Important Instructions to the Allottee(s)
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           The Allottee(s) states and confirms that the firm has made the Allottee(s) aware of the
-          availability of the Builder Buyers’ Agreement (hereinafter defined) at the head office of
+          availability of the Builder Buyers' Agreement (hereinafter defined) at the head office of
           the firm. The Allottee(s) confirms that the Allottee(s) has read and perused the
           Agreement, containing the detailed terms and conditions and in addition, the Allottee(s)
           further confirms to have fully understood the terms and conditions of the Agreement
           (including the Firms limitations) and the Allottee(s) is agreeable to perform his
-          obligations as
+          obligations as per the conditions stipulated in the Agreement.
         </p>
-        <p className="mb-3 text-justify">
-          per the conditions stipulated in the Agreement. Thereafter the Allottee(s) has applied for
-          allotment of a plot/shop in the Said Complex and has requested the firm to allot a
-          plot/shop. The Allottee(s) agrees and confirms to sign the Agreement in entirety and to
-          abide by the terms and conditions of the Agreement and the terms and conditions, as
-          mentioned herein. The Allottee(s) will execute two (2) copies of the Agreement for each
-          plot/shop to be purchased. The Agreement sets forth in detail the terms and conditions of
-          sale with respect to the plot//shop(s). The Allottee(s) agrees and understands that if the
-          Allottee(s) fails to execute and deliver the Agreement along with all annexures in its
-          original form and all amounts due and payable as per the schedule of payment within thirty
-          (30) days from the date of its dispatch by the firm, then the Allottee(s) authorizes the
-          firm to cancel the allotment and on such cancelation, the Allottee(s) consents and
-          authorizes the firm to forfeit the Earnest Money along with Non Refundable Amounts.
-          Thereafter the Allottee(s) shall be left with no right, title or interest whatsoever in
-          the Said Plot/shop.
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          Thereafter the Allottee(s) has applied for allotment of a plot/shop in the Said Complex
+          and has requested the firm to allot a plot/shop. The Allottee(s) agrees and confirms to
+          sign the Agreement in entirety and to abide by the terms and conditions of the Agreement
+          and the terms and conditions, as mentioned herein. The Allottee(s) will execute two (2)
+          copies of the Agreement for each plot/shop to be purchased. The Agreement sets forth in
+          detail the terms and conditions of sale with respect to the plot//shop(s). The Allottee(s)
+          agrees and understands that if the Allottee(s) fails to execute and deliver the Agreement
+          along with all annexures in its original form and all amounts due and payable as per the
+          schedule of payment within thirty (30) days from the date of its dispatch by the firm,
+          then the Allottee(s) authorizes the firm to cancel the allotment and on such cancelation,
+          the Allottee(s) consents and authorizes the firm to forfeit the Earnest Money along with
+          Non Refundable Amounts. Thereafter the Allottee(s) shall be left with no right, title or
+          interest whatsoever in the Said Plot/shop.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           The Allottee(s) further agrees and understands that the firm is not obliged to send any
           notice/reminders in this regard.
         </p>
-        <p className="mb-3 text-justify">
-          The Agreement shall not be binding on the firm until executed by the firm through it’s
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          The Agreement shall not be binding on the firm until executed by the firm through it's
           authorized signatory. The firm reserves the right to request information as it may so
           desire concerning the Allottee(s). The firm will not execute any Agreement wherein the
           Allottee(s) has made any corrections/ cancellations / alterations / modifications. The
@@ -48,39 +49,39 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           cause or explanation or without assigning any reasons thereof and the decision of the firm
           shall be final and binding on the Allottee(s).
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           The Allottee(s) confirms to have read and understood the above instructions and the
           clauses of the Agreement, its annexures, etc. and the Allottee(s) now execute this
           Agreement and undertake to faithfully abide by all the terms and conditions of this
           Agreement.
         </p>
-        <p className="mt-8 font-bold">{formData.clientName}</p>
-        <p className="mb-3">(Allottee(s))</p>
+        <p className="mt-8 text-[11px] font-bold">{formData.clientName}</p>
+        <p className="mb-3 text-[10px]">(Allottee(s))</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-4 text-left text-sm font-bold underline">
+        <p className="mb-4 text-left text-[11px] font-bold underline">
           Instructions for execution of the Agreement:
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           1) Kindly sign along with joint allottee, if any, on every page of the Agreement including
           all annexures.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           3) Both of the signed copies of the Agreement with all the annexures in its original form
           shall be returned to the firm by registered post (AD)/hand delivery only within the time
           stipulated.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           4) Kindly sign next to the tentative typical plot/shop plan in Annexures as attached.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           5) Witnesses signatures to be done only on Witness space.
         </p>
-        <p className="mb-2 text-center text-lg font-bold uppercase">“SHYAM AANGAN”</p>
+        <p className="mb-2 text-center text-lg font-bold uppercase">"SHYAM AANGAN"</p>
         <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
         <p className="mb-6 text-center text-xl font-bold underline">BUILDER-BUYER AGREEMENT</p>
-        <p className="mb-3 text-justify">
-          This Agreement (the ‘Agreement’) is made at Noida on this{' '}
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          This Agreement (the 'Agreement') is made at Noida on this{' '}
           {new Date().toLocaleDateString('en-GB', {
             day: 'numeric',
             month: 'long',
@@ -89,76 +90,94 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           .
         </p>
         <p className="my-4 text-center text-lg font-bold">BY AND BETWEEN</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           M/s. SVI INFRA SOLUTIONS PVT LTD, firm presently having its Registered Office at A-61
-          Sector-65 Noida Uttar Pradesh 201309 (hereinafter referred to as the ‘Firm which
+          Sector-65 Noida Uttar Pradesh 201309 (hereinafter referred to as the 'Firm which
           expression shall, unless it be repugnant to the context or meaning thereof, be deemed to
           include its executors, successors) acting through its Authorized Signatory of the FIRST
           PART.
         </p>
         <p className="my-4 text-center text-lg font-bold">AND</p>
-        <p className="mb-3 text-justify">(FOR INDIVIDUALS) 1st ALLOTTEE</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          (FOR INDIVIDUALS) 1st ALLOTTEE
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Mr/Ms/Mrs : {formData.clientName} (Aadhar No : _________________) Son/Daughter/Wife of :
           _________________ H/No: {formData.address}
         </p>
         <p className="my-4 text-center text-lg font-bold">AND</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           2nd ALLOTTEE Mr/Ms/Mrs……………………………………………….……………………………………………………………………………………………
           Son/Daughter/Wife of ……………………………………………………………………………………………….………………………
           R/o…………………………………………………………………………………………………………………………………………...….
         </p>
         <p className="my-4 text-center text-lg font-bold">AND</p>
-        <p className="mb-3 text-justify">Son/Daughter/</p>
-        <p className="mb-3 text-justify">3rd ALLOTTEE Mr/Ms/Mrs. Wife of R/o</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">Son/Daughter/</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          3rd ALLOTTEE Mr/Ms/Mrs. Wife of R/o
+        </p>
         <p className="my-4 text-center text-lg font-bold">OR</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           (FOR FIRMS) M/s. proprietorship firm duly registered and having its office at
         </p>
-        <p className="mb-3 text-justify">a partnership/</p>
-        <p className="mb-3 text-justify">through its Authorized Signatory Partner/ Sole</p>
-        <p className="mb-3 text-justify">Proprietor Mr. / Ms. / Mrs R/o</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">a partnership/</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          through its Authorized Signatory Partner/ Sole
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          Proprietor Mr. / Ms. / Mrs R/o
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           OR (FOR COMPANIES) M/s. registered under Companies Act, 1965 having its registered office
           at
         </p>
-        <p className="mb-3 text-justify">a firm duly</p>
-        <p className="mb-3 text-justify">Mrs dated</p>
-        <p className="mb-3 text-justify">.</p>
-        <p className="mb-3 text-justify"># (Strike out whatever is not applicable)</p>
-        <p className="mb-3 text-justify">through its duly Authorized Signatory Mr. / Ms. /</p>
-        <p className="mb-3 text-justify">authorized by board resolution</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">a firm duly</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">Mrs dated</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">.</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          # (Strike out whatever is not applicable)
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          through its duly Authorized Signatory Mr. / Ms. /
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          authorized by board resolution
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Hereinafter jointly and severally referred to as the 'Allottee' (which expression unless
           excluded by or repugnant to the context or meaning thereof, shall mean and include
           his/her/its heirs, executors, administrators, successors and legal representatives) of the
           SECOND PART.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           The firm and Allottee are hereinafter individually referred to as the 'Party' and
-          collectively referred to as the ‘Parties'.
+          collectively referred to as the 'Parties'.
         </p>
-        <p className="mb-3 text-justify font-bold">Firms Representation</p>
-        <p className="mb-3 text-justify">
-          WHEREAS the firm is bona fide purchaser of the land bearing “SHYAM AANGAN”, Village Basadi
+        <p className="mb-3 text-justify text-[10px] leading-tight font-bold">
+          Firms Representation
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          WHEREAS the firm is bona fide purchaser of the land bearing "SHYAM AANGAN", Village Basadi
           Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan (hereinafter referred to as the
           'Said Land').
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS it is clarified that the firm has not intended to convey right or interest in
           any of the land
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           falling outside the Said Building / Said Complex / Said Land and no impression of any kind
           has been given with regard to the constructions that may take place on the land outside
           the Said Land.
         </p>
-        <p className="mb-3 text-justify font-bold">Allottee(s) Representations</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight font-bold">
+          Allottee(s) Representations
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS the Allottee(s) vide Application Dated{' '}
           {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
             day: 'numeric',
@@ -168,14 +187,14 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           applied for allotment of Said Plot//shop (herein after defined) in the Said Complex after
           perusal and understanding the terms and conditions of this Agreement
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS the Allottee after fully satisfying himself with the stated facts applied to
           the firm is in the process of developing the Residential Colony on the said Land, and in
           pursuance thereof, it is understood and agreed by the Allottee that the Plot//shop area
           and location of Plot/shop, which the Allottee is intending to buy are tentative and are
           subject to change.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS the Allottee after fully satisfying himself about the right, title, interest
           and limitation of the firm in the said land / complex has shown interest in the Complex
           and has approached the Firm for allotment of Plot/shop admeasuring {formData.area} sq.yd.
@@ -187,14 +206,14 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           })}
           .
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS the Allottee has read and understood the advance payment plans offered by SVI
           INFRA SOLUTIONS PVT LTD, and hereby agree to abide by the conditions mentioned in it and
           the Allottee has/have chosen to pay the balance advance/subscription Agreement towards the
           provisional registration against a probable allotment of plot(s)/shops as per detailed in
           Annexure- A.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS in pursuance to the aforesaid application for allotment the firm accepted the
           application of the Allottee and allotted Plot No – {formData.unitNumber} in SHYAM AANGAN
           on dated{' '}
@@ -206,7 +225,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           to the Allottee and the Allottee has verified and satisfied with the records which entitle
           the firm to execute this Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS the Allottee hereby undertakes that he/she shall abide by all laws, rules,
           regulations, notifications and terms and conditions of Rajasthan Government, as per
           alteration(s)/amendment(s)/modification(s) thereto, and shall be liable for defaults
@@ -216,55 +235,55 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           into and perform this Agreement and has clearly understood his / her rights, duties,
           responsibilities and obligations under the Agreement.
         </p>
-        <p className="mb-3 text-justify">law and any</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">law and any</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           AND WHEREAS the firm relying on the confirmations, representations and assurances of the
           Allottee(s) to faithfully abide by all the terms, conditions and stipulations contained in
           this Agreement has accepted in good faith the Application to allot the Said Plot/shop and
           is now willing to enter into this Agreement on the terms and conditions appearing
           hereinafter.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           NOW, THEREFORE, THIS INDENTURE WITNESSETH AND IT IS HEREBY AGREED AND DECLARED BY AND
           BETWEEN THE PARTIES HERETO AS FOLLOWS:
         </p>
-        <p className="mb-3 text-justify">
-          'Agreement' shall mean Builder Buyer’s agreement, which is executed by and between the
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          'Agreement' shall mean Builder Buyer's agreement, which is executed by and between the
           firm and the Allottee;
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
-          ‘Allottee’ means the person(s) named and referred to as party and who is being allotted
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          'Allottee' means the person(s) named and referred to as party and who is being allotted
           the Said Plot//shop and who has signed and executed the Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           'Date of Possession' shall mean the date on which the actual physical possession is taken
           or deemed to have been taken by the Allottee
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           'Deemed Possession' shall mean the possession of the Plot/shop, if not taken, by the
           Allottee possession be deemed to be delivered on the next succeeding day after the expiry
           date of the notice of possession;
         </p>
-        <p className="mb-3 text-justify">
-          "Earnest Money “means 50% of the Total Price, of the Said Plot/shop payable by the
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Earnest Money "means 50% of the Total Price, of the Said Plot/shop payable by the
           Allottee(s) and more clearly setout in schedule of payments, Annexure A
         </p>
-        <p className="mb-3 text-justify">
-          ‘External Developmental Charges (EDC)’ means the charges levied or livable on the Said
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          'External Developmental Charges (EDC)' means the charges levied or livable on the Said
           Complex/ Said Land (whatever name called or in whatever form) by the Government of
           Rajasthan or any other Governmental Authority and with all such conditions imposed to be
           paid by the Allottee(s) and also includes any further increase in such charges.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           "Force Majeure" means any event or combination of events or circumstances beyond the
           control of the firm which cannot (a) by the exercise of reasonable diligence, or (b)
           despite the adoption of reasonable precaution and/or alternative measures, be prevented,
           or caused to be prevented, and which adversely affects the Firms ability to perform
           obligations under this Agreement, which shall include but not be limited to:
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           (a) acts of God i.e. fire, drought, flood, earthquake, epidemics, natural disasters; (b)
           explosions or accidents, air crashes and shipwrecks, act of terrorism; (c) strikes or lock
           outs, industrial dispute; (d) non-availability of cement, steel or other construction
@@ -281,20 +300,20 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           before a competent court or; for any reason whatsoever; (h) any event or circumstances
           analogous to the foregoing.
         </p>
-        <p className="mb-3 text-justify">
-          “IBMS” means the interest bearing maintenance security to be paid by the Allottee(s) for
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "IBMS" means the interest bearing maintenance security to be paid by the Allottee(s) for
           the maintenance and upkeep of the Said Complex/ Said Building to be paid as per the
           Schedule of payments (attached as Annexure-B to this Agreement) to the firm
         </p>
-        <p className="mb-3 text-justify">
-          ‘Infrastructure Development Charges (IDC)’ shall mean the infrastructure development
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          'Infrastructure Development Charges (IDC)' shall mean the infrastructure development
           charges levied/ leviable (by whatever name called, now or in future) by the Governmental
           Authority towards the cost of development of major infrastructure projects.
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
-          “Governmental Authority” or “Governmental Authorities” shall mean any government
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Governmental Authority" or "Governmental Authorities" shall mean any government
           authority, statutory authority, competent authority, government department, agency,
           commission, board, tribunal or court or other law, rule or regulation making entity having
           or purporting to have jurisdiction on behalf of the Republic of India or any state or
@@ -302,14 +321,14 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           any other municipal/ local authority having jurisdiction over the land on which the Said
           Complex/ Said Building is situated;
         </p>
-        <p className="mb-3 text-justify">
-          “Maintenance Agency” means the Firm, its nominee(s) or association of plot/shop allottee’s
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Maintenance Agency" means the Firm, its nominee(s) or association of plot/shop allottee's
           or such other agency/ body/ Firm/ association of condominium to whom the Firm may handover
           the maintenance and who shall be responsible for carrying out the maintenance of the Said
           Complex/ Said Building.
         </p>
-        <p className="mb-3 text-justify">
-          “Maintenance Charges” shall mean the charges payable by the Allottee(s) to the Maintenance
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Maintenance Charges" shall mean the charges payable by the Allottee(s) to the Maintenance
           Agency for the maintenance services of the Said Building/Said Complex, including common
           areas and facilities but does not include; (a) the charges for actual consumption of
           utilities in the Said Plot/shop including but not limited to electricity, water, which
@@ -317,30 +336,30 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           payments, taxes, with regard to the Said Plot/shop/Said Building/Said Complex. The details
           of Maintenance Charges shall be more elaborately described in the Maintenance Agreement.
         </p>
-        <p className="mb-3 text-justify">
-          “Non Refundable Amounts” means the interest paid or payable on delayed payments, brokerage
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Non Refundable Amounts" means the interest paid or payable on delayed payments, brokerage
           paid/payable by the Firm, if any, etc.
         </p>
-        <p className="mb-3 text-justify">
-          “Preferential Location Charges (PLC)” means charges for the preferential location
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Preferential Location Charges (PLC)" means charges for the preferential location
           attribute(s) of the Said Plot/shop payable/ as applicable to be calculated on the per sq.
           yd./sq. ft. based on super area of the Said Plot/shop, as mentioned in this Agreement.
         </p>
-        <p className="mb-3 text-justify">
-          “Said Plot/shop” means the plot/shop allotted to the Allottee/s, details of which have
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Said Plot/shop" means the plot/shop allotted to the Allottee/s, details of which have
           been set out in clause 1 of this Agreement, the tentative typical plot/shop plan and the
           tentative specifications of the same given in annexure-_A_and includes any alternative
           plot/shop allotted in lieu of the Said Plot/shop.
         </p>
-        <p className="mb-3 text-justify">
-          “Said Complex” means the ““SHYAM AANGAN””, BASADI, KISHAN GARH RENWAL, RAJASTHAN
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Said Complex" means the ""SHYAM AANGAN"", BASADI, KISHAN GARH RENWAL, RAJASTHAN
           comprising of residential plot/shop buildings, shops, club house swimming pool, gym etc.,
           community shopping, nursery school, and any other building Amenities and Facilities as may
           be approved by the Governmental Authority.
         </p>
-        <p className="mb-3 text-justify">JAIPUR,</p>
-        <p className="mb-3 text-justify">
-          “Total Price” means any and all kind of the amount amongst others, payable for the Said
+        <p className="mb-3 text-justify text-[10px] leading-tight">JAIPUR,</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          "Total Price" means any and all kind of the amount amongst others, payable for the Said
           Plot/shop which includes basic sale price, PLC (if the Said Plot/shop is preferentially
           located), Additional PLC calculated on per sqyd./sq.ft. based on the Area of the Said
           Plot/shop and EDC/IDC, but does not include other amounts, charges, security amount etc.,
@@ -354,7 +373,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           consumption. vii) Club membership fees and club charges, as applicable. viii) Escalation
           charges. ix) Any other charges that may be payable by the Allottee(s) as per the other
           terms of the Agreement and such other charges as may be demanded by the Firm which amounts
@@ -363,17 +382,19 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           to time. Interpretation Unless the context otherwise requires in this Agreement: a. the
           use of words importing the singular shall gender and vice versa;
         </p>
-        <p className="mb-3 text-justify">include plural and masculine shall</p>
-        <p className="mb-3 text-justify">include feminine</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          include plural and masculine shall
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">include feminine</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           b. reference to any law shall include such law as from time to time enacted, amended,
-          supplemented or re-enacted; c. reference to the words “include” or “including” shall be
+          supplemented or re-enacted; c. reference to the words "include" or "including" shall be
           construed without limitation; d. reference to this Agreement, or any other agreement, deed
           or other instrument or document shall be construed as a reference to this Agreement or
           such agreement, deed or other instrument or document as the same may from time to time be
           amended, varied, supplemented or novated.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           The Allottee(s) agrees that wherever in this Agreement, it is explicitly mentioned that
           the Allottee(s) has understood or acknowledged obligations of the Allottee(s) or the
           rights of theFirm, the Allottee(s) has given consent to the actions of the Firm or the
@@ -382,12 +403,12 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Firm may deem necessary and/or execute such documents/deeds in favour of the Firm at the
           first request without any protest or demur.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           1. That the Firm hereby agrees to sell/ convey/ Transfer the /shop/Plot NO.{' '}
           {formData.unitNumber} admeasuring {formData.area} SqYd in favour of Allottee, at Village
           Basadi, Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           2. The Allottee(s) has paid a sum of Rs. {(totalCost * 0.1).toLocaleString('en-IN')}/-
           being part payment towards the Total Price at the time of Application, the receipt of
           which the Firm both hereby acknowledge and the Allottee(s) agrees to pay the remaining
@@ -395,7 +416,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           this Agreement along with all other charges, Taxes and Cesses, securities, etc. as may be
           demanded by the Firm within the time and in the manner specified therein.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           3. The Allottee(s) agrees and confirms that out of the total amount(s) paid/payable by the
           Allottee(s) for the Said Plot/shop, 30% of the Total Price of the Said Plot/shop shall be
           treated as Earnest Money to ensure fulfillment of the terms and conditions as contained in
@@ -414,27 +435,29 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           4. The Allottee understands that the part advance given by him/them is towards provisional
           registration against to probable’s allotments of plot(s)/shop(s)/in the ongoing project.
           That further Understand the Allotee at the provisional registration against a probable’s
           allotment is subject to the following conditions: I. II.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           EDC And IDC shall be charged extra @ 150/Sq. yard for plots and @ 50 /Sq. ft. for shop.
           PLC(s) determined by the firm shall be charged extra and will be charged proportionally
           with every Advances payment installments. There will be three types of PLC applicable
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           on both plots and Shops (1) Corner, (2) Wide Road, (3) park facing, (4) facility. Payment
           for PLC’s will be as Follows: one PLC’s- 6% of BSP, Two PLC’s- 9% of BSP, Three PLC’s 12%
           of BSP.
         </p>
-        <p className="mb-3 text-justify">III. IV.</p>
-        <p className="mb-3 text-justify">V.</p>
-        <p className="mb-3 text-justify">to cancel</p>
-        <p className="mb-3 text-justify">the provisional registration without any notice.</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">III. IV.</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">V.</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">to cancel</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          the provisional registration without any notice.
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           All other charges like maintenance deposits and such other charges as may be determined by
           the firm at the time of allotment/possession, shall be charged extra and compulsory to
           initiate final registration process. Registration charge, stamp duty and service tax will
@@ -450,25 +473,25 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           government department, the Agreement as apportioned by the firm shall be final and
           bindings on Allottee.
         </p>
-        <p className="mb-3 text-justify">it</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">it</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           The Allottee(s) shall make all payments within the stipulated time as mentioned in the
           schedule of payments as given in Annexure-A annexed to this Agreement and other charges
           and amounts, as may be demanded by the Firm from time to time, without any reminders from
           the Firm, through A/c payee cheque(s)/ demand draft(s) in favour of ‘_SVI INFRA SOLUTIONS
           PVT LTD_' or transfer online to:
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Account Name: SVI INFRA SOLUTIONS PVT LTD, Account Number: 0894102000013837, Bank: IDBI
           BANK, IFSC CODE: IBKL0000894
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           5. The Allottee understands that the project is still at the concept stage and decision
           and developments will to an extent depend on the kind of Allottee response as generated by
           this and like request besides the completions of land acquisition, conversion and approval
           of plans.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           6. The Allottee further understands that the Agreement paid hereby and through the
           provisional registration against a probable’s allotment shall be converted into allotment
           only upon the intimations by the firm post sanctions of the plans provided all payments
@@ -476,13 +499,13 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">timely.</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">timely.</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           7. The Allottee understands that the allotment shall be subject to due execution of the
           firms Agreement in its standard format including maintenance agreement IBMS as per
           Annexure B and acceptance by him/ them of all term and condition of the firm.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           8. A. The Allottee understands that there is a lock in period of 12 months from the date
           of the realization of first part advance payment with a grace period of 6 months in order
           to claim 18% interest for delay on possession on the paid amount unless there shall be
@@ -492,7 +515,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           or any of the terms and conditions of this Agreement during which the Allottee understands
           that he /she will not be entitled to any refund of the money from the firm.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           B. Possession will be given within lock in period of 12 months along with 6 months grace
           period. If the possession of the Said Plot/shop is delayed due to Force Majeure
           conditions, then the Firm shall be entitled to extension of time for delivery of
@@ -509,11 +532,11 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           any nature whatsoever and the Firm shall be released and discharged of all its obligations
           and liabilities under this Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           C. The builder will provide basic facilities like internal Roads, Parks, External Boundary
           Walls/Fencing, Street Lights, Security System, etc…..
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           D. If the Firm is unable to construct/continue or complete the construction of the Said
           Building/Said Complex due to Force Majeure conditions or due to any government/regulatory
           authority’s action, inaction or omission, then the Firm may challenge the same by moving
@@ -532,22 +555,22 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           binding, the Firm will, subject to provisions of law/court order, refund within reasonable
           time to the Allottee(s) the amounts received from the Allottee(s) after deducting
         </p>
-        <p className="mb-3 text-justify">impugned</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">impugned</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Non Refundable Amounts, but without any interest or compensation and the decision of the
           Firm in this regard shall be final and binding on the Allottee(s) save as otherwise
           provided herein, the Allottee(s) shall be left with no other right, claim of whatsoever
           nature against the Firm under or in relation to this Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           9. The Allottee(s) authorizes the Firm to adjust/appropriate all payments that shall be
           made by the Allottee(s) under any head(s) of dues against outstanding heads in Allottee’s
           name and the Allottee(s) shall not have a right to object/demand/direct the Firm to adjust
           the payments in any manner otherwise than as decided by the Firm.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           10. The Allottee(s) agrees that time is essence with respect to payment of Total Price and
           other charges, deposits and amounts payable by the Allottee(s) as per this Agreement
           and/or as demanded by the Firm from time to time and also to perform/observe all the other
@@ -558,12 +581,12 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           such delay continue for 90 days then allotment will automatically get transfer to Market
           Payment Plan.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           11. If any delay in due payment, then the firm will charge 18% p.a interest on pro-rata
           basis and if such delay continue for 90 days then allotment will automatically get
           transfer to Market Payment Plan.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           12. The Allottee(s) has seen and accepted the schedule of payments, (as given in
           Annexure-A) .The Firm may in its sole discretion or as may be directed by any Governmental
           Authority (ies) or due to Force Majeure conditions carry out, such additions, alterations,
@@ -574,8 +597,8 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Allottee(s) agrees and understands the construction will commence only after all necessary
           approvals are received from the concerned authorities.
         </p>
-        <p className="mb-3 text-justify">that</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">that</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           13. In case of any alteration/modifications resulting in (+)(-)10% change in the plot Area
           of the Said Plot/shop any time prior to and upon the grant of intimation letter/Conveyance
           Deed/ registration, the Firm shall intimate in writing to the Allottee(s) the changes
@@ -591,20 +614,20 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           date of intimation received by the Firm from the Allottee(s). Upon the decision of the
           Firm to cancel the Said Plot/shop, the
         </p>
-        <p className="mb-3 text-justify">non-consent/objections</p>
-        <p className="mb-3 text-justify">in writing</p>
-        <p className="mb-3 text-justify">indicating</p>
-        <p className="mb-3 text-justify">objects</p>
-        <p className="mb-3 text-justify">his</p>
-        <p className="mb-3 text-justify">to</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">non-consent/objections</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">in writing</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">indicating</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">objects</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">his</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">to</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Firm shall be discharged from all its obligations and liabilities under this Agreement and
           the Allottee(s) shall have no right, interest or claim of any nature whatsoever on the
           Said Plot/shop.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           14. The Firm, upon obtaining necessary approvals from the Govt authority shall offer in
           writing possession of the Said Plot/shop to the Allottee(s). Within 30 days from the date
           of issue of such notice and the Firm shall give possession of the Said Plot/shop to the
@@ -615,7 +638,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           whichever is earlier irrespective of the date on which the Allottee(s) takes possession of
           the Said Plot/shop.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           15. Upon receiving a written intimation from the Firm in terms of clause 13 above, the
           Allottee(s) shall within the time stipulated by the Firm, take possession of the Said
           Plot//shop from the Firm by executing necessary indemnities, undertakings, and such other
@@ -651,9 +674,9 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           concerning construction and all other work relating to the Said Plot/shop/Said
           Building/Said Complex.
         </p>
-        <p className="mb-3 text-justify">the Said Plot//shop</p>
-        <p className="mb-3 text-justify">for</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">the Said Plot//shop</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">for</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           16. If for any reasons other than those given in clauses 8(b), 8(c) and clause 28, the
           Firm is unable to or fails to deliver possession of the Said Plot//shop to the Allottee(s)
           within Twenty Four(24) months with a grace period of 6 months from the date of Application
@@ -661,7 +684,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           period or periods as envisaged under this Agreement, then in such case, the Allottee(s)
           shall be entitled to give notice to the Firm, within ninety (90) days from the expiry of
           said period of Twelve (12) months with a grace period of 6 months or such extended
@@ -680,7 +703,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           waived off and the Allottee(s) shall continue to be bound by the provisions of this
           Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           17. Subject to the terms and conditions of the Agreement, in case of any delay other than
           clause 28 and conditions as mentioned in clause 8(b) and 8(c) by the Firm incompletion of
           handing over possession of the Said Plot/shop, the Firm shall pay compensation @ Rs. 20
@@ -691,13 +714,13 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           whatsoever. The adjustment of such compensation shall be done only at the time of
           execution of conveyance deed of the SaidPlot/shop to the Allottee(s) first named.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           18. The Firm, its associates/subsidiaries shall execute a Conveyance Deed to convey the
           title, of the Said Plot/shop in favor of the Allottee(s), provided the Allottee(s) has
           paid the Total Price and other charges in accordance with this Agreement and the
           Allottee(s) is not in breach of all or any of the terms of this Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           19. In order to provide necessary maintenance services, upon the completion of the Said
           Building/Said Complex the maintenance of the Said Building / Said Complex may be handed
           over to the Maintenance Agency. The Allottee(s) agrees to execute Maintenance Agreement
@@ -716,17 +739,19 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Said Building / Said Complex, the Maintenance Agency, said association of plot//shop
           owners/ condominium of association decides to modify, alter, add, delete any one or
         </p>
-        <p className="mb-3 text-justify">is proposed to be entered into with the Allottee(s)</p>
-        <p className="mb-3 text-justify">that</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          is proposed to be entered into with the Allottee(s)
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">that</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           more of the terms and conditions of the Maintenance Agreement, the Allottee(s) shall not
           have any objection to the same and shall execute the Maintenance Agreement as may be
           required by the Maintenance Agency or association of plot//shop owners or association of
           condominium or its nominees or assigns.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           20. The total Maintenance Charges shall be more elaborately described in the Maintenance
           Agreement (draft given in annexure -_B_). The Allottee(s) undertakes to pay the same
           promptly. It is agreed by the Allottee(s) that the payment of Maintenance Charges will be
@@ -740,7 +765,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           undertakes to pay the maintenance bills on or before due date as intimated by the
           Maintenance Agency.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           21. The Allottee(s) shall not use the Said Plot//shop for any purpose other than for
           residential purpose or commercial use, as prescribed; or use the same in a manner that may
           cause nuisance or annoyance to other plot/shop owners or residents of the Said Complex; or
@@ -750,7 +775,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           common use. The Allottee(s) shall indemnify the Firm against any action, damages or loss
           due to misuse for which the Allottee(s) / occupant shall be solely responsible.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           22. (a). The Allottee(s) agrees and understands that terms and conditions of the Agreement
           may be modified/amended by the Firm in accordance with any directions/order of any court
           of law, Governmental Authority, in compliance with applicable law and such amendment shall
@@ -767,7 +792,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Agreement and also annexures which are indicated to be tentative at any time prior to the
           execution of the Conveyance Deed/intimation letter of the Said Plot//shop.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           23. The Allottee(s) agrees that the provisions of this Agreement, Maintenance Agreement,
           and those contained in other annexures are specific and applicable to plot//shops offered
           for sale in the Said Complex and these provisions cannot be read in evidence or
@@ -776,57 +801,57 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Firm/ its associates/subsidiaries, partnership firms in which the Firm is partner or
           interested.
         </p>
-        <p className="mb-3 text-justify">Forum(s)</p>
-        <p className="mb-3 text-justify">involving</p>
-        <p className="mb-3 text-justify">judicial</p>
-        <p className="mb-3 text-justify">forum</p>
-        <p className="mb-3 text-justify">other</p>
-        <p className="mb-3 text-justify">any</p>
-        <p className="mb-3 text-justify">any</p>
-        <p className="mb-3 text-justify">or</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">Forum(s)</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">involving</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">judicial</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">forum</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">other</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">any</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">any</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">or</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           24. The Allottee(s) agrees and understands that if any provision of this Agreement is
           determined to be void or unenforceable under applicable law, such provisions shall be
           deemed amended or
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           deleted in so far as reasonably inconsistent with the purpose of this Agreement and to the
           extent necessary to conform to applicable law and the remaining provisions of this
           Agreement shall remain valid and enforceable as applicable at the time of execution of
           this Agreement.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           25. The Firm shall not be responsible or liable for not performing any of its obligations
           or undertakings provided for in this Agreement if such performance is prevented due to
           Force Majeure conditions.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           26. The execution of this Agreement will be complete only upon its execution by the Firm
           through its authorized signatory at the Firms head office at, A-61 Sector-65 Noida Uttar
           Pradesh 201309, after the copies are duly executed by the Allottee(s) and are received by
           the Firm .
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           27. All notices are to be served on the Allottee(s) as contemplated in this Agreement
           shall be deemed to have been duly served if sent to the Allottee(s) or the Firm by
           registered post at their respective addresses specified below:
         </p>
-        <p className="mb-3 text-justify">{formData.address}</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">{formData.address}</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           It shall be the duty of the Allottee(s) to inform the Firm of any change subsequent to the
           execution of this Agreement in the above address by Registered Post failing which all
           communications and letters posted at the above address shall be deemed to have been
           received by the Allottee(s).
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           28. The Allottee(s) agrees that all defaults, breaches and/or non-compliance of any of the
           terms and conditions of this Agreement shall be deemed to be events of defaults liable for
           consequences stipulated herein. Some of the indicative events of defaults are mentioned
           below which are merely illustrative and are not exhaustive. i)
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Failure to make payments within the time as stipulated in the schedule of payments as
           given in annexure-A_and failure to pay the stamp duty, legal, registration, any incidental
           charges, any increases in security including but not limited to IBMS as demanded by the
@@ -846,19 +871,19 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           confirms that the decision of the Firm in this regard shall be final and binding on the
           Allottee(s).
         </p>
-        <p className="mb-3 text-justify">Agreement,</p>
-        <p className="mb-3 text-justify">terms</p>
-        <p className="mb-3 text-justify">other</p>
-        <p className="mb-3 text-justify">this</p>
-        <p className="mb-3 text-justify">any</p>
-        <p className="mb-3 text-justify">of</p>
-        <p className="mb-3 text-justify">in</p>
-        <p className="mb-3 text-justify">ii) iii)</p>
-        <p className="mb-3 text-justify">iv)</p>
-        <p className="mb-3 text-justify">v) vi) vii)</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">Agreement,</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">terms</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">other</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">this</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">any</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">of</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">in</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">ii) iii)</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">iv)</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">v) vi) vii)</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           Unless otherwise provided in this Agreement, upon the occurrence of any one or more of
           event(s) of default under this Agreement including but not limited to those specified
           above, the Firm may, in its sole discretion, by notice to the Allottee(s), cancel this
@@ -879,7 +904,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           liquidated damages which the Firm might have suffered due to such breach committed by the
           Allottee(s).
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           29. All or any disputes arising out or touching upon or in relation to the terms this
           Builder Buyer Agreement including the interpretation and validity of the terms thereof and
           the respective rights and obligations of the parties, which cannot be amicably settled,
@@ -891,45 +916,51 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           proceeding, reference etc. touching upon the arbitration subject including any award, the
           territorial jurisdiction of the competent courts of Rajasthan.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           30. That no Allottee shall have any rights to invoke jurisdiction of Civil Court directly
           without availing
         </p>
-        <p className="mb-3 text-justify">remedy of Arbitration.</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">remedy of Arbitration.</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           31. You are requested to keep one copy of this Agreement with you and return the second
           copy to us duly signed within 7 days failing of which we will presume that the given terms
           &amp; conditions of this Agreement are acceptable to you.
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           32. This provisional agreement shall be null and void after final registration of
           plot/plots.
         </p>
-        <p className="mb-3 text-justify">For &amp; on Behalf of</p>
-        <p className="mb-3 text-justify">SVI INFRA SOLUTIONS PVT LTD</p>
-        <p className="mb-3 text-justify">(Authorized signatory)</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">For &amp; on Behalf of</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">SVI INFRA SOLUTIONS PVT LTD</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">(Authorized signatory)</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
           subscribed their respective hands at the places and on the day, month and year mentioned
           under their respective signatures:
         </p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           SIGNED AND DELIVERED BY THE WITHIN NAMED Allottee: (including joint Allottees) (1) (2) at
         </p>
-        <p className="mb-3 text-justify">in the presence of:</p>
-        <p className="mb-3 text-justify">on</p>
-        <p className="mb-3 text-justify">
+        <p className="mb-3 text-justify text-[10px] leading-tight">in the presence of:</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">on</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
           WITNESSES: 1. Signature Name Address (to be completed by the Allottee(s)
         </p>
-        <p className="mb-3 text-justify">2. Signature Name Address</p>
-        <p className="mb-3 text-justify">SIGNED AND DELIVERED by the within named Firm at</p>
-        <p className="mb-3 text-justify">on</p>
-        <p className="mb-3 text-justify">in the presence of:</p>
-        <p className="mb-3 text-justify">(AUTHORISED SIGNATORY)</p>
-        <p className="mb-3 text-justify">WITNESSES: 1. Signature Name Address</p>
-        <p className="mb-3 text-justify">FOR AND ON BEHALF 2. Signature Name Address</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">2. Signature Name Address</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          SIGNED AND DELIVERED by the within named Firm at
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">on</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">in the presence of:</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">(AUTHORISED SIGNATORY)</p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          WITNESSES: 1. Signature Name Address
+        </p>
+        <p className="mb-3 text-justify text-[10px] leading-tight">
+          FOR AND ON BEHALF 2. Signature Name Address
+        </p>
       </div>
     </div>
   );

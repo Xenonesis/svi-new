@@ -6,6 +6,9 @@ import Link from 'next/link';
 import { Download, ArrowRight, MapPin, X, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { FacebookIcon, TwitterIcon, LinkedinIcon } from '@/src/components/common/social-icons';
 import HoverZoomImage from '@/src/components/common/HoverZoomImage';
+import dynamic from 'next/dynamic';
+
+const ProjectsFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
 
 const GRADIENT_STYLE = {
   backgroundImage:
@@ -185,24 +188,26 @@ export default function CompletedProjects() {
           </div>
           <Suspense
             fallback={
-              <div className="flex h-[500px] flex-col items-center justify-center bg-gray-100 dark:bg-gray-900/60 border border-gray-200 dark:border-white/5 rounded-2xl relative overflow-hidden animate-pulse">
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none">
+              <div className="relative flex h-[500px] animate-pulse flex-col items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 dark:border-white/5 dark:bg-gray-900/60">
+                <div className="pointer-events-none absolute inset-0 opacity-[0.03] dark:opacity-[0.05]">
                   {/* Fake map grid pattern */}
-                  <div className="w-full h-full bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px]" />
+                  <div className="h-full w-full bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:24px_24px]" />
                 </div>
                 {/* Fake map search and control tools */}
-                <div className="absolute top-4 left-4 h-10 w-48 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
-                <div className="absolute top-4 right-4 h-10 w-10 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
-                <div className="absolute bottom-8 right-4 space-y-2">
-                  <div className="h-10 w-10 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
-                  <div className="h-10 w-10 rounded-lg bg-gray-250 dark:bg-white/5 shadow-md" />
+                <div className="bg-gray-250 absolute top-4 left-4 h-10 w-48 rounded-lg shadow-md dark:bg-white/5" />
+                <div className="bg-gray-250 absolute top-4 right-4 h-10 w-10 rounded-lg shadow-md dark:bg-white/5" />
+                <div className="absolute right-4 bottom-8 space-y-2">
+                  <div className="bg-gray-250 h-10 w-10 rounded-lg shadow-md dark:bg-white/5" />
+                  <div className="bg-gray-250 h-10 w-10 rounded-lg shadow-md dark:bg-white/5" />
                 </div>
                 {/* Map Center Pin Pulsing */}
                 <div className="flex flex-col items-center gap-2">
-                  <div className="h-12 w-12 rounded-full bg-brand-gold/15 flex items-center justify-center border border-brand-gold/30">
-                    <div className="h-4 w-4 rounded-full bg-brand-gold" />
+                  <div className="bg-brand-gold/15 border-brand-gold/30 flex h-12 w-12 items-center justify-center rounded-full border">
+                    <div className="bg-brand-gold h-4 w-4 rounded-full" />
                   </div>
-                  <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">Initializing project locations map...</span>
+                  <span className="text-xs font-semibold text-gray-400 dark:text-gray-500">
+                    Initializing project locations map...
+                  </span>
                 </div>
               </div>
             }
@@ -480,6 +485,7 @@ export default function CompletedProjects() {
           </motion.div>
         ) : null}
       </AnimatePresence>
+      <ProjectsFAQ />
     </div>
   );
 }

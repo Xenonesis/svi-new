@@ -15,6 +15,11 @@ import {
 } from 'lucide-react';
 import { motion } from 'motion/react';
 import Captcha from '@/src/components/Captcha';
+import dynamic from 'next/dynamic';
+
+const RegistrationFAQ = dynamic(() => import('@/src/components/common/RegistrationFAQ'), {
+  ssr: false,
+});
 
 // Projects are fetched dynamically from the database
 
@@ -919,6 +924,7 @@ export default function Registration() {
           </motion.div>
         </div>
       )}
+      <RegistrationFAQ />
     </div>
   );
 }
