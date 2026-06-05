@@ -150,6 +150,7 @@ export default function BbaPage() {
   }, [token]);
 
   const [formData, setFormData] = useState({
+    salutation: '',
     clientName: '',
     aadharNumber: '',
     fatherName: '',
@@ -302,6 +303,19 @@ export default function BbaPage() {
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <FormSelect
+                label="Salutation"
+                name="salutation"
+                value={formData.salutation}
+                onChange={handleChange}
+                options={[
+                  { value: '', label: 'Select Salutation' },
+                  { value: 'Mr', label: 'Mr' },
+                  { value: 'Mrs', label: 'Mrs' },
+                  { value: 'Ms', label: 'Ms' },
+                  { value: 'Dr', label: 'Dr' },
+                ]}
+              />
               <FormField
                 label="Client Name"
                 name="clientName"
@@ -682,7 +696,7 @@ export default function BbaPage() {
               {/* Body */}
               <div className="mb-6">
                 <p className="mb-2">
-                  Dear Mr./Mrs./Ms.{' '}
+                  Dear {formData.salutation || 'Mr./Mrs./Ms.'}{' '}
                   <span className="font-bold">{formData.clientName || '[Client Name]'}</span>
                 </p>
                 <p className="mb-1 text-justify">

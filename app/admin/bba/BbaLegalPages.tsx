@@ -103,7 +103,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         <p className="mb-0 text-[13px]">(FOR INDIVIDUALS)</p>
         <p className="mb-4 text-[13px]">1st ALLOTTEE</p>
         <p className="mb-1 text-[13px]">
-          Mr/Ms/Mrs&nbsp;&nbsp;:{' '}
+          {formData.salutation || 'Mr/Ms/Mrs'}&nbsp;&nbsp;:{' '}
           <strong>
             {formData.clientName} (Aadhar No : {formData.aadharNumber || '_________________'})
           </strong>
