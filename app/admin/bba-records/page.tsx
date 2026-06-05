@@ -15,7 +15,7 @@ import {
   TrendingUp,
   Image as ImageIcon,
 } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { supabase } from '@/src/lib/supabase/client';
 import BbaPreviewContent from '@/src/components/admin/DocumentGenerator/BbaPreviewContent';
@@ -57,6 +57,11 @@ export default function BbaRecordsPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [projectFilter, setProjectFilter] = useState('');
+  const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
+    key: 'date',
+    direction: 'desc',
+  });
+  const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [selectedBba, setSelectedBba] = useState<SavedBba | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedBba | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -227,14 +232,53 @@ export default function BbaRecordsPage() {
     }
   };
 
-  const filteredBbas = bbas.filter((r) => {
-    const query = searchQuery.toLowerCase();
-    const name = (r.form_data?.clientName || '').toLowerCase();
-    const advisor = (r.form_data?.advisorName || '').toLowerCase();
-    const matchesSearch = name.includes(query) || advisor.includes(query);
-    const matchesProject = projectFilter ? r.form_data?.projectName === projectFilter : true;
-    return matchesSearch && matchesProject;
-  });
+  const filteredBbas = useMemo(() => {
+    return bbas
+      .filter((r) => {
+        const query = searchQuery.toLowerCase();
+        const name = (r.form_data?.clientName || '').toLowerCase();
+        const advisor = (r.form_data?.advisorName || '').toLowerCase();
+        const matchesSearch = name.includes(query) || advisor.includes(query);
+        const matchesProject = projectFilter ? r.form_data?.projectName === projectFilter : true;
+
+        let matchesDate = true;
+        if (dateRange.start || dateRange.end) {
+          const recordDate = new Date(r.created_at);
+          if (dateRange.start && new Date(dateRange.start) > recordDate) matchesDate = false;
+          if (dateRange.end) {
+            const endD = new Date(dateRange.end);
+            endD.setHours(23, 59, 59, 999);
+            if (endD < recordDate) matchesDate = false;
+          }
+        }
+
+        return matchesSearch && matchesProject && matchesDate;
+      })
+      .sort((a, b) => {
+        const dir = sortConfig.direction === 'asc' ? 1 : -1;
+        if (sortConfig.key === 'date') {
+          return (new Date(a.created_at).getTime() - new Date(b.created_at).getTime()) * dir;
+        }
+        if (sortConfig.key === 'name') {
+          const nameA = (a.form_data?.clientName || '').toLowerCase();
+          const nameB = (b.form_data?.clientName || '').toLowerCase();
+          return nameA.localeCompare(nameB) * dir;
+        }
+        if (sortConfig.key === 'cost') {
+          const costA = calculateTotalCost(a.form_data);
+          const costB = calculateTotalCost(b.form_data);
+          return (costA - costB) * dir;
+        }
+        return 0;
+      });
+  }, [bbas, searchQuery, projectFilter, sortConfig, dateRange]);
+
+  const handleClearFilters = () => {
+    setSearchQuery('');
+    setProjectFilter('');
+    setSortConfig({ key: 'date', direction: 'desc' });
+    setDateRange({ start: '', end: '' });
+  };
 
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
@@ -323,34 +367,80 @@ export default function BbaRecordsPage() {
 
       {/* Main Database Table Container */}
       <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
-        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-          <div className="relative w-full max-w-xs">
-            <Search className="text-brand-gold absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search by client or advisor..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:bg-[#0e0e14] dark:text-white"
-            />
+        <div className="mb-6 flex flex-col gap-4">
+          <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+            <div className="relative w-full max-w-xs">
+              <Search className="text-brand-gold absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+              <input
+                type="text"
+                placeholder="Search by client or advisor..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:bg-[#0e0e14] dark:text-white"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3">
+              <div className="flex items-center gap-2">
+                <Calendar className="text-brand-gold h-4 w-4" />
+                <input
+                  type="date"
+                  value={dateRange.start}
+                  onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
+                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white"
+                />
+                <span className="text-gray-400">-</span>
+                <input
+                  type="date"
+                  value={dateRange.end}
+                  onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
+                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white"
+                />
+              </div>
+
+              <select
+                value={projectFilter}
+                onChange={(e) => setProjectFilter(e.target.value)}
+                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200"
+              >
+                <option value="">All Projects</option>
+                {projects.map((proj) => (
+                  <option key={proj} value={proj}>
+                    {proj}
+                  </option>
+                ))}
+              </select>
+
+              <select
+                value={`${sortConfig.key}-${sortConfig.direction}`}
+                onChange={(e) => {
+                  const [key, direction] = e.target.value.split('-');
+                  setSortConfig({ key, direction: direction as 'asc' | 'desc' });
+                }}
+                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200"
+              >
+                <option value="date-desc">Newest First</option>
+                <option value="date-asc">Oldest First</option>
+                <option value="name-asc">Client (A-Z)</option>
+                <option value="name-desc">Client (Z-A)</option>
+                <option value="cost-desc">Value (High-Low)</option>
+                <option value="cost-asc">Value (Low-High)</option>
+              </select>
+            </div>
           </div>
-          <div className="flex items-center gap-3">
-            <label className="text-[10px] font-bold tracking-widest whitespace-nowrap text-gray-400 uppercase">
-              Project:
-            </label>
-            <select
-              value={projectFilter}
-              onChange={(e) => setProjectFilter(e.target.value)}
-              className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14]"
-            >
-              <option value="">All</option>
-              {projects.map((proj) => (
-                <option key={proj} value={proj}>
-                  {proj}
-                </option>
-              ))}
-            </select>
-          </div>
+
+          {(searchQuery || projectFilter || dateRange.start || dateRange.end) && (
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-gray-500 dark:text-gray-400">Active Filters:</span>
+              <button
+                onClick={handleClearFilters}
+                className="text-brand-gold hover:text-brand-navy flex items-center gap-1 font-medium transition-colors"
+              >
+                <X className="h-3 w-3" />
+                Clear All
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="overflow-x-auto">
@@ -423,6 +513,24 @@ export default function BbaRecordsPage() {
                 ))}
               </tbody>
             </table>
+          ) : filteredBbas.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-50 dark:bg-white/5">
+                <Search className="h-8 w-8 text-gray-400" />
+              </div>
+              <h3 className="mb-1 text-lg font-medium text-gray-900 dark:text-white">
+                No records found
+              </h3>
+              <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                We couldn't find any BBAs matching your current filters.
+              </p>
+              <button
+                onClick={handleClearFilters}
+                className="text-brand-gold hover:bg-brand-gold/10 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
+              >
+                Clear all filters
+              </button>
+            </div>
           ) : (
             <table className="w-full border-collapse text-left">
               <thead>
