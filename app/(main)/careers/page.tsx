@@ -1,6 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
+import dynamic from 'next/dynamic';
+
+const CareersFAQ = dynamic(() => import('@/src/components/common/AboutFAQ'), { ssr: false });
 import {
   DollarSign,
   Laptop,
@@ -178,6 +181,7 @@ export default function Careers() {
           </div>
         </div>
       </section>
+      <CareersFAQ />
     </div>
   );
 }

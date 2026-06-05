@@ -12,7 +12,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         <p className="mb-6 text-left text-[11px] font-bold underline">
           Important Instructions to the Allottee(s)
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           The Allottee(s) states and confirms that the firm has made the Allottee(s) aware of the
           availability of the Builder Buyers' Agreement (hereinafter defined) at the head office of
           the firm. The Allottee(s) confirms that the Allottee(s) has read and perused the
@@ -21,7 +21,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           (including the Firms limitations) and the Allottee(s) is agreeable to perform his
           obligations as per the conditions stipulated in the Agreement.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           Thereafter the Allottee(s) has applied for allotment of a plot/shop in the Said Complex
           and has requested the firm to allot a plot/shop. The Allottee(s) agrees and confirms to
           sign the Agreement in entirety and to abide by the terms and conditions of the Agreement
@@ -36,11 +36,11 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           Non Refundable Amounts. Thereafter the Allottee(s) shall be left with no right, title or
           interest whatsoever in the Said Plot/shop.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           The Allottee(s) further agrees and understands that the firm is not obliged to send any
           notice/reminders in this regard.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           The Agreement shall not be binding on the firm until executed by the firm through it's
           authorized signatory. The firm reserves the right to request information as it may so
           desire concerning the Allottee(s). The firm will not execute any Agreement wherein the
@@ -49,7 +49,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           cause or explanation or without assigning any reasons thereof and the decision of the firm
           shall be final and binding on the Allottee(s).
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           The Allottee(s) confirms to have read and understood the above instructions and the
           clauses of the Agreement, its annexures, etc. and the Allottee(s) now execute this
           Agreement and undertake to faithfully abide by all the terms and conditions of this
@@ -59,196 +59,257 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
         <p className="mb-3 text-[10px]">(Allottee(s))</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-4 text-left text-[11px] font-bold underline">
+        <p className="mb-4 text-left text-[13px] font-bold underline">
           Instructions for execution of the Agreement:
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           1) Kindly sign along with joint allottee, if any, on every page of the Agreement including
           all annexures.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           3) Both of the signed copies of the Agreement with all the annexures in its original form
           shall be returned to the firm by registered post (AD)/hand delivery only within the time
           stipulated.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           4) Kindly sign next to the tentative typical plot/shop plan in Annexures as attached.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+        <p className="mb-3 text-justify text-[13px] leading-tight">
           5) Witnesses signatures to be done only on Witness space.
         </p>
         <p className="mb-2 text-center text-lg font-bold uppercase">"SHYAM AANGAN"</p>
         <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
         <p className="mb-6 text-center text-xl font-bold underline">BUILDER-BUYER AGREEMENT</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          This Agreement (the 'Agreement') is made at Noida on this{' '}
-          {new Date().toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}
-          .
+        <p className="mb-6 text-justify text-[13px] leading-relaxed">
+          This Agreement (the &apos;<strong>Agreement</strong>&apos;) is made at Noida on this{' '}
+          <strong>
+            {new Date().toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </strong>.
         </p>
         <p className="my-4 text-center text-lg font-bold">BY AND BETWEEN</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          M/s. SVI INFRA SOLUTIONS PVT LTD, firm presently having its Registered Office at A-61
-          Sector-65 Noida Uttar Pradesh 201309 (hereinafter referred to as the 'Firm which
-          expression shall, unless it be repugnant to the context or meaning thereof, be deemed to
-          include its executors, successors) acting through its Authorized Signatory of the FIRST
-          PART.
+        <p className="mb-6 text-justify text-[13px] leading-relaxed">
+          <strong>M/s. SVI INFRA SOLUTIONS PVT LTD,</strong> firm presently having its Registered
+          Office at <strong>A-61 Sector-65 Noida Uttar Pradesh 201309</strong> (hereinafter referred
+          to as the &apos;<strong>Firm</strong>&apos; which expression shall, unless it be repugnant to the
+          context or meaning thereof, be deemed to include its executors, successors) acting through
+          its Authorized Signatory of the <strong>FIRST PART</strong>.
         </p>
-        <p className="my-4 text-center text-lg font-bold">AND</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          (FOR INDIVIDUALS) 1st ALLOTTEE
+        <p className="my-6 text-center text-[13px] font-bold">AND</p>
+        <p className="mb-0 text-[13px]">(FOR INDIVIDUALS)</p>
+        <p className="mb-4 text-[13px]">1st ALLOTTEE</p>
+        <p className="mb-1 text-[13px]">
+          Mr/Ms/Mrs&nbsp;&nbsp;:{' '}
+          <strong>
+            {formData.clientName} (Aadhar No : {formData.aadharNumber || '_________________'})
+          </strong>
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          Mr/Ms/Mrs : {formData.clientName} (Aadhar No : _________________) Son/Daughter/Wife of :
-          _________________ H/No: {formData.address}
+        <p className="mb-1 text-[13px]">
+          Son/Daughter/Wife of : {formData.fatherName || '_________________'}
         </p>
-        <p className="my-4 text-center text-lg font-bold">AND</p>
+        <p className="mb-1 text-[13px] font-bold">
+          {formData.addressLine1 || formData.address || 'H/No: _________________'}
+        </p>
+        {formData.addressLine2 && (
+          <p className="mb-1 text-[13px] font-bold">{formData.addressLine2}</p>
+        )}
+        <p className="mb-6 text-[13px] font-bold">
+          {formData.city ? `${formData.city}, ` : ''}
+          {formData.state ? `${formData.state}` : ''}
+          {formData.pincode ? ` -${formData.pincode}.` : '.'}
+        </p>
+        <p className="my-6 text-center text-[13px] font-bold">AND</p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          2nd ALLOTTEE Mr/Ms/Mrs……………………………………………….……………………………………………………………………………………………
-          Son/Daughter/Wife of ……………………………………………………………………………………………….………………………
-          R/o…………………………………………………………………………………………………………………………………………...….
+        {/* 2nd Allottee */}
+        <p className="mb-1 text-[13px] font-bold">2nd ALLOTTEE</p>
+        <p className="mb-1 text-[13px]">
+          Mr/Ms/Mrs……………………………………………………………………………………………………………………………………………………………………………………………………………………
         </p>
-        <p className="my-4 text-center text-lg font-bold">AND</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">Son/Daughter/</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          3rd ALLOTTEE Mr/Ms/Mrs. Wife of R/o
+        <p className="mb-1 text-[13px]">
+          Son/Daughter/Wife of ………………………………………………………………………………………………………………………………………………………………………………
         </p>
-        <p className="my-4 text-center text-lg font-bold">OR</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          (FOR FIRMS) M/s. proprietorship firm duly registered and having its office at
+        <p className="mb-6 text-[13px]">
+          R/o………………………………………………………………………………………………………………………………………………………………………………………...
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">a partnership/</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          through its Authorized Signatory Partner/ Sole
+
+        <p className="my-6 text-center text-[13px] font-bold">AND</p>
+
+        {/* 3rd Allottee */}
+        <p className="mb-1 text-[13px] font-bold">3rd ALLOTTEE</p>
+        <p className="mb-1 text-[13px]">
+          Mr/Ms/Mrs.______________________________________________________________Son/Daughter/
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          Proprietor Mr. / Ms. / Mrs R/o
+        <p className="mb-1 text-[13px]">
+          Wife of ________________________________________________
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          OR (FOR COMPANIES) M/s. registered under Companies Act, 1965 having its registered office
-          at
+        <p className="mb-6 text-[13px]">
+          R/o ________________________________________________
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">a firm duly</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">Mrs dated</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">.</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          # (Strike out whatever is not applicable)
+
+        <p className="mb-4 text-[13px] font-bold">OR</p>
+
+        {/* For Firms */}
+        <p className="mb-1 text-[13px] font-bold">(FOR FIRMS)</p>
+        <p className="mb-1 text-[13px]">
+          M/s._______________________________________________________________a partnership/
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          through its duly Authorized Signatory Mr. / Ms. /
+        <p className="mb-1 text-[13px]">
+          proprietorship firm duly registered and having its office at
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          authorized by board resolution
+        <p className="mb-1 text-[13px]">
+          ____________________________________________________through its Authorized Signatory Partner/ Sole
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          Hereinafter jointly and severally referred to as the 'Allottee' (which expression unless
-          excluded by or repugnant to the context or meaning thereof, shall mean and include
-          his/her/its heirs, executors, administrators, successors and legal representatives) of the
-          SECOND PART.
+        <p className="mb-1 text-[13px]">
+          Proprietor Mr. / Ms. / Mrs _______________________________________________
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          The firm and Allottee are hereinafter individually referred to as the 'Party' and
-          collectively referred to as the 'Parties'.
+        <p className="mb-6 text-[13px]">
+          R/o______________________________________________________________________________________
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight font-bold">
-          Firms Representation
+
+        <p className="mb-1 text-[13px] font-bold">OR</p>
+        <p className="mb-1 text-[13px] font-bold">(FOR COMPANIES)</p>
+        <p className="mb-1 text-[13px]">
+          M/s.___________________________________________________________________________a firm duly
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          WHEREAS the firm is bona fide purchaser of the land bearing "SHYAM AANGAN", Village Basadi
-          Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan (hereinafter referred to as the
-          'Said Land').
+        <p className="mb-1 text-[13px]">
+          registered under Companies Act, 1965 having its registered office at____________________________
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS it is clarified that the firm has not intended to convey right or interest in
-          any of the land
+        <p className="mb-1 text-[13px]">
+          ______________________________________________through its duly Authorized Signatory Mr. / Ms. /
+        </p>
+        <p className="mb-1 text-[13px]">
+          Mrs ___________________________________________________authorized by board resolution
+        </p>
+        <p className="mb-6 text-[13px]">
+          dated _____________.
+        </p>
+
+        <p className="mb-6 text-[13px]"># (Strike out whatever is not applicable)</p>
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          Hereinafter jointly and severally referred to as the &apos;<strong>Allottee</strong>&apos; (which expression unless excluded by or
+          repugnant to the context or meaning thereof, shall mean and include his/her/its heirs, executors,
+          administrators, successors and legal representatives) of the <strong>SECOND PART</strong>.
+        </p>
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          The <strong>firm</strong> and <strong>Allottee</strong> are hereinafter individually referred to as the &apos;<strong>Party</strong>&apos; and collectively
+          referred to as the &apos;<strong>Parties</strong>&apos;.
+        </p>
+
+        <p className="mb-4 text-[13px] font-bold">Firms Representation</p>
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>WHEREAS</strong> the firm is bona fide purchaser of the land bearing &quot;SHYAM AANGAN&quot;, Village Basadi Tehsil
+          Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan (hereinafter referred to as the &apos;<strong>Said Land</strong>&apos;).
+        </p>
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> it is clarified that the firm has not intended to convey right or interest in any of the land
         </p>
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          falling outside the Said Building / Said Complex / Said Land and no impression of any kind
-          has been given with regard to the constructions that may take place on the land outside
-          the Said Land.
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          falling outside the Said Building / Said Complex / Said Land and no impression of any kind has been given
+          with regard to the constructions that may take place on the land outside the Said Land.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight font-bold">
-          Allottee(s) Representations
-        </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS the Allottee(s) vide Application Dated{' '}
-          {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}{' '}
+
+        <p className="mb-4 text-[13px] font-bold">Allottee(s) Representations</p>
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the Allottee(s) vide Application Dated{' '}
+          <strong>
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </strong>{' '}
           applied for allotment of Said Plot//shop (herein after defined) in the Said Complex after
           perusal and understanding the terms and conditions of this Agreement
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS the Allottee after fully satisfying himself with the stated facts applied to
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the Allottee after fully satisfying himself with the stated facts applied to
           the firm is in the process of developing the Residential Colony on the said Land, and in
           pursuance thereof, it is understood and agreed by the Allottee that the Plot//shop area
           and location of Plot/shop, which the Allottee is intending to buy are tentative and are
           subject to change.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS the Allottee after fully satisfying himself about the right, title, interest
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the Allottee after fully satisfying himself about the right, title, interest
           and limitation of the firm in the said land / complex has shown interest in the Complex
-          and has approached the Firm for allotment of Plot/shop admeasuring {formData.area} sq.yd.
+          and has approached the Firm for allotment of Plot/shop admeasuring{' '}
+          <strong>{formData.area} sq.yd</strong>.{' '}
           vide application form dated{' '}
-          {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}
+          <strong>
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </strong>
           .
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS the Allottee has read and understood the advance payment plans offered by SVI
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the Allottee has read and understood the advance payment plans offered by SVI
           INFRA SOLUTIONS PVT LTD, and hereby agree to abide by the conditions mentioned in it and
           the Allottee has/have chosen to pay the balance advance/subscription Agreement towards the
           provisional registration against a probable allotment of plot(s)/shops as per detailed in
           Annexure- A.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS in pursuance to the aforesaid application for allotment the firm accepted the
-          application of the Allottee and allotted Plot No – {formData.unitNumber} in SHYAM AANGAN
-          on dated{' '}
-          {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
-            day: 'numeric',
-            month: 'long',
-            year: 'numeric',
-          })}{' '}
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> in pursuance to the aforesaid application for allotment the firm accepted the
+          application of the Allottee and allotted{' '}
+          <strong>Plot No – {formData.unitNumber}</strong> in{' '}
+          <strong>SHYAM AANGAN</strong> on dated{' '}
+          <strong>
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </strong>{' '}
           to the Allottee and the Allottee has verified and satisfied with the records which entitle
           the firm to execute this Agreement.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS the Allottee hereby undertakes that he/she shall abide by all laws, rules,
-          regulations, notifications and terms and conditions of Rajasthan Government, as per
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the Allottee hereby undertakes that he/she shall abide by all laws, rules,
+          regulations, notifications and terms and conditions of Rajasthan Government, as per law and any
           alteration(s)/amendment(s)/modification(s) thereto, and shall be liable for defaults
           and/or breaches of any of the conditions, rules or regulations as may be applicable to the
-          said land/complex from time to time. AND WHEREAS the Allottee has represented and
-          warranted to the firm that the Allottee has the power, competence and authority to enter
-          into and perform this Agreement and has clearly understood his / her rights, duties,
-          responsibilities and obligations under the Agreement.
+          said land/complex from time to time.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">law and any</p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          AND WHEREAS the firm relying on the confirmations, representations and assurances of the
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the Allottee has represented and warranted to the firm that the Allottee has the power,
+          competence and authority to enter into and perform this Agreement and has clearly understood his /
+          her rights, duties, responsibilities and obligations under the Agreement.
+        </p>
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>AND WHEREAS</strong> the firm relying on the confirmations, representations and assurances of the
           Allottee(s) to faithfully abide by all the terms, conditions and stipulations contained in
           this Agreement has accepted in good faith the Application to allot the Said Plot/shop and
           is now willing to enter into this Agreement on the terms and conditions appearing
           hereinafter.
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
+
+        <p className="mb-4 text-justify text-[13px] font-bold leading-relaxed">
           NOW, THEREFORE, THIS INDENTURE WITNESSETH AND IT IS HEREBY AGREED AND DECLARED BY AND
           BETWEEN THE PARTIES HERETO AS FOLLOWS:
         </p>
-        <p className="mb-3 text-justify text-[10px] leading-tight">
-          'Agreement' shall mean Builder Buyer's agreement, which is executed by and between the
+
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>&apos;Agreement&apos;</strong> shall mean Builder Buyer&apos;s agreement, which is executed by and between the
           firm and the Allottee;
         </p>
       </div>

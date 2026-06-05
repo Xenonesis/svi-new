@@ -4,7 +4,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, User, Tag } from 'lucide-react';
 import { BLOG_POST_MAP, BLOG_POSTS as SHARED_BLOG_POSTS } from '@/src/lib/blog';
-import { absoluteUrl } from '@/src/lib/seo';
+import { absoluteUrl } from '@/src/lib/seo';import dynamic from 'next/dynamic';
+
+const BlogDetailFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
+
 
 // Sample blog posts data (in production, this would come from a CMS or database)
 /* const BLOG_POSTS = {
@@ -342,6 +345,7 @@ export default async function BlogPost({ params }: Props) {
           </div>
         </div>
       </article>
+<BlogDetailFAQ />
     </div>
   );
 }

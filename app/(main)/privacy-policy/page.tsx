@@ -2,6 +2,10 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const PrivacyFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
+
 
 export default function PrivacyPolicy() {
   return (
@@ -175,6 +179,7 @@ export default function PrivacyPolicy() {
           </section>
         </div>
       </div>
+<PrivacyFAQ />
     </div>
   );
 }

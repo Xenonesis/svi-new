@@ -1,6 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
+import dynamic from 'next/dynamic';
+
+const PaymentFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
 import { ShieldCheck, CreditCard, Landmark, X, Copy, Check } from 'lucide-react';
 import { useState, useEffect, type FormEvent } from 'react';
 
@@ -517,6 +520,7 @@ export default function Payment() {
           </motion.div>
         </div>
       )}
+      <PaymentFAQ />
     </div>
   );
 }

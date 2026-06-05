@@ -1,6 +1,9 @@
 'use client';
 
 import { motion } from 'motion/react';
+import dynamic from 'next/dynamic';
+
+const GrievanceFAQ = dynamic(() => import('@/src/components/common/ContactFAQ'), { ssr: false });
 import { MessageSquareWarning, FileText, Send, AlertCircle } from 'lucide-react';
 import { useState, type FormEvent } from 'react';
 
@@ -209,6 +212,7 @@ export default function Grievance() {
           </motion.div>
         )}
       </section>
+      <GrievanceFAQ />
     </div>
   );
 }

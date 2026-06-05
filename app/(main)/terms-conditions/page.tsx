@@ -2,6 +2,10 @@
 
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import dynamic from 'next/dynamic';
+
+const TermsFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
+
 
 export default function TermsConditions() {
   return (
@@ -161,6 +165,7 @@ export default function TermsConditions() {
           </section>
         </div>
       </div>
+<TermsFAQ />
     </div>
   );
 }

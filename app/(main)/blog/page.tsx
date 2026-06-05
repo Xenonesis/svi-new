@@ -5,6 +5,9 @@ import Image from 'next/image';
 import { ArrowRight, Calendar, User } from 'lucide-react';
 import Link from 'next/link';
 import { BLOG_POSTS } from '@/src/lib/blog';
+import dynamic from 'next/dynamic';
+
+const BlogFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
 
 export default function Blog() {
   return (
@@ -94,6 +97,7 @@ export default function Blog() {
           ))}
         </div>
       </section>
+      <BlogFAQ />
     </div>
   );
 }

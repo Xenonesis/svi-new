@@ -151,7 +151,13 @@ export default function BbaPage() {
 
   const [formData, setFormData] = useState({
     clientName: '',
-    address: '',
+    aadharNumber: '',
+    fatherName: '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    pincode: '',
     ticketId: '',
     projectName: 'Shyam Aangan',
     unitNumber: '',
@@ -304,12 +310,74 @@ export default function BbaPage() {
                 required
               />
               <FormField
-                label="Address"
-                name="address"
-                value={formData.address}
+                label="Aadhar Number"
+                name="aadharNumber"
+                value={formData.aadharNumber}
                 onChange={handleChange}
-                required
+                placeholder="e.g. 590415758951"
               />
+              <FormField
+                label="Father / Husband Name"
+                name="fatherName"
+                value={formData.fatherName}
+                onChange={handleChange}
+                placeholder="Son/Daughter/Wife of"
+              />
+            </div>
+
+            {/* Address Section */}
+            <div className="col-span-full">
+              <p className="mb-2 text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                Client Address
+              </p>
+              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                <div className="md:col-span-2">
+                  <FormField
+                    label="House No. / Street Address"
+                    name="addressLine1"
+                    value={formData.addressLine1}
+                    onChange={handleChange}
+                    placeholder="e.g. H/No-212 Puncture Shop Old Route NH24 Near Hotel,"
+                    required
+                  />
+                </div>
+                <div className="md:col-span-2">
+                  <FormField
+                    label="Locality / Area (optional)"
+                    name="addressLine2"
+                    value={formData.addressLine2}
+                    onChange={handleChange}
+                    placeholder="e.g. Green Palace Baksar, Faridpur Simbhavali,"
+                  />
+                </div>
+                <FormField
+                  label="City"
+                  name="city"
+                  value={formData.city}
+                  onChange={handleChange}
+                  placeholder="e.g. Hapur"
+                  required
+                />
+                <FormField
+                  label="State"
+                  name="state"
+                  value={formData.state}
+                  onChange={handleChange}
+                  placeholder="e.g. Uttar Pradesh"
+                  required
+                />
+                <FormField
+                  label="Pincode"
+                  name="pincode"
+                  value={formData.pincode}
+                  onChange={handleChange}
+                  placeholder="e.g. 245207"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               <FormField
                 label="Ticket ID"
                 name="ticketId"
@@ -601,7 +669,14 @@ export default function BbaPage() {
                 </p>
                 <p className="font-bold">To,</p>
                 <p className="font-bold">{formData.clientName || '[Client Name]'}</p>
-                <p className="font-bold whitespace-pre-wrap">{formData.address || '[Address]'}</p>
+                {formData.addressLine1 && <p className="font-bold">{formData.addressLine1}</p>}
+                {formData.addressLine2 && <p className="font-bold">{formData.addressLine2}</p>}
+                {(formData.city || formData.state || formData.pincode) && (
+                  <p className="font-bold">
+                    {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
+                  </p>
+                )}
+                {!formData.addressLine1 && <p className="font-bold">[Address]</p>}
               </div>
 
               {/* Body */}
