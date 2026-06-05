@@ -543,69 +543,28 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: any)
           government and /or authorities or any other government department, the Agreement as
           apportioned by the firm shall be final and bindings on Allottee.
         </p>
-        <div className="my-6 overflow-hidden rounded-xl border-2 border-amber-500 bg-slate-950 text-white shadow-lg print:rounded-none print:border-black print:bg-white print:text-black print:shadow-none">
-          <div className="flex items-center gap-2 border-b border-amber-500/30 bg-slate-900 px-5 py-3 print:border-black print:bg-transparent print:px-0 print:py-1">
-            <svg
-              className="h-4 w-4 flex-shrink-0 text-amber-500 print:hidden"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-              />
-            </svg>
-            <span className="text-xs font-black tracking-wider text-amber-400 uppercase print:text-[13px] print:tracking-normal print:text-black">
-              Payment Instructions &amp; Official Bank Account
-            </span>
-          </div>
+        <div className="my-6">
+          <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
+            The Allottee(s) shall make all payments within the stipulated time as mentioned in the
+            schedule of payments as given in Annexure-A annexed to this Agreement and other charges
+            and amounts, as may be demanded by the Firm from time to time, without any reminders
+            from the Firm, through A/c payee cheque(s)/ demand draft(s) in favour of &apos;SVI INFRA
+            SOLUTIONS PVT LTD&apos; or transfer online to:
+          </p>
 
-          <div className="p-5 print:p-0">
-            <p className="mb-4 text-justify text-[13px] leading-relaxed text-slate-300 print:text-black">
-              The Allottee(s) shall make all payments within the stipulated time as mentioned in the
-              schedule of payments as given in Annexure-A annexed to this Agreement and other
-              charges and amounts, as may be demanded by the Firm from time to time, without any
-              reminders from the Firm, through A/c payee cheque(s)/ demand draft(s) in favour of
-              &apos;SVI INFRA SOLUTIONS PVT LTD&apos; or transfer online to:
-            </p>
+          <div className="ml-8 text-[13px] leading-relaxed font-bold">
+            <div className="grid grid-cols-[150px_1fr] gap-1">
+              <span>Account Name:</span>
+              <span>SVI INFRA SOLUTIONS PVT LTD</span>
 
-            <div className="grid grid-cols-2 gap-4 text-[13px] print:grid-cols-2 print:gap-x-8 print:gap-y-2">
-              <div className="rounded-lg border border-slate-800/80 bg-slate-900/60 p-3 print:border-none print:bg-transparent print:p-0">
-                <span className="mb-0.5 block text-[9px] font-bold tracking-widest text-amber-400 uppercase print:text-[10px] print:font-bold print:text-black">
-                  Account Name
-                </span>
-                <strong className="text-sm font-extrabold tracking-wide text-white print:text-black">
-                  SVI INFRA SOLUTIONS PVT LTD
-                </strong>
-              </div>
-              <div className="rounded-lg border border-slate-800/80 bg-slate-900/60 p-3 print:border-none print:bg-transparent print:p-0">
-                <span className="mb-0.5 block text-[9px] font-bold tracking-widest text-amber-400 uppercase print:text-[10px] print:font-bold print:text-black">
-                  Bank Name
-                </span>
-                <strong className="text-sm font-extrabold tracking-wide text-white print:text-black">
-                  IDBI BANK
-                </strong>
-              </div>
-              <div className="rounded-lg border border-slate-800/80 bg-slate-900/60 p-3 print:border-none print:bg-transparent print:p-0">
-                <span className="mb-0.5 block text-[9px] font-bold tracking-widest text-amber-400 uppercase print:text-[10px] print:font-bold print:text-black">
-                  Account Number
-                </span>
-                <strong className="text-base font-black tracking-wider text-white print:text-black">
-                  0894 1020 0001 3837
-                </strong>
-              </div>
-              <div className="rounded-lg border border-slate-800/80 bg-slate-900/60 p-3 print:border-none print:bg-transparent print:p-0">
-                <span className="mb-0.5 block text-[9px] font-bold tracking-widest text-amber-400 uppercase print:text-[10px] print:font-bold print:text-black">
-                  IFSC Code
-                </span>
-                <strong className="text-base font-black tracking-wider text-white print:text-black">
-                  IBKL0000894
-                </strong>
-              </div>
+              <span>Account Number:</span>
+              <span>0894102000013837</span>
+
+              <span>Bank:</span>
+              <span>IDBI BANK</span>
+
+              <span>IFSC CODE:</span>
+              <span>IBKL0000894</span>
             </div>
           </div>
         </div>
