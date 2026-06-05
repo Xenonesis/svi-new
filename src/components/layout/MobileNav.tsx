@@ -44,7 +44,7 @@ function MobileLink({
   return (
     <Link
       href={href}
-      className={`block py-0.5 text-[17px] font-bold transition-colors min-[380px]:text-lg ${
+      className={`block py-0.5 text-[16px] font-semibold tracking-wide transition-colors min-[380px]:text-[17px] ${
         isActive
           ? 'text-brand-gold'
           : 'text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold dark:text-gray-100'
@@ -107,7 +107,7 @@ export function MobileNav({
             <img
               src="/logo.png"
               alt="SVI Infra Solutions Logo"
-              className="h-8.5 w-auto object-contain dark:brightness-0 dark:invert"
+              className="h-[30px] w-auto object-contain"
             />
           </Link>
           <div className="flex items-center gap-2.5">
@@ -150,7 +150,7 @@ export function MobileNav({
             >
               <button
                 onClick={onToggleProjects}
-                className="text-brand-navy group flex w-full items-center justify-between py-0.5 text-left text-[17px] font-bold min-[380px]:text-lg dark:text-gray-100"
+                className="text-brand-navy group flex w-full items-center justify-between py-0.5 text-left text-[16px] font-semibold tracking-wide min-[380px]:text-[17px] dark:text-gray-100"
               >
                 <span>Projects</span>
                 <ChevronDown
@@ -171,7 +171,7 @@ export function MobileNav({
                   <Link
                     href="/projects/current"
                     onClick={onClose}
-                    className="hover:text-brand-gold flex items-center gap-2 py-1 text-[14px] font-semibold text-gray-600 transition-colors min-[380px]:text-[15px] dark:text-gray-400"
+                    className="hover:text-brand-gold flex items-center gap-2 py-1 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
                   >
                     <Building2 size={15} className="text-brand-gold/70" />
                     Current Projects
@@ -179,7 +179,7 @@ export function MobileNav({
                   <Link
                     href="/projects/completed"
                     onClick={onClose}
-                    className="hover:text-brand-gold flex items-center gap-2 py-1 text-[14px] font-semibold text-gray-600 transition-colors min-[380px]:text-[15px] dark:text-gray-400"
+                    className="hover:text-brand-gold flex items-center gap-2 py-1 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
                   >
                     <CheckSquare size={15} className="text-brand-gold/70" />
                     Completed Projects
@@ -217,7 +217,7 @@ export function MobileNav({
                 <Link
                   href="/lottery"
                   onClick={onClose}
-                  className={`block py-0.5 text-[17px] font-bold transition-colors min-[380px]:text-lg ${
+                  className={`block py-0.5 text-[16px] font-semibold tracking-wide transition-colors min-[380px]:text-[17px] ${
                     currentPath === '/lottery'
                       ? 'text-brand-gold'
                       : 'text-brand-gold/80 hover:text-brand-gold'
@@ -237,14 +237,14 @@ export function MobileNav({
             <Link
               href="/login"
               onClick={onClose}
-              className="border-brand-navy dark:border-brand-gold/45 text-brand-navy dark:text-brand-gold block w-full rounded-full border py-2.5 text-center text-xs font-bold tracking-wider uppercase transition-colors hover:bg-gray-50 min-[380px]:py-3 min-[380px]:text-sm dark:hover:bg-zinc-900"
+              className="border-brand-navy dark:border-brand-gold/45 text-brand-navy dark:text-brand-gold block w-full rounded-full border py-2 text-center text-xs font-semibold tracking-widest uppercase transition-colors hover:bg-gray-50 min-[380px]:py-2.5 min-[380px]:text-sm dark:hover:bg-zinc-900"
             >
               Client Login
             </Link>
             <Link
               href="/registration"
               onClick={onClose}
-              className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy shadow-brand-navy/10 block w-full rounded-full py-2.5 text-center text-xs font-bold tracking-wider text-white uppercase shadow-md min-[380px]:py-3 min-[380px]:text-sm"
+              className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy block w-full rounded-full py-2 text-center text-xs font-semibold tracking-widest text-white uppercase min-[380px]:py-2.5 min-[380px]:text-sm"
             >
               Register Now
             </Link>

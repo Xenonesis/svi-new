@@ -13,10 +13,10 @@ export default function Header() {
       <header
         className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
           h.isScrolled
-            ? 'dark:border-zinc-850/50 border-b border-white/20 bg-white/75 py-3 shadow-lg shadow-zinc-950/5 backdrop-blur-xl dark:bg-zinc-950/75'
+            ? 'dark:border-zinc-850/50 border-b border-white/20 bg-white/75 py-2 shadow-lg shadow-zinc-950/5 backdrop-blur-xl md:py-2.5 dark:bg-zinc-950/75'
             : h.pathname === '/'
-              ? 'border-b border-transparent bg-transparent py-4.5'
-              : 'border-gray-150/40 dark:border-zinc-850/30 border-b bg-white/75 py-4.5 backdrop-blur-md dark:bg-zinc-950/75'
+              ? 'border-b border-transparent bg-transparent py-3 md:py-3.5'
+              : 'border-gray-150/40 dark:border-zinc-850/30 border-b bg-white/75 py-2.5 backdrop-blur-md md:py-3 dark:bg-zinc-950/75'
         }`}
       >
         <div
@@ -34,9 +34,11 @@ export default function Header() {
               <img
                 src="/logo.png"
                 alt="SVI Infra Solutions Logo"
-                className={`h-8.5 w-auto max-w-[130px] object-contain transition-all duration-300 min-[380px]:h-10 min-[380px]:max-w-[170px] sm:h-12 sm:max-w-none md:h-14 ${
-                  h.isHomeTransparent ? 'brightness-0 invert' : 'dark:brightness-0 dark:invert'
-                }`}
+                className={`w-auto max-w-[130px] object-contain transition-all duration-300 min-[380px]:max-w-[170px] sm:max-w-none ${
+                  h.isScrolled
+                    ? 'h-[28px] min-[380px]:h-[30px] sm:h-[32px] md:h-[36px]'
+                    : 'h-[32px] min-[380px]:h-[34px] sm:h-[38px] md:h-[42px]'
+                } ${h.isHomeTransparent ? 'brightness-0 invert' : ''}`}
               />
             </Link>
 

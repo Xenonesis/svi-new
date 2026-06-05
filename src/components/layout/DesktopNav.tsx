@@ -38,7 +38,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`group relative py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
+      className={`group relative py-1 text-[11px] font-semibold tracking-widest uppercase transition-colors duration-200 ${
         isActive
           ? 'text-brand-gold'
           : isHomeTransparent
@@ -49,7 +49,7 @@ function NavLink({
     >
       {children}
       <span
-        className={`bg-brand-gold absolute -bottom-0.5 left-1/2 h-[2px] -translate-x-1/2 transition-all duration-300 ease-out ${
+        className={`bg-brand-gold absolute -bottom-0.5 left-1/2 h-[1.5px] -translate-x-1/2 transition-all duration-300 ease-out ${
           isActive ? 'w-full' : 'w-0 group-hover:w-full'
         }`}
       />
@@ -112,7 +112,7 @@ export function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-3 py-1 text-[11px] font-bold tracking-wider uppercase transition-colors duration-200 ${
+          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-3 py-1 text-[11px] font-semibold tracking-widest uppercase transition-colors duration-200 ${
             currentPath === '/lottery'
               ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
               : 'text-brand-gold/80 hover:text-brand-gold'
@@ -127,7 +127,7 @@ export function DesktopNav({
       <div className="flex items-center gap-4 border-l border-gray-200 pl-6 dark:border-zinc-800">
         <Link
           href="/login"
-          className={`group/login relative py-1 text-[11px] font-bold tracking-wider uppercase transition-all duration-200 ${
+          className={`group/login relative py-1 text-[11px] font-semibold tracking-widest uppercase transition-all duration-200 ${
             isHomeTransparent
               ? 'hover:text-brand-gold text-white/95'
               : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
@@ -138,7 +138,7 @@ export function DesktopNav({
         </Link>
         <Link
           href="/registration"
-          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy shadow-brand-navy/10 dark:hover:shadow-brand-gold/10 relative overflow-hidden rounded-full px-5 py-2 text-[11px] font-bold tracking-wider text-white uppercase shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:brightness-105 active:translate-y-0"
+          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-4 py-1.5 text-[11px] font-semibold tracking-widest text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0"
         >
           Register
         </Link>
