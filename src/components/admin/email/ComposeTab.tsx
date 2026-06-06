@@ -18,6 +18,10 @@ import {
 import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
 import { getToken, saveDraft, loadDraft, clearDraft, fileToBase64 } from './helpers';
+import {
+  extractTemplateVars as parseExtractTemplateVars,
+  getPreviewHtml as parseGetPreviewHtml,
+} from '@/src/lib/utils/templateParser';
 import { RichTextEditor } from './RichTextEditor';
 import { ComposeFields } from './compose/ComposeFields';
 import { TemplateBanner } from './compose/TemplateBanner';
@@ -107,6 +111,88 @@ export function ComposeTab({
     }
   }, [templatePrefill, onClearPrefill]);
 
+  // Handle prefill from Allotment Records
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('prefillAllotment') === 'true') {
+        const stored = sessionStorage.getItem('emailPrefillRecord');
+        if (stored) {
+          try {
+            const record = JSON.parse(stored);
+            const fd = record.form_data;
+            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'allotment_letter');
+
+            if (tpl) {
+              let processedSubject = tpl.subject;
+              processedSubject = processedSubject.replace('{{projectName}}', fd.projectName || '');
+              processedSubject = processedSubject.replace('{{unitNumber}}', fd.unitNumber || '');
+
+              setSubject(processedSubject);
+              setTemplateHtml(tpl.html);
+              setSelectedTemplate('allotment_letter');
+
+              const area = parseFloat(fd.area) || 0;
+              const bsp = parseFloat(fd.bsp) || 0;
+              const plc = parseFloat(fd.plc) || 0;
+              const base = area * bsp;
+              const totalCost = base + base * (plc / 100);
+              const initialPayment =
+                totalCost * ((parseFloat(fd.bookingPaymentPercent) || 10) / 100);
+
+              const vars: Record<string, string> = {
+                salutation: fd.salutation || 'Mr.',
+                clientName: fd.clientName || '',
+                projectName: fd.projectName || '',
+                ticketId: fd.ticketId || '',
+                unitNumber: fd.unitNumber || '',
+                area: fd.area || '',
+                totalCost: totalCost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                paymentPlan: fd.paymentPlan || '',
+                bookingDate: fd.bookingDate || '',
+                bookingPercent: fd.bookingPaymentPercent || '10',
+                initialPayment: initialPayment.toLocaleString('en-IN', {
+                  maximumFractionDigits: 0,
+                }),
+                secondInstalmentRow:
+                  fd.showSecondInstalment === 'true'
+                    ? `<tr><td style="padding:10px;">2</td><td style="padding:10px;">Second Instalment</td><td style="padding:10px;text-align:right;">20%</td><td style="padding:10px;text-align:right;font-weight:bold;">₹${(totalCost * 0.2).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td></tr>`
+                    : '',
+                remainingPercent:
+                  fd.showSecondInstalment === 'true'
+                    ? `${100 - (parseFloat(fd.bookingPaymentPercent) || 10) - 20}`
+                    : `${100 - (parseFloat(fd.bookingPaymentPercent) || 10)}`,
+                emiCount: fd.emiCount || '12',
+                advisorName: fd.advisorName || '',
+                advisorNumber: fd.advisorNumber || '',
+                advisorEmail: fd.advisorEmail || '',
+                bankAccountName: 'Svi Infra Solutions Pvt. Ltd',
+                bankAccountNo: '0894102000013837',
+                bankName: 'IDBI BANK',
+                bankIfsc: 'IBKL0000894',
+              };
+
+              setTemplateVars(vars);
+              setHtml('');
+              setPreviewMode(true);
+              setEditorKey((prev) => prev + 1);
+
+              if (fd.clientEmail) {
+                setTo(fd.clientEmail);
+              }
+            }
+
+            sessionStorage.removeItem('emailPrefillRecord');
+            const newUrl = window.location.pathname + '?tab=compose';
+            window.history.replaceState({}, '', newUrl);
+          } catch (e) {
+            console.error('Error prefilling allotment email:', e);
+          }
+        }
+      }
+    }
+  }, []);
+
   // Auto-save draft every 5s
   useEffect(() => {
     if (!to && !subject && !html) return;
@@ -133,20 +219,11 @@ export function ComposeTab({
   };
 
   const extractTemplateVars = (html: string): string[] => {
-    const matches = html.match(/\{\{([^}]+)\}\}/g);
-    if (!matches) return [];
-    return [...new Set(matches.map((m) => m.replace(/[{}]/g, '')))];
+    return parseExtractTemplateVars(html);
   };
 
   const getPreviewHtml = (): string => {
-    const sourceHtml = templateHtml || html;
-    if (!sourceHtml) return '';
-    let result = sourceHtml;
-    Object.entries(templateVars).forEach(([key, value]) => {
-      const pattern = new RegExp('\\{\\{' + key + '\\}\\}', 'g');
-      result = result.replace(pattern, value || '{{' + key + '}}');
-    });
-    return result;
+    return parseGetPreviewHtml(templateHtml || html, templateVars);
   };
 
   const loadTemplate = (templateId: string) => {
@@ -374,6 +451,11 @@ export function ComposeTab({
           selectedTemplate={selectedTemplate}
           templateVars={templateVars}
           onEditTemplate={() => {
+            if (!html && templateHtml) {
+              setHtml(getPreviewHtml());
+              setTemplateHtml(null);
+              setSelectedTemplate(null);
+            }
             setPreviewMode(false);
           }}
           onClearTemplate={() => {
@@ -383,6 +465,16 @@ export function ComposeTab({
             setPreviewMode(false);
           }}
           onVariableChange={(key, value) => setTemplateVars((prev) => ({ ...prev, [key]: value }))}
+          onRemoveVariable={(key) => {
+            setTemplateVars((prev) => {
+              const next = { ...prev };
+              delete next[key];
+              return next;
+            });
+            if (templateHtml) {
+              setTemplateHtml(templateHtml.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), ''));
+            }
+          }}
         />
 
         {/* Body */}

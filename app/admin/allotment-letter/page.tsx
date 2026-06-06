@@ -357,6 +357,16 @@ export default function AllotmentLetterPage() {
     setSelectedRecordId(id);
   };
 
+  useEffect(() => {
+    if (savedAllotments.length > 0 && typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const templateId = searchParams.get('templateId');
+      if (templateId && !selectedRecordId) {
+        loadFromRecord(templateId);
+      }
+    }
+  }, [savedAllotments, selectedRecordId]);
+
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
       <div className="mb-6 flex items-center justify-between">

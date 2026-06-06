@@ -1,6 +1,6 @@
 'use client';
 
-import { PenLine, LayoutTemplate } from 'lucide-react';
+import { PenLine, LayoutTemplate, Trash2 } from 'lucide-react';
 import { EMAIL_TEMPLATES } from '../constants';
 
 interface TemplateBannerProps {
@@ -9,6 +9,7 @@ interface TemplateBannerProps {
   onEditTemplate: () => void;
   onClearTemplate: () => void;
   onVariableChange: (key: string, value: string) => void;
+  onRemoveVariable?: (key: string) => void;
 }
 
 export function TemplateBanner({
@@ -17,6 +18,7 @@ export function TemplateBanner({
   onEditTemplate,
   onClearTemplate,
   onVariableChange,
+  onRemoveVariable,
 }: TemplateBannerProps) {
   if (!selectedTemplate) return null;
 
@@ -54,13 +56,24 @@ export function TemplateBanner({
               <label className="mb-1 text-[10px] font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
                 {key.replace(/_/g, ' ')}
               </label>
-              <input
-                type="text"
-                value={value}
-                onChange={(e) => onVariableChange(key, e.target.value)}
-                placeholder={`Enter ${key.replace(/_/g, ' ')}...`}
-                className="rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 transition-colors outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
-              />
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={value}
+                  onChange={(e) => onVariableChange(key, e.target.value)}
+                  placeholder={`Enter ${key.replace(/_/g, ' ')}...`}
+                  className="flex-1 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 transition-colors outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400/20 dark:border-gray-600 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                />
+                {onRemoveVariable && (
+                  <button
+                    onClick={() => onRemoveVariable(key)}
+                    title={`Delete ${key}`}
+                    className="rounded-md p-1.5 text-red-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/20"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </button>
+                )}
+              </div>
             </div>
           ))}
         </div>

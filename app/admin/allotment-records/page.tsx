@@ -14,10 +14,12 @@ import {
   Building2,
   TrendingUp,
   Image as ImageIcon,
+  Mail,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { supabase } from '@/src/lib/supabase/client';
+import Link from 'next/link';
 
 interface SavedAllotment {
   id: string;
@@ -476,6 +478,22 @@ export default function AllotmentRecordsPage() {
                             className="bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold flex items-center justify-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-all"
                           >
                             <Eye className="h-3.5 w-3.5" /> View & Print
+                          </button>
+                          <Link
+                            href={`/admin/allotment-letter?templateId=${record.id}`}
+                            className="flex items-center justify-center gap-1 rounded-lg bg-blue-500/10 px-2.5 py-1.5 font-bold text-blue-600 transition-all hover:bg-blue-500/20"
+                          >
+                            <FileText className="h-3.5 w-3.5" /> Use as Template
+                          </Link>
+                          <button
+                            onClick={() => {
+                              sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
+                              window.location.href =
+                                '/admin/email?tab=compose&prefillAllotment=true';
+                            }}
+                            className="flex items-center justify-center gap-1 rounded-lg bg-purple-500/10 px-2.5 py-1.5 font-bold text-purple-600 transition-all hover:bg-purple-500/20"
+                          >
+                            <Mail className="h-3.5 w-3.5" /> Email Client
                           </button>
                           <button
                             onClick={() => setDeleteTarget(record)}
