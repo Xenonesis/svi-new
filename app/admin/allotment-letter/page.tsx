@@ -168,6 +168,10 @@ export default function AllotmentLetterPage() {
     emiCount: '12',
     emiPercentage: '',
     emiStartDate: '',
+    zeroPercentEmi: 'false',
+    // Payment customization
+    bookingPaymentPercent: '10',
+    showSecondInstalment: 'true',
   });
 
   const [preview, setPreview] = useState(false);
@@ -184,8 +188,17 @@ export default function AllotmentLetterPage() {
   };
 
   const totalCost = calculateTotalCost();
-  const initialPayment = totalCost * 0.1; // 10% booking payment
-  const secondPayment = totalCost * 0.2; // 20% second payment
+  const bookingPercent = parseFloat(formData.bookingPaymentPercent) || 10;
+  const initialPayment = totalCost * (bookingPercent / 100);
+  const secondPercent = 20;
+  const secondPayment = totalCost * (secondPercent / 100);
+  const showSecondInstalment = formData.showSecondInstalment === 'true';
+  const zeroCost = formData.zeroPercentEmi === 'true';
+  const remainingPercentInTerms = zeroCost
+    ? 0
+    : showSecondInstalment
+      ? 100 - bookingPercent - secondPercent
+      : 100 - bookingPercent;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -520,6 +533,7 @@ export default function AllotmentLetterPage() {
                   placeholder="e.g., 5"
                   value={formData.emiPercentage}
                   onChange={handleChange}
+                  disabled={formData.zeroPercentEmi === 'true'}
                 />
                 <FormField
                   label="EMI Start Date"
@@ -528,6 +542,73 @@ export default function AllotmentLetterPage() {
                   value={formData.emiStartDate}
                   onChange={handleChange}
                 />
+              </div>
+              <div className="mt-3">
+                <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5 transition-all hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+                  <input
+                    type="checkbox"
+                    name="zeroPercentEmi"
+                    checked={formData.zeroPercentEmi === 'true'}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        zeroPercentEmi: e.target.checked ? 'true' : 'false',
+                        // Clear emiPercentage when zero-cost is enabled
+                        emiPercentage: e.target.checked ? '' : prev.emiPercentage,
+                      }))
+                    }
+                    className="h-4 w-4 cursor-pointer rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                  />
+                  <div>
+                    <span className="text-sm font-medium text-gray-800 dark:text-white">
+                      0% Interest EMI
+                    </span>
+                    <p className="text-[10px] text-gray-400">
+                      Remaining amount divided equally — no extra interest charged
+                    </p>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            {/* Payment Customization Section */}
+            <div className="mt-4 rounded-lg border border-gray-100 bg-gray-50/50 p-4 dark:border-white/8 dark:bg-white/5">
+              <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-600 uppercase dark:text-gray-400">
+                Payment Customization
+              </h3>
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField
+                  label="On Booking Payment (%) "
+                  name="bookingPaymentPercent"
+                  type="number"
+                  value={formData.bookingPaymentPercent}
+                  onChange={handleChange}
+                  step="0.1"
+                  min="0"
+                  placeholder="10"
+                />
+                <div className="flex items-end pb-2">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5 transition-all hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+                    <input
+                      type="checkbox"
+                      name="showSecondInstalment"
+                      checked={formData.showSecondInstalment === 'true'}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          showSecondInstalment: e.target.checked ? 'true' : 'false',
+                        }))
+                      }
+                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-800 dark:text-white">
+                        Show Second Instalment
+                      </span>
+                      <p className="text-[10px] text-gray-400">20% payment with due date</p>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
 
@@ -546,7 +627,7 @@ export default function AllotmentLetterPage() {
               </div>
               <div className="text-right">
                 <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-                  Booking Payment (10%)
+                  Booking Payment ({bookingPercent}%)
                 </p>
                 <p className="text-brand-gold text-lg font-bold">
                   ₹
@@ -760,7 +841,7 @@ export default function AllotmentLetterPage() {
                       </tr>
                     </thead>
                     <tbody className="text-xs">
-                      {/* First Instalment (10%) */}
+                      {/* First Instalment (Custom %) */}
                       <tr>
                         <td className="border border-gray-400 p-2 font-bold">1</td>
                         <td className="border border-gray-400 p-2 font-bold">
@@ -774,33 +855,37 @@ export default function AllotmentLetterPage() {
                         <td className="border border-gray-400 p-2 font-bold">
                           On Booking (First 3 Days)
                         </td>
-                        <td className="border border-gray-400 p-2">10%</td>
+                        <td className="border border-gray-400 p-2">{bookingPercent}%</td>
                         <td className="border border-gray-400 p-2 font-bold">
-                          Rs. {(totalCost * 0.1).toFixed(2)}
+                          Rs. {initialPayment.toFixed(2)}
                         </td>
                       </tr>
-                      {/* Second Instalment (20%) */}
-                      <tr>
-                        <td className="border border-gray-400 p-2 font-bold">2</td>
-                        <td className="border border-gray-400 p-2 font-bold">
-                          {(() => {
-                            if (!formData.bookingDate) return '-';
-                            const d = new Date(formData.bookingDate);
-                            d.setDate(d.getDate() + parseInt(formData.secondPaymentDays));
-                            return d.toISOString().split('T')[0].split('-').reverse().join('-');
-                          })()}
-                        </td>
-                        <td className="border border-gray-400 p-2 font-bold">
-                          Second Instalment ({formData.secondPaymentDays} Days)
-                        </td>
-                        <td className="border border-gray-400 p-2">20%</td>
-                        <td className="border border-gray-400 p-2 font-bold">
-                          Rs. {(totalCost * 0.2).toFixed(2)}
-                        </td>
-                      </tr>
-                      {/* EMIs (Remaining 70%) */}
+                      {/* Second Instalment (20%) — only shown if enabled */}
+                      {showSecondInstalment && (
+                        <tr>
+                          <td className="border border-gray-400 p-2 font-bold">2</td>
+                          <td className="border border-gray-400 p-2 font-bold">
+                            {(() => {
+                              if (!formData.bookingDate) return '-';
+                              const d = new Date(formData.bookingDate);
+                              d.setDate(d.getDate() + parseInt(formData.secondPaymentDays));
+                              return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                            })()}
+                          </td>
+                          <td className="border border-gray-400 p-2 font-bold">
+                            Second Instalment ({formData.secondPaymentDays} Days)
+                          </td>
+                          <td className="border border-gray-400 p-2">{secondPercent}%</td>
+                          <td className="border border-gray-400 p-2 font-bold">
+                            Rs. {secondPayment.toFixed(2)}
+                          </td>
+                        </tr>
+                      )}
+                      {/* EMIs (Remaining %) */}
                       {(() => {
-                        const remainingPercent = 70;
+                        const remainingPercent = showSecondInstalment
+                          ? 100 - bookingPercent - secondPercent
+                          : 100 - bookingPercent;
                         const emiCount =
                           formData.emiCount === 'custom'
                             ? parseInt(formData.paymentPlan || '12')
@@ -809,6 +894,7 @@ export default function AllotmentLetterPage() {
                           ? parseFloat(formData.emiPercentage)
                           : remainingPercent / emiCount;
                         const emiAmount = totalCost * (emiPercentPerInstallment / 100);
+                        const emiStartIndex = showSecondInstalment ? 3 : 2;
 
                         return Array.from({ length: emiCount }).map((_, i) => {
                           let emiDate = '-';
@@ -824,9 +910,13 @@ export default function AllotmentLetterPage() {
 
                           return (
                             <tr key={i}>
-                              <td className="border border-gray-400 p-2 font-bold">{i + 3}</td>
+                              <td className="border border-gray-400 p-2 font-bold">
+                                {i + emiStartIndex}
+                              </td>
                               <td className="border border-gray-400 p-2 font-bold">{emiDate}</td>
-                              <td className="border border-gray-400 p-2 font-bold">{i + 1} EMI</td>
+                              <td className="border border-gray-400 p-2 font-bold">
+                                {zeroCost ? `${i + 1} EMI (0% Interest)` : `${i + 1} EMI`}
+                              </td>
                               <td className="border border-gray-400 p-2">
                                 {emiPercentPerInstallment.toFixed(1)}%
                               </td>
@@ -844,8 +934,8 @@ export default function AllotmentLetterPage() {
                 {/* Terms Box */}
                 <div className="mb-8 rounded-lg border-l-4 border-[#00b0f0] bg-[#f0f8ff] p-4 text-xs text-gray-800 italic">
                   <p className="mb-2">
-                    Please transfer the initial amount of 10% (Rs. {(totalCost * 0.1).toFixed(2)})
-                    within the first 3 days (by{' '}
+                    Please transfer the initial amount of {bookingPercent}% (Rs.{' '}
+                    {initialPayment.toFixed(2)}) within the first 3 days (by{' '}
                     {(() => {
                       if (!formData.bookingDate) return '[Date]';
                       const d = new Date(formData.bookingDate);
@@ -854,24 +944,28 @@ export default function AllotmentLetterPage() {
                     })()}
                     ) to confirm allotment under {formData.projectName}.
                   </p>
+                  {showSecondInstalment && (
+                    <p className="mb-2">
+                      The second instalment of {secondPercent}% (Rs. {secondPayment.toFixed(2)})
+                      must be paid within {formData.secondPaymentDays} days (by{' '}
+                      {(() => {
+                        if (!formData.bookingDate) return '[Date]';
+                        const d = new Date(formData.bookingDate);
+                        d.setDate(d.getDate() + parseInt(formData.secondPaymentDays));
+                        return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                      })()}
+                      ).
+                    </p>
+                  )}
                   <p className="mb-2">
-                    The second instalment of 20% (Rs. {(totalCost * 0.2).toFixed(2)}) must be paid
-                    within {formData.secondPaymentDays} days (by{' '}
-                    {(() => {
-                      if (!formData.bookingDate) return '[Date]';
-                      const d = new Date(formData.bookingDate);
-                      d.setDate(d.getDate() + parseInt(formData.secondPaymentDays));
-                      return d.toISOString().split('T')[0].split('-').reverse().join('-');
-                    })()}
-                    ).
-                  </p>
-                  <p className="mb-2">
-                    The remaining 70% will be paid as per the selected payment plan EMIs and is
-                    scheduled to complete accordingly.
+                    The remaining {remainingPercentInTerms}%
+                    {zeroCost ? ' (0% Interest — equal instalments)' : ''} will be paid as per the
+                    selected payment plan EMIs and is scheduled to complete accordingly.
                   </p>
                   <p className="mb-2">
                     Note: Allotment under {formData.projectName} will only be confirmed upon receipt
-                    of the initial 10% (Rs. {(totalCost * 0.1).toFixed(2)}) by the due date.
+                    of the initial {bookingPercent}% (Rs. {initialPayment.toFixed(2)}) by the due
+                    date.
                   </p>
                   <p>
                     In the event you fail to make the payments as per the payment plan chosen by
