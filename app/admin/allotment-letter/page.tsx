@@ -892,7 +892,6 @@ export default function AllotmentLetterPage() {
                           {(() => {
                             if (!formData.bookingDate) return '-';
                             const d = parseDate(formData.bookingDate);
-                            d.setDate(d.getDate() + 3);
                             return formatDate(d);
                           })()}
                         </td>

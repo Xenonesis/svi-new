@@ -355,38 +355,70 @@ export default function AllotmentRecordsPage() {
 
         <div className="overflow-x-auto">
           {loading ? (
-            <table className="w-full border-collapse text-left text-xs animate-pulse">
+            <table className="w-full border-collapse animate-pulse text-left text-xs">
               <thead>
                 <tr className="border-b border-gray-100 text-[11px] font-bold tracking-widest text-gray-400 uppercase dark:border-white/8">
-                  <th className="px-4 py-3"><div className="h-3.5 w-16 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3"><div className="h-3.5 w-24 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3"><div className="h-3.5 w-20 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3"><div className="h-3.5 w-16 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3"><div className="h-3.5 w-12 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3"><div className="h-3.5 w-16 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3"><div className="h-3.5 w-20 bg-gray-250 dark:bg-white/5 rounded" /></th>
-                  <th className="px-4 py-3 text-right"><div className="h-3.5 w-24 bg-gray-250 dark:bg-white/5 rounded ml-auto" /></th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-16 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-24 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-20 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-16 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-12 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-16 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3">
+                    <div className="bg-gray-250 h-3.5 w-20 rounded dark:bg-white/5" />
+                  </th>
+                  <th className="px-4 py-3 text-right">
+                    <div className="bg-gray-250 ml-auto h-3.5 w-24 rounded dark:bg-white/5" />
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/5">
                 {[...Array(6)].map((_, i) => (
                   <tr key={i}>
                     {/* Ticket ID */}
-                    <td className="px-4 py-4"><div className="h-4 w-12 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-12 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Client Name */}
-                    <td className="px-4 py-4"><div className="h-4 w-28 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-28 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Project */}
-                    <td className="px-4 py-4"><div className="h-4 w-20 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-20 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Unit/Plot */}
-                    <td className="px-4 py-4"><div className="h-4 w-12 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-12 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Area */}
-                    <td className="px-4 py-4"><div className="h-4 w-10 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-10 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Total Cost */}
-                    <td className="px-4 py-4"><div className="h-4 w-16 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-16 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Plan */}
-                    <td className="px-4 py-4"><div className="h-4 w-20 bg-gray-200 dark:bg-white/5 rounded" /></td>
+                    <td className="px-4 py-4">
+                      <div className="h-4 w-20 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     {/* Actions */}
-                    <td className="px-4 py-4 text-right"><div className="h-8 w-28 bg-gray-200 dark:bg-white/5 rounded ml-auto" /></td>
+                    <td className="px-4 py-4 text-right">
+                      <div className="ml-auto h-8 w-28 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -733,7 +765,6 @@ export default function AllotmentRecordsPage() {
                             {(() => {
                               if (!selectedAllotment.form_data?.bookingDate) return '-';
                               const d = new Date(selectedAllotment.form_data.bookingDate);
-                              d.setDate(d.getDate() + 3);
                               return d.toISOString().split('T')[0].split('-').reverse().join('-');
                             })()}
                           </td>

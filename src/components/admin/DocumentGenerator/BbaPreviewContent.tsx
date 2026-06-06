@@ -162,7 +162,7 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                   <tr>
                     <td className="border border-gray-400 p-2 font-bold">1</td>
                     <td className="border border-gray-400 p-2 font-bold">
-                      {fmtDate(formData?.bookingDate, 3)}
+                      {fmtDate(formData?.bookingDate, 0)}
                     </td>
                     <td className="border border-gray-400 p-2 font-bold">On Booking</td>
                     <td className="border border-gray-400 p-2">10%</td>
@@ -223,7 +223,6 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                       {(() => {
                         if (!formData?.bookingDate) return '-';
                         const d = new Date(formData.bookingDate);
-                        d.setDate(d.getDate() + 3);
                         return d.toISOString().split('T')[0];
                       })()}
                     </td>
