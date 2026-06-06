@@ -387,21 +387,21 @@ export default function BbaRecordsPage() {
                   type="date"
                   value={dateRange.start}
                   onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
-                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white"
+                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:[color-scheme:dark]"
                 />
                 <span className="text-gray-400">-</span>
                 <input
                   type="date"
                   value={dateRange.end}
                   onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
-                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white"
+                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:[color-scheme:dark]"
                 />
               </div>
 
               <select
                 value={projectFilter}
                 onChange={(e) => setProjectFilter(e.target.value)}
-                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200"
+                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200 dark:[color-scheme:dark]"
               >
                 <option value="">All Projects</option>
                 {projects.map((proj) => (
@@ -417,7 +417,7 @@ export default function BbaRecordsPage() {
                   const [key, direction] = e.target.value.split('-');
                   setSortConfig({ key, direction: direction as 'asc' | 'desc' });
                 }}
-                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200"
+                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200 dark:[color-scheme:dark]"
               >
                 <option value="date-desc">Newest First</option>
                 <option value="date-asc">Oldest First</option>
@@ -434,7 +434,7 @@ export default function BbaRecordsPage() {
               <span className="text-gray-500 dark:text-gray-400">Active Filters:</span>
               <button
                 onClick={handleClearFilters}
-                className="text-brand-gold hover:text-brand-navy flex items-center gap-1 font-medium transition-colors"
+                className="text-brand-gold hover:text-brand-navy flex items-center gap-1 font-medium transition-colors dark:hover:text-white"
               >
                 <X className="h-3 w-3" />
                 Clear All

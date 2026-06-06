@@ -136,7 +136,7 @@ function SidebarContent({
         </motion.div>
 
         {documentItems.map((item) => {
-          const active = pathname.startsWith(item.path);
+          const active = pathname === item.path || pathname.startsWith(`${item.path}/`);
           return (
             <Link
               key={item.name}
@@ -174,7 +174,7 @@ function SidebarContent({
         </motion.div>
 
         {managementItems.map((item) => {
-          const active = pathname.startsWith(item.path);
+          const active = pathname === item.path || pathname.startsWith(`${item.path}/`);
           return (
             <Link
               key={item.name}
