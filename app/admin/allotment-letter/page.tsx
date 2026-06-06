@@ -159,6 +159,7 @@ export default function AllotmentLetterPage() {
     bsp: '',
     plc: '',
     edc: '',
+    edcInEmi: 'false',
     paymentPlan: '12',
     bookingDate: '',
     secondPaymentDays: '15',
@@ -204,10 +205,13 @@ export default function AllotmentLetterPage() {
   };
 
   const totalCost = calculateTotalCost();
+  const edcAmount = parseFloat(formData.edc) || 0;
+  const edcInEmi = formData.edcInEmi === 'true';
+  const baseCost = totalCost - edcAmount; // without EDC
   const bookingPercent = parseFloat(formData.bookingPaymentPercent) || 10;
-  const initialPayment = totalCost * (bookingPercent / 100);
+  const initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
   const secondPercent = 20;
-  const secondPayment = totalCost * (secondPercent / 100);
+  const secondPayment = (edcInEmi ? baseCost : totalCost) * (secondPercent / 100);
   const showSecondInstalment = formData.showSecondInstalment === 'true';
   const zeroCost = formData.zeroPercentEmi === 'true';
   const remainingPercentInTerms = zeroCost
@@ -399,6 +403,34 @@ export default function AllotmentLetterPage() {
                 onChange={handleChange}
                 placeholder="0"
               />
+
+              {(parseFloat(formData.edc) || 0) > 0 && (
+                <div className="col-span-2">
+                  <label className="flex cursor-pointer items-center gap-3 rounded-lg border border-gray-200 bg-white px-4 py-2.5 transition-all hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+                    <input
+                      type="checkbox"
+                      name="edcInEmi"
+                      checked={formData.edcInEmi === 'true'}
+                      onChange={(e) =>
+                        setFormData((prev) => ({
+                          ...prev,
+                          edcInEmi: e.target.checked ? 'true' : 'false',
+                        }))
+                      }
+                      className="h-4 w-4 cursor-pointer rounded border-gray-300 text-amber-600 focus:ring-amber-500"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-800 dark:text-white">
+                        Include EDC in EMI payments only
+                      </span>
+                      <p className="text-[10px] text-gray-400">
+                        EDC excluded from booking &amp; second instalment — added to remaining EMI
+                        amount
+                      </p>
+                    </div>
+                  </label>
+                </div>
+              )}
 
               <FormSelect
                 label="Payment Plan"
@@ -672,6 +704,7 @@ export default function AllotmentLetterPage() {
                       minimumFractionDigits: 2,
                       maximumFractionDigits: 2,
                     })}
+                    {edcInEmi ? ' (added to EMI)' : ' (proportionate in all payments)'}
                   </p>
                 </div>
               )}
@@ -936,8 +969,15 @@ export default function AllotmentLetterPage() {
                         const emiPercentPerInstallment = formData.emiPercentage
                           ? parseFloat(formData.emiPercentage)
                           : remainingPercent / emiCount;
-                        const emiAmount = totalCost * (emiPercentPerInstallment / 100);
                         const emiStartIndex = showSecondInstalment ? 3 : 2;
+
+                        // When EDC is in EMI-only mode, the EMI amount = base remaining portion + full EDC, divided equally
+                        const totalEmiAmount = edcInEmi
+                          ? (baseCost * remainingPercent) / 100 + edcAmount
+                          : totalCost * (emiPercentPerInstallment / 100);
+                        const emiAmount = edcInEmi
+                          ? totalEmiAmount / emiCount
+                          : totalCost * (emiPercentPerInstallment / 100);
 
                         return Array.from({ length: emiCount }).map((_, i) => {
                           let emiDate = '-';
@@ -958,7 +998,11 @@ export default function AllotmentLetterPage() {
                               </td>
                               <td className="border border-gray-400 p-2 font-bold">{emiDate}</td>
                               <td className="border border-gray-400 p-2 font-bold">
-                                {zeroCost ? `${i + 1} EMI (0% Interest)` : `${i + 1} EMI`}
+                                {zeroCost
+                                  ? `${i + 1} EMI (0% Interest)`
+                                  : edcInEmi
+                                    ? `${i + 1} EMI (incl. EDC)`
+                                    : `${i + 1} EMI`}
                               </td>
                               <td className="border border-gray-400 p-2">
                                 {emiPercentPerInstallment.toFixed(1)}%
@@ -1002,8 +1046,9 @@ export default function AllotmentLetterPage() {
                   )}
                   <p className="mb-2">
                     The remaining {remainingPercentInTerms}%
-                    {zeroCost ? ' (0% Interest — equal instalments)' : ''} will be paid as per the
-                    selected payment plan EMIs and is scheduled to complete accordingly.
+                    {zeroCost ? ' (0% Interest — equal instalments)' : ''}
+                    {edcInEmi && !zeroCost ? ' (incl. EDC)' : ''} will be paid as per the selected
+                    payment plan EMIs and is scheduled to complete accordingly.
                   </p>
                   <p className="mb-2">
                     Note: Allotment under {formData.projectName} will only be confirmed upon receipt
