@@ -87,7 +87,7 @@ export default function AllotmentLetterPage() {
           filteredProfiles.map((p) => ({
             full_name: p.full_name || '',
             phone: p.phone || '',
-            email: p.email || '',
+            email: p.real_email || p.email || '',
           }))
         );
       } catch (err) {

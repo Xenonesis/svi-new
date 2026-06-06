@@ -257,7 +257,8 @@ export function ComposeTab({
   };
 
   const handleSend = async () => {
-    if (!to.trim() || !subject.trim() || !html.trim()) {
+    const finalHtml = getPreviewHtml() || html;
+    if (!to.trim() || !subject.trim() || !finalHtml.trim()) {
       setError('Please fill in To, Subject, and Body fields.');
       return;
     }
