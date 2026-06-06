@@ -101,7 +101,7 @@ function SidebarContent({
       </div>
 
       {/* Nav */}
-      <div className="custom-scrollbar flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-6">
+      <div className="custom-scrollbar flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto px-3 py-6">
         {/* Dashboard */}
         <Link
           href="/admin/dashboard"
@@ -207,7 +207,7 @@ function SidebarContent({
       </div>
 
       {/* Footer */}
-      <div className="dark:border-brand-gold/15 border-t border-gray-200 p-3">
+      <div className="dark:border-brand-gold/15 overflow-x-hidden border-t border-gray-200 p-3">
         <Link
           href="/admin/settings"
           onClick={onLinkClick}
