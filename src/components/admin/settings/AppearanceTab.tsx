@@ -121,6 +121,7 @@ export function AppearanceTab({
         <div className="flex gap-2">
           {[
             { id: 'comfortable', label: 'Comfortable' },
+            { id: 'medium', label: 'Medium' },
             { id: 'compact', label: 'Compact' },
           ].map((density) => {
             const isSelected = uiDensity === density.id;
