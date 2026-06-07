@@ -6,11 +6,72 @@ import {
   PreviewContainer,
 } from '@/src/components/admin/DocumentGenerator/Shared';
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
-import { FileSignature, RefreshCw } from 'lucide-react';
+import { FileSignature, RefreshCw, ChevronDown, SlidersHorizontal } from 'lucide-react';
 
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
+
+const SALARY_SLABS = [
+  { target: 120, salary: 17000, offerSlab: '3%' },
+  { target: 140, salary: 18000, offerSlab: '3%' },
+  { target: 160, salary: 19000, offerSlab: '3%' },
+  { target: 180, salary: 20000, offerSlab: '3%' },
+  { target: 210, salary: 22000, offerSlab: '3%' },
+  { target: 250, salary: 25000, offerSlab: '3%' },
+  { target: 290, salary: 28000, offerSlab: '3%' },
+  { target: 320, salary: 30000, offerSlab: '3%' },
+  { target: 380, salary: 35000, offerSlab: '3%' },
+  { target: 450, salary: 40000, offerSlab: '3%' },
+  { target: 520, salary: 45000, offerSlab: '3%' },
+  { target: 600, salary: 50000, offerSlab: '3%' },
+];
+
+// ─── Suggestion Dropdown ─────────────────────────────────────────
+function SlabSuggestions({
+  slabs,
+  activeKey,
+  activeVal,
+  selectedSalary,
+  onSelect,
+  format,
+}: {
+  slabs: typeof SALARY_SLABS;
+  activeKey: 'salary' | 'target';
+  activeVal: string;
+  selectedSalary: number;
+  onSelect: (s: (typeof SALARY_SLABS)[number]) => void;
+  format: (s: (typeof SALARY_SLABS)[number]) => { left: string; right: string };
+}) {
+  if (slabs.length === 0) {
+    return <div className="px-3 py-2 text-xs text-gray-400">No matching slab</div>;
+  }
+  return (
+    <div className="py-1">
+      {slabs.map((s) => {
+        const isActive =
+          s[activeKey] === (activeKey === 'salary' ? selectedSalary : parseFloat(activeVal));
+        const { left, right } = format(s);
+        return (
+          <button
+            key={s[activeKey]}
+            type="button"
+            onMouseDown={(e) => {
+              e.preventDefault();
+              onSelect(s);
+            }}
+            className={`flex w-full items-center justify-between px-3 py-2 text-left text-xs transition-colors hover:bg-gray-50 dark:hover:bg-white/5 ${
+              isActive ? 'text-brand-gold font-medium' : 'text-gray-700 dark:text-gray-300'
+            }`}
+          >
+            <span>{left}</span>
+            <span className="text-gray-400">{right}</span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export default function OfferLetterPage() {
   const { token } = useAdminSession();
@@ -62,17 +123,95 @@ export default function OfferLetterPage() {
 
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
+  const [salaryOpen, setSalaryOpen] = useState(false);
+  const [targetOpen, setTargetOpen] = useState(false);
+  const [showSlabs, setShowSlabs] = useState(false);
+
+  const salaryRef = useRef<HTMLDivElement>(null);
+  const targetRef = useRef<HTMLDivElement>(null);
+
+  // Close on outside click
+  const handleClickOutside = useCallback((e: MouseEvent) => {
+    if (salaryRef.current && !salaryRef.current.contains(e.target as Node)) setSalaryOpen(false);
+    if (targetRef.current && !targetRef.current.contains(e.target as Node)) setTargetOpen(false);
+  }, []);
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [handleClickOutside]);
+
+  // Derive matched slab
+  const matchedSlab = SALARY_SLABS.find((s) => parseFloat(formData.salaryCtc) === s.salary);
+  const isCustom = formData.salaryCtc !== '' && !matchedSlab;
+
+  // Filter suggestions
+  const salarySuggestions = formData.salaryCtc
+    ? SALARY_SLABS.filter((s) => {
+        const v = parseFloat(formData.salaryCtc) || 0;
+        return (
+          s.salary.toString().includes(formData.salaryCtc) ||
+          (v > 0 && Math.abs(s.salary - v) <= 2000)
+        );
+      })
+    : SALARY_SLABS;
+  const targetSuggestions = formData.target
+    ? SALARY_SLABS.filter((s) => {
+        const v = parseFloat(formData.target) || 0;
+        return (
+          s.target.toString().includes(formData.target) || (v > 0 && Math.abs(s.target - v) <= 20)
+        );
+      })
+    : SALARY_SLABS;
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    const updated = { ...formData, [name]: value };
+
+    if (name === 'salaryCtc' && value) {
+      const numVal = parseFloat(value);
+      if (!isNaN(numVal)) {
+        const slab = SALARY_SLABS.find((s) => s.salary === numVal);
+        if (slab) {
+          updated.target = slab.target.toString();
+          updated.offerSlab = slab.offerSlab;
+          setSalaryOpen(false);
+        } else {
+          setSalaryOpen(true);
+        }
+      }
+    } else if (name === 'target' && value) {
+      const numVal = parseFloat(value);
+      if (!isNaN(numVal)) {
+        const slab = SALARY_SLABS.find((s) => s.target === numVal);
+        if (slab) {
+          updated.salaryCtc = slab.salary.toString();
+          updated.offerSlab = slab.offerSlab;
+          setTargetOpen(false);
+        } else {
+          setTargetOpen(true);
+        }
+      }
+    }
+
+    setFormData(updated);
+  };
+
+  const selectSalarySlab = (s: (typeof SALARY_SLABS)[number]) => {
+    setFormData({
+      ...formData,
+      salaryCtc: s.salary.toString(),
+      target: s.target.toString(),
+      offerSlab: s.offerSlab,
+    });
+    setSalaryOpen(false);
+    setTargetOpen(false);
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Save document record to database
     if (token) {
       try {
         const response = await fetch('/api/admin/documents', {
@@ -107,7 +246,6 @@ export default function OfferLetterPage() {
         filename: 'Offer_Letter.pdf',
       });
 
-      // Update document status to completed
       if (documentId && token) {
         try {
           await fetch(`/api/admin/documents/${documentId}`, {
@@ -139,27 +277,24 @@ export default function OfferLetterPage() {
   };
 
   return (
-    <div className="mx-auto w-full max-w-7xl font-sans">
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
-            Offer <span className="text-brand-gold italic">Letter</span>
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Generate and download official job offer letters for new employees.
-          </p>
-        </div>
+    <div className="mx-auto w-full max-w-7xl">
+      <div className="mb-6">
+        <h1 className="text-brand-navy mb-1 font-serif text-3xl tracking-tight dark:text-white">
+          Offer <span className="text-brand-gold italic">Letter</span>
+        </h1>
+        <p className="text-sm text-gray-500 dark:text-gray-400">
+          Generate offer letters for new employees.
+        </p>
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
-        <div className="relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
-          <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
-
-          <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-white/10">
-            <div className="bg-brand-gold/10 border-brand-gold/20 flex h-8 w-8 items-center justify-center rounded border">
-              <FileSignature className="text-brand-gold h-4 w-4" />
-            </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Candidate Details</h2>
+        {/* ──────────────── Form ──────────────── */}
+        <div className="relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#0e0e14]/80">
+          <div className="mb-5 flex items-center gap-2 border-b border-gray-100 pb-4 dark:border-white/10">
+            <FileSignature className="text-brand-gold h-4 w-4" />
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
+              Candidate Details
+            </h2>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -196,7 +331,7 @@ export default function OfferLetterPage() {
                 required
               />
               <FormField
-                label="Alternative No"
+                label="Alternate No"
                 name="alternativeNo"
                 type="tel"
                 value={formData.alternativeNo}
@@ -241,34 +376,145 @@ export default function OfferLetterPage() {
                 required
               />
               <FormField
-                label="Location of Posting"
+                label="Location"
                 name="location"
                 value={formData.location}
                 onChange={handleChange}
                 required
               />
+
+              {/* ── Salary ── */}
+              <div ref={salaryRef} className="relative">
+                <FormField
+                  label="Salary (CTC) / month"
+                  name="salaryCtc"
+                  type="number"
+                  value={formData.salaryCtc}
+                  onChange={handleChange}
+                  onFocus={() => formData.salaryCtc && setSalaryOpen(true)}
+                  required
+                />
+                {formData.salaryCtc && (
+                  <div className="absolute top-7 right-2.5">
+                    <span
+                      className={`inline-block rounded px-1.5 py-0.5 text-[10px] leading-tight font-medium ${
+                        matchedSlab
+                          ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400'
+                          : 'bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-400'
+                      }`}
+                    >
+                      {matchedSlab ? `${matchedSlab.target} Sq.Yd` : 'Custom'}
+                    </span>
+                  </div>
+                )}
+                {salaryOpen && formData.salaryCtc && (
+                  <div className="absolute z-50 mt-0.5 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-[#1a1a23]">
+                    <SlabSuggestions
+                      slabs={salarySuggestions}
+                      activeKey="salary"
+                      activeVal={formData.salaryCtc}
+                      selectedSalary={matchedSlab?.salary || 0}
+                      onSelect={selectSalarySlab}
+                      format={(s) => ({
+                        left: `₹${s.salary.toLocaleString('en-IN')}`,
+                        right: `${s.target} Sq.Yd`,
+                      })}
+                    />
+                  </div>
+                )}
+              </div>
+
+              {/* ── Target ── */}
+              <div ref={targetRef} className="relative">
+                <FormField
+                  label="Target (Sq. Yd.)"
+                  name="target"
+                  type="number"
+                  value={formData.target}
+                  onChange={handleChange}
+                  onFocus={() => formData.target && setTargetOpen(true)}
+                  required
+                />
+                {formData.target && matchedSlab && (
+                  <div className="absolute top-7 right-2.5">
+                    <span className="inline-block rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] leading-tight font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
+                      ₹{matchedSlab.salary.toLocaleString('en-IN')}
+                    </span>
+                  </div>
+                )}
+                {targetOpen && formData.target && (
+                  <div className="absolute z-50 mt-0.5 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-[#1a1a23]">
+                    <SlabSuggestions
+                      slabs={targetSuggestions}
+                      activeKey="target"
+                      activeVal={formData.target}
+                      selectedSalary={matchedSlab?.salary || 0}
+                      onSelect={selectSalarySlab}
+                      format={(s) => ({
+                        left: `${s.target} Sq.Yd`,
+                        right: `₹${s.salary.toLocaleString('en-IN')}`,
+                      })}
+                    />
+                  </div>
+                )}
+              </div>
+
               <FormField
-                label="Salary (CTC) Per Month"
-                name="salaryCtc"
-                type="number"
-                value={formData.salaryCtc}
-                onChange={handleChange}
-                required
-              />
-              <FormField
-                label="Target"
-                name="target"
-                value={formData.target}
-                onChange={handleChange}
-                required
-              />
-              <FormField
-                label="Offer Slab Per Month"
+                label="Offer Slab"
                 name="offerSlab"
                 value={formData.offerSlab}
                 onChange={handleChange}
                 required
               />
+
+              {/* ── Slab Reference ── */}
+              <div className="md:col-span-2">
+                <button
+                  type="button"
+                  onClick={() => setShowSlabs(!showSlabs)}
+                  className="flex w-full items-center justify-between rounded-lg border border-dashed border-gray-300 px-3 py-2 text-xs text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-700 dark:border-white/10 dark:text-gray-400 dark:hover:text-gray-200"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <SlidersHorizontal className="h-3.5 w-3.5" />
+                    Salary slab reference
+                  </span>
+                  <ChevronDown
+                    className={`h-3.5 w-3.5 transition-transform ${showSlabs ? 'rotate-180' : ''}`}
+                  />
+                </button>
+
+                {showSlabs && (
+                  <div className="mt-3 grid grid-cols-2 gap-1.5 sm:grid-cols-3 lg:grid-cols-4">
+                    {SALARY_SLABS.map((slab) => {
+                      const active = parseFloat(formData.salaryCtc) === slab.salary;
+                      return (
+                        <button
+                          key={slab.target}
+                          type="button"
+                          onClick={() => selectSalarySlab(slab)}
+                          className={`rounded-lg border px-3 py-2 text-left text-xs transition-all ${
+                            active
+                              ? 'border-brand-gold bg-brand-gold/5 text-brand-gold'
+                              : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/30'
+                          }`}
+                        >
+                          <div className="font-medium">₹{slab.salary.toLocaleString('en-IN')}</div>
+                          <div className="mt-0.5 text-[10px] text-gray-400">
+                            {slab.target} Sq.Yd &middot; {slab.offerSlab}
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* ── Work / Probation ── */}
+              <div className="col-span-2 mt-2 border-t border-gray-100 pt-4 dark:border-white/10">
+                <p className="mb-3 text-[11px] font-medium tracking-wider text-gray-500 uppercase">
+                  Employment Terms
+                </p>
+              </div>
               <FormField
                 label="Working Hours Start"
                 name="workingHoursStart"
@@ -291,7 +537,7 @@ export default function OfferLetterPage() {
                 placeholder="Wednesday to Monday"
               />
               <FormField
-                label="Probation Period (months)"
+                label="Probation (months)"
                 name="probationPeriod"
                 type="number"
                 value={formData.probationPeriod}
@@ -302,39 +548,33 @@ export default function OfferLetterPage() {
 
             <button
               type="submit"
-              className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all"
+              className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 text-xs font-bold tracking-widest uppercase shadow-sm transition-all"
             >
               <RefreshCw className="h-4 w-4" /> Generate Offer Letter
             </button>
           </form>
         </div>
 
-        <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/8 dark:bg-[#0e0e14]">
-          <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
-
-          <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Live Preview</h2>
+        {/* ──────────────── Preview ──────────────── */}
+        <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#0e0e14]">
+          <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-white/10">
+            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Preview</h2>
             {preview && (
               <button
                 onClick={() => {
-                  const previewElement = document.getElementById('offerPreview');
-                  if (previewElement) {
-                    if (document.fullscreenElement) {
-                      document.exitFullscreen();
-                    } else {
-                      previewElement.requestFullscreen().catch((err) => {
-                        console.error('Error attempting to enable fullscreen:', err);
-                      });
-                    }
+                  const el = document.getElementById('offerPreview');
+                  if (el) {
+                    if (document.fullscreenElement) document.exitFullscreen();
+                    else el.requestFullscreen().catch(() => {});
                   }
                 }}
-                className="flex items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
-                title="Toggle Fullscreen"
+                className="rounded-md p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                title="Fullscreen"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
+                  width="16"
+                  height="16"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
@@ -347,7 +587,6 @@ export default function OfferLetterPage() {
                   <path d="M3 16v3a2 2 0 0 0 2 2h3" />
                   <path d="M16 21h3a2 2 0 0 0 2-2v-3" />
                 </svg>
-                <span className="hidden sm:inline">Fullscreen</span>
               </button>
             )}
           </div>

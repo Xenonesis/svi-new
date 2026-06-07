@@ -46,6 +46,8 @@ interface FormFieldProps {
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => void;
+  onFocus?: (e: React.FocusEvent<HTMLInputElement>) => void;
+  onBlur?: (e: React.FocusEvent<HTMLInputElement>) => void;
   required?: boolean;
   placeholder?: string;
   className?: string;
@@ -60,6 +62,8 @@ export function FormField({
   type = 'text',
   value,
   onChange,
+  onFocus,
+  onBlur,
   required = false,
   placeholder,
   className = '',
@@ -77,6 +81,8 @@ export function FormField({
         name={name}
         value={value}
         onChange={onChange}
+        onFocus={onFocus}
+        onBlur={onBlur}
         required={required}
         placeholder={placeholder}
         step={step}
