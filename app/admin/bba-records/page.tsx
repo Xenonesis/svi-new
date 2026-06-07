@@ -14,7 +14,9 @@ import {
   Building2,
   TrendingUp,
   Image as ImageIcon,
+  Mail,
 } from 'lucide-react';
+import Link from 'next/link';
 import { useEffect, useState, useMemo } from 'react';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { supabase } from '@/src/lib/supabase/client';
@@ -580,18 +582,37 @@ export default function BbaRecordsPage() {
                         </span>
                       </td>
                       <td className="px-4 py-3.5 text-right">
-                        <div className="flex justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
                           <button
                             onClick={() => setSelectedBba(record)}
-                            className="bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold flex items-center justify-center gap-1 rounded-lg px-2.5 py-1.5 font-bold transition-all"
+                            className="hover:text-brand-gold hover:bg-brand-gold/10 dark:hover:bg-brand-gold/10 dark:hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors"
+                            title="View & Print"
                           >
-                            <Eye className="h-3.5 w-3.5" /> View & Print
+                            <Eye className="h-4 w-4" />
+                          </button>
+                          <Link
+                            href={`/admin/bba?templateId=${record.id}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                            title="Use as Template"
+                          >
+                            <FileText className="h-4 w-4" />
+                          </Link>
+                          <button
+                            onClick={() => {
+                              sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
+                              window.location.href = '/admin/email?tab=compose&prefillBba=true';
+                            }}
+                            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-500/10 dark:hover:text-purple-400"
+                            title="Email Client"
+                          >
+                            <Mail className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => setDeleteTarget(record)}
-                            className="flex items-center justify-center gap-1 rounded-lg bg-red-500/10 px-2.5 py-1.5 font-bold text-red-500 transition-all hover:bg-red-500/20"
+                            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                            title="Delete"
                           >
-                            <Trash2 className="h-3.5 w-3.5" /> Delete
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </td>

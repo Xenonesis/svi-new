@@ -266,6 +266,59 @@ export function ComposeTab({
     }
   }, []);
 
+  // Handle prefill from BBA Records
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('prefillBba') === 'true') {
+        const stored = sessionStorage.getItem('emailPrefillRecord');
+        if (stored) {
+          try {
+            const record = JSON.parse(stored);
+            const fd = record.form_data;
+
+            const area = parseFloat(fd.area) || 0;
+            const bsp = parseFloat(fd.bsp) || 0;
+            const plc = parseFloat(fd.plc) || 0;
+            const totalCost = area * bsp + area * bsp * (plc / 100);
+            const formattedCost = totalCost.toLocaleString('en-IN', { maximumFractionDigits: 0 });
+
+            setSubject(`BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`);
+            setHtml(
+              `
+<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
+  <h2 style="color:#1a2744;">Builder Buyer Agreement</h2>
+  <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.clientName || 'N/A'}</p>
+  <p><strong>Project:</strong> ${fd.projectName || 'N/A'}</p>
+  <p><strong>Unit / Plot:</strong> ${fd.unitNumber || 'N/A'} (${fd.area || ''} Sq. Yds.)</p>
+  <p><strong>Total Cost:</strong> ₹${formattedCost}</p>
+  <p><strong>Payment Plan:</strong> ${fd.paymentPlan || 'N/A'} Months</p>
+  <p><strong>Booking Date:</strong> ${fd.bookingDate ? new Date(fd.bookingDate).toLocaleDateString('en-GB') : 'N/A'}</p>
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
+  <p style="color:#666;font-size:13px;">Please find the BBA document attached for your records.</p>
+</div>
+`.trim()
+            );
+            setTemplateHtml(null);
+            setSelectedTemplate(null);
+            setPreviewMode(false);
+            setEditorKey((prev) => prev + 1);
+
+            if (fd.email) {
+              setTo(fd.email);
+            }
+
+            sessionStorage.removeItem('emailPrefillRecord');
+            const newUrl = window.location.pathname + '?tab=compose';
+            window.history.replaceState({}, '', newUrl);
+          } catch (e) {
+            console.error('Error prefilling BBA email:', e);
+          }
+        }
+      }
+    }
+  }, []);
+
   // Auto-save draft every 5s
   useEffect(() => {
     if (!to && !subject && !html) return;

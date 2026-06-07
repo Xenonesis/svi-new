@@ -329,6 +329,21 @@ export default function BbaPage() {
     }
   };
 
+  // Handle templateId from URL (e.g. from BBA Records "Use as Template")
+  useEffect(() => {
+    if (savedBbas.length > 0 && typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const templateId = searchParams.get('templateId');
+      if (templateId) {
+        const selected = savedBbas.find((b) => b.id === templateId);
+        if (selected && selected.form_data) {
+          setDocumentId(selected.id);
+          setFormData((prev) => ({ ...prev, ...selected.form_data }));
+        }
+      }
+    }
+  }, [savedBbas]);
+
   const handleDownloadPDF = async () => {
     try {
       await exportToPDF({
