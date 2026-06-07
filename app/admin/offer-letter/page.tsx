@@ -3,6 +3,7 @@
 import {
   DownloadOptions,
   FormField,
+  FormSelect,
   PreviewContainer,
 } from '@/src/components/admin/DocumentGenerator/Shared';
 import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
@@ -11,6 +12,8 @@ import { FileSignature, RefreshCw, ChevronDown, SlidersHorizontal } from 'lucide
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
 import { useEffect, useState, useRef, useCallback } from 'react';
+
+const DEPARTMENTS = ['Sales', 'IT', 'Management'];
 
 const SALARY_SLABS = [
   { target: 120, salary: 17000, offerSlab: '3%' },
@@ -439,12 +442,15 @@ export default function OfferLetterPage() {
                 onChange={handleChange}
                 required
               />
-              <FormField
+              <FormSelect
                 label="Department"
                 name="department"
                 value={formData.department}
                 onChange={handleChange}
-                required
+                options={[
+                  { value: '', label: '— Select department —' },
+                  ...DEPARTMENTS.map((d) => ({ value: d, label: d })),
+                ]}
               />
               <FormField
                 label="Reporting To"
