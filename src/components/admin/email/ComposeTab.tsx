@@ -193,6 +193,79 @@ export function ComposeTab({
     }
   }, []);
 
+  // Handle prefill from Receipt Records
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('prefillReceipt') === 'true') {
+        const stored = sessionStorage.getItem('emailPrefillRecord');
+        if (stored) {
+          try {
+            const record = JSON.parse(stored);
+            const fd = record.form_data;
+            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'payment');
+
+            const amountFormatted = parseFloat(fd.amount || '0').toLocaleString('en-IN', {
+              maximumFractionDigits: 0,
+            });
+
+            if (tpl) {
+              let processedSubject = tpl.subject;
+              processedSubject = processedSubject.replace(
+                '{{property_name}}',
+                `Plot ${fd.plotNo || ''}`
+              );
+              processedSubject = processedSubject.replace('{{name}}', fd.name || '');
+
+              setSubject(processedSubject);
+              setTemplateHtml(tpl.html);
+              setSelectedTemplate('payment');
+
+              const vars: Record<string, string> = {
+                name: fd.salutation ? `${fd.salutation} ${fd.name}` : fd.name || '',
+                property_name: `Plot ${fd.plotNo || ''} (${fd.plotSize || ''} Sq. Yds.)`,
+                amount: amountFormatted,
+                date: fd.date ? new Date(fd.date).toLocaleDateString('en-GB') : '',
+                receipt_no: fd.receiptNo || '',
+                portal_url: 'https://www.sviinfrasolutions.in',
+              };
+
+              setTemplateVars(vars);
+              setHtml('');
+              setPreviewMode(true);
+              setEditorKey((prev) => prev + 1);
+            } else {
+              // Fallback: prefill subject + plain body with receipt details when no template
+              setSubject(`Payment Receipt - ${fd.receiptNo || ''} - ${fd.name || ''}`);
+              setHtml(
+                `
+<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
+  <h2 style="color:#1a2744;">Payment Receipt</h2>
+  <p><strong>Receipt No:</strong> ${fd.receiptNo || 'N/A'}</p>
+  <p><strong>Date:</strong> ${fd.date ? new Date(fd.date).toLocaleDateString('en-GB') : 'N/A'}</p>
+  <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.name || 'N/A'}</p>
+  <p><strong>Amount:</strong> ₹${amountFormatted}</p>
+  <p><strong>Payment Method:</strong> ${fd.paymentMethod || 'N/A'}</p>
+  <p><strong>Plot No:</strong> ${fd.plotNo || 'N/A'} (${fd.plotSize || ''} Sq. Yds.)</p>
+  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
+  <p style="color:#666;font-size:13px;">Please find the payment receipt attached for your records.</p>
+</div>
+`.trim()
+              );
+              setEditorKey((prev) => prev + 1);
+            }
+
+            sessionStorage.removeItem('emailPrefillRecord');
+            const newUrl = window.location.pathname + '?tab=compose';
+            window.history.replaceState({}, '', newUrl);
+          } catch (e) {
+            console.error('Error prefilling receipt email:', e);
+          }
+        }
+      }
+    }
+  }, []);
+
   // Auto-save draft every 5s
   useEffect(() => {
     if (!to && !subject && !html) return;
