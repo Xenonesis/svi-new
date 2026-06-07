@@ -283,9 +283,44 @@ export function ComposeTab({
             const totalCost = area * bsp + area * bsp * (plc / 100);
             const formattedCost = totalCost.toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
-            setSubject(`BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`);
-            setHtml(
-              `
+            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'bba_document');
+
+            if (tpl) {
+              let processedSubject = tpl.subject;
+              processedSubject = processedSubject.replace('{{projectName}}', fd.projectName || '');
+              processedSubject = processedSubject.replace('{{unitNumber}}', fd.unitNumber || '');
+
+              setSubject(processedSubject);
+              setTemplateHtml(tpl.html);
+              setSelectedTemplate('bba_document');
+
+              const vars: Record<string, string> = {
+                salutation: fd.salutation || 'Mr.',
+                clientName: fd.clientName || '',
+                projectName: fd.projectName || '',
+                unitNumber: fd.unitNumber || '',
+                area: fd.area || '',
+                totalCost: formattedCost,
+                paymentPlan: fd.paymentPlan || '12',
+                bookingDate: fd.bookingDate
+                  ? new Date(fd.bookingDate).toLocaleDateString('en-GB')
+                  : '',
+                advisorName: fd.advisorName || '',
+                advisorNumber: fd.advisorNumber || '',
+                advisorEmail: fd.advisorEmail || '',
+                bankAccountName: 'Svi Infra Solutions Pvt. Ltd',
+                bankAccountNo: '0894102000013837',
+                bankName: 'IDBI BANK',
+                bankIfsc: 'IBKL0000894',
+              };
+
+              setTemplateVars(vars);
+              setHtml('');
+              setPreviewMode(true);
+            } else {
+              setSubject(`BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`);
+              setHtml(
+                `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
   <h2 style="color:#1a2744;">Builder Buyer Agreement</h2>
   <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.clientName || 'N/A'}</p>
@@ -298,10 +333,11 @@ export function ComposeTab({
   <p style="color:#666;font-size:13px;">Please find the BBA document attached for your records.</p>
 </div>
 `.trim()
-            );
-            setTemplateHtml(null);
-            setSelectedTemplate(null);
-            setPreviewMode(false);
+              );
+              setTemplateHtml(null);
+              setSelectedTemplate(null);
+              setPreviewMode(false);
+            }
             setEditorKey((prev) => prev + 1);
 
             if (fd.email) {
