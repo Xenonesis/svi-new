@@ -36,6 +36,7 @@ const documentItems = [
   { name: 'Receipt Records', path: '/admin/payment-receipts', icon: ClipboardList },
   { name: 'Payment Plan', path: '/admin/payment-plan', icon: Calculator },
   { name: 'Offer Letter', path: '/admin/offer-letter', icon: FileText },
+  { name: 'Offer Letter Records', path: '/admin/offer-letter-records', icon: ClipboardList },
   { name: 'BBA', path: '/admin/bba', icon: FileText },
   { name: 'BBA Records', path: '/admin/bba-records', icon: ClipboardList },
 ];

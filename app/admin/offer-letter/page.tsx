@@ -9,6 +9,7 @@ import { useAdminSession } from '@/src/components/admin/AdminSessionProvider';
 import { FileSignature, RefreshCw } from 'lucide-react';
 
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
+import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
 import { useEffect, useState } from 'react';
 
 export default function OfferLetterPage() {
@@ -53,6 +54,10 @@ export default function OfferLetterPage() {
     salaryCtc: '',
     target: '',
     offerSlab: '',
+    workingHoursStart: '10:30 am',
+    workingHoursEnd: '6:30 pm',
+    workingDays: 'Wednesday to Monday',
+    probationPeriod: '3',
   });
 
   const [preview, setPreview] = useState(false);
@@ -264,6 +269,35 @@ export default function OfferLetterPage() {
                 onChange={handleChange}
                 required
               />
+              <FormField
+                label="Working Hours Start"
+                name="workingHoursStart"
+                value={formData.workingHoursStart}
+                onChange={handleChange}
+                placeholder="10:30 am"
+              />
+              <FormField
+                label="Working Hours End"
+                name="workingHoursEnd"
+                value={formData.workingHoursEnd}
+                onChange={handleChange}
+                placeholder="6:30 pm"
+              />
+              <FormField
+                label="Working Days"
+                name="workingDays"
+                value={formData.workingDays}
+                onChange={handleChange}
+                placeholder="Wednesday to Monday"
+              />
+              <FormField
+                label="Probation Period (months)"
+                name="probationPeriod"
+                type="number"
+                value={formData.probationPeriod}
+                onChange={handleChange}
+                placeholder="3"
+              />
             </div>
 
             <button
@@ -319,108 +353,7 @@ export default function OfferLetterPage() {
           </div>
 
           <PreviewContainer previewId="offerPreview" hasPreview={preview}>
-            <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
-              {/* Header */}
-              <div className="mb-8 flex items-start justify-between">
-                <div>
-                  <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-                    {companyInfo.company_name}
-                  </h1>
-                  <p className="text-gray-700">
-                    Cell: {companyInfo.company_phone} | Email: {companyInfo.company_email}
-                  </p>
-                  <p className="text-gray-700">Website: {companyInfo.company_website}</p>
-                  <p className="text-gray-700">Office Address : {companyInfo.company_address}</p>
-                </div>
-                <div className="w-48">
-                  <img
-                    src="/logo.png"
-                    alt={companyInfo.company_name}
-                    className="h-auto w-full object-contain"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                </div>
-              </div>
-
-              {/* Date & To */}
-              <div className="mb-6">
-                <p className="mb-4 font-bold">
-                  Date:{' '}
-                  {formData.date ||
-                    new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
-                </p>
-                <p className="font-bold">To,</p>
-                <p className="font-bold">{formData.name || '[Candidate Name]'}</p>
-                <p className="font-bold whitespace-pre-wrap">{formData.address || '[Address]'}</p>
-              </div>
-
-              {/* Subject */}
-              <div className="mb-6 text-center">
-                <h3 className="font-bold uppercase underline">
-                  Subject: Offer Letter - {formData.designation || '[Designation]'}
-                </h3>
-              </div>
-
-              {/* Body */}
-              <div className="mb-16 space-y-4 text-justify">
-                <p>
-                  Dear <span className="font-bold">{formData.name || '[Candidate Name]'}</span>,
-                </p>
-                <p>
-                  We are pleased to offer you the position of{' '}
-                  <span className="font-bold">{formData.designation || '[Designation]'}</span> in
-                  the
-                  <span className="font-bold"> {formData.department || '[Department]'}</span>{' '}
-                  department at {companyInfo.company_name}. You will report to{' '}
-                  <span className="font-bold">{formData.reportingTo || '[Reporting To]'}</span> and
-                  be based at
-                  <span className="font-bold"> {formData.location || '[Location]'}</span>.
-                </p>
-                <p>
-                  Your appointment date is{' '}
-                  <span className="font-bold">{formData.appointmentDate || '[Date]'}</span>. The
-                  monthly CTC offered is
-                  <span className="font-bold">
-                    {' '}
-                    ₹
-                    {parseFloat(formData.salaryCtc || '0').toLocaleString('en-IN', {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </span>{' '}
-                  with a target of
-                  <span className="font-bold"> {formData.target || '[Target]'}</span> and offer slab
-                  per month of
-                  <span className="font-bold"> {formData.offerSlab || '[Offer Slab]'}</span>.
-                </p>
-                <p>
-                  Please confirm your acceptance of this offer by signing and returning a copy of
-                  this letter. We look forward to welcoming you to the team.
-                </p>
-              </div>
-
-              {/* Footer / Signatures */}
-              <div className="mt-12 flex items-end justify-between">
-                <div>
-                  <p className="mb-2">
-                    For <span className="font-bold text-[#1e3a8a]">{companyInfo.company_name}</span>
-                  </p>
-                  <img
-                    src="/images/signature.png"
-                    alt="Signature"
-                    className="mb-2 h-12 w-auto opacity-80 mix-blend-multiply"
-                    onError={(e) => (e.currentTarget.style.display = 'none')}
-                  />
-                  <p className="font-bold">Ilyas Ali</p>
-                  <p className="text-gray-600">(Director)</p>
-                </div>
-                <div className="text-center">
-                  <div className="mx-auto w-48 border-t border-black pt-2">
-                    <p className="font-bold">Candidate Signature</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <OfferLetterPreviewContent formData={formData} companyInfo={companyInfo} />
           </PreviewContainer>
 
           <DownloadOptions
