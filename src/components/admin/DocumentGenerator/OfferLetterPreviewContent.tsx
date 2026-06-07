@@ -19,6 +19,9 @@ interface OfferLetterFormData {
   workingHoursEnd?: string;
   workingDays?: string;
   probationPeriod?: string;
+  salesCompensationType?: string;
+  noSaleMonths?: string;
+  customSalaryPercent?: string;
 }
 
 interface CompanyInfo {
@@ -36,6 +39,8 @@ export default function OfferLetterPreviewContent({
   formData: OfferLetterFormData;
   companyInfo: CompanyInfo;
 }) {
+  const isSalesDepartment = formData.department === 'Sales';
+
   return (
     <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
       {/* Header */}
@@ -70,6 +75,9 @@ export default function OfferLetterPreviewContent({
         <p className="font-bold">{formData.name || '[Candidate Name]'}</p>
         <p className="font-bold whitespace-pre-wrap">{formData.address || '[Address]'}</p>
         {formData.mobileNo && <p className="font-bold">Mobile NO : +91 {formData.mobileNo}</p>}
+        {formData.alternativeNo && (
+          <p className="font-bold">Alternate No: +91 {formData.alternativeNo}</p>
+        )}
       </div>
 
       {/* Subject */}
@@ -126,26 +134,110 @@ export default function OfferLetterPreviewContent({
                 })
               : '[Amount]'}
           </span>
-          {formData.target && (
+          {(formData.target || matchedSlab) && (
             <>
               {' '}
-              (Target – <span className="font-bold">{formData.target}</span>
+              (Target –{' '}
+              <span className="font-bold">
+                {formData.target || formData.salaryCtc
+                  ? `${formData.target || matchedSlab?.target} Sq.Yd`
+                  : '[Target]'}
+              </span>
             </>
           )}
           {formData.offerSlab && <> = {formData.offerSlab}</>}
-          {formData.target && ')'}, which includes all statutory benefits as applicable. Additional
-          performance based incentives will be provided as per company policy.
+          {(formData.target || matchedSlab) && ')'}, which includes all statutory benefits as
+          applicable. Additional performance-based incentives will be provided as per company
+          policy.
         </p>
+
+        {/* ── Sales Compensation Condition (Term 3.5) ── */}
+        {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
+          <p>
+            <span className="font-bold">3A. No Sale No Salary Policy</span>
+            <br />
+            As a condition of this offer, your compensation is linked to sales performance. In the
+            event of <span className="font-bold">no confirmed sale</span> within your Quota Period
+            you shall receive only a{' '}
+            {formData.subsistenceAllowance && parseFloat(formData.subsistenceAllowance) > 0 ? (
+              <span className="font-bold">
+                subsistence allowance of ₹
+                {(() => {
+                  const v = parseFloat(formData.subsistenceAllowance);
+                  return v ? v.toLocaleString('en-IN') : '0';
+                })()}{' '}
+                per month
+              </span>
+            ) : (
+              <span className="font-bold">
+                subsistence allowance as may be decided by the Company
+              </span>
+            )}
+            . No further salary or allowances shall be liable beyond such subsistence allowance
+            unless and until a sale is closed. Otherwise, your agreed salary as per Clause 3 above
+            shall continue.
+          </p>
+        )}
+
+        {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
+          <p>
+            <span className="font-bold">3A. Guaranteed Salary During Quota Period</span>
+            <br />
+            As a condition of this offer, your compensation will be structured as a percentage of
+            your total CTC during the initial Quota Period. For the first{' '}
+            <span className="font-bold">
+              {formData.probationPeriod || '3'}{' '}
+              {(() => {
+                const p = parseInt(formData.probationPeriod || '3', 10);
+                return p === 1 ? 'month' : 'months';
+              })()}
+            </span>{' '}
+            (or such other period as may be extended by the Company in writing), the Company shall
+            pay you a guaranteed sum of{' '}
+            <span className="font-bold">
+              ₹
+              {(() => {
+                const pct = parseFloat(formData.customSalaryPercent || 0);
+                const ctc = parseFloat(formData.salaryCtc || 0);
+                return pct && ctc
+                  ? Math.round((pct / 100) * ctc).toLocaleString('en-IN')
+                  : '[Amount]';
+              })()}
+            </span>{' '}
+            per month, being{' '}
+            <span className="font-bold">{formData.customSalaryPercent || '[X]'}%</span> of your
+            total CTC. After successful completion of this period and subject to meeting the sales
+            targets as determined by the Company from time to time, your full agreed salary as per
+            Clause 3 above shall become payable.
+          </p>
+        )}
+
         <p>
-          <span className="font-bold">4. Working Hours</span>
+          <span className="font-bold">
+            {(() => {
+              const base = isSalesDepartment && formData.salesCompensationType ? 5 : 4;
+              return `${base}. Working Hours`;
+            })()}
+          </span>
           <br />
           Your working hours will be from{' '}
           <span className="font-bold">{formData.workingHoursStart || '10:30 am'}</span> to{' '}
-          <span className="font-bold">{formData.workingHoursEnd || '6:30 pm'}</span>, Days of the
-          Week, <span className="font-bold">{formData.workingDays || 'Wednesday to Monday'}</span>.
+          <span className="font-bold">{formData.workingHoursEnd || '6:30 pm'}</span>.
+          {formData.workingDays && (
+            <>
+              {' '}
+              Days of the Week,{' '}
+              <span className="font-bold">{formData.workingDays || 'Wednesday to Monday'}</span>.
+            </>
+          )}
         </p>
         <p>
-          <span className="font-bold">5. Probation Period</span>
+          <span className="font-bold">
+            {(() => {
+              const base = isSalesDepartment && formData.salesCompensationType ? 6 : 5;
+              return `${base}. Probation Period`;
+            })()}
+          </span>
           <br />
           You will be on probation for a period of{' '}
           <span className="font-bold">
@@ -154,19 +246,34 @@ export default function OfferLetterPreviewContent({
           . Upon successful completion, your employment may be confirmed in writing.
         </p>
         <p>
-          <span className="font-bold">6. Duties & Responsibilities</span>
+          <span className="font-bold">
+            {(() => {
+              const n = isSalesDepartment && formData.salesCompensationType ? 7 : 6;
+              return `${n}. Duties & Responsibilities`;
+            })()}
+          </span>
           <br />
           You are expected to perform the duties assigned to you diligently, promote company
           interests, and maintain professionalism with clients and colleagues.
         </p>
         <p>
-          <span className="font-bold">7. Termination</span>
+          <span className="font-bold">
+            {(() => {
+              const n = isSalesDepartment && formData.salesCompensationType ? 8 : 7;
+              return `${n}. Termination`;
+            })()}
+          </span>
           <br />
           Either party may terminate the employment within probation period written notice or salary
           in lieu thereof.
         </p>
         <p>
-          <span className="font-bold">8. Confidentiality</span>
+          <span className="font-bold">
+            {(() => {
+              const base = isSalesDepartment && formData.salesCompensationType ? 9 : 8;
+              return `${base}. Confidentiality`;
+            })()}
+          </span>
           <br />
           You are required to maintain the confidentiality of all company and client information
           during and after your employment.

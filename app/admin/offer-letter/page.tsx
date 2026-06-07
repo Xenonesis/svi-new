@@ -30,7 +30,6 @@ const SALARY_SLABS = [
   { target: 600, salary: 50000, offerSlab: '3%' },
 ];
 
-// ─── Suggestion Dropdown ─────────────────────────────────────────
 function SlabSuggestions({
   slabs,
   activeKey,
@@ -46,9 +45,8 @@ function SlabSuggestions({
   onSelect: (s: (typeof SALARY_SLABS)[number]) => void;
   format: (s: (typeof SALARY_SLABS)[number]) => { left: string; right: string };
 }) {
-  if (slabs.length === 0) {
+  if (slabs.length === 0)
     return <div className="px-3 py-2 text-xs text-gray-400">No matching slab</div>;
-  }
   return (
     <div className="py-1">
       {slabs.map((s) => {
@@ -96,9 +94,7 @@ export default function OfferLetterPage() {
         return res.json();
       })
       .then((json) => {
-        if (json.value) {
-          setCompanyInfo(json.value);
-        }
+        if (json.value) setCompanyInfo(json.value);
       })
       .catch((err) => console.error('Error fetching company info:', err));
   }, [token]);
@@ -122,27 +118,16 @@ export default function OfferLetterPage() {
     workingHoursEnd: '6:30 pm',
     workingDays: 'Wednesday to Monday',
     probationPeriod: '3',
+    salesCompensationType: '',
+    noSaleMonths: '',
+    customSalaryPercent: '',
+    subsistenceAllowance: '',
   });
 
+  const [showSalesOptions, setShowSalesOptions] = useState(false);
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
-
-  // Saved offer letters for Load / Use as Template
   const [savedOffers, setSavedOffers] = useState<any[]>([]);
-
-  useEffect(() => {
-    if (!token) return;
-    fetch('/api/admin/documents?type=offer_letter&limit=1000', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch');
-        return res.json();
-      })
-      .then((json) => setSavedOffers(json.documents || []))
-      .catch((err) => console.error('Error loading offer letters:', err));
-  }, [token]);
-
   const [salaryOpen, setSalaryOpen] = useState(false);
   const [targetOpen, setTargetOpen] = useState(false);
   const [showSlabs, setShowSlabs] = useState(false);
@@ -150,7 +135,6 @@ export default function OfferLetterPage() {
   const salaryRef = useRef<HTMLDivElement>(null);
   const targetRef = useRef<HTMLDivElement>(null);
 
-  // Close on outside click
   const handleClickOutside = useCallback((e: MouseEvent) => {
     if (salaryRef.current && !salaryRef.current.contains(e.target as Node)) setSalaryOpen(false);
     if (targetRef.current && !targetRef.current.contains(e.target as Node)) setTargetOpen(false);
@@ -160,11 +144,8 @@ export default function OfferLetterPage() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [handleClickOutside]);
 
-  // Derive matched slab
   const matchedSlab = SALARY_SLABS.find((s) => parseFloat(formData.salaryCtc) === s.salary);
-  const isCustom = formData.salaryCtc !== '' && !matchedSlab;
 
-  // Filter suggestions
   const salarySuggestions = formData.salaryCtc
     ? SALARY_SLABS.filter((s) => {
         const v = parseFloat(formData.salaryCtc) || 0;
@@ -187,7 +168,7 @@ export default function OfferLetterPage() {
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-    const updated = { ...formData, [name]: value };
+    const updated = { ...formData, [name]: value } as any;
 
     if (name === 'salaryCtc' && value) {
       const numVal = parseFloat(value);
@@ -197,9 +178,7 @@ export default function OfferLetterPage() {
           updated.target = slab.target.toString();
           updated.offerSlab = slab.offerSlab;
           setSalaryOpen(false);
-        } else {
-          setSalaryOpen(true);
-        }
+        } else setSalaryOpen(true);
       }
     } else if (name === 'target' && value) {
       const numVal = parseFloat(value);
@@ -209,9 +188,7 @@ export default function OfferLetterPage() {
           updated.salaryCtc = slab.salary.toString();
           updated.offerSlab = slab.offerSlab;
           setTargetOpen(false);
-        } else {
-          setTargetOpen(true);
-        }
+        } else setTargetOpen(true);
       }
     }
 
@@ -229,37 +206,6 @@ export default function OfferLetterPage() {
     setTargetOpen(false);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (token) {
-      try {
-        const response = await fetch('/api/admin/documents', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            document_type: 'offer_letter',
-            form_data: formData,
-            status: 'draft',
-          }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setDocumentId(data.document.id);
-        }
-      } catch (error) {
-        console.error('Failed to save document:', error);
-      }
-    }
-
-    setPreview(true);
-  };
-
-  // Handle loading a saved offer letter (dropdown or templateId URL)
   const handleLoadOffer = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const id = e.target.value;
     if (!id) {
@@ -283,6 +229,10 @@ export default function OfferLetterPage() {
         workingHoursEnd: '6:30 pm',
         workingDays: 'Wednesday to Monday',
         probationPeriod: '3',
+        salesCompensationType: '',
+        noSaleMonths: '',
+        customSalaryPercent: '',
+        subsistenceAllowance: '',
       });
       return;
     }
@@ -293,7 +243,6 @@ export default function OfferLetterPage() {
     }
   };
 
-  // Handle templateId from URL (e.g. from Offer Letter Records "Use as Template")
   useEffect(() => {
     if (savedOffers.length > 0 && typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
@@ -308,21 +257,41 @@ export default function OfferLetterPage() {
     }
   }, [savedOffers]);
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (token) {
+      try {
+        const response = await fetch('/api/admin/documents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            document_type: 'offer_letter',
+            form_data: formData,
+            status: 'draft',
+          }),
+        });
+        if (response.ok) {
+          const data = await response.json();
+          setDocumentId(data.document.id);
+        }
+      } catch (error) {
+        console.error('Failed to save document:', error);
+      }
+    }
+    setPreview(true);
+  };
+
   const handleDownloadPDF = async () => {
     try {
-      await exportToPDF({
-        elementId: 'offerPreview',
-        filename: 'Offer_Letter.pdf',
-      });
-
+      await exportToPDF({ elementId: 'offerPreview', filename: 'Offer_Letter.pdf' });
       if (documentId && token) {
         try {
           await fetch(`/api/admin/documents/${documentId}`, {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
             body: JSON.stringify({ status: 'completed' }),
           });
         } catch (error) {
@@ -336,10 +305,7 @@ export default function OfferLetterPage() {
 
   const handleDownloadImage = async () => {
     try {
-      await exportToImage({
-        elementId: 'offerPreview',
-        filename: 'Offer_Letter.png',
-      });
+      await exportToImage({ elementId: 'offerPreview', filename: 'Offer_Letter.png' });
     } catch (error) {
       console.error('Error generating Image:', error);
     }
@@ -367,7 +333,6 @@ export default function OfferLetterPage() {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Load saved offer letter */}
             {savedOffers.length > 0 && (
               <div className="mb-2">
                 <label className="mb-1 block text-xs font-bold text-gray-500 dark:text-gray-400">
@@ -446,7 +411,10 @@ export default function OfferLetterPage() {
                 label="Department"
                 name="department"
                 value={formData.department}
-                onChange={handleChange}
+                onChange={(e) => {
+                  handleChange(e);
+                  setShowSalesOptions(e.target.value === 'Sales');
+                }}
                 options={[
                   { value: '', label: '— Select department —' },
                   ...DEPARTMENTS.map((d) => ({ value: d, label: d })),
@@ -456,21 +424,6 @@ export default function OfferLetterPage() {
                 label="Reporting To"
                 name="reportingTo"
                 value={formData.reportingTo}
-                onChange={handleChange}
-                required
-              />
-              <FormField
-                label="Appointment Date"
-                name="appointmentDate"
-                type="date"
-                value={formData.appointmentDate}
-                onChange={handleChange}
-                required
-              />
-              <FormField
-                label="Location"
-                name="location"
-                value={formData.location}
                 onChange={handleChange}
                 required
               />
@@ -558,6 +511,21 @@ export default function OfferLetterPage() {
                 onChange={handleChange}
                 required
               />
+              <FormField
+                label="Appointment Date"
+                name="appointmentDate"
+                type="date"
+                value={formData.appointmentDate}
+                onChange={handleChange}
+                required
+              />
+              <FormField
+                label="Location"
+                name="location"
+                value={formData.location}
+                onChange={handleChange}
+                required
+              />
 
               {/* ── Slab Reference ── */}
               <div className="md:col-span-2">
@@ -600,6 +568,166 @@ export default function OfferLetterPage() {
                   </div>
                 )}
               </div>
+
+              {/* ── Sales Compensation Options ── */}
+              {showSalesOptions && formData.department === 'Sales' && (
+                <div className="md:col-span-2">
+                  <div className="mt-1 rounded-xl border border-gray-200 bg-gray-50/50 p-4 dark:border-white/10 dark:bg-white/5">
+                    <p className="mb-3 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      Sales Compensation Policy
+                    </p>
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                      <div>
+                        <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                          Compensation Type
+                        </label>
+                        <select
+                          name="salesCompensationType"
+                          value={formData.salesCompensationType || ''}
+                          onChange={handleChange}
+                          className="focus:border-brand-gold w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                        >
+                          <option value="">— Select type —</option>
+                          <option value="no_sale_no_salary">No Sale No Salary (Allowance)</option>
+                          <option value="custom_percent">Custom % of Salary</option>
+                        </select>
+                      </div>
+
+                      {formData.salesCompensationType === 'no_sale_no_salary' && (
+                        <>
+                          <div>
+                            <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                              Duration
+                            </label>
+                            <div className="flex items-center gap-2">
+                              <select
+                                name="noSaleMonths"
+                                value={formData.noSaleMonths || ''}
+                                onChange={handleChange}
+                                className="focus:border-brand-gold w-24 appearance-none rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-sm text-gray-900 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                              >
+                                <option value="">—</option>
+                                {Array.from({ length: 36 }, (_, i) => i + 1).map((m) => (
+                                  <option key={m} value={m.toString()}>
+                                    {m} {m === 1 ? 'month' : 'months'}
+                                  </option>
+                                ))}
+                              </select>
+                              {formData.noSaleMonths && formData.appointmentDate && (
+                                <span className="text-xs text-gray-400">
+                                  until{' '}
+                                  {(() => {
+                                    const d = new Date(formData.appointmentDate);
+                                    d.setMonth(d.getMonth() + parseInt(formData.noSaleMonths));
+                                    return d
+                                      .toISOString()
+                                      .split('T')[0]
+                                      .split('-')
+                                      .reverse()
+                                      .join('-');
+                                  })()}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Subsistence Allowance — shown only when a value exists (otherwise add-back link) */}
+                          <div>
+                            {formData.subsistenceAllowance ? (
+                              <>
+                                <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                                  Subsistence Allowance (₹/month)
+                                </label>
+                                <div className="relative">
+                                  <span className="absolute top-1/2 left-3 -translate-y-1/2 text-xs text-gray-400">
+                                    ₹
+                                  </span>
+                                  <input
+                                    type="number"
+                                    name="subsistenceAllowance"
+                                    value={formData.subsistenceAllowance}
+                                    onChange={handleChange}
+                                    placeholder="10000"
+                                    min="0"
+                                    className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white py-2.5 pr-16 pl-7 font-sans text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
+                                  />
+                                  <div className="absolute top-1/2 right-2 flex -translate-y-1/2 gap-1">
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setFormData({ ...formData, subsistenceAllowance: '10000' })
+                                      }
+                                      className="hover:text-brand-gold text-[10px] text-gray-400"
+                                      title="Reset to default"
+                                    >
+                                      ↺
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={() =>
+                                        setFormData({ ...formData, subsistenceAllowance: '' })
+                                      }
+                                      className="text-[10px] text-gray-400 hover:text-red-500"
+                                      title="Remove subsistence allowance"
+                                    >
+                                      ✕
+                                    </button>
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="pt-5">
+                                <button
+                                  type="button"
+                                  onClick={() =>
+                                    setFormData({ ...formData, subsistenceAllowance: '10000' })
+                                  }
+                                  className="text-brand-gold hover:text-brand-gold-light text-[11px] font-medium underline underline-offset-2 transition-colors"
+                                >
+                                  + Add subsistence allowance
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      )}
+
+                      {formData.salesCompensationType === 'custom_percent' && (
+                        <div>
+                          <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                            Guaranteed Salary (%)
+                          </label>
+                          <div className="relative">
+                            <input
+                              type="number"
+                              name="customSalaryPercent"
+                              value={formData.customSalaryPercent || ''}
+                              onChange={handleChange}
+                              placeholder="e.g. 50"
+                              min="0"
+                              max="100"
+                              className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 pr-10 font-sans text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
+                            />
+                            <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs text-gray-400">
+                              %
+                            </span>
+                          </div>
+                          {formData.customSalaryPercent && formData.salaryCtc && (
+                            <p className="mt-1 text-[10px] text-gray-400">
+                              Guaranteed: ₹
+                              {Math.round(
+                                (parseFloat(formData.customSalaryPercent) / 100) *
+                                  parseFloat(formData.salaryCtc)
+                              ).toLocaleString('en-IN')}
+                              /month
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* ── Work / Probation ── */}
               <div className="col-span-2 mt-2 border-t border-gray-100 pt-4 dark:border-white/10">
