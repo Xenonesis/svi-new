@@ -322,16 +322,15 @@ export default function OfferLetterPreviewContent({
             </p>
           </div>
         </div>
-        {/* Offer Slab */}
-        <div className="mt-8 border-t border-gray-200 pt-4">
+        {/* Offer Slab Line */}
+        <div className="mt-6 border-t border-gray-200 pt-4">
           <p className="text-[11px] font-medium tracking-wider text-gray-500 uppercase">
             Offer Slab *
           </p>
-          <div className="mt-1.5 flex items-baseline gap-2">
+          <div className="mt-2 border-b border-dashed border-black pb-1">
             <span className="text-brand-gold text-sm font-bold">
-              {formData.offerSlab || '[Offer Slab]'}
+              = {formData.offerSlab || '3%'}
             </span>
-            <span className="text-xs text-gray-400">— Final agreed commission slab</span>
           </div>
         </div>
       </div>
