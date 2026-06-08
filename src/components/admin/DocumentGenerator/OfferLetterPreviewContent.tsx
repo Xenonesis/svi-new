@@ -137,12 +137,13 @@ export default function OfferLetterPreviewContent({
           {(formData.target || matchedSlab) && (
             <>
               {' '}
-              (Target –{' '}
+              (Your target is{' '}
               <span className="font-bold">
                 {formData.target || formData.salaryCtc
-                  ? `${formData.target || matchedSlab?.target} Sq.Yd`
+                  ? `${formData.target || matchedSlab?.target} Sq.Yd.`
                   : '[Target]'}
               </span>
+              {formData.target || matchedSlab ? ' is your target per month' : ''})
             </>
           )}
           {formData.offerSlab && <> = {formData.offerSlab}</>}
