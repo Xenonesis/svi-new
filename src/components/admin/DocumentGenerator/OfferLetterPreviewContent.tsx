@@ -146,9 +146,9 @@ export default function OfferLetterPreviewContent({
               {' per month'})
             </>
           )}
-          {formData.offerSlab && <> = {formData.offerSlab}</>}
-          {(formData.target || matchedSlab) && ')'}, which includes all statutory benefits as
-          applicable. Additional performance-based incentives will be provided as per company
+          {formData.offerSlab && <span className="font-bold"> = {formData.offerSlab}</span>}
+          {!formData.offerSlab && formData.target && ' = 3%'}, which includes all statutory benefits
+          as applicable. Additional performance-based incentives will be provided as per company
           policy.
         </p>
 
@@ -320,17 +320,6 @@ export default function OfferLetterPreviewContent({
             <p>
               Date: <span className="border-b border-black px-8">__________________</span>
             </p>
-          </div>
-        </div>
-        {/* Offer Slab Line */}
-        <div className="mt-6 border-t border-gray-200 pt-4">
-          <p className="text-[11px] font-medium tracking-wider text-gray-500 uppercase">
-            Offer Slab *
-          </p>
-          <div className="mt-2 border-b border-dashed border-black pb-1">
-            <span className="text-brand-gold text-sm font-bold">
-              {formData.offerSlab ? `= ${formData.offerSlab}` : '3%'}
-            </span>
           </div>
         </div>
       </div>
