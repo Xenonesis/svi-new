@@ -143,7 +143,7 @@ export default function OfferLetterPreviewContent({
                   ? `${formData.target || matchedSlab?.target} Sq.Yd.`
                   : '[Target]'}
               </span>
-              {formData.target || matchedSlab ? ' is your target per month' : ''})
+              {' per month'})
             </>
           )}
           {formData.offerSlab && <> = {formData.offerSlab}</>}
