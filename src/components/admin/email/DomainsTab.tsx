@@ -15,6 +15,7 @@ import {
 import { toast } from 'sonner';
 import { Domain } from './types';
 import { getDomainStatusColor, getToken } from './helpers';
+import { DashboardCardSkeleton } from './Skeletons';
 
 export function DomainsTab() {
   const [domains, setDomains] = useState<Domain[]>([]);
@@ -89,8 +90,10 @@ export function DomainsTab() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="text-brand-gold h-6 w-6 animate-spin" />
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <DashboardCardSkeleton key={i} />
+          ))}
         </div>
       ) : error ? (
         <div className="flex flex-col items-center justify-center py-16 text-center">
