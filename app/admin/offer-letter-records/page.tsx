@@ -505,7 +505,14 @@ export default function OfferLetterRecordsPage() {
                     >
                       <td className="text-brand-gold px-4 py-3.5 font-bold">
                         {record.created_at
-                          ? new Date(record.created_at).toLocaleDateString('en-GB')
+                          ? new Date(record.created_at).toLocaleString('en-GB', {
+                              day: '2-digit',
+                              month: 'short',
+                              year: 'numeric',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                              hour12: false,
+                            })
                           : 'N/A'}
                       </td>
                       <td className="px-4 py-3.5 font-semibold text-gray-900 dark:text-white">
@@ -619,7 +626,15 @@ export default function OfferLetterRecordsPage() {
                   Offer Letter - {selectedOffer.form_data?.name}
                 </h3>
                 <p className="text-[10px] text-gray-500">
-                  Generated on {new Date(selectedOffer.created_at).toLocaleDateString('en-GB')}
+                  Generated on{' '}
+                  {new Date(selectedOffer.created_at).toLocaleString('en-GB', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  })}
                 </p>
               </div>
               <div className="flex items-center gap-3">
