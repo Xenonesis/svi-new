@@ -22,6 +22,7 @@ import {
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
 import { SlabSelector, SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
+import { useOfferLetterApi } from '@/src/services/offerLetterApi';
 import { useEffect, useState, useCallback } from 'react';
 
 const DEPARTMENTS = ['Sales', 'IT', 'Management'];
