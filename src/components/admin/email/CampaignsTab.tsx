@@ -9,6 +9,7 @@ import { CampaignStatsCards } from './campaigns/CampaignStatsCards';
 import { CampaignSearchBar } from './campaigns/CampaignSearchBar';
 import { CampaignCard } from './campaigns/CampaignCard';
 import { CampaignFormModal } from './campaigns/CampaignFormModal';
+import { DashboardCardSkeleton, EmailListSkeleton } from './Skeletons';
 import type { Campaign } from './types';
 
 export function CampaignsTab() {
@@ -162,8 +163,18 @@ export function CampaignsTab() {
       />
 
       {loading ? (
-        <div className="flex h-64 items-center justify-center">
-          <div className="border-brand-gold h-8 w-8 animate-spin rounded-full border-[3px] border-t-transparent" />
+        <div className="space-y-4">
+          {/* Stats cards skeleton */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <DashboardCardSkeleton key={i} />
+            ))}
+          </div>
+
+          {/* Campaign list skeleton */}
+          <div className="rounded-xl border border-gray-200/80 bg-white dark:border-gray-700/60 dark:bg-[#0e0e14]">
+            <EmailListSkeleton count={5} />
+          </div>
         </div>
       ) : filteredCampaigns.length === 0 ? (
         <div className="rounded-xl border border-dashed border-gray-200 p-16 text-center dark:border-gray-800">

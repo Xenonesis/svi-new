@@ -21,6 +21,7 @@ import {
 } from 'lucide-react';
 import { getToken } from './helpers';
 import { ResendUsageDashboard } from './ResendUsageDashboard';
+import { DashboardCardSkeleton } from './Skeletons';
 
 export function SettingsTab({ adminEmail }: { adminEmail: string }) {
   const [testTo, setTestTo] = useState(adminEmail);
@@ -94,39 +95,53 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
       {/* Config overview */}
       <div className={isDev ? '' : 'lg:col-span-3'}>
         <div className="rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60 dark:bg-[#0e0e14]">
-          <h3 className="mb-1 text-sm font-bold text-gray-900 dark:text-white">
-            {isDev ? 'Resend Configuration' : 'Connection Configuration'}
-          </h3>
-          <p className="mb-5 font-mono text-[10px] tracking-wider text-gray-400 uppercase">
-            Email service credentials and settings
-          </p>
-          <div className="space-y-2.5">
-            {configItems.map((item) => {
-              const ItemIcon = item.icon;
-              const isOk = item.status === 'configured' || item.status === 'active';
-              return (
-                <div
-                  key={item.label}
-                  className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/30"
-                >
-                  <div className="flex items-center gap-3">
-                    <ItemIcon className="h-4 w-4 text-gray-400" />
-                    <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
-                      {item.label}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <code className="font-mono text-xs text-gray-700 dark:text-gray-300">
-                      {item.value}
-                    </code>
-                    <Check
-                      className={`h-3.5 w-3.5 ${isOk ? 'text-emerald-500' : 'text-amber-500'}`}
-                    />
-                  </div>
-                </div>
-              );
-            })}
+          <div className="mb-5 flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
+              <Shield className="h-5 w-5 text-gray-400" />
+            </div>
+            <div>
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+                {isDev ? 'Resend Configuration' : 'Connection Configuration'}
+              </h3>
+              <p className="mt-1 font-mono text-[10px] tracking-wider text-gray-400 uppercase">
+                Email service credentials and settings
+              </p>
+            </div>
           </div>
+
+          {/* Show skeleton while checking config */}
+          {!adminEmail && isDev ? (
+            <DashboardCardSkeleton />
+          ) : (
+            <div className="space-y-2.5">
+              {configItems.map((item) => {
+                const ItemIcon = item.icon;
+                const isOk = item.status === 'configured' || item.status === 'active';
+                return (
+                  <div
+                    key={item.label}
+                    className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50/80 px-4 py-3 dark:border-gray-800 dark:bg-gray-800/30"
+                  >
+                    <div className="flex items-center gap-3">
+                      <ItemIcon className="h-4 w-4 text-gray-400" />
+                      <span className="text-xs font-medium text-gray-600 dark:text-gray-300">
+                        {item.label}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <code className="font-mono text-xs text-gray-700 dark:text-gray-300">
+                        {item.value}
+                      </code>
+                      <Check
+                        className={`h-3.5 w-3.5 ${isOk ? 'text-emerald-500' : 'text-amber-500'}`}
+                      />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
           {isDev && (
             <div className="mt-4 rounded-lg border border-amber-200/60 bg-amber-50/80 px-4 py-3 dark:border-amber-500/20 dark:bg-amber-500/5">
               <p className="text-xs text-amber-700 dark:text-amber-400">

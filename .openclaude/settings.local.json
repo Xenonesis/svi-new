@@ -18,7 +18,8 @@
       "Bash(npm info:*)",
       "WebSearch",
       "Bash(git commit:*)",
-      "Skill(firecrawl-crawl)"
+      "Skill(firecrawl-crawl)",
+      "WebFetch(domain:resend.com)"
     ]
   }
 }

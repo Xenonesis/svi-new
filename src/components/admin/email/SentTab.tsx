@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, ChevronDown, Inbox, Loader2 } from 'lucide-react';
 import type { ForwardData, ReplyData } from './types';
 import { buildForwardHtml, buildReplyHtml } from './helpers';
-import { EmailListSkeleton } from './Skeletons';
+import { EmailListSkeleton, EmailDetailSkeleton, FilterPanelSkeleton } from './Skeletons';
 import { useSentEmails } from './hooks/useSentEmails';
 import { EmailToolbar, ActiveFilterChips } from './sections/EmailToolbar';
 import { EmailListItem } from './sections/EmailListItem';
@@ -217,22 +217,26 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
       </div>
 
       {/* ─── Reading Pane ─── */}
-      <EmailDetailPanel
-        selected={h.selected}
-        loadingDetail={h.loadingDetail}
-        copiedId={h.copiedId}
-        copiedType={h.copiedType}
-        copyMenuOpen={h.copyMenuOpen}
-        copyMenuRef={h.copyMenuRef as React.RefObject<HTMLDivElement | null>}
-        starred={h.starred}
-        onClose={() => h.setSelected(null)}
-        onReply={handleReply}
-        onForward={handleForward}
-        onCopyMenuToggle={() => h.setCopyMenuOpen(!h.copyMenuOpen)}
-        onCopyText={h.copyText}
-        onCopyId={h.copyId}
-        onToggleStar={h.toggleStar}
-      />
+      {h.loadingDetail && !h.selected ? (
+        <EmailDetailSkeleton />
+      ) : (
+        <EmailDetailPanel
+          selected={h.selected}
+          loadingDetail={h.loadingDetail}
+          copiedId={h.copiedId}
+          copiedType={h.copiedType}
+          copyMenuOpen={h.copyMenuOpen}
+          copyMenuRef={h.copyMenuRef as React.RefObject<HTMLDivElement | null>}
+          starred={h.starred}
+          onClose={() => h.setSelected(null)}
+          onReply={handleReply}
+          onForward={handleForward}
+          onCopyMenuToggle={() => h.setCopyMenuOpen(!h.copyMenuOpen)}
+          onCopyText={h.copyText}
+          onCopyId={h.copyId}
+          onToggleStar={h.toggleStar}
+        />
+      )}
     </div>
   );
 }

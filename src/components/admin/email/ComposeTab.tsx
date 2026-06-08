@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
+import { Skeletons } from './Skeletons';
 import { getToken, saveDraft, loadDraft, clearDraft, fileToBase64 } from './helpers';
 import {
   extractTemplateVars as parseExtractTemplateVars,
@@ -626,17 +627,19 @@ export function ComposeTab({
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <PenLine className="text-brand-gold h-4 w-4" />
-            <span className="text-sm font-semibold text-gray-900 dark:text-white">New Email</span>
-            {forwardData && (
-              <span className="rounded-md bg-violet-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-violet-700 uppercase dark:bg-violet-500/15 dark:text-violet-400">
-                Forwarding
-              </span>
-            )}
-            {replyData && (
-              <span className="rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-blue-700 uppercase dark:bg-blue-500/15 dark:text-blue-400">
-                Replying
-              </span>
-            )}
+            <div>
+              <span className="text-sm font-semibold text-gray-900 dark:text-white">New Email</span>
+              {forwardData && (
+                <span className="ml-2 rounded-md bg-violet-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-violet-700 uppercase dark:bg-violet-500/15 dark:text-violet-400">
+                  Forwarding
+                </span>
+              )}
+              {replyData && (
+                <span className="ml-2 rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-blue-700 uppercase dark:bg-blue-500/15 dark:text-blue-400">
+                  Replying
+                </span>
+              )}
+            </div>
           </div>
           <div className="flex items-center gap-3">
             <AnimatePresence>
@@ -660,7 +663,7 @@ export function ComposeTab({
               }`}
             >
               {previewMode ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              {previewMode ? 'Edit' : 'Preview'}
+              <span className="hidden sm:inline">{previewMode ? 'Edit' : 'Preview'}</span>
             </button>
           </div>
         </div>
@@ -798,7 +801,7 @@ export function ComposeTab({
             </motion.button>
           </div>
 
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-2">
             <TemplatePicker selectedTemplate={selectedTemplate} onSelect={loadTemplate} />
 
             <button
@@ -825,6 +828,27 @@ export function ComposeTab({
               <span className="hidden sm:inline">Discard</span>
             </button>
           </div>
+
+          <motion.button
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            onClick={handleSend}
+            disabled={sending || sent}
+            className={`flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold shadow-sm transition-all duration-300 disabled:opacity-70 ${
+              sent
+                ? 'bg-emerald-500 text-white shadow-emerald-500/20'
+                : 'bg-brand-gold text-brand-navy glow-gold hover:opacity-95'
+            }`}
+          >
+            {sending ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : sent ? (
+              <Check className="h-4 w-4" />
+            ) : (
+              <Send className="h-4 w-4" />
+            )}
+            {sent ? 'Sent!' : sending ? 'Sending...' : 'Send'}
+          </motion.button>
         </div>
       </div>
     </div>
