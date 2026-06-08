@@ -329,7 +329,7 @@ export default function OfferLetterPreviewContent({
           </p>
           <div className="mt-2 border-b border-dashed border-black pb-1">
             <span className="text-brand-gold text-sm font-bold">
-              = {formData.offerSlab || '3%'}
+              {formData.offerSlab ? `= ${formData.offerSlab}` : '3%'}
             </span>
           </div>
         </div>
