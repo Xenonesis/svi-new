@@ -34,19 +34,6 @@ export async function POST(req: NextRequest) {
     // fallback
   }
 
-  // Compute message stats
-  let msgCount = 0;
-  let userCount = 0;
-  try {
-    const parsed = typeof messages === 'string' ? JSON.parse(messages) : messages;
-    if (Array.isArray(parsed)) {
-      msgCount = parsed.length;
-      userCount = parsed.filter((m: any) => m.role === 'user').length;
-    }
-  } catch {
-    // fallback
-  }
-
   const { error } = await supabaseAdmin.from('chat_logs').upsert(
     {
       session_id: sessionId,
