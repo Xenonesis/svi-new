@@ -283,6 +283,16 @@ create policy "Service role full access"
 
 -- Fix: extend activity_logs CHECK constraint to include attendance action types
 alter table public.activity_logs drop constraint if exists activity_logs_action_type_check;
+
+-- Normalize any rows with old/unrecognized action_types before adding constraint
+update public.activity_logs
+  set action_type = 'settings_updated'
+  where action_type not in (
+    'user_created', 'user_deleted', 'document_generated', 'document_downloaded',
+    'settings_updated', 'profile_updated', 'team_created', 'team_deleted',
+    'attendance_marked'
+  );
+
 alter table public.activity_logs add constraint activity_logs_action_type_check
   check (action_type in (
     'user_created', 'user_deleted', 'document_generated', 'document_downloaded',
