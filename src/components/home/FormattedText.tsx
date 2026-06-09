@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+
 // ─── Regex patterns ──────────────────────────────────────────────────────
 const URL_PATTERN = /(https?:\/\/[^\s<]+)/gi;
 
@@ -16,7 +18,7 @@ const PROPERTY_SIZE_PATTERN =
   /\b(\d+(?:[-\s]\d+)?\s*(?:sq\.?\s*(?:ft|feet|yrd|yard|m|meter)|BHK|bedroom|acre|hectare))\b/gi;
 
 const LOCATION_PATTERN =
-  /\b(Jaipur|Noida|Phulera|Rajasthan|Uttar Pradesh|Delhi|Gurgaon|Lucknow|Mumbai|Bengaluru|DMIC|DFC)\b/gi;
+  /\b(Jaipur|Noida|Phulera|Rajasthan|Uttar Pradesh|Delhi|Gurgaon(?:on)?|Lucknow|Mumbai|Bengaluru|DMIC|DFC)\b/gi;
 
 const COMPANY_PATTERN = /\b(SVI Infra(?: Solutions)?)\b/gi;
 
@@ -25,6 +27,10 @@ const KEYWORD_PATTERN =
 
 const DATE_PATTERN =
   /\b(\d{1,2}(?:st|nd|rd|th)?\s+(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)[a-z]*\s*\d{0,4}|today|tomorrow|next week|next month)\b/gi;
+
+// Internal page paths like /projects, /contact, /about, etc.
+const PAGE_PATH_PATTERN =
+  /(\/(?:projects(?:\/(?:current|completed))?|about|contact|faq|registration|lottery|careers|leadership|privacy-policy|terms-conditions|thank-you|grievance|payment|blog(?:\/[a-z0-9-]+)?))\b/gi;
 
 interface MatchResult {
   type:
@@ -38,6 +44,7 @@ interface MatchResult {
     | 'company'
     | 'keyword'
     | 'date'
+    | 'page-path'
     | 'text';
   text: string;
   index: number;
@@ -50,6 +57,7 @@ function tokenize(text: string): MatchResult[] {
       `(${URL_PATTERN.source})`,
       `(${PHONE_PATTERN.source})`,
       `(${EMAIL_PATTERN.source})`,
+      `(${PAGE_PATH_PATTERN.source})`,
       `(${COMPANY_PATTERN.source})`,
       `(${PRICE_PATTERN.source})`,
       `(${PERCENT_PATTERN.source})`,
@@ -78,13 +86,15 @@ function tokenize(text: string): MatchResult[] {
 
     const matched = match[0];
 
-    // Determine type by checking which group matched
+    // Determine type by checking which group matched (order matters: most specific first)
     if (matched.match(URL_PATTERN)) {
       results.push({ type: 'url', text: matched, index: results.length });
     } else if (matched.match(PHONE_PATTERN)) {
       results.push({ type: 'phone', text: matched, index: results.length });
     } else if (matched.match(EMAIL_PATTERN)) {
       results.push({ type: 'email', text: matched, index: results.length });
+    } else if (matched.match(PAGE_PATH_PATTERN)) {
+      results.push({ type: 'page-path', text: matched, index: results.length });
     } else if (matched.match(COMPANY_PATTERN)) {
       results.push({ type: 'company', text: matched, index: results.length });
     } else if (matched.match(PRICE_PATTERN)) {
@@ -115,6 +125,11 @@ function tokenize(text: string): MatchResult[] {
 function formatPhoneHref(phone: string): string {
   const digits = phone.replace(/[^0-9]/g, '');
   return `tel:+91${digits.length === 10 ? digits : digits.slice(0, 10)}`;
+}
+
+function locationSearchUrl(location: string): string {
+  const q = encodeURIComponent(`${location} India real estate`);
+  return `/projects/current?location=${encodeURIComponent(location)}`;
 }
 
 function FormattedTextSegment({ item }: { item: MatchResult }) {
@@ -157,6 +172,19 @@ function FormattedTextSegment({ item }: { item: MatchResult }) {
         </a>
       );
 
+    case 'page-path':
+      return (
+        <Link
+          href={item.text}
+          className="bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:bg-brand-gold/5 dark:text-brand-gold dark:hover:bg-brand-gold/10 inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-sm font-medium underline underline-offset-2 transition-colors"
+        >
+          <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M10 6v2H5v11h11v-5h2v6a1 1 0 01-1 1H4a1 1 0 01-1-1V7a1 1 0 011-1h6zm11-4v8h-2V5.42l-9.3 9.3-1.42-1.42L17.58 4H14V2h7z" />
+          </svg>
+          {item.text}
+        </Link>
+      );
+
     case 'price':
       return (
         <span className="inline-flex items-center rounded-md bg-amber-50 px-1.5 py-0.5 font-bold text-amber-800 dark:bg-amber-950/30 dark:text-amber-400">
@@ -176,22 +204,28 @@ function FormattedTextSegment({ item }: { item: MatchResult }) {
 
     case 'location':
       return (
-        <span className="inline-flex items-center gap-0.5 rounded-md bg-orange-50 px-1.5 py-0.5 text-sm font-semibold text-orange-700 dark:bg-orange-950/30 dark:text-orange-400">
+        <Link
+          href={locationSearchUrl(item.text)}
+          className="inline-flex items-center gap-0.5 rounded-md bg-orange-50 px-1.5 py-0.5 text-sm font-semibold text-orange-700 underline underline-offset-2 transition-colors hover:bg-orange-100 dark:bg-orange-950/30 dark:text-orange-400 dark:hover:bg-orange-950/50"
+        >
           <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 110-5 2.5 2.5 0 010 5z" />
           </svg>
           {item.text}
-        </span>
+        </Link>
       );
 
     case 'company':
       return (
-        <span className="bg-brand-navy/10 text-brand-navy dark:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-sm font-bold">
+        <Link
+          href="/about"
+          className="bg-brand-navy/10 text-brand-navy hover:bg-brand-navy/20 dark:bg-brand-gold/20 dark:text-brand-gold dark:hover:bg-brand-gold/30 inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 text-sm font-bold underline underline-offset-2 transition-colors"
+        >
           <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 24 24">
             <path d="M10 2v2.343A7.98 7.98 0 0012 4c1.163 0 2.27.248 3.273.692L16 2h-2l-1 3h-2l-1-3H8l.727 2.692A7.98 7.98 0 0012 6c.702 0 1.378.09 2.025.256L14 9h-4l-1 2h6l-.5 1H9.5L9 14h6l-.5 1h-5l-.5 1h6l-.5 1H12v4h-2v-3.5l-3-1v-6l-2-1v-2l2-1V2z" />
           </svg>
           {item.text}
-        </span>
+        </Link>
       );
 
     case 'keyword':
