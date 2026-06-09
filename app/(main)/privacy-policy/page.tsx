@@ -1,11 +1,15 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
-const PrivacyFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
+const PrivacyFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'));
 
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description:
+    'SVI Infra Solutions privacy policy — how we collect, use, and protect your personal information.',
+};
 
 export default function PrivacyPolicy() {
   return (
@@ -179,7 +183,7 @@ export default function PrivacyPolicy() {
           </section>
         </div>
       </div>
-<PrivacyFAQ />
+      <PrivacyFAQ />
     </div>
   );
 }

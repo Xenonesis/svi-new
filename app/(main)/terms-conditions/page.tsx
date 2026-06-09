@@ -1,11 +1,15 @@
-'use client';
-
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
-const TermsFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'), { ssr: false });
+const TermsFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'));
 
+export const metadata: Metadata = {
+  title: 'Terms & Conditions',
+  description:
+    'SVI Infra Solutions terms and conditions — rules and guidelines for using our website and services.',
+};
 
 export default function TermsConditions() {
   return (
@@ -165,7 +169,7 @@ export default function TermsConditions() {
           </section>
         </div>
       </div>
-<TermsFAQ />
+      <TermsFAQ />
     </div>
   );
 }
