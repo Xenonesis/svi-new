@@ -269,6 +269,24 @@ export async function POST(request: NextRequest) {
         }
       }
 
+      // ── Notification ──
+      const deletedSubjects = Array.isArray(emails)
+        ? emails.map((e: any) => e.subject || '(no subject)').filter(Boolean)
+        : [];
+      if (emailIds.length > 0) {
+        try {
+          const { data: profileData } = await supabaseAdmin
+            .from('profiles')
+            .select('full_name')
+            .eq('id', admin.id)
+            .single();
+          const adminName = profileData?.full_name || admin.email || 'Admin';
+          await NotificationHelper.emailDeleted(emailIds.length, deletedSubjects, adminName);
+        } catch (notifErr) {
+          console.error('Failed to create delete notification:', notifErr);
+        }
+      }
+
       return NextResponse.json({ success: true, deleted: emailIds.length });
     }
 
@@ -277,6 +295,21 @@ export async function POST(request: NextRequest) {
       const { emailIds } = body;
       if (!emailIds || !Array.isArray(emailIds) || emailIds.length === 0) {
         return NextResponse.json({ error: 'Missing emailIds array' }, { status: 400 });
+      }
+
+      // Fetch subjects before deleting for the notification
+      let restoredSubjects: string[] = [];
+      try {
+        const { data: restoreData } = await supabaseAdmin
+          .from('email_deletions')
+          .select('email_data')
+          .eq('admin_id', admin.id)
+          .in('email_id', emailIds);
+        restoredSubjects = (restoreData || [])
+          .map((d: any) => d.email_data?.subject || '(no subject)')
+          .filter(Boolean);
+      } catch {
+        // Non-critical
       }
 
       const { error } = await supabaseAdmin
@@ -289,6 +322,19 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
 
+      // ── Notification ──
+      try {
+        const { data: profileData } = await supabaseAdmin
+          .from('profiles')
+          .select('full_name')
+          .eq('id', admin.id)
+          .single();
+        const adminName = profileData?.full_name || admin.email || 'Admin';
+        await NotificationHelper.emailRestored(emailIds.length, restoredSubjects, adminName);
+      } catch (notifErr) {
+        console.error('Failed to create restore notification:', notifErr);
+      }
+
       return NextResponse.json({ success: true, restored: emailIds.length });
     }
 
@@ -296,21 +342,59 @@ export async function POST(request: NextRequest) {
     if (action === 'permanently_delete') {
       const { emailIds, all } = body;
 
+      // Fetch subjects before deleting for the notification
+      let permDeletedCount = 0;
+      let permDeletedSubjects: string[] = [];
+      try {
+        let fetchQuery = supabaseAdmin
+          .from('email_deletions')
+          .select('email_data')
+          .eq('admin_id', admin.id);
+        if (!all && Array.isArray(emailIds) && emailIds.length > 0) {
+          fetchQuery = fetchQuery.in('email_id', emailIds);
+        }
+        const { data: permData, count: permCount } = await fetchQuery;
+        permDeletedCount = permCount ?? 0;
+        permDeletedSubjects = (permData || [])
+          .map((d: any) => d.email_data?.subject || '(no subject)')
+          .filter(Boolean);
+      } catch {
+        // Non-critical
+      }
+
       let query = supabaseAdmin.from('email_deletions').delete().eq('admin_id', admin.id);
 
       if (all) {
         // Delete ALL records for this admin
-        // (no additional filter needed)
       } else if (Array.isArray(emailIds) && emailIds.length > 0) {
         query = query.in('email_id', emailIds);
       } else {
         return NextResponse.json({ error: 'Missing emailIds or all flag' }, { status: 400 });
       }
 
-      const { error, count } = await query;
+      const { error } = await query;
 
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+
+      // ── Notification ──
+      if (permDeletedCount > 0) {
+        try {
+          const { data: profileData } = await supabaseAdmin
+            .from('profiles')
+            .select('full_name')
+            .eq('id', admin.id)
+            .single();
+          const adminName = profileData?.full_name || admin.email || 'Admin';
+          await NotificationHelper.emailPermanentlyDeleted(
+            permDeletedCount,
+            permDeletedSubjects,
+            adminName
+          );
+        } catch (notifErr) {
+          console.error('Failed to create permanent delete notification:', notifErr);
+        }
       }
 
       return NextResponse.json({ success: true });

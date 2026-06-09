@@ -494,4 +494,58 @@ export const NotificationHelper = {
       metadata: { event: 'email_sent', to, subject },
     });
   },
+
+  /**
+   * Email moved to recycle bin notification
+   */
+  emailDeleted: async (count: number, subjects: string[], adminName: string) => {
+    const label = count === 1 ? `"${subjects[0]}"` : `${count} emails`;
+    return createNotificationForAllAdmins({
+      title: 'Emails Moved to Recycle Bin',
+      message: `${adminName} moved ${label} to the recycle bin.`,
+      type: 'warning',
+      action_url: `/admin/email?tab=trash`,
+      metadata: {
+        event: 'email_deleted',
+        count,
+        subjects,
+      },
+    });
+  },
+
+  /**
+   * Email restored from recycle bin notification
+   */
+  emailRestored: async (count: number, subjects: string[], adminName: string) => {
+    const label = count === 1 ? `"${subjects[0]}"` : `${count} emails`;
+    return createNotificationForAllAdmins({
+      title: 'Emails Restored',
+      message: `${adminName} restored ${label} from the recycle bin.`,
+      type: 'info',
+      action_url: `/admin/email`,
+      metadata: {
+        event: 'email_restored',
+        count,
+        subjects,
+      },
+    });
+  },
+
+  /**
+   * Email permanently deleted notification
+   */
+  emailPermanentlyDeleted: async (count: number, subjects: string[], adminName: string) => {
+    const label = count === 1 ? `"${subjects[0]}"` : `${count} emails`;
+    return createNotificationForAllAdmins({
+      title: 'Emails Permanently Deleted',
+      message: `${adminName} permanently deleted ${label}.`,
+      type: 'error',
+      action_url: `/admin/email?tab=trash`,
+      metadata: {
+        event: 'email_permanently_deleted',
+        count,
+        subjects,
+      },
+    });
+  },
 };
