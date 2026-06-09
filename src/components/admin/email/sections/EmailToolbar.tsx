@@ -3,7 +3,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowUpDown,
-  Clock,
   Filter,
   RefreshCw,
   Search,
@@ -237,7 +236,138 @@ export function EmailToolbar({
           </button>
         </div>
       </div>
+
+      {/* Filter Panel */}
+      <AnimatePresence>
+        {filterOpen && (
+          <FilterPanel
+            statusFilter={statusFilter}
+            datePreset={datePreset}
+            fromFilter={fromFilter}
+            showStarredOnly={showStarredOnly}
+            onStatusToggle={onStatusToggle}
+            onDatePresetChange={onDatePresetChange}
+            onFromFilterChange={onFromFilterChange}
+            onStarToggle={onStarToggle}
+          />
+        )}
+      </AnimatePresence>
     </div>
+  );
+}
+
+/* ─── Filter Panel ─── */
+interface FilterPanelProps {
+  statusFilter: Set<string>;
+  datePreset: DatePreset;
+  fromFilter: string;
+  showStarredOnly: boolean;
+  onStatusToggle: (s: string) => void;
+  onDatePresetChange: (v: DatePreset) => void;
+  onFromFilterChange: (v: string) => void;
+  onStarToggle: () => void;
+}
+
+function FilterPanel({
+  statusFilter,
+  datePreset,
+  fromFilter,
+  showStarredOnly,
+  onStatusToggle,
+  onDatePresetChange,
+  onFromFilterChange,
+  onStarToggle,
+}: FilterPanelProps) {
+  return (
+    <motion.div
+      initial={{ height: 0, opacity: 0 }}
+      animate={{ height: 'auto', opacity: 1 }}
+      exit={{ height: 0, opacity: 0 }}
+      transition={{ duration: 0.2 }}
+      className="overflow-hidden border-b border-gray-100 dark:border-gray-800"
+    >
+      <div className="space-y-4 px-4 py-3">
+        {/* Status filter */}
+        <div>
+          <label className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+            Status
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {STATUS_FILTER_OPTIONS.map((opt) => {
+              const active = statusFilter.has(opt.value);
+              return (
+                <button
+                  key={opt.value}
+                  onClick={() => onStatusToggle(opt.value)}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-medium transition-all ${
+                    active
+                      ? `${opt.color.replace('bg-', 'bg-')} text-white dark:text-white`
+                      : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                  }`}
+                >
+                  <div className={`h-1.5 w-1.5 rounded-full ${opt.color}`} />
+                  {opt.value.charAt(0).toUpperCase() + opt.value.slice(1)}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Date filter */}
+        <div>
+          <label className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+            Date range
+          </label>
+          <div className="flex flex-wrap gap-1.5">
+            {DATE_PRESETS.map((preset) => (
+              <button
+                key={preset.key}
+                onClick={() => onDatePresetChange(preset.key)}
+                className={`rounded-full px-3 py-1 text-[11px] font-medium transition-all ${
+                  datePreset === preset.key
+                    ? 'bg-brand-gold text-white'
+                    : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400'
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* From filter */}
+        <div>
+          <label className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
+            From
+          </label>
+          <div className="relative">
+            <User className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Filter by sender..."
+              value={fromFilter}
+              onChange={(e) => onFromFilterChange(e.target.value)}
+              className="focus-gold w-full rounded-lg border border-gray-200 bg-gray-50/80 py-1.5 pr-3 pl-9 text-sm text-gray-900 placeholder-gray-400 outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"
+            />
+          </div>
+        </div>
+
+        {/* Starred only */}
+        <div>
+          <button
+            onClick={onStarToggle}
+            className={`flex items-center gap-2 text-xs font-medium transition-colors ${
+              showStarredOnly
+                ? 'text-amber-600 dark:text-amber-400'
+                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            <Star className={`h-3.5 w-3.5 ${showStarredOnly ? 'fill-amber-400' : ''}`} />
+            Show starred only
+          </button>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
