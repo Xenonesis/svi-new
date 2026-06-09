@@ -5,10 +5,16 @@ CREATE TABLE IF NOT EXISTS chat_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id TEXT UNIQUE NOT NULL,
   messages JSONB NOT NULL,
+  message_count INTEGER DEFAULT 0,
+  user_message_count INTEGER DEFAULT 0,
   user_agent TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
 );
+
+-- Add columns for existing databases (idempotent)
+ALTER TABLE chat_logs ADD COLUMN IF NOT EXISTS message_count INTEGER DEFAULT 0;
+ALTER TABLE chat_logs ADD COLUMN IF NOT EXISTS user_message_count INTEGER DEFAULT 0;
 
 -- Indexes for admin lookup and sorting
 CREATE INDEX IF NOT EXISTS idx_chat_logs_updated_at ON chat_logs(updated_at DESC);

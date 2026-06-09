@@ -21,11 +21,26 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'sessionId and messages are required' }, { status: 400 });
   }
 
+  // Compute message stats
+  let msgCount = 0;
+  let userCount = 0;
+  try {
+    const parsed = typeof messages === 'string' ? JSON.parse(messages) : messages;
+    if (Array.isArray(parsed)) {
+      msgCount = parsed.length;
+      userCount = parsed.filter((m: any) => m.role === 'user').length;
+    }
+  } catch {
+    // fallback
+  }
+
   const { error } = await supabaseAdmin.from('chat_logs').upsert(
     {
       session_id: sessionId,
-      messages: JSON.stringify(messages),
+      messages: typeof messages === 'string' ? messages : JSON.stringify(messages),
       user_agent: userAgent,
+      message_count: msgCount,
+      user_message_count: userCount,
       updated_at: new Date().toISOString(),
     },
     { onConflict: 'session_id' }
@@ -48,13 +63,51 @@ export async function GET(req: NextRequest) {
 
   const { searchParams } = new URL(req.url);
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1'));
-  const limit = Math.min(50, Math.max(1, parseInt(searchParams.get('limit') ?? '20')));
+  const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') ?? '20')));
   const offset = (page - 1) * limit;
 
-  const { data, error, count } = await supabaseAdmin
-    .from('chat_logs')
-    .select('*', { count: 'exact' })
-    .order('updated_at', { ascending: false })
+  // Sort params
+  const sortBy = searchParams.get('sort_by') || 'updated_at';
+  const sortOrder = searchParams.get('sort_order') === 'asc' ? true : false;
+
+  // Allowed sort columns
+  const allowedSorts = ['created_at', 'updated_at', 'message_count', 'user_message_count'];
+  const actualSortBy = allowedSorts.includes(sortBy) ? sortBy : 'updated_at';
+
+  // Date range filter
+  const dateFrom = searchParams.get('date_from');
+  const dateTo = searchParams.get('date_to');
+
+  // Message count filter
+  const minMessages = searchParams.get('min_messages');
+  const maxMessages = searchParams.get('max_messages');
+
+  // Search text
+  const searchText = searchParams.get('search')?.trim();
+
+  // Build query
+  let query = supabaseAdmin.from('chat_logs').select('*', { count: 'exact' });
+
+  // Apply filters
+  if (dateFrom) {
+    query = query.gte('created_at', dateFrom);
+  }
+  if (dateTo) {
+    // Add 1 day to include the end date fully
+    const endDate = new Date(dateTo);
+    endDate.setDate(endDate.getDate() + 1);
+    query = query.lt('created_at', endDate.toISOString());
+  }
+  if (minMessages) {
+    query = query.gte('message_count', parseInt(minMessages));
+  }
+  if (maxMessages) {
+    query = query.lte('message_count', parseInt(maxMessages));
+  }
+
+  // Apply sorting & pagination
+  const { data, error, count } = await query
+    .order(actualSortBy, { ascending: sortOrder })
     .range(offset, offset + limit - 1);
 
   if (error) {
@@ -63,7 +116,7 @@ export async function GET(req: NextRequest) {
   }
 
   return NextResponse.json({
-    logs: data,
+    logs: data || [],
     pagination: {
       page,
       limit,
@@ -71,4 +124,40 @@ export async function GET(req: NextRequest) {
       totalPages: Math.ceil((count ?? 0) / limit),
     },
   });
+}
+
+// ─── DELETE: Delete chat log(s) ─────────────────────────────────────────
+export async function DELETE(req: NextRequest) {
+  const user = await verifyAdmin(req);
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  const { searchParams } = new URL(req.url);
+  const id = searchParams.get('id');
+  const all = searchParams.get('all');
+
+  if (all === 'true') {
+    // Clear all logs
+    const { error } = await supabaseAdmin
+      .from('chat_logs')
+      .delete()
+      .neq('id', '00000000-0000-0000-0000-000000000000');
+    if (error) {
+      return NextResponse.json({ error: 'Failed to clear logs' }, { status: 500 });
+    }
+    return NextResponse.json({ success: true, message: 'All logs cleared' });
+  }
+
+  if (!id) {
+    return NextResponse.json({ error: 'id or ?all=true required' }, { status: 400 });
+  }
+
+  const { error } = await supabaseAdmin.from('chat_logs').delete().eq('id', id);
+
+  if (error) {
+    return NextResponse.json({ error: 'Failed to delete' }, { status: 500 });
+  }
+
+  return NextResponse.json({ success: true });
 }

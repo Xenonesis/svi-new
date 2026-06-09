@@ -327,6 +327,8 @@ CREATE TABLE IF NOT EXISTS chat_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   session_id TEXT UNIQUE NOT NULL,
   messages JSONB NOT NULL,
+  message_count INTEGER DEFAULT 0,
+  user_message_count INTEGER DEFAULT 0,
   user_agent TEXT,
   created_at TIMESTAMPTZ DEFAULT now(),
   updated_at TIMESTAMPTZ DEFAULT now()
