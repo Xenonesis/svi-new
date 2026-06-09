@@ -3,6 +3,7 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { AppError, handleApiError } from '@/src/lib/api/errors';
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -13,7 +14,7 @@ function getResend() {
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!admin) throw AppError.unauthorized();
 
     const resend = getResend();
     const url = new URL(request.url);
@@ -92,9 +93,8 @@ export async function GET(request: NextRequest) {
       emails: filteredEmails,
       hasMore: responseData?.has_more ?? false,
     });
-  } catch (error) {
-    console.error('Email fetch error:', error);
-    return NextResponse.json({ error: 'Failed to fetch emails' }, { status: 500 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }
 
@@ -102,7 +102,7 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!admin) throw AppError.unauthorized();
 
     const resend = getResend();
     const body = await request.json();
@@ -412,8 +412,7 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
-  } catch (error) {
-    console.error('Email send error:', error);
-    return NextResponse.json({ error: 'Failed to process request' }, { status: 500 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }

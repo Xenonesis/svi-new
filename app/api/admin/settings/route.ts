@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { AppError, handleApiError } from '@/src/lib/api/errors';
 import fs from 'fs';
 import path from 'path';
 
@@ -22,7 +23,6 @@ const DEFAULT_COMPANY_INFO = {
   bank_ifsc: 'IBKL0000894',
 };
 
-// Helper to safely write fallback
 function writeFallback(data: any) {
   try {
     if (!fs.existsSync(FALLBACK_DIR)) {
@@ -34,7 +34,6 @@ function writeFallback(data: any) {
   }
 }
 
-// Helper to safely read fallback
 function readFallback() {
   try {
     if (fs.existsSync(FALLBACK_FILE)) {
@@ -49,17 +48,14 @@ function readFallback() {
 
 // GET /api/admin/settings
 export async function GET(request: NextRequest) {
-  const admin = await verifyAdmin(request);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const key = searchParams.get('key');
-
   try {
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
+
+    const { searchParams } = new URL(request.url);
+    const key = searchParams.get('key');
+
     if (key) {
-      // Query specific key
       const { data, error } = await supabaseAdmin
         .from('portal_settings')
         .select('*')
@@ -67,11 +63,9 @@ export async function GET(request: NextRequest) {
         .single();
 
       if (error) {
-        // Check if table does not exist or item not found
         if (error.code === 'PGRST116' || error.message?.includes('does not exist')) {
           if (key === 'company_info') {
-            const fallbackData = readFallback();
-            return NextResponse.json({ key, value: fallbackData });
+            return NextResponse.json({ key, value: readFallback() });
           }
           return NextResponse.json({ key, value: {} });
         }
@@ -79,20 +73,17 @@ export async function GET(request: NextRequest) {
       }
       return NextResponse.json({ key: data.key, value: data.value });
     } else {
-      // Query all settings
       const { data, error } = await supabaseAdmin.from('portal_settings').select('*');
 
       if (error) {
         if (error.message?.includes('does not exist')) {
-          const fallbackData = readFallback();
           return NextResponse.json({
-            settings: [{ key: 'company_info', value: fallbackData }],
+            settings: [{ key: 'company_info', value: readFallback() }],
           });
         }
         throw error;
       }
 
-      // If portal_settings table is empty, we return the default company info as one entry
       if (!data || data.length === 0) {
         return NextResponse.json({
           settings: [{ key: 'company_info', value: DEFAULT_COMPANY_INFO }],
@@ -103,34 +94,28 @@ export async function GET(request: NextRequest) {
     }
   } catch (err: any) {
     console.error('GET settings error:', err);
-    // If anything goes wrong, return default company info under company_info
-    if (key === 'company_info') {
-      return NextResponse.json({ key: 'company_info', value: readFallback() });
-    }
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    return NextResponse.json({ settings: [{ key: 'company_info', value: readFallback() }] });
   }
 }
 
 // POST /api/admin/settings
 export async function POST(request: NextRequest) {
-  const admin = await verifyAdmin(request);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  let body;
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-  }
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
 
-  const { key, value } = body;
-  if (!key || value === undefined) {
-    return NextResponse.json({ error: 'Key and value are required' }, { status: 400 });
-  }
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      throw AppError.badRequest('Invalid JSON body');
+    }
 
-  try {
+    const { key, value } = body;
+    if (!key || value === undefined) {
+      throw AppError.badRequest('Key and value are required');
+    }
+
     // 1. Save to Database
     const { error } = await supabaseAdmin.from('portal_settings').upsert({
       key,
@@ -142,47 +127,34 @@ export async function POST(request: NextRequest) {
     if (error) {
       console.warn('DB upsert error, falling back to local file:', error.message);
       dbSaved = false;
-      // Trigger local file fallback for company_info
-      if (key === 'company_info') {
-        writeFallback(value);
-      }
+      if (key === 'company_info') writeFallback(value);
     } else {
-      // Also write locally as a synchronized cache
-      if (key === 'company_info') {
-        writeFallback(value);
-      }
+      if (key === 'company_info') writeFallback(value);
     }
 
-    // 2. Fetch admin full name for logs & notifications
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('full_name')
-      .eq('id', admin.id)
-      .single();
-    const adminName = profile?.full_name || admin.email || 'Admin';
-
-    // 3. Insert Activity Log
+    // 2. Activity log + notification (non-blocking)
     try {
+      const { data: profile } = await supabaseAdmin
+        .from('profiles')
+        .select('full_name')
+        .eq('id', admin.id)
+        .single();
+      const adminName = profile?.full_name || admin.email || 'Admin';
+
       await supabaseAdmin.from('activity_logs').insert({
         user_id: admin.id,
         action_type: 'settings_updated',
         description: `${adminName} updated ${key.replace('_', ' ')} settings.`,
         metadata: { event: 'settings_updated', settingName: key, dbSaved },
       });
-    } catch (logErr) {
-      console.error('Failed to log settings update activity:', logErr);
-    }
 
-    // 4. Send system notification
-    try {
       await NotificationHelper.settingsUpdated(key.replace('_', ' '), adminName);
-    } catch (notifErr) {
-      console.error('Failed to trigger notification:', notifErr);
+    } catch (logErr) {
+      console.error('Failed to log settings update:', logErr);
     }
 
     return NextResponse.json({ success: true, key, value, dbSaved });
-  } catch (err: any) {
-    console.error('POST settings error:', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }
