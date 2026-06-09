@@ -2,54 +2,42 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { AppError, handleApiError } from '@/src/lib/api/errors';
 
-// GET /api/admin/properties - Fetch all properties
+// GET /api/admin/properties
 export async function GET(request: NextRequest) {
-  const admin = await verifyAdmin(request);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
   try {
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
+
     const { data: properties, error } = await supabaseAdmin
       .from('properties')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (error) {
-      console.error('Error fetching admin properties:', error.message);
-      return NextResponse.json({ error: 'Failed to fetch properties' }, { status: 500 });
-    }
-
+    if (error) throw AppError.internal('Failed to fetch properties');
     return NextResponse.json({ properties: properties || [] });
-  } catch (err: any) {
-    console.error('GET admin properties error:', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }
 
-// POST /api/admin/properties - Create or update a property
+// POST /api/admin/properties
 export async function POST(request: NextRequest) {
-  const admin = await verifyAdmin(request);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  let body;
   try {
-    body = await request.json();
-  } catch {
-    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-  }
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
 
-  const { id, name, slug, active } = body;
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      throw AppError.badRequest('Invalid JSON body');
+    }
 
-  if (!name || !slug) {
-    return NextResponse.json({ error: 'Name and slug are required' }, { status: 400 });
-  }
+    const { id, name, slug, active } = body;
+    if (!name || !slug) throw AppError.badRequest('Name and slug are required');
 
-  try {
-    // Get admin profile for logging
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('full_name')
@@ -57,14 +45,11 @@ export async function POST(request: NextRequest) {
       .single();
     const adminName = profile?.full_name || admin.email || 'Admin';
 
-    let result;
+    let result: any;
     let actionType = 'property_created';
-    let logDescription = '';
 
     if (id) {
-      // Update existing property
       actionType = 'property_updated';
-      logDescription = `${adminName} updated property: ${name}.`;
       const { data, error } = await supabaseAdmin
         .from('properties')
         .update({
@@ -76,22 +61,14 @@ export async function POST(request: NextRequest) {
         .eq('id', id)
         .select()
         .single();
-
       if (error) throw error;
       result = data;
     } else {
-      // Create new property
-      logDescription = `${adminName} created a new property: ${name}.`;
       const { data, error } = await supabaseAdmin
         .from('properties')
-        .insert({
-          name,
-          slug,
-          active: active !== undefined ? active : true,
-        })
+        .insert({ name, slug, active: active !== undefined ? active : true })
         .select()
         .single();
-
       if (error) throw error;
       result = data;
     }
@@ -100,7 +77,7 @@ export async function POST(request: NextRequest) {
       await supabaseAdmin.from('activity_logs').insert({
         user_id: admin.id,
         action_type: actionType,
-        description: logDescription,
+        description: `${adminName} ${actionType === 'property_created' ? 'created' : 'updated'} property: ${name}.`,
         metadata: { event: actionType, propertyName: name, propertyId: result.id },
       });
     } catch (logErr) {
@@ -108,37 +85,28 @@ export async function POST(request: NextRequest) {
     }
 
     try {
-      const action = id
-        ? NotificationHelper.propertyUpdated(name, adminName)
-        : NotificationHelper.propertyCreated(name, adminName);
-      await action;
+      if (id) await NotificationHelper.propertyUpdated(name, adminName);
+      else await NotificationHelper.propertyCreated(name, adminName);
     } catch (notifErr) {
       console.error('Failed to create property notification:', notifErr);
     }
 
     return NextResponse.json({ success: true, property: result });
-  } catch (err: any) {
-    console.error('POST admin properties error:', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }
 
-// DELETE /api/admin/properties - Delete a property
+// DELETE /api/admin/properties
 export async function DELETE(request: NextRequest) {
-  const admin = await verifyAdmin(request);
-  if (!admin) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-
-  const { searchParams } = new URL(request.url);
-  const id = searchParams.get('id');
-
-  if (!id) {
-    return NextResponse.json({ error: 'Property ID is required' }, { status: 400 });
-  }
-
   try {
-    // Get admin profile for logging
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
+
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+    if (!id) throw AppError.badRequest('Property ID is required');
+
     const { data: profile } = await supabaseAdmin
       .from('profiles')
       .select('full_name')
@@ -146,20 +114,16 @@ export async function DELETE(request: NextRequest) {
       .single();
     const adminName = profile?.full_name || admin.email || 'Admin';
 
-    // Get property details before deletion for logging
     const { data: property } = await supabaseAdmin
       .from('properties')
       .select('name')
       .eq('id', id)
       .single();
-
     const propertyName = property?.name || 'Unknown Property';
 
     const { error } = await supabaseAdmin.from('properties').delete().eq('id', id);
-
     if (error) throw error;
 
-    // Insert Activity Log
     try {
       await supabaseAdmin.from('activity_logs').insert({
         user_id: admin.id,
@@ -172,8 +136,7 @@ export async function DELETE(request: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
-    console.error('DELETE admin properties error:', err);
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }

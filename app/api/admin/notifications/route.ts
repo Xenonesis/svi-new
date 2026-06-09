@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
+import { AppError, handleApiError } from '@/src/lib/api/errors';
 
-// GET /api/admin/notifications - Fetch notifications for admin
+// GET /api/admin/notifications
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!admin) throw AppError.unauthorized();
 
     const url = new URL(request.url);
     const limit = Math.max(1, parseInt(url.searchParams.get('limit') || '50') || 50);
@@ -19,9 +20,7 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false })
       .limit(limit);
 
-    if (unreadOnly) {
-      query = query.eq('is_read', false);
-    }
+    if (unreadOnly) query = query.eq('is_read', false);
 
     let countQuery = supabaseAdmin
       .from('notifications')
@@ -38,68 +37,50 @@ export async function GET(request: NextRequest) {
       countQuery,
     ]);
 
-    if (error) {
-      console.error('Error fetching notifications:', error);
-      return NextResponse.json({ error: 'Failed to fetch notifications' }, { status: 500 });
-    }
+    if (error) throw AppError.internal('Failed to fetch notifications');
 
-    return NextResponse.json({
-      notifications: notifications || [],
-      unreadCount: unreadCount || 0,
-    });
-  } catch (error) {
-    console.error('Notification fetch error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ notifications: notifications || [], unreadCount: unreadCount || 0 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }
 
-// POST /api/admin/notifications - Create a new notification
+// POST /api/admin/notifications — create a notification
 export async function POST(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
-    if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    if (!admin) throw AppError.unauthorized();
 
-    const body = await request.json();
-    const { title, message, type, user_id, action_url, metadata } = body;
-
-    if (!title || !message || !type) {
-      return NextResponse.json(
-        { error: 'Missing required fields: title, message, type' },
-        { status: 400 }
-      );
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      throw AppError.badRequest('Invalid JSON body');
     }
 
-    const validTypes = ['info', 'success', 'warning', 'error'];
-    if (!validTypes.includes(type)) {
-      return NextResponse.json(
-        { error: `Invalid type. Must be one of: ${validTypes.join(', ')}` },
-        { status: 400 }
-      );
+    const { type, title, message, user_id, metadata, priority = 'normal' } = body;
+
+    if (!type || !title || !message) {
+      throw AppError.badRequest('type, title, and message are required');
     }
 
-    const { data: notification, error } = await supabaseAdmin
+    const { data, error } = await supabaseAdmin
       .from('notifications')
-      .insert([
-        {
-          title,
-          message,
-          type,
-          user_id: user_id || null,
-          action_url: action_url || null,
-          metadata: metadata || {},
-        },
-      ])
+      .insert({
+        type,
+        title,
+        message,
+        user_id: user_id || null,
+        metadata: metadata || {},
+        priority,
+      })
       .select()
       .single();
 
-    if (error) {
-      console.error('Error creating notification:', error);
-      return NextResponse.json({ error: 'Failed to create notification' }, { status: 500 });
-    }
+    if (error) throw AppError.internal('Failed to create notification');
 
-    return NextResponse.json({ notification, success: true }, { status: 201 });
-  } catch (error) {
-    console.error('Notification creation error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return NextResponse.json({ notification: data }, { status: 201 });
+  } catch (err) {
+    return handleApiError(err);
   }
 }

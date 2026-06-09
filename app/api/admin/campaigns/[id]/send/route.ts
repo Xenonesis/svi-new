@@ -102,7 +102,7 @@ export async function POST(request: NextRequest, { params }: Params) {
       description: `Campaign "${campaign.title}" sent to ${sent} recipients.`,
       metadata: { campaignId: id, recipientCount: sent },
     });
-  } catch (_err) {
+  } catch {
     // Activity logging is non-critical
   }
 
