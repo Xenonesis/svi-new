@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
@@ -153,12 +154,23 @@ export default function ChatBot() {
     }).catch(() => {});
   }, [messages, sessionId]);
 
-  // Periodic save every 60s while chat is open
+  // Periodic save every 30s while chat is open + save on close
   useEffect(() => {
     if (!isOpen || messages.length === 0) return;
-    logSaveTimerRef.current = setInterval(saveLog, 60000);
-    return () => clearInterval(logSaveTimerRef.current);
+    logSaveTimerRef.current = setInterval(saveLog, 30000);
+    return () => {
+      clearInterval(logSaveTimerRef.current);
+      // Save when chat closes
+      if (messages.length > 0) saveLog();
+    };
   }, [isOpen, messages.length, saveLog]);
+
+  // Save on unmount (page navigation)
+  useEffect(() => {
+    return () => {
+      if (messages.length > 0) saveLog();
+    };
+  }, [messages, saveLog]);
 
   // ─── Lead capture: Show after 3rd AI message ───────────────────────────
   useEffect(() => {
