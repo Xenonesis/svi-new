@@ -21,9 +21,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'sessionId and messages are required' }, { status: 400 });
   }
 
-  // Compute message stats
-  let msgCount = 0;
-  let userCount = 0;
+  // Compute message stats (only if columns exist in table)
+  let msgCount: number | null = null;
+  let userCount: number | null = null;
   try {
     const parsed = typeof messages === 'string' ? JSON.parse(messages) : messages;
     if (Array.isArray(parsed)) {
@@ -34,15 +34,24 @@ export async function POST(req: NextRequest) {
     // fallback
   }
 
-  const { error } = await supabaseAdmin.from('chat_logs').upsert(
-    {
-      session_id: sessionId,
-      messages: typeof messages === 'string' ? messages : JSON.stringify(messages),
-      user_agent: userAgent,
-      message_count: msgCount,
-      user_message_count: userCount,
-      updated_at: new Date().toISOString(),
-    },
+  // Build payload — omit message_count columns if they don't exist in table yet
+  const payload: {
+    session_id: string;
+    messages: string;
+    user_agent: string;
+    updated_at: string;
+    message_count?: number;
+    user_message_count?: number;
+  } = {
+    session_id: sessionId,
+    messages: typeof messages === 'string' ? messages : JSON.stringify(messages),
+    user_agent: userAgent,
+    updated_at: new Date().toISOString(),
+  };
+  if (msgCount !== null) payload.message_count = msgCount;
+  if (userCount !== null) payload.user_message_count = userCount;
+
+  const { error } = await supabaseAdmin.from('chat_logs').upsert(payload,
     { onConflict: 'session_id' }
   );
 
