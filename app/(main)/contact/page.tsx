@@ -46,10 +46,10 @@ export default function Contact() {
         sources: {
           osm: {
             type: 'raster',
-            tiles: ['https://tiles.openfreemap.org/tiles/{z}/{x}/{y}.png'],
+            tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
             tileSize: 256,
             attribution:
-              '&copy; <a href="https://openfreemap.org">OpenFreeMap</a> &copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a>',
+              '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           },
         },
         layers: [
