@@ -34,26 +34,34 @@ export async function POST(req: NextRequest) {
     // fallback
   }
 
-  // Build payload — skip message_count/user_message_count until columns exist
-  const payload: {
-    session_id: string;
-    messages: string;
-    user_agent: string;
-    updated_at: string;
-  } = {
-    session_id: sessionId,
-    messages: typeof messages === 'string' ? messages : JSON.stringify(messages),
-    user_agent: userAgent,
-    updated_at: new Date().toISOString(),
-  };
+  // Compute message stats
+  let msgCount = 0;
+  let userCount = 0;
+  try {
+    const parsed = typeof messages === 'string' ? JSON.parse(messages) : messages;
+    if (Array.isArray(parsed)) {
+      msgCount = parsed.length;
+      userCount = parsed.filter((m: any) => m.role === 'user').length;
+    }
+  } catch {
+    // fallback
+  }
 
-  const { error } = await supabaseAdmin.from('chat_logs').upsert(payload,
+  const { error } = await supabaseAdmin.from('chat_logs').upsert(
+    {
+      session_id: sessionId,
+      messages: typeof messages === 'string' ? messages : JSON.stringify(messages),
+      user_agent: userAgent,
+      message_count: msgCount,
+      user_message_count: userCount,
+      updated_at: new Date().toISOString(),
+    },
     { onConflict: 'session_id' }
   );
 
   if (error) {
-    console.error('Chat log save error:', error);
-    return NextResponse.json({ error: 'Failed to save', detail: error.message }, { status: 500 });
+    console.error('Chat log save error:', error.message);
+    return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
   }
 
   return NextResponse.json({ success: true });
