@@ -4,26 +4,18 @@ export interface CreateNotificationParams {
   title: string;
   message: string;
   type: 'info' | 'success' | 'warning' | 'error';
-  user_id?: string; // Optional - if not provided, it's a global notification for all admins
+  user_id?: string;
   action_url?: string;
   metadata?: Record<string, any>;
 }
 
-/**
- * Create a notification in the database
- * This can be called from API routes or server actions
- */
 export async function createNotification(params: CreateNotificationParams) {
   try {
     const { title, message, type, user_id, action_url, metadata } = params;
-
-    // Validate type
     const validTypes = ['info', 'success', 'warning', 'error'];
     if (!validTypes.includes(type)) {
       throw new Error(`Invalid notification type. Must be one of: ${validTypes.join(', ')}`);
     }
-
-    // Insert notification
     const { data, error } = await supabaseAdmin
       .from('notifications')
       .insert([
@@ -38,12 +30,10 @@ export async function createNotification(params: CreateNotificationParams) {
       ])
       .select()
       .single();
-
     if (error) {
       console.error('Error creating notification:', error);
       throw error;
     }
-
     return { success: true, notification: data };
   } catch (error) {
     console.error('Failed to create notification:', error);
@@ -51,30 +41,21 @@ export async function createNotification(params: CreateNotificationParams) {
   }
 }
 
-/**
- * Create notifications for all admin users
- */
 export async function createNotificationForAllAdmins(
   params: Omit<CreateNotificationParams, 'user_id'>
 ) {
   try {
-    // Get all admin users
     const { data: admins, error: fetchError } = await supabaseAdmin
       .from('profiles')
       .select('id')
       .eq('role', 'admin');
-
     if (fetchError) {
       console.error('Error fetching admins:', fetchError);
       throw fetchError;
     }
-
     if (!admins || admins.length === 0) {
-      console.warn('No admin users found');
       return { success: true, count: 0 };
     }
-
-    // Create notification for each admin
     const notifications = admins.map((admin) => ({
       title: params.title,
       message: params.message,
@@ -83,17 +64,11 @@ export async function createNotificationForAllAdmins(
       action_url: params.action_url || null,
       metadata: params.metadata || {},
     }));
-
-    const { data, error } = await supabaseAdmin
-      .from('notifications')
-      .insert(notifications)
-      .select();
-
+    const { data, error } = await supabaseAdmin.from('notifications').insert(notifications).select();
     if (error) {
       console.error('Error creating notifications for admins:', error);
       throw error;
     }
-
     return { success: true, count: data?.length || 0, notifications: data };
   } catch (error) {
     console.error('Failed to create notifications for admins:', error);
@@ -101,13 +76,7 @@ export async function createNotificationForAllAdmins(
   }
 }
 
-/**
- * Helper functions for common notification types
- */
 export const NotificationHelper = {
-  /**
-   * User registered notification
-   */
   userRegistered: async (userName: string, userId: string) => {
     return createNotificationForAllAdmins({
       title: 'New User Registered',
@@ -118,19 +87,11 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Email automated dispatch notification
-   */
   emailDispatched: async (recipient: string, subject: string, referenceId: string) => {
     let eventName = 'automated notification email';
-    if (subject.includes('Registration')) {
-      eventName = 'automated registration email';
-    } else if (subject.includes('Contact Form')) {
-      eventName = 'automated contact form alert';
-    } else if (subject.includes('Grievance')) {
-      eventName = 'automated grievance alert';
-    }
-
+    if (subject.includes('Registration')) eventName = 'automated registration email';
+    else if (subject.includes('Contact Form')) eventName = 'automated contact form alert';
+    else if (subject.includes('Grievance')) eventName = 'automated grievance alert';
     return createNotificationForAllAdmins({
       title: 'Automated Email Sent',
       message: `System successfully dispatched ${eventName} to ${recipient} (Reference ID: ${referenceId}).`,
@@ -140,37 +101,20 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Email automated dispatch failure
-   */
   emailDispatchFailed: async (recipient: string, error: string, referenceId: string) => {
     let eventName = 'email';
-    if (referenceId.startsWith('SVI-')) {
-      eventName = 'grievance alert email';
-    } else if (referenceId.startsWith('SVI2')) {
-      eventName = 'registration copy email';
-    } else {
-      eventName = 'contact copy email';
-    }
-
+    if (referenceId.startsWith('SVI-')) eventName = 'grievance alert email';
+    else if (referenceId.startsWith('SVI2')) eventName = 'registration copy email';
+    else eventName = 'contact copy email';
     return createNotificationForAllAdmins({
       title: 'Automated Email Failed',
       message: `Failed to deliver automated ${eventName} to ${recipient} (Reference: ${referenceId}). Error: ${error}`,
       type: 'error',
       action_url: `/admin/email`,
-      metadata: {
-        event: 'email_dispatch_failed',
-        recipient,
-        error,
-        referenceId,
-        subType: 'email',
-      },
+      metadata: { event: 'email_dispatch_failed', recipient, error, referenceId, subType: 'email' },
     });
   },
 
-  /**
-   * Document created notification
-   */
   documentCreated: async (documentType: string, userName: string, userId: string) => {
     const docLabels: Record<string, string> = {
       allotment_letter: 'Allotment Letter',
@@ -179,7 +123,6 @@ export const NotificationHelper = {
       offer_letter: 'Offer Letter',
       bba: 'BBA Agreement',
     };
-
     return createNotificationForAllAdmins({
       title: 'Document Generated',
       message: `${docLabels[documentType] || documentType} generated for ${userName}.`,
@@ -189,9 +132,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * User deleted notification
-   */
   userDeleted: async (userName: string) => {
     return createNotificationForAllAdmins({
       title: 'User Deleted',
@@ -201,9 +141,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Settings updated notification
-   */
   settingsUpdated: async (settingName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Settings Updated',
@@ -213,9 +150,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Error notification
-   */
   systemError: async (errorMessage: string) => {
     return createNotificationForAllAdmins({
       title: 'System Error',
@@ -225,15 +159,7 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Attendance marked notification
-   */
-  attendanceMarked: async (
-    teamName: string,
-    date: string,
-    memberCount: number,
-    adminName: string
-  ) => {
+  attendanceMarked: async (teamName: string, date: string, memberCount: number, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Attendance Marked',
       message: `${adminName} marked attendance for ${memberCount} member(s) in ${teamName} on ${date}.`,
@@ -243,9 +169,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Team created notification
-   */
   teamCreated: async (teamName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Team Created',
@@ -256,9 +179,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Document updated/downloaded notification
-   */
   documentUpdated: async (documentType: string, adminName: string, documentId: string) => {
     const docLabels: Record<string, string> = {
       allotment_letter: 'Allotment Letter',
@@ -276,9 +196,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Document deleted notification
-   */
   documentDeleted: async (documentType: string, adminName: string) => {
     const docLabels: Record<string, string> = {
       allotment_letter: 'Allotment Letter',
@@ -296,9 +213,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Property created notification
-   */
   propertyCreated: async (propertyName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Property Created',
@@ -309,9 +223,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Property updated notification
-   */
   propertyUpdated: async (propertyName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Property Updated',
@@ -322,9 +233,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Property deleted notification
-   */
   propertyDeleted: async (propertyName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Property Deleted',
@@ -335,14 +243,7 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Registration status updated notification
-   */
-  registrationStatusUpdated: async (
-    registrationId: string,
-    newStatus: string,
-    adminName: string
-  ) => {
+  registrationStatusUpdated: async (registrationId: string, newStatus: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Registration Status Updated',
       message: `${adminName} changed registration ${registrationId.slice(0, 8)}... status to "${newStatus}".`,
@@ -352,9 +253,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Registration deleted notification
-   */
   registrationDeleted: async (registrationId: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Registration Deleted',
@@ -365,9 +263,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Lottery draw scheduled notification
-   */
   lotteryScheduled: async (lotteryTitle: string, scheduledAt: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Lottery Draw Scheduled',
@@ -378,9 +273,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Lottery schedule cancelled notification
-   */
   lotteryScheduleCancelled: async (lotteryTitle: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Lottery Draw Cancelled',
@@ -391,9 +283,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Lottery draw executed notification
-   */
   lotteryDrawn: async (lotteryTitle: string, winners: string[], adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Lottery Draw Executed',
@@ -404,9 +293,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Campaign created notification
-   */
   campaignCreated: async (campaignTitle: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Campaign Created',
@@ -417,9 +303,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Campaign updated notification
-   */
   campaignUpdated: async (campaignTitle: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Campaign Updated',
@@ -430,9 +313,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Campaign deleted notification
-   */
   campaignDeleted: async (campaignTitle: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Campaign Deleted',
@@ -443,9 +323,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Campaign sent notification
-   */
   campaignSent: async (campaignTitle: string, recipientCount: number, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Campaign Sent',
@@ -456,9 +333,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Member added to team notification
-   */
   memberAddedToTeam: async (teamName: string, memberName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Member Added to Team',
@@ -469,9 +343,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Member removed from team notification
-   */
   memberRemovedFromTeam: async (teamName: string, memberName: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Member Removed from Team',
@@ -482,9 +353,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Email sent notification
-   */
   emailSent: async (to: string, subject: string, adminName: string) => {
     return createNotificationForAllAdmins({
       title: 'Email Sent',
@@ -495,9 +363,6 @@ export const NotificationHelper = {
     });
   },
 
-  /**
-   * Email moved to recycle bin notification
-   */
   emailDeleted: async (count: number, subjects: string[], adminName: string) => {
     const label = count === 1 ? `"${subjects[0]}"` : `${count} emails`;
     return createNotificationForAllAdmins({
@@ -505,17 +370,10 @@ export const NotificationHelper = {
       message: `${adminName} moved ${label} to the recycle bin.`,
       type: 'warning',
       action_url: `/admin/email?tab=trash`,
-      metadata: {
-        event: 'email_deleted',
-        count,
-        subjects,
-      },
+      metadata: { event: 'email_deleted', count, subjects },
     });
   },
 
-  /**
-   * Email restored from recycle bin notification
-   */
   emailRestored: async (count: number, subjects: string[], adminName: string) => {
     const label = count === 1 ? `"${subjects[0]}"` : `${count} emails`;
     return createNotificationForAllAdmins({
@@ -523,17 +381,10 @@ export const NotificationHelper = {
       message: `${adminName} restored ${label} from the recycle bin.`,
       type: 'info',
       action_url: `/admin/email`,
-      metadata: {
-        event: 'email_restored',
-        count,
-        subjects,
-      },
+      metadata: { event: 'email_restored', count, subjects },
     });
   },
 
-  /**
-   * Email permanently deleted notification
-   */
   emailPermanentlyDeleted: async (count: number, subjects: string[], adminName: string) => {
     const label = count === 1 ? `"${subjects[0]}"` : `${count} emails`;
     return createNotificationForAllAdmins({
@@ -541,11 +392,18 @@ export const NotificationHelper = {
       message: `${adminName} permanently deleted ${label}.`,
       type: 'error',
       action_url: `/admin/email?tab=trash`,
-      metadata: {
-        event: 'email_permanently_deleted',
-        count,
-        subjects,
-      },
+      metadata: { event: 'email_permanently_deleted', count, subjects },
+    });
+  },
+
+  // ─── Chat Lead Notifications ─────────────────────────────────────────
+  chatLeadCreated: async (name: string, phone: string) => {
+    return createNotificationForAllAdmins({
+      title: 'New Chat Lead',
+      message: `${name} (${phone}) shared their contact info via the AI chatbot.`,
+      type: 'info',
+      action_url: '/admin/chat-logs',
+      metadata: { event: 'chat_lead_created', name, phone },
     });
   },
 };

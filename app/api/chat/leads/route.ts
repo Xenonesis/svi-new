@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { rateLimit } from '@/src/lib/api/rateLimit';
+import { NotificationHelper } from '@/src/lib/supabase/notifications';
 
 export async function POST(req: NextRequest) {
   // Rate limit: 3 lead submissions per IP per minute
@@ -39,6 +40,11 @@ export async function POST(req: NextRequest) {
     console.error('Chat lead save error:', error.message);
     return NextResponse.json({ error: 'Failed to save' }, { status: 500 });
   }
+
+  // Notify all admins about the new lead
+  NotificationHelper.chatLeadCreated(name.trim(), cleanPhone).catch((err) =>
+    console.error('Failed to send chat lead notification:', err),
+  );
 
   return NextResponse.json({ success: true, id: data.id }, { status: 201 });
 }
