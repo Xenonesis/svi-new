@@ -79,7 +79,12 @@ export async function GET(request: NextRequest) {
     const filteredEmails = (responseData?.data || [])
       .filter((e: any) => !deletedIds.has(e.id))
       .map((e: any) => ({
-        ...e,
+        id: e.id,
+        object: e.object,
+        created_at: e.created_at,
+        subject: e.subject,
+        from: e.from,
+        to: e.to,
         last_event: e.status || 'sent',
       }));
 
