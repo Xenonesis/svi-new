@@ -377,10 +377,17 @@ export function useSentEmails(): UseSentEmailsReturn {
 
     // Date range
     if (dateCutoff) {
+      console.log(
+        '[date filter] cutoff:',
+        dateCutoff,
+        'sample dates:',
+        emails.slice(0, 3).map((e) => e.created_at)
+      );
       list = list.filter((e) => {
         const emailDate = new Date(e.created_at);
         return !isNaN(emailDate.getTime()) && emailDate >= dateCutoff;
       });
+      console.log('[date filter] after:', list.length);
     }
 
     // From filter
