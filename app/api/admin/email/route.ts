@@ -63,6 +63,7 @@ export async function GET(request: NextRequest) {
             email.html_content?.replace(/<[^>]+>/g, '').substring(0, 100) ||
             '',
           is_starred: false,
+          last_event: email.opened ? 'opened' : email.clicked ? 'clicked' : 'received',
         })),
       });
     }
@@ -74,8 +75,13 @@ export async function GET(request: NextRequest) {
       .eq('admin_id', admin.id);
     const deletedIds = new Set((deletedData || []).map((d: { email_id: string }) => d.email_id));
 
-    // Filter out deleted emails
-    const filteredEmails = (responseData?.data || []).filter((e: any) => !deletedIds.has(e.id));
+    // Filter out deleted emails and map to include last_event
+    const filteredEmails = (responseData?.data || [])
+      .filter((e: any) => !deletedIds.has(e.id))
+      .map((e: any) => ({
+        ...e,
+        last_event: e.status || 'sent',
+      }));
 
     return NextResponse.json({
       emails: filteredEmails,
