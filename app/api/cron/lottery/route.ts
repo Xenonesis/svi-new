@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { Resend } from 'resend';
+import { AppError } from '@/src/lib/api/errors';
 import crypto from 'crypto';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
@@ -14,13 +15,7 @@ function getResend() {
 const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
 
 /** Format a date to IST string */
-import {
-  toIST,
-  buildCountdownBlock,
-  reminderEmailHtml,
-  winnerEmailHtml,
-  nonWinnerEmailHtml,
-} from '@/src/lib/email-templates';
+import { reminderEmailHtml, winnerEmailHtml, nonWinnerEmailHtml } from '@/src/lib/email-templates';
 
 // ─── Main Cron Handler ─────────────────────────────────────────────────────────
 
@@ -29,7 +24,7 @@ export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get('authorization');
   if (secret && authHeader !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    throw AppError.unauthorized();
   }
 
   const now = new Date();

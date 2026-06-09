@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
+import { AppError } from '@/src/lib/api/errors';
 import { Resend } from 'resend';
 
 const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
@@ -19,7 +20,9 @@ async function resolveRecipients(campaign: any): Promise<{ email: string; name: 
       .from('lottery_participants')
       .select('name, email')
       .not('email', 'is', null);
-    return (data || []).filter((p: any) => p.email).map((p: any) => ({ email: p.email, name: p.name }));
+    return (data || [])
+      .filter((p: any) => p.email)
+      .map((p: any) => ({ email: p.email, name: p.name }));
   }
   // all_users
   const { data } = await supabaseAdmin
@@ -58,7 +61,7 @@ export async function GET(request: NextRequest) {
   const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get('authorization');
   if (secret && authHeader !== `Bearer ${secret}`) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    throw AppError.unauthorized();
   }
 
   const now = new Date();
@@ -89,7 +92,9 @@ export async function GET(request: NextRequest) {
             description: `Campaign "${campaign.title}" automatically sent to ${sent} recipients.`,
             metadata: { campaignId: campaign.id, recipientCount: sent },
           });
-        } catch {}
+        } catch {
+          // Activity log failure is non-blocking
+        }
       } catch (err: any) {
         results.push(`  → Error: ${err.message}`);
       }
