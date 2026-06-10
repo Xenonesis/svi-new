@@ -20,6 +20,7 @@ interface MobileNavProps {
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
   { name: 'About Us', path: '/about' },
+  { name: 'Calculators', path: '/calculators' },
   { name: 'Careers', path: '/careers' },
   { name: 'Blog', path: '/blog' },
 ];
