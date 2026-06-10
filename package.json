@@ -17,7 +17,10 @@
     "editorconfig": "editorconfig-checker",
     "prepare": "husky",
     "clean": "rm -rf .next",
-    "generate-icons": "node scripts/generate-icons.js"
+    "generate-icons": "node scripts/generate-icons.js",
+    "test:e2e": "playwright test --config=e2e/playwright.config.ts",
+    "test:e2e:ui": "playwright test --ui --config=e2e/playwright.config.ts",
+    "test:e2e:debug": "playwright test --config=e2e/playwright.config.ts --debug"
   },
   "dependencies": {
     "@ai-sdk/groq": "^3.0.39",
