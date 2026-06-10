@@ -61,3 +61,6 @@ replace_bba_3.py
 *.pdf
 salary*
 .playwright-mcp/
+
+# Next.js
+next-env.d.ts
