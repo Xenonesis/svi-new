@@ -1,16 +1,27 @@
 import type { Metadata } from 'next';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import dynamic from 'next/dynamic';
 import PaymentForm from './PaymentForm';
 
 const PaymentFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'));
 
-export const metadata: Metadata = {
-  title: 'Make a Payment',
-  description:
-    'Secure online payment portal for SVI Infra Solutions. Pay for your property registration, booking amount, or installment online.',
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default function Payment() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pages.payment' });
+  return {
+    title: t('title'),
+    description:
+      'Secure online payment portal for SVI Infra Solutions. Pay for your property registration, booking amount, or installment online.',
+  };
+}
+
+export default async function Payment({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div className="bg-brand-bg min-h-screen pt-20 pb-20 dark:bg-gray-900">
       {/* Hero — static content */}

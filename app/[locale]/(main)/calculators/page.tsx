@@ -1,20 +1,33 @@
 import type { Metadata } from 'next';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import PropertyCalculator from '@/src/components/common/PropertyCalculator';
 
-export const metadata: Metadata = {
-  title: 'EMI & ROI Calculator',
-  description:
-    'Plan your property investment with SVI Infra Solutions — calculate home loan EMIs and track your ROI with interactive charts.',
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default function CalculatorsPage() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pages.calculators' });
+  return {
+    title: t('title'),
+    description:
+      'Plan your property investment with SVI Infra Solutions — calculate home loan EMIs and track your ROI.',
+  };
+}
+
+export default async function CalculatorsPage({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('pages.calculators');
+
   return (
     <div className="bg-brand-bg min-h-screen pt-28 pb-20 dark:bg-gray-900">
       {/* Hero */}
       <section className="border-b border-gray-200 pb-12 text-center dark:border-gray-700">
         <div className="container mx-auto px-4">
           <h1 className="text-brand-navy animate-hero-h1 mb-6 font-serif text-3xl sm:text-4xl md:text-5xl dark:text-gray-100">
-            Property Calculator
+            {t('heading')}
           </h1>
           <div className="bg-brand-gold animate-hero-divider mx-auto mb-6 h-px w-16"></div>
           <p className="mx-auto max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400">

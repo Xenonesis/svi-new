@@ -1,17 +1,30 @@
 import type { Metadata } from 'next';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import dynamic from 'next/dynamic';
 import BlogHero from './BlogHero';
 import BlogCards from './BlogCards';
 
 const BlogFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'));
 
-export const metadata: Metadata = {
-  title: 'Insights & Updates',
-  description:
-    'Stay informed with the latest real estate market trends, investment guides, and updates from SVI Infra Solutions.',
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default function Blog() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pages.blog' });
+  return {
+    title: t('heading'),
+    description:
+      'Stay informed with the latest real estate market trends, investment guides, and updates from SVI Infra Solutions.',
+  };
+}
+
+export default async function Blog({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('pages.blog');
+
   return (
     <div className="min-h-screen bg-gray-50 pt-24 pb-20 dark:bg-[#0C0C0C]">
       <BlogHero />

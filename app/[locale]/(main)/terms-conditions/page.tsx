@@ -1,17 +1,28 @@
 import type { Metadata } from 'next';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const TermsFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'));
 
-export const metadata: Metadata = {
-  title: 'Terms & Conditions',
-  description:
-    'SVI Infra Solutions terms and conditions — rules and guidelines for using our website and services.',
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default function TermsConditions() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pages.terms' });
+  return {
+    title: t('title'),
+    description:
+      'SVI Infra Solutions terms and conditions — rules and guidelines for using our website and services.',
+  };
+}
+
+export default async function TermsConditions({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div className="bg-brand-bg min-h-screen pt-24 pb-20 dark:bg-gray-900">
       <div className="container mx-auto max-w-4xl px-4">

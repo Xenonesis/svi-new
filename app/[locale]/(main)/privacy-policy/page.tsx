@@ -1,17 +1,28 @@
 import type { Metadata } from 'next';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 const PrivacyFAQ = dynamic(() => import('@/src/components/common/ProjectsFAQ'));
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy',
-  description:
-    'SVI Infra Solutions privacy policy — how we collect, use, and protect your personal information.',
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default function PrivacyPolicy() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pages.privacy' });
+  return {
+    title: t('title'),
+    description:
+      'SVI Infra Solutions privacy policy — how we collect, use, and protect your personal information.',
+  };
+}
+
+export default async function PrivacyPolicy({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div className="bg-brand-bg min-h-screen pt-24 pb-20 dark:bg-gray-900">
       <div className="container mx-auto max-w-4xl px-4">

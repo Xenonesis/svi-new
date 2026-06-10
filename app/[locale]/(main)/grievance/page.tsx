@@ -1,17 +1,28 @@
 import type { Metadata } from 'next';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import dynamic from 'next/dynamic';
 import { MessageSquareWarning } from 'lucide-react';
 import GrievanceForm from './GrievanceForm';
 
 const GrievanceFAQ = dynamic(() => import('@/src/components/common/ContactFAQ'));
 
-export const metadata: Metadata = {
-  title: 'Raise a Grievance',
-  description:
-    'Submit a grievance or support request to SVI Infra Solutions. We are committed to resolving your issues promptly.',
+type Props = {
+  params: Promise<{ locale: string }>;
 };
 
-export default function Grievance() {
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'pages.grievance' });
+  return {
+    title: t('title'),
+    description:
+      'Submit a grievance or support request to SVI Infra Solutions. We are committed to resolving your issues promptly.',
+  };
+}
+
+export default async function Grievance({ params }: Props) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   return (
     <div className="bg-brand-bg min-h-screen pt-20 pb-20 dark:bg-gray-900">
       {/* Hero — static content */}
