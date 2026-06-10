@@ -1,7 +1,7 @@
 {
   "common": {
     "siteName": "SVI Infra Solutions",
-    "tagline": "जहाँ सपनों को मिलता है एक नया पता",
+    "tagline": "जहाँ सपनों को मिलता है एक नया पता।",
     "readMore": "और जानें",
     "contactUs": "संपर्क करें",
     "registerNow": "रजिस्टर करें",
@@ -65,10 +65,10 @@
     "chatWelcome": "SVI Infra में आपका स्वागत है!"
   },
   "stats": {
-    "propertiesSold": "प्रॉपर्टी बिक चुकी हैं",
+    "propertiesSold": "प्रॉपर्टी बिक्री",
     "happyClients": "खुश ग्राहक",
-    "yearsExperience": "साल का एक्सपीरियंस",
-    "successRate": "सक्सेस रेट"
+    "yearsExperience": "सालों का अनुभव",
+    "successRate": "सफलता दर"
   },
   "whyInvest": {
     "sectionTitle": "हमारे साथ क्यों निवेश करें",
