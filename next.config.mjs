@@ -12,9 +12,6 @@ const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
-  turbopack: {
-    root: process.cwd(),
-  },
   // Log build warnings for large chunks
   logging: {
     fetches: { fullUrl: true },

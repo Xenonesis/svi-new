@@ -507,7 +507,7 @@ table {
 }
 
 .blog-content blockquote::before {
-  content: '\201C';
+  content: '“';
   position: absolute;
   top: -8px;
   left: 12px;
