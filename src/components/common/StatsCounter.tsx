@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { memo, useEffect, useRef, useState } from 'react';
 
 interface StatProps {
@@ -70,13 +71,14 @@ const StatItem = memo(function StatItem({ end, label, suffix = '', duration = 20
 });
 
 export default function StatsCounter() {
+  const t = useTranslations('stats');
   return (
     <div className="container mx-auto px-4 py-12 md:py-16">
       <div className="grid grid-cols-2 gap-4 divide-white/10 md:grid-cols-4 md:gap-8 md:divide-x">
-        <StatItem end={5000} suffix="+" label="Properties Sold" />
-        <StatItem end={5000} suffix="+" label="Happy Clients" />
-        <StatItem end={15} suffix="+" label="Years Experience" />
-        <StatItem end={100} suffix="%" label="Success Rate" />
+        <StatItem end={5000} suffix="+" label={t('propertiesSold')} />
+        <StatItem end={5000} suffix="+" label={t('happyClients')} />
+        <StatItem end={15} suffix="+" label={t('yearsExperience')} />
+        <StatItem end={100} suffix="%" label={t('successRate')} />
       </div>
     </div>
   );

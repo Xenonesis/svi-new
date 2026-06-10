@@ -6,10 +6,12 @@ import { FacebookIcon, InstagramIcon } from '@/src/components/common/social-icon
 import { type FormEvent, memo, useCallback, useState } from 'react';
 
 import Link from 'next/link';
+import { useTranslations } from 'next-intl';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
 const Footer = memo(function Footer() {
+  const t = useTranslations();
   const [email, setEmail] = useState('');
   const [subscribed, setSubscribed] = useState(false);
 
@@ -38,8 +40,7 @@ const Footer = memo(function Footer() {
               />
             </Link>
             <p className="mb-6 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-              Where Dreams Take Address. Building trust and delivering excellence in real estate for
-              over 15 years.
+              {t('common.tagline')} {t('common.description')}
             </p>
             <div className="flex gap-4">
               {[
@@ -57,7 +58,7 @@ const Footer = memo(function Footer() {
                 <motion.a
                   key={label}
                   href={href}
-                  aria-label={`Follow us on ${label}`}
+                  aria-label={t('nav.followUs', { social: label })}
                   whileHover={{ scale: 1.1, borderColor: '#c9a84c', color: '#c9a84c' }}
                   whileTap={{ scale: 0.95 }}
                   className="text-brand-navy flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 transition-colors dark:border-gray-700 dark:text-gray-200"
@@ -70,7 +71,7 @@ const Footer = memo(function Footer() {
 
           <div>
             <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-[10px] font-semibold tracking-[0.2em] uppercase">
-              Quick Links
+              {t('footer.quickLinks')}
             </h4>
             <ul className="flex flex-col gap-4">
               <li>
@@ -134,7 +135,7 @@ const Footer = memo(function Footer() {
 
           <div>
             <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-[10px] font-semibold tracking-[0.2em] uppercase">
-              Services & Support
+              {t('footer.servicesSupport')}
             </h4>
             <ul className="flex flex-col gap-4">
               <li>
@@ -167,7 +168,7 @@ const Footer = memo(function Footer() {
 
           <div>
             <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-[10px] font-semibold tracking-[0.2em] uppercase">
-              Contact Info
+              {t('footer.contactInfo')}
             </h4>
             <ul className="flex flex-col gap-5">
               <li className="flex items-start gap-3">
@@ -198,10 +199,10 @@ const Footer = memo(function Footer() {
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div>
               <h4 className="text-brand-navy mb-1 text-sm font-semibold tracking-wider uppercase dark:text-gray-100">
-                Stay Updated
+                {t('footer.stayUpdated')}
               </h4>
               <p className="text-xs text-gray-500 dark:text-gray-400">
-                Get the latest property updates and exclusive offers in your inbox.
+                {t('footer.newsletterDesc')}
               </p>
             </div>
             <form
@@ -239,7 +240,7 @@ const Footer = memo(function Footer() {
                       animate={{ opacity: 1 }}
                       className="flex items-center gap-2"
                     >
-                      <Send size={14} /> Subscribe
+                      <Send size={14} /> {t('footer.subscribe')}
                     </motion.span>
                   )}
                 </AnimatePresence>
@@ -254,10 +255,10 @@ const Footer = memo(function Footer() {
           </p>
           <div className="flex gap-6 text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
             <Link href="/privacy-policy" className="hover:text-brand-gold transition-colors">
-              Privacy
+              {t('footer.privacy')}
             </Link>
             <Link href="/terms-conditions" className="hover:text-brand-gold transition-colors">
-              Terms
+              {t('footer.terms')}
             </Link>
           </div>
         </div>

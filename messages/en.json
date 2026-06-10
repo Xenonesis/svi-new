@@ -9,11 +9,13 @@
     "phone": "+91-73000-07643",
     "email": "info@sviinfrasolutions.com",
     "address": "A-61 Sector 65, Noida, Uttar Pradesh 201309",
+    "description": "Premium real estate developer with 15+ years of experience. Specializing in residential flats and commercial properties in Jaipur, Noida, and DMIC corridors.",
     "copyright": "© 2026 SVI Infra Solutions. All rights reserved."
   },
   "nav": {
     "home": "Home",
     "aboutUs": "About Us",
+    "leadership": "Leadership",
     "calculators": "Calculators",
     "careers": "Careers",
     "blog": "Blog",
@@ -24,20 +26,78 @@
     "contactUs": "Contact Us",
     "faq": "FAQ",
     "clientLogin": "Client Login",
-    "registerNow": "Register Now"
+    "registerNow": "Register Now",
+    "followUs": "Follow us on {social}"
+  },
+  "footer": {
+    "quickLinks": "Quick Links",
+    "servicesSupport": "Services & Support",
+    "contactInfo": "Contact Info",
+    "stayUpdated": "Stay Updated",
+    "newsletterDesc": "Get the latest property updates and exclusive offers in your inbox.",
+    "subscribe": "Subscribe",
+    "privacy": "Privacy",
+    "terms": "Terms",
+    "payOnline": "Pay Online",
+    "raiseGrievance": "Raise a Grievance",
+    "residentialProperties": "Residential Properties",
+    "commercialProperties": "Commercial Properties",
+    "propertyManagement": "Property Management"
   },
   "hero": {
-    "title": "Where Dreams Take Address",
+    "badge": "Legacy of Excellence",
+    "title": "Where Dreams Take",
+    "titleAccent": "Address",
     "subtitle": "Specializing in premium residential flats and strategic plot investments across Jaipur and Noida.",
     "cta": "View Our Projects",
-    "invest": "Invest with us"
+    "invest": "Invest with us",
+    "scroll": "Scroll"
   },
   "about": {
-    "welcomeTitle": "Building Trust, Delivering Excellence",
+    "welcomeTitle": "Welcome to SVI Infra",
+    "missionTitle": "Building Trust, Delivering Excellence",
     "description": "With over a decade of experience in the real estate sector, SVI Infra Solutions Pvt. Ltd. has established itself as a beacon of trust, quality, and innovation. Based in Noida, we specialize in delivering dream homes and lucrative investment opportunities across expanding regions.",
     "yearsExperience": "15+ Years of Industry Experience",
     "completedProjects": "15 Successfully Completed Projects",
     "primeLocations": "Favorable Locations like Phulera Smart City & Jaipur",
-    "yearsTrust": "Years of Trust"
+    "yearsLabel": "Years of Trust",
+    "readStory": "Read Our Full Story",
+    "chatWelcome": "Welcome to SVI Infra!"
+  },
+  "stats": {
+    "propertiesSold": "Properties Sold",
+    "happyClients": "Happy Clients",
+    "yearsExperience": "Years Experience",
+    "successRate": "Success Rate"
+  },
+  "whyInvest": {
+    "sectionTitle": "Why Invest With Us",
+    "heading": "Excellence in Every Step",
+    "description": "We focus on prime locations with high appreciation potential, notably the Phulera Smart City, Jaipur, and DMIC/DFC corridors. Backed by government approvals and strong partnerships.",
+    "expertAgentsTitle": "Expert Agents",
+    "expertAgentsDesc": "Our experienced professionals guide you through every step of property selection and acquisition.",
+    "trustedServiceTitle": "Trusted Service",
+    "trustedServiceDesc": "20+ years of core management expertise ensuring complete transparency and peace of mind.",
+    "marketExpertiseTitle": "Market Expertise",
+    "marketExpertiseDesc": "Deep insights into high-growth corridors like DMIC ensuring the best ROI for investors."
+  },
+  "portfolio": {
+    "sectionTitle": "Portfolio",
+    "heading": "Featured Projects",
+    "viewAll": "View Portfolio",
+    "exploreDetails": "Explore Details",
+    "completed": "Completed"
+  },
+  "faq": {
+    "title": "Have Questions?",
+    "subtitle": "Here are some common questions our clients ask about buying property with SVI Infra.",
+    "buyingProcess": "Buying Process",
+    "investment": "Investment"
+  },
+  "cta": {
+    "title": "Ready to Find Your Dream Home?",
+    "subtitle": "Join thousands of happy families and investors. Our experts are ready to assist you in finding the perfect property match.",
+    "registerNow": "Register Now",
+    "contactUs": "Contact Us"
   }
 }

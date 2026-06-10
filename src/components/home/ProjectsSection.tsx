@@ -1,5 +1,6 @@
 'use client';
 
+import { useTranslations } from 'next-intl';
 import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -31,6 +32,7 @@ const PROJECTS = [
 ];
 
 export default function ProjectsSection() {
+  const t = useTranslations('portfolio');
   return (
     <section
       className="bg-white py-16 md:py-24 dark:bg-gray-900"
@@ -42,10 +44,10 @@ export default function ProjectsSection() {
         <div className="mb-16 flex items-end justify-between border-b border-gray-200 pb-8 dark:border-gray-700">
           <AnimatedSection type="fadeLeft">
             <h4 className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
-              Portfolio
+              {t('sectionTitle')}
             </h4>
             <h2 className="text-brand-navy font-serif text-3xl md:text-5xl dark:text-gray-100">
-              Featured Projects
+              {t('heading')}
             </h2>
           </AnimatedSection>
           <AnimatedSection type="fadeRight">
@@ -53,7 +55,7 @@ export default function ProjectsSection() {
               href="/projects/completed"
               className="text-brand-navy group hidden items-center gap-2 text-[11px] font-semibold tracking-wider uppercase md:inline-flex dark:text-gray-200"
             >
-              <span className="group-hover:text-brand-gold transition-colors">View Portfolio</span>
+              <span className="group-hover:text-brand-gold transition-colors">{t('viewAll')}</span>
               <ArrowRight
                 size={14}
                 className="text-brand-gold transition-transform group-hover:translate-x-1"
@@ -81,7 +83,7 @@ export default function ProjectsSection() {
                     className="object-cover opacity-90 transition-opacity group-hover:opacity-100"
                   />
                   <div className="text-brand-navy absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-semibold tracking-wider uppercase shadow-sm">
-                    Completed
+                    {t('completed')}
                   </div>
                 </div>
                 <div className="bg-gray-50 p-8 transition-colors dark:bg-gray-800">
@@ -95,7 +97,7 @@ export default function ProjectsSection() {
                     href="/projects/completed"
                     className="text-brand-navy group-hover:text-brand-gold inline-flex items-center gap-2 text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                   >
-                    Explore Details
+                    {t('exploreDetails')}
                     <ArrowRight
                       size={14}
                       className="transition-transform group-hover:translate-x-1"
@@ -112,7 +114,7 @@ export default function ProjectsSection() {
             href="/projects/completed"
             className="text-brand-navy group inline-flex items-center gap-2 text-[11px] font-semibold tracking-wider uppercase dark:text-gray-200"
           >
-            <span className="group-hover:text-brand-gold transition-colors">View All Projects</span>
+            <span className="group-hover:text-brand-gold transition-colors">{t('viewAll')}</span>
             <ArrowRight
               size={14}
               className="text-brand-gold transition-transform group-hover:translate-x-1"

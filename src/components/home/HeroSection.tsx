@@ -6,6 +6,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
+import { useTranslations } from 'next-intl';
+
 interface HeroImage {
   src: string;
   alt: string;
@@ -23,6 +25,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
   const [_isPending, startTransition] = useTransition();
 
   const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  const t = useTranslations('hero');
   useEffect(() => {
     setPrefersReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
@@ -137,11 +140,11 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         style={{ opacity: heroOpacity }}
       >
         <span className="text-brand-gold animate-hero-1 mb-6 inline-block text-[10px] font-semibold tracking-[0.2em] uppercase opacity-80">
-          Legacy of Excellence
+          {t('badge')}
         </span>
 
         <h1 className="animate-hero-2 mb-8 font-serif text-4xl leading-[1.1] text-white sm:text-5xl md:text-7xl">
-          Where Dreams Take
+          {t('title')}
           <br />
           <span
             className="text-gradient-gold animate-bg-pan inline-block italic"
@@ -151,13 +154,12 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
                 'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070, #c9a84c)',
             }}
           >
-            Address
+            {t('titleAccent')}
           </span>
         </h1>
 
         <p className="animate-hero-3 mb-10 max-w-2xl px-2 text-center text-sm leading-relaxed text-white/90 md:text-xl">
-          Specializing in premium residential flats and strategic plot investments across Jaipur and
-          Noida.
+          {t('subtitle')}
         </p>
 
         <div className="animate-hero-4 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
@@ -166,7 +168,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
               href="/projects/current"
               className="shimmer bg-brand-gold text-brand-navy inline-block px-8 py-3.5 text-[11px] font-semibold tracking-wider uppercase shadow-lg transition-shadow hover:shadow-xl"
             >
-              View Our Projects
+              {t('cta')}
             </Link>
           </motion.div>
           <Link
@@ -174,14 +176,14 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
             className="group flex items-center gap-2.5 text-white/90 transition-colors hover:text-white"
           >
             <span className="hover-underline-gold text-[10px] font-semibold tracking-wider uppercase">
-              Invest with us
+              {t('invest')}
             </span>
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
           </Link>
         </div>
 
         <div className="animate-hero-5 absolute bottom-16 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex">
-          <span className="text-[9px] tracking-[0.2em] text-white/30 uppercase">Scroll</span>
+          <span className="text-[9px] tracking-[0.2em] text-white/30 uppercase">{t('scroll')}</span>
           <div className="h-8 w-px bg-gradient-to-b from-white/30 to-transparent" />
         </div>
       </motion.div>
