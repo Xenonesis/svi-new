@@ -93,6 +93,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ settings: data });
     }
   } catch (err: any) {
+    // If auth error, don't leak data
+    if (err instanceof AppError) {
+      return handleApiError(err);
+    }
     console.error('GET settings error:', err);
     return NextResponse.json({ settings: [{ key: 'company_info', value: readFallback() }] });
   }

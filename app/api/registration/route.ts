@@ -63,7 +63,7 @@ async function uploadFile(
   return { path: fileName, url: data?.signedUrl ?? '' };
 }
 
-export async function POST(_request: NextRequest) {
+export async function POST(request: NextRequest) {
   try {
     // Rate limit: 3 registrations per IP per minute
     const limited = rateLimit(request, { limit: 3, windowSeconds: 60 });
