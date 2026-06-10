@@ -81,7 +81,7 @@ export async function POST(request: NextRequest) {
       .from('email_inbox')
       .select('id')
       .eq('email_id', emailId)
-      .single();
+      .maybeSingle();
 
     if (existing) {
       return NextResponse.json({ received: true, duplicate: true });

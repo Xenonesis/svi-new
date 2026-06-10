@@ -26,6 +26,7 @@ interface RepliesTabProps {
 export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
   const [replies, setReplies] = useState<ReplyItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedReply, setSelectedReply] = useState<EmailDetail | null>(null);
   const [loadingDetail, setLoadingDetail] = useState(false);
   const [starred, setStarred] = useState<Set<string>>(new Set());
@@ -33,23 +34,32 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
 
   const fetchReplies = useCallback(async () => {
     setLoading(true);
+    setError(null);
     try {
       const token = await getToken();
+      if (!token) {
+        setError('Not authenticated. Please sign in.');
+        setReplies([]);
+        return;
+      }
       const res = await fetch('/api/admin/email?action=inbox', {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-
+      if (!res.ok) {
+        setError(data?.error?.message || data?.error || 'Failed to load inbox');
+        setReplies([]);
+        return;
+      }
       // Handle both 'emails' and 'replies' keys for compatibility
       const emailList = data.emails || data.replies || [];
-
       // Get admin email from storage
       const stored = localStorage.getItem('adminEmail');
       if (stored) setAdminEmail(stored);
-
       setReplies(emailList);
     } catch (e) {
       console.error('Failed to fetch replies:', e);
+      setError('Network error. Please try again.');
       setReplies([]);
     } finally {
       setLoading(false);
@@ -124,6 +134,22 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
                 </div>
               </div>
             ))}
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-24 text-center">
+            <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/20">
+              <Mail className="h-6 w-6 text-red-500" />
+            </div>
+            <h3 className="text-base font-bold text-gray-900 dark:text-white">Failed to load inbox</h3>
+            <p className="mt-2 max-w-sm text-sm text-red-500 dark:text-red-400">
+              {error}
+            </p>
+            <button
+              onClick={fetchReplies}
+              className="mt-4 rounded-lg bg-brand-gold px-4 py-2 text-xs font-bold text-brand-navy uppercase transition-all hover:shadow-lg"
+            >
+              Retry
+            </button>
           </div>
         ) : replies.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 text-center">
