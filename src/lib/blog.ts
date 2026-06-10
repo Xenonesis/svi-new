@@ -29,12 +29,12 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: 'Essential guidance for newcomers looking to invest in real estate markets.',
     excerptHi: 'नए निवेशकों के लिए रियल एस्टेट में पैसा लगाने से पहले जानने लायक ज़रूरी बातें।',
     content: `
-      <p>Investing in real estate can be one of the most rewarding financial decisions you make. However, for first-time buyers, navigating the property market can seem overwhelming. Here are five essential tips to help you get started on your investment journey.</p>
+      <p>Investing in real estate can be one of the <mark>most rewarding financial decisions</mark> you make. However, for first-time buyers, navigating the property market can seem overwhelming. Here are five essential tips to help you get started on your investment journey.</p>
 
       <h2>1. Research the Location Thoroughly</h2>
-      <p>Location is arguably the most important factor in real estate investment. Look for areas with:</p>
+      <p>Location is arguably the <mark>most important factor</mark> in real estate investment. Look for areas with:</p>
       <ul>
-        <li>Good connectivity to major highways and public transport</li>
+        <li><mark>Good connectivity</mark> to major highways and public transport</li>
         <li>Proximity to schools, hospitals, and shopping centers</li>
         <li>Planned infrastructure developments</li>
         <li>Low crime rates and good neighborhood reputation</li>
@@ -43,41 +43,41 @@ export const BLOG_POSTS: BlogPost[] = [
       <h2>2. Understand Your Budget</h2>
       <p>Before you start looking at properties, get clarity on your finances:</p>
       <ul>
-        <li>Check your credit score and improve it if necessary</li>
-        <li>Get pre-approved for a home loan</li>
-        <li>Factor in additional costs like registration, stamp duty, and maintenance</li>
-        <li>Maintain an emergency fund for unexpected expenses</li>
+        <li>Check your <mark>credit score</mark> and improve it if necessary</li>
+        <li>Get <mark>pre-approved for a home loan</mark></li>
+        <li>Factor in additional costs like <mark>registration, stamp duty, and maintenance</mark></li>
+        <li>Maintain an <mark>emergency fund</mark> for unexpected expenses</li>
       </ul>
 
       <h2>3. Think Long-Term</h2>
-      <p>Real estate is a long-term investment. Consider:</p>
+      <p>Real estate is a <mark>long-term investment</mark>. Consider:</p>
       <ul>
-        <li>The appreciation potential of the area</li>
-        <li>Rental yield if you plan to lease the property</li>
+        <li>The <mark>appreciation potential</mark> of the area</li>
+        <li><mark>Rental yield</mark> if you plan to lease the property</li>
         <li>Future development plans in the vicinity</li>
         <li>Your own life goals and how the property fits into them</li>
       </ul>
 
       <h2>4. Verify Legal Documentation</h2>
-      <p>Never skip the legal due diligence:</p>
+      <p>Never skip the <mark>legal due diligence</mark>:</p>
       <ul>
-        <li>Verify title deeds and ownership history</li>
-        <li>Check for any pending litigation or encumbrances</li>
+        <li>Verify <mark>title deeds</mark> and ownership history</li>
+        <li>Check for any <mark>pending litigation</mark> or encumbrances</li>
         <li>Ensure all necessary approvals from local authorities</li>
-        <li>Hire a qualified lawyer to review all documents</li>
+        <li>Hire a <mark>qualified lawyer</mark> to review all documents</li>
       </ul>
 
       <h2>5. Work with Reputed Developers</h2>
-      <p>Choose developers with a proven track record:</p>
+      <p>Choose developers with a <mark>proven track record</mark>:</p>
       <ul>
         <li>Research their past projects and delivery timelines</li>
         <li>Read customer reviews and testimonials</li>
-        <li>Verify RERA registration and compliance</li>
-        <li>Assess the quality of construction and materials used</li>
+        <li>Verify <mark>RERA registration</mark> and compliance</li>
+        <li>Assess the <mark>quality of construction</mark> and materials used</li>
       </ul>
 
       <h2>Conclusion</h2>
-      <p>Real estate investment requires careful planning and research. By following these five tips, you'll be better equipped to make informed decisions and maximize your returns. Remember, patience and due diligence are your best allies in the property market.</p>
+      <p>Real estate investment requires <mark>careful planning and research</mark>. By following these five tips, you'll be better equipped to make informed decisions and maximize your returns. Remember, <mark>patience and due diligence</mark> are your best allies in the property market.</p>
     `,
     contentHi: `
       <p><mark>रियल एस्टेट में निवेश</mark> आपके सबसे फ़ायदेमंद फ़ैसलों में से एक हो सकता है। लेकिन पहली बार प्रॉपर्टी खरीदने वालों के लिए यह थोड़ा मुश्किल लग सकता है। यहाँ 5 ज़रूरी टिप्स दी जा रही हैं जो आपके इन्वेस्टमेंट जर्नी में मदद करेंगी।</p>
@@ -157,32 +157,32 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: 'Comprehensive analysis of the current real estate landscape in Jaipur.',
     excerptHi: 'जयपुर के रियल एस्टेट मार्केट की पूरी जानकारी — क्या चल रहा है, कहाँ निवेश करें।',
     content: `
-      <p>Jaipur's real estate market has shown remarkable growth in recent years, driven by infrastructure development, IT sector expansion, and increasing demand for affordable housing. Let's explore the key trends shaping the market in 2026.</p>
+      <p>Jaipur's real estate market has shown <mark>remarkable growth</mark> in recent years, driven by <mark>infrastructure development, IT sector expansion</mark>, and increasing demand for affordable housing. Let's explore the key trends shaping the market in 2026.</p>
 
       <h2>Infrastructure Development Driving Growth</h2>
-      <p>The Delhi-Mumbai Industrial Corridor (DMIC) and Dedicated Freight Corridor (DFC) have significantly boosted Jaipur's real estate prospects. Areas along these corridors are witnessing unprecedented demand from both residential and commercial investors.</p>
+      <p>The <mark>Delhi-Mumbai Industrial Corridor (DMIC)</mark> and <mark>Dedicated Freight Corridor (DFC)</mark> have significantly boosted Jaipur's real estate prospects. Areas along these corridors are witnessing unprecedented demand from both residential and commercial investors.</p>
 
       <h2>Rising Demand in Suburban Areas</h2>
       <p>With land prices in central Jaipur reaching premium levels, buyers are increasingly looking at suburban locations like:</p>
       <ul>
-        <li>Jagatpura</li>
-        <li>Vidhyadhar Nagar extension</li>
-        <li>NH-8 corridor</li>
+        <li><mark>Jagatpura</mark></li>
+        <li><mark>Vidhyadhar Nagar extension</mark></li>
+        <li><mark>NH-8 corridor</mark></li>
         <li>Tonk Road</li>
         <li>Ajmer Road</li>
       </ul>
 
       <h2>Affordable Housing Boom</h2>
-      <p>Government initiatives like PMAY (Pradhan Mantri Awas Yojana) have made homeownership more accessible. Developers are focusing on compact, well-designed apartments in the Rs 25-50 lakh range, catering to middle-income families.</p>
+      <p>Government initiatives like <mark>PMAY (Pradhan Mantri Awas Yojana)</mark> have made homeownership more accessible. Developers are focusing on compact, well-designed apartments in the <mark>Rs 25-50 lakh range</mark>, catering to middle-income families.</p>
 
       <h2>Commercial Real Estate Expansion</h2>
-      <p>The IT and services sector growth has led to increased demand for office spaces and retail outlets. Areas near Sitapura Industrial Area and Malviya Nagar are emerging as commercial hubs.</p>
+      <p>The IT and services sector growth has led to increased demand for <mark>office spaces and retail outlets</mark>. Areas near Sitapura Industrial Area and Malviya Nagar are emerging as commercial hubs.</p>
 
       <h2>Price Appreciation Trends</h2>
-      <p>Residential property prices in Jaipur have appreciated by 8-12% annually over the past three years, outperforming many Tier-2 cities. Experts predict continued growth of 10-15% in prime locations.</p>
+      <p>Residential property prices in Jaipur have appreciated by <mark>8-12% annually</mark> over the past three years, outperforming many Tier-2 cities. Experts predict continued growth of <mark>10-15% in prime locations</mark>.</p>
 
       <h2>Investment Outlook</h2>
-      <p>With Smart City projects, improved connectivity, and growing employment opportunities, Jaipur presents excellent investment opportunities for both end-users and investors seeking capital appreciation.</p>
+      <p>With <mark>Smart City projects</mark>, improved connectivity, and growing employment opportunities, Jaipur presents excellent investment opportunities for both end-users and investors seeking capital appreciation.</p>
     `,
     contentHi: `
       <p>जयपुर का <mark>रियल एस्टेट मार्केट</mark> पिछले कुछ सालों में ज़बरदस्त तरीके से बढ़ा है। इंफ्रास्ट्रक्चर डेवलपमेंट, <mark>IT सेक्टर की ग्रोथ</mark> और अफ़ोर्डेबल हाउसिंग की बढ़ती डिमांड ने इस ग्रोथ को गति दी है। आइए जानते हैं 2026 के प्रमुख ट्रेंड्स।</p>
@@ -239,42 +239,42 @@ export const BLOG_POSTS: BlogPost[] = [
     excerpt: 'How technology is revolutionizing residential properties and enhancing lifestyle.',
     excerptHi: 'टेक्नोलॉजी कैसे बदल रही है हमारे रहने के तरीके को — स्मार्ट होम की पूरी जानकारी।',
     content: `
-      <p>The concept of home is evolving rapidly with the integration of smart technology. Modern homebuyers are no longer just looking for four walls and a roof; they want intelligent living spaces that enhance comfort, security, and energy efficiency.</p>
+      <p>The concept of home is evolving rapidly with the integration of <mark>smart technology</mark>. Modern homebuyers are no longer just looking for four walls and a roof; they want <mark>intelligent living spaces</mark> that enhance comfort, security, and energy efficiency.</p>
 
       <h2>Essential Smart Home Features</h2>
 
       <h3>1. Automated Lighting and Climate Control</h3>
-      <p>Smart lighting systems allow you to control brightness, color, and scheduling through mobile apps or voice commands. Similarly, smart thermostats learn your preferences and optimize heating/cooling for maximum comfort and energy savings.</p>
+      <p>Smart lighting systems allow you to control brightness, color, and scheduling through mobile apps or <mark>voice commands</mark>. Similarly, <mark>smart thermostats</mark> learn your preferences and optimize heating/cooling for maximum comfort and energy savings.</p>
 
       <h3>2. Advanced Security Systems</h3>
       <p>Modern homes feature:</p>
       <ul>
-        <li>Video doorbells with two-way communication</li>
-        <li>Smart locks with remote access</li>
-        <li>Motion sensors and surveillance cameras</li>
+        <li><mark>Video doorbells</mark> with two-way communication</li>
+        <li><mark>Smart locks</mark> with remote access</li>
+        <li><mark>Motion sensors</mark> and surveillance cameras</li>
         <li>Integrated alarm systems connected to smartphones</li>
       </ul>
 
       <h3>3. Energy Management</h3>
-      <p>Smart meters and energy monitoring systems help homeowners track consumption patterns and reduce electricity bills. Solar panel integration with battery storage is becoming increasingly popular.</p>
+      <p><mark>Smart meters</mark> and energy monitoring systems help homeowners track consumption patterns and reduce electricity bills. Solar panel integration with <mark>battery storage</mark> is becoming increasingly popular.</p>
 
       <h3>4. Voice-Activated Assistants</h3>
       <p>Integration with Alexa, Google Assistant, or Siri allows seamless control of various home functions through simple voice commands.</p>
 
       <h2>Benefits of Smart Homes</h2>
       <ul>
-        <li><strong>Convenience:</strong> Control everything from your smartphone</li>
-        <li><strong>Energy Efficiency:</strong> Reduce utility bills by 20-30%</li>
-        <li><strong>Enhanced Security:</strong> Real-time monitoring and alerts</li>
-        <li><strong>Increased Property Value:</strong> Smart features boost resale value</li>
-        <li><strong>Accessibility:</strong> Easier management for elderly and differently-abled residents</li>
+        <li><strong><mark>Convenience:</mark></strong> Control everything from your smartphone</li>
+        <li><strong><mark>Energy Efficiency:</mark></strong> Reduce utility bills by <mark>20-30%</mark></li>
+        <li><strong><mark>Enhanced Security:</mark></strong> Real-time monitoring and alerts</li>
+        <li><strong><mark>Increased Property Value:</mark></strong> Smart features boost resale value</li>
+        <li><strong><mark>Accessibility:</mark></strong> Easier management for elderly and differently-abled residents</li>
       </ul>
 
       <h2>Future Trends</h2>
-      <p>Emerging technologies like AI-powered home assistants, predictive maintenance systems, and IoT-enabled appliances will further transform how we interact with our living spaces.</p>
+      <p>Emerging technologies like <mark>AI-powered home assistants</mark>, predictive maintenance systems, and <mark>IoT-enabled appliances</mark> will further transform how we interact with our living spaces.</p>
 
       <h2>Conclusion</h2>
-      <p>Smart home technology is no longer a luxury; it is becoming a standard expectation. As developers, we are committed to integrating these innovations into our projects to deliver future-ready homes.</p>
+      <p>Smart home technology is no longer a luxury; it is becoming a <mark>standard expectation</mark>. As developers, we are committed to integrating these innovations into our projects to deliver future-ready homes.</p>
     `,
     contentHi: `
       <p><mark>स्मार्ट टेक्नोलॉजी</mark> के साथ घर का कॉन्सेप्ट तेज़ी से बदल रहा है। आज के खरीदार सिर्फ चार दीवारें और छत नहीं चाहते — वे ऐसा <mark>स्मार्ट लिविंग स्पेस</mark> चाहते हैं जो कम्फ़र्ट, सिक्योरिटी और एनर्जी एफ़िशिएंसी में चार चाँद लगाए।</p>
