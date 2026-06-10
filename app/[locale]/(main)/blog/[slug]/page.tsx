@@ -173,7 +173,7 @@ export default async function BlogPost({ params }: Props) {
 
             {/* Content */}
             <div
-              className="blog-content prose prose-lg dark:prose-invert prose-headings:font-serif prose-headings:text-brand-navy dark:prose-headings:text-gray-100 prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-2xl prose-h2:border-b prose-h2:border-gray-200 dark:prose-h2:border-gray-700 prose-h2:pb-3 prose-p:text-gray-600 dark:prose-p:text-gray-400 prose-p:leading-[1.8] prose-li:text-gray-600 dark:prose-li:text-gray-400 prose-li:leading-[1.7] prose-strong:text-brand-navy dark:prose-strong:text-gray-200 prose-a:text-brand-gold prose-a:no-underline hover:prose-a:underline prose-blockquote:border-l-brand-gold prose-blockquote:bg-brand-gold/5 prose-blockquote:rounded-r-lg prose-blockquote:py-1 prose-blockquote:px-4 prose-blockquote:not-italic prose-blockquote:text-gray-700 dark:prose-blockquote:text-gray-300 max-w-none"
+              className="blog-content max-w-none"
               dangerouslySetInnerHTML={{ __html: content }}
             />
 

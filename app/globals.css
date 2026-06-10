@@ -517,6 +517,95 @@ table {
   line-height: 1;
 }
 
+/* ─── Strong heading sizes ─── */
+.blog-content h2 {
+  font-size: 1.875rem !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.01em;
+  font-family: Georgia, 'Times New Roman', serif;
+  margin-top: 3.5rem !important;
+  margin-bottom: 1.25rem !important;
+  padding-bottom: 0.75rem !important;
+  border-bottom: 2px solid rgba(201, 168, 76, 0.3) !important;
+  color: #0a1a2f !important;
+}
+
+.dark .blog-content h2 {
+  color: #f3f4f6 !important;
+}
+
+.blog-content h3 {
+  font-size: 1.5rem !important;
+  font-weight: 600 !important;
+  color: #c9a84c !important;
+  font-family: Georgia, 'Times New Roman', serif;
+  margin-top: 2.5rem !important;
+  margin-bottom: 0.75rem !important;
+}
+
+@media (min-width: 768px) {
+  .blog-content h2 {
+    font-size: 2.25rem !important;
+  }
+  .blog-content h3 {
+    font-size: 1.75rem !important;
+  }
+}
+
+.blog-content p {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  margin-bottom: 1.25rem;
+  color: #4b5563;
+}
+
+.dark .blog-content p {
+  color: #9ca3af;
+}
+
+.blog-content ul,
+.blog-content ol {
+  margin-bottom: 1.5rem;
+}
+
+.blog-content li {
+  font-size: 1.125rem;
+  line-height: 1.7;
+  margin-bottom: 0.5rem;
+  color: #4b5563;
+}
+
+.dark .blog-content li {
+  color: #9ca3af;
+}
+
+.blog-content strong {
+  color: #0a1a2f;
+  font-weight: 700;
+}
+
+.dark .blog-content strong {
+  color: #e5e7eb;
+}
+
+.blog-content a {
+  color: #c9a84c;
+  text-decoration: none;
+}
+
+.blog-content a:hover {
+  text-decoration: underline;
+}
+
+/* ─── Mark inside headings ─── */
+.blog-content h2 mark,
+.blog-content h3 mark {
+  background: none;
+  padding: 0;
+  font-weight: inherit;
+  color: inherit;
+}
+
 /* ─── Numbered list styling ─── */
 .blog-content ol {
   counter-reset: blog-counter;
