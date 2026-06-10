@@ -245,6 +245,33 @@ export default function BlogCards() {
             })}
           </div>
         </AnimatePresence>
+
+        {/* Newsletter section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="from-brand-navy to-brand-navy/90 mt-16 rounded-2xl border border-gray-200/60 bg-gradient-to-br p-8 text-center shadow-xl md:p-12 dark:border-gray-700/60 dark:from-gray-900 dark:to-gray-900/90"
+        >
+          <h3 className="mb-3 font-serif text-2xl text-white">
+            {isHindi ? 'लेटेस्ट अपडेट पाएँ' : 'Stay Updated'}
+          </h3>
+          <p className="mx-auto mb-6 max-w-md text-sm text-gray-300">
+            {isHindi
+              ? 'नए आर्टिकल, मार्केट अपडेट और एक्सक्लूसिव ऑफ़र सीधे अपने इनबॉक्स में पाएँ।'
+              : 'Get new articles, market updates, and exclusive offers delivered straight to your inbox.'}
+          </p>
+          <div className="mx-auto flex max-w-sm flex-col gap-3 sm:flex-row">
+            <input
+              type="email"
+              placeholder={isHindi ? 'अपना ईमेल डालें' : 'Enter your email'}
+              className="focus:border-brand-gold flex-1 rounded-full border border-white/20 bg-white/10 px-5 py-2.5 text-sm text-white placeholder-gray-400 backdrop-blur-sm focus:outline-none"
+            />
+            <button className="bg-brand-gold text-brand-navy hover:shadow-brand-gold/20 rounded-full px-6 py-2.5 text-xs font-bold tracking-wider uppercase transition-all hover:shadow-lg">
+              {isHindi ? 'सब्सक्राइब करें' : 'Subscribe'}
+            </button>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
