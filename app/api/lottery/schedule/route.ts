@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/src/lib/supabase/admin';
-import { AppError } from '@/src/lib/api/errors';
+import { lotteryRepository } from '@/src/lib/repositories';
 
 /**
  * GET /api/lottery/schedule
@@ -8,40 +7,24 @@ import { AppError } from '@/src/lib/api/errors';
  */
 export async function GET(_request: NextRequest) {
   try {
-    const { data: activeLottery, error: lError } = await supabaseAdmin
-      .from('lotteries')
-      .select('id, title')
-      .eq('status', 'active')
-      .order('created_at', { ascending: false })
-      .limit(1)
-      .maybeSingle();
-
+    const { data: activeLottery, error: lError } = await lotteryRepository.getActive();
     if (lError) throw lError;
-    if (!activeLottery) {
-      return NextResponse.json({ scheduled: null });
-    }
+    if (!activeLottery) return NextResponse.json({ scheduled: null });
 
-    const { data: scheduledDraw, error: sError } = await supabaseAdmin
-      .from('scheduled_draws')
-      .select('id, scheduled_at, show_countdown, include_countdown_in_email, status')
-      .eq('lottery_id', activeLottery.id)
-      .in('status', ['pending', 'reminder_sent'])
-      .eq('show_countdown', true)
-      .maybeSingle();
-
+    const { data: scheduledDraw, error: sError } = await lotteryRepository.getPublicSchedule(
+      activeLottery.id
+    );
     if (sError) throw sError;
 
-    if (!scheduledDraw) {
-      return NextResponse.json({ scheduled: null });
-    }
-
     return NextResponse.json({
-      scheduled: {
-        id: scheduledDraw.id,
-        scheduled_at: scheduledDraw.scheduled_at,
-        status: scheduledDraw.status,
-        lottery_title: activeLottery.title,
-      },
+      scheduled: scheduledDraw
+        ? {
+            id: scheduledDraw.id,
+            scheduled_at: scheduledDraw.scheduled_at,
+            status: scheduledDraw.status,
+            lottery_title: activeLottery.title,
+          }
+        : null,
     });
   } catch (err: any) {
     console.error('[Public schedule API] Error:', err);
