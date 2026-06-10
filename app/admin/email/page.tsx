@@ -258,7 +258,7 @@ export default function AdminEmailPage() {
             />
           )}
           {activeTab === 'sent' && <SentTab onForward={handleForward} onReply={handleReply} />}
-          {activeTab === 'replies' && <RepliesTab adminEmail={adminEmail} />}
+          {activeTab === 'replies' && <RepliesTab adminEmail={adminEmail} onForward={handleForward} onReply={handleReply} />}
           {activeTab === 'campaigns' && <CampaignsTab />}
           {activeTab === 'trash' && <DeletedTab />}
           {activeTab === 'templates' && <TemplatesTab onUseTemplate={handleUseTemplate} />}

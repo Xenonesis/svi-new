@@ -2,11 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Inbox, Mail, Star, RefreshCw } from 'lucide-react';
+import { Inbox, Mail, Star, RefreshCw, Paperclip } from 'lucide-react';
 import { toast } from 'sonner';
 import { getToken } from './helpers';
 import { EmailDetailSkeleton } from './Skeletons';
-import type { EmailDetail } from './types';
+import type { EmailDetail, ForwardData, ReplyData } from './types';
+import { EmailDetailPanel } from './sections/EmailDetailPanel';
+import { buildForwardHtml, buildReplyHtml } from './helpers';
 
 interface ReplyItem {
   id: string;
@@ -18,15 +20,18 @@ interface ReplyItem {
   created_at: string;
   snippet: string;
   is_starred: boolean;
+  has_attachments?: boolean;
 }
 
 interface RepliesTabProps {
   adminEmail?: string;
+  onForward?: (data: ForwardData) => void;
+  onReply?: (data: ReplyData) => void;
 }
 
 const POLL_INTERVAL = 30_000; // 30 seconds auto-refresh
 
-export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
+export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: RepliesTabProps) {
   const [replies, setReplies] = useState<ReplyItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -37,6 +42,60 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
   const [adminEmail, setAdminEmail] = useState<string>(propAdminEmail || '');
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
+
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedType, setCopiedType] = useState<string | null>(null);
+  const [copyMenuOpen, setCopyMenuOpen] = useState(false);
+  const copyMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      const target = e.target as Node;
+      if (copyMenuRef.current && !copyMenuRef.current.contains(target)) setCopyMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  const copyText = async (text: string, type: string) => {
+    await navigator.clipboard.writeText(text);
+    setCopiedType(type);
+    setTimeout(() => setCopiedType(null), 2000);
+    setCopyMenuOpen(false);
+    toast.success('Copied to clipboard');
+  };
+
+  const copyId = (id: string) => {
+    navigator.clipboard.writeText(id);
+    setCopiedId(id);
+    setTimeout(() => setCopiedId(null), 1500);
+    toast.success('Email ID copied');
+  };
+
+  const handleForward = () => {
+    if (!selectedReply || !onForward) return;
+    onForward({
+      subject: `Fwd: ${selectedReply.subject}`,
+      html: buildForwardHtml(selectedReply as any),
+      originalFrom: selectedReply.from || (selectedReply as any).from_email || '',
+      originalTo: selectedReply.to || (selectedReply as any).to_emails || [],
+      originalDate: selectedReply.created_at,
+      originalSubject: selectedReply.subject,
+    });
+  };
+
+  const handleReply = () => {
+    if (!selectedReply || !onReply) return;
+    onReply({
+      to: selectedReply.from || (selectedReply as any).from_email || '',
+      subject: `Re: ${selectedReply.subject}`,
+      html: buildReplyHtml(selectedReply as any),
+      originalFrom: selectedReply.from || (selectedReply as any).from_email || '',
+      originalDate: selectedReply.created_at,
+      originalSubject: selectedReply.subject,
+      cc: selectedReply.cc,
+    });
+  };
 
   const fetchReplies = useCallback(
     async (isBackground = false) => {
@@ -268,6 +327,11 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
                       <span className="font-mono text-[10px] text-gray-400">
                         {new Date(reply.created_at).toLocaleString('en-IN')}
                       </span>
+                      {reply.has_attachments && (
+                        <div className="flex items-center text-gray-400">
+                          <Paperclip className="h-3.5 w-3.5" />
+                        </div>
+                      )}
                     </div>
                   </div>
                 </button>
@@ -332,6 +396,11 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
                     {formatSender(reply)}
                   </p>
                   <p className="mt-0.5 truncate text-[11px] text-gray-400">{reply.snippet}</p>
+                  {reply.has_attachments && (
+                    <div className="mt-1.5 flex items-center text-gray-400">
+                      <Paperclip className="h-3.5 w-3.5" />
+                    </div>
+                  )}
                 </div>
               </button>
             </motion.div>
@@ -340,67 +409,28 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
       </div>
 
       {/* Detail Panel */}
-      {loadingDetail ? (
+      {loadingDetail && !selectedReply ? (
         <EmailDetailSkeleton />
       ) : selectedReply ? (
-        <div className="flex flex-col overflow-hidden lg:col-span-3">
-          {/* Email Header */}
-          <div className="border-b border-gray-100 p-6 dark:border-gray-800">
-            <h2 className="text-brand-navy mb-3 font-serif text-xl leading-tight dark:text-gray-100">
-              {selectedReply.subject || '(No Subject)'}
-            </h2>
-            <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
-              <div className="flex items-start gap-2">
-                <span className="w-12 shrink-0 text-xs font-semibold text-gray-400 uppercase">
-                  From
-                </span>
-                <span>
-                  {(selectedReply as any).from_name
-                    ? `${(selectedReply as any).from_name} <${selectedReply.from || selectedReply.from_email}>`
-                    : selectedReply.from || selectedReply.from_email || 'Unknown'}
-                </span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="w-12 shrink-0 text-xs font-semibold text-gray-400 uppercase">
-                  To
-                </span>
-                <span>{(selectedReply.to || selectedReply.to_emails || []).join(', ')}</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <span className="w-12 shrink-0 text-xs font-semibold text-gray-400 uppercase">
-                  Date
-                </span>
-                <span>
-                  {new Date(
-                    selectedReply.created_at || selectedReply.received_at || ''
-                  ).toLocaleString('en-IN')}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* Email Body */}
-          <div className="flex-1 overflow-y-auto p-6">
-            {selectedReply.html ? (
-              <div
-                className="prose prose-sm dark:prose-invert max-w-none"
-                dangerouslySetInnerHTML={{ __html: selectedReply.html }}
-              />
-            ) : selectedReply.text ? (
-              <pre className="font-sans text-sm whitespace-pre-wrap text-gray-700 dark:text-gray-300">
-                {selectedReply.text}
-              </pre>
-            ) : (
-              <div className="flex flex-col items-center justify-center py-12 text-center">
-                <Mail className="mb-3 h-10 w-10 text-gray-200 dark:text-gray-700" />
-                <p className="text-sm text-gray-400 italic">Email body not available.</p>
-                <p className="mt-1 text-xs text-gray-300 dark:text-gray-600">
-                  This may happen if Resend could not fetch the full email content.
-                </p>
-              </div>
-            )}
-          </div>
-        </div>
+        <EmailDetailPanel
+          selected={selectedReply}
+          loadingDetail={loadingDetail}
+          copiedId={copiedId}
+          copiedType={copiedType}
+          copyMenuOpen={copyMenuOpen}
+          copyMenuRef={copyMenuRef}
+          starred={starred}
+          onClose={() => setSelectedReply(null)}
+          onReply={handleReply}
+          onForward={handleForward}
+          onCopyMenuToggle={() => setCopyMenuOpen(!copyMenuOpen)}
+          onCopyText={copyText}
+          onCopyId={copyId}
+          onToggleStar={(id, e) => {
+            e.stopPropagation();
+            toggleStar(id);
+          }}
+        />
       ) : (
         <div className="flex flex-col items-center justify-center py-32 text-center lg:col-span-3">
           <Mail className="mb-4 h-12 w-12 text-gray-200 dark:text-gray-700" />

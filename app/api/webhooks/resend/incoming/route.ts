@@ -100,6 +100,7 @@ export async function POST(request: NextRequest) {
     // (Resend webhook does NOT include html/text in the payload — must fetch separately)
     let htmlContent: string | null = null;
     let textContent: string | null = null;
+    let attachments: any[] | null = null;
 
     try {
       const resend = getResend();
@@ -110,9 +111,26 @@ export async function POST(request: NextRequest) {
       } else {
         htmlContent = (emailData as any)?.html || null;
         textContent = (emailData as any)?.text || null;
+        // Attachments may come from the full fetch or the webhook payload
+        const fetchedAttachments = (emailData as any)?.attachments;
+        const payloadAttachments = data.attachments;
+        const rawAttachments = fetchedAttachments || payloadAttachments;
+        if (rawAttachments && Array.isArray(rawAttachments) && rawAttachments.length > 0) {
+          // Strip binary content for storage — keep only metadata
+          attachments = rawAttachments.map((att: any) => ({
+            filename: att.filename || att.name || null,
+            content_type: att.content_type || att.type || null,
+            size: att.size || null,
+            // Keep base64 content if present (for download) — limit to 5 MB per attachment
+            content:
+              att.content && typeof att.content === 'string' && att.content.length < 5_000_000
+                ? att.content
+                : null,
+          }));
+        }
       }
       console.log(
-        `[WEBHOOK] Fetched email body for ${emailId}: html=${!!htmlContent}, text=${!!textContent}`
+        `[WEBHOOK] Fetched email body for ${emailId}: html=${!!htmlContent}, text=${!!textContent}, attachments=${attachments?.length ?? 0}`
       );
     } catch (fetchErr) {
       // If fetching fails, still store the email metadata — body will be empty
@@ -120,7 +138,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Store in database
-    const insertData = {
+    const insertData: Record<string, any> = {
       email_id: emailId,
       thread_id: data.thread_id || data.message_id || emailId,
       subject: data.subject || '(No Subject)',
@@ -131,26 +149,32 @@ export async function POST(request: NextRequest) {
       text_content: textContent,
       received_at: data.created_at || payload.created_at || new Date().toISOString(),
       status: 'received',
+      attachments: attachments && attachments.length > 0 ? attachments : null,
     };
 
     const { error } = await supabaseAdmin.from('email_inbox').insert(insertData);
 
     if (error) {
-      if (
-        error.message?.includes('duplicate key') ||
-        error.message?.includes('column "from_name" of relation')
-      ) {
-        // from_name column may not exist yet — retry without it
-        const { error: error2 } = await supabaseAdmin.from('email_inbox').insert({
-          ...insertData,
-          from_name: undefined,
-        });
-        if (error2 && !error2.message?.includes('duplicate key')) {
+      const isColMissing = (msg: string) =>
+        msg?.includes('column') && msg?.includes('of relation');
+      const isDuplicate = (msg: string) => msg?.includes('duplicate key');
+
+      if (isDuplicate(error.message)) {
+        console.log(`[WEBHOOK] Duplicate on insert, ignoring: ${emailId}`);
+        return NextResponse.json({ received: true, duplicate: true });
+      }
+
+      if (isColMissing(error.message)) {
+        // Some columns may not exist yet — fall back by removing optional ones
+        const { from_name: _fn, attachments: _att, ...safeData } = insertData;
+        const { error: error2 } = await supabaseAdmin.from('email_inbox').insert(safeData);
+        if (error2 && !isDuplicate(error2.message)) {
           console.error('[WEBHOOK] Failed to store email (fallback):', error2);
           throw AppError.internal('Failed to store incoming email');
         }
         return NextResponse.json({ received: true });
       }
+
       console.error('[WEBHOOK] Failed to store email:', error);
       throw AppError.internal('Failed to store incoming email');
     }

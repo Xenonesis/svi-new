@@ -62,6 +62,22 @@ async function syncInboundEmails(resend: Resend) {
           toEmails.push(m ? m[1] : addr);
         });
 
+        const rawAttachments = (emailData as any).attachments;
+        const normalizedAttachments =
+          rawAttachments && Array.isArray(rawAttachments) && rawAttachments.length > 0
+            ? rawAttachments.map((att: any) => ({
+                filename: att.filename || att.name || null,
+                content_type: att.content_type || att.type || null,
+                size: att.size || null,
+                content:
+                  att.content &&
+                  typeof att.content === 'string' &&
+                  att.content.length < 5_000_000
+                    ? att.content
+                    : null,
+              }))
+            : null;
+
         const insertData = {
           email_id: emailId,
           thread_id: (emailData as any).thread_id || (emailData as any).message_id || emailId,
@@ -73,18 +89,21 @@ async function syncInboundEmails(resend: Resend) {
           text_content: (emailData as any).text || null,
           received_at: (emailData as any).created_at || new Date().toISOString(),
           status: 'received',
+          attachments: normalizedAttachments,
         };
 
         const { error: insertError } = await supabaseAdmin.from('email_inbox').insert(insertData);
         if (insertError) {
           if (
             insertError.message?.includes('duplicate key') ||
-            insertError.message?.includes('column "from_name" of relation')
+            insertError.message?.includes('column "from_name" of relation') ||
+            insertError.message?.includes('column "attachments" of relation')
           ) {
-            const { error: insertError2 } = await supabaseAdmin.from('email_inbox').insert({
-              ...insertData,
-              from_name: undefined,
-            });
+            // Fallback for missing columns (from_name, attachments) in older schema
+            const fallbackData: any = { ...insertData };
+            delete fallbackData.from_name;
+            delete fallbackData.attachments;
+            const { error: insertError2 } = await supabaseAdmin.from('email_inbox').insert(fallbackData);
             if (insertError2 && !insertError2.message?.includes('duplicate key')) {
               console.error(
                 `[SYNC] Failed to insert email ${emailId} without from_name:`,
@@ -172,7 +191,7 @@ export async function GET(request: NextRequest) {
       const { data, error } = await supabaseAdmin
         .from('email_inbox')
         .select(
-          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked'
+          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked, attachments'
         )
         .order('received_at', { ascending: false })
         .limit(50);
@@ -204,6 +223,7 @@ export async function GET(request: NextRequest) {
           text: email.text_content,
           is_starred: false,
           last_event: email.opened ? 'opened' : email.clicked ? 'clicked' : 'received',
+          has_attachments: !!(email.attachments && email.attachments.length > 0),
         })),
       });
     }
@@ -235,6 +255,7 @@ export async function GET(request: NextRequest) {
           text: data.text_content,
           opened: data.opened,
           clicked: data.clicked,
+          attachments: data.attachments || undefined,
         },
       });
     }
@@ -283,7 +304,7 @@ export async function POST(request: NextRequest) {
     const { action } = body;
 
     if (action === 'send') {
-      const { to, subject, html, from, replyTo, cc, bcc, text, attachments } = body;
+      const { to, subject, html, from, replyTo, cc, bcc, text, attachments, inReplyTo } = body;
 
       if (!to || !subject || (!html && !text)) {
         return NextResponse.json(
@@ -313,6 +334,12 @@ export async function POST(request: NextRequest) {
         cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
         bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
         attachments: resendAttachments,
+        headers: inReplyTo
+          ? {
+              'In-Reply-To': inReplyTo,
+              References: inReplyTo,
+            }
+          : undefined,
       });
 
       if (result.error) {

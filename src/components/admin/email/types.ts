@@ -29,6 +29,7 @@ export interface EmailDetail {
   received_at?: string;
   opened?: boolean;
   clicked?: boolean;
+  attachments?: any[];
 }
 
 export interface Domain {

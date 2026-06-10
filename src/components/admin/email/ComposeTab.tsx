@@ -62,6 +62,7 @@ export function ComposeTab({
   const [attachments, setAttachments] = useState<EmailAttachment[]>([]);
   const [draftSaved, setDraftSaved] = useState(false);
   const [hasDraft, setHasDraft] = useState(false);
+  const [inReplyToMessageId, setInReplyToMessageId] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Load saved draft on mount
@@ -80,6 +81,7 @@ export function ComposeTab({
       setHtml(forwardData.html);
       setTemplateHtml(null);
       setSelectedTemplate(null);
+      setInReplyToMessageId(null);
       setEditorKey((prev) => prev + 1);
       onClearPrefill?.();
     }
@@ -94,6 +96,7 @@ export function ComposeTab({
       setHtml(replyData.html);
       setTemplateHtml(null);
       setSelectedTemplate(null);
+      setInReplyToMessageId(replyData.originalMessageId || null);
       setEditorKey((prev) => prev + 1);
       onClearPrefill?.();
     }
@@ -106,6 +109,7 @@ export function ComposeTab({
       setHtml(templatePrefill.html);
       setTemplateHtml(null);
       setSelectedTemplate(null);
+      setInReplyToMessageId(null);
       setEditorKey((prev) => prev + 1);
       onClearPrefill?.();
     }
@@ -533,6 +537,7 @@ export function ComposeTab({
           subject,
           html: getPreviewHtml() || html,
           replyTo: replyTo || undefined,
+          inReplyTo: inReplyToMessageId || undefined,
           from: `${fromName} <noreply@sviiinfrasolutions.com>`,
           attachments:
             attachments.length > 0
@@ -556,6 +561,7 @@ export function ComposeTab({
           setSubject('');
           setHtml('');
           setReplyTo('');
+          setInReplyToMessageId(null);
           setSelectedTemplate(null);
           setAttachments([]);
         }, 3000);
@@ -579,6 +585,7 @@ export function ComposeTab({
     setPreviewMode(false);
     setError(null);
     setAttachments([]);
+    setInReplyToMessageId(null);
     clearDraft();
   };
 
@@ -827,27 +834,6 @@ export function ComposeTab({
               <span className="hidden sm:inline">Discard</span>
             </button>
           </div>
-
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleSend}
-            disabled={sending || sent}
-            className={`flex items-center gap-2 rounded-xl px-6 py-2.5 text-sm font-bold shadow-sm transition-all duration-300 disabled:opacity-70 ${
-              sent
-                ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-                : 'bg-brand-gold text-brand-navy glow-gold hover:opacity-95'
-            }`}
-          >
-            {sending ? (
-              <Loader2 className="h-4 w-4 animate-spin" />
-            ) : sent ? (
-              <Check className="h-4 w-4" />
-            ) : (
-              <Send className="h-4 w-4" />
-            )}
-            {sent ? 'Sent!' : sending ? 'Sending...' : 'Send'}
-          </motion.button>
         </div>
       </div>
     </div>

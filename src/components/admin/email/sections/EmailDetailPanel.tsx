@@ -271,6 +271,57 @@ export function EmailDetailPanel({
                 </div>
               )}
 
+              {/* Attachments Section */}
+              {selected.attachments && selected.attachments.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="mb-3 text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                    Attachments ({selected.attachments.length})
+                  </h3>
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                    {selected.attachments.map((attachment: any, index: number) => {
+                      const isBase64 = attachment.content && typeof attachment.content === 'string' && !attachment.content.includes(' ');
+                      const downloadHref = isBase64 
+                        ? `data:${attachment.content_type || 'application/octet-stream'};base64,${attachment.content}`
+                        : '#';
+                      return (
+                        <div
+                          key={index}
+                          className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-[#0e0e14]"
+                        >
+                          <div className="flex items-center gap-3 overflow-hidden">
+                            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-white/5">
+                              <FileText className="h-4 w-4 text-gray-500 dark:text-gray-400" />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <p className="truncate text-sm font-medium text-gray-900 dark:text-white">
+                                {attachment.filename || `attachment-${index + 1}`}
+                              </p>
+                              {attachment.content_type && (
+                                <p className="truncate text-[10px] text-gray-500">
+                                  {attachment.content_type}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          {isBase64 ? (
+                            <a
+                              href={downloadHref}
+                              download={attachment.filename || `attachment-${index + 1}`}
+                              className="ml-3 rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                              title="Download"
+                            >
+                              <ExternalLink className="h-4 w-4" />
+                            </a>
+                          ) : (
+                            <span className="ml-3 text-[10px] text-gray-400">No content</span>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {/* Footer actions */}
               <div className="mt-6 border-t border-gray-100 pt-4 dark:border-gray-800">
                 <div className="flex items-center justify-between">

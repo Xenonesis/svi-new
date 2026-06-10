@@ -1,0 +1,1 @@
+ALTER TABLE email_inbox ADD COLUMN IF NOT EXISTS attachments JSONB;
