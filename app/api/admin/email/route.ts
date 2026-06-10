@@ -28,6 +28,35 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ domains: domains.data });
     }
 
+    if (action === 'inbound_status') {
+      // Check inbound email configuration status
+      const inboundDomain = process.env.RESEND_INBOUND_DOMAIN;
+      const webhookSecret = !!process.env.RESEND_WEBHOOK_SECRET;
+      const webhookUrl = `${request.nextUrl.protocol}//${request.nextUrl.host}/api/webhooks/resend/incoming`;
+
+      let inboundDomains: any[] = [];
+      try {
+        // Check if Resend has inbound domains configured
+        const domainsResp: any = await resend.domains.list();
+        const domainData = domainsResp?.data?.data || domainsResp?.data || [];
+        if (Array.isArray(domainData)) {
+          inboundDomains = domainData.filter((d: any) => d.type === 'inbound');
+        }
+      } catch {
+        // Resend API may not support filtering yet
+      }
+
+      return NextResponse.json({
+        configured: !!inboundDomain,
+        inboundDomain: inboundDomain || null,
+        webhookSecretConfigured: webhookSecret,
+        webhookUrl,
+        inboundDomains,
+        // How many emails received today
+        todayCount: 0, // Will be filled from DB
+      });
+    }
+
     if (action === 'email' && emailId) {
       const email = await resend.emails.get(emailId);
       return NextResponse.json({ email: email.data });
