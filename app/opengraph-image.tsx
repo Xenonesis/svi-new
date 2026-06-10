@@ -1,4 +1,4 @@
-import Image from './(main)/og';
+import Image from './[locale]/(main)/og';
 
 export const runtime = 'edge';
 export const alt = 'SVI Infra Solutions - Premium Real Estate Developer';

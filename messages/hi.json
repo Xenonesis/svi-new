@@ -1,0 +1,43 @@
+{
+  "common": {
+    "siteName": "SVI Infra Solutions",
+    "tagline": "Where Dreams Take Address",
+    "readMore": "और पढ़ें",
+    "contactUs": "संपर्क करें",
+    "registerNow": "अभी पंजीकरण करें",
+    "exploreProjects": "हमारे प्रोजेक्ट देखें",
+    "phone": "+91-73000-07643",
+    "email": "info@sviinfrasolutions.com",
+    "address": "A-61 सेक्टर 65, नोएडा, उत्तर प्रदेश 201309",
+    "copyright": "© 2026 SVI Infra Solutions. सर्वाधिकार सुरक्षित।"
+  },
+  "nav": {
+    "home": "होम",
+    "aboutUs": "हमारे बारे में",
+    "calculators": "कैलकुलेटर",
+    "careers": "करियर",
+    "blog": "ब्लॉग",
+    "projects": "प्रोजेक्ट",
+    "currentProjects": "वर्तमान प्रोजेक्ट",
+    "completedProjects": "पूर्ण प्रोजेक्ट",
+    "payment": "भुगतान",
+    "contactUs": "संपर्क करें",
+    "faq": "सामान्य प्रश्न",
+    "clientLogin": "क्लाइंट लॉगिन",
+    "registerNow": "अभी पंजीकरण करें"
+  },
+  "hero": {
+    "title": "जहाँ सपने पते लेते हैं",
+    "subtitle": "जयपुर और नोएडा में प्रीमियम आवासीय फ्लैटों और रणनीतिक प्लॉट निवेश में विशेषज्ञता।",
+    "cta": "हमारे प्रोजेक्ट देखें",
+    "invest": "हमारे साथ निवेश करें"
+  },
+  "about": {
+    "welcomeTitle": "विश्वास का निर्माण, उत्कृष्टता का वितरण",
+    "description": "रियल एस्टेट क्षेत्र में एक दशक से अधिक के अनुभव के साथ, SVI Infra Solutions Pvt. Ltd. ने विश्वास, गुणवत्ता और नवाचार का प्रतीक स्थापित किया है।",
+    "yearsExperience": "15+ वर्षों का उद्योग अनुभव",
+    "completedProjects": "15 सफलतापूर्वक पूर्ण प्रोजेक्ट",
+    "primeLocations": "फुलेरा स्मार्ट सिटी और जयपुर जैसे अनुकूल स्थान",
+    "yearsTrust": "विश्वास के वर्ष"
+  }
+}

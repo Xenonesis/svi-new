@@ -85,7 +85,7 @@ export default function NotFoundPage() {
         ))}
 
       {/* City skyline at bottom */}
-      <div className="pointer-events-none absolute bottom-0 left-0 right-0 h-20 opacity-[0.06] dark:opacity-[0.1]">
+      <div className="pointer-events-none absolute right-0 bottom-0 left-0 h-20 opacity-[0.06] dark:opacity-[0.1]">
         <svg viewBox="0 0 1200 80" preserveAspectRatio="none" className="h-full w-full">
           <path
             d="M0,50 L50,50 L50,30 L60,30 L60,20 L65,20 L65,10 L70,10 L70,20 L75,20 L75,30 L85,30 L85,50
@@ -116,7 +116,7 @@ export default function NotFoundPage() {
         {/* Large 404 */}
         <div className="relative mb-2 select-none">
           <span
-            className="block font-serif text-[110px] font-bold leading-none md:text-[160px]"
+            className="block font-serif text-[110px] leading-none font-bold md:text-[160px]"
             style={{
               color: 'transparent',
               WebkitTextStroke: '1px rgba(201,168,76,0.25)',
@@ -127,9 +127,10 @@ export default function NotFoundPage() {
           </span>
           {/* Layered gold glow text */}
           <span
-            className="pointer-events-none absolute inset-0 flex items-center justify-center font-serif text-[110px] font-bold leading-none md:text-[160px]"
+            className="pointer-events-none absolute inset-0 flex items-center justify-center font-serif text-[110px] leading-none font-bold md:text-[160px]"
             style={{
-              background: 'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.15) 50%, rgba(201,168,76,0.06) 100%)',
+              background:
+                'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.15) 50%, rgba(201,168,76,0.06) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -147,21 +148,20 @@ export default function NotFoundPage() {
           <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#c9a84c]/60" />
         </div>
 
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-[#c9a84c]">
+        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] text-[#c9a84c] uppercase">
           Page Not Found
         </p>
 
         <h1 className="text-brand-navy mb-4 font-serif text-3xl leading-tight md:text-4xl dark:text-gray-100">
-          This Address Doesn&apos;t{' '}
-          <span className="text-[#c9a84c] italic">Exist Yet</span>
+          This Address Doesn&apos;t <span className="text-[#c9a84c] italic">Exist Yet</span>
         </h1>
 
         <p className="mx-auto mb-3 max-w-md text-base leading-relaxed text-gray-600 dark:text-gray-400">
-          The page you&apos;re looking for may have been moved, renamed, or hasn&apos;t been
-          built yet — much like the finest properties we develop.
+          The page you&apos;re looking for may have been moved, renamed, or hasn&apos;t been built
+          yet — much like the finest properties we develop.
         </p>
 
-        <p className="mb-8 font-serif text-base italic text-[#c9a84c]/70">
+        <p className="mb-8 font-serif text-base text-[#c9a84c]/70 italic">
           &ldquo;Where Dreams Take Address&rdquo; — but not at this URL.
         </p>
 
@@ -208,7 +208,7 @@ export default function NotFoundPage() {
           <Link
             href="/contact"
             onClick={cancelRedirect}
-            className="text-brand-navy border-brand-navy dark:border-gray-400 flex items-center gap-2.5 border px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:text-gray-300"
+            className="text-brand-navy border-brand-navy flex items-center gap-2.5 border px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:border-gray-400 dark:text-gray-300"
           >
             <ArrowLeft size={14} />
             Contact Support
@@ -217,7 +217,7 @@ export default function NotFoundPage() {
 
         {/* Quick links grid */}
         <div className="border-t border-gray-200 pt-8 dark:border-gray-700">
-          <p className="mb-4 text-[10px] font-semibold tracking-widest uppercase text-gray-400">
+          <p className="mb-4 text-[10px] font-semibold tracking-widest text-gray-400 uppercase">
             Explore instead
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">

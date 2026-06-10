@@ -2,6 +2,7 @@
 
 import { ChevronDown, Building2, CheckSquare, Phone, Mail, Menu, X } from 'lucide-react';
 import Link from 'next/link';
+import LanguageToggle from '@/src/components/LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 interface MobileNavProps {
@@ -112,6 +113,7 @@ export function MobileNav({
             />
           </Link>
           <div className="flex items-center gap-2.5">
+            <LanguageToggle />
             <ThemeToggle
               theme={theme}
               mounted={mounted}

@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { ProjectDropdown } from './ProjectDropdown';
+import LanguageToggle from '@/src/components/LanguageToggle';
 import { ThemeToggle } from './ThemeToggle';
 
 interface DesktopNavProps {
@@ -144,6 +145,9 @@ export function DesktopNav({
           Register
         </Link>
       </div>
+
+      {/* Language Toggle */}
+      <LanguageToggle />
 
       {/* Theme Toggle */}
       <ThemeToggle

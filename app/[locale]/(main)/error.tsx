@@ -88,13 +88,12 @@ export default function MainError({ error, reset }: ErrorProps) {
           <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#c9a84c]/50" />
         </div>
 
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-red-400">
+        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] text-red-400 uppercase">
           Something Went Wrong
         </p>
 
         <h1 className="text-brand-navy mb-3 font-serif text-3xl md:text-4xl dark:text-gray-100">
-          Page Error{' '}
-          <span className="text-[#c9a84c] italic">Occurred</span>
+          Page Error <span className="text-[#c9a84c] italic">Occurred</span>
         </h1>
 
         <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-400">
@@ -130,7 +129,7 @@ export default function MainError({ error, reset }: ErrorProps) {
           </button>
           <Link
             href="/"
-            className="text-brand-navy border-brand-navy dark:border-gray-500 flex items-center gap-2.5 border px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:text-gray-300"
+            className="text-brand-navy border-brand-navy flex items-center gap-2.5 border px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:border-gray-500 dark:text-gray-300"
           >
             <Home size={14} />
             Go Home
@@ -162,7 +161,7 @@ export default function MainError({ error, reset }: ErrorProps) {
             </button>
             {showDetails && (
               <div className="border-t border-gray-200 px-5 py-4 dark:border-gray-700">
-                <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed text-red-400 whitespace-pre-wrap break-all">
+                <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed break-all whitespace-pre-wrap text-red-400">
                   {error.message}
                   {error.stack &&
                     `\n\nStack trace:\n${error.stack.split('\n').slice(0, 5).join('\n')}`}

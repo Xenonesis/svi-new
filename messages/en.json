@@ -1,0 +1,43 @@
+{
+  "common": {
+    "siteName": "SVI Infra Solutions",
+    "tagline": "Where Dreams Take Address",
+    "readMore": "Read More",
+    "contactUs": "Contact Us",
+    "registerNow": "Register Now",
+    "exploreProjects": "Explore Our Projects",
+    "phone": "+91-73000-07643",
+    "email": "info@sviinfrasolutions.com",
+    "address": "A-61 Sector 65, Noida, Uttar Pradesh 201309",
+    "copyright": "© 2026 SVI Infra Solutions. All rights reserved."
+  },
+  "nav": {
+    "home": "Home",
+    "aboutUs": "About Us",
+    "calculators": "Calculators",
+    "careers": "Careers",
+    "blog": "Blog",
+    "projects": "Projects",
+    "currentProjects": "Current Projects",
+    "completedProjects": "Completed Projects",
+    "payment": "Payment",
+    "contactUs": "Contact Us",
+    "faq": "FAQ",
+    "clientLogin": "Client Login",
+    "registerNow": "Register Now"
+  },
+  "hero": {
+    "title": "Where Dreams Take Address",
+    "subtitle": "Specializing in premium residential flats and strategic plot investments across Jaipur and Noida.",
+    "cta": "View Our Projects",
+    "invest": "Invest with us"
+  },
+  "about": {
+    "welcomeTitle": "Building Trust, Delivering Excellence",
+    "description": "With over a decade of experience in the real estate sector, SVI Infra Solutions Pvt. Ltd. has established itself as a beacon of trust, quality, and innovation. Based in Noida, we specialize in delivering dream homes and lucrative investment opportunities across expanding regions.",
+    "yearsExperience": "15+ Years of Industry Experience",
+    "completedProjects": "15 Successfully Completed Projects",
+    "primeLocations": "Favorable Locations like Phulera Smart City & Jaipur",
+    "yearsTrust": "Years of Trust"
+  }
+}
