@@ -62,16 +62,12 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ email: email.data });
     }
 
-    const emails = await resend.emails.list({ limit, after });
-    const responseData = emails.data as any;
-
-    // Handle replies action - get emails from inbox table
+    // ─── Inbox / Replies — from email_inbox table ───
     if (action === 'replies' || action === 'inbox') {
-      // Get all received emails (since we're the admin sending system)
       const { data, error } = await supabaseAdmin
         .from('email_inbox')
         .select(
-          'id, email_id, thread_id, subject, from_email, to_emails, received_at, html_content, text_content, opened, clicked'
+          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked'
         )
         .order('received_at', { ascending: false })
         .limit(50);
@@ -83,20 +79,60 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({
         emails: (data || []).map((email: any) => ({
           id: email.id,
+          email_id: email.email_id,
           thread_id: email.thread_id || email.email_id,
           subject: email.subject,
-          from: email.from_email,
+          from: email.from_name ? `${email.from_name} <${email.from_email}>` : email.from_email,
+          from_email: email.from_email,
+          from_name: email.from_name,
           to: email.to_emails || [],
           created_at: email.received_at,
           snippet:
             email.text_content ||
             email.html_content?.replace(/<[^>]+>/g, '').substring(0, 100) ||
             '',
+          html: email.html_content,
+          text: email.text_content,
           is_starred: false,
           last_event: email.opened ? 'opened' : email.clicked ? 'clicked' : 'received',
         })),
       });
     }
+
+    // ─── Inbox detail — single email from email_inbox table ───
+    if (action === 'inbox_detail' && emailId) {
+      const { data, error } = await supabaseAdmin
+        .from('email_inbox')
+        .select('*')
+        .eq('id', emailId)
+        .single();
+
+      if (error || !data) {
+        return NextResponse.json({ error: 'Email not found' }, { status: 404 });
+      }
+
+      return NextResponse.json({
+        email: {
+          id: data.id,
+          email_id: data.email_id,
+          thread_id: data.thread_id,
+          subject: data.subject,
+          from: data.from_name ? `${data.from_name} <${data.from_email}>` : data.from_email,
+          from_email: data.from_email,
+          from_name: data.from_name,
+          to: data.to_emails || [],
+          created_at: data.received_at,
+          html: data.html_content,
+          text: data.text_content,
+          opened: data.opened,
+          clicked: data.clicked,
+        },
+      });
+    }
+
+    // ─── For Sent tab — fetch from Resend API ───
+    const emails = await resend.emails.list({ limit, after });
+    const responseData = emails.data as any;
 
     // Fetch deleted email IDs for this admin
     const { data: deletedData } = await supabaseAdmin

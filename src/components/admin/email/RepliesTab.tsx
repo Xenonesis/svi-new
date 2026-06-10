@@ -64,7 +64,7 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
     setLoadingDetail(true);
     try {
       const token = await getToken();
-      const res = await fetch(`/api/admin/email?action=email&id=${id}`, {
+      const res = await fetch(`/api/admin/email?action=inbox_detail&id=${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
@@ -236,7 +236,53 @@ export function RepliesTab({ adminEmail: propAdminEmail }: RepliesTabProps) {
       </div>
 
       {/* Detail Panel */}
-      <EmailDetailSkeleton />
+      {loadingDetail ? (
+        <EmailDetailSkeleton />
+      ) : selectedReply ? (
+        <div className="flex flex-col overflow-hidden lg:col-span-3">
+          {/* Email Header */}
+          <div className="border-b border-gray-100 p-6 dark:border-gray-800">
+            <h2 className="text-brand-navy mb-3 font-serif text-xl leading-tight dark:text-gray-100">
+              {selectedReply.subject || '(No Subject)'}
+            </h2>
+            <div className="space-y-1.5 text-sm text-gray-600 dark:text-gray-400">
+              <div className="flex items-start gap-2">
+                <span className="w-12 shrink-0 text-xs font-semibold text-gray-400 uppercase">From</span>
+                <span>{selectedReply.from || selectedReply.from_email || 'Unknown'}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="w-12 shrink-0 text-xs font-semibold text-gray-400 uppercase">To</span>
+                <span>{(selectedReply.to || selectedReply.to_emails || []).join(', ')}</span>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="w-12 shrink-0 text-xs font-semibold text-gray-400 uppercase">Date</span>
+                <span>{new Date(selectedReply.created_at || selectedReply.received_at || '').toLocaleString('en-IN')}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Email Body */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {selectedReply.html ? (
+              <div
+                className="prose prose-sm max-w-none dark:prose-invert"
+                dangerouslySetInnerHTML={{ __html: selectedReply.html }}
+              />
+            ) : selectedReply.text ? (
+              <pre className="whitespace-pre-wrap font-sans text-sm text-gray-700 dark:text-gray-300">
+                {selectedReply.text}
+              </pre>
+            ) : (
+              <p className="text-sm italic text-gray-400">No content</p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-32 text-center lg:col-span-3">
+          <Mail className="mb-4 h-12 w-12 text-gray-200 dark:text-gray-700" />
+          <p className="text-sm text-gray-400">Select an email to view</p>
+        </div>
+      )}
     </div>
   );
 }

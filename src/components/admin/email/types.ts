@@ -20,6 +20,15 @@ export interface EmailDetail {
   cc?: string[];
   bcc?: string[];
   reply_to?: string[];
+  /** Inbox-specific fields */
+  email_id?: string;
+  thread_id?: string;
+  from_email?: string;
+  from_name?: string;
+  to_emails?: string[];
+  received_at?: string;
+  opened?: boolean;
+  clicked?: boolean;
 }
 
 export interface Domain {
