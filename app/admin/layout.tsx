@@ -1,94 +1,61 @@
 'use client';
 
-// import { Moon, Sun } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 
 import AdminHeader from '@/src/components/admin/AdminHeader';
 import AdminSidebar from '@/src/components/admin/AdminSidebar';
 import { AdminSessionProvider } from '@/src/components/admin/AdminSessionProvider';
-import { supabase } from '@/src/lib/supabase/client';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
+import { ThemeProvider } from '@/src/components/ThemeProvider';
+import { useAuthStore } from '@/src/stores/authStore';
+import { useUIStore } from '@/src/stores/uiStore';
 
 function AdminLayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
-  const [mounted, setMounted] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const [isDark, setIsDark] = useState(false);
-  const [userId, setUserId] = useState<string | null>(null);
-  const [adminName, setAdminName] = useState('Admin');
-  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+
+  // Auth store
+  const userId = useAuthStore((s) => s.userId);
+  const loading = useAuthStore((s) => s.loading);
+  const profile = useAuthStore((s) => s.profile);
+  const initialize = useAuthStore((s) => s.initialize);
+
+  // UI store
+  const isDark = useUIStore((s) => s.isDark);
+  const mobileSidebarOpen = useUIStore((s) => s.mobileSidebarOpen);
+  const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
+  const toggleTheme = useUIStore((s) => s.toggleTheme);
+  const theme = useUIStore((s) => s.theme);
 
   useEffect(() => {
-    setMounted(true);
+    initialize();
+  }, [initialize]);
 
-    // Get current user session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (session) {
-        setUserId(session.user.id);
-        // Fetch admin profile
-        supabase
-          .from('profiles')
-          .select('full_name')
-          .eq('id', session.user.id)
-          .single()
-          .then(({ data }) => {
-            if (data?.full_name) {
-              setAdminName(data.full_name);
-            }
-          });
-      }
-    });
-  }, []);
-
-  // Update isDark based on theme and media query
+  // Sync isDark with system preference when theme is 'system'
   useEffect(() => {
-    const updateIsDark = () => {
-      if (theme === 'system') {
-        setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
-      } else {
-        setIsDark(theme === 'dark');
-      }
+    if (theme !== 'system') return;
+
+    const updateDark = () => {
+      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      useUIStore.getState().setIsDark(isSystemDark);
     };
 
-    updateIsDark();
-
-    if (theme === 'system') {
-      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-      if (mediaQuery.addEventListener) {
-        mediaQuery.addEventListener('change', updateIsDark);
-      } else {
-        mediaQuery.addListener(updateIsDark);
-      }
-      return () => {
-        if (mediaQuery.removeEventListener) {
-          mediaQuery.removeEventListener('change', updateIsDark);
-        } else {
-          mediaQuery.removeListener(updateIsDark);
-        }
-      };
-    }
+    updateDark();
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    mq.addEventListener('change', updateDark);
+    return () => mq.removeEventListener('change', updateDark);
   }, [theme]);
-
-  const toggleTheme = () => {
-    setTheme((prev) => {
-      if (prev === 'light') return 'dark';
-      if (prev === 'dark') return 'system';
-      return 'light';
-    });
-  };
 
   // If on the admin login page, completely bypass the admin panel outer frame (header & sidebar)
   if (pathname === '/admin') {
     return (
       <AdminSessionProvider>
-        <div className="min-h-screen w-full" style={{ visibility: mounted ? 'visible' : 'hidden' }}>
-          {children}
-        </div>
+        <div className="min-h-screen w-full">{children}</div>
       </AdminSessionProvider>
     );
   }
+
+  const mounted = !loading;
 
   return (
     <AdminSessionProvider>
@@ -105,7 +72,7 @@ function AdminLayoutInner({ children }: { children: ReactNode }) {
             isDark={isDark}
             toggleTheme={toggleTheme}
             userId={userId || ''}
-            adminName={adminName}
+            adminName={profile?.full_name || 'Admin'}
             onMenuClick={() => setMobileSidebarOpen(true)}
           />
 
