@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { RefreshCw, Search, Users, X } from 'lucide-react';
+import { RefreshCw, Search, Users, X, Briefcase } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 
 interface AdvisorProfile {
@@ -86,9 +86,9 @@ export function AdvisorSettingsModal({ onClose, token, showToast }: AdvisorSetti
       });
 
       const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to update dynamic advisor list.');
+      if (!res.ok) throw new Error(json.error || 'Failed to update dynamic list.');
 
-      showToast('success', 'Public advisor list updated successfully!');
+      showToast('success', 'Public advisors and employees updated successfully!');
       onClose();
     } catch (err: any) {
       console.error(err);
@@ -116,15 +116,16 @@ export function AdvisorSettingsModal({ onClose, token, showToast }: AdvisorSetti
 
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-white/8">
           <div className="flex items-center gap-3">
-            <div className="bg-brand-gold/10 border-brand-gold/20 flex h-8 w-8 items-center justify-center rounded-lg border">
+            <div className="bg-brand-gold/10 border-brand-gold/20 flex h-8 items-center justify-center gap-2 rounded-lg border px-2.5">
               <Users className="text-brand-gold h-4 w-4" />
+              <Briefcase className="text-brand-gold h-4 w-4" />
             </div>
             <div>
               <h2 className="text-brand-navy font-serif text-lg font-semibold dark:text-white">
-                Manage Public Advisors
+                Manage Public Advisors & Employees
               </h2>
               <p className="text-[10px] text-gray-500">
-                Select accounts to display as advisors in booking.
+                Select accounts to display publicly in booking and team sections.
               </p>
             </div>
           </div>

@@ -15,6 +15,7 @@ import {
   Phone,
   Mail,
   FileText,
+  Briefcase,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { useCallback, useEffect, useState } from 'react';
@@ -34,6 +35,7 @@ import { CreateUserModal } from '@/src/components/admin/modals/CreateUserModal';
 import { EditUserModal } from '@/src/components/admin/modals/EditUserModal';
 import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
+import { MakeEmployeeConfirm } from '@/src/components/admin/modals/MakeEmployeeConfirm';
 
 const GRID_STYLE = {
   backgroundImage:
@@ -59,6 +61,8 @@ export default function AdminDashboard() {
   const [editTarget, setEditTarget] = useState<UserProfile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [employeeTarget, setEmployeeTarget] = useState<UserProfile | null>(null);
+  const [employeeLoading, setEmployeeLoading] = useState(false);
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
 
@@ -134,6 +138,32 @@ export default function AdminDashboard() {
     } finally {
       setDeleteLoading(false);
       setDeleteTarget(null);
+    }
+  };
+
+  const handleMakeEmployee = async () => {
+    if (!employeeTarget) return;
+    setEmployeeLoading(true);
+    try {
+      const res = await fetch(`/api/admin/users/${employeeTarget.id}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ role: 'employee' }),
+      });
+      if (!res.ok) {
+        const j = await res.json();
+        throw new Error(j.error || 'Failed to update role');
+      }
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      showToast('success', `${employeeTarget.full_name} is now an employee.`);
+    } catch (err: unknown) {
+      showToast('error', err instanceof Error ? err.message : 'Update failed');
+    } finally {
+      setEmployeeLoading(false);
+      setEmployeeTarget(null);
     }
   };
 
@@ -288,10 +318,20 @@ export default function AdminDashboard() {
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </button>
           <button
+            onClick={() => router.push('/admin/employees')}
+            className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+          >
+            <Briefcase className="h-3.5 w-3.5" /> Manage Employees
+          </button>
+          <button
             onClick={() => setShowAdvisorSettings(true)}
             className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
           >
-            <Users className="h-3.5 w-3.5" /> Manage Advisors
+            <div className="flex items-center gap-1">
+              <Users className="h-3.5 w-3.5" />
+              <Briefcase className="h-3.5 w-3.5" />
+            </div>
+            Manage Public Team
           </button>
           <button
             onClick={() => setShowCreate(true)}
@@ -480,6 +520,15 @@ export default function AdminDashboard() {
                       {/* Actions */}
                       <td className="w-[120px] px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
+                          {u.role === 'client' && (
+                            <button
+                              onClick={() => setEmployeeTarget(u)}
+                              className="text-brand-gold hover:bg-brand-gold/10 dark:hover:bg-brand-gold/10 flex h-8 w-8 items-center justify-center rounded-md transition-colors"
+                              title="Make Employee"
+                            >
+                              <Briefcase className="h-4 w-4" />
+                            </button>
+                          )}
                           <button
                             onClick={() => setEditTarget(u)}
                             className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-300"
@@ -538,6 +587,14 @@ export default function AdminDashboard() {
             onClose={() => setDeleteTarget(null)}
             onConfirm={handleDelete}
             loading={deleteLoading}
+          />
+        )}
+        {employeeTarget && (
+          <MakeEmployeeConfirm
+            user={employeeTarget}
+            onClose={() => setEmployeeTarget(null)}
+            onConfirm={handleMakeEmployee}
+            loading={employeeLoading}
           />
         )}
         {showAdvisorSettings && (

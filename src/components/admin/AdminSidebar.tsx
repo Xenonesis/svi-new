@@ -17,6 +17,7 @@ import {
   Receipt,
   Settings,
   X,
+  Users,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -45,6 +46,7 @@ const documentItems = [
 const managementItems = [
   { name: 'Portal Allotments', path: '/admin/portal-allotments', icon: Building2 },
   { name: 'Registrations', path: '/admin/registrations', icon: ClipboardList },
+  { name: 'Employees', path: '/admin/employees', icon: Users },
   { name: 'Attendance', path: '/admin/attendance', icon: CheckSquare },
   { name: 'Properties', path: '/admin/properties', icon: Building2 },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
