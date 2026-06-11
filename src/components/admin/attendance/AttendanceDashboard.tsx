@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import AttendanceStatusChart from '@/src/components/admin/ChartComponents/AttendanceStatusChart';
 import AttendanceTrendChart from '@/src/components/admin/ChartComponents/AttendanceTrendChart';
+import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 
 interface AttendanceDashboardProps {
   token: string;
@@ -105,22 +106,7 @@ export default function AttendanceDashboard({ token, showToast }: AttendanceDash
             </p>
           </div>
         </div>
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-2xl border border-gray-200 bg-white/80 p-6 dark:border-white/8 dark:bg-[#0e0e14]/65"
-            >
-              <div className="mb-4 flex items-center gap-4">
-                <div className="h-12 w-12 rounded-xl bg-gray-200 dark:bg-white/5" />
-                <div className="space-y-2">
-                  <div className="h-8 w-16 rounded bg-gray-200 dark:bg-white/5" />
-                  <div className="h-3 w-24 rounded bg-gray-200 dark:bg-white/5" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <DynamicSkeleton type="stat-cards" />
         <div className="mt-6 grid gap-6 lg:grid-cols-2">
           {[1, 2].map((i) => (
             <div

@@ -14,6 +14,7 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { type FormEvent, useEffect, useState } from 'react';
 
+import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { Team, TeamMember, UserProfile } from '@/src/lib/supabase/types';
 
 interface TeamsManagerProps {
@@ -363,29 +364,7 @@ export default function TeamsManager({
       </div>
 
       {teamsLoading ? (
-        <div className="space-y-3">
-          {[1, 2, 3].map((i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-xl border border-gray-200 bg-white/80 p-5 dark:border-white/8 dark:bg-[#0e0e14]/65"
-            >
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                  <div className="h-10 w-10 rounded-lg bg-gray-200 dark:bg-white/5" />
-                  <div className="space-y-2">
-                    <div className="h-4 w-32 rounded bg-gray-200 dark:bg-white/5" />
-                    <div className="h-3 w-20 rounded bg-gray-200 dark:bg-white/5" />
-                  </div>
-                </div>
-                <div className="flex items-center gap-3">
-                  <div className="h-6 w-20 rounded-full bg-gray-200 dark:bg-white/5" />
-                  <div className="h-8 w-8 rounded-lg bg-gray-200 dark:bg-white/5" />
-                  <div className="h-8 w-8 rounded-lg bg-gray-200 dark:bg-white/5" />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <DynamicSkeleton type="chat-log" count={3} />
       ) : teams.length === 0 ? (
         <div className="py-16 text-center">
           <Users className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-700" />

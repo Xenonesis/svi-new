@@ -4,6 +4,7 @@ import { Calendar, CheckCircle2, Save, UserCheck, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
+import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { AttendanceStatus, Team, TeamMember } from '@/src/lib/supabase/types';
 
 interface MarkAttendanceProps {
@@ -200,26 +201,7 @@ export default function MarkAttendance({
       </div>
 
       {loading ? (
-        <div className="space-y-3">
-          {[1, 2, 3, 4].map((i) => (
-            <div
-              key={i}
-              className="animate-pulse rounded-xl border border-gray-200 bg-white/80 px-5 py-4 dark:border-white/8 dark:bg-[#0e0e14]/65"
-            >
-              <div className="flex items-center justify-between">
-                <div className="space-y-2">
-                  <div className="h-4 w-28 rounded bg-gray-200 dark:bg-white/5" />
-                  <div className="h-3 w-40 rounded bg-gray-200 dark:bg-white/5" />
-                </div>
-                <div className="flex gap-2">
-                  {[1, 2, 3, 4].map((j) => (
-                    <div key={j} className="h-8 w-16 rounded-lg bg-gray-200 dark:bg-white/5" />
-                  ))}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
+        <DynamicSkeleton type="chat-log" count={4} />
       ) : membersLoaded && members.length === 0 ? (
         <div className="py-16 text-center">
           <UserCheck className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-700" />

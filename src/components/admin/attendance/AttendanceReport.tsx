@@ -4,6 +4,7 @@ import { BarChart3, Search } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
+import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { AttendanceReportRow, Team } from '@/src/lib/supabase/types';
 
 interface AttendanceReportProps {
@@ -126,66 +127,7 @@ export default function AttendanceReport({ token, showToast, teams }: Attendance
           </p>
         </div>
       ) : loading ? (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white/80 dark:border-white/8 dark:bg-[#0e0e14]/65">
-          <div className="overflow-x-auto">
-            <table className="w-full font-sans text-sm">
-              <thead>
-                <tr className="dark:border-brand-gold/15 border-b border-gray-200 bg-gray-50/50 dark:bg-white/2">
-                  {[
-                    'Name',
-                    'Email',
-                    'Present',
-                    'Absent',
-                    'Half Day',
-                    'Leave',
-                    'Total Days',
-                    'Attendance %',
-                  ].map((h) => (
-                    <th
-                      key={h}
-                      className="px-6 py-4 text-left text-[9px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400"
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody>
-                {[1, 2, 3, 4, 5].map((i) => (
-                  <tr
-                    key={i}
-                    className="animate-pulse border-b border-gray-100 dark:border-white/5"
-                  >
-                    <td className="px-6 py-4">
-                      <div className="h-4 w-28 rounded bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 w-36 rounded bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-6 w-8 rounded-full bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-6 w-8 rounded-full bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-6 w-8 rounded-full bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-6 w-8 rounded-full bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-4 w-10 rounded bg-gray-200 dark:bg-white/5" />
-                    </td>
-                    <td className="px-6 py-4">
-                      <div className="h-6 w-14 rounded-full bg-gray-200 dark:bg-white/5" />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <DynamicSkeleton type="chat-log" count={5} />
       ) : report.length === 0 ? (
         <div className="py-16 text-center">
           <BarChart3 className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-700" />
