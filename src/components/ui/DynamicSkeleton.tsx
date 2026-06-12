@@ -89,7 +89,7 @@ interface DynamicSkeletonProps {
   /** Number of skeleton cards to show */
   count?: number;
   /** Type of skeleton layout */
-  type?: 'chat-log' | 'stat-cards' | 'full-page';
+  type?: 'chat-log' | 'stat-cards' | 'full-page' | 'property-grid';
 }
 
 /**
@@ -97,6 +97,32 @@ interface DynamicSkeletonProps {
  * placeholder cards matching the actual UI layout.
  */
 export default function DynamicSkeleton({ count = 6, type = 'chat-log' }: DynamicSkeletonProps) {
+  if (type === 'property-grid') {
+    return (
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {Array.from({ length: count }).map((_, i) => (
+          <div
+            key={i}
+            className="animate-pulse rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-700 dark:bg-gray-800"
+          >
+            <div className="mb-4 flex items-center gap-4">
+              <SkeletonBlock className="h-12 w-12 rounded-full" />
+              <div className="space-y-2">
+                <SkeletonBlock className="h-4 w-32" />
+                <SkeletonBlock className="h-3 w-24" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <SkeletonBlock className="h-3 w-full" />
+              <SkeletonBlock className="h-3 w-3/4" />
+              <SkeletonBlock className="h-3 w-1/2" />
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   if (type === 'stat-cards') {
     return (
       <div className="mb-6 grid grid-cols-2 gap-3 sm:grid-cols-4">

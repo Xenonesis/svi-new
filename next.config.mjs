@@ -1,4 +1,5 @@
 // @ts-check
+/* global process */
 
 import createNextIntlPlugin from 'next-intl/plugin';
 

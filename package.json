@@ -45,6 +45,7 @@
     "ai": "^6.0.198",
     "canvas-confetti": "^1.9.4",
     "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
     "exceljs": "^4.4.0",
     "heic-convert": "^2.1.0",
     "html2canvas-pro": "^2.0.2",
