@@ -14,6 +14,19 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   typescript: { ignoreBuildErrors: true },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      config.watchOptions = {
+        ...config.watchOptions,
+        ignored: [
+          '**/node_modules/**',
+          '**/.next/**',
+          '**/.git/**',
+        ],
+      };
+    }
+    return config;
+  },
   // Log build warnings for large chunks
   logging: {
     fetches: { fullUrl: true },
