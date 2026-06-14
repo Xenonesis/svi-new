@@ -2,7 +2,6 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import {
-  Check,
   ChevronDown,
   Copy,
   Download,
@@ -19,9 +18,8 @@ import {
   ExternalLink,
   Calendar,
 } from 'lucide-react';
-import type { EmailDetail, ForwardData, ReplyData } from '../types';
+import type { EmailDetail } from '../types';
 import { buildCopyText } from '../helpers';
-import { StatusDot } from './constants';
 import { useState } from 'react';
 
 interface EmailDetailPanelProps {

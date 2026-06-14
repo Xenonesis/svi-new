@@ -10,9 +10,6 @@ import {
   User,
   X,
   Calendar,
-  Mail,
-  Send,
-  BarChart3,
   Trash2,
   CheckSquare,
   Square,
@@ -120,9 +117,14 @@ export function EmailToolbar({
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
-                  onClick={onDeleteSelected}
-                  disabled={deleting}
-                  className="inline-flex items-center gap-1.5 rounded-lg bg-red-500 px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-red-600 disabled:opacity-50"
+                  onClick={() => {
+                    if (!deleting) onDeleteSelected();
+                  }}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold text-white transition-all ${
+                    deleting
+                      ? 'cursor-not-allowed bg-red-400 opacity-50'
+                      : 'bg-red-500 hover:bg-red-600'
+                  }`}
                 >
                   {deleting ? (
                     <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -268,9 +270,14 @@ export function EmailToolbar({
 
           {/* Refresh */}
           <button
-            onClick={onRefresh}
-            disabled={!!loading}
-            className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-400 transition-all hover:bg-gray-50 hover:text-gray-600 disabled:opacity-50 dark:hover:bg-white/5"
+            onClick={() => {
+              if (!loading) onRefresh();
+            }}
+            className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all dark:hover:bg-white/5 ${
+              loading
+                ? 'cursor-not-allowed text-gray-300 opacity-50'
+                : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600'
+            }`}
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />
             <span className="hidden sm:inline">Refresh</span>
