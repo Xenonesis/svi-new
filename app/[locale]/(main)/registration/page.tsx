@@ -835,11 +835,11 @@ export default function Registration() {
                   </span>
                   <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-[#f8fafc] p-3.5 dark:border-gray-700 dark:bg-gray-800">
                     <span className="mr-2 font-mono text-[13px] leading-tight tracking-wider break-words text-[#1e293b] uppercase dark:text-white">
-                      Svi Infra Solutions Pvt. Ltd
+                      SVI INFRA SOLUTIONS PVT. LTD.
                     </span>
                     <button
                       type="button"
-                      onClick={() => handleCopy('Svi Infra Solutions Pvt. Ltd', 'name')}
+                      onClick={() => handleCopy('SVI INFRA SOLUTIONS PVT. LTD.', 'name')}
                       className="text-brand-navy hover:text-brand-gold shrink-0 p-1 transition-colors"
                       title="Copy"
                     >
