@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "cross-env NEXT_TURBOPACK=0 next dev --port 3000",
+    "dev": "next dev --webpack --port 3000",
     "build": "next build",
     "analyze": "ANALYZE=true next build",
     "start": "next start",
