@@ -269,7 +269,7 @@ export function EmailToolbar({
           {/* Refresh */}
           <button
             onClick={onRefresh}
-            disabled={loading}
+            disabled={!!loading}
             className="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium text-gray-400 transition-all hover:bg-gray-50 hover:text-gray-600 disabled:opacity-50 dark:hover:bg-white/5"
           >
             <RefreshCw className={`h-3.5 w-3.5 ${loading ? 'animate-spin' : ''}`} />

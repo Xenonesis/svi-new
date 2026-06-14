@@ -11,8 +11,52 @@ function getResend() {
   return new Resend(apiKey);
 }
 
+/** Guess content-type from filename extension */
+function mimeFromFilename(filename: string): string {
+  const ext = filename.split('.').pop()?.toLowerCase() || '';
+  const mime: Record<string, string> = {
+    pdf: 'application/pdf',
+    doc: 'application/msword',
+    docx: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    xls: 'application/vnd.ms-excel',
+    xlsx: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ppt: 'application/vnd.ms-powerpoint',
+    pptx: 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    png: 'image/png',
+    jpg: 'image/jpeg',
+    jpeg: 'image/jpeg',
+    gif: 'image/gif',
+    webp: 'image/webp',
+    svg: 'image/svg+xml',
+    txt: 'text/plain',
+    csv: 'text/csv',
+    zip: 'application/zip',
+    rar: 'application/vnd.rar',
+    html: 'text/html',
+    json: 'application/json',
+  };
+  return mime[ext] || 'application/octet-stream';
+}
+
+/** Ensure the email-attachments storage bucket exists */
+async function ensureAttachmentBucket() {
+  try {
+    const { data: buckets } = await supabaseAdmin.storage.listBuckets();
+    if (!buckets?.find((b: any) => b.name === 'email-attachments')) {
+      await supabaseAdmin.storage.createBucket('email-attachments', {
+        public: true,
+        fileSizeLimit: 10 * 1024 * 1024, // 10 MB
+      });
+      console.log('[STORAGE] Created email-attachments bucket');
+    }
+  } catch (err) {
+    console.warn('[STORAGE] Could not ensure email-attachments bucket:', err);
+  }
+}
+
 async function syncInboundEmails(resend: Resend) {
   try {
+    await ensureAttachmentBucket();
     const resendEmails = await resend.emails.receiving.list();
     const emails = (resendEmails.data as any)?.data || resendEmails.data || [];
     if (emails.length === 0) return;
@@ -245,7 +289,46 @@ export async function GET(request: NextRequest) {
 
     if (action === 'email' && emailId) {
       const email = await resend.emails.get(emailId);
-      return NextResponse.json({ email: email.data });
+      const emailData = email.data as any;
+
+      // Fetch attachments: try DB first, then fallback to Resend attachment API
+      if (emailData) {
+        // 1) Try our Supabase email_attachments table (uploaded during send)
+        let attachments: any[] | null = null;
+        const { data: dbAttachments } = await supabaseAdmin
+          .from('email_attachments')
+          .select('*')
+          .eq('email_id', emailId);
+
+        if (dbAttachments && dbAttachments.length > 0) {
+          attachments = dbAttachments;
+        }
+
+        // 2) Fallback: fetch from Resend's attachment API (signed URLs)
+        if (!attachments) {
+          try {
+            const attRes = await resend.emails.attachments.list({ emailId });
+            const attData = attRes.data;
+            if (attData?.data?.length) {
+              attachments = attData.data.map((a: any) => ({
+                filename: a.filename || 'attachment',
+                content_type: a.content_type,
+                size: a.size,
+                url: a.download_url,
+                expires_at: a.expires_at,
+              }));
+            }
+          } catch (_err) {
+            // Resend attachment API may not be available for older emails
+          }
+        }
+
+        if (attachments) {
+          emailData.attachments = attachments;
+        }
+      }
+
+      return NextResponse.json({ email: emailData });
     }
 
     // ─── Inbox / Replies — from email_inbox table ───
@@ -433,6 +516,7 @@ export async function POST(request: NextRequest) {
 
         // Handle attachments for scheduled emails
         if (Array.isArray(attachments) && attachments.length > 0) {
+          await ensureAttachmentBucket();
           for (const att of attachments) {
             const buffer = Buffer.from(att.content, 'base64');
             const filePath = `${emailId}/${att.filename}`;
@@ -441,7 +525,7 @@ export async function POST(request: NextRequest) {
             const { error: uploadError } = await supabaseAdmin.storage
               .from('email-attachments')
               .upload(filePath, buffer, {
-                contentType: att.type || 'application/octet-stream',
+                contentType: mimeFromFilename(att.filename),
                 upsert: true,
               });
 
@@ -460,7 +544,7 @@ export async function POST(request: NextRequest) {
             const { error: attInsertError } = await supabaseAdmin.from('email_attachments').insert({
               email_id: emailId,
               filename: att.filename,
-              content_type: att.type || 'application/octet-stream',
+              content_type: mimeFromFilename(att.filename),
               size: att.size || buffer.length,
               url: url,
             });
@@ -534,6 +618,7 @@ export async function POST(request: NextRequest) {
       }
 
       if (result.data?.id && Array.isArray(attachments) && attachments.length > 0) {
+        await ensureAttachmentBucket();
         const emailId = result.data.id;
         for (const att of attachments) {
           const buffer = Buffer.from(att.content, 'base64');
@@ -543,7 +628,7 @@ export async function POST(request: NextRequest) {
           const { error: uploadError } = await supabaseAdmin.storage
             .from('email-attachments')
             .upload(filePath, buffer, {
-              contentType: att.type || 'application/octet-stream',
+              contentType: mimeFromFilename(att.filename),
               upsert: true,
             });
 
@@ -562,7 +647,7 @@ export async function POST(request: NextRequest) {
           const { error: attInsertError } = await supabaseAdmin.from('email_attachments').insert({
             email_id: emailId,
             filename: att.filename,
-            content_type: att.type || 'application/octet-stream',
+            content_type: mimeFromFilename(att.filename),
             size: att.size || buffer.length,
             url: url,
           });
@@ -605,10 +690,9 @@ export async function POST(request: NextRequest) {
       const { emailId } = body;
       if (!emailId) return NextResponse.json({ error: 'Missing email id' }, { status: 400 });
 
-      const { data, error } = await supabaseAdmin
+      const { error } = await supabaseAdmin
         .from('email_stars')
-        .insert({ email_id: emailId, admin_id: admin.id })
-        .select();
+        .insert({ email_id: emailId, admin_id: admin.id });
 
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });

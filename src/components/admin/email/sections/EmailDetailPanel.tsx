@@ -5,6 +5,8 @@ import {
   Check,
   ChevronDown,
   Copy,
+  Download,
+  Eye,
   Forward,
   Loader2,
   Mail,
@@ -20,6 +22,7 @@ import {
 import type { EmailDetail, ForwardData, ReplyData } from '../types';
 import { buildCopyText } from '../helpers';
 import { StatusDot } from './constants';
+import { useState } from 'react';
 
 interface EmailDetailPanelProps {
   selected: EmailDetail | null;
@@ -54,6 +57,7 @@ export function EmailDetailPanel({
   onCopyId,
   onToggleStar,
 }: EmailDetailPanelProps) {
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   if (!selected) return null;
 
   return (
@@ -290,6 +294,8 @@ export function EmailDetailPanel({
                           ? `data:${attachment.content_type || 'application/octet-stream'};base64,${attachment.content}`
                           : '#';
                       const canDownload = hasUrl || isBase64;
+                      const ct = (attachment.content_type || '').toLowerCase();
+                      const isImage = ct.startsWith('image/');
                       return (
                         <div
                           key={index}
@@ -310,24 +316,81 @@ export function EmailDetailPanel({
                               )}
                             </div>
                           </div>
-                          {canDownload ? (
-                            <a
-                              href={downloadHref}
-                              download={attachment.filename || `attachment-${index + 1}`}
-                              target={hasUrl ? '_blank' : undefined}
-                              rel={hasUrl ? 'noopener noreferrer' : undefined}
-                              className="ml-3 rounded-lg p-2 text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300"
-                              title="Download"
-                            >
-                              <ExternalLink className="h-4 w-4" />
-                            </a>
-                          ) : (
-                            <span className="ml-3 text-[10px] text-gray-400">No content</span>
-                          )}
+                          <div className="flex items-center gap-1">
+                            {canDownload ? (
+                              <>
+                                {/* Preview — inline for images, new tab for others */}
+                                {isImage ? (
+                                  <button
+                                    onClick={() => setPreviewImage(downloadHref)}
+                                    className="rounded-lg p-2 text-gray-400 transition-all hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                    title="Preview"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </button>
+                                ) : (
+                                  <a
+                                    href={downloadHref}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="rounded-lg p-2 text-gray-400 transition-all hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                    title="Preview"
+                                  >
+                                    <Eye className="h-4 w-4" />
+                                  </a>
+                                )}
+                                {/* Download — prompts file save */}
+                                <a
+                                  href={downloadHref}
+                                  download={attachment.filename || `attachment-${index + 1}`}
+                                  className="rounded-lg p-2 text-gray-400 transition-all hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-300"
+                                  title="Download"
+                                >
+                                  <Download className="h-4 w-4" />
+                                </a>
+                              </>
+                            ) : (
+                              <span className="text-[10px] text-gray-400">No content</span>
+                            )}
+                          </div>
                         </div>
                       );
                     })}
                   </div>
+
+                  {/* Image preview lightbox */}
+                  <AnimatePresence>
+                    {previewImage && (
+                      <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+                        onClick={() => setPreviewImage(null)}
+                      >
+                        <motion.div
+                          initial={{ scale: 0.85, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.85, opacity: 0 }}
+                          transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                          className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-1 shadow-2xl dark:bg-[#0e0e14]"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <button
+                            onClick={() => setPreviewImage(null)}
+                            className="absolute top-2 right-2 z-10 rounded-full bg-black/50 p-1.5 text-white transition-colors hover:bg-black/70"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                          <img
+                            src={previewImage}
+                            alt="Preview"
+                            className="max-h-[85vh] w-full rounded-xl object-contain"
+                          />
+                        </motion.div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               )}
 
