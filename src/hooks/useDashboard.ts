@@ -47,26 +47,33 @@ export interface ActivitiesResponse {
 
 /**
  * Fetch all admin users with built-in caching.
+ * Users change infrequently — stale after 30s, cache for 5 min.
  */
 export function useUsers(token: string | null) {
   return useGetApi<UsersResponse>(['admin', 'users'], '/api/admin/users', {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     enabled: !!token,
+    staleTime: 30_000,
+    gcTime: 5 * 60_000,
   });
 }
 
 /**
  * Fetch dashboard analytics (user growth, document stats, trends).
+ * Analytics change slowly — stale after 2 min, cache for 10 min.
  */
 export function useAnalytics(token: string | null) {
   return useGetApi<DashboardAnalytics>(['admin', 'analytics'], '/api/admin/analytics', {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     enabled: !!token,
+    staleTime: 2 * 60_000,
+    gcTime: 10 * 60_000,
   });
 }
 
 /**
  * Fetch recent admin activities.
+ * Activities update frequently — stale after 15s, cache for 2 min.
  */
 export function useActivities(token: string | null, limit = 10) {
   return useGetApi<ActivitiesResponse>(
@@ -75,6 +82,8 @@ export function useActivities(token: string | null, limit = 10) {
     {
       headers: token ? { Authorization: `Bearer ${token}` } : undefined,
       enabled: !!token,
+      staleTime: 15_000,
+      gcTime: 2 * 60_000,
     }
   );
 }

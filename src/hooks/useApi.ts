@@ -56,12 +56,14 @@ async function apiFetch<T>(
 export function useGetApi<TData = unknown>(
   queryKey: string[],
   url: string,
-  options?: ApiOptions & { enabled?: boolean }
+  options?: ApiOptions & { enabled?: boolean; staleTime?: number; gcTime?: number }
 ) {
   return useQuery<TData>({
     queryKey,
     queryFn: () => apiFetch<TData>(url, 'GET', undefined, options),
     enabled: options?.enabled ?? true,
+    staleTime: options?.staleTime,
+    gcTime: options?.gcTime,
   });
 }
 

@@ -33,6 +33,8 @@ export function useAllotments() {
       return data || [];
     },
     enabled: !!userId,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
   });
 }
 
@@ -70,6 +72,8 @@ export function usePaymentSchedules() {
       return data || [];
     },
     enabled: !!userId,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
   });
 }
 
@@ -91,5 +95,7 @@ export function useDocuments() {
       return data || [];
     },
     enabled: !!userId,
+    staleTime: 5 * 60_000,
+    gcTime: 30 * 60_000,
   });
 }

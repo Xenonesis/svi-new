@@ -37,13 +37,15 @@ async function syncInboundEmails(resend: Resend) {
 
     console.log(`[SYNC] Found ${missingEmails.length} missing inbound emails. Syncing now...`);
 
-    for (const e of missingEmails) {
+    // Process missing emails in parallel batches (concurrency = 5)
+    const CONCURRENCY = 5;
+    const syncEmail = async (e: any) => {
       const emailId = e.id;
       try {
         const { data: emailData, error: fetchError } = await resend.emails.receiving.get(emailId);
         if (fetchError) {
           console.error(`[SYNC] Error fetching email details for ${emailId}:`, fetchError);
-          continue;
+          return;
         }
 
         const fromRaw = (emailData as any).from || '';
@@ -126,7 +128,6 @@ async function syncInboundEmails(resend: Resend) {
             insertError.message?.includes('column "from_name" of relation') ||
             insertError.message?.includes('column "attachments" of relation')
           ) {
-            // Fallback for missing columns (from_name, attachments) in older schema
             const fallbackData: any = { ...insertData };
             delete fallbackData.from_name;
             delete fallbackData.attachments;
@@ -162,6 +163,12 @@ async function syncInboundEmails(resend: Resend) {
       } catch (err) {
         console.error(`[SYNC] Exception syncing email ${emailId}:`, err);
       }
+    };
+
+    // Parallel batches with controlled concurrency
+    for (let i = 0; i < missingEmails.length; i += CONCURRENCY) {
+      const batch = missingEmails.slice(i, i + CONCURRENCY);
+      await Promise.allSettled(batch.map(syncEmail));
     }
   } catch (err) {
     console.error('[SYNC] Exception during inbound email sync:', err);

@@ -79,7 +79,7 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  // Auth check — only sets token and admin info
+  // Auth check + parallel data fetch
   useEffect(() => {
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       if (!session) {
@@ -87,11 +87,17 @@ export default function AdminDashboard() {
         return;
       }
 
-      const { data: profile, error } = await supabase
-        .from('profiles')
-        .select('role, full_name')
-        .eq('id', session.user.id)
-        .single();
+      // Profile check + properties fetch in parallel (no dependency between them)
+      const [profileResult, propertiesResult] = await Promise.all([
+        supabase.from('profiles').select('role, full_name').eq('id', session.user.id).single(),
+        supabase
+          .from('properties')
+          .select('name, slug')
+          .eq('active', true)
+          .order('name', { ascending: true }),
+      ]);
+
+      const { data: profile, error } = profileResult;
 
       if (error || !profile || profile?.role !== 'admin') {
         router.replace('/admin');
@@ -103,13 +109,7 @@ export default function AdminDashboard() {
       setAdminName(profile?.full_name || session.user.email || 'Admin');
       setAuthLoading(false);
 
-      // Fetch properties (non-sensitive, can be done directly)
-      const { data: propertiesData } = await supabase
-        .from('properties')
-        .select('name, slug')
-        .eq('active', true)
-        .order('name', { ascending: true });
-      if (propertiesData) setProperties(propertiesData);
+      if (propertiesResult.data) setProperties(propertiesResult.data);
     });
   }, [router]);
 

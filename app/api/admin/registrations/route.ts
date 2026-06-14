@@ -12,20 +12,6 @@ export async function GET(request: NextRequest) {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
-    // ── Auto-cleanup of registrations older than 30 days ──
-    try {
-      const thirtyDaysAgo = new Date();
-      thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-      const { error: cleanupError } = await supabaseAdmin
-        .from('registrations')
-        .delete()
-        .lt('created_at', thirtyDaysAgo.toISOString())
-        .or('is_important.eq.false,is_important.is.null');
-      if (cleanupError) console.error('[Registration Cleanup Error]:', cleanupError.message);
-    } catch (cleanupErr) {
-      console.error('[Registration Cleanup Exception]:', cleanupErr);
-    }
-
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get('page') || '1') || 1);
     const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '50') || 50));

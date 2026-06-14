@@ -54,24 +54,20 @@ export function useRegistrations() {
   }, []);
 
   const fetchFilterOptions = useCallback(async (tkn: string) => {
-    const res = await fetch('/api/admin/registrations?limit=1000', {
+    const res = await fetch('/api/admin/registrations/filters', {
       headers: { Authorization: `Bearer ${tkn}` },
     });
     if (!res.ok) return;
     const json = await res.json();
-    const regs: Registration[] = json.registrations || [];
-
-    const unique = (arr: (string | null | undefined)[]) =>
-      [...new Set(arr.filter(Boolean) as string[])].sort();
 
     setFilterOptions({
-      projects: unique(regs.map((r) => r.project)),
-      advisors: unique(regs.map((r) => r.advisor_name)),
-      propertyTypes: unique(regs.map((r) => r.property_type)),
-      propertySizes: unique(regs.map((r) => r.property_size)),
-      plotPreferences: unique(regs.map((r) => r.plot_preference)),
-      paymentPlans: unique(regs.map((r) => r.payment_plan)),
-      paymentModes: unique(regs.map((r) => r.payment_mode)),
+      projects: json.projects || [],
+      advisors: json.advisors || [],
+      propertyTypes: json.propertyTypes || [],
+      propertySizes: json.propertySizes || [],
+      plotPreferences: json.plotPreferences || [],
+      paymentPlans: json.paymentPlans || [],
+      paymentModes: json.paymentModes || [],
     });
   }, []);
 
