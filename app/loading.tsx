@@ -19,7 +19,7 @@ export default function RootLoading() {
             style={{ animation: 'pulse 2s ease-in-out 0.1s infinite' }}
           />
           <div
-            className="h-10 w-48 rounded bg-[#c9a84c]/20 sm:h-12 sm:w-56 md:h-16 md:w-64"
+            className="bg-brand-gold/20 h-10 w-48 rounded sm:h-12 sm:w-56 md:h-16 md:w-64"
             style={{ animation: 'pulse 2s ease-in-out 0.2s infinite' }}
           />
         </div>
@@ -39,7 +39,7 @@ export default function RootLoading() {
         {/* Button skeletons */}
         <div className="flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
           <div
-            className="h-12 w-44 rounded bg-[#c9a84c]/30"
+            className="bg-brand-gold/30 h-12 w-44 rounded"
             style={{ animation: 'pulse 2s ease-in-out 0.5s infinite' }}
           />
           <div
@@ -61,15 +61,15 @@ export default function RootLoading() {
       {/* Loading indicator */}
       <div className="absolute right-8 bottom-8 z-20 flex items-center gap-2">
         <div
-          className="h-1.5 w-1.5 rounded-full bg-[#c9a84c]/60"
+          className="bg-brand-gold/60 h-1.5 w-1.5 rounded-full"
           style={{ animation: 'pulse-gold 1.2s ease-in-out 0s infinite' }}
         />
         <div
-          className="h-1.5 w-1.5 rounded-full bg-[#c9a84c]/60"
+          className="bg-brand-gold/60 h-1.5 w-1.5 rounded-full"
           style={{ animation: 'pulse-gold 1.2s ease-in-out 0.2s infinite' }}
         />
         <div
-          className="h-1.5 w-1.5 rounded-full bg-[#c9a84c]/60"
+          className="bg-brand-gold/60 h-1.5 w-1.5 rounded-full"
           style={{ animation: 'pulse-gold 1.2s ease-in-out 0.4s infinite' }}
         />
       </div>

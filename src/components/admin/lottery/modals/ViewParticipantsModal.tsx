@@ -13,7 +13,12 @@ interface ViewParticipantsModalProps {
   onOpenEmail: (lottery: Lottery) => void;
 }
 
-export function ViewParticipantsModal({ open, lottery, onClose, onOpenEmail }: ViewParticipantsModalProps) {
+export function ViewParticipantsModal({
+  open,
+  lottery,
+  onClose,
+  onOpenEmail,
+}: ViewParticipantsModalProps) {
   const [participants, setParticipants] = useState<DbParticipant[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
@@ -67,7 +72,7 @@ export function ViewParticipantsModal({ open, lottery, onClose, onOpenEmail }: V
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex w-full max-w-3xl flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-[#0C0C0C]"
+            className="dark:bg-brand-dark-bg flex w-full max-w-3xl flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700"
             style={{ maxHeight: '85vh' }}
           >
             {/* Header */}
@@ -99,7 +104,7 @@ export function ViewParticipantsModal({ open, lottery, onClose, onOpenEmail }: V
             {/* Search */}
             <div className="px-6 pt-4">
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
                   type="text"
                   value={search}
@@ -135,17 +140,27 @@ export function ViewParticipantsModal({ open, lottery, onClose, onOpenEmail }: V
                     <tbody className="divide-y divide-slate-50 dark:divide-white/5">
                       {filtered.map((p) => (
                         <tr key={p.id} className="hover:bg-slate-50 dark:hover:bg-white/5">
-                          <td className="py-3 font-semibold text-slate-900 dark:text-white">{p.name}</td>
-                          <td className="py-3 font-mono text-xs text-slate-600 dark:text-gray-300">{p.ticket_number}</td>
-                          <td className="py-3 text-xs text-slate-500 dark:text-gray-400">{p.phone || '—'}</td>
-                          <td className="py-3 text-xs text-slate-500 dark:text-gray-400">{p.email || '—'}</td>
+                          <td className="py-3 font-semibold text-slate-900 dark:text-white">
+                            {p.name}
+                          </td>
+                          <td className="py-3 font-mono text-xs text-slate-600 dark:text-gray-300">
+                            {p.ticket_number}
+                          </td>
+                          <td className="py-3 text-xs text-slate-500 dark:text-gray-400">
+                            {p.phone || '—'}
+                          </td>
+                          <td className="py-3 text-xs text-slate-500 dark:text-gray-400">
+                            {p.email || '—'}
+                          </td>
                           <td className="py-3">
                             {p.is_winner ? (
                               <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
                                 <Award className="h-3 w-3" /> Winner
                               </span>
                             ) : (
-                              <span className="text-[10px] text-slate-400 dark:text-gray-500">Participant</span>
+                              <span className="text-[10px] text-slate-400 dark:text-gray-500">
+                                Participant
+                              </span>
                             )}
                           </td>
                         </tr>

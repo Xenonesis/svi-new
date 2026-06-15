@@ -55,7 +55,7 @@ export function DomainsTab() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-6 py-4 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+      <div className="dark:bg-brand-dark-surface flex items-center justify-between rounded-xl border border-gray-200/80 bg-white px-6 py-4 dark:border-gray-700/60">
         <div>
           <h3 className="text-sm font-bold text-gray-900 dark:text-white">Verified Domains</h3>
           <p className="mt-0.5 font-mono text-[10px] tracking-wider text-gray-400 uppercase">
@@ -136,7 +136,7 @@ export function DomainsTab() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.06, duration: 0.3 }}
-                className="rounded-xl border border-gray-200/80 bg-white p-5 dark:border-gray-700/60 dark:bg-[#0e0e14]"
+                className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-5 dark:border-gray-700/60"
               >
                 <div className="mb-4 flex items-start justify-between">
                   <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">

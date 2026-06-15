@@ -30,7 +30,7 @@ const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
 
 const GRID_STYLE = {
   backgroundImage:
-    'radial-gradient(circle at 1px 1px, rgba(201, 168, 76, 0.05) 1px, transparent 0)',
+    'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
   backgroundSize: '24px 24px',
 };
 
@@ -133,7 +133,7 @@ function AttendanceContent() {
               style={{
                 backgroundSize: '200% 200%',
                 backgroundImage:
-                  'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070, #c9a84c)',
+                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
               }}
             >
               Management
@@ -167,7 +167,7 @@ function AttendanceContent() {
         </div>
 
         {/* Tab Content */}
-        <div className="relative rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+        <div className="dark:bg-brand-dark-surface/65 relative rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
           {activeTab === 'dashboard' && token && (
             <AttendanceDashboard token={token} showToast={showToast} />

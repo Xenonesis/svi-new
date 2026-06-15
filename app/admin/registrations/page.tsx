@@ -32,7 +32,7 @@ export default function AdminRegistrations() {
               style={{
                 backgroundSize: '200% 200%',
                 backgroundImage:
-                  'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070, #c9a84c)',
+                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
               }}
             >
               Registrations
@@ -45,7 +45,7 @@ export default function AdminRegistrations() {
 
         {/* Stats */}
         <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          <div className="dark:border-brand-gold/15 relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:bg-[#0e0e14]/65">
+          <div className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 p-5 shadow-lg backdrop-blur-xl">
             <div className="via-brand-gold/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
             <div className="mb-3 flex items-center justify-between">
               <div className="bg-brand-gold/10 border-brand-gold/25 flex h-11 w-11 items-center justify-center rounded-lg border">

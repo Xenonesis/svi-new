@@ -105,7 +105,7 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
 
   return (
     <div className={className}>
-      <div className="rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+      <div className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
         <div className="mb-5 flex items-center gap-3">
           <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
             <BarChart3 className="text-brand-gold h-5 w-5" />

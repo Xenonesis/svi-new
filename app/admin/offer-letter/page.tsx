@@ -278,7 +278,7 @@ export default function OfferLetterPage() {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
         {/* ──────────────── Form ──────────────── */}
-        <div className="relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10 dark:bg-[#0e0e14]/80">
+        <div className="dark:bg-brand-dark-surface/80 relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10">
           <div className="mb-5 flex items-center gap-2 border-b border-gray-100 pb-4 dark:border-white/10">
             <FileSignature className="text-brand-gold h-4 w-4" />
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">
@@ -294,7 +294,7 @@ export default function OfferLetterPage() {
                 </label>
                 <select
                   onChange={handleLoadOffer}
-                  className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200"
+                  className="focus:border-brand-gold dark:bg-brand-dark-surface w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:text-gray-200"
                 >
                   <option value="">— Select a saved offer letter —</option>
                   {savedOffers.map((b) => (
@@ -824,7 +824,7 @@ export default function OfferLetterPage() {
         </div>
 
         {/* ──────────────── Preview ──────────────── */}
-        <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#0e0e14]">
+        <div className="dark:bg-brand-dark-surface relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-white/10">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-white/10">
             <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Preview</h2>
             {preview && (

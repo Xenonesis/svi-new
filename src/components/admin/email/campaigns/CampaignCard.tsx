@@ -62,7 +62,7 @@ export function CampaignCard({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.04, duration: 0.3 }}
-      className={`group relative overflow-hidden rounded-xl border border-gray-200/80 bg-white transition-all hover:shadow-md dark:border-gray-700/60 dark:bg-[#0e0e14] ${cfg.accent} border-l-[3px]`}
+      className={`group dark:bg-brand-dark-surface relative overflow-hidden rounded-xl border border-gray-200/80 bg-white transition-all hover:shadow-md dark:border-gray-700/60 ${cfg.accent} border-l-[3px]`}
     >
       <div className="p-5">
         <div className="flex items-start justify-between gap-3">

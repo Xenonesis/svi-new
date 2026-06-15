@@ -44,7 +44,7 @@ export function reminderEmailHtml(opts: {
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:600px;width:100%;">
         <!-- Header -->
         <tr><td style="background:linear-gradient(135deg,#1a1a2e,#16213e);padding:40px 40px 32px;text-align:center;">
-          <div style="font-size:11px;letter-spacing:0.2em;color:#c9a84c;text-transform:uppercase;margin-bottom:12px;">✦ SVI Infra Solutions</div>
+          <div style="font-size:11px;letter-spacing:0.2em;color:#d4af37;text-transform:uppercase;margin-bottom:12px;">✦ SVI Infra Solutions</div>
           <h1 style="margin:0;font-size:28px;font-weight:700;color:#ffffff;letter-spacing:-0.5px;">🎉 Draw Reminder</h1>
           <p style="margin:10px 0 0;font-size:14px;color:#a0a0b0;">Your lucky draw is coming up!</p>
         </td></tr>
@@ -90,7 +90,7 @@ export function winnerEmailHtml(opts: {
     <tr><td align="center">
       <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);max-width:600px;width:100%;">
         <!-- Gold Header -->
-        <tr><td style="background:linear-gradient(135deg,#c9a84c,#f0d080,#b08f36);padding:48px 40px;text-align:center;">
+        <tr><td style="background:linear-gradient(135deg,#d4af37,#f0d080,#b08f36);padding:48px 40px;text-align:center;">
           <div style="font-size:48px;margin-bottom:16px;">🏆</div>
           <h1 style="margin:0;font-size:32px;font-weight:800;color:#0a0a0f;letter-spacing:-0.5px;">Congratulations!</h1>
           <p style="margin:10px 0 0;font-size:15px;color:#3a2800;font-weight:600;">You are the winner of ${opts.lotteryTitle}</p>
@@ -102,7 +102,7 @@ export function winnerEmailHtml(opts: {
             We are thrilled to announce that your ticket has been selected as the <strong>Grand Prize Winner</strong> of the <strong>${opts.lotteryTitle}</strong> draw! 🎊
           </p>
           <!-- Winning Ticket -->
-          <div style="background:linear-gradient(135deg,#fef9ec,#fffbe8);border:2px solid #c9a84c;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
+          <div style="background:linear-gradient(135deg,#fef9ec,#fffbe8);border:2px solid #d4af37;border-radius:12px;padding:24px;text-align:center;margin-bottom:24px;">
             <div style="font-size:11px;color:#b08f36;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:8px;font-weight:700;">🎫 Winning Ticket</div>
             <div style="font-size:28px;font-weight:800;color:#0a0a0f;font-family:monospace;">${opts.ticketNumber}</div>
             <div style="font-size:12px;color:#888;margin-top:8px;">Drawn on ${toIST(opts.drawnAt)}</div>

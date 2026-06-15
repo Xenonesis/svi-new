@@ -69,7 +69,7 @@ export default function PaymentForm() {
               required
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
-              className="w-full border px-4 py-3 text-sm outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800"
+              className="focus:border-brand-gold w-full border px-4 py-3 text-sm outline-none dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
           <div>
@@ -81,7 +81,7 @@ export default function PaymentForm() {
               required
               value={form.email}
               onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
-              className="w-full border px-4 py-3 text-sm outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800"
+              className="focus:border-brand-gold w-full border px-4 py-3 text-sm outline-none dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
         </div>
@@ -96,7 +96,7 @@ export default function PaymentForm() {
               required
               value={form.phone}
               onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-              className="w-full border px-4 py-3 text-sm outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800"
+              className="focus:border-brand-gold w-full border px-4 py-3 text-sm outline-none dark:border-gray-600 dark:bg-gray-800"
             />
           </div>
           <div>
@@ -107,7 +107,7 @@ export default function PaymentForm() {
               required
               value={form.project}
               onChange={(e) => setForm((f) => ({ ...f, project: e.target.value }))}
-              className="w-full border px-4 py-3 text-sm outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800"
+              className="focus:border-brand-gold w-full border px-4 py-3 text-sm outline-none dark:border-gray-600 dark:bg-gray-800"
             >
               <option value="">Select project</option>
               {projects.map((p) => (
@@ -144,7 +144,7 @@ export default function PaymentForm() {
             placeholder="Or enter custom amount"
             value={form.amount}
             onChange={(e) => setForm((f) => ({ ...f, amount: e.target.value }))}
-            className="w-full border px-4 py-3 text-sm outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800"
+            className="focus:border-brand-gold w-full border px-4 py-3 text-sm outline-none dark:border-gray-600 dark:bg-gray-800"
           />
         </div>
 

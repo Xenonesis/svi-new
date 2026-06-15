@@ -46,7 +46,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       startTransition(() => {
         setCurrentHeroIndex((prev) => (prev + 1) % images.length);
       });
-    }, 5000);
+    }, 6000); // slightly slower transitions for a luxurious pace
     return () => clearInterval(timer);
   }, [isAutoPlaying, prefersReducedMotion, images.length]);
 
@@ -62,7 +62,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
   return (
     <section
       ref={heroRef}
-      className="relative flex min-h-[80vh] items-center justify-center overflow-hidden py-20 md:min-h-[900px] lg:py-32"
+      className="relative flex min-h-[85vh] items-center justify-center overflow-hidden py-20 md:min-h-[900px] lg:py-32"
       role="region"
       aria-label="Hero section"
     >
@@ -83,34 +83,37 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
               alt={img.alt}
               fill
               priority={idx === 0}
-              quality={85}
+              quality={90}
               sizes="100vw"
               className="object-cover"
             />
           </div>
         ))}
-        <div className="absolute inset-0 z-10 bg-gradient-to-b from-black/70 via-black/40 to-black/70" />
+        {/* Dynamic Dark Gradient + Aurora Mesh */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#0b0c10]/90 via-[#0b0c10]/60 to-transparent mix-blend-multiply" />
+        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0b0c10] via-transparent to-transparent" />
+        <div className="aurora-bg z-10" />
       </motion.div>
 
       {/* Navigation arrows */}
       <button
         onClick={prevHeroSlide}
-        className="absolute top-1/2 left-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white md:left-8"
+        className="hover:border-brand-gold hover:bg-brand-gold/10 hover:text-brand-gold absolute right-24 bottom-8 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white/80 backdrop-blur-md transition-all md:right-32 md:bottom-12"
         aria-label="Previous slide"
       >
-        <ChevronLeft size={20} />
+        <ChevronLeft size={20} strokeWidth={1.5} />
       </button>
       <button
         onClick={nextHeroSlide}
-        className="absolute top-1/2 right-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full border border-white/15 bg-white/5 text-white/80 backdrop-blur-sm transition-all hover:bg-white/15 hover:text-white md:right-8"
+        className="hover:border-brand-gold hover:bg-brand-gold/10 hover:text-brand-gold absolute right-8 bottom-8 z-40 flex h-12 w-12 items-center justify-center rounded-full border border-white/20 bg-black/20 text-white/80 backdrop-blur-md transition-all md:right-16 md:bottom-12"
         aria-label="Next slide"
       >
-        <ChevronRight size={20} />
+        <ChevronRight size={20} strokeWidth={1.5} />
       </button>
 
-      {/* Slide indicators */}
+      {/* Slide indicators - repositioned to left bottom */}
       <div
-        className="absolute bottom-8 left-1/2 z-30 flex -translate-x-1/2 gap-3"
+        className="absolute bottom-12 left-8 z-30 hidden gap-3 md:flex lg:left-16"
         role="tablist"
         aria-label="Hero slide navigation"
       >
@@ -125,68 +128,95 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
             aria-selected={idx === currentHeroIndex}
             role="tab"
             animate={{
-              width: idx === currentHeroIndex ? 28 : 10,
-              backgroundColor: idx === currentHeroIndex ? '#c9a84c' : 'rgba(255,255,255,0.5)',
+              width: idx === currentHeroIndex ? 36 : 12,
+              backgroundColor: idx === currentHeroIndex ? '#d4af37' : 'rgba(255,255,255,0.4)',
             }}
-            transition={{ duration: 0.3 }}
-            className="h-2.5 rounded-full"
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="h-1 rounded-full"
           />
         ))}
       </div>
 
-      {/* Hero content with parallax opacity */}
+      {/* Hero content with parallax opacity - Left Aligned Asymmetrical */}
       <motion.div
-        className="z-30 container mx-auto flex flex-col items-center px-5 text-center drop-shadow-2xl sm:px-8 md:px-4"
+        className="z-30 container mx-auto flex w-full flex-col items-start px-8 text-left drop-shadow-2xl md:px-16"
         style={{ opacity: heroOpacity }}
       >
-        <span className="text-brand-gold animate-hero-1 mb-6 inline-block text-[10px] font-semibold tracking-[0.2em] uppercase opacity-80">
-          {t('badge')}
-        </span>
-
-        <h1 className="animate-hero-2 mb-8 font-serif text-4xl leading-[1.1] text-white sm:text-5xl md:text-7xl">
-          {t('title')}
-          <br />
-          <span
-            className="text-gradient-gold animate-bg-pan inline-block italic"
-            style={{
-              backgroundSize: '200% 200%',
-              backgroundImage:
-                'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070, #c9a84c)',
-            }}
-          >
-            {t('titleAccent')}
+        <div className="max-w-3xl">
+          <span className="text-brand-gold animate-hero-1 mb-8 inline-block text-xs font-bold tracking-[0.3em] uppercase opacity-90">
+            {t('badge')}
           </span>
-        </h1>
 
-        <p className="animate-hero-3 mb-10 max-w-2xl px-2 text-center text-sm leading-relaxed text-white/90 md:text-xl">
-          {t('subtitle')}
-        </p>
-
-        <div className="animate-hero-4 flex flex-col items-center justify-center gap-4 sm:flex-row sm:gap-5">
-          <motion.div whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.98 }}>
-            <Link
-              href="/projects/current"
-              className="shimmer bg-brand-gold text-brand-navy inline-block px-8 py-3.5 text-[11px] font-semibold tracking-wider uppercase shadow-lg transition-shadow hover:shadow-xl"
+          <h1 className="animate-hero-2 mb-8 font-serif text-5xl leading-[1.05] text-white sm:text-6xl md:text-8xl">
+            {t('title')}
+            <br />
+            <span
+              className="text-gradient-gold animate-bg-pan inline-block pr-4 italic"
+              style={{
+                backgroundSize: '200% 200%',
+                backgroundImage:
+                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
+              }}
             >
-              {t('cta')}
-            </Link>
-          </motion.div>
-          <Link
-            href="/registration"
-            className="group flex items-center gap-2.5 text-white/90 transition-colors hover:text-white"
-          >
-            <span className="hover-underline-gold text-[10px] font-semibold tracking-wider uppercase">
-              {t('invest')}
+              {t('titleAccent')}
             </span>
-            <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
-          </Link>
-        </div>
+          </h1>
 
-        <div className="animate-hero-5 absolute bottom-16 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-2 md:flex">
-          <span className="text-[9px] tracking-[0.2em] text-white/30 uppercase">{t('scroll')}</span>
-          <div className="h-8 w-px bg-gradient-to-b from-white/30 to-transparent" />
+          <p className="animate-hero-3 mb-12 max-w-xl text-base leading-relaxed font-light text-white/80 md:text-xl">
+            {t('subtitle')}
+          </p>
+
+          <div className="animate-hero-4 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+            <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+              <Link
+                href="/projects/current"
+                className="shimmer bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all hover:shadow-[0_0_60px_rgba(212,175,55,0.5)]"
+              >
+                {t('cta')}
+              </Link>
+            </motion.div>
+            <Link
+              href="/registration"
+              className="group hover:text-brand-gold flex items-center gap-3 text-white/80 transition-colors"
+            >
+              <span className="hover-underline-gold text-[11px] font-bold tracking-[0.15em] uppercase">
+                {t('invest')}
+              </span>
+              <ArrowRight
+                size={16}
+                className="transition-transform duration-300 group-hover:translate-x-2"
+              />
+            </Link>
+          </div>
         </div>
       </motion.div>
+
+      {/* Asymmetric Floating Stat Card */}
+      <motion.div
+        className="animate-hero-5 absolute right-16 bottom-32 z-30 hidden lg:block"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.4, duration: 1 }}
+      >
+        <div className="group relative max-w-[320px] overflow-hidden border border-white/10 bg-black/20 p-8 shadow-2xl backdrop-blur-xl">
+          <div className="from-brand-gold/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+          <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none">
+            15<span className="text-3xl">+</span>
+          </h3>
+          <p className="text-sm leading-relaxed font-light text-white/70">
+            Years of delivering uncompromising luxury, architectural excellence, and prime real
+            estate investments.
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Scroll Indicator */}
+      <div className="animate-hero-5 absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3 md:hidden">
+        <span className="text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">
+          {t('scroll')}
+        </span>
+        <div className="h-10 w-[1px] bg-gradient-to-b from-white/40 to-transparent" />
+      </div>
     </section>
   );
 }

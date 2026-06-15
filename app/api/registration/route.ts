@@ -318,16 +318,16 @@ export async function POST(request: NextRequest) {
         const emailHtmlContent = `
           <div style="font-family: sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #eaeaea;border-radius:10px;background:#fff;">
             <div style="text-align:right;margin-bottom:15px;">
-              <span style="background:#c9a84c;color:#fff;font-size:9px;font-weight:bold;padding:4px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px;">
+              <span style="background:#d4af37;color:#fff;font-size:9px;font-weight:bold;padding:4px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px;">
                 ✨ System Automated Notification
               </span>
             </div>
-            <h2 style="color:#c9a84c;font-family:serif;border-bottom:2px solid #f0d080;padding-bottom:10px;">
+            <h2 style="color:#d4af37;font-family:serif;border-bottom:2px solid #f0d080;padding-bottom:10px;">
               ${isFallbackRoute ? 'Admin Record: Property Registration' : 'Registration Acknowledgment'}
             </h2>
             <p>Dear <strong>${escapeHtml(firstName)} ${escapeHtml(lastName || '')}</strong>,</p>
             <p>Thank you for registering with SVI Infra Solutions.</p>
-            <div style="background:#f9f9f9;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #c9a84c;">
+            <div style="background:#f9f9f9;padding:15px;border-radius:8px;margin:20px 0;border-left:4px solid #d4af37;">
               <h3 style="margin-top:0;">Submission Details</h3>
               <table style="border-collapse:collapse;width:100%;font-size:13px;">
                 <tr><td style="padding:6px 0;font-weight:bold;width:40%">Submission ID:</td><td style="padding:6px 0">${data.submission_id}</td></tr>

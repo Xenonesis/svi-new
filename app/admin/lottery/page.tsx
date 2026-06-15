@@ -283,7 +283,7 @@ export default function AdminLotteryPage() {
               onClick={() => setActiveTab('dashboard')}
               className={`cursor-pointer rounded-xl border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all duration-300 ${
                 activeTab === 'dashboard'
-                  ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30 shadow-[0_0_15px_rgba(201,168,76,0.1)]'
+                  ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/30 shadow-[0_0_15px_rgba(212, 175, 55,0.1)]'
                   : 'border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:border-white/5 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
               }`}
             >
@@ -296,7 +296,7 @@ export default function AdminLotteryPage() {
               }}
               className={`flex cursor-pointer items-center gap-2 rounded-xl border px-5 py-2.5 text-xs font-bold tracking-wider uppercase transition-all duration-300 ${
                 activeTab === 'create'
-                  ? 'bg-brand-gold text-brand-navy border-brand-gold shadow-[0_0_20px_rgba(201,168,76,0.3)]'
+                  ? 'bg-brand-gold text-brand-navy border-brand-gold shadow-[0_0_20px_rgba(212, 175, 55,0.3)]'
                   : 'bg-brand-gold/10 text-brand-gold border-brand-gold/20 hover:bg-brand-gold/20'
               }`}
             >
@@ -374,7 +374,7 @@ export default function AdminLotteryPage() {
 
         {/* ══ VISIBILITY CONTROL ════════════════════════════════════════ */}
         <div
-          className={`relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 ${lotteryVisible ? 'border-brand-gold/40 to-brand-gold/5 bg-gradient-to-br from-white shadow-[0_0_30px_rgba(201,168,76,0.1)] dark:from-[#0e0e14]' : 'border-slate-200 bg-white dark:border-white/10 dark:bg-[#0e0e14]/50'}`}
+          className={`relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 ${lotteryVisible ? 'border-brand-gold/40 to-brand-gold/5 shadow-[0_0_30px_rgba(212, 175, 55,0.1)] dark:from-brand-dark-surface bg-gradient-to-br from-white' : 'dark:bg-brand-dark-surface/50 border-slate-200 bg-white dark:border-white/10'}`}
         >
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex items-center gap-5">
@@ -410,7 +410,7 @@ export default function AdminLotteryPage() {
               <button
                 onClick={() => toggleLotteryVisibility(!lotteryVisible)}
                 disabled={visibilityLoading || visibilityPending}
-                className={`focus-visible:ring-brand-gold relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${lotteryVisible ? 'border-brand-gold bg-brand-gold shadow-[0_0_15px_rgba(201,168,76,0.5)]' : 'border-slate-300 bg-slate-200 dark:border-white/10 dark:bg-white/5'}`}
+                className={`focus-visible:ring-brand-gold relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${lotteryVisible ? 'border-brand-gold bg-brand-gold shadow-[0_0_15px_rgba(212, 175, 55,0.5)]' : 'border-slate-300 bg-slate-200 dark:border-white/10 dark:bg-white/5'}`}
               >
                 <span
                   className={`inline-block h-6 w-6 rounded-full shadow-md transition-all duration-300 ${lotteryVisible ? 'translate-x-8 bg-white dark:bg-[#0a0a0f]' : 'translate-x-1 bg-white dark:bg-gray-500'}`}
@@ -500,7 +500,7 @@ export default function AdminLotteryPage() {
 
         {/* ══ CREATE TAB ════════════════════════════════════════════════ */}
         {activeTab === 'create' && (
-          <div className="mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl md:p-12 dark:border-white/10 dark:bg-[#0e0e14]/80 dark:shadow-2xl">
+          <div className="dark:bg-brand-dark-surface/80 mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl md:p-12 dark:border-white/10 dark:shadow-2xl">
             <WizardProgress currentStep={wizardStep} />
 
             <div className="min-h-[400px]">

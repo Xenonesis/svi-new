@@ -172,7 +172,7 @@ export function CampaignsTab() {
           </div>
 
           {/* Campaign list skeleton */}
-          <div className="rounded-xl border border-gray-200/80 bg-white dark:border-gray-700/60 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white dark:border-gray-700/60">
             <EmailListSkeleton count={5} />
           </div>
         </div>

@@ -13,7 +13,7 @@ interface LotteryInfo {
 
 export function buildLotteryCampaignBody(title: string, description?: string | null): string {
   return `<div style="font-family:sans-serif;max-width:600px;margin:auto;padding:24px;">
-  <h2 style="color:#1a2744;border-bottom:2px solid #c9a84c;padding-bottom:10px;">${title}</h2>
+  <h2 style="color:#111827;border-bottom:2px solid #d4af37;padding-bottom:10px;">${title}</h2>
   <p>Dear Participant,</p>
   <p>You have been registered for our exclusive lucky draw <strong>${title}</strong>.</p>
   <p>${description?.trim() || 'Stay tuned for the live draw. Best of luck!'}</p>

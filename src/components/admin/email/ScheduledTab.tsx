@@ -9,10 +9,10 @@ export function ScheduledTab() {
   const h = useScheduledEmails();
 
   return (
-    <div className="grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
       <div className="flex flex-col transition-all duration-300">
         {/* Toolbar */}
-        <div className="flex min-h-[56px] items-center justify-between border-b border-gray-100 bg-white/50 px-4 py-2 backdrop-blur-md dark:border-gray-800 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 flex min-h-[56px] items-center justify-between border-b border-gray-100 bg-white/50 px-4 py-2 backdrop-blur-md dark:border-gray-800">
           <div className="flex w-full items-center gap-3">
             <div className="group relative w-full max-w-md">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

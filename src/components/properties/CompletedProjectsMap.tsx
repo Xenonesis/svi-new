@@ -89,7 +89,7 @@ const ProjectMarker = memo(function ProjectMarker({
 
   useEffect(() => {
     const marker = new maplibregl.Marker({
-      color: '#1a2744',
+      color: '#111827',
       rotation: 0,
       scale: 1.2,
     })
@@ -115,7 +115,7 @@ const ProjectMarker = memo(function ProjectMarker({
           }
           <div class="mt-2 flex items-center justify-between">
             <span class="text-[10px] font-bold text-gray-400 uppercase">${project.type}</span>
-            <button class="rounded-sm border border-[#1a2744] bg-[#1a2744] px-3 py-1 text-xs font-bold tracking-wider text-[#c9a84c] uppercase transition-colors hover:bg-[#c9a84c] hover:text-[#1a2744]" id="details-btn-${project.id}">
+            <button class="rounded-sm border border-brand-navy bg-brand-navy px-3 py-1 text-xs font-bold tracking-wider text-brand-gold uppercase transition-colors hover:bg-brand-gold hover:text-brand-navy" id="details-btn-${project.id}">
               Details
             </button>
           </div>

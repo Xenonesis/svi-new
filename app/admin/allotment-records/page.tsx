@@ -252,7 +252,7 @@ export default function AllotmentRecordsPage() {
         </div>
         <button
           onClick={fetchAllotments}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/50 dark:hover:bg-white/5"
+          className="dark:bg-brand-dark-surface/50 flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
           title="Refresh List"
         >
           <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -261,7 +261,7 @@ export default function AllotmentRecordsPage() {
 
       {/* Quick Statistics Cards */}
       <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <FileText className="text-brand-gold h-5 w-5" />
@@ -275,7 +275,7 @@ export default function AllotmentRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <IndianRupee className="text-brand-gold h-5 w-5" />
@@ -291,7 +291,7 @@ export default function AllotmentRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <TrendingUp className="text-brand-gold h-5 w-5" />
@@ -307,7 +307,7 @@ export default function AllotmentRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <Building2 className="text-brand-gold h-5 w-5" />
@@ -333,7 +333,7 @@ export default function AllotmentRecordsPage() {
             placeholder="Search by client, ticket ID or advisor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="focus:border-brand-gold focus:ring-brand-gold/15 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-white dark:placeholder-gray-600"
+            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
           />
           {searchQuery && (
             <button
@@ -348,7 +348,7 @@ export default function AllotmentRecordsPage() {
           <select
             value={projectFilter}
             onChange={(e) => setProjectFilter(e.target.value)}
-            className="focus:border-brand-gold w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 transition-all outline-none hover:bg-gray-50 sm:w-auto dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+            className="focus:border-brand-gold dark:bg-brand-dark-surface/85 w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 transition-all outline-none hover:bg-gray-50 sm:w-auto dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
           >
             <option value="">ALL PROJECTS</option>
             {projects.map((proj) => (
@@ -361,7 +361,7 @@ export default function AllotmentRecordsPage() {
       </div>
 
       {/* Records Table glassmorphic container */}
-      <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-2xl backdrop-blur-xl transition-colors duration-300 dark:border-white/8 dark:bg-[#0e0e14]/65">
+      <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-2xl backdrop-blur-xl transition-colors duration-300 dark:border-white/8">
         {/* Subtle gold line on top */}
         <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
 
@@ -542,7 +542,7 @@ export default function AllotmentRecordsPage() {
       {/* Delete Confirmation Modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/10">
             <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
               Delete Allotment Record
             </h3>
@@ -579,7 +579,7 @@ export default function AllotmentRecordsPage() {
       {/* View & Re-download overlay Modal */}
       {selectedAllotment && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-md dark:bg-black/90">
-          <div className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
               <div>

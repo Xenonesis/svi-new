@@ -33,7 +33,7 @@ export default function MainError({ error, reset }: ErrorProps) {
     : `ERR-${Date.now().toString(36).toUpperCase().slice(-6)}`;
 
   return (
-    <div className="relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden bg-gray-50 px-4 py-24 dark:bg-[#0C0C0C]">
+    <div className="dark:bg-brand-dark-bg relative flex min-h-[80vh] flex-col items-center justify-center overflow-hidden bg-gray-50 px-4 py-24">
       {/* Background grid */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.015] dark:opacity-[0.03]"
@@ -83,9 +83,9 @@ export default function MainError({ error, reset }: ErrorProps) {
 
         {/* Divider */}
         <div className="mx-auto mb-5 flex items-center justify-center gap-3">
-          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#c9a84c]/50" />
-          <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a84c]/70" />
-          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#c9a84c]/50" />
+          <div className="to-brand-gold/50 h-px w-10 bg-gradient-to-r from-transparent" />
+          <div className="bg-brand-gold/70 h-1.5 w-1.5 rotate-45" />
+          <div className="to-brand-gold/50 h-px w-10 bg-gradient-to-l from-transparent" />
         </div>
 
         <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] text-red-400 uppercase">
@@ -93,7 +93,7 @@ export default function MainError({ error, reset }: ErrorProps) {
         </p>
 
         <h1 className="text-brand-navy mb-3 font-serif text-3xl md:text-4xl dark:text-gray-100">
-          Page Error <span className="text-[#c9a84c] italic">Occurred</span>
+          Page Error <span className="text-brand-gold italic">Occurred</span>
         </h1>
 
         <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-gray-600 dark:text-gray-400">
@@ -108,7 +108,7 @@ export default function MainError({ error, reset }: ErrorProps) {
             {errorCode}
           </span>
           {retryCount > 0 && (
-            <span className="ml-1 rounded-full bg-[#c9a84c]/20 px-2 py-0.5 text-[10px] font-semibold text-[#c9a84c]">
+            <span className="bg-brand-gold/20 text-brand-gold ml-1 rounded-full px-2 py-0.5 text-[10px] font-semibold">
               Attempt #{retryCount + 1}
             </span>
           )}
@@ -119,7 +119,7 @@ export default function MainError({ error, reset }: ErrorProps) {
           <button
             onClick={handleRetry}
             disabled={isRetrying}
-            className="bg-brand-gold text-brand-navy group flex items-center gap-2.5 px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase shadow-lg transition-all hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="bg-brand-gold text-brand-navy group hover:shadow-[0_0_20px_rgba(212, 175, 55,0.3)] flex items-center gap-2.5 px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw
               size={14}
@@ -129,7 +129,7 @@ export default function MainError({ error, reset }: ErrorProps) {
           </button>
           <Link
             href="/"
-            className="text-brand-navy border-brand-navy flex items-center gap-2.5 border px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:border-gray-500 dark:text-gray-300"
+            className="text-brand-navy border-brand-navy hover:border-brand-gold hover:text-brand-gold flex items-center gap-2.5 border px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all dark:border-gray-500 dark:text-gray-300"
           >
             <Home size={14} />
             Go Home

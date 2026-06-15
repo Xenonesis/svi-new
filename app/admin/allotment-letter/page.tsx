@@ -381,7 +381,7 @@ export default function AllotmentLetterPage() {
       </div>
 
       {/* Load from saved records */}
-      <div className="mb-6 rounded-xl border border-gray-200 bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:border-white/8 dark:bg-[#0e0e14]/40">
+      <div className="dark:bg-brand-dark-surface/40 mb-6 rounded-xl border border-gray-200 bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:border-white/8">
         <div className="flex flex-wrap items-center gap-3">
           <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
             <FileText className="h-3.5 w-3.5" />
@@ -449,7 +449,7 @@ export default function AllotmentLetterPage() {
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
         {/* Form Section */}
-        <div className="relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
+        <div className="dark:bg-brand-dark-surface/65 relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 
           <div className="mb-6 flex items-center gap-3 border-b border-gray-100 pb-4 dark:border-white/10">
@@ -859,7 +859,7 @@ export default function AllotmentLetterPage() {
         </div>
 
         {/* Preview Section */}
-        <div className="relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/8 dark:bg-[#0e0e14]">
+        <div className="dark:bg-brand-dark-surface relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 
           <div className="mb-4 flex items-center justify-between border-b border-gray-100 pb-4">

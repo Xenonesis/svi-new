@@ -67,7 +67,7 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-5 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-5 dark:border-gray-700/60">
       {/* ─── Email List ─── */}
       <div
         className={`${h.selected ? 'lg:col-span-2' : 'lg:col-span-5'} flex flex-col transition-all duration-300`}

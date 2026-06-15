@@ -82,7 +82,7 @@ export default function Leadership() {
           className="pointer-events-none absolute top-0 left-0 h-full w-full opacity-10"
           style={{
             backgroundImage:
-              'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)',
+              'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
             backgroundSize: '40px 40px',
           }}
         />
@@ -262,7 +262,7 @@ export default function Leadership() {
                   {HIERARCHY.staff.map((staff, idx) => (
                     <motion.div
                       key={idx}
-                      whileHover={{ y: -5, borderColor: 'rgba(201, 168, 76, 0.8)' }}
+                      whileHover={{ y: -5, borderColor: 'rgba(212, 175, 55, 0.8)' }}
                       className="group flex flex-col items-center rounded-lg border border-gray-100 bg-gray-50 p-6 text-center shadow-sm transition-all dark:border-gray-800 dark:bg-gray-900"
                     >
                       <div className="mb-3 rounded-full bg-white p-3 shadow-sm transition-transform group-hover:scale-110 dark:bg-gray-800">

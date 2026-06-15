@@ -80,7 +80,7 @@ function TeamModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="dark:border-brand-gold/20 relative w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:bg-[#0e0e14]"
+        className="dark:border-brand-gold/20 dark:bg-brand-dark-surface relative w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl"
       >
         <div className="via-brand-gold/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-white/8">
@@ -169,7 +169,7 @@ function DeleteConfirm({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="dark:border-brand-gold/20 relative w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-2xl dark:bg-[#0e0e14]"
+        className="dark:border-brand-gold/20 dark:bg-brand-dark-surface relative w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-2xl"
       >
         <div className="absolute top-0 right-0 left-0 h-[2px] bg-red-500/50" />
         <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10">
@@ -350,7 +350,7 @@ export default function TeamsManager({
         <div className="flex gap-3">
           <button
             onClick={onTeamsChange}
-            className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+            className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
           >
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </button>
@@ -377,7 +377,7 @@ export default function TeamsManager({
           {teams.map((team) => (
             <div
               key={team.id}
-              className="overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-lg backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65"
+              className="dark:bg-brand-dark-surface/65 overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-lg backdrop-blur-xl dark:border-white/8"
             >
               <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
               <div

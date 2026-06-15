@@ -46,7 +46,7 @@ export function ScheduleDrawPanel({
   onQuickTimeSelect,
 }: ScheduleDrawPanelProps) {
   return (
-    <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#0e0e14]/60">
+    <div className="dark:bg-brand-dark-surface/60 relative overflow-hidden rounded-3xl border border-slate-200 bg-white p-6 dark:border-white/10">
       <div className="pointer-events-none absolute -top-20 -left-20 h-56 w-56 rounded-full bg-violet-500/10 blur-[80px]" />
       <div className="relative">
         <div className="mb-6 flex flex-wrap items-center gap-4">

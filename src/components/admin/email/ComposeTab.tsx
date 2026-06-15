@@ -247,7 +247,7 @@ export function ComposeTab({
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <h2 style="color:#1a2744;">Payment Receipt</h2>
+  <h2 style="color:#111827;">Payment Receipt</h2>
   <p><strong>Receipt No:</strong> ${fd.receiptNo || 'N/A'}</p>
   <p><strong>Date:</strong> ${fd.date ? new Date(fd.date).toLocaleDateString('en-GB') : 'N/A'}</p>
   <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.name || 'N/A'}</p>
@@ -329,7 +329,7 @@ export function ComposeTab({
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <h2 style="color:#1a2744;">Builder Buyer Agreement</h2>
+  <h2 style="color:#111827;">Builder Buyer Agreement</h2>
   <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.clientName || 'N/A'}</p>
   <p><strong>Project:</strong> ${fd.projectName || 'N/A'}</p>
   <p><strong>Unit / Plot:</strong> ${fd.unitNumber || 'N/A'} (${fd.area || ''} Sq. Yds.)</p>
@@ -410,7 +410,7 @@ export function ComposeTab({
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <h2 style="color:#1a2744;">Offer Letter</h2>
+  <h2 style="color:#111827;">Offer Letter</h2>
   <p><strong>Candidate:</strong> ${fd.name || 'N/A'}</p>
   <p><strong>Designation:</strong> ${fd.designation || 'N/A'}</p>
   <p><strong>Department:</strong> ${fd.department || 'N/A'}</p>
@@ -634,7 +634,7 @@ export function ComposeTab({
       </AnimatePresence>
 
       {/* Compose Card */}
-      <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60 dark:bg-[#0e0e14]">
+      <div className="dark:bg-brand-dark-surface overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
           <div className="flex items-center gap-3">

@@ -239,7 +239,7 @@ export function LogsTab({ token, isCompact, showToast }: LogsTabProps) {
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
-        className="relative overflow-hidden rounded-xl border border-gray-200/80 bg-white/50 dark:border-white/8 dark:bg-[#0e0e14]/50"
+        className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-xl border border-gray-200/80 bg-white/50 dark:border-white/8"
       >
         <div className="min-h-[350px] overflow-x-auto">
           {loading ? (
@@ -401,7 +401,7 @@ export function LogsTab({ token, isCompact, showToast }: LogsTabProps) {
               initial={{ opacity: 0, scale: 0.95, y: 12 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 12 }}
-              className="relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]"
+              className="dark:bg-brand-dark-surface relative flex max-h-[85vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10"
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
@@ -457,7 +457,7 @@ export function LogsTab({ token, isCompact, showToast }: LogsTabProps) {
               </div>
 
               {/* Footer */}
-              <div className="flex justify-end border-t border-gray-100 bg-gray-50 px-6 py-4 dark:border-white/5 dark:bg-[#0e0e14]">
+              <div className="dark:bg-brand-dark-surface flex justify-end border-t border-gray-100 bg-gray-50 px-6 py-4 dark:border-white/5">
                 <button
                   onClick={() => setSelectedLog(null)}
                   className="rounded-lg bg-gray-900 px-4 py-2 text-xs font-bold text-white uppercase transition-all hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-white/90"

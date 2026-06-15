@@ -119,7 +119,7 @@ export function ComposeSkeleton() {
       transition={{ duration: 0.3 }}
       className="mx-auto max-w-[920px]"
     >
-      <div className="rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60 dark:bg-[#0e0e14]">
+      <div className="dark:bg-brand-dark-surface rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
           <div className="flex items-center gap-3">
@@ -177,7 +177,7 @@ export function DashboardCardSkeleton() {
       initial={{ opacity: 0, scale: 0.95 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.2 }}
-      className="rounded-xl border border-gray-200/80 bg-white p-5 dark:border-gray-700/60 dark:bg-[#0e0e14]"
+      className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-5 dark:border-gray-700/60"
     >
       <div className="flex items-start justify-between">
         <div className="flex-1 space-y-2">

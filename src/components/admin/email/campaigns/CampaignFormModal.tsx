@@ -95,11 +95,11 @@ export function CampaignFormModal({
     setTitle('');
     setSubject('');
     setBodyHtml(`<div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
-  <h2 style="color: #1a2744; border-bottom: 2px solid #c9a84c; padding-bottom: 10px;">Exclusive Update from SVI Infra</h2>
+  <h2 style="color: #111827; border-bottom: 2px solid #d4af37; padding-bottom: 10px;">Exclusive Update from SVI Infra</h2>
   <p>Hello,</p>
   <p>We are delighted to bring you our latest updates, investment plans, and property details!</p>
   <div style="background: #f8f8ff; padding: 15px; border-radius: 8px; margin: 20px 0;">
-    <h3 style="margin-top: 0; color: #1a2744;">Current Hot Projects</h3>
+    <h3 style="margin-top: 0; color: #111827;">Current Hot Projects</h3>
     <p>Discover luxury living and high return investments on our standard pricing premium flats.</p>
   </div>
   <p>For more details, visit our dashboard or contact your account manager directly.</p>
@@ -231,7 +231,7 @@ export function CampaignFormModal({
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-            className="relative flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl dark:bg-[#0e0e14]"
+            className="dark:bg-brand-dark-surface relative flex h-full w-full max-w-2xl flex-col bg-white shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-5 dark:border-gray-800">
@@ -326,7 +326,7 @@ export function CampaignFormModal({
                       onChange={(e) => setCustomEmailsInput(e.target.value)}
                       placeholder="client1@gmail.com, client2@outlook.com"
                       rows={2}
-                      className="focus-gold w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs dark:border-gray-700 dark:bg-[#0e0e14]"
+                      className="focus-gold dark:bg-brand-dark-surface w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs dark:border-gray-700"
                     />
                     <p className="font-mono text-[10px] text-gray-400">
                       Comma-separated email addresses
@@ -396,7 +396,7 @@ export function CampaignFormModal({
                         <FileText className="h-3 w-3" /> Import Template
                       </button>
                       {showTemplateImport && (
-                        <div className="absolute top-full right-0 z-50 mt-1 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-[#0e0e14]">
+                        <div className="dark:bg-brand-dark-surface absolute top-full right-0 z-50 mt-1 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700">
                           <div className="scrollbar-gold max-h-60 overflow-y-auto">
                             {EMAIL_TEMPLATES.map((tpl) => (
                               <button

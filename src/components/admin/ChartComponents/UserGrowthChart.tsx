@@ -22,7 +22,7 @@ export default function UserGrowthChart({ data }: UserGrowthChartProps) {
   const mounted = useMounted();
 
   return (
-    <div className="min-w-0 rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:bg-[#0e0e14]/65">
+    <div className="dark:bg-brand-dark-surface/65 min-w-0 rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">User Growth</h3>
@@ -40,8 +40,8 @@ export default function UserGrowthChart({ data }: UserGrowthChartProps) {
             <AreaChart data={data} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
               <defs>
                 <linearGradient id="userGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#c9a84c" stopOpacity={0.3} />
-                  <stop offset="95%" stopColor="#c9a84c" stopOpacity={0} />
+                  <stop offset="5%" stopColor="#d4af37" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#d4af37" stopOpacity={0} />
                 </linearGradient>
               </defs>
               <CartesianGrid
@@ -60,17 +60,17 @@ export default function UserGrowthChart({ data }: UserGrowthChartProps) {
               <Tooltip
                 contentStyle={{
                   backgroundColor: 'rgba(14, 14, 20, 0.95)',
-                  border: '1px solid rgba(201, 168, 76, 0.2)',
+                  border: '1px solid rgba(212, 175, 55, 0.2)',
                   borderRadius: '8px',
                   color: '#fff',
                   fontSize: '12px',
                 }}
-                cursor={{ stroke: '#c9a84c', strokeWidth: 1, strokeDasharray: '3 3' }}
+                cursor={{ stroke: '#d4af37', strokeWidth: 1, strokeDasharray: '3 3' }}
               />
               <Area
                 type="monotone"
                 dataKey="users"
-                stroke="#c9a84c"
+                stroke="#d4af37"
                 strokeWidth={2}
                 fill="url(#userGradient)"
               />

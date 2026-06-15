@@ -92,7 +92,7 @@ export default function GrievanceForm() {
             required
             value={formData.name}
             onChange={(e) => updateField('name', e.target.value)}
-            className="w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-[#c9a84c]"
+            className="focus:border-brand-gold dark:focus:border-brand-gold w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
         <div>
@@ -104,7 +104,7 @@ export default function GrievanceForm() {
             required
             value={formData.email}
             onChange={(e) => updateField('email', e.target.value)}
-            className="w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-[#c9a84c]"
+            className="focus:border-brand-gold dark:focus:border-brand-gold w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function GrievanceForm() {
             required
             value={formData.phone}
             onChange={(e) => updateField('phone', e.target.value)}
-            className="w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-[#c9a84c]"
+            className="focus:border-brand-gold dark:focus:border-brand-gold w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           />
         </div>
         <div>
@@ -129,7 +129,7 @@ export default function GrievanceForm() {
             required
             value={formData.category}
             onChange={(e) => updateField('category', e.target.value)}
-            className="w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-[#c9a84c]"
+            className="focus:border-brand-gold dark:focus:border-brand-gold w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
           >
             <option value="">Select category</option>
             {CATEGORIES.map((cat) => (
@@ -149,7 +149,7 @@ export default function GrievanceForm() {
           required
           value={formData.subject}
           onChange={(e) => updateField('subject', e.target.value)}
-          className="w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-[#c9a84c]"
+          className="focus:border-brand-gold dark:focus:border-brand-gold w-full border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         />
       </div>
       <div>
@@ -161,7 +161,7 @@ export default function GrievanceForm() {
           rows={5}
           value={formData.description}
           onChange={(e) => updateField('description', e.target.value)}
-          className="w-full resize-none border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none focus:border-[#c9a84c] dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100 dark:focus:border-[#c9a84c]"
+          className="focus:border-brand-gold dark:focus:border-brand-gold w-full resize-none border border-gray-300 bg-white px-4 py-3 text-sm transition-colors outline-none dark:border-gray-600 dark:bg-gray-800 dark:text-gray-100"
         />
       </div>
       <button

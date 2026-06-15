@@ -1,7 +1,7 @@
 import './globals.css';
 
 import { COMPANY_NAME, SITE_NAME, SITE_URL, absoluteUrl } from '@/src/lib/seo';
-import { Inter, Playfair_Display } from 'next/font/google';
+import { Outfit, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import type { Metadata, Viewport } from 'next';
 
@@ -10,7 +10,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next';
 import QueryProvider from '@/src/components/QueryProvider';
 import { ThemeScript } from '@/src/components/ThemeProvider';
 
-const inter = Inter({
+const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
@@ -105,7 +105,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#1a2744',
+  themeColor: '#111827',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -206,7 +206,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <link rel="manifest" href="/manifest.json" />
       </head>
-      <body className={`${inter.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <body className={`${outfit.variable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />
         <QueryProvider>{children}</QueryProvider>
         <Analytics />

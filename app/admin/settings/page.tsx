@@ -509,7 +509,7 @@ export default function AdminSettings() {
               style={{
                 backgroundSize: '200% 200%',
                 backgroundImage:
-                  'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070, #c9a84c)',
+                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
               }}
             >
               Settings
@@ -577,7 +577,7 @@ export default function AdminSettings() {
 
             {/* Settings Content Container */}
             <main className="flex-1 font-sans">
-              <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 md:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+              <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 md:p-8 dark:border-white/8">
                 {/* Accent Gold top line */}
                 <div className="via-brand-gold/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 

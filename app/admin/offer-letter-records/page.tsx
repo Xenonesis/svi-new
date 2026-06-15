@@ -253,7 +253,7 @@ export default function OfferLetterRecordsPage() {
         </div>
         <button
           onClick={fetchOffers}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/50 dark:hover:bg-white/5"
+          className="dark:bg-brand-dark-surface/50 flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
           title="Refresh List"
         >
           <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -262,7 +262,7 @@ export default function OfferLetterRecordsPage() {
 
       {/* Quick Statistics Cards */}
       <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <FileSignature className="text-brand-gold h-5 w-5" />
@@ -276,7 +276,7 @@ export default function OfferLetterRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <IndianRupee className="text-brand-gold h-5 w-5" />
@@ -292,7 +292,7 @@ export default function OfferLetterRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <Briefcase className="text-brand-gold h-5 w-5" />
@@ -308,7 +308,7 @@ export default function OfferLetterRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <BadgeCheck className="text-brand-gold h-5 w-5" />
@@ -324,7 +324,7 @@ export default function OfferLetterRecordsPage() {
       </div>
 
       {/* Main Table Container */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65">
+      <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
         <div className="mb-6 flex flex-col gap-4">
           <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div className="relative w-full max-w-xs">
@@ -334,7 +334,7 @@ export default function OfferLetterRecordsPage() {
                 placeholder="Search by name, role, department..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:bg-[#0e0e14] dark:text-white"
+                className="focus:border-brand-gold dark:bg-brand-dark-surface w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:text-white"
               />
             </div>
 
@@ -345,14 +345,14 @@ export default function OfferLetterRecordsPage() {
                   type="date"
                   value={dateRange.start}
                   onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
-                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:[color-scheme:dark]"
+                  className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-white dark:[color-scheme:dark]"
                 />
                 <span className="text-gray-400">-</span>
                 <input
                   type="date"
                   value={dateRange.end}
                   onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
-                  className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:[color-scheme:dark]"
+                  className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-white dark:[color-scheme:dark]"
                 />
               </div>
 
@@ -362,7 +362,7 @@ export default function OfferLetterRecordsPage() {
                   const [key, direction] = e.target.value.split('-');
                   setSortConfig({ key, direction: direction as 'asc' | 'desc' });
                 }}
-                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200 dark:[color-scheme:dark]"
+                className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-gray-200 dark:[color-scheme:dark]"
               >
                 <option value="date-desc">Newest First</option>
                 <option value="date-asc">Oldest First</option>
@@ -582,7 +582,7 @@ export default function OfferLetterRecordsPage() {
       {/* Delete Confirmation Modal */}
       {deleteTarget && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/10">
             <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
               Delete Offer Letter Record
             </h3>
@@ -618,7 +618,7 @@ export default function OfferLetterRecordsPage() {
       {/* View & Re-download overlay Modal */}
       {selectedOffer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-md dark:bg-black/90">
-          <div className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
               <div>

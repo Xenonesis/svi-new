@@ -44,8 +44,8 @@ export default function RootError({ error, reset }: ErrorProps) {
       <div
         className="pointer-events-none absolute inset-0 hidden opacity-[0.04] dark:block"
         style={{
-          backgroundImage: `linear-gradient(rgba(201,168,76,0.8) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(201,168,76,0.8) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(212, 175, 55,0.8) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(212, 175, 55,0.8) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
         }}
       />
@@ -55,7 +55,7 @@ export default function RootError({ error, reset }: ErrorProps) {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(220,60,60,0.04) 0%, rgba(201,168,76,0.02) 50%, transparent 80%)',
+            'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(220,60,60,0.04) 0%, rgba(212, 175, 55,0.02) 50%, transparent 80%)',
         }}
       />
 
@@ -93,18 +93,17 @@ export default function RootError({ error, reset }: ErrorProps) {
 
         {/* Gold divider */}
         <div className="mx-auto mb-5 flex items-center justify-center gap-3">
-          <div className="h-px w-8 bg-gradient-to-r from-transparent to-[#c9a84c]/60" />
-          <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a84c]/80" />
-          <div className="h-px w-8 bg-gradient-to-l from-transparent to-[#c9a84c]/60" />
+          <div className="to-brand-gold/60 h-px w-8 bg-gradient-to-r from-transparent" />
+          <div className="bg-brand-gold/80 h-1.5 w-1.5 rotate-45" />
+          <div className="to-brand-gold/60 h-px w-8 bg-gradient-to-l from-transparent" />
         </div>
 
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] uppercase text-red-500/90 dark:text-red-400/80">
+        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] text-red-500/90 uppercase dark:text-red-400/80">
           Something went wrong
         </p>
 
-        <h1 className="mb-3 font-serif text-3xl text-[#1a2744] md:text-4xl dark:text-white">
-          An Unexpected{' '}
-          <span className="italic text-[#c9a84c]">Error Occurred</span>
+        <h1 className="text-brand-navy mb-3 font-serif text-3xl md:text-4xl dark:text-white">
+          An Unexpected <span className="text-brand-gold italic">Error Occurred</span>
         </h1>
 
         <p className="mx-auto mb-6 max-w-sm text-sm leading-relaxed text-gray-500 dark:text-gray-400">
@@ -115,9 +114,11 @@ export default function RootError({ error, reset }: ErrorProps) {
         {/* Error code badge */}
         <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-4 py-1.5 shadow-sm dark:border-white/10 dark:bg-white/5">
           <span className="h-1.5 w-1.5 rounded-full bg-red-500 dark:bg-red-400" />
-          <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500">{errorCode}</span>
+          <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500">
+            {errorCode}
+          </span>
           {retryCount > 0 && (
-            <span className="ml-1 rounded-full bg-[#c9a84c]/20 px-2 py-0.5 text-[10px] font-semibold text-[#c9a84c]">
+            <span className="bg-brand-gold/20 text-brand-gold ml-1 rounded-full px-2 py-0.5 text-[10px] font-semibold">
               Retry #{retryCount}
             </span>
           )}
@@ -128,7 +129,7 @@ export default function RootError({ error, reset }: ErrorProps) {
           <button
             onClick={handleRetry}
             disabled={isRetrying}
-            className="group flex items-center gap-2.5 bg-[#c9a84c] px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase text-[#1a2744] shadow-lg transition-all hover:bg-[#dec070] hover:shadow-[0_0_24px_rgba(201,168,76,0.3)] disabled:cursor-not-allowed disabled:opacity-60"
+            className="group bg-brand-gold text-brand-navy hover:bg-brand-gold-light hover:shadow-[0_0_24px_rgba(212, 175, 55,0.3)] flex items-center gap-2.5 px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-60"
           >
             <RefreshCw
               size={14}
@@ -138,7 +139,7 @@ export default function RootError({ error, reset }: ErrorProps) {
           </button>
           <Link
             href="/"
-            className="flex items-center gap-2.5 border border-[#1a2744]/30 px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase text-[#1a2744] transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:border-white/20 dark:text-white/80 dark:hover:border-[#c9a84c]/50 dark:hover:text-white"
+            className="border-brand-navy/30 text-brand-navy hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold/50 flex items-center gap-2.5 border px-7 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all dark:border-white/20 dark:text-white/80 dark:hover:text-white"
           >
             <Home size={14} />
             Go Home
@@ -153,15 +154,11 @@ export default function RootError({ error, reset }: ErrorProps) {
               className="flex w-full items-center justify-between px-5 py-3 text-[11px] font-semibold tracking-wider text-gray-400 uppercase transition-colors hover:text-gray-600 dark:text-gray-500 dark:hover:text-gray-300"
             >
               <span>Technical Details</span>
-              {showDetails ? (
-                <ChevronUp size={14} />
-              ) : (
-                <ChevronDown size={14} />
-              )}
+              {showDetails ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
             </button>
             {showDetails && (
               <div className="border-t border-gray-200 px-5 py-4 dark:border-white/10">
-                <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed text-red-500 dark:text-red-400/80 whitespace-pre-wrap break-all">
+                <pre className="overflow-x-auto font-mono text-[11px] leading-relaxed break-all whitespace-pre-wrap text-red-500 dark:text-red-400/80">
                   {error.message}
                   {error.stack && `\n\nStack:\n${error.stack.split('\n').slice(0, 6).join('\n')}`}
                 </pre>

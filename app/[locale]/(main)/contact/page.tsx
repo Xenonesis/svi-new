@@ -67,7 +67,7 @@ export default function Contact() {
     map.addControl(new NavigationControl(), 'top-right');
 
     // Office marker
-    new maplibregl.Marker({ color: '#c9a84c', scale: 1.3 })
+    new maplibregl.Marker({ color: '#d4af37', scale: 1.3 })
       .setLngLat([OFFICE_LOCATION.lng, OFFICE_LOCATION.lat])
       .addTo(map);
 
@@ -596,7 +596,7 @@ export default function Contact() {
                   onClick={() => setShowNearby((v) => !v)}
                   className={`absolute top-3 right-3 z-10 flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold shadow backdrop-blur transition-colors ${
                     showNearby
-                      ? 'bg-[#1a2744] text-[#c9a84c]'
+                      ? 'bg-brand-navy text-brand-gold'
                       : 'bg-white/90 text-gray-600 hover:bg-white dark:bg-gray-900/90 dark:text-gray-300'
                   }`}
                 >

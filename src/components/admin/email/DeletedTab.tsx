@@ -218,7 +218,7 @@ export function DeletedTab() {
   const busy = h.restoring || h.deleting;
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
       {/* ─── Header ─── */}
       <div className="h-[2px] w-full bg-gradient-to-r from-red-500/60 via-red-500 to-red-500/60" />
 

@@ -48,7 +48,14 @@ Our team will contact you shortly with details on how to claim your prize.
   },
 };
 
-export function BulkEmailModal({ open, lottery, onClose, token, onSuccess, onError }: BulkEmailModalProps) {
+export function BulkEmailModal({
+  open,
+  lottery,
+  onClose,
+  token,
+  onSuccess,
+  onError,
+}: BulkEmailModalProps) {
   const [subject, setSubject] = useState('');
   const [body, setBody] = useState('');
   const [sending, setSending] = useState(false);
@@ -121,7 +128,7 @@ export function BulkEmailModal({ open, lottery, onClose, token, onSuccess, onErr
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex w-full max-w-xl flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-[#0C0C0C]"
+            className="dark:bg-brand-dark-bg flex w-full max-w-xl flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700"
           >
             {/* Header */}
             <div className="flex items-start justify-between border-b border-gray-200 p-6 dark:border-gray-700">

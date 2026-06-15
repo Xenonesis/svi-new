@@ -157,7 +157,7 @@ export default function Login() {
         className="pointer-events-none absolute top-0 left-0 h-full w-full opacity-10"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)',
+            'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
           backgroundSize: '40px 40px',
         }}
       ></div>
@@ -200,7 +200,7 @@ export default function Login() {
                   initial={{ left: '-100%' }}
                   animate={{ left: '100%' }}
                   transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
-                  className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent"
+                  className="via-brand-gold absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent to-transparent"
                 />
               </div>
             </motion.div>

@@ -43,7 +43,7 @@ export default function GlobalError({
             justifyContent: 'center',
             padding: '2rem',
             background: `
-              radial-gradient(ellipse 70% 60% at 50% 40%, rgba(220,60,60,0.06) 0%, rgba(201,168,76,0.03) 50%, transparent 80%),
+              radial-gradient(ellipse 70% 60% at 50% 40%, rgba(220,60,60,0.06) 0%, rgba(212, 175, 55,0.03) 50%, transparent 80%),
               #0e1628
             `,
             textAlign: 'center',
@@ -68,23 +68,17 @@ export default function GlobalError({
           </div>
 
           {/* Divider */}
-          <div
-            style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}
-          >
-            <div
-              style={{ height: '1px', width: '32px', background: 'rgba(201,168,76,0.4)' }}
-            />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '1rem' }}>
+            <div style={{ height: '1px', width: '32px', background: 'rgba(212, 175, 55,0.4)' }} />
             <div
               style={{
                 height: '6px',
                 width: '6px',
-                background: '#c9a84c',
+                background: '#d4af37',
                 transform: 'rotate(45deg)',
               }}
             />
-            <div
-              style={{ height: '1px', width: '32px', background: 'rgba(201,168,76,0.4)' }}
-            />
+            <div style={{ height: '1px', width: '32px', background: 'rgba(212, 175, 55,0.4)' }} />
           </div>
 
           <p
@@ -109,10 +103,18 @@ export default function GlobalError({
             }}
           >
             Application{' '}
-            <span style={{ color: '#c9a84c', fontStyle: 'italic' }}>Encountered a Problem</span>
+            <span style={{ color: '#d4af37', fontStyle: 'italic' }}>Encountered a Problem</span>
           </h1>
 
-          <p style={{ maxWidth: '380px', fontSize: '14px', color: '#6b7280', marginBottom: '2rem', lineHeight: '1.7' }}>
+          <p
+            style={{
+              maxWidth: '380px',
+              fontSize: '14px',
+              color: '#6b7280',
+              marginBottom: '2rem',
+              lineHeight: '1.7',
+            }}
+          >
             A critical error occurred that prevented the page from loading. Our team has been
             notified. Please try again or visit our home page.
           </p>
@@ -134,17 +136,15 @@ export default function GlobalError({
             </div>
           )}
 
-          <div
-            style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}
-          >
+          <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', justifyContent: 'center' }}>
             <button
               onClick={reset}
               style={{
                 display: 'flex',
                 alignItems: 'center',
                 gap: '8px',
-                background: '#c9a84c',
-                color: '#1a2744',
+                background: '#d4af37',
+                color: '#111827',
                 border: 'none',
                 padding: '14px 28px',
                 fontSize: '11px',

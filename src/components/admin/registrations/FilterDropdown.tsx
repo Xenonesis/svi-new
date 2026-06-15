@@ -21,7 +21,7 @@ export function FilterDropdown({
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="focus:border-brand-gold mt-1 w-full appearance-none truncate rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 transition-colors outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+        className="focus:border-brand-gold dark:bg-brand-dark-surface mt-1 w-full appearance-none truncate rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 transition-colors outline-none dark:border-white/10 dark:text-gray-300"
       >
         <option value="">All</option>
         {options.map((opt) => (

@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 
 const GRID_STYLE = {
   backgroundImage:
-    'radial-gradient(circle at 1px 1px, rgba(201, 168, 76, 0.08) 1px, transparent 0)',
+    'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.08) 1px, transparent 0)',
   backgroundSize: '24px 24px',
 };
 
@@ -92,7 +92,7 @@ export default function AdminLogin() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 p-4 font-sans transition-colors duration-300 dark:bg-[#0C0C0C]">
+    <div className="dark:bg-brand-dark-bg relative flex min-h-screen items-center justify-center overflow-hidden bg-gray-50 p-4 font-sans transition-colors duration-300">
       {/* Background glow & luxury accents */}
       <div className="pointer-events-none absolute inset-0 z-0">
         <div className="bg-brand-gold/5 absolute top-1/2 left-1/2 h-[600px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-[120px]" />
@@ -110,7 +110,7 @@ export default function AdminLogin() {
         className="relative z-10 w-full max-w-md"
       >
         {/* Card */}
-        <div className="dark:border-brand-gold/15 relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-10 shadow-2xl backdrop-blur-xl transition-colors duration-300 dark:bg-[#0e0e14]/75">
+        <div className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/75 relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-10 shadow-2xl backdrop-blur-xl transition-colors duration-300">
           {/* Subtle gold line on top of the card */}
           <div className="via-brand-gold/60 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
 
@@ -119,7 +119,7 @@ export default function AdminLogin() {
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 p-10 text-center backdrop-blur-xl dark:bg-[#0e0e14]/95"
+              className="dark:bg-brand-dark-surface/95 absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 p-10 text-center backdrop-blur-xl"
             >
               <motion.div
                 initial={{ scale: 0, rotate: -45 }}
@@ -144,7 +144,7 @@ export default function AdminLogin() {
                   initial={{ left: '-100%' }}
                   animate={{ left: '100%' }}
                   transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
-                  className="absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent via-[#c9a84c] to-transparent"
+                  className="via-brand-gold absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent to-transparent"
                 />
               </div>
             </motion.div>
@@ -164,7 +164,7 @@ export default function AdminLogin() {
               style={{
                 backgroundSize: '200% 200%',
                 backgroundImage:
-                  'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070, #c9a84c)',
+                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
               }}
             >
               Portal

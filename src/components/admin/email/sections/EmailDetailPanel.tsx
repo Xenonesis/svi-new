@@ -188,7 +188,7 @@ export function EmailDetailPanel({
                         initial={{ opacity: 0, y: -4, scale: 0.96 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                        className="absolute top-full left-0 z-50 mt-1.5 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700 dark:bg-[#0e0e14]"
+                        className="dark:bg-brand-dark-surface absolute top-full left-0 z-50 mt-1.5 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700"
                       >
                         {[
                           {
@@ -297,7 +297,7 @@ export function EmailDetailPanel({
                       return (
                         <div
                           key={index}
-                          className="flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800 dark:bg-[#0e0e14]"
+                          className="dark:bg-brand-dark-surface flex items-center justify-between rounded-lg border border-gray-200 bg-white p-3 dark:border-gray-800"
                         >
                           <div className="flex items-center gap-3 overflow-hidden">
                             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-gray-100 dark:bg-white/5">
@@ -371,7 +371,7 @@ export function EmailDetailPanel({
                           animate={{ scale: 1, opacity: 1 }}
                           exit={{ scale: 0.85, opacity: 0 }}
                           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-                          className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-1 shadow-2xl dark:bg-[#0e0e14]"
+                          className="dark:bg-brand-dark-surface relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-2xl bg-white p-1 shadow-2xl"
                           onClick={(e) => e.stopPropagation()}
                         >
                           <button

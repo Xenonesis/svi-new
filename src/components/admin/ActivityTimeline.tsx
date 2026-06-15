@@ -51,7 +51,7 @@ const getActivityColor = (type: Activity['type']) => {
 
 export default function ActivityTimeline({ activities }: ActivityTimelineProps) {
   return (
-    <div className="rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:bg-[#0e0e14]/65">
+    <div className="dark:bg-brand-dark-surface/65 rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h3>

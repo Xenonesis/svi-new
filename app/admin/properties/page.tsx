@@ -10,7 +10,7 @@ import { supabase } from '@/src/lib/supabase/client';
 
 const GRID_STYLE = {
   backgroundImage:
-    'radial-gradient(circle at 1px 1px, rgba(201, 168, 76, 0.05) 1px, transparent 0)',
+    'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
   backgroundSize: '24px 24px',
 };
 
@@ -56,23 +56,23 @@ function PropertiesContent() {
 
   if (loading || !token) {
     return (
-      <div className="mx-auto w-full max-w-7xl relative z-10 animate-pulse font-sans">
-        <div className="rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+      <div className="relative z-10 mx-auto w-full max-w-7xl animate-pulse font-sans">
+        <div className="dark:bg-brand-dark-surface/65 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8">
           {/* Header Skeleton */}
-          <div className="flex justify-between items-center mb-6">
+          <div className="mb-6 flex items-center justify-between">
             <div className="space-y-2">
-              <div className="h-7 w-48 bg-gray-200 dark:bg-white/5 rounded" />
-              <div className="h-4 w-72 bg-gray-200 dark:bg-white/5 rounded" />
+              <div className="h-7 w-48 rounded bg-gray-200 dark:bg-white/5" />
+              <div className="h-4 w-72 rounded bg-gray-200 dark:bg-white/5" />
             </div>
-            <div className="h-10 w-32 bg-gray-200 dark:bg-white/5 rounded-lg" />
+            <div className="h-10 w-32 rounded-lg bg-gray-200 dark:bg-white/5" />
           </div>
           {/* Search & Actions Bar Skeleton */}
-          <div className="flex justify-between items-center mb-6 gap-4">
-            <div className="h-10 w-64 bg-gray-200 dark:bg-white/5 rounded-lg" />
-            <div className="h-4 w-24 bg-gray-200 dark:bg-white/5 rounded" />
+          <div className="mb-6 flex items-center justify-between gap-4">
+            <div className="h-10 w-64 rounded-lg bg-gray-200 dark:bg-white/5" />
+            <div className="h-4 w-24 rounded bg-gray-200 dark:bg-white/5" />
           </div>
           {/* Table Skeleton */}
-          <div className="border border-gray-150 dark:border-white/5 rounded-xl bg-white/40 dark:bg-black/20 overflow-hidden h-60" />
+          <div className="border-gray-150 h-60 overflow-hidden rounded-xl border bg-white/40 dark:border-white/5 dark:bg-black/20" />
         </div>
       </div>
     );
@@ -88,7 +88,7 @@ function PropertiesContent() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-7xl">
-        <div className="rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+        <div className="dark:bg-brand-dark-surface/65 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
 
           <PropertiesTab token={token} isCompact={false} showToast={showToast} />
@@ -125,23 +125,23 @@ export default function PropertiesPage() {
   return (
     <Suspense
       fallback={
-        <div className="mx-auto w-full max-w-7xl relative z-10 animate-pulse font-sans">
-          <div className="rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8 dark:bg-[#0e0e14]/65">
+        <div className="relative z-10 mx-auto w-full max-w-7xl animate-pulse font-sans">
+          <div className="dark:bg-brand-dark-surface/65 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8">
             {/* Header Skeleton */}
-            <div className="flex justify-between items-center mb-6">
+            <div className="mb-6 flex items-center justify-between">
               <div className="space-y-2">
-                <div className="h-7 w-48 bg-gray-200 dark:bg-white/5 rounded" />
-                <div className="h-4 w-72 bg-gray-200 dark:bg-white/5 rounded" />
+                <div className="h-7 w-48 rounded bg-gray-200 dark:bg-white/5" />
+                <div className="h-4 w-72 rounded bg-gray-200 dark:bg-white/5" />
               </div>
-              <div className="h-10 w-32 bg-gray-200 dark:bg-white/5 rounded-lg" />
+              <div className="h-10 w-32 rounded-lg bg-gray-200 dark:bg-white/5" />
             </div>
             {/* Search & Actions Bar Skeleton */}
-            <div className="flex justify-between items-center mb-6 gap-4">
-              <div className="h-10 w-64 bg-gray-200 dark:bg-white/5 rounded-lg" />
-              <div className="h-4 w-24 bg-gray-200 dark:bg-white/5 rounded" />
+            <div className="mb-6 flex items-center justify-between gap-4">
+              <div className="h-10 w-64 rounded-lg bg-gray-200 dark:bg-white/5" />
+              <div className="h-4 w-24 rounded bg-gray-200 dark:bg-white/5" />
             </div>
             {/* Table Skeleton */}
-            <div className="border border-gray-150 dark:border-white/5 rounded-xl bg-white/40 dark:bg-black/20 overflow-hidden h-60" />
+            <div className="border-gray-150 h-60 overflow-hidden rounded-xl border bg-white/40 dark:border-white/5 dark:bg-black/20" />
           </div>
         </div>
       }

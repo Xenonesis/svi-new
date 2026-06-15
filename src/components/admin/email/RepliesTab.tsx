@@ -227,7 +227,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
 
   if (!selectedReply) {
     return (
-      <div className="rounded-xl border border-gray-200/80 bg-white dark:border-gray-700/60 dark:bg-[#0e0e14]">
+      <div className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white dark:border-gray-700/60">
         <InboxHeader />
 
         {loading ? (
@@ -355,7 +355,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   }
 
   return (
-    <div className="grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-5 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-5 dark:border-gray-700/60">
       {/* Email List */}
       <div className="flex flex-col border-r border-gray-100 transition-all duration-300 lg:col-span-2 dark:border-gray-800">
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 dark:border-gray-800">

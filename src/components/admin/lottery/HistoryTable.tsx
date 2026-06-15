@@ -27,7 +27,7 @@ export function HistoryTable({
         <h3 className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
           Archive & History
         </h3>
-        <div className="rounded-3xl border border-slate-200 bg-white p-12 text-center backdrop-blur-md dark:border-white/10 dark:bg-[#0e0e14]/60">
+        <div className="dark:bg-brand-dark-surface/60 rounded-3xl border border-slate-200 bg-white p-12 text-center backdrop-blur-md dark:border-white/10">
           <p className="text-sm text-slate-400 italic dark:text-gray-500">No archived campaigns.</p>
         </div>
       </div>
@@ -39,7 +39,7 @@ export function HistoryTable({
       <h3 className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
         Archive & History
       </h3>
-      <div className="overflow-hidden rounded-3xl border border-slate-200 bg-white backdrop-blur-md dark:border-white/10 dark:bg-[#0e0e14]/60">
+      <div className="dark:bg-brand-dark-surface/60 overflow-hidden rounded-3xl border border-slate-200 bg-white backdrop-blur-md dark:border-white/10">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm text-slate-600 dark:text-gray-300">
             <thead className="border-b border-slate-200 bg-slate-50 text-[10px] font-bold tracking-widest text-slate-500 uppercase dark:border-white/10 dark:bg-black/40 dark:text-gray-400">

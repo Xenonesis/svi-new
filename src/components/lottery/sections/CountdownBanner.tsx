@@ -19,7 +19,7 @@ export function CountdownBanner({ countdownStr, scheduledAt }: CountdownBannerPr
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -16 }}
           transition={{ duration: 0.4 }}
-          className="mb-10 overflow-hidden rounded-2xl border border-[#D4AF37]/30 bg-gradient-to-r from-[#0a0a0f] via-[#1a1a2e] to-[#0a0a0f] p-px shadow-[0_0_40px_rgba(201,168,76,0.15)]"
+          className="shadow-[0_0_40px_rgba(212, 175, 55,0.15)] mb-10 overflow-hidden rounded-2xl border border-[#D4AF37]/30 bg-gradient-to-r from-[#0a0a0f] via-[#1a1a2e] to-[#0a0a0f] p-px"
         >
           <div className="flex flex-col items-center gap-4 rounded-2xl bg-gradient-to-r from-[#0e0e18] via-[#14142a] to-[#0e0e18] px-8 py-6 sm:flex-row sm:justify-between">
             <div className="flex items-center gap-4">

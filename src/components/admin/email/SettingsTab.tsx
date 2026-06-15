@@ -41,8 +41,8 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
       : 'SVI Admin - Connection Test Email';
 
     const testHtml = isDev
-      ? `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#1a2744;margin:0 0 16px;">Resend Test Successful</h2><p style="color:#555;">This test email confirms that your Resend integration is working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`
-      : `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#1a2744;margin:0 0 16px;">Connection Test Successful</h2><p style="color:#555;">This test email confirms that your admin portal email connection is active and working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`;
+      ? `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#111827;margin:0 0 16px;">Resend Test Successful</h2><p style="color:#555;">This test email confirms that your Resend integration is working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`
+      : `<div style="font-family:Arial,sans-serif;padding:32px;background:#f5f5f5;"><div style="background:#fff;border-radius:12px;padding:32px;max-width:480px;margin:auto;"><h2 style="color:#111827;margin:0 0 16px;">Connection Test Successful</h2><p style="color:#555;">This test email confirms that your admin portal email connection is active and working correctly.</p><p style="color:#999;font-size:12px;margin-top:24px;">Sent from SVI Infra Admin Panel</p></div></div>`;
 
     try {
       const token = await getToken();
@@ -94,7 +94,7 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
     <div className={`grid grid-cols-1 gap-6 ${isDev ? 'lg:grid-cols-2' : 'lg:grid-cols-5'}`}>
       {/* Config overview */}
       <div className={isDev ? '' : 'lg:col-span-3'}>
-        <div className="rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+        <div className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
           <div className="mb-5 flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800">
               <Shield className="h-5 w-5 text-gray-400" />
@@ -154,7 +154,7 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
 
         {/* Quick links */}
         {isDev && (
-          <div className="mt-4 rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface mt-4 rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
             <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">
               Resend Resources
             </h3>
@@ -192,7 +192,7 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
 
       {/* Test email & Limits */}
       <div className={isDev ? 'space-y-4' : 'space-y-4 lg:col-span-2'}>
-        <div className="rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+        <div className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
           <div className="mb-5 flex items-center gap-3">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <Zap className="text-brand-gold h-5 w-5" />
@@ -258,7 +258,7 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
 
         {/* Rate limits */}
         {isDev && (
-          <div className="rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
             <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">
               Free Plan Limits
             </h3>

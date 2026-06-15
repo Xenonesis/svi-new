@@ -38,7 +38,7 @@ export function CampaignStatsCards({ total, draft, scheduled, sent }: CampaignSt
           initial={{ opacity: 0, y: 12 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: i * 0.05, duration: 0.3 }}
-          className="rounded-xl border border-gray-200/80 bg-white p-4 dark:border-gray-700/60 dark:bg-[#0e0e14]"
+          className="dark:bg-brand-dark-surface rounded-xl border border-gray-200/80 bg-white p-4 dark:border-gray-700/60"
         >
           <div className="flex items-center justify-between">
             <stat.icon className={`h-4 w-4 ${stat.color}`} />

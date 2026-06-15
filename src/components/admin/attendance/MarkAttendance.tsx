@@ -218,7 +218,7 @@ export default function MarkAttendance({
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.03, duration: 0.3 }}
-                className="flex items-center justify-between rounded-xl border border-gray-200 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65"
+                className="dark:bg-brand-dark-surface/65 flex items-center justify-between rounded-xl border border-gray-200 bg-white/80 px-5 py-4 shadow-sm backdrop-blur-xl dark:border-white/8"
               >
                 <div>
                   <span className="text-sm font-semibold text-gray-900 dark:text-white">

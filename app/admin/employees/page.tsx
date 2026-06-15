@@ -203,7 +203,7 @@ function EmployeeCard({ employee, onDelete }: { employee: Employee; onDelete: ()
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/10 dark:bg-[#0e0e14]"
+      className="dark:bg-brand-dark-surface relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/10"
     >
       <div className="via-brand-gold/30 absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent to-transparent" />
 
@@ -366,7 +366,7 @@ function AddEmployeeModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]"
+        className="dark:bg-brand-dark-surface w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10"
       >
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/5">
           <h2 className="text-brand-navy font-serif text-lg font-semibold dark:text-white">

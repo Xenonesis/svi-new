@@ -473,7 +473,7 @@ export default function AdminNotifications() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-6 space-y-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:p-6 dark:border-gray-700 dark:bg-[#0e0e14]"
+        className="dark:bg-brand-dark-surface mb-6 space-y-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm md:p-6 dark:border-gray-700"
       >
         {/* Row 1: Type filter & search */}
         <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -749,7 +749,7 @@ export default function AdminNotifications() {
                       notification.is_read
                         ? isEmail
                           ? 'border-brand-gold/40 dark:bg-brand-gold/5 dark:hover:bg-brand-gold/10 bg-amber-500/[0.02] hover:bg-amber-500/[0.04]'
-                          : 'border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:bg-[#0e0e14] dark:hover:bg-white/[0.03]'
+                          : 'dark:bg-brand-dark-surface border-gray-200 bg-white hover:bg-gray-50 dark:border-gray-700 dark:hover:bg-white/[0.03]'
                         : `${config.border} ${config.bg} shadow-sm`
                     } ${selectedIds.has(notification.id) ? 'ring-brand-gold/50 ring-2' : ''}`}
                   >

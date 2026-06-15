@@ -26,7 +26,7 @@ export default async function Blog({ params }: Props) {
   const t = await getTranslations('pages.blog');
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-24 pb-20 dark:bg-[#0C0C0C]">
+    <div className="dark:bg-brand-dark-bg min-h-screen bg-gray-50 pt-24 pb-20">
       <BlogHero />
       <BlogCards />
       <BlogFAQ />

@@ -26,8 +26,8 @@ export function WizardProgress({ currentStep }: WizardProgressProps) {
             <div
               className={`flex h-12 w-12 items-center justify-center rounded-full border-2 font-bold transition-all duration-500 ${
                 currentStep >= step
-                  ? 'border-brand-gold bg-brand-gold text-brand-navy shadow-[0_0_15px_rgba(201,168,76,0.4)]'
-                  : 'border-slate-200 bg-white text-slate-400 dark:border-white/20 dark:bg-[#0e0e14] dark:text-gray-500'
+                  ? 'border-brand-gold bg-brand-gold text-brand-navy shadow-[0_0_15px_rgba(212, 175, 55,0.4)]'
+                  : 'dark:bg-brand-dark-surface border-slate-200 bg-white text-slate-400 dark:border-white/20 dark:text-gray-500'
               }`}
             >
               {currentStep > step ? <CheckCircle2 className="h-6 w-6" /> : step}

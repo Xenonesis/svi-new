@@ -2,7 +2,7 @@
 
 export const GRID_STYLE = {
   backgroundImage:
-    'radial-gradient(circle at 1px 1px, rgba(201, 168, 76, 0.05) 1px, transparent 0)',
+    'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
   backgroundSize: '24px 24px',
 };
 

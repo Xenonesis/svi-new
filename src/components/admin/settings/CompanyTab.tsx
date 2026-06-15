@@ -147,7 +147,7 @@ export function CompanyTab({
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.1 }}
-        className="border-brand-gold/15 bg-brand-gold/[0.015] dark:border-brand-gold/25 dark:bg-brand-gold/[0.005] rounded-2xl border p-5 shadow-[0_4px_20px_rgba(201,168,76,0.03)]"
+        className="border-brand-gold/15 bg-brand-gold/[0.015] dark:border-brand-gold/25 dark:bg-brand-gold/[0.005] shadow-[0_4px_20px_rgba(212, 175, 55,0.03)] rounded-2xl border p-5"
       >
         <div className="mb-4">
           <h3 className="text-brand-gold font-sans text-xs font-extrabold tracking-widest uppercase">

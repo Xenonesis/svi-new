@@ -1,14 +1,14 @@
 export default function MainLoading() {
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gray-50 dark:bg-[#0C0C0C]">
+    <div className="dark:bg-brand-dark-bg flex min-h-screen w-full flex-col bg-gray-50">
       {/* Hero skeleton */}
-      <div className="relative flex min-h-[60vh] items-center justify-center overflow-hidden bg-[#1a2744]">
+      <div className="bg-brand-navy relative flex min-h-[60vh] items-center justify-center overflow-hidden">
         {/* Shimmer overlay */}
         <div
           className="pointer-events-none absolute inset-0"
           style={{
             background:
-              'linear-gradient(105deg, transparent 40%, rgba(201,168,76,0.04) 50%, transparent 60%)',
+              'linear-gradient(105deg, transparent 40%, rgba(212, 175, 55,0.04) 50%, transparent 60%)',
             backgroundSize: '200% 100%',
             animation: 'shimmer 2s ease-in-out infinite',
           }}
@@ -27,7 +27,7 @@ export default function MainLoading() {
               style={{ animation: 'pulse 2s ease-in-out 0.1s infinite' }}
             />
             <div
-              className="h-8 w-1/2 rounded bg-[#c9a84c]/20"
+              className="bg-brand-gold/20 h-8 w-1/2 rounded"
               style={{ animation: 'pulse 2s ease-in-out 0.2s infinite' }}
             />
           </div>
@@ -45,7 +45,7 @@ export default function MainLoading() {
           {/* Buttons */}
           <div className="mt-2 flex gap-4">
             <div
-              className="h-11 w-36 rounded bg-[#c9a84c]/30"
+              className="bg-brand-gold/30 h-11 w-36 rounded"
               style={{ animation: 'pulse 2s ease-in-out 0.5s infinite' }}
             />
             <div
@@ -109,7 +109,7 @@ export default function MainLoading() {
                 style={{ animation: 'pulse 2s 0.2s infinite' }}
               />
               <div
-                className="absolute -bottom-4 -left-4 h-20 w-28 bg-[#c9a84c]/20"
+                className="bg-brand-gold/20 absolute -bottom-4 -left-4 h-20 w-28"
                 style={{ animation: 'pulse 2s 0.4s infinite' }}
               />
             </div>
@@ -118,13 +118,13 @@ export default function MainLoading() {
       </div>
 
       {/* Stats bar skeleton */}
-      <div className="bg-[#1a2744] py-10">
+      <div className="bg-brand-navy py-10">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 gap-6 md:grid-cols-4">
             {[0, 0.1, 0.2, 0.3].map((d, i) => (
               <div key={i} className="flex flex-col items-center gap-2">
                 <div
-                  className="h-10 w-24 rounded bg-[#c9a84c]/20"
+                  className="bg-brand-gold/20 h-10 w-24 rounded"
                   style={{ animation: `pulse 2s ${d}s infinite` }}
                 />
                 <div
@@ -158,7 +158,7 @@ export default function MainLoading() {
                 className="border border-gray-200 bg-white p-8 dark:border-gray-700 dark:bg-gray-900"
                 style={{ animation: `pulse 2s ${d}s infinite` }}
               >
-                <div className="mb-4 h-10 w-10 rounded bg-[#c9a84c]/20" />
+                <div className="bg-brand-gold/20 mb-4 h-10 w-10 rounded" />
                 <div className="mb-3 h-6 w-32 rounded bg-gray-200 dark:bg-gray-700" />
                 <div className="space-y-2">
                   <div className="h-3 w-full rounded bg-gray-100 dark:bg-gray-800" />
@@ -172,15 +172,15 @@ export default function MainLoading() {
       </div>
 
       {/* Loading indicator */}
-      <div className="fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-full border border-white/10 bg-[#1a2744]/95 px-5 py-3 shadow-2xl backdrop-blur-md">
+      <div className="bg-brand-navy/95 fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-full border border-white/10 px-5 py-3 shadow-2xl backdrop-blur-md">
         <div
           className="h-4 w-4 rounded-full border-2 border-transparent"
           style={{
-            borderTopColor: '#c9a84c',
+            borderTopColor: '#d4af37',
             animation: 'rotate-slow 0.8s linear infinite',
           }}
         />
-        <span className="text-[11px] font-semibold tracking-widest text-[#c9a84c] uppercase">
+        <span className="text-brand-gold text-[11px] font-semibold tracking-widest uppercase">
           Loading
         </span>
       </div>

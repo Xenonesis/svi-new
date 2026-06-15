@@ -111,7 +111,7 @@ export default function AttendanceDashboard({ token, showToast }: AttendanceDash
           {[1, 2].map((i) => (
             <div
               key={i}
-              className="animate-pulse rounded-2xl border border-gray-200 bg-white/80 p-6 dark:border-white/8 dark:bg-[#0e0e14]/65"
+              className="dark:bg-brand-dark-surface/65 animate-pulse rounded-2xl border border-gray-200 bg-white/80 p-6 dark:border-white/8"
             >
               <div className="mb-6 space-y-2">
                 <div className="h-5 w-32 rounded bg-gray-200 dark:bg-white/5" />
@@ -138,7 +138,7 @@ export default function AttendanceDashboard({ token, showToast }: AttendanceDash
         </div>
         <button
           onClick={fetchAnalytics}
-          className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+          className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
         >
           <RefreshCw className="h-3.5 w-3.5" /> Refresh
         </button>
@@ -156,7 +156,7 @@ export default function AttendanceDashboard({ token, showToast }: AttendanceDash
               initial={{ opacity: 0, y: 16 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.08, duration: 0.5, ease: 'easeOut' }}
-              className="group relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8 dark:bg-[#0e0e14]/65"
+              className="group dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8"
             >
               {i === 0 && (
                 <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />

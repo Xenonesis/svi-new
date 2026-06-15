@@ -41,7 +41,7 @@ export default function NotFoundPage() {
   };
 
   return (
-    <div className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-gray-50 px-4 py-24 dark:bg-[#0C0C0C]">
+    <div className="dark:bg-brand-dark-bg relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden bg-gray-50 px-4 py-24">
       {/* Decorative background */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.02] dark:opacity-[0.04]"
@@ -57,7 +57,7 @@ export default function NotFoundPage() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(201,168,76,0.04) 0%, transparent 65%)',
+            'radial-gradient(ellipse 60% 50% at 50% 50%, rgba(212, 175, 55,0.04) 0%, transparent 65%)',
         }}
       />
 
@@ -78,7 +78,7 @@ export default function NotFoundPage() {
               top: d.y,
               width: d.size,
               height: d.size,
-              background: '#c9a84c',
+              background: '#d4af37',
               animation: `float 6s ease-in-out ${d.delay}s infinite`,
             }}
           />
@@ -104,7 +104,7 @@ export default function NotFoundPage() {
                L1040,50 L1040,38 L1055,38 L1055,50
                L1110,50 L1110,25 L1120,25 L1120,12 L1128,12 L1128,25 L1138,25 L1138,50
                L1200,50 L1200,80 L0,80 Z"
-            fill="#1a2744"
+            fill="#111827"
           />
         </svg>
       </div>
@@ -119,7 +119,7 @@ export default function NotFoundPage() {
             className="block font-serif text-[110px] leading-none font-bold md:text-[160px]"
             style={{
               color: 'transparent',
-              WebkitTextStroke: '1px rgba(201,168,76,0.25)',
+              WebkitTextStroke: '1px rgba(212, 175, 55,0.25)',
               letterSpacing: '-4px',
             }}
           >
@@ -130,7 +130,7 @@ export default function NotFoundPage() {
             className="pointer-events-none absolute inset-0 flex items-center justify-center font-serif text-[110px] leading-none font-bold md:text-[160px]"
             style={{
               background:
-                'linear-gradient(135deg, rgba(201,168,76,0.08) 0%, rgba(201,168,76,0.15) 50%, rgba(201,168,76,0.06) 100%)',
+                'linear-gradient(135deg, rgba(212, 175, 55,0.08) 0%, rgba(212, 175, 55,0.15) 50%, rgba(212, 175, 55,0.06) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -143,17 +143,17 @@ export default function NotFoundPage() {
 
         {/* Decorative divider */}
         <div className="mx-auto mb-5 flex items-center justify-center gap-3">
-          <div className="h-px w-16 bg-gradient-to-r from-transparent to-[#c9a84c]/60" />
-          <div className="h-2 w-2 rotate-45 bg-[#c9a84c]" />
-          <div className="h-px w-16 bg-gradient-to-l from-transparent to-[#c9a84c]/60" />
+          <div className="to-brand-gold/60 h-px w-16 bg-gradient-to-r from-transparent" />
+          <div className="bg-brand-gold h-2 w-2 rotate-45" />
+          <div className="to-brand-gold/60 h-px w-16 bg-gradient-to-l from-transparent" />
         </div>
 
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] text-[#c9a84c] uppercase">
+        <p className="text-brand-gold mb-2 text-[10px] font-semibold tracking-[0.25em] uppercase">
           Page Not Found
         </p>
 
         <h1 className="text-brand-navy mb-4 font-serif text-3xl leading-tight md:text-4xl dark:text-gray-100">
-          This Address Doesn&apos;t <span className="text-[#c9a84c] italic">Exist Yet</span>
+          This Address Doesn&apos;t <span className="text-brand-gold italic">Exist Yet</span>
         </h1>
 
         <p className="mx-auto mb-3 max-w-md text-base leading-relaxed text-gray-600 dark:text-gray-400">
@@ -161,7 +161,7 @@ export default function NotFoundPage() {
           yet — much like the finest properties we develop.
         </p>
 
-        <p className="mb-8 font-serif text-base text-[#c9a84c]/70 italic">
+        <p className="text-brand-gold/70 mb-8 font-serif text-base italic">
           &ldquo;Where Dreams Take Address&rdquo; — but not at this URL.
         </p>
 
@@ -173,11 +173,11 @@ export default function NotFoundPage() {
               <div
                 className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
                 style={{
-                  background: `conic-gradient(#c9a84c ${(countdown / 12) * 360}deg, rgba(201,168,76,0.1) 0deg)`,
+                  background: `conic-gradient(#d4af37 ${(countdown / 12) * 360}deg, rgba(212, 175, 55,0.1) 0deg)`,
                 }}
               >
                 <div className="absolute inset-1 rounded-full bg-white dark:bg-gray-800" />
-                <span className="relative z-10 text-[10px] font-bold text-[#c9a84c]">
+                <span className="text-brand-gold relative z-10 text-[10px] font-bold">
                   {countdown}
                 </span>
               </div>
@@ -200,7 +200,7 @@ export default function NotFoundPage() {
           <Link
             href="/"
             onClick={cancelRedirect}
-            className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light flex items-center gap-2.5 px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase shadow-lg transition-all hover:shadow-[0_0_20px_rgba(201,168,76,0.3)]"
+            className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light hover:shadow-[0_0_20px_rgba(212, 175, 55,0.3)] flex items-center gap-2.5 px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase shadow-lg transition-all"
           >
             <Home size={14} />
             Back to Home
@@ -208,7 +208,7 @@ export default function NotFoundPage() {
           <Link
             href="/contact"
             onClick={cancelRedirect}
-            className="text-brand-navy border-brand-navy flex items-center gap-2.5 border px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:border-gray-400 dark:text-gray-300"
+            className="text-brand-navy border-brand-navy hover:border-brand-gold hover:text-brand-gold flex items-center gap-2.5 border px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all dark:border-gray-400 dark:text-gray-300"
           >
             <ArrowLeft size={14} />
             Contact Support
@@ -226,7 +226,7 @@ export default function NotFoundPage() {
                 key={href}
                 href={href}
                 onClick={cancelRedirect}
-                className="group flex items-center gap-2 border border-gray-200 bg-white px-4 py-2 text-xs text-gray-600 shadow-sm transition-all hover:border-[#c9a84c]/40 hover:bg-[#c9a84c]/5 hover:text-[#c9a84c] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
+                className="group hover:border-brand-gold/40 hover:bg-brand-gold/5 hover:text-brand-gold flex items-center gap-2 border border-gray-200 bg-white px-4 py-2 text-xs text-gray-600 shadow-sm transition-all dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400"
               >
                 <Icon size={12} className="transition-transform group-hover:scale-110" />
                 {label}

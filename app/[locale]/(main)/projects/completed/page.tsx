@@ -12,7 +12,7 @@ const ProjectsFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'), { 
 
 const GRADIENT_STYLE = {
   backgroundImage:
-    'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)',
+    'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
   backgroundSize: '40px 40px',
 };
 
@@ -158,7 +158,7 @@ export default function CompletedProjects() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-20 pb-16 dark:bg-[#0C0C0C]">
+    <div className="dark:bg-brand-dark-bg min-h-screen bg-gray-50 pt-20 pb-16">
       {/* RealEstateListing Structured Data */}
       <script
         type="application/ld+json"

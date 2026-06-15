@@ -209,7 +209,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -10, scale: 0.95 }}
               transition={{ duration: 0.2 }}
-              className="dark:border-brand-gold/15 fixed top-[4.5rem] right-2 left-2 z-50 mt-0 w-auto overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-3 sm:w-96 sm:max-w-[calc(100vw-2rem)] dark:bg-[#0e0e14]"
+              className="dark:border-brand-gold/15 dark:bg-brand-dark-surface fixed top-[4.5rem] right-2 left-2 z-50 mt-0 w-auto overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-3 sm:w-96 sm:max-w-[calc(100vw-2rem)]"
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-white/5">

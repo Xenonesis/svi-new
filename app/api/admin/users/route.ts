@@ -132,7 +132,7 @@ export async function POST(request: NextRequest) {
               subject: 'Your SVI Infra Portal Account is Ready',
               html: `
               <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; rounded-corners: 10px;">
-                <h2 style="color: #c9a84c; font-family: serif;">Welcome to SVI Infra Solutions</h2>
+                <h2 style="color: #d4af37; font-family: serif;">Welcome to SVI Infra Solutions</h2>
                 <p>Hello <strong>${full_name}</strong>,</p>
                 <p>Your authorized client portal account has been successfully created. You can now log in using the details below:</p>
                 <div style="background-color: #f9f9f9; color: #333333; padding: 15px; border-radius: 8px; margin: 20px 0;">

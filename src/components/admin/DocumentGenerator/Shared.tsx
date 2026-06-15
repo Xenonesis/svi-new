@@ -145,7 +145,7 @@ export function PreviewContainer({
   hasPreview: boolean;
 }) {
   return (
-    <div className="custom-scrollbar relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-inner sm:p-6 dark:border-white/10 dark:bg-[#0e0e14] [:fullscreen]:overflow-hidden [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:p-0">
+    <div className="custom-scrollbar dark:bg-brand-dark-surface relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-inner sm:p-6 dark:border-white/10 [:fullscreen]:overflow-hidden [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:p-0">
       {!hasPreview ? (
         <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-400 dark:text-gray-600">
           Fill the form to generate a preview.

@@ -40,7 +40,7 @@ export function TemplatesTab({ onUseTemplate }: TemplatesTabProps) {
   const categories = [...new Set(EMAIL_TEMPLATES.map((t) => t.category))];
 
   return (
-    <div className="grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-3 dark:border-gray-700/60 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-3 dark:border-gray-700/60">
       {/* Template list */}
       <div
         className="scrollbar-gold overflow-y-auto border-r border-gray-100 lg:col-span-1 dark:border-gray-800"

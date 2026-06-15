@@ -122,7 +122,7 @@ export default function LotteryCTA() {
         <div
           className="pointer-events-none absolute inset-0 opacity-[0.04]"
           style={{
-            backgroundImage: 'radial-gradient(#c9a84c 1px, transparent 1px)',
+            backgroundImage: 'radial-gradient(#d4af37 1px, transparent 1px)',
             backgroundSize: '22px 22px',
           }}
         />
@@ -168,7 +168,7 @@ export default function LotteryCTA() {
                     className="italic"
                     style={{
                       backgroundImage:
-                        'linear-gradient(135deg, #c9a84c, #f0d080, #b08f36, #dec070)',
+                        'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070)',
                       WebkitBackgroundClip: 'text',
                       WebkitTextFillColor: 'transparent',
                     }}

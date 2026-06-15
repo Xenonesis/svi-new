@@ -20,9 +20,9 @@ export default async function Image() {
         alignItems: 'center',
         width: '100%',
         height: '100%',
-        backgroundColor: '#1a2744',
+        backgroundColor: '#111827',
         backgroundImage:
-          'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)',
+          'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
         backgroundSize: '40px 40px',
       }}
     >
@@ -53,7 +53,7 @@ export default async function Image() {
         <div
           style={{
             fontSize: '32px',
-            color: '#c9a84c',
+            color: '#d4af37',
             fontWeight: '600',
             letterSpacing: '0.1em',
             textTransform: 'uppercase',
@@ -67,7 +67,7 @@ export default async function Image() {
           style={{
             width: '200px',
             height: '4px',
-            backgroundColor: '#c9a84c',
+            backgroundColor: '#d4af37',
             marginTop: '20px',
             marginBottom: '20px',
           }}
@@ -84,9 +84,9 @@ export default async function Image() {
           }}
         >
           <span>Jaipur</span>
-          <span style={{ color: '#c9a84c' }}>•</span>
+          <span style={{ color: '#d4af37' }}>•</span>
           <span>Noida</span>
-          <span style={{ color: '#c9a84c' }}>•</span>
+          <span style={{ color: '#d4af37' }}>•</span>
           <span>Phulera Smart City</span>
         </div>
 

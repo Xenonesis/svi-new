@@ -33,7 +33,7 @@ export default function MissionValuesCards() {
         className="pointer-events-none absolute top-0 left-0 h-full w-full opacity-10"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(45deg, #c9a84c 0, #c9a84c 1px, transparent 0, transparent 50%)',
+            'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
           backgroundSize: '40px 40px',
         }}
       ></div>

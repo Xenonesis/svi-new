@@ -43,7 +43,7 @@ export function DashboardPanel({
 }: DashboardPanelProps) {
   if (!activeLottery) {
     return (
-      <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-16 text-center dark:border-white/20 dark:bg-[#0e0e14]/30">
+      <div className="dark:bg-brand-dark-surface/30 flex flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 p-16 text-center dark:border-white/20">
         <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-gray-600">
           <Award className="h-10 w-10" />
         </div>
@@ -56,7 +56,7 @@ export function DashboardPanel({
         </p>
         <button
           onClick={onCreateNew}
-          className="bg-brand-gold text-brand-navy flex cursor-pointer items-center gap-2 rounded-xl px-8 py-3.5 text-xs font-bold tracking-wider uppercase transition-transform hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(201,168,76,0.2)]"
+          className="bg-brand-gold text-brand-navy hover:shadow-[0_10px_20px_rgba(212, 175, 55,0.2)] flex cursor-pointer items-center gap-2 rounded-xl px-8 py-3.5 text-xs font-bold tracking-wider uppercase transition-transform hover:-translate-y-1"
         >
           <Plus className="h-4 w-4" /> Start New Campaign
         </button>
@@ -65,7 +65,7 @@ export function DashboardPanel({
   }
 
   return (
-    <div className="border-brand-gold/30 relative rounded-3xl border bg-white p-8 shadow-[0_0_40px_rgba(201,168,76,0.15)] dark:bg-[#0a0a0f]">
+    <div className="border-brand-gold/30 shadow-[0_0_40px_rgba(212, 175, 55,0.15)] relative rounded-3xl border bg-white p-8 dark:bg-[#0a0a0f]">
       <div className="pointer-events-none absolute inset-0 overflow-hidden rounded-3xl">
         <div className="bg-brand-gold/10 absolute -top-32 -right-32 h-96 w-96 rounded-full blur-[100px]" />
         <div className="bg-brand-gold/5 absolute -bottom-32 -left-32 h-96 w-96 rounded-full blur-[100px]" />
@@ -245,7 +245,7 @@ export function DashboardPanel({
         <div className="flex shrink-0 flex-col gap-4 self-center lg:mt-16 lg:self-start">
           {activeWinners.length > 0 ? (
             <div className="border-brand-gold/30 flex flex-col items-center justify-center gap-4 rounded-3xl border bg-gradient-to-b from-slate-50 to-white p-8 shadow-2xl dark:from-[#1a1a24] dark:to-[#0a0a0f]">
-              <div className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold flex h-16 w-16 items-center justify-center rounded-full border shadow-[0_0_20px_rgba(201,168,76,0.3)]">
+              <div className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold shadow-[0_0_20px_rgba(212, 175, 55,0.3)] flex h-16 w-16 items-center justify-center rounded-full border">
                 <Trophy className="h-8 w-8" />
               </div>
               <div className="text-center">
@@ -284,7 +284,7 @@ export function DashboardPanel({
               disabled={
                 isPending || (drawMethod === 'manual' && selectedPredeterminedWinners.length === 0)
               }
-              className="group bg-brand-gold text-brand-navy relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-2xl px-10 py-6 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:scale-105 hover:shadow-[0_0_40px_rgba(201,168,76,0.6)] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
+              className="group bg-brand-gold text-brand-navy hover:shadow-[0_0_40px_rgba(212, 175, 55,0.6)] relative flex cursor-pointer items-center justify-center gap-3 overflow-hidden rounded-2xl px-10 py-6 text-sm font-bold tracking-widest uppercase transition-all duration-300 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-none"
             >
               <div className="absolute inset-0 flex h-full w-full [transform:skew(-12deg)_translateX(-100%)] justify-center group-hover:[transform:skew(-12deg)_translateX(100%)] group-hover:duration-1000">
                 <div className="relative h-full w-8 bg-white/30" />

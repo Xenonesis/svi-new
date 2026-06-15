@@ -2,16 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  X,
-  FileText,
-  Trophy,
-  Users,
-  RefreshCw,
-  Edit2,
-  Award,
-  Search,
-} from 'lucide-react';
+import { X, FileText, Trophy, Users, RefreshCw, Edit2, Award, Search } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import { syncLinkedCampaignTitle } from '@/src/lib/lottery/campaignHelpers';
 import type { Lottery, DbParticipant } from '../types';
@@ -25,7 +16,14 @@ interface EditCampaignModalProps {
   onSuccess: (msg: string | null) => void;
 }
 
-export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, onSuccess }: EditCampaignModalProps) {
+export function EditCampaignModal({
+  open,
+  lottery,
+  onClose,
+  onSaved,
+  onError,
+  onSuccess,
+}: EditCampaignModalProps) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [status, setStatus] = useState<'active' | 'completed' | 'inactive'>('active');
@@ -172,7 +170,13 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
       setParticipants((prev) =>
         prev.map((p) =>
           p.id === editId
-            ? { ...p, name: editName.trim(), ticket_number: editTicket.trim(), phone: editPhone.trim() || null, email: editEmail.trim() || null }
+            ? {
+                ...p,
+                name: editName.trim(),
+                ticket_number: editTicket.trim(),
+                phone: editPhone.trim() || null,
+                email: editEmail.trim() || null,
+              }
             : p
         )
       );
@@ -230,7 +234,7 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
             animate={{ scale: 1, y: 0 }}
             exit={{ scale: 0.95, y: 20 }}
             onClick={(e) => e.stopPropagation()}
-            className="flex w-full max-w-2xl flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700 dark:bg-[#0C0C0C]"
+            className="dark:bg-brand-dark-bg flex w-full max-w-2xl flex-col rounded-lg border border-gray-200 bg-white shadow-sm dark:border-gray-700"
             style={{ maxHeight: '90vh' }}
           >
             {/* Header */}
@@ -315,7 +319,9 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
                     </label>
                     <select
                       value={status}
-                      onChange={(e) => setStatus(e.target.value as 'active' | 'completed' | 'inactive')}
+                      onChange={(e) =>
+                        setStatus(e.target.value as 'active' | 'completed' | 'inactive')
+                      }
                       className="w-full rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-900 focus:border-violet-400 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
                     >
                       <option value="active">Active</option>
@@ -418,7 +424,8 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
                   )}
 
                   <p className="text-[10px] text-slate-400 italic dark:text-gray-500">
-                    Leave winner name blank to clear existing winner records. Use "Toggle Winner" in the Participants tab for granular control.
+                    Leave winner name blank to clear existing winner records. Use "Toggle Winner" in
+                    the Participants tab for granular control.
                   </p>
 
                   {/* Current Winners List */}
@@ -427,16 +434,25 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
                       Current Winners
                     </h4>
                     {participants.filter((p) => p.is_winner).length === 0 ? (
-                      <p className="text-xs text-slate-400 italic dark:text-gray-500">No winners marked yet.</p>
+                      <p className="text-xs text-slate-400 italic dark:text-gray-500">
+                        No winners marked yet.
+                      </p>
                     ) : (
                       <div className="space-y-2">
                         {participants
                           .filter((p) => p.is_winner)
                           .map((wp) => (
-                            <div key={wp.id} className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 dark:border-amber-500/30 dark:bg-amber-500/10">
+                            <div
+                              key={wp.id}
+                              className="flex items-center justify-between rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 dark:border-amber-500/30 dark:bg-amber-500/10"
+                            >
                               <div>
-                                <span className="font-bold text-slate-900 dark:text-white">{wp.name}</span>
-                                <span className="ml-2 font-mono text-xs text-slate-500 dark:text-gray-400">{wp.ticket_number}</span>
+                                <span className="font-bold text-slate-900 dark:text-white">
+                                  {wp.name}
+                                </span>
+                                <span className="ml-2 font-mono text-xs text-slate-500 dark:text-gray-400">
+                                  {wp.ticket_number}
+                                </span>
                               </div>
                               <button
                                 onClick={() => handleToggleWinner(wp.id, true)}
@@ -557,11 +573,19 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
                             <>
                               <div className="flex items-center gap-3">
                                 <div>
-                                  <span className={`font-semibold ${p.is_winner ? 'text-amber-700 dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}>
+                                  <span
+                                    className={`font-semibold ${p.is_winner ? 'text-amber-700 dark:text-amber-300' : 'text-slate-900 dark:text-white'}`}
+                                  >
                                     {p.name}
                                   </span>
-                                  <span className="ml-2 font-mono text-xs text-slate-400">{p.ticket_number}</span>
-                                  {p.email && <span className="ml-2 hidden text-xs text-slate-400 sm:inline">{p.email}</span>}
+                                  <span className="ml-2 font-mono text-xs text-slate-400">
+                                    {p.ticket_number}
+                                  </span>
+                                  {p.email && (
+                                    <span className="ml-2 hidden text-xs text-slate-400 sm:inline">
+                                      {p.email}
+                                    </span>
+                                  )}
                                 </div>
                                 {p.is_winner && (
                                   <Award className="text-brand-gold h-4 w-4 shrink-0" />
@@ -597,7 +621,9 @@ export function EditCampaignModal({ open, lottery, onClose, onSaved, onError, on
                       ))}
                       {filteredParticipants.length === 0 && (
                         <p className="py-8 text-center text-xs text-slate-400 italic dark:text-gray-500">
-                          {partsSearch ? 'No participants match your search.' : 'No participants yet.'}
+                          {partsSearch
+                            ? 'No participants match your search.'
+                            : 'No participants yet.'}
                         </p>
                       )}
                     </div>

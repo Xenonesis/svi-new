@@ -64,7 +64,7 @@ export default function PropertyCalculator() {
     '₹ ' + val.toLocaleString('en-IN', { maximumFractionDigits: 0 });
 
   const inputCls =
-    'w-full accent-[#c9a84c] h-2 rounded-full appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700 outline-none';
+    'w-full accent-brand-gold h-2 rounded-full appearance-none cursor-pointer bg-gray-200 dark:bg-gray-700 outline-none';
   const labelCls = 'text-xs font-bold tracking-wider uppercase text-gray-500 dark:text-gray-400';
   const valueCls = 'text-brand-gold font-bold text-lg';
 
@@ -288,8 +288,8 @@ export default function PropertyCalculator() {
                 <AreaChart data={roiData}>
                   <defs>
                     <linearGradient id="roiGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#c9a84c" stopOpacity={0.3} />
-                      <stop offset="95%" stopColor="#c9a84c" stopOpacity={0} />
+                      <stop offset="5%" stopColor="#d4af37" stopOpacity={0.3} />
+                      <stop offset="95%" stopColor="#d4af37" stopOpacity={0} />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
@@ -312,7 +312,7 @@ export default function PropertyCalculator() {
                   <Area
                     type="monotone"
                     dataKey="value"
-                    stroke="#c9a84c"
+                    stroke="#d4af37"
                     strokeWidth={2}
                     fill="url(#roiGradient)"
                   />

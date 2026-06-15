@@ -46,7 +46,7 @@ export function RegistrationsToolbar({
           value={search}
           onChange={(e) => onSearchChange(e.target.value)}
           placeholder="Search by submission ID, name, email, phone, aadhar, advisor or project..."
-          className="focus:border-brand-gold focus:ring-brand-gold/15 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-white dark:placeholder-gray-600"
+          className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
         />
         {search && (
           <button
@@ -64,7 +64,7 @@ export function RegistrationsToolbar({
         <select
           value={sortBy}
           onChange={(e) => onSortByChange(e.target.value)}
-          className="focus:border-brand-gold appearance-none rounded-lg border border-gray-200 bg-white px-3 py-3 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300"
+          className="focus:border-brand-gold dark:bg-brand-dark-surface/85 appearance-none rounded-lg border border-gray-200 bg-white px-3 py-3 text-xs text-gray-700 outline-none dark:border-white/10 dark:text-gray-300"
         >
           {SORT_OPTIONS.map((opt) => (
             <option key={opt.value} value={opt.value}>
@@ -74,7 +74,7 @@ export function RegistrationsToolbar({
         </select>
         <button
           onClick={onSortOrderToggle}
-          className="hover:border-brand-gold hover:text-brand-gold flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors dark:border-white/10 dark:bg-[#0e0e14]/85"
+          className="hover:border-brand-gold hover:text-brand-gold dark:bg-brand-dark-surface/85 flex h-11 w-11 cursor-pointer items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-500 transition-colors dark:border-white/10"
           title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
         >
           {sortOrder === 'asc' ? (
@@ -91,7 +91,7 @@ export function RegistrationsToolbar({
         className={`flex cursor-pointer items-center gap-2 rounded-lg border px-5 py-3 text-xs font-bold tracking-widest uppercase transition-all ${
           showFilters || activeFilterCount > 0
             ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
-            : 'border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5'
+            : 'dark:bg-brand-dark-surface/85 border-gray-200 bg-white text-gray-700 hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5'
         }`}
       >
         <Filter className="h-3.5 w-3.5" /> Filters
@@ -104,21 +104,21 @@ export function RegistrationsToolbar({
 
       <button
         onClick={onExport}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+        className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
       >
         <Download className="h-3.5 w-3.5" /> Export
       </button>
 
       <button
         onClick={onRefresh}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+        className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
       >
         <RefreshCw className="h-3.5 w-3.5" /> Refresh
       </button>
 
       <button
         onClick={onManageAdvisors}
-        className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/85 dark:text-gray-300 dark:hover:bg-white/5"
+        className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
       >
         <Users className="h-3.5 w-3.5" /> Manage Advisors
       </button>

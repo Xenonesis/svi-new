@@ -20,7 +20,7 @@ export function CampaignSearchBar({
   onCreateClick,
 }: CampaignSearchBarProps) {
   return (
-    <div className="flex flex-col gap-3 rounded-xl border border-gray-200/80 bg-white p-4 sm:flex-row sm:items-center dark:border-gray-700/60 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface flex flex-col gap-3 rounded-xl border border-gray-200/80 bg-white p-4 sm:flex-row sm:items-center dark:border-gray-700/60">
       <div className="relative flex-1">
         <Search className="absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-gray-400" />
         <input

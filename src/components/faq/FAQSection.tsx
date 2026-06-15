@@ -87,7 +87,7 @@ export default function FAQSection({
     variant === 'light'
       ? 'bg-white dark:bg-gray-900'
       : variant === 'dark'
-        ? 'bg-gray-50 dark:bg-[#0C0C0C]'
+        ? 'bg-gray-50 dark:bg-brand-dark-bg'
         : variant === 'brand'
           ? 'bg-brand-bg dark:bg-gray-900'
           : '';

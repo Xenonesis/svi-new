@@ -41,7 +41,7 @@ export function FilterPanel({
       transition={{ duration: 0.2 }}
       className="overflow-hidden"
     >
-      <div className="dark:border-brand-gold/15 rounded-xl border border-gray-200 bg-white/80 p-5 backdrop-blur-xl dark:bg-[#0e0e14]/65">
+      <div className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/65 rounded-xl border border-gray-200 bg-white/80 p-5 backdrop-blur-xl">
         <div className="mb-4 flex items-center justify-between">
           <h3 className="text-brand-navy text-xs font-bold tracking-widest dark:text-white">
             FILTER BY
@@ -65,7 +65,7 @@ export function FilterPanel({
             <select
               value={filters.status}
               onChange={(e) => onUpdateFilter('status', e.target.value)}
-              className="focus:border-brand-gold mt-1 w-full appearance-none truncate rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+              className="focus:border-brand-gold dark:bg-brand-dark-surface mt-1 w-full appearance-none truncate rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:text-gray-300"
             >
               <option value="">All</option>
               {STATUS_OPTIONS.map((s) => (
@@ -126,7 +126,7 @@ export function FilterPanel({
               type="date"
               value={filters.dateFrom}
               onChange={(e) => onUpdateFilter('dateFrom', e.target.value)}
-              className="focus:border-brand-gold mt-1 w-full rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+              className="focus:border-brand-gold dark:bg-brand-dark-surface mt-1 w-full rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:text-gray-300"
             />
           </div>
           <div className="min-w-0 flex-1">
@@ -137,7 +137,7 @@ export function FilterPanel({
               type="date"
               value={filters.dateTo}
               onChange={(e) => onUpdateFilter('dateTo', e.target.value)}
-              className="focus:border-brand-gold mt-1 w-full rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-300"
+              className="focus:border-brand-gold dark:bg-brand-dark-surface mt-1 w-full rounded border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 outline-none dark:border-white/10 dark:text-gray-300"
             />
           </div>
         </div>

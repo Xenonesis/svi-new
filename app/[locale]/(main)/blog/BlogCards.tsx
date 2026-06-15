@@ -37,7 +37,7 @@ export default function BlogCards() {
   const showFeatured = !activeCategory && filteredPosts.length > 1;
 
   return (
-    <section className="bg-gray-50/50 py-20 dark:bg-[#0C0C0C]/50">
+    <section className="dark:bg-brand-dark-bg/50 bg-gray-50/50 py-20">
       <div className="container mx-auto px-4 lg:px-8">
         {/* Category filter tabs */}
         {categories.length > 1 && (

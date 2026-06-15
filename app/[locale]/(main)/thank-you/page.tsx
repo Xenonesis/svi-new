@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 const GRADIENT_STYLE = {
   backgroundImage:
-    'repeating-linear-gradient(45deg, #1a2744 0, #1a2744 1px, transparent 0, transparent 50%)',
+    'repeating-linear-gradient(45deg, #111827 0, #111827 1px, transparent 0, transparent 50%)',
   backgroundSize: '40px 40px',
 };
 

@@ -45,7 +45,7 @@ interface SavedReceipt {
 
 const GRID_STYLE = {
   backgroundImage:
-    'radial-gradient(circle at 1px 1px, rgba(201, 168, 76, 0.05) 1px, transparent 0)',
+    'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
   backgroundSize: '24px 24px',
 };
 
@@ -236,7 +236,7 @@ export default function ReceiptRecordsPage() {
         </div>
         <button
           onClick={fetchReceipts}
-          className="flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 dark:border-white/10 dark:bg-[#0e0e14]/50 dark:hover:bg-white/5"
+          className="dark:bg-brand-dark-surface/50 flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 dark:border-white/10 dark:hover:bg-white/5"
           title="Refresh List"
         >
           <RefreshCw className="h-4 w-4 text-gray-600 dark:text-gray-400" />
@@ -245,7 +245,7 @@ export default function ReceiptRecordsPage() {
 
       {/* Quick Statistics Cards */}
       <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <Receipt className="text-brand-gold h-5 w-5" />
@@ -259,7 +259,7 @@ export default function ReceiptRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <IndianRupee className="text-brand-gold h-5 w-5" />
@@ -275,7 +275,7 @@ export default function ReceiptRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <CreditCard className="text-brand-gold h-5 w-5" />
@@ -289,7 +289,7 @@ export default function ReceiptRecordsPage() {
           </div>
         </div>
 
-        <div className="relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5 dark:bg-[#0e0e14]/50">
+        <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
           <div className="flex items-center gap-4">
             <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
               <Calendar className="text-brand-gold h-5 w-5" />
@@ -314,7 +314,7 @@ export default function ReceiptRecordsPage() {
               placeholder="Search by client or receipt no..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:bg-[#0e0e14] dark:text-white"
+              className="focus:border-brand-gold dark:bg-brand-dark-surface w-full rounded-lg border border-gray-200 bg-white py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:outline-none dark:border-white/8 dark:text-white"
             />
           </div>
 
@@ -325,21 +325,21 @@ export default function ReceiptRecordsPage() {
                 type="date"
                 value={dateRange.start}
                 onChange={(e) => setDateRange((prev) => ({ ...prev, start: e.target.value }))}
-                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:[color-scheme:dark]"
+                className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-white dark:[color-scheme:dark]"
               />
               <span className="text-gray-400">-</span>
               <input
                 type="date"
                 value={dateRange.end}
                 onChange={(e) => setDateRange((prev) => ({ ...prev, end: e.target.value }))}
-                className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-white dark:[color-scheme:dark]"
+                className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-2 py-1.5 text-xs text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-white dark:[color-scheme:dark]"
               />
             </div>
 
             <select
               value={methodFilter}
               onChange={(e) => setMethodFilter(e.target.value)}
-              className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200 dark:[color-scheme:dark]"
+              className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-gray-200 dark:[color-scheme:dark]"
             >
               <option value="">All Methods</option>
               <option value="UPI">UPI</option>
@@ -354,7 +354,7 @@ export default function ReceiptRecordsPage() {
                 const [key, direction] = e.target.value.split('-');
                 setSortConfig({ key, direction: direction as 'asc' | 'desc' });
               }}
-              className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:bg-[#0e0e14] dark:text-gray-200 dark:[color-scheme:dark]"
+              className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-gray-200 dark:[color-scheme:dark]"
             >
               <option value="date-desc">Newest First</option>
               <option value="date-asc">Oldest First</option>
@@ -381,7 +381,7 @@ export default function ReceiptRecordsPage() {
       </div>
 
       {/* Main Database Table Container */}
-      <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-2xl backdrop-blur-xl transition-colors duration-300 dark:border-white/8 dark:bg-[#0e0e14]/65">
+      <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-2xl backdrop-blur-xl transition-colors duration-300 dark:border-white/8">
         <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
 
         <div className="overflow-x-auto">
@@ -560,7 +560,7 @@ export default function ReceiptRecordsPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="dark:border-brand-gold/20 relative w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-2xl transition-colors duration-300 dark:bg-[#0e0e14]"
+              className="dark:border-brand-gold/20 dark:bg-brand-dark-surface relative w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-2xl transition-colors duration-300"
             >
               <div className="absolute top-0 right-0 left-0 h-[2px] bg-red-500/50" />
               <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10">
@@ -603,7 +603,7 @@ export default function ReceiptRecordsPage() {
       {/* View & Re-download overlay Modal */}
       {selectedReceipt && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-md dark:bg-black/90">
-          <div className="relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0e0e14]">
+          <div className="dark:bg-brand-dark-surface relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10">
             {/* Modal Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
               <div>

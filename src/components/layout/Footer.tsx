@@ -59,7 +59,7 @@ const Footer = memo(function Footer() {
                   key={label}
                   href={href}
                   aria-label={t('nav.followUs', { social: label })}
-                  whileHover={{ scale: 1.1, borderColor: '#c9a84c', color: '#c9a84c' }}
+                  whileHover={{ scale: 1.1, borderColor: '#d4af37', color: '#d4af37' }}
                   whileTap={{ scale: 0.95 }}
                   className="text-brand-navy flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 transition-colors dark:border-gray-700 dark:text-gray-200"
                 >

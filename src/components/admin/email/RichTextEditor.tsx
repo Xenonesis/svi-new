@@ -159,7 +159,7 @@ export function RichTextEditor({ value, onChange, placeholder, contentKey }: Ric
   if (!editor) return null;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700 dark:bg-[#0e0e14]">
+    <div className="dark:bg-brand-dark-surface overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700">
       {/* Toolbar */}
       <div className="sticky top-0 z-10 flex flex-wrap items-center gap-0.5 border-b border-gray-100 bg-gray-50/50 px-2 py-1.5 dark:border-gray-800 dark:bg-gray-900/30">
         {/* Undo/Redo */}

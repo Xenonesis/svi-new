@@ -68,8 +68,8 @@ export default function NotFound() {
       <div
         className="pointer-events-none absolute inset-0 hidden opacity-[0.04] dark:block"
         style={{
-          backgroundImage: `linear-gradient(rgba(201,168,76,0.8) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(201,168,76,0.8) 1px, transparent 1px)`,
+          backgroundImage: `linear-gradient(rgba(212, 175, 55,0.8) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(212, 175, 55,0.8) 1px, transparent 1px)`,
           backgroundSize: '60px 60px',
         }}
       />
@@ -79,7 +79,7 @@ export default function NotFound() {
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(201,168,76,0.05) 0%, transparent 70%)',
+            'radial-gradient(ellipse 70% 60% at 50% 50%, rgba(212, 175, 55,0.05) 0%, transparent 70%)',
         }}
       />
 
@@ -88,7 +88,7 @@ export default function NotFound() {
         PARTICLES.map((p) => (
           <div
             key={p.id}
-            className="pointer-events-none absolute rounded-full bg-[#c9a84c]"
+            className="bg-brand-gold pointer-events-none absolute rounded-full"
             style={{
               left: `${p.x}%`,
               top: `${p.y}%`,
@@ -120,7 +120,7 @@ export default function NotFound() {
                L1030,80 L1030,60 L1050,60 L1050,40 L1060,40 L1060,60 L1070,60 L1070,80
                L1130,80 L1130,50 L1145,50 L1145,30 L1155,30 L1155,50 L1165,50 L1165,80
                L1200,80 L1200,120 L0,120 Z"
-            className="fill-[#1a2744] dark:fill-[#c9a84c]"
+            className="fill-brand-navy dark:fill-brand-gold"
           />
         </svg>
       </div>
@@ -136,7 +136,7 @@ export default function NotFound() {
           <span
             className="block font-serif text-[120px] leading-none font-bold md:text-[180px] dark:hidden"
             style={{
-              background: 'linear-gradient(135deg, #1a2744 0%, #2a3b61 40%, #c9a84c 100%)',
+              background: 'linear-gradient(135deg, #111827 0%, #2a3b61 40%, #d4af37 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -149,11 +149,11 @@ export default function NotFound() {
           <span
             className="hidden font-serif text-[120px] leading-none font-bold md:text-[180px] dark:block"
             style={{
-              background: 'linear-gradient(135deg, #1a2744 0%, #2a3b61 50%, #1a2744 100%)',
+              background: 'linear-gradient(135deg, #111827 0%, #2a3b61 50%, #111827 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
-              WebkitTextStroke: '1px rgba(201,168,76,0.3)',
+              WebkitTextStroke: '1px rgba(212, 175, 55,0.3)',
               letterSpacing: '-4px',
             }}
           >
@@ -164,7 +164,7 @@ export default function NotFound() {
             className="pointer-events-none absolute inset-0 flex items-center justify-center font-serif text-[120px] leading-none font-bold md:text-[180px]"
             style={{
               background:
-                'linear-gradient(135deg, transparent 30%, rgba(201,168,76,0.1) 50%, transparent 70%)',
+                'linear-gradient(135deg, transparent 30%, rgba(212, 175, 55,0.1) 50%, transparent 70%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
@@ -177,17 +177,17 @@ export default function NotFound() {
 
         {/* Gold divider */}
         <div className="mx-auto mb-6 flex items-center justify-center gap-3">
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[#c9a84c]" />
-          <div className="h-1.5 w-1.5 rotate-45 bg-[#c9a84c]" />
-          <div className="h-px w-12 bg-gradient-to-l from-transparent to-[#c9a84c]" />
+          <div className="to-brand-gold h-px w-12 bg-gradient-to-r from-transparent" />
+          <div className="bg-brand-gold h-1.5 w-1.5 rotate-45" />
+          <div className="to-brand-gold h-px w-12 bg-gradient-to-l from-transparent" />
         </div>
 
-        <p className="mb-2 text-[10px] font-semibold tracking-[0.25em] text-[#c9a84c] uppercase opacity-90">
+        <p className="text-brand-gold mb-2 text-[10px] font-semibold tracking-[0.25em] uppercase opacity-90">
           Page Not Found
         </p>
 
-        <h1 className="mb-4 font-serif text-3xl leading-tight text-[#1a2744] md:text-4xl dark:text-white">
-          This Address Doesn&apos;t Exist <span className="text-[#c9a84c] italic">...Yet</span>
+        <h1 className="text-brand-navy mb-4 font-serif text-3xl leading-tight md:text-4xl dark:text-white">
+          This Address Doesn&apos;t Exist <span className="text-brand-gold italic">...Yet</span>
         </h1>
 
         <p className="mx-auto mb-4 max-w-md text-sm leading-relaxed text-gray-500 dark:text-gray-400">
@@ -195,7 +195,7 @@ export default function NotFound() {
           construction — much like the finest properties we build.
         </p>
 
-        <p className="mb-8 font-serif text-base text-[#c9a84c]/80 italic">
+        <p className="text-brand-gold/80 mb-8 font-serif text-base italic">
           &ldquo;Where Dreams Take Address&rdquo; — but not at this URL.
         </p>
 
@@ -207,17 +207,17 @@ export default function NotFound() {
               <div
                 className="relative flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full"
                 style={{
-                  background: `conic-gradient(#c9a84c ${(countdown / 15) * 360}deg, rgba(201,168,76,0.1) 0deg)`,
+                  background: `conic-gradient(#d4af37 ${(countdown / 15) * 360}deg, rgba(212, 175, 55,0.1) 0deg)`,
                 }}
               >
                 <div className="absolute inset-1 rounded-full bg-gray-50 dark:bg-[#0e1628]" />
-                <span className="relative z-10 text-[10px] font-bold text-[#c9a84c]">
+                <span className="text-brand-gold relative z-10 text-[10px] font-bold">
                   {countdown}
                 </span>
               </div>
               <span className="text-xs text-gray-500 dark:text-gray-400">
                 Redirecting to home in{' '}
-                <span className="font-semibold text-[#1a2744] dark:text-white">{countdown}s</span>
+                <span className="text-brand-navy font-semibold dark:text-white">{countdown}s</span>
               </span>
             </div>
             <button
@@ -234,7 +234,7 @@ export default function NotFound() {
           <Link
             href="/"
             onClick={cancelRedirect}
-            className="flex items-center gap-2.5 bg-[#c9a84c] px-8 py-3.5 text-[11px] font-bold tracking-widest text-[#1a2744] uppercase shadow-lg transition-all hover:bg-[#dec070] hover:shadow-[0_0_24px_rgba(201,168,76,0.3)]"
+            className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light hover:shadow-[0_0_24px_rgba(212, 175, 55,0.3)] flex items-center gap-2.5 px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase shadow-lg transition-all"
           >
             <Home size={14} />
             Back to Home
@@ -242,7 +242,7 @@ export default function NotFound() {
           <Link
             href="/contact"
             onClick={cancelRedirect}
-            className="flex items-center gap-2.5 border border-[#1a2744]/30 px-8 py-3.5 text-[11px] font-bold tracking-widest text-[#1a2744] uppercase transition-all hover:border-[#c9a84c] hover:text-[#c9a84c] dark:border-white/20 dark:text-white/80 dark:hover:border-[#c9a84c]/60 dark:hover:text-white"
+            className="border-brand-navy/30 text-brand-navy hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold/60 flex items-center gap-2.5 border px-8 py-3.5 text-[11px] font-bold tracking-widest uppercase transition-all dark:border-white/20 dark:text-white/80 dark:hover:text-white"
           >
             <ArrowLeft size={14} />
             Contact Support
@@ -260,7 +260,7 @@ export default function NotFound() {
                 key={href}
                 href={href}
                 onClick={cancelRedirect}
-                className="group flex items-center gap-2 border border-gray-200 bg-gray-50 px-4 py-2 text-xs text-gray-500 transition-all hover:border-[#c9a84c]/40 hover:bg-[#c9a84c]/5 hover:text-[#c9a84c] dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-[#c9a84c]/30 dark:hover:bg-[#c9a84c]/10 dark:hover:text-[#c9a84c]"
+                className="group hover:border-brand-gold/40 hover:bg-brand-gold/5 hover:text-brand-gold dark:hover:border-brand-gold/30 dark:hover:bg-brand-gold/10 dark:hover:text-brand-gold flex items-center gap-2 border border-gray-200 bg-gray-50 px-4 py-2 text-xs text-gray-500 transition-all dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
               >
                 <Icon size={12} className="transition-transform group-hover:scale-110" />
                 {label}
