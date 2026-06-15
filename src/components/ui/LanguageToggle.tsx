@@ -22,7 +22,7 @@ export default function LanguageToggle() {
     <button
       onClick={toggleLocale}
       disabled={isPending}
-      className="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
+      className="flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium text-gray-700 transition-colors hover:bg-gray-100 xl:gap-1.5 xl:px-3 xl:py-2 xl:text-sm dark:text-gray-300 dark:hover:bg-gray-800"
       aria-label="Switch language"
     >
       <Globe className="h-4 w-4" />

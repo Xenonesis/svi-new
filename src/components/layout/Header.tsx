@@ -24,7 +24,7 @@ export default function Header() {
           className="pointer-events-none absolute top-0 left-0 h-px w-px"
           aria-hidden="true"
         />
-        <div className="container mx-auto px-4 lg:px-8">
+        <div className="container mx-auto px-4 xl:px-8">
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link

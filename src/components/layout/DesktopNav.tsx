@@ -40,7 +40,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`group relative py-1 text-[11px] font-semibold tracking-widest uppercase transition-colors duration-200 ${
+      className={`group relative py-1 text-[10px] font-semibold tracking-widest uppercase transition-colors duration-200 xl:text-[11px] ${
         isActive
           ? 'text-brand-gold'
           : isHomeTransparent
@@ -72,7 +72,7 @@ export function DesktopNav({
   onToggleTheme,
 }: DesktopNavProps) {
   return (
-    <nav className="hidden items-center gap-8 lg:flex">
+    <nav className="hidden items-center lg:flex lg:gap-3 xl:gap-5 2xl:gap-8">
       {NAV_LINKS.map((link) => (
         <NavLink
           key={link.name}
@@ -114,7 +114,7 @@ export function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-3 py-1 text-[11px] font-semibold tracking-widest uppercase transition-colors duration-200 ${
+          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-2 py-1 text-[10px] font-semibold tracking-widest uppercase transition-colors duration-200 xl:px-3 xl:text-[11px] ${
             currentPath === '/lottery'
               ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
               : 'text-brand-gold/80 hover:text-brand-gold'
@@ -126,10 +126,10 @@ export function DesktopNav({
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-4 border-l border-gray-200 pl-6 dark:border-zinc-800">
+      <div className="flex items-center border-l border-gray-200 lg:gap-2 lg:pl-3 xl:gap-4 xl:pl-6 dark:border-zinc-800">
         <Link
           href="/login"
-          className={`group/login relative py-1 text-[11px] font-semibold tracking-widest uppercase transition-all duration-200 ${
+          className={`group/login relative py-1 text-[10px] font-semibold tracking-widest uppercase transition-all duration-200 xl:text-[11px] ${
             isHomeTransparent
               ? 'hover:text-brand-gold text-white/95'
               : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
@@ -140,7 +140,7 @@ export function DesktopNav({
         </Link>
         <Link
           href="/registration"
-          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-4 py-1.5 text-[11px] font-semibold tracking-widest text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0"
+          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-3 py-1.5 text-[10px] font-semibold tracking-widest text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:text-[11px]"
         >
           Register
         </Link>
