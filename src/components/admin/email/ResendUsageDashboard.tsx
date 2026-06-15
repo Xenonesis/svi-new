@@ -3,6 +3,15 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { BarChart3, TrendingUp, Calendar, Mail, Send, Users, Globe } from 'lucide-react';
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from 'recharts';
 import { getToken } from './helpers';
 
 interface UsageData {
@@ -13,6 +22,7 @@ interface UsageData {
   clicked: number;
   bounces: number;
   spamComplaints: number;
+  dailyStats: { date: string; sent: number; delivered: number; opened: number }[];
 }
 
 interface ResendUsageDashboardProps {
@@ -187,6 +197,91 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
                 );
               })}
             </div>
+
+            {/* Advanced Analytics Chart */}
+            {usageData?.dailyStats && usageData.dailyStats.length > 0 && (
+              <div className="mt-8 border-t border-gray-200/60 pt-6 dark:border-gray-800/60">
+                <h4 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">
+                  Email Delivery Over Time
+                </h4>
+                <div className="h-[250px] w-full min-w-0">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart
+                      data={usageData.dailyStats}
+                      margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+                    >
+                      <defs>
+                        <linearGradient id="colorSent" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorDelivered" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#10b981" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#10b981" stopOpacity={0} />
+                        </linearGradient>
+                        <linearGradient id="colorOpened" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#8b5cf6" stopOpacity={0.3} />
+                          <stop offset="95%" stopColor="#8b5cf6" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid
+                        strokeDasharray="3 3"
+                        stroke="#374151"
+                        opacity={0.1}
+                        vertical={false}
+                      />
+                      <XAxis
+                        dataKey="date"
+                        tick={{ fontSize: 11, fill: '#9ca3af' }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <YAxis
+                        tick={{ fontSize: 11, fill: '#9ca3af' }}
+                        axisLine={false}
+                        tickLine={false}
+                      />
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'rgba(14, 14, 20, 0.95)',
+                          border: '1px solid rgba(255, 255, 255, 0.1)',
+                          borderRadius: '8px',
+                          color: '#fff',
+                          fontSize: '12px',
+                        }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="sent"
+                        name="Sent"
+                        stroke="#3b82f6"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorSent)"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="delivered"
+                        name="Delivered"
+                        stroke="#10b981"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorDelivered)"
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="opened"
+                        name="Opened"
+                        stroke="#8b5cf6"
+                        strokeWidth={2}
+                        fillOpacity={1}
+                        fill="url(#colorOpened)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+            )}
 
             {/* Quick Actions */}
             <div className="mt-5 flex items-center justify-between">
