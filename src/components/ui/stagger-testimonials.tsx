@@ -176,7 +176,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
     <div
       onClick={() => handleMove(position)}
       className={cn(
-        'absolute top-1/2 left-1/2 cursor-pointer border-2 p-8 transition-all duration-500 ease-in-out',
+        'absolute top-1/2 left-1/2 cursor-pointer border-2 p-8 transition-all duration-300 ease-out',
         isCenter
           ? 'bg-brand-gold text-brand-navy border-brand-gold z-10'
           : 'text-brand-navy dark:bg-brand-dark-surface dark:border-brand-dark-border hover:border-brand-gold/50 z-0 border-gray-200 bg-white dark:text-gray-100'
@@ -273,7 +273,7 @@ export const StaggerTestimonials: React.FC = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       handleMove(1);
-    }, 5000);
+    }, 3000);
     return () => clearInterval(interval);
   }, [testimonialsList]);
 
