@@ -11,6 +11,7 @@ export default function Header() {
 
   return (
     <>
+      {/* Vercel trigger update */}
       <header
         className={`fixed top-0 right-0 left-0 z-50 transition-all duration-500 ${
           h.isScrolled
