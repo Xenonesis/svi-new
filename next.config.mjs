@@ -58,6 +58,10 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'maps.gstatic.com',
       },
+      {
+        protocol: 'https',
+        hostname: 'images.unsplash.com',
+      },
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [320, 420, 768, 1024, 1200, 1920],

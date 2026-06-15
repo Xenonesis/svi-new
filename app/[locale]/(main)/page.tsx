@@ -9,6 +9,10 @@ const HeroSection = dynamic(() => import('@/src/components/home/HeroSection'), {
 
 const HomeSections = dynamic(() => import('@/src/components/home/HomeSections'));
 
+const StaggerTestimonials = dynamic(() =>
+  import('@/src/components/ui/stagger-testimonials').then((mod) => mod.StaggerTestimonials)
+);
+
 const HERO_IMAGES = [
   {
     src: '/images/hero1.png',
@@ -43,6 +47,7 @@ export default async function Home({ params }: Props) {
       <HeroSection images={HERO_IMAGES} />
       <Suspense fallback={null}>
         <HomeSections />
+        <StaggerTestimonials />
       </Suspense>
     </div>
   );
