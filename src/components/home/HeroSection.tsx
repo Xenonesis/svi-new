@@ -143,7 +143,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         style={{ opacity: heroOpacity }}
       >
         <div className="max-w-3xl">
-          <span className="text-brand-gold animate-hero-1 mb-8 inline-block text-xs font-bold tracking-[0.3em] uppercase opacity-90">
+          <span className="text-brand-gold animate-hero-1 mb-8 inline-block text-base font-bold tracking-[0.3em] uppercase opacity-90">
             {t('badge')}
           </span>
 
