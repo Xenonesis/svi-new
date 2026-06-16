@@ -219,6 +219,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           src={testimonial.imgSrc}
           alt={`${testimonial.by.split(',')[0]}`}
           fill
+          sizes="48px"
           className="object-cover object-top grayscale transition-all duration-300 hover:grayscale-0"
         />
       </div>

@@ -14,7 +14,6 @@ const nextConfig = {
   reactStrictMode: true,
   compress: true,
   typescript: { ignoreBuildErrors: true },
-  eslint: { ignoreDuringBuilds: true },
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {
@@ -66,7 +65,7 @@ const nextConfig = {
     ],
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [320, 420, 768, 1024, 1200, 1920],
-    qualities: [75, 85],
+    qualities: [75, 85, 90, 100],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
 };

@@ -522,11 +522,48 @@ export default function AdminSettings() {
         </div>
 
         {pageLoading ? (
-          <div className="flex flex-col items-center justify-center py-32 font-sans text-gray-500">
-            <RefreshCw className="text-brand-gold mb-4 h-8 w-8 animate-spin" />
-            <p className="font-sans text-sm font-medium tracking-wide">
-              Loading administrator setting panels...
-            </p>
+          <div className="flex flex-col gap-8 font-sans md:flex-row">
+            {/* Skeleton Navigation Sidebar */}
+            <aside className="w-full shrink-0 font-sans md:w-64">
+              <div className="flex flex-row gap-2 overflow-x-auto pb-4 font-sans md:flex-col md:pb-0">
+                {[...Array(8)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="h-[52px] w-32 shrink-0 animate-pulse rounded-xl bg-gray-200/60 md:w-full dark:bg-white/5"
+                    style={{ animationDelay: `${i * 100}ms` }}
+                  />
+                ))}
+              </div>
+            </aside>
+
+            {/* Skeleton Content Container */}
+            <main className="flex-1 font-sans">
+              <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl transition-all duration-300 md:p-8 dark:border-white/8">
+                {/* Header Skeleton */}
+                <div className="mb-8 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                  <div className="space-y-3">
+                    <div className="h-7 w-48 animate-pulse rounded-lg bg-gray-200/80 dark:bg-white/10" />
+                    <div className="h-4 w-64 animate-pulse rounded-lg bg-gray-200/50 sm:w-80 dark:bg-white/5" />
+                  </div>
+                  <div className="h-10 w-28 animate-pulse rounded-lg bg-gray-200/80 dark:bg-white/10" />
+                </div>
+
+                {/* Form Fields Skeleton */}
+                <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={`field-${i}`} className="space-y-2">
+                      <div className="h-4 w-24 animate-pulse rounded-md bg-gray-200/60 dark:bg-white/5" />
+                      <div className="h-[46px] w-full animate-pulse rounded-xl bg-gray-200/50 dark:bg-white/5" />
+                    </div>
+                  ))}
+                </div>
+
+                {/* Footer Skeleton */}
+                <div className="mt-8 flex justify-end">
+                  <div className="h-[46px] w-40 animate-pulse rounded-xl bg-gray-200/80 dark:bg-white/10" />
+                </div>
+              </div>
+            </main>
           </div>
         ) : (
           <div className="flex flex-col gap-8 font-sans md:flex-row">
