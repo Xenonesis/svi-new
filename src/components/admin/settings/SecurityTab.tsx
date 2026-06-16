@@ -180,32 +180,6 @@ export function SecurityTab({
               </div>
             </div>
           </div>
-
-          {/* PRE-LOADED SECURE ALTERNATIVE SESSION */}
-          <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-white p-4 shadow-sm dark:border-white/5 dark:bg-[#111118]/50">
-            <div className="flex items-center gap-3 font-sans">
-              <div className="bg-gray-250/10 flex h-10 w-10 items-center justify-center rounded-lg border border-gray-300/20 dark:bg-white/5">
-                <Smartphone className="h-5 w-5 text-gray-400" />
-              </div>
-              <div className="font-sans">
-                <div className="flex items-center gap-2">
-                  <h4 className="font-sans text-xs font-bold text-gray-900 dark:text-white">
-                    Apple iPhone
-                  </h4>
-                </div>
-                <p className="mt-0.5 font-sans text-[10px] text-gray-500">
-                  SVI Infra Admin App • Location: Noida, India • 4 hours ago
-                </p>
-              </div>
-            </div>
-            <button
-              type="button"
-              onClick={() => showToast('success', 'Revocation command issued!')}
-              className="cursor-pointer font-sans text-[9px] font-bold tracking-wider text-red-500 uppercase hover:text-red-400"
-            >
-              Revoke
-            </button>
-          </div>
         </div>
       </div>
     </div>
