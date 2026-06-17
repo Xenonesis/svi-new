@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useState, type ChangeEvent, type FormEvent, useEffect, useRef } from 'react';
+import React, { useCallback, useState, type ChangeEvent, useEffect, useRef } from 'react';
 // import { motion } from 'motion/react';
 import { useRouter } from 'next/navigation';
 import { MapPin, PhoneIcon, Mail, Clock, AlertCircle, Layers } from 'lucide-react';
@@ -262,7 +262,7 @@ export default function Contact() {
 
   const [submitError, setSubmitError] = useState('');
   const handleSubmit = useCallback(
-    async (e: FormEvent) => {
+    async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!validateForm()) return;
 

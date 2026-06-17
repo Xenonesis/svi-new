@@ -105,9 +105,7 @@ export default function AllotmentLetterPage() {
         });
         if (!res.ok) throw new Error('Failed to fetch records');
         const json = await res.json();
-        console.log('Allotment records response:', json);
         const docs = json.documents || [];
-        console.log('Allotment docs count:', docs.length);
         // Only include records with form_data that have at least clientName
         const valid = docs.filter((d: any) => d.form_data?.clientName);
         setSavedAllotments(valid);

@@ -12,7 +12,7 @@ import {
   X,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { type FormEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { Team, TeamMember, UserProfile } from '@/src/lib/supabase/types';
@@ -46,7 +46,7 @@ function TeamModal({
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name.trim()) {
       setError('Team name is required.');

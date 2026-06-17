@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent, memo } from 'react';
+import React, { useState, memo } from 'react';
 import { Send, X, User, Phone, Check } from 'lucide-react';
 
 interface LeadCaptureProps {
@@ -15,7 +15,7 @@ function LeadCapture({ onClose, onSubmitted }: LeadCaptureProps) {
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name.trim() || !phone.trim()) {
       setError('Please fill in all fields');

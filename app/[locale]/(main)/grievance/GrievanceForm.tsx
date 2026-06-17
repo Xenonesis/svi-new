@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { Send, AlertCircle } from 'lucide-react';
 
@@ -29,7 +29,7 @@ export default function GrievanceForm() {
   const updateField = (field: string, value: string) =>
     setFormData((prev) => ({ ...prev, [field]: value }));
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setSubmitError('');

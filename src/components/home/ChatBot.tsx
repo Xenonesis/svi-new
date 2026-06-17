@@ -18,7 +18,7 @@ import {
   ThumbsDown,
   Sparkles,
 } from 'lucide-react';
-import { useState, useRef, useEffect, type FormEvent, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import FormattedText from '@/src/components/home/FormattedText';
 import QuickActions from '@/src/components/home/QuickActions';
 import LeadCapture from '@/src/components/home/LeadCapture';
@@ -188,7 +188,7 @@ export default function ChatBot() {
   const [input, setInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(true);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input.trim() && status === 'ready') {
       sendMessage({ text: input });

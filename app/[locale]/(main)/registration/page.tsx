@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
+import React, { useCallback, useEffect, useState, type ChangeEvent } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import {
   AlertCircle,
@@ -323,7 +323,7 @@ export default function Registration() {
   }, []);
 
   const handleSubmit = useCallback(
-    (e: FormEvent) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!validateForm()) return;
       setIsPaymentModalOpen(true);

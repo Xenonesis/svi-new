@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
-import { useAuthStore } from '@/src/stores/authStore';
 import {
   Building2,
   Plus,
@@ -18,7 +17,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 
 export default function PortalAllotmentsAdmin() {
-  const { token } = useAuthStore();
   const [allotments, setAllotments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');

@@ -3,7 +3,7 @@
 import { AnimatePresence, motion } from 'motion/react';
 import { Mail, MapPin, Phone, Send } from 'lucide-react';
 import { FacebookIcon, InstagramIcon } from '@/src/components/common/social-icons';
-import { type FormEvent, memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -17,7 +17,7 @@ const Footer = memo(function Footer() {
   const [subscribed, setSubscribed] = useState(false);
 
   const handleNewsletterSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
         setSubscribed(true);

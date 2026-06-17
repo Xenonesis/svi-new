@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import { UserCircle2, ArrowRight, AlertCircle, MapPin } from 'lucide-react';
-import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import { useTheme } from '@/src/components/ThemeProvider';
@@ -27,7 +27,7 @@ export default function EmployeeLogin() {
   const showIdentifierError = identifierTouched && !identifierIsValid;
   const showPasswordError = passwordTouched && !passwordIsValid;
 
-  const handlePasswordLogin = async (e: FormEvent) => {
+  const handlePasswordLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setIdentifierTouched(true);

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { AlertCircle, Eye, EyeOff, FileText, Mail, Phone, Plus, X } from 'lucide-react';
 import { PROPERTY_LABELS } from '../helpers/propertyLabels';
@@ -46,7 +46,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     if (error) setError('');
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       !form.email ||

@@ -2,15 +2,13 @@
 
 import { motion } from 'motion/react';
 import { UserCircle2, ArrowRight, AlertCircle } from 'lucide-react';
-import { useState, useRef, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
-import { useTheme } from '@/src/components/ThemeProvider';
 
 export default function Login() {
   const router = useRouter();
-  const { theme } = useTheme();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
   const [identifier, setIdentifier] = useState('');
@@ -34,7 +32,7 @@ export default function Login() {
   const showPasswordError = passwordTouched && !passwordIsValid;
   const showOtpError = otpTouched && !otpIsValid;
 
-  const handlePasswordLogin = async (e: FormEvent) => {
+  const handlePasswordLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setIdentifierTouched(true);
@@ -108,7 +106,7 @@ export default function Login() {
     }
   };
 
-  const handleOtpVerify = async (e: FormEvent) => {
+  const handleOtpVerify = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setOtpTouched(true);

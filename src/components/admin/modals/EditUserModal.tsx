@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, type FormEvent } from 'react';
+import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { AlertCircle, ChevronDown, FileText, Mail, Pencil, Phone, Shield, X } from 'lucide-react';
 import type { UserProfile } from '@/src/lib/supabase/types';
@@ -46,7 +46,7 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
     if (error) setError('');
   };
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (
       !form.full_name ||

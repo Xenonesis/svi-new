@@ -1,14 +1,13 @@
 'use client';
 
-import { useState, useEffect, type FormEvent } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
-import { ShieldCheck, CreditCard, Landmark, X, Copy, Check, AlertCircle } from 'lucide-react';
+import { ShieldCheck, CreditCard, Landmark, Copy, Check } from 'lucide-react';
 
 const AMOUNTS = [100000, 200000, 500000, 1000000];
 
 export default function PaymentForm() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
   const [form, setForm] = useState({
@@ -40,7 +39,7 @@ export default function PaymentForm() {
     setTimeout(() => setCopiedField(null), 2000);
   };
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
     setTimeout(() => {

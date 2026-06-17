@@ -1,7 +1,7 @@
 'use client';
 
 import { AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
-import { type FormEvent, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 
 import { motion } from 'motion/react';
 import { supabase } from '@/src/lib/supabase/client';
@@ -33,7 +33,7 @@ export default function AdminLogin() {
   const showEmailError = emailTouched && !emailIsValid;
   const showPasswordError = passwordTouched && !passwordIsValid;
 
-  const handleSubmit = async (e: FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
     setEmailTouched(true);

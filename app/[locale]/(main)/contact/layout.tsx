@@ -1,6 +1,7 @@
+import type { Metadata } from 'next';
 import { createMetadata } from '@/src/lib/seo';
 
-export const metadata = createMetadata({
+export const metadata: Metadata = createMetadata({
   title: 'Contact SVI Infra Solutions | Get in Touch',
   description:
     'Contact SVI Infra Solutions for inquiries about our premium residential and commercial properties. We are here to help you find your dream home or investment.',
