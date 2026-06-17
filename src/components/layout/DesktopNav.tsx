@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { ProjectDropdown } from './ProjectDropdown';
 import LanguageToggle from '@/src/components/ui/LanguageToggle';
 import { ThemeToggle } from '@/src/components/ui/ThemeToggle';
+import { NAV_LINKS } from './navLinks';
 
 interface DesktopNavProps {
   currentPath: string;
@@ -17,14 +18,6 @@ interface DesktopNavProps {
   onProjectsClick: () => void;
   onToggleTheme: () => void;
 }
-
-const NAV_LINKS = [
-  { name: 'Home', path: '/' },
-  { name: 'About Us', path: '/about' },
-  { name: 'Calculators', path: '/calculators' },
-  { name: 'Careers', path: '/careers' },
-  { name: 'Blog', path: '/blog' },
-];
 
 function NavLink({
   href,

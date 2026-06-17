@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Phone, MessageCircle, Calendar, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { PHONE_HREF, WHATSAPP_URL } from '@/src/lib/constants';
 
 export function FloatingContact() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -28,7 +29,7 @@ export function FloatingContact() {
       {/* Mobile Sticky Bar */}
       <div className="fixed right-0 bottom-0 left-0 z-50 flex h-16 w-full items-center justify-between border-t border-gray-200 bg-white/90 px-2 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] backdrop-blur-md md:hidden dark:border-gray-800 dark:bg-gray-900/90">
         <a
-          href="tel:+917300007643"
+          href={PHONE_HREF}
           onClick={handleCallClick}
           className="hover:text-brand-gold flex flex-1 flex-col items-center justify-center gap-1 text-gray-600 transition-colors dark:text-gray-400"
         >
@@ -37,7 +38,7 @@ export function FloatingContact() {
         </a>
         <div className="h-8 w-px bg-gray-300 dark:bg-gray-700" />
         <a
-          href="https://wa.me/917300007643"
+          href={WHATSAPP_URL}
           target="_blank"
           rel="noreferrer"
           onClick={handleWhatsAppClick}
@@ -59,7 +60,7 @@ export function FloatingContact() {
       {/* Desktop FAB */}
       <div className="fixed right-8 bottom-8 z-50 hidden flex-col items-end gap-3 md:flex">
         <a
-          href="tel:+917300007643"
+          href={PHONE_HREF}
           onClick={handleCallClick}
           className="hover:text-brand-gold flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-700 shadow-xl transition-transform hover:scale-110 dark:bg-gray-800 dark:text-gray-200"
           title="Call Us"
@@ -67,7 +68,7 @@ export function FloatingContact() {
           <Phone size={20} />
         </a>
         <a
-          href="https://wa.me/917300007643"
+          href={WHATSAPP_URL}
           target="_blank"
           rel="noreferrer"
           onClick={handleWhatsAppClick}

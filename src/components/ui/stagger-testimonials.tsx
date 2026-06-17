@@ -8,16 +8,16 @@ import Image from 'next/image';
 const SQRT_5000 = Math.sqrt(5000);
 
 const testimonialImages = [
-  '/images/testimonials/arjun_avatar.png',
-  '/images/testimonials/rohan_avatar.png',
-  '/images/testimonials/priya_avatar.png',
-  '/images/testimonials/vikram_avatar.png',
-  '/images/testimonials/ananya_avatar.png',
-  '/images/testimonials/karan_avatar.png',
-  '/images/testimonials/amit_avatar.png',
-  '/images/testimonials/siddharth_avatar.png',
-  '/images/testimonials/neha_avatar.png',
-  '/images/testimonials/kritika_avatar.png',
+  'https://ui-avatars.com/api/?name=Arjun&background=D4AF37&color=fff',
+  'https://ui-avatars.com/api/?name=Rohan&background=1e293b&color=fff',
+  'https://ui-avatars.com/api/?name=Priya&background=D4AF37&color=fff',
+  'https://ui-avatars.com/api/?name=Vikram&background=1e293b&color=fff',
+  'https://ui-avatars.com/api/?name=Ananya&background=D4AF37&color=fff',
+  'https://ui-avatars.com/api/?name=Karan&background=1e293b&color=fff',
+  'https://ui-avatars.com/api/?name=Amit&background=D4AF37&color=fff',
+  'https://ui-avatars.com/api/?name=Siddharth&background=1e293b&color=fff',
+  'https://ui-avatars.com/api/?name=Neha&background=D4AF37&color=fff',
+  'https://ui-avatars.com/api/?name=Kritika&background=1e293b&color=fff',
 ];
 
 const testimonials = [
@@ -215,12 +215,10 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         className="dark:bg-brand-dark-bg relative mb-4 h-14 w-12 bg-gray-100"
         style={{ boxShadow: '3px 3px 0px var(--color-brand-bg)' }}
       >
-        <Image
+        <img
           src={testimonial.imgSrc}
           alt={`${testimonial.by.split(',')[0]}`}
-          fill
-          sizes="48px"
-          className="object-cover object-top grayscale transition-all duration-300 hover:grayscale-0"
+          className="h-full w-full object-cover object-top grayscale transition-all duration-300 hover:grayscale-0"
         />
       </div>
       <h3

@@ -1,13 +1,14 @@
 'use client';
 
 import { Award, Eye, Edit2, Mail, RefreshCw, Trash2 } from 'lucide-react';
+import type { Lottery } from './types';
 
 interface HistoryTableProps {
-  lotteries: any[];
+  lotteries: Lottery[];
   isPending: boolean;
-  onViewParticipants: (lottery: any) => void;
-  onEditCampaign: (lottery: any) => void;
-  onEmailParticipants: (lottery: any) => void;
+  onViewParticipants: (lottery: Lottery) => void;
+  onEditCampaign: (lottery: Lottery) => void;
+  onEmailParticipants: (lottery: Lottery) => void;
   onResetDraw: (lotteryId: string) => void;
   onDelete: (lotteryId: string) => void;
 }

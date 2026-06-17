@@ -5,6 +5,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import LanguageToggle from '@/src/components/ui/LanguageToggle';
 import { ThemeToggle } from '@/src/components/ui/ThemeToggle';
+import { NAV_LINKS } from './navLinks';
+import { PHONE_HREF } from '@/src/lib/constants';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -18,14 +20,6 @@ interface MobileNavProps {
   onToggleProjects: () => void;
   onToggleTheme: () => void;
 }
-
-const NAV_LINKS = [
-  { name: 'Home', path: '/' },
-  { name: 'About Us', path: '/about' },
-  { name: 'Calculators', path: '/calculators' },
-  { name: 'Careers', path: '/careers' },
-  { name: 'Blog', path: '/blog' },
-];
 
 function getStaggerStyle(isOpen: boolean, index: number) {
   return {
@@ -275,7 +269,7 @@ export function MobileNav({
             </p>
             <div className="mt-3.5 flex flex-col gap-2">
               <a
-                href="tel:+917300007643"
+                href={PHONE_HREF}
                 className="hover:text-brand-gold flex items-center gap-2 text-xs font-medium text-gray-600 transition-colors dark:text-gray-300"
               >
                 <Phone size={13} className="text-brand-gold" />

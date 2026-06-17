@@ -1,22 +1,23 @@
 'use client';
 
 import { Award, Clock, Plus, Play, RefreshCw, Users, Trophy, Search, XCircle } from 'lucide-react';
+import type { Lottery, DbParticipant } from './types';
 
 interface DashboardPanelProps {
-  activeLottery: any;
+  activeLottery: Lottery | null;
   activeParticipantsCount: number;
-  activeWinners: any[];
+  activeWinners: DbParticipant[];
   drawMethod: 'random' | 'manual';
   isPending: boolean;
-  dbParticipants: any[];
+  dbParticipants: DbParticipant[];
   dbParticipantsSearch: string;
   dbParticipantsLoading: boolean;
-  selectedPredeterminedWinners: any[];
+  selectedPredeterminedWinners: DbParticipant[];
   onDrawMethodChange: (method: 'random' | 'manual') => void;
   onExecuteDraw: () => void;
   onResetDraw: () => void;
   onDbParticipantsSearchChange: (value: string) => void;
-  onSelectPredeterminedWinner: (participant: any) => void;
+  onSelectPredeterminedWinner: (participant: DbParticipant) => void;
   onRemovePredeterminedWinner: (id: string) => void;
   onClearPredeterminedWinners: () => void;
   onCreateNew: () => void;

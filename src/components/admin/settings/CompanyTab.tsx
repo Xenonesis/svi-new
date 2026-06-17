@@ -2,6 +2,7 @@
 
 import { RefreshCw } from 'lucide-react';
 import { motion } from 'motion/react';
+import { getSettingsDensity, getSettingsInputClass, SETTINGS_LABEL_CLASS } from './helpers';
 
 interface Company {
   company_name: string;
@@ -32,13 +33,9 @@ export function CompanyTab({
   handleSaveCompany,
   isCompact,
 }: CompanyTabProps) {
-  const densityPadding = isCompact ? 'py-1.5 px-3' : 'py-2.5 px-4';
-  const densityGridGap = isCompact ? 'gap-3.5' : 'gap-5';
-  const densitySecSpacing = isCompact ? 'space-y-4' : 'space-y-6';
-
-  const inputClass = `w-full bg-white dark:bg-[#111118] border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/15 transition-all outline-none font-sans ${densityPadding}`;
-  const labelClass =
-    'mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase font-sans';
+  const { densityPadding, densityGridGap, densitySecSpacing } = getSettingsDensity(isCompact);
+  const inputClass = getSettingsInputClass(densityPadding);
+  const labelClass = SETTINGS_LABEL_CLASS;
 
   return (
     <form onSubmit={handleSaveCompany} className={densitySecSpacing}>

@@ -2,6 +2,7 @@
 
 import { Phone, Calendar, FileText } from 'lucide-react';
 import { memo } from 'react';
+import { PHONE_HREF } from '@/src/lib/constants';
 
 const QUICK_ACTIONS = [
   {
@@ -14,7 +15,7 @@ const QUICK_ACTIONS = [
   {
     label: 'Call Back',
     icon: Phone,
-    href: 'tel:+917300007643',
+    href: PHONE_HREF,
     className:
       'bg-green-50 text-green-700 hover:bg-green-100 dark:bg-green-950/30 dark:text-green-400 dark:hover:bg-green-950/50',
   },

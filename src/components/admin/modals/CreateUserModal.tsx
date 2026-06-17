@@ -4,6 +4,8 @@ import { useState, type FormEvent } from 'react';
 import { motion } from 'motion/react';
 import { AlertCircle, Eye, EyeOff, FileText, Mail, Phone, Plus, X } from 'lucide-react';
 import { PROPERTY_LABELS } from '../helpers/propertyLabels';
+import { INPUT_CLS, LABEL_CLS, MODAL_OVERLAY_CLASS } from '../helpers/formStyles';
+import { getDisplayProperties, togglePropertySelection } from '../helpers/propertyUtils';
 
 interface CreateUserModalProps {
   onClose: () => void;
@@ -23,21 +25,15 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     notes: '',
   });
 
-  const displayProperties =
-    properties.length > 0
-      ? properties
-      : Object.entries(PROPERTY_LABELS).map(([slug, name]) => ({ name, slug }));
+  const displayProperties = getDisplayProperties(properties);
 
   const selectedProperties = form.property_interest ? form.property_interest.split(',') : [];
 
   const handlePropertyToggle = (slug: string) => {
-    let updated;
-    if (selectedProperties.includes(slug)) {
-      updated = selectedProperties.filter((s) => s !== slug);
-    } else {
-      updated = [...selectedProperties, slug];
-    }
-    setForm((p) => ({ ...p, property_interest: updated.join(',') }));
+    setForm((p) => ({
+      ...p,
+      property_interest: togglePropertySelection(p.property_interest, slug),
+    }));
   };
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -88,13 +84,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     }
   };
 
-  const inputCls =
-    'w-full bg-white dark:bg-[#111118] border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2.5 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-600 focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/15 transition-all font-sans';
-  const labelCls =
-    'text-[10px] uppercase tracking-widest font-bold text-gray-500 dark:text-gray-400 mb-1.5 block transition-colors duration-300';
+  const inputCls = INPUT_CLS;
+  const labelCls = LABEL_CLS;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85">
+    <div className={MODAL_OVERLAY_CLASS}>
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}

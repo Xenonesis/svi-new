@@ -1,5 +1,3 @@
-'use client';
-
 export const GRID_STYLE = {
   backgroundImage:
     'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',

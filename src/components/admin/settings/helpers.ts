@@ -1,3 +1,21 @@
+/**
+ * Returns density-based Tailwind class strings derived from the isCompact prop.
+ * All settings tabs use this instead of recomputing the same three variables.
+ */
+export const getSettingsDensity = (isCompact: boolean) => ({
+  densityPadding: isCompact ? 'py-1.5 px-3' : 'py-2.5 px-4',
+  densityGridGap: isCompact ? 'gap-3.5' : 'gap-5',
+  densitySecSpacing: isCompact ? 'space-y-4' : 'space-y-6',
+});
+
+/** Builds the settings tab input class string with the correct density padding. */
+export const getSettingsInputClass = (densityPadding: string) =>
+  `w-full bg-white dark:bg-[#111118] border border-gray-200 dark:border-white/10 rounded-lg text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/15 transition-all outline-none font-sans ${densityPadding}`;
+
+/** Standard label class for all settings tab form fields. */
+export const SETTINGS_LABEL_CLASS =
+  'mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase font-sans';
+
 export const getUserAgentInfo = () => {
   if (typeof window === 'undefined') {
     return { os: 'Windows PC', browser: 'Google Chrome', isMobile: false };

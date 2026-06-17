@@ -1,5 +1,4 @@
 'use client';
-/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
@@ -44,7 +43,7 @@ function getSuggestions(lastMessage: string): string[] {
   const lower = lastMessage.toLowerCase();
   const pools: string[] = [];
 
-  if (lower.includes('jaipur') || lower.includes('jaipur')) pools.push('jaipur');
+  if (lower.includes('jaipur') || lower.includes('jodhpur')) pools.push('jaipur');
   if (lower.includes('noida')) pools.push('noida');
   if (lower.includes('phulera')) pools.push('phulera');
   if (lower.includes('price') || lower.includes('cost') || lower.includes('₹')) pools.push('price');
@@ -84,7 +83,7 @@ export default function ChatBot() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<any>(null);
+  const recognitionRef = useRef<SpeechRecognition | null>(null);
   const logSaveTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { messages, sendMessage, status, stop, error, setMessages } = useChat({
