@@ -1,674 +1,773 @@
-# SVI Infra Solutions — Next.js Web Application
+<div align="center">
 
-**SVI Infra Solutions Pvt. Ltd.** is a premium real estate development platform built with Next.js 16, React 19, TypeScript, and Tailwind CSS v4. This application serves as a full-featured corporate website and administrative portal for managing real estate projects, client relationships, employee attendance, document generation, and more.
+# 🏗️ SVI Infra Solutions
 
-The platform combines a modern, responsive public-facing website with a comprehensive admin dashboard, featuring Supabase-powered authentication and database services, AI integration via Groq (Llama 4) and Google Gemini, interactive mapping with MapLibre GL, real-time analytics, a robust PDF document generation system, an email marketing suite, and a lottery management system.
+### _Where Dreams Take Address_
+
+A premium real estate development platform — modern public website, full-featured admin portal, employee workspace, AI-powered chatbot, and an end-to-end document/email/lottery suite.
+
+[![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js&logoColor=white)](https://nextjs.org)
+[![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38bdf8?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e?logo=supabase&logoColor=white)](https://supabase.com)
+[![License](https://img.shields.io/badge/license-Private-red)](#-license)
+
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Screenshots](#-screenshots) • [Deploy](#-deployment)
+
+</div>
 
 ---
 
-## Tech Stack
+## 📑 Table of Contents
 
-### Core Framework & Language
+- [🌟 Overview](#-overview)
+- [✨ Features](#-features)
+  - [Public Website](#-public-website)
+  - [Admin Portal](#-admin-portal)
+  - [Employee Portal](#-employee-portal)
+  - [AI & Automation](#-ai--automation)
+- [🏗️ Tech Stack](#-tech-stack)
+- [🧱 Architecture](#-architecture)
+- [🗂️ Project Structure](#-project-structure)
+- [🚀 Quick Start](#-quick-start)
+- [🔐 Environment Variables](#-environment-variables)
+- [📜 Available Scripts](#-available-scripts)
+- [🌐 Routing Reference](#-routing-reference)
+- [🧩 Component Library](#-component-library)
+- [🗃️ Database Migrations](#-database-migrations)
+- [🎨 Design System](#-design-system)
+- [🧪 Testing](#-testing)
+- [🔧 Development Workflow](#-development-workflow)
+- [🚀 Deployment](#-deployment)
+- [🤝 Third-Party Integrations](#-third-party-integrations)
+- [🛠️ Troubleshooting](#-troubleshooting)
+- [🤝 Contributing](#-contributing)
+- [📄 License](#-license)
 
-| Technology     | Version | Purpose                                       |
-| -------------- | ------- | --------------------------------------------- |
-| **Next.js**    | ^16.2.6 | React framework with App Router, SSR, and SSG |
-| **React**      | ^19.0.1 | UI component library                          |
-| **TypeScript** | ^5.9.3  | Type-safe JavaScript                          |
+---
+
+## 🌟 Overview
+
+**SVI Infra Solutions Pvt. Ltd.** is a 15+ year old real estate developer with **15+ delivered projects** and **5,000+ happy families** across **Noida, Jaipur, and Phulera Smart City** (DMIC/DFC corridors).
+
+This repository hosts the company's full digital platform — a **public marketing website** combined with a **role-based admin portal** and **employee workspace**, built on Next.js 16 with React Server Components, Supabase authentication, and an AI chatbot.
+
+> **Brand promise:** _Where Dreams Take Address_ — building trust through quality construction, strategic locations, and exceptional customer service.
+
+### Why this project stands out
+
+| Area              | What makes it production-grade                                         |
+| ----------------- | ---------------------------------------------------------------------- |
+| **Rendering**     | Hybrid RSC + selective client islands via `"use client"` boundary      |
+| **Data**          | Server-side Supabase queries, optimistic updates via TanStack Query    |
+| **i18n**          | Native locale routing with `next-intl` (English/Hindi, auto-detection) |
+| **Auth**          | Cookie-based Supabase SSR + middleware role-gating for `/admin`        |
+| **Documents**     | Client-side jsPDF generation (BBA, invoices, allotment, offer letters) |
+| **State**         | Zustand stores with `persist` middleware for theme & auth              |
+| **UI**            | Tailwind v4, Motion animations, MapLibre GL maps, 3D Three.js scenes   |
+| **AI**            | Streaming Groq (Llama 4) chatbot + Gemini content generation           |
+| **Email**         | Resend transactional + Tiptap-powered campaign editor                  |
+| **Quality gates** | Husky pre-commit (lint+format), Commitlint, Vitest, Playwright e2e     |
+
+---
+
+## ✨ Features
+
+### 🏠 Public Website
+
+- **Landing page** — Hero with Motion entrance animations, animated stats counter, scroll-triggered reveals
+- **Project showcase** — Current and completed projects with **MapLibre GL** interactive maps
+- **Company pages** — About, Leadership (team profiles), Careers, Blog (`/[slug]` dynamic posts)
+- **AI Chatbot** — Floating streaming chat widget powered by **Groq Llama 4** via Vercel AI SDK
+- **Lottery page** — Feature-flagged via `portal_settings.lottery_page_visible`; live draws, hall of fame, winner carousel
+- **Forms** — Contact, Registration, Grievance, Payment (all with hCaptcha + Resend delivery)
+- **Multi-language** — 🇬🇧 English / 🇮🇳 Hindi via `next-intl` locale routing
+- **Theme** — Light/dark/system with `localStorage` persistence and FOUC-free init
+- **Legal & consent** — Privacy Policy, Terms & Conditions, GDPR-style cookie banner
+- **UX polish** — Reading progress bar, breadcrumbs, back-to-top, WhatsApp button, error boundary, skeletons
+
+### 🛠️ Admin Portal
+
+> Protected by `middleware.ts` — Supabase SSR session + `profiles.role = 'admin'` check
+
+- **Dashboard** — Recharts analytics (User Growth, Attendance Status, Attendance Trend, Document Stats), KPI cards, activity timeline, quick actions
+- **User management** — Full CRUD, role assignment, advisor linking
+- **Attendance** — Daily check-in/out, monthly reports, teams with nested member management
+- **Document generator** — Dynamic PDFs for:
+  - 📄 **Allotment Letter**
+  - 📄 **Builder Buyer Agreement (BBA)**
+  - 📄 **Offer Letter** (with sales compensation slabs)
+  - 📄 **Payment Plan**
+  - 📄 **Payment Receipt** / Invoice
+  - All with **PDF and PNG image** download options
+- **Property management** — CRUD for real estate listings with image management
+- **Registration manager** — View, filter, assign advisors
+- **Email suite** — Tiptap rich text composer, sent history with replies, **templates**, **domains**, **marketing campaigns**, deleted messages, **Resend usage dashboard**
+- **Lottery management** — Schedule draws, upload participants, edit campaigns, bulk email, winner history
+- **Notifications** — Real-time dropdown in admin header, create/read/dismiss workflow
+- **Settings** — Tabbed interface: Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs
+- **Chat logs** — Conversation history for the AI chatbot
+
+### 👥 Employee Portal
+
+- **Employee login** at `/employee/login` (separate route group)
+- **Attendance** at `/(employee)/attendance` — dedicated staff check-in/out surface
+- Distinct auth boundary from admin and clients
+
+### 🤖 AI & Automation
+
+- **Streaming chatbot** (`/api/chat`) — Vercel AI SDK + `@ai-sdk/groq` (Llama 4)
+- **Content generation** — `@google/genai` for server-side content
+- **Admin chat logs** — Review conversations for support & compliance
+- **Cron endpoints** (`/api/cron/*`) — Scheduled task runners (e.g., draw execution)
+
+---
+
+## 🏗️ Tech Stack
+
+### Core Framework
+
+| Layer      | Technology            | Version   | Why we chose it                         |
+| ---------- | --------------------- | --------- | --------------------------------------- |
+| Framework  | **Next.js**           | `^16.2.6` | App Router, RSC, route handlers         |
+| UI library | **React**             | `^19.0.1` | Server Components, `use()` hook         |
+| Language   | **TypeScript**        | `^6.0.3`  | Strict mode, end-to-end type safety     |
+| Bundler    | **Webpack** (default) | bundled   | Stable build, full Next.js plugin chain |
 
 ### Styling & UI
 
-| Technology                 | Version  | Purpose                                          |
-| -------------------------- | -------- | ------------------------------------------------ |
-| **Tailwind CSS**           | ^4.1.14  | Utility-first CSS framework                      |
-| **@tailwindcss/postcss**   | ^4.3.0   | Tailwind CSS PostCSS plugin for v4               |
-| **Tailwind Merge**         | ^3.6.0   | Intelligent Tailwind class merging               |
-| **clsx**                   | ^2.1.1   | Conditional className utility                    |
-| **Motion (Framer Motion)** | ^12.39.0 | Declarative animations for React                 |
-| **Lucide React**           | ^1.16.0  | Open-source icon set                             |
-| **Recharts**               | ^3.8.1   | Composable charting library for admin dashboards |
-| **Sonner**                 | ^2.0.7   | Lightweight toast notification library           |
-| **canvas-confetti**        | ^1.9.4   | Confetti animation effects for celebrations      |
+| Technology                 | Version             | Purpose                               |
+| -------------------------- | ------------------- | ------------------------------------- |
+| **Tailwind CSS**           | `^4.1.14`           | Utility-first CSS                     |
+| **Motion (Framer Motion)** | `^12.39.0`          | Scroll-reveal & micro-interactions    |
+| **Lucide React**           | `^1.16.0`           | Open-source icon set                  |
+| **Recharts**               | `^3.8.1`            | Composable charts for admin dashboard |
+| **Sonner**                 | `^2.0.7`            | Toast notifications                   |
+| **canvas-confetti**        | `^1.9.4`            | Confetti for lottery wins             |
+| **clsx / tailwind-merge**  | `^2.1.1` / `^3.6.0` | Conditional class composition         |
 
-### Backend & Database
+### State, Data & 3D
 
-| Technology          | Version  | Purpose                                          |
-| ------------------- | -------- | ------------------------------------------------ |
-| **Supabase Client** | ^2.106.1 | PostgreSQL database + authentication + real-time |
-| **Supabase SSR**    | ^0.10.3  | Server-side rendering auth utilities             |
-| **@google/genai**   | ^2.4.0   | Google Gemini AI API client                      |
+| Technology               | Version    | Purpose                                     |
+| ------------------------ | ---------- | ------------------------------------------- |
+| **Zustand**              | `^5.0.14`  | Lightweight stores (`authStore`, `uiStore`) |
+| **TanStack React Query** | `^5.101.0` | Server-state caching, optimistic updates    |
+| **@react-three/fiber**   | `^9.6.1`   | 3D scene rendering                          |
+| **@react-three/drei**    | `^10.7.7`  | Useful 3D helpers                           |
+| **three**                | `^0.184.0` | 3D engine                                   |
+| **date-fns**             | `^4.4.0`   | Date formatting                             |
 
-### AI & Chatbot
+### Backend, Auth & Database
 
-| Technology        | Version  | Purpose                                     |
-| ----------------- | -------- | ------------------------------------------- |
-| **ai (Vercel)**   | ^6.0.198 | AI SDK for streaming chat and generative UI |
-| **@ai-sdk/groq**  | ^3.0.39  | Groq AI provider for Llama 4 models         |
-| **@ai-sdk/react** | ^3.0.200 | React hooks for AI SDK                      |
+| Technology        | Version    | Purpose                                |
+| ----------------- | ---------- | -------------------------------------- |
+| **Supabase JS**   | `^2.106.1` | PostgreSQL + auth + storage + realtime |
+| **@supabase/ssr** | `^0.12.0`  | Cookie-based SSR sessions              |
+| **next-intl**     | `^4.13.0`  | Locale routing (en/hi) + translations  |
 
-### Document Generation & Email
+### AI Providers
 
-| Technology          | Version | Purpose                                                   |
-| ------------------- | ------- | --------------------------------------------------------- |
-| **jsPDF**           | ^4.2.1  | Client-side PDF generation for booking forms and invoices |
-| **html2canvas-pro** | ^2.0.2  | HTML-to-canvas conversion for PDF content                 |
-| **exceljs**         | ^4.4.0  | Excel file parsing and generation                         |
-| **Resend**          | ^6.12.3 | Transactional email delivery API                          |
+| Technology        | Version    | Purpose                        |
+| ----------------- | ---------- | ------------------------------ |
+| **ai (Vercel)**   | `^6.0.198` | Streaming chat & generative UI |
+| **@ai-sdk/groq**  | `^3.0.39`  | Llama 4 inference              |
+| **@ai-sdk/react** | `^3.0.200` | React hooks for AI SDK         |
+| **@google/genai** | `^2.4.0`   | Server-side content generation |
 
-### Rich Text Editor
+### Documents, Forms & Email
 
-| Technology                       | Version | Purpose                             |
-| -------------------------------- | ------- | ----------------------------------- |
-| **@tiptap/react**                | ^3.24.0 | Headless rich text editor framework |
-| **@tiptap/starter-kit**          | ^3.24.0 | Essential Tiptap extensions bundle  |
-| **@tiptap/pm**                   | ^3.24.0 | ProseMirror core for Tiptap         |
-| **@tiptap/extension-link**       | ^3.24.0 | Hyperlink support in editor         |
-| **@tiptap/extension-image**      | ^3.24.0 | Image embedding in editor           |
-| **@tiptap/extension-underline**  | ^3.24.0 | Underline text formatting           |
-| **@tiptap/extension-color**      | ^3.24.0 | Text color customization            |
-| **@tiptap/extension-highlight**  | ^3.24.0 | Text highlight/marker               |
-| **@tiptap/extension-text-align** | ^3.24.0 | Text alignment controls             |
-| **@tiptap/extension-text-style** | ^3.24.0 | Text style support                  |
+| Technology          | Version   | Purpose                                                          |
+| ------------------- | --------- | ---------------------------------------------------------------- |
+| **jsPDF**           | `^4.2.1`  | Client-side PDF generation                                       |
+| **html2canvas-pro** | `^2.0.2`  | HTML → canvas for PDF content                                    |
+| **ExcelJS**         | `^4.4.0`  | Excel parsing & export                                           |
+| **Resend**          | `^6.12.3` | Transactional + marketing email                                  |
+| **TipTap**          | `^3.24.0` | Rich text editor (compose, link, image, color, highlight, align) |
+| **heic-convert**    | `^2.1.0`  | HEIC → JPEG/PNG in browser                                       |
+| **Zod**             | `^4.4.3`  | Schema validation for API payloads                               |
+| **maplibre-gl**     | `^5.24.0` | Open-source vector map rendering (no API key)                    |
 
-### Maps
+### Analytics, Testing & Tooling
 
-| Technology      | Version | Purpose                                  |
-| --------------- | ------- | ---------------------------------------- |
-| **maplibre-gl** | ^5.24.0 | Open-source map rendering (vector tiles) |
-
-### Analytics
-
-| Technology                 | Version | Purpose                                  |
-| -------------------------- | ------- | ---------------------------------------- |
-| **@vercel/analytics**      | ^2.0.1  | Vercel web analytics                     |
-| **@vercel/speed-insights** | ^2.0.0  | Real User Monitoring for Core Web Vitals |
-
-### Image Processing
-
-| Technology       | Version | Purpose                             |
-| ---------------- | ------- | ----------------------------------- |
-| **heic-convert** | ^2.1.0  | HEIC to JPEG/PNG browser conversion |
-
-### Validation
-
-| Technology | Version | Purpose                            |
-| ---------- | ------- | ---------------------------------- |
-| **zod**    | ^4.4.3  | TypeScript-first schema validation |
-
-### Development & Tooling
-
-| Technology               | Version | Purpose                                                    |
-| ------------------------ | ------- | ---------------------------------------------------------- |
-| **ESLint**               | ^9.39.4 | Static code analysis with TypeScript/React/Next.js plugins |
-| **Prettier**             | ^3.8.3  | Code formatter with Tailwind CSS class sorting             |
-| **Husky**                | ^9.1.7  | Git hooks for pre-commit and commit-msg validation         |
-| **lint-staged**          | ^17.0.5 | Runs linters only on staged git files                      |
-| **Commitlint**           | ^21.0.1 | Conventional commits validation                            |
-| **Vitest**               | ^4.1.7  | Unit/integration test runner with jsdom environment        |
-| **Playwright**           | ^1.60.0 | End-to-end browser testing                                 |
-| **tsx**                  | ^4.22.3 | TypeScript execution for Node.js scripts                   |
-| **esbuild**              | ^0.28.0 | Fast JavaScript bundler for scripts                        |
-| **dotenv**               | ^17.4.2 | Environment variable loading for scripts                   |
-| **cross-env**            | ^10.1.0 | Cross-platform environment variable setting                |
-| **editorconfig-checker** | ^6.1.1  | Check .editorconfig compliance                             |
+| Technology                  | Version              | Purpose                         |
+| --------------------------- | -------------------- | ------------------------------- |
+| **@vercel/analytics**       | `^2.0.1`             | Page-view & visitor tracking    |
+| **@vercel/speed-insights**  | `^2.0.0`             | Real-user Core Web Vitals       |
+| **Vitest** + **jsdom**      | `^4.1.7` / `^29.1.1` | Unit & integration tests        |
+| **Playwright**              | `^1.60.0`            | End-to-end browser tests        |
+| **ESLint** (flat config)    | `^9.39.4`            | Type-aware linting              |
+| **Prettier**                | `^3.8.3`             | Formatter + Tailwind class sort |
+| **Husky** + **lint-staged** | `^9.1.7` / `^17.0.5` | Git hooks                       |
+| **Commitlint**              | `^21.0.1`            | Conventional commit enforcement |
+| **@next/bundle-analyzer**   | `^16.2.7`            | Bundle size inspection          |
 
 ---
 
-## Architecture Overview
+## 🧱 Architecture
 
-The application follows a **hybrid rendering architecture** leveraging Next.js App Router:
+```
+┌────────────────────────────────────────────────────────────────────┐
+│                          Next.js 16 App Router                     │
+│                                                                    │
+│   ┌──────────────┐   ┌──────────────┐   ┌────────────────────┐     │
+│   │   /[locale]  │   │   /admin/*   │   │  /employee +        │    │
+│   │  public site │   │  (protected) │   │  /(employee)        │    │
+│   └──────┬───────┘   └──────┬───────┘   └─────────┬──────────┘     │
+│          │                  │                     │                │
+│          ▼                  ▼                     ▼                │
+│   ┌──────────────┐   ┌──────────────┐   ┌────────────────────┐     │
+│   │  RSC +       │   │  AdminSession│   │  Employee session   │    │
+│   │  Motion/Map  │   │  Provider    │   │  Provider           │    │
+│   └──────┬───────┘   └──────┬───────┘   └─────────┬──────────┘     │
+│          └──────────┬───────┴───────────┬─────────┘                │
+│                     ▼                   ▼                          │
+│            ┌─────────────────┐  ┌──────────────────┐               │
+│            │ middleware.ts   │  │  Zustand stores  │               │
+│            │  (auth + role)  │  │  auth + ui       │               │
+│            └────────┬────────┘  └──────────────────┘               │
+│                     ▼                                              │
+│      ┌──────────────────────────────┐                              │
+│      │   /api route handlers        │  ← chat, contact, admin/*   │
+│      └──────────┬───────────────────┘                              │
+│                 ▼                                                  │
+│      ┌──────────────────────────────┐                              │
+│      │  Supabase (Postgres+Auth+RT) │  ← profiles, properties,    │
+│      │                              │     notifications, lottery,  │
+│      │                              │     campaigns, attendance   │
+│      └──────────────────────────────┘                              │
+└────────────────────────────────────────────────────────────────────┘
+```
 
-- **Server Components** are the default — data fetching and rendering happen on the server
-- **Client Components** are explicitly marked with `"use client"` for interactive features (maps, animations, admin interaction)
-- **API Routes** (`app/api/`) provide serverless endpoint handlers for auth, form submissions, AI chat, and database operations
-- **Middleware** (`middleware.ts`) protects admin routes by verifying Supabase auth sessions and admin role
-- **Static Generation** is used for marketing pages (About, Privacy Policy, Terms) for optimal performance
-- **Dynamic Rendering** is used for admin pages and project listings requiring up-to-date data
-- **Turbopack** is available for faster development builds (currently disabled via `cross-env NEXT_TURBOPACK=0`)
+### Key architectural decisions
 
-### Key Architectural Decisions
-
-1. **Supabase as Backend-as-a-Service**: Authentication, database, real-time subscriptions, and file storage are handled by Supabase, eliminating the need for a custom backend server
-2. **SSR Authentication with @supabase/ssr**: Cookie-based session management compatible with Next.js App Router's server components, enforced via middleware
-3. **Component Separation**: Clean split between `src/components/common/` (reusable UI primitives), `src/components/admin/` (admin-specific), `src/components/lottery/` (lottery feature), `src/components/layout/` (navigation & footer), `src/components/home/` (landing page sections), and `src/components/admin/email/` (email marketing suite)
-4. **Modular Data Layer**: `src/data/` contains `company_settings.json`, `email-templates.json`, and `faq` definitions; `src/lib/` houses utilities, API helpers, SEO metadata, blog data, lottery helpers, and Supabase client configuration
-5. **Client-Side PDF Generation**: Booking forms, invoices, allotment letters, offer letters, BBAs, and payment receipts generated using jsPDF and html2canvas-pro to avoid server CPU overhead
-6. **Centralized SEO**: `src/lib/seo.ts` provides `createMetadata()` helper with Open Graph, Twitter cards, canonical URLs, and robots configuration
-7. **Centralized Blog**: `src/lib/blog.ts` defines typed blog posts with slug-based routing via `app/(main)/blog/[slug]`
-8. **AI Chatbot**: Integrated via Vercel AI SDK with Groq (Llama 4) provider — streaming chat interface on the landing page
-9. **Lottery System**: Full-featured lottery management with scheduled draws, participant management, and visibility toggling via `portal_settings` table
-10. **Email Marketing**: Campaign management with Tiptap rich text editor, template system, domain management, and Resend-powered delivery
-
----
-
-## Features
-
-### Public-Facing Features
-
-- **Landing Page & Navigation**: Hero section with animations, responsive sticky header with transparent-to-solid scroll transition, mobile hamburger menu, theme toggle (light/dark)
-- **AI Chatbot**: Streaming AI assistant powered by Groq (Llama 4) via Vercel AI SDK — floating chat widget on the landing page
-- **Project Showcase**: Current projects with progress status; completed projects with MapLibre GL interactive mapping showing project locations
-- **Company Pages**: About Us, Leadership (team profiles), Careers (job listings), Blog (market insights and news with dynamic `[slug]` routing)
-- **Client Engagement**: Contact form (Resend email API), Registration (Supabase auth), Client Login, Payment portal, FAQ (accordion UI with data-driven content), Grievance submission, Thank You confirmation
-- **Lottery**: Feature-flagged lottery page togglable from admin settings via `portal_settings.lottery_page_visible`
-- **Legal**: Privacy Policy, Terms & Conditions, GDPR-compliant Cookie Consent banner
-- **UI/UX**: Scroll-triggered Motion animations, breadcrumbs, back-to-top button, WhatsApp chat button, hover zoom on images, animated stats counters, reading progress bar, error boundary fallback, loading skeletons
-
-### Admin Portal Features
-
-- **Dashboard**: KPIs, Recharts-powered analytics charts (User Growth, Attendance Status, Attendance Trend, Document Stats), quick action cards, activity timeline feed
-- **User Management**: Admin session provider with persistent auth, user CRUD and role management (modals for create/edit/delete)
-- **Attendance System**: Daily check-in/check-out, attendance dashboard, monthly reports, teams management with nested member assignment
-- **Document Generation**: Dynamic PDFs for booking forms, invoices, allotment letters, offer letters, BBAs (Builder Buyer Agreements), payment plans, and payment receipts — all with PDF and image download options. Record-keeping pages for allotments, BBAs, offer letters, and payment receipts
-- **Property Management**: CRUD for real estate properties with image management
-- **Registration Management**: View, filter, and manage user registrations with advisor assignment
-- **Email Management**: Compose with rich text editor, sent history with replies, templates, domains, campaigns (marketing), deleted messages, Resend usage dashboard, and email settings — powered by Resend
-- **Lottery Management**: Admin-side lottery draw management with scheduling, participant upload, campaign editing, bulk email, and winner history
-- **Notifications**: Real-time notification dropdown in admin header, create/read/dismiss workflow
-- **Settings**: Configurable application parameters in database with tabbed interface — Profile, Company, Appearance, Notifications, Security, Email, Properties, Logs
+1. **Hybrid RSC** — Server Components by default; `"use client"` islands for maps, animations, admin interactivity
+2. **Locale-first routing** — `app/[locale]/(main)/...` with `next-intl` for English/Hindi
+3. **Layered role groups** — `app/admin` (admin), `app/employee` (staff), `app/(employee)` (grouped route)
+4. **Cookie-based SSR auth** — `@supabase/ssr` + middleware guard on `/admin/:path*`
+5. **Client-side PDF** — jsPDF + html2canvas-pro to avoid server CPU cost; templates live in `src/lib/bba/`
+6. **Centralized SEO** — `src/lib/seo.ts` exposes `createMetadata()` with OG, Twitter, canonical, robots
+7. **Optimistic UI** — TanStack Query wraps admin mutations; Zustand persists theme + auth slice
+8. **No API key for maps** — MapLibre GL uses open vector tiles
+9. **Feature flags in DB** — `portal_settings` table drives lottery visibility, etc.
 
 ---
 
-## Project Structure
+## 🗂️ Project Structure
 
-````
-svi-infra/
-├── app/                          # Next.js App Router
-│   ├── (main)/                   # Public website route group
-│   │   ├── about/                #    /about
-│   │   ├── blog/                 #    /blog + /[slug] dynamic posts
-│   │   ├── careers/              #    /careers
-│   │   ├── contact/              #    /contact
-│   │   ├── faq/                  #    /faq
-│   │   ├── grievance/            #    /grievance
-│   │   ├── leadership/           #    /leadership
-│   │   ├── login/                #    /login
-│   │   ├── lottery/              #    /lottery (feature-flagged)
-│   │   ├── payment/              #    /payment
-│   │   ├── privacy-policy/       #    /privacy-policy
-│   │   ├── projects/             #    /projects/completed + /projects/current
-│   │   ├── registration/         #    /registration
-│   │   ├── terms-conditions/     #    /terms
-│   │   ├── thank-you/            #    /thank-you
-│   │   ├── error.tsx             #    Custom error page
-│   │   ├── layout.tsx            #    Public layout with Header/Footer
-│   │   ├── loading.tsx           #    Suspense loading fallback
-│   │   ├── not-found.tsx         #    Custom 404 page
-│   │   ├── og.tsx                #    OG image component
-│   │   └── page.tsx              #    Landing page
-│   ├── admin/                    # Admin portal (authenticated via middleware)
-│   │   ├── allotment-letter/     #    Allotment letter PDF generation
-│   │   ├── allotment-records/    #    Allotment record management
-│   │   ├── attendance/           #    Employee check-in/out + reports
-│   │   ├── bba/                  #    Builder Buyer Agreement generation
-│   │   ├── bba-records/          #    BBA record management
-│   │   ├── dashboard/            #    Analytics & KPIs
-│   │   ├── email/                #    Email management
-│   │   ├── lottery/              #    Lottery draw management
-│   │   ├── notifications/        #    Notification center
-│   │   ├── offer-letter/         #    Offer letter PDF generation
-│   │   ├── offer-letter-records/ #    Offer letter record management
-│   │   ├── payment-plan/         #    Payment plan PDF generation
-│   │   ├── payment-receipt/      #    Payment receipt PDF generation
-│   │   ├── payment-receipts/     #    Payment receipt records
-│   │   ├── properties/           #    Property CRUD
-│   │   ├── registrations/        #    User registration management
-│   │   ├── settings/             #    System configuration (tabs)
-│   │   ├── layout.tsx            #    Admin layout with sidebar
-│   │   └── page.tsx              #    Admin root (login page)
-│   ├── api/                      # API route handlers
-│   │   ├── admin/                #    Admin-only API routes
-│   │   │   ├── activities/       #        Activity log CRUD
-│   │   │   ├── analytics/        #        Analytics data
-│   │   │   ├── attendance/       #        Attendance management
-│   │   │   ├── bba/              #        BBA record management
-│   │   │   ├── campaigns/        #        Email campaign management
-│   │   │   ├── documents/        #        Document management + [id]
-│   │   │   ├── email/            #        Email sending
-│   │   │   ├── lottery/          #        Lottery draw management
-│   │   │   ├── notifications/    #        Notification CRUD + [id]
-│   │   │   ├── properties/       #        Property CRUD
-│   │   │   ├── registrations/    #        Registration management
-│   │   │   ├── settings/         #        Portal settings
-│   │   │   └── users/            #        User management + [id]
-│   │   ├── chat/                 #    AI chatbot streaming endpoint
-│   │   ├── contact/              #    Contact form submission
-│   │   ├── cron/                 #    Scheduled task endpoints
-│   │   ├── grievance/            #    Grievance submission
-│   │   ├── lottery/              #    Public lottery API
+```
+svi-new/
+├── app/
+│   ├── [locale]/                  # Locale-routed public site
+│   │   ├── (main)/                #   Public route group
+│   │   │   ├── about/             #   /about
+│   │   │   ├── blog/[slug]/       #   /blog + dynamic posts
+│   │   │   ├── careers/           #   /careers
+│   │   │   ├── contact/           #   /contact
+│   │   │   ├── faq/               #   /faq
+│   │   │   ├── grievance/         #   /grievance
+│   │   │   ├── leadership/        #   /leadership
+│   │   │   ├── login/             #   /login (client portal)
+│   │   │   ├── lottery/           #   /lottery (feature-flagged)
+│   │   │   ├── payment/           #   /payment
+│   │   │   ├── privacy-policy/    #   /privacy-policy
+│   │   │   ├── projects/{current,completed}/
+│   │   │   ├── registration/      #   /registration
+│   │   │   ├── terms-conditions/  #   /terms
+│   │   │   ├── thank-you/         #   /thank-you
+│   │   │   ├── layout.tsx         #   Public layout (Header/Footer)
+│   │   │   └── page.tsx           #   Landing page
+│   │   └── layout.tsx             # Locale layout
+│   ├── admin/                     # Admin portal (middleware-protected)
+│   │   ├── allotment-letter/      #   Allotment letter PDF generator
+│   │   ├── allotment-records/     #   Allotment record management
+│   │   ├── attendance/            #   Employee check-in + reports
+│   │   ├── bba/                   #   Builder Buyer Agreement
+│   │   ├── bba-records/           #   BBA records
+│   │   ├── chat-logs/             #   AI chatbot conversation history
+│   │   ├── dashboard/             #   Analytics & KPIs
+│   │   ├── email/                 #   Email suite (compose, campaigns, templates...)
+│   │   ├── employees/             #   Employee directory
+│   │   ├── lottery/               #   Lottery draw management
+│   │   ├── notifications/         #   Notification center
+│   │   ├── offer-letter/          #   Offer letter PDF
+│   │   ├── offer-letter-records/  #   Offer letter records
+│   │   ├── payment-plan/          #   Payment plan PDF
+│   │   ├── payment-receipt/       #   Payment receipt PDF
+│   │   ├── payment-receipts/      #   Payment receipt records
+│   │   ├── portal-allotments/     #   Client-facing allotments
+│   │   ├── properties/            #   Property CRUD
+│   │   ├── registrations/         #   User registration management
+│   │   ├── settings/              #   Tabbed system configuration
+│   │   ├── layout.tsx             #   Admin layout (sidebar + header)
+│   │   └── page.tsx               #   Admin login
+│   ├── employee/                  # Employee portal
+│   │   └── login/                 #   /employee/login
+│   ├── (employee)/                # Employee route group
+│   │   └── attendance/            #   Staff attendance surface
+│   ├── api/                       # Route handlers
+│   │   ├── admin/                 #   admin/* CRUD endpoints
+│   │   ├── chat/                  #   Streaming AI chat
+│   │   ├── contact/               #   Contact form
+│   │   ├── cron/                  #   Scheduled tasks
+│   │   ├── employee/              #   Employee endpoints
+│   │   ├── grievance/             #   Grievance form
+│   │   ├── lottery/               #   Public lottery data
+│   │   ├── project-images/        #   Image serving
+│   │   ├── properties/            #   Public listings
+│   │   ├── registration/          #   User registration
+│   │   └── webhooks/              #   External integrations
+│   ├── layout.tsx                 # Root layout (ClientProviders)
+│   ├── error.tsx / global-error.tsx
+│   ├── loading.tsx                # Suspense fallback
+│   ├── not-found.tsx              # Custom 404
+│   ├── opengraph-image.tsx        # Dynamic OG image
+│   ├── robots.ts                  # robots.txt
+│   ├── sitemap.ts                 # Dynamic sitemap
+│   └── globals.css                # Tailwind v4 + tokens
+├── src/
+│   ├── components/
+│   │   ├── common/                # Reusable UI primitives
+│   │   │   ├── ui/                #   Atomic UI (BackToTop, ErrorBoundary,
+│   │   │   │                       #   ThemeToggle, LanguageToggle, ...)
+│   │   │   └── AnalyticsTracker.tsx
+│   │   ├── admin/                 # Admin-specific widgets
+│   │   │   ├── attendance/, ChartComponents/, DocumentGenerator/,
+│   │   │   ├── email/, helpers/, lottery/, modals/, OfferLetter/,
+│   │   │   └── registrations/, settings/, Shared/
+│   │   ├── home/                  # Landing page sections
+│   │   ├── layout/                # Header, Footer, nav
+│   │   ├── lottery/               # Public lottery client
+│   │   ├── portal/                # Client portal (PortalSidebar, ...)
+│   │   ├── properties/            # Property widgets
+│   │   ├── Captcha.tsx
+│   │   ├── ClientProviders.tsx    # Theme + Query providers
+│   │   ├── QueryProvider.tsx
+│   │   └── ThemeProvider.tsx
+│   ├── data/                      # company_settings.json, email-templates.json, faq/
+│   ├── hooks/                     # useMounted, useLotteryVisibility, ...
+│   ├── i18n/                      # next-intl routing, navigation, request
+│   ├── lib/
+│   │   ├── api/                   # rateLimit, Zod schemas, withAdminAuth
+│   │   ├── bba/                   # BBA helper utilities
+│   │   ├── hooks/                 # Cross-cutting hooks
+│   │   ├── lottery/               # Campaign helpers
+│   │   ├── repositories/          # Server data access
+│   │   ├── supabase/              # client / admin / server / types
+│   │   ├── utils/                 # documentExporter, templateParser
+│   │   ├── blog.ts                # Typed blog posts
+│   │   ├── chat-context.ts
+│   │   ├── email-templates.ts
+│   │   ├── nearby-places.ts
+│   │   ├── seo.ts                 # createMetadata() helper
+│   │   └── utils.ts
+│   ├── services/                  # API service wrappers
+│   ├── stores/                    # Zustand stores (authStore, uiStore)
+│   └── index.css
+├── e2e/                           # Playwright e2e tests
+├── public/                        # Static assets
+├── scripts/                       # Node/TS scripts (icons, etc.)
+├── supabase/                      # Migrations & config
+├── __tests__/                     # Vitest unit/integration tests
+├── messages/                      # i18n message catalogs
+├── types/                         # Ambient type declarations
+├── proxy.ts                       # Reverse-proxy helpers
+├── next.config.mjs
+├── eslint.config.js
+├── tsconfig.json
+├── vercel.json
+└── package.json
+```
 
 ---
 
-## Getting Started
+## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Node.js** — Latest LTS (v20 or v22 recommended)
-- **npm** — Ships with Node.js
-- **Supabase** — Free account for database and authentication
-- **Groq** — Free API key for AI chatbot (https://console.groq.com)
-- **Google Cloud Platform** — Account for Gemini AI API (optional)
-- **Resend** — Account for transactional email
-- **Vercel** — Free account for deployment (optional)
+| Tool          | Version  | Notes                                        |
+| ------------- | -------- | -------------------------------------------- |
+| **Node.js**   | `v20+`   | LTS recommended                              |
+| **npm**       | bundled  | pnpm/yarn work too                           |
+| **Supabase**  | account  | Database, auth, storage                      |
+| **Groq**      | API key  | [console.groq.com](https://console.groq.com) |
+| **Google AI** | API key  | Optional — Gemini content generation         |
+| **Resend**    | API key  | Transactional & campaign email               |
+| **hCaptcha**  | site key | Form spam protection                         |
 
 ### Installation
 
-1. **Clone the repository:**
+```bash
+# 1. Clone
+git clone https://github.com/Xenonesis/svi-new.git
+cd svi-new
 
-   ```bash
-   git clone https://github.com/Xenonesis/svi-new.git
-   cd svi-new
-````
+# 2. Install
+npm install
 
-2. **Install dependencies:**
+# 3. Environment
+cp .env.example .env.local
+# Edit .env.local with your keys (see "Environment Variables" below)
 
-   ```bash
-   npm install
-   ```
+# 4. Database migrations
+# Create a Supabase project, then run in order:
+#   migration.sql, forms-migration.sql, attendance-migration.sql,
+#   notifications-setup.sql, performance-indexes.sql,
+#   campaigns-migration.sql, scheduled-draw-migration.sql,
+#   supabase/migrations/*.sql (timestamp order)
 
-3. **Set up environment variables:**
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Then edit `.env.local` with your keys.
-
-4. **Initialize the database:**
-
-   Create a Supabase project and run migrations in order:
-   1. `migration.sql` — core schema
-   2. `forms-migration.sql` — form submissions tables
-   3. `attendance-migration.sql` — attendance tracking tables
-   4. `notifications-setup.sql` — notifications system
-   5. `performance-indexes.sql` — database indexes
-   6. `campaigns-migration.sql` — email campaigns tables
-   7. `scheduled-draw-migration.sql` — lottery scheduled draw tables
-   8. Files in `supabase/migrations/` in timestamp order
-
-5. **Start the development server:**
-
-   ```bash
-   npm run dev
-   ```
-
-6. Open [http://localhost:3000](http://localhost:3000).
+# 5. Dev server
+npm run dev          # → http://localhost:3000
+```
 
 ---
 
-## Routing & Pages
+## 🔐 Environment Variables
 
-### Public Routes
-
-| Route                 | Description                                           |
-| --------------------- | ----------------------------------------------------- |
-| `/`                   | Landing page with hero, featured projects, AI chatbot |
-| `/about`              | Company history, mission, vision, values              |
-| `/blog`               | Market insights and company news                      |
-| `/blog/[slug]`        | Dynamic blog post pages                               |
-| `/careers`            | Job openings and career applications                  |
-| `/contact`            | Inquiry form → Resend email API                       |
-| `/faq`                | FAQs with accordion UI, data-driven content           |
-| `/grievance`          | Complaint submission with tracking                    |
-| `/leadership`         | Management team profiles                              |
-| `/login`              | Client authentication portal                          |
-| `/lottery`            | Lottery page (feature-flagged via portal settings)    |
-| `/payment`            | Online payment portal                                 |
-| `/privacy-policy`     | Data protection documentation                         |
-| `/projects/completed` | Delivered projects with MapLibre GL interactive maps  |
-| `/projects/current`   | Ongoing developments                                  |
-| `/registration`       | New user registration (Supabase auth)                 |
-| `/terms-conditions`   | Terms of service                                      |
-| `/thank-you`          | Post-submission confirmation                          |
-
-### Admin Routes
-
-All admin routes protected by middleware (Supabase auth + admin role check):
-
-| Route                         | Description                                                                  |
-| ----------------------------- | ---------------------------------------------------------------------------- |
-| `/admin`                      | Admin login page                                                             |
-| `/admin/dashboard`            | Analytics, KPIs, activity timeline                                           |
-| `/admin/attendance`           | Check-in/out, reports, team management                                       |
-| `/admin/allotment-letter`     | Allotment letter PDF generation                                              |
-| `/admin/allotment-records`    | Allotment record management                                                  |
-| `/admin/bba`                  | Builder Buyer Agreement PDF generation                                       |
-| `/admin/bba-records`          | BBA record management                                                        |
-| `/admin/email`                | Email compose, sent, templates, domains, campaigns, deleted, replies         |
-| `/admin/lottery`              | Lottery draw management, scheduling, participants                            |
-| `/admin/notifications`        | Notification center                                                          |
-| `/admin/offer-letter`         | Offer letter PDF generation                                                  |
-| `/admin/offer-letter-records` | Offer letter record management                                               |
-| `/admin/payment-plan`         | Payment plan PDF generation                                                  |
-| `/admin/payment-receipt`      | Payment receipt PDF generation                                               |
-| `/admin/payment-receipts`     | Payment receipt record management                                            |
-| `/admin/properties`           | Property CRUD management                                                     |
-| `/admin/registrations`        | User registration management with filtering                                  |
-| `/admin/settings`             | System configuration (profile, company, appearance, notifications, security) |
-
-### API Routes
-
-#### Public API Routes
-
-| Route                 | Method | Description              |
-| --------------------- | ------ | ------------------------ |
-| `/api/chat`           | POST   | AI chatbot streaming     |
-| `/api/contact`        | POST   | Contact form submission  |
-| `/api/cron`           | POST   | Scheduled task execution |
-| `/api/grievance`      | POST   | Grievance submission     |
-| `/api/lottery`        | GET    | Public lottery data      |
-| `/api/project-images` | GET    | Project image serving    |
-| `/api/properties`     | GET    | Public property listings |
-| `/api/registration`   | POST   | User registration        |
-| `/api/webhooks`       | POST   | External webhooks        |
-
-#### Admin API Routes
-
-| Route                                               | Description                        |
-| --------------------------------------------------- | ---------------------------------- |
-| `/api/admin/activities`                             | Activity log CRUD                  |
-| `/api/admin/analytics`                              | Analytics data endpoints           |
-| `/api/admin/attendance/records`                     | Attendance record management       |
-| `/api/admin/attendance/analytics`                   | Attendance analytics               |
-| `/api/admin/attendance/report`                      | Attendance report generation       |
-| `/api/admin/attendance/teams`                       | Team CRUD                          |
-| `/api/admin/attendance/teams/[id]`                  | Individual team management         |
-| `/api/admin/attendance/teams/[id]/members`          | Team member management             |
-| `/api/admin/attendance/teams/[id]/members/[userId]` | Individual member management       |
-| `/api/admin/bba`                                    | BBA record management              |
-| `/api/admin/campaigns`                              | Email campaign management          |
-| `/api/admin/documents`                              | Document list/create               |
-| `/api/admin/documents/[id]`                         | Individual document CRUD           |
-| `/api/admin/email`                                  | Email sending                      |
-| `/api/admin/lottery`                                | Lottery draw management            |
-| `/api/admin/notifications`                          | Notification CRUD                  |
-| `/api/admin/notifications/[id]`                     | Individual notification management |
-| `/api/admin/properties`                             | Property CRUD                      |
-| `/api/admin/registrations`                          | Registration management            |
-| `/api/admin/settings`                               | Portal settings CRUD               |
-| `/api/admin/users`                                  | User list/create                   |
-| `/api/admin/users/[id]`                             | Individual user CRUD               |
-
----
-
-## Environment Variables
-
-```env
-# ── Gemini AI ───────────────────────────────────────────────────────
-GEMINI_API_KEY="MY_GEMINI_API_KEY"
-
-# ── Application ─────────────────────────────────────────────────────
+```bash
+# ── Application ───────────────────────────────────
 APP_URL="http://localhost:3000"
 NEXT_PUBLIC_ANALYTICS_ID=""
 
-# ── Supabase ────────────────────────────────────────────────────────
+# ── Supabase ──────────────────────────────────────
 NEXT_PUBLIC_SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
 NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
 SUPABASE_SERVICE_ROLE_KEY="YOUR_SUPABASE_SERVICE_ROLE_KEY"
 
-# ── hCaptcha ────────────────────────────────────────────────────────
-# Use test key for local development
-NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
+# ── AI Providers ─────────────────────────────────
+GROQ_API_KEY="gsk_your_groq_api_key_here"     # Chatbot (Llama 4)
+GEMINI_API_KEY="your_gemini_api_key_here"      # Server-side content
 
-# ── AI Chatbot ──────────────────────────────────────────────────────
-GROQ_API_KEY="gsk_your_groq_api_key_here"
-
-# ── Resend (Email) ──────────────────────────────────────────────────
+# ── Resend (Email) ────────────────────────────────
 RESEND_API_KEY="re_your_resend_api_key"
 ADMIN_EMAIL="admin@yourdomain.com"
+
+# ── hCaptcha (use test key locally) ──────────────
+NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 ```
 
 ---
 
-## Available Scripts
+## 📜 Available Scripts
 
-| Script         | Command                                           | Description                           |
-| -------------- | ------------------------------------------------- | ------------------------------------- |
-| `dev`          | `cross-env NEXT_TURBOPACK=0 next dev --port 3000` | Development server with HMR           |
-| `build`        | `next build`                                      | Production build                      |
-| `start`        | `next start`                                      | Start production server               |
-| `test`         | `vitest run`                                      | Run all tests                         |
-| `test:watch`   | `vitest`                                          | Watch mode                            |
-| `lint`         | `eslint . --ext .ts,.tsx,.js,.jsx`                | Code quality check                    |
-| `lint:fix`     | `eslint . --ext .ts,.tsx,.js,.jsx --fix`          | Auto-fix lint issues                  |
-| `format`       | `prettier --write .`                              | Format all files                      |
-| `format:check` | `prettier --check .`                              | Verify formatting                     |
-| `editorconfig` | `editorconfig-checker`                            | Check .editorconfig compliance        |
-| `prepare`      | `husky`                                           | Init git hooks (auto-runs on install) |
-| `clean`        | `rm -rf .next`                                    | Remove build artifacts                |
+| Script           | Command                                                  | Purpose                 |
+| ---------------- | -------------------------------------------------------- | ----------------------- |
+| `dev`            | `next dev --webpack --port 3000`                         | Dev server with HMR     |
+| `build`          | `next build`                                             | Production build        |
+| `analyze`        | `ANALYZE=true next build`                                | Inspect bundle size     |
+| `start`          | `next start`                                             | Serve production build  |
+| `lint`           | `eslint . --ext .ts,.tsx,.js,.jsx`                       | Static analysis         |
+| `lint:fix`       | `eslint . --ext .ts,.tsx,.js,.jsx --fix`                 | Auto-fix lint issues    |
+| `format`         | `prettier --write .`                                     | Format all files        |
+| `format:check`   | `prettier --check .`                                     | Verify formatting       |
+| `editorconfig`   | `editorconfig-checker`                                   | Editorconfig compliance |
+| `test`           | `vitest run`                                             | Unit/integration tests  |
+| `test:watch`     | `vitest`                                                 | Watch mode              |
+| `test:e2e`       | `playwright test --config=e2e/playwright.config.ts`      | End-to-end tests        |
+| `test:e2e:ui`    | `playwright test --ui --config=e2e/playwright.config.ts` | Playwright UI debugger  |
+| `generate-icons` | `node scripts/generate-icons.js`                         | Regenerate app icons    |
+| `clean`          | `rm -rf .next`                                           | Wipe build artifacts    |
 
 ---
 
-## Component Architecture
+## 🌐 Routing Reference
 
-### Provider Hierarchy (in `ClientProviders.tsx`)
+### Public (`/`, `/{locale}/`)
+
+| Route                 | Description                               |
+| --------------------- | ----------------------------------------- |
+| `/`                   | Landing page — hero, projects, AI chatbot |
+| `/about`              | Company history, mission, vision, values  |
+| `/blog`               | Market insights & company news            |
+| `/blog/[slug]`        | Dynamic blog posts                        |
+| `/careers`            | Job openings                              |
+| `/contact`            | Inquiry form → Resend                     |
+| `/faq`                | Data-driven FAQ accordion                 |
+| `/grievance`          | Complaint submission with tracking        |
+| `/leadership`         | Management team profiles                  |
+| `/login`              | Client portal login                       |
+| `/lottery`            | Feature-flagged lottery                   |
+| `/payment`            | Online payment portal                     |
+| `/privacy-policy`     | Data protection                           |
+| `/projects/current`   | Ongoing developments                      |
+| `/projects/completed` | Delivered projects + MapLibre GL map      |
+| `/registration`       | New user registration                     |
+| `/terms-conditions`   | Terms of service                          |
+| `/thank-you`          | Post-submission confirmation              |
+
+### Admin (middleware-protected)
+
+| Route                         | Description                                                                           |
+| ----------------------------- | ------------------------------------------------------------------------------------- |
+| `/admin`                      | Admin login                                                                           |
+| `/admin/dashboard`            | Analytics, KPIs, activity timeline                                                    |
+| `/admin/attendance`           | Check-in/out, reports, teams                                                          |
+| `/admin/allotment-letter`     | Allotment letter PDF                                                                  |
+| `/admin/allotment-records`    | Allotment records                                                                     |
+| `/admin/bba`                  | Builder Buyer Agreement                                                               |
+| `/admin/bba-records`          | BBA records                                                                           |
+| `/admin/chat-logs`            | AI chatbot conversation history                                                       |
+| `/admin/email`                | Compose, sent, templates, domains, campaigns                                          |
+| `/admin/employees`            | Employee directory                                                                    |
+| `/admin/lottery`              | Draw management & scheduling                                                          |
+| `/admin/notifications`        | Notification center                                                                   |
+| `/admin/offer-letter`         | Offer letter PDF                                                                      |
+| `/admin/offer-letter-records` | Offer letter records                                                                  |
+| `/admin/payment-plan`         | Payment plan PDF                                                                      |
+| `/admin/payment-receipt`      | Payment receipt PDF                                                                   |
+| `/admin/payment-receipts`     | Payment receipt records                                                               |
+| `/admin/portal-allotments`    | Client-facing allotments                                                              |
+| `/admin/properties`           | Property CRUD                                                                         |
+| `/admin/registrations`        | Registration management                                                               |
+| `/admin/settings`             | Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs |
+
+### Employee
+
+| Route                    | Description                      |
+| ------------------------ | -------------------------------- |
+| `/employee/login`        | Staff authentication             |
+| `/(employee)/attendance` | Staff check-in/out (route group) |
+
+### API
+
+#### Public
+
+| Route                 | Method | Description         |
+| --------------------- | ------ | ------------------- |
+| `/api/chat`           | POST   | Streaming AI chat   |
+| `/api/contact`        | POST   | Contact form        |
+| `/api/cron`           | POST   | Scheduled tasks     |
+| `/api/grievance`      | POST   | Grievance form      |
+| `/api/lottery`        | GET    | Public lottery data |
+| `/api/project-images` | GET    | Image serving       |
+| `/api/properties`     | GET    | Public listings     |
+| `/api/registration`   | POST   | User registration   |
+| `/api/webhooks`       | POST   | External webhooks   |
+
+#### Admin
+
+| Route                                                        | Description             |
+| ------------------------------------------------------------ | ----------------------- |
+| `/api/admin/activities`                                      | Activity log CRUD       |
+| `/api/admin/analytics`                                       | Analytics endpoints     |
+| `/api/admin/attendance/{records,analytics,report,teams}/...` | Attendance suite        |
+| `/api/admin/bba`                                             | BBA management          |
+| `/api/admin/campaigns`                                       | Email campaigns         |
+| `/api/admin/documents` (+ `[id]`)                            | Document CRUD           |
+| `/api/admin/email`                                           | Email sending           |
+| `/api/admin/employee`                                        | Employee endpoints      |
+| `/api/admin/lottery`                                         | Draw management         |
+| `/api/admin/notifications` (+ `[id]`)                        | Notification CRUD       |
+| `/api/admin/properties`                                      | Property CRUD           |
+| `/api/admin/registrations`                                   | Registration management |
+| `/api/admin/settings`                                        | Portal settings         |
+| `/api/admin/users` (+ `[id]`)                                | User CRUD               |
+
+---
+
+## 🧩 Component Library
+
+### Provider hierarchy (`ClientProviders.tsx`)
 
 ```
-ThemeProvider          — Light/dark mode context
-  └─ Children          — Page content (Vercel Analytics/Speed Insights)
+QueryProvider              ← TanStack Query (devtools on client)
+  └─ ThemeProvider         ← Light/dark/system with localStorage
+       └─ AnalyticsTracker ← Vercel Analytics + Speed Insights
 ```
 
-Admin layout adds **AdminSessionProvider** for Supabase auth context.
+Admin layout additionally wraps children in `AdminSessionProvider`.
 
-### Common Components (`src/components/common/`)
+### Public UI primitives (`src/components/common/ui`)
 
-| Component         | Description                                                   |
-| ----------------- | ------------------------------------------------------------- |
-| `Analytics`       | Vercel Analytics and Speed Insights                           |
-| `AnimatedSection` | Scroll-triggered fade/slide animations via Motion `useInView` |
-| `BackToTop`       | Floating scroll-to-top button                                 |
-| `Breadcrumbs`     | Auto-generated breadcrumb trail from URL path                 |
-| `CookieConsent`   | GDPR-compliant consent banner with localStorage               |
-| `ErrorBoundary`   | React error boundary with fallback UI                         |
-| `FAQSection`      | Reusable FAQ accordion section                                |
-| `HoverZoomImage`  | Image with CSS transform zoom on hover                        |
-| `ReadingProgress` | Scroll-based reading progress indicator bar                   |
-| `ScrollToTop`     | Auto-scroll to top on route change                            |
-| `social-icons`    | Social media icon set                                         |
-| `StatsCounter`    | Animated counter that counts up on scroll                     |
+| Component              | Description                             |
+| ---------------------- | --------------------------------------- |
+| `AnimatedSection`      | Scroll-reveal via `motion` `useInView`  |
+| `BackToTop`            | Floating scroll-to-top                  |
+| `Breadcrumbs`          | Auto-generated from URL path            |
+| `CookieConsent`        | GDPR consent banner w/ localStorage     |
+| `DynamicSkeleton`      | Loading placeholders                    |
+| `ErrorBoundary`        | React error boundary + fallback         |
+| `HoverZoomImage`       | CSS transform zoom on hover             |
+| `LanguageToggle`       | EN / हिं switcher                       |
+| `ReadingProgress`      | Top-of-page scroll indicator            |
+| `ScrollToTop`          | Auto-scroll on route change             |
+| `StatsCounter`         | Spring-physics count-up on scroll       |
+| `ThemeToggle`          | Light/dark/system switcher              |
+| `AnalyticsTracker`     | Vercel Analytics + Speed Insights mount |
+| `stagger-testimonials` | Staggered motion variants               |
 
-### Admin Components (`src/components/admin/`)
+### Home (`src/components/home/`)
 
-| Component              | Description                                                                         |
-| ---------------------- | ----------------------------------------------------------------------------------- |
-| `AdminHeader`          | Top nav + notification dropdown                                                     |
-| `AdminSidebar`         | Collapsible sidebar navigation                                                      |
-| `AdminSessionProvider` | Auth context for admin routes                                                       |
-| `ActivityTimeline`     | Chronological activity feed                                                         |
-| `NotificationDropdown` | Read/unread notification panel                                                      |
-| `QuickActions`         | Dashboard shortcut cards                                                            |
-| `attendance/`          | Attendance dashboard, report, mark attendance, teams manager                        |
-| `ChartComponents/`     | User growth, attendance status/trend, document stats charts                         |
-| `DocumentGenerator/`   | BBA/OfferLetter preview content, shared download options                            |
-| `email/`               | Full email suite: compose, campaigns, templates, domains, rich text editor          |
-| `helpers/`             | Badge, property interest tags, property labels                                      |
-| `lottery/`             | Dashboard panel, history table, schedule draw panel, hooks, modals, wizard          |
-| `modals/`              | Advisor settings, create user, delete confirm, edit user                            |
-| `OfferLetter/`         | Sales compensation section, slab selector                                           |
-| `registrations/`       | Registration table, filters, detail modals, status badges, hooks                    |
-| `settings/`            | Profile, Company, Appearance, Notifications, Security, Email, Logs, Properties tabs |
-| `Shared/`              | Modal component                                                                     |
+`HeroSection`, `AboutSection`, `FeaturesSection`, `ProjectsSection`, `CTASection`, `ChatBot`, `HomeFAQ`, `HomeSections` (orchestrator)
 
-### Home Page Components (`src/components/home/`)
+### Admin (`src/components/admin/`)
 
-| Component         | Description                       |
-| ----------------- | --------------------------------- |
-| `HeroSection`     | Landing page hero with animations |
-| `AboutSection`    | Company overview section          |
-| `FeaturesSection` | Key features highlight            |
-| `ProjectsSection` | Featured projects showcase        |
-| `CTASection`      | Call-to-action section            |
-| `ChatBot`         | AI-powered floating chat widget   |
-| `HomeFAQ`         | Frequently asked questions        |
-| `HomeSections`    | Section composition orchestrator  |
+- `AdminHeader`, `AdminSidebar`, `AdminSessionProvider`
+- `ActivityTimeline`, `NotificationDropdown`, `QuickActions`
+- `attendance/`, `ChartComponents/`, `DocumentGenerator/`, `OfferLetter/`
+- `email/` — compose, campaigns, templates, domains, settings
+- `lottery/` — dashboard, history, schedule-draw, wizard, modals, hooks
+- `modals/` — advisor, create-user, delete-confirm, edit-user
+- `registrations/` — table, filters, detail modals, status badges
+- `settings/` — Profile · Company · Appearance · Notifications · Security · Email · Logs · Properties
+- `helpers/` — badge, property interest tags, property labels
+- `Shared/Modal`
 
-### Lottery Components (`src/components/lottery/`)
+### Portal & lottery
 
-| Component              | Description                                                 |
-| ---------------------- | ----------------------------------------------------------- |
-| `LotteryClientSection` | Client-side lottery interaction                             |
-| `LotteryCTA`           | Call-to-action for lottery                                  |
-| `LotteryDrawSection`   | Lottery draw display                                        |
-| `sections/`            | CountdownBanner, DrawArenaModal, HallOfFame, WinnerCarousel |
-| `hooks/`               | `useLotteryDraw` hook                                       |
+- `portal/PortalSidebar` — client-portal navigation
+- `lottery/LotteryClientSection`, `LotteryCTA`, `LotteryDrawSection`
+- `lottery/sections/` — `CountdownBanner`, `DrawArenaModal`, `HallOfFame`, `WinnerCarousel`
+- `lottery/hooks/useLotteryDraw`
 
-### Data & Configuration (`src/data/`)
+### Data, hooks, lib
 
-- `company_settings.json` — Company details (name, address, GST, RERA, bank info)
-- `email-templates.json` — Email template definitions
-- `faq/general.ts` — FAQ content data
-
-### Library Utilities (`src/lib/`)
-
-- `seo.ts` — `createMetadata()` helper for Open Graph, Twitter card, canonical, robots metadata
-- `blog.ts` — Typed `BlogPost[]` array with `BLOG_POST_MAP` for slug-based lookup
-- `api/` — `rateLimit.ts`, Zod `schemas.ts`, `withAdminAuth.ts`
-- `hooks/useLotteryVisibility.ts` — Feature-flag hook for lottery page
-- `hooks/useMounted.ts` — Hydration-safe mount detection
-- `lottery/campaignHelpers.ts` — Campaign helper utilities
-- `utils/documentExporter.ts` — PDF/image export utilities
-- `utils/templateParser.ts` — Template string parser
-- `bba/` — BBA-related helper utilities
-- `email-templates.ts` — Email template rendering
-- `nearby-places.ts` — Nearby places data for maps
+- `data/company_settings.json` — name, address, GST, RERA, bank
+- `data/email-templates.json` — email template definitions
+- `data/faq/general.ts` — FAQ content
+- `lib/seo.ts` — `createMetadata()` helper
+- `lib/blog.ts` — typed `BlogPost[]` with slug map
+- `lib/api/{rateLimit,schemas,withAdminAuth}.ts`
+- `lib/supabase/{client,admin,server,types}.ts`
+- `lib/utils/{documentExporter,templateParser}.ts`
+- `lib/email-templates.ts`, `lib/nearby-places.ts`, `lib/chat-context.ts`
+- `stores/{authStore,uiStore}.ts` (Zustand + persist)
+- `hooks/useMounted`, `hooks/useLotteryVisibility`
 
 ---
 
-## State Management & Providers
+## 🗃️ Database Migrations
 
-### ThemeProvider
+Run in order against a fresh Supabase project:
 
-- Provides `ThemeContext` with `theme` (light/dark) and `setTheme`
-- Persists to `localStorage` under key `svi-theme`
-- Falls back to OS `prefers-color-scheme`
-- Initializes via `public/theme-init.js` to prevent flash
-
-### AdminSessionProvider
-
-- Wraps all admin routes with Supabase auth context
-- Maintains persistent admin session across page navigations
-
-### Middleware Auth (`middleware.ts`)
-
-- Protects all `/admin/:path*` routes (except root `/admin` login page)
-- Verifies Supabase auth cookie session server-side
-- Checks `profiles` table for `role = 'admin'`
-
-### ClientProviders
-
-Composes ThemeProvider + Vercel Analytics + Speed Insights in `app/layout.tsx`.
-
----
-
-## Animations & UI Effects
-
-| Element          | Animation                                                |
-| ---------------- | -------------------------------------------------------- |
-| Hero section     | Fade-in with scale entrance on load                      |
-| Scroll reveal    | Elements fade upward via `AnimatedSection` + `useInView` |
-| Stats counter    | Values count up with spring physics                      |
-| Navigation hover | Gold underline slides in from left                       |
-| Header scroll    | Transparent → solid with backdrop blur                   |
-| Theme toggle     | Smooth light/dark transition                             |
-| FAQ accordion    | Smooth height and opacity on expand/collapse             |
-| Project cards    | Lift effect with shadow on hover                         |
-| Reading progress | Scroll-position indicator bar at top of page             |
+| File / Migration                                               | Purpose                       |
+| -------------------------------------------------------------- | ----------------------------- |
+| `migration.sql`                                                | Core schema (users, projects) |
+| `forms-migration.sql`                                          | Form submission tables        |
+| `attendance-migration.sql`                                     | Attendance tracking           |
+| `notifications-setup.sql`                                      | Notifications system          |
+| `performance-indexes.sql`                                      | Strategic indexes             |
+| `campaigns-migration.sql`                                      | Email campaigns               |
+| `scheduled-draw-migration.sql`                                 | Lottery scheduled draws       |
+| `migrations/20260520120000_forms_tables.sql`                   | Forms                         |
+| `migrations/20260520130000_attendance_tables.sql`              | Attendance                    |
+| `migrations/20260520140000_activity_logs_check_constraint.sql` | Activity log constraint       |
+| `migrations/20260520150000_fix_notifications_trigger.sql`      | Notification trigger fix      |
+| `migrations/20260522130000_create_portal_settings.sql`         | Portal settings               |
+| `migrations/20260528150000_create_lotteries_table.sql`         | Lottery system                |
+| `migrations/20260528180000_lottery_visibility_policy.sql`      | Lottery visibility RLS        |
+| `migrations/20260602100001_create_email_stars_table.sql`       | Email star/favorite           |
+| `migrations/20260602100002_create_email_inbox_table.sql`       | Email inbox/threading         |
+| `migrations/20260602100003_create_email_deletions_table.sql`   | Email deletion tracking       |
+| `migrations/20260602100004_add_email_data_to_deletions.sql`    | Email data in deletions       |
 
 ---
 
-## Database Migrations
+## 🎨 Design System
 
-| File / Migration                                               | Purpose                             |
-| -------------------------------------------------------------- | ----------------------------------- |
-| `migration.sql`                                                | Core schema (users, projects, auth) |
-| `forms-migration.sql`                                          | Form submissions tables             |
-| `attendance-migration.sql`                                     | Attendance tracking tables          |
-| `notifications-setup.sql`                                      | Notifications system                |
-| `performance-indexes.sql`                                      | Database performance indexes        |
-| `campaigns-migration.sql`                                      | Email campaigns tables              |
-| `scheduled-draw-migration.sql`                                 | Lottery scheduled draw tables       |
-| `migrations/20260520120000_forms_tables.sql`                   | Forms tables                        |
-| `migrations/20260520130000_attendance_tables.sql`              | Attendance tables                   |
-| `migrations/20260520140000_activity_logs_check_constraint.sql` | Activity logs constraint            |
-| `migrations/20260520150000_fix_notifications_trigger.sql`      | Notifications trigger fix           |
-| `migrations/20260522130000_create_portal_settings.sql`         | Portal settings table               |
-| `migrations/20260528150000_create_lotteries_table.sql`         | Lottery system tables               |
-| `migrations/20260528180000_lottery_visibility_policy.sql`      | Lottery visibility RLS policy       |
-| `migrations/20260602100001_create_email_stars_table.sql`       | Email star/favorite system          |
-| `migrations/20260602100002_create_email_inbox_table.sql`       | Email inbox/threading system        |
-| `migrations/20260602100003_create_email_deletions_table.sql`   | Email deletion tracking             |
-| `migrations/20260602100004_add_email_data_to_deletions.sql`    | Email data additions to deletions   |
+| Token           | Choice                                                                   |
+| --------------- | ------------------------------------------------------------------------ |
+| **Framework**   | Tailwind v4 with CSS variables (`@theme` block in `globals.css`)         |
+| **Type**        | System font stack via `next/font` (no external font requests)            |
+| **Color**       | Brand `primary` + semantic tokens; light/dark via `prefers-color-scheme` |
+| **Motion**      | `motion` (Framer Motion 12) for entrances & scroll-reveal                |
+| **Iconography** | `lucide-react` (1.16) — consistent stroke weight                         |
+| **Spacing**     | Tailwind scale (4px base)                                                |
+| **Radius**      | Tailwind `rounded-{sm,md,lg,xl,2xl,3xl,full}`                            |
+| **Shadow**      | Layered `shadow-{sm,md,lg,xl}` for elevation                             |
+| **Breakpoints** | Tailwind defaults — `sm` 640, `md` 768, `lg` 1024, `xl` 1280             |
+
+### Animation catalogue
+
+| Element          | Animation                                     |
+| ---------------- | --------------------------------------------- |
+| Hero section     | Fade-in + scale entrance on load              |
+| Scroll reveal    | `AnimatedSection` + `useInView` upward fade   |
+| Stats counter    | Spring-physics count-up                       |
+| Nav hover        | Gold underline slides in from left            |
+| Header           | Transparent → solid + backdrop blur on scroll |
+| Theme switch     | Cross-fade light/dark                         |
+| FAQ accordion    | Smooth height + opacity                       |
+| Project cards    | Lift + shadow on hover                        |
+| Reading progress | Top bar tracking scroll position              |
+| Lottery win      | Confetti burst via `canvas-confetti`          |
 
 ---
 
-## Testing Strategy
+## 🧪 Testing
 
-- **Vitest** with **jsdom** for DOM simulation
-- **Playwright** for end-to-end browser testing
-- **API Tests**: `__tests__/api/admin/` — analytics, attendance, documents, teams, users, admin verification
-- **Utility Tests**: `__tests__/utils/templateParser.test.ts`
-- **BBA Tests**: `__tests__/bba/`
-- **Integration Tests**: `__tests__/api/registration.test.ts`
+- **Vitest** + **jsdom** — unit & integration
+- **Playwright** — end-to-end browser tests (`e2e/`)
+
+```
+__tests__/
+├── api/
+│   ├── admin/           # analytics, attendance, documents, teams, users
+│   ├── registration.test.ts
+├── bba/
+├── utils/
+│   └── templateParser.test.ts
+```
 
 ```bash
-npm test           # Run all tests
-npm run test:watch # Watch mode
+npm test            # all unit/integration
+npm run test:watch  # watch mode
+npm run test:e2e    # Playwright
+npm run test:e2e:ui # interactive UI
 ```
 
 ---
 
-## Development Workflow
+## 🔧 Development Workflow
 
-### Code Quality Gates
+### Git hooks (Husky)
 
-The pipeline enforces quality through **Husky git hooks**:
+| Hook         | Action                                                |
+| ------------ | ----------------------------------------------------- |
+| `pre-commit` | `lint-staged` → ESLint fix + Prettier on staged files |
+| `commit-msg` | Commitlint validates conventional commit format       |
 
-- **pre-commit**: `lint-staged` runs ESLint + Prettier on staged files
-- **commit-msg**: Validates conventional commits format
+### Commit convention
 
-### Commit Convention
+```
+<type>(<scope>): <description>
 
-All commits must follow **Conventional Commits**: `<type>(<scope>): <description>`
+feat(admin): add attendance check-in/out UI
+fix(header): resolve mobile menu overflow on iOS
+chore(deps): bump next to 16.2.6
+```
 
-**Types**: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
+**Types:** `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore`, `revert`
 
-**Examples**: `feat(admin): add attendance check-in/out UI`, `fix(header): resolve mobile menu overflow on iOS`
+### Lint-staged targets
 
-### Lint-Staged Configuration
+| Glob                   | Checks                |
+| ---------------------- | --------------------- |
+| `*.{ts,tsx,js,jsx}`    | ESLint fix + Prettier |
+| `*.{json,md,yml,yaml}` | Prettier              |
 
-| File Pattern                        | Checks                       |
-| ----------------------------------- | ---------------------------- |
-| `*.ts`, `*.tsx`, `*.js`, `*.jsx`    | ESLint fix + Prettier format |
-| `*.json`, `*.md`, `*.yml`, `*.yaml` | Prettier format              |
+### Next.js config highlights
 
-### ESLint & Prettier
-
-Flat config (`eslint.config.js`) includes TypeScript ESLint (type-aware), React plugin, React Hooks plugin, Next.js plugin, and Prettier integration. Semicolons enabled, single quotes, ES5 trailing commas, 2-space tabs, Tailwind CSS class sorting via `prettier-plugin-tailwindcss`.
-
----
-
-## Next.js Configuration
-
-`next.config.ts` includes:
-
-- **React Strict Mode** enabled
-- **Compression** enabled
-- **Turbopack** available (currently disabled at runtime)
-- **Security Headers**: `X-Content-Type-Options: nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera, microphone, geolocation disabled)
-- **Image Optimization**: Remote patterns for Google Maps domains (legacy), WebP/AVIF formats, responsive device sizes, 75/85 quality tiers, 30-day minimum cache TTL
+- React Strict Mode **on**
+- Compression **on**
+- Security headers: `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` (camera/mic/geo off)
+- Image optimization: WebP/AVIF, responsive sizes, 30-day cache TTL
 
 ---
 
-## Deployment
+## 🚀 Deployment
 
-### Vercel Deployment
+### Vercel (recommended)
 
-1. Push code to GitHub/GitLab/Bitbucket
-2. Import repo into Vercel
-3. Set environment variables in Project Settings
-4. Deploy — Vercel auto-builds on each push
+```bash
+# One-time
+vercel link
 
-**`vercel.json`:**
+# Set env vars in Vercel project settings, then:
+git push origin main    # auto-deploys via GitHub integration
+```
+
+`vercel.json`:
 
 ```json
 {
@@ -679,111 +778,86 @@ Flat config (`eslint.config.js`) includes TypeScript ESLint (type-aware), React 
 }
 ```
 
-### Alternative Platforms
+### Other platforms
 
-AWS (Amplify or ECS/Fargate), Google Cloud Run (with Dockerfile), Azure Static Web Apps, or any dedicated server running `npm run start`.
-
----
-
-## Third-Party Integrations
-
-- **Google Gemini AI** (`@google/genai`): AI-powered content generation — server-side only
-- **Groq AI** (`@ai-sdk/groq`): Streaming AI chatbot using Llama 4 via Vercel AI SDK
-- **MapLibre GL** (`maplibre-gl`): Open-source interactive project location maps — no API key required
-- **hCaptcha**: Form spam protection on contact and registration forms
-- **Resend**: Transactional email, marketing campaigns, domain management
-- **TipTap** (`@tiptap/react`): Rich text editor for email composition
-- **Vercel Analytics**: Privacy-friendly page view and visitor tracking
-- **Vercel Speed Insights**: Real-user Core Web Vitals (LCP, FID/INP, CLS)
-- **Supabase Realtime**: WebSocket-based live updates for notifications and activity feeds
-- **ExcelJS** (`exceljs`): Excel file parsing and generation for data export
-- **Sonner** (`sonner`): Toast notifications for user feedback
-- **canvas-confetti**: Confetti animation effects for celebrations
-- **Zod** (`zod`): Schema validation for API request/response payloads
+- **AWS** — Amplify or ECS/Fargate
+- **Google Cloud Run** — wrap with a Dockerfile (`npm run build && npm run start`)
+- **Azure** — Static Web Apps
+- **Self-hosted** — `node` server running `npm run start`
 
 ---
 
-## Data Layer
+## 🤝 Third-Party Integrations
 
-### Supabase Integration
-
-- **Authentication**: Email/password with `@supabase/ssr` — cookie-based sessions
-- **PostgreSQL Database**: Schema via migration files — core, attendance, forms, notifications, portal settings, lottery, email campaigns, email inbox, performance indexes
-- **Client Architecture**: `client.ts`, `admin.ts`, `create-admin.ts`, `verifyAdmin.ts`, `notifications.ts`, `types.ts`
-
----
-
-## Performance & SEO
-
-### Performance
-
-- Server Components by default minimize client-side JavaScript
-- Next.js `<Image>` with automatic WebP/AVIF, lazy loading, responsive sizing
-- Route segment caching for instant page loads
-- Code splitting at the route level
-- Strategic PostgreSQL indexes from `performance-indexes.sql`
-- 30-day image cache TTL
-- Streaming AI chat responses (no blocking)
-
-### SEO
-
-- Centralized `createMetadata()` utility in `src/lib/seo.ts`
-- Dynamic metadata (`generateMetadata()`) per page
-- Dynamic Open Graph image generation (`opengraph-image.tsx`)
-- XML sitemap (`app/sitemap.ts`) covering all public routes
-- Dynamic `robots.ts` with Googlebot and AI crawler directives
-- Canonical URLs on all pages
-- Twitter card metadata (`summary_large_image`)
-- Semantic HTML with proper heading hierarchy and ARIA attributes
-- WCAG AA color contrast and visible focus states
-- JSON-LD structured data for rich search results
+| Service                   | Usage                                                   |
+| ------------------------- | ------------------------------------------------------- |
+| **Groq (Llama 4)**        | Streaming chatbot via Vercel AI SDK                     |
+| **Google Gemini**         | Server-side content generation                          |
+| **MapLibre GL**           | Open-source project location maps (no API key)          |
+| **hCaptcha**              | Form spam protection on contact & registration          |
+| **Resend**                | Transactional email + marketing campaigns + domain mgmt |
+| **TipTap**                | Rich text editor for email composer                     |
+| **Vercel Analytics**      | Privacy-friendly traffic tracking                       |
+| **Vercel Speed Insights** | Real-user Core Web Vitals (LCP, INP, CLS)               |
+| **Supabase Realtime**     | WebSocket updates for notifications & activity feed     |
+| **ExcelJS**               | Excel parsing & export                                  |
+| **Sonner**                | Toast notifications                                     |
+| **canvas-confetti**       | Lottery win celebrations                                |
+| **Zod**                   | API payload validation                                  |
 
 ---
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
-| Issue                      | Solution                                                                            |
-| -------------------------- | ----------------------------------------------------------------------------------- |
-| Dev server won't start     | Check Node.js v18+, delete `node_modules` and reinstall, run `npm run clean`        |
-| Supabase connection errors | Verify `.env.local` keys, ensure Supabase project is active, check IP restrictions  |
-| Auth not working           | Run all migrations, enable email/password auth in Supabase, configure site URL      |
-| MapLibre not rendering     | Verify map tiles are accessible, check browser console for CORS errors              |
-| AI Chatbot not responding  | Verify `GROQ_API_KEY` is set correctly in `.env.local`                              |
-| Emails not sending         | Verify Resend API key, check delivery dashboard, verify sender domain               |
-| Lottery page not visible   | Check `portal_settings` table for `lottery_page_visible` key set to `true`          |
-| Build failures             | Run `npm run clean`, check TypeScript (`npx tsc --noEmit`), ensure env vars are set |
-| Admin routes redirect loop | Clear cookies, check middleware config, verify admin role in database               |
-
----
-
-## Contributing
-
-1. Fork the repo and branch from `main`: `git checkout -b feat/your-feature-name`
-2. Make changes following code quality standards
-3. Run tests: `npm test && npm run lint && npm run format:check`
-4. Commit using conventional commits: `git commit -m "feat(scope): description"`
-5. Push and open a Pull Request
-
-### Code Style Guidelines
-
-- Use TypeScript strict mode with explicit types
-- Prefer server components unless interactivity requires client components
-- Use `@/` path alias for imports (e.g., `@/src/components/common/BackToTop`)
-- Place reusable components in `src/components/common/`, feature components co-located with routes
-- Use `createMetadata()` from `@/src/lib/seo.ts` for page metadata
-- Use `tailwind-merge` and `clsx` for conditional class composition
-- Follow Prettier's auto-sorted Tailwind class order
-- Write tests for new features; update tests when modifying logic
-- Always run migrations in timestamp order when adding new database tables
+| Issue                      | Fix                                                                              |
+| -------------------------- | -------------------------------------------------------------------------------- |
+| Dev server won't start     | Node 20+; `rm -rf node_modules .next && npm install`; `npm run clean`            |
+| Supabase connection errors | Verify `.env.local` keys; check project is active; review IP allowlist           |
+| Auth not working           | Run **all** migrations in order; enable email/password in Supabase; set site URL |
+| MapLibre not rendering     | Check browser console for CORS; verify tile CDN reachable                        |
+| AI chatbot not responding  | Confirm `GROQ_API_KEY`; check Quota page on Groq                                 |
+| Emails not sending         | Verify `RESEND_API_KEY`; check sender domain verification status                 |
+| Lottery page not visible   | `portal_settings.lottery_page_visible` must be `true`                            |
+| Build failures             | `npm run clean`; `npx tsc --noEmit`; ensure all env vars are set                 |
+| Admin redirect loop        | Clear cookies; verify `profiles.role = 'admin'`; check middleware config         |
+| Locale not switching       | Confirm `next-intl` config in `src/i18n/routing.ts`; clear `NEXT_LOCALE` cookie  |
+| 3D scene not loading       | Check `three`/`@react-three/fiber` versions; look for WebGL errors               |
 
 ---
 
-## License
+## 🤝 Contributing
 
-**Private** — All rights reserved by SVI Infra Solutions Pvt. Ltd.
+1. Fork & branch: `git checkout -b feat/your-feature`
+2. Code with TypeScript strict + tests for new behavior
+3. Quality gates: `npm test && npm run lint && npm run format:check`
+4. Commit conventionally: `feat(scope): description`
+5. Push & open a PR
+
+### Code style
+
+- TypeScript strict mode, explicit types
+- Prefer Server Components; use `"use client"` only for islands
+- `@/` path alias for imports (e.g. `@/src/components/common/BackToTop`)
+- Reusable UI → `src/components/common/`, feature UI co-located
+- Page metadata via `createMetadata()` from `src/lib/seo.ts`
+- Use `clsx` + `tailwind-merge` for conditional classes
+- Trust Prettier's auto-sorted Tailwind class order
+- Always run migrations in timestamp order
+
+---
+
+## 📄 License
+
+**Private** — © 2026 SVI Infra Solutions Pvt. Ltd. All rights reserved.
 
 Unauthorized copying, distribution, or use of this software, via any medium, is strictly prohibited without prior written permission.
 
 ---
 
-_© 2026 SVI Infra Solutions Pvt. Ltd. All rights reserved._
+<div align="center">
+
+[⬆ Back to top](#-svi-infra-solutions)
+
+Made with ❤️ by the SVI Infra Solutions engineering team
+
+</div>
