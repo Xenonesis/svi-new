@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/src/lib/seo';
+import BreadcrumbSchema from '@/src/components/common/BreadcrumbSchema';
 
 export const metadata: Metadata = createMetadata({
   title: 'Frequently Asked Questions (FAQ) | SVI Infra Solutions',
@@ -9,5 +10,10 @@ export const metadata: Metadata = createMetadata({
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <BreadcrumbSchema items={[{ name: 'FAQ', path: '/faq' }]} />
+      {children}
+    </>
+  );
 }

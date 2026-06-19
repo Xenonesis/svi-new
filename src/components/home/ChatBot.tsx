@@ -83,7 +83,7 @@ export default function ChatBot() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<any>(null);
   const logSaveTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const { messages, sendMessage, status, stop, error, setMessages } = useChat({

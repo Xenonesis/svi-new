@@ -257,6 +257,8 @@ export default function AllotmentLetterPage() {
 
   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
 
+  const DRAFT_VERSION = 1;
+
   // Load draft from localStorage on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -264,13 +266,19 @@ export default function AllotmentLetterPage() {
       if (savedDraft) {
         try {
           const parsed = JSON.parse(savedDraft);
-          setFormData((prev) => ({ ...prev, ...parsed }));
+          if (parsed._v === DRAFT_VERSION) {
+            const { _v, ...data } = parsed;
+            setFormData((prev) => ({ ...prev, ...data }));
 
-          const isCustomDays =
-            parsed.secondPaymentDays &&
-            parsed.secondPaymentDays !== '15' &&
-            parsed.secondPaymentDays !== '28';
-          setIsCustomSecondPaymentDays(!!isCustomDays);
+            const isCustomDays =
+              parsed.secondPaymentDays &&
+              parsed.secondPaymentDays !== '15' &&
+              parsed.secondPaymentDays !== '28';
+            setIsCustomSecondPaymentDays(!!isCustomDays);
+          } else {
+            console.log('Draft version mismatch, ignoring stale draft');
+            localStorage.removeItem('allotment_letter_form_draft');
+          }
         } catch (e) {
           console.error('Failed to parse form draft from localStorage', e);
         }
@@ -282,7 +290,10 @@ export default function AllotmentLetterPage() {
   // Save draft to localStorage on changes after it is loaded
   useEffect(() => {
     if (typeof window !== 'undefined' && isDraftLoaded) {
-      localStorage.setItem('allotment_letter_form_draft', JSON.stringify(formData));
+      localStorage.setItem(
+        'allotment_letter_form_draft',
+        JSON.stringify({ _v: DRAFT_VERSION, ...formData })
+      );
     }
   }, [formData, isDraftLoaded]);
 

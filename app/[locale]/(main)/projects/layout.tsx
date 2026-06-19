@@ -1,4 +1,5 @@
 import { createMetadata } from '@/src/lib/seo';
+import BreadcrumbSchema from '@/src/components/common/BreadcrumbSchema';
 
 export const metadata = createMetadata({
   title: 'Our Projects - Premium Real Estate Portfolio',
@@ -8,5 +9,10 @@ export const metadata = createMetadata({
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  return <>{children}</>;
+  return (
+    <>
+      <BreadcrumbSchema items={[{ name: 'Projects', path: '/projects' }]} />
+      {children}
+    </>
+  );
 }

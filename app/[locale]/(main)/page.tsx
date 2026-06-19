@@ -47,6 +47,8 @@ export default async function Home({ params }: Props) {
       <HeroSection images={HERO_IMAGES} />
       <Suspense fallback={null}>
         <HomeSections />
+      </Suspense>
+      <Suspense fallback={null}>
         <StaggerTestimonials />
       </Suspense>
     </div>

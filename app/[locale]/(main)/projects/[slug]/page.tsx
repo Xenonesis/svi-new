@@ -63,9 +63,38 @@ export default async function ProjectDetailPage({ params }: Props) {
     notFound();
   }
 
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'RealEstateListing',
+    name: project.title,
+    description: project.description,
+    image: `https://sviiinfrasolutions.com${project.heroImage}`,
+    datePosted: new Date().toISOString().split('T')[0],
+    itemOffered: {
+      '@type': 'Product',
+      name: project.title,
+      description: project.description,
+      image: project.gallery.map((img: string) => `https://sviiinfrasolutions.com${img}`),
+      offers: {
+        '@type': 'Offer',
+        availability: 'https://schema.org/InStock',
+        priceCurrency: 'INR',
+      },
+    },
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality: project.location,
+      addressCountry: 'IN',
+    },
+  };
+
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 pb-20 dark:bg-gray-900">
       <AnalyticsTracker event="project_view" data={{ slug }} />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
 
       {/* Project Hero */}
       <section className="relative h-[60vh] min-h-[500px] w-full pt-20">
