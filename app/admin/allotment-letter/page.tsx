@@ -25,6 +25,7 @@ export default function AllotmentLetterPage() {
 
   const [advisors, setAdvisors] = useState<Advisor[]>([]);
   const [isCustomAdvisor, setIsCustomAdvisor] = useState(false);
+  const [isCustomSecondPaymentDays, setIsCustomSecondPaymentDays] = useState(false);
   const [projects, setProjects] = useState<{ value: string; label: string }[]>([
     { value: 'Shyam Aangan', label: 'Shyam Aangan' },
     { value: 'Shyam Aangan Farm House', label: 'Shyam Aangan Farm House' },
@@ -140,6 +141,63 @@ export default function AllotmentLetterPage() {
     }
   };
 
+  const formatYYYYMMDD = (date: Date) => {
+    const yyyy = date.getFullYear();
+    const mm = String(date.getMonth() + 1).padStart(2, '0');
+    const dd = String(date.getDate()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd}`;
+  };
+
+  const getCustomDateValue = () => {
+    if (!formData.bookingDate) return '';
+    const bDate = parseDate(formData.bookingDate);
+    const days = parseInt(formData.secondPaymentDays) || 0;
+    const targetDate = new Date(bDate);
+    targetDate.setDate(targetDate.getDate() + days);
+    return formatYYYYMMDD(targetDate);
+  };
+
+  const handleCustomDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const chosenDateStr = e.target.value;
+    if (!chosenDateStr) return;
+
+    const bDateStr = formData.bookingDate || formatYYYYMMDD(new Date());
+    const bDate = parseDate(bDateStr);
+    const chosenDate = parseDate(chosenDateStr);
+
+    const diffTime = chosenDate.getTime() - bDate.getTime();
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+    setFormData((prev) => ({
+      ...prev,
+      secondPaymentDays: String(diffDays >= 0 ? diffDays : 0),
+      bookingDate: prev.bookingDate ? prev.bookingDate : bDateStr,
+    }));
+  };
+
+  const handleSecondPaymentDaysChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const val = e.target.value;
+    if (val === 'custom') {
+      setIsCustomSecondPaymentDays(true);
+      const bDateStr = formData.bookingDate || formatYYYYMMDD(new Date());
+      const bDate = parseDate(bDateStr);
+      const defaultTarget = new Date(bDate);
+      defaultTarget.setDate(defaultTarget.getDate() + 15);
+
+      setFormData((prev) => ({
+        ...prev,
+        secondPaymentDays: '15',
+        bookingDate: prev.bookingDate ? prev.bookingDate : bDateStr,
+      }));
+    } else {
+      setIsCustomSecondPaymentDays(false);
+      setFormData((prev) => ({
+        ...prev,
+        secondPaymentDays: val,
+      }));
+    }
+  };
+
   const [companyInfo, setCompanyInfo] = useState({
     company_name: 'SVI Infra Solutions Pvt. Ltd.',
     company_address: 'A-61 Sector 65 Noida Uttar Pradesh 201309',
@@ -196,6 +254,46 @@ export default function AllotmentLetterPage() {
     bookingPaymentPercent: '10',
     showSecondInstalment: 'true',
   });
+
+  const [isDraftLoaded, setIsDraftLoaded] = useState(false);
+
+  // Load draft from localStorage on mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedDraft = localStorage.getItem('allotment_letter_form_draft');
+      if (savedDraft) {
+        try {
+          const parsed = JSON.parse(savedDraft);
+          setFormData((prev) => ({ ...prev, ...parsed }));
+
+          const isCustomDays =
+            parsed.secondPaymentDays &&
+            parsed.secondPaymentDays !== '15' &&
+            parsed.secondPaymentDays !== '28';
+          setIsCustomSecondPaymentDays(!!isCustomDays);
+        } catch (e) {
+          console.error('Failed to parse form draft from localStorage', e);
+        }
+      }
+      setIsDraftLoaded(true);
+    }
+  }, []);
+
+  // Save draft to localStorage on changes after it is loaded
+  useEffect(() => {
+    if (typeof window !== 'undefined' && isDraftLoaded) {
+      localStorage.setItem('allotment_letter_form_draft', JSON.stringify(formData));
+    }
+  }, [formData, isDraftLoaded]);
+
+  // Adjust isCustomAdvisor when advisors load or draft is loaded
+  useEffect(() => {
+    if (isDraftLoaded && advisors.length > 0 && formData.advisorName) {
+      const isCustAdv =
+        formData.advisorName && !advisors.some((adv) => adv.full_name === formData.advisorName);
+      setIsCustomAdvisor(!!isCustAdv);
+    }
+  }, [advisors, isDraftLoaded, formData.advisorName]);
 
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
@@ -327,6 +425,14 @@ export default function AllotmentLetterPage() {
     const record = savedAllotments.find((r) => r.id === id);
     if (!record?.form_data) return;
     const fd = record.form_data;
+
+    const isCustAdv = fd.advisorName && !advisors.some((adv) => adv.full_name === fd.advisorName);
+    setIsCustomAdvisor(!!isCustAdv);
+
+    const isCustomDays =
+      fd.secondPaymentDays && fd.secondPaymentDays !== '15' && fd.secondPaymentDays !== '28';
+    setIsCustomSecondPaymentDays(!!isCustomDays);
+
     setFormData({
       clientName: fd.clientName || '',
       salutation: fd.salutation || 'Mr.',
@@ -451,6 +557,8 @@ export default function AllotmentLetterPage() {
               type="button"
               onClick={() => {
                 setSelectedRecordId('');
+                setIsCustomAdvisor(false);
+                setIsCustomSecondPaymentDays(false);
                 setFormData({
                   clientName: '',
                   salutation: 'Mr.',
@@ -632,33 +740,71 @@ export default function AllotmentLetterPage() {
                 required
               />
 
-              <FormSelect
-                label="Second Payment Days"
-                name="secondPaymentDays"
-                value={formData.secondPaymentDays}
-                onChange={handleChange}
-                options={[
-                  { value: '15', label: '15 days' },
-                  { value: '28', label: '28 days' },
-                ]}
-              />
+              {isCustomSecondPaymentDays ? (
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400">
+                      Second Payment Date (Custom) *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsCustomSecondPaymentDays(false);
+                        setFormData((prev) => ({ ...prev, secondPaymentDays: '15' }));
+                      }}
+                      className="text-brand-gold text-[10px] font-bold tracking-wider uppercase hover:underline"
+                    >
+                      Use Dropdown
+                    </button>
+                  </div>
+                  <input
+                    type="date"
+                    name="secondPaymentDaysCustom"
+                    value={getCustomDateValue()}
+                    onChange={handleCustomDateChange}
+                    required
+                    className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100/70 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600 dark:disabled:bg-gray-900/40"
+                  />
+                  <div className="mt-1 flex items-center justify-between text-[10px] text-gray-400 dark:text-gray-500">
+                    <span>Calculated: {formData.secondPaymentDays || '0'} days</span>
+                  </div>
+                </div>
+              ) : (
+                <FormSelect
+                  label="Second Payment Days"
+                  name="secondPaymentDays"
+                  value={formData.secondPaymentDays}
+                  onChange={handleSecondPaymentDaysChange}
+                  options={[
+                    { value: '15', label: '15 days' },
+                    { value: '28', label: '28 days' },
+                    { value: 'custom', label: 'Other / Custom...' },
+                  ]}
+                />
+              )}
 
               {isCustomAdvisor ? (
-                <div className="relative">
-                  <FormField
-                    label="Advisor Name"
+                <div>
+                  <div className="mb-1.5 flex items-center justify-between">
+                    <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400">
+                      Advisor Name *
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomAdvisor(false)}
+                      className="text-brand-gold text-[10px] font-bold tracking-wider uppercase hover:underline"
+                    >
+                      Use Dropdown
+                    </button>
+                  </div>
+                  <input
+                    type="text"
                     name="advisorName"
                     value={formData.advisorName}
                     onChange={handleChange}
                     required
+                    className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-1 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-100/70 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600 dark:disabled:bg-gray-900/40"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setIsCustomAdvisor(false)}
-                    className="text-brand-gold absolute top-0 right-0 text-[10px] font-bold tracking-wider uppercase hover:underline"
-                  >
-                    Use Dropdown
-                  </button>
                 </div>
               ) : (
                 <FormSelect
