@@ -443,6 +443,80 @@ export function ComposeTab({
     }
   }, []);
 
+  // Handle prefill from Registration Records
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('prefillRegistration') === 'true') {
+        const stored = sessionStorage.getItem('emailPrefillRegistration');
+        if (stored) {
+          try {
+            const reg = JSON.parse(stored);
+            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'registration_acknowledgment');
+
+            if (tpl) {
+              let processedSubject = tpl.subject;
+              processedSubject = processedSubject.replace('{{firstName}}', reg.name || 'Client');
+              processedSubject = processedSubject.replace(
+                '{{submissionId}}',
+                reg.submission_id || 'N/A'
+              );
+
+              setSubject(processedSubject);
+              setTemplateHtml(tpl.html);
+              setSelectedTemplate('registration_acknowledgment');
+
+              const vars: Record<string, string> = {
+                firstName: reg.name || '',
+                lastName: reg.last_name || '',
+                submissionId: reg.submission_id || 'N/A',
+                project: reg.project || reg.property_interest || 'N/A',
+                propertyType: reg.property_type || 'N/A',
+                propertySize: reg.property_size || 'N/A',
+                advisorName: reg.advisor_name || 'N/A',
+                paymentPlan: reg.payment_plan || 'N/A',
+                schemeAmount: reg.scheme_amount || '0',
+                adminEmail: adminEmail || 'hr.sviinfrasolutions@gmail.com',
+              };
+
+              setTemplateVars(vars);
+              setHtml('');
+              setPreviewMode(true);
+            } else {
+              setSubject(`Registration Update - SVI Infra`);
+              setHtml(
+                `
+<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
+  <p>Dear ${reg.name || 'Client'},</p>
+  <p>Thank you for registering with SVI Infra Solutions.</p>
+  <p>Project Interest: ${reg.project || reg.property_interest || 'N/A'}</p>
+  <br />
+  <p>Best regards,<br>SVI Infra Team</p>
+</div>
+`.trim()
+              );
+              setTemplateHtml(null);
+              setSelectedTemplate(null);
+              setPreviewMode(false);
+            }
+
+            setEditorKey((prev) => prev + 1);
+
+            if (reg.email) {
+              setTo(reg.email);
+            }
+
+            sessionStorage.removeItem('emailPrefillRegistration');
+            const newUrl = window.location.pathname + '?tab=compose';
+            window.history.replaceState({}, '', newUrl);
+          } catch (e) {
+            console.error('Error prefilling registration email:', e);
+          }
+        }
+      }
+    }
+  }, [adminEmail]);
+
   // Auto-save draft every 5s
   useEffect(() => {
     if (!to && !subject && !html) return;

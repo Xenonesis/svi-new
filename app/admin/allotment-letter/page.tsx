@@ -356,11 +356,50 @@ export default function AllotmentLetterPage() {
   };
 
   useEffect(() => {
-    if (savedAllotments.length > 0 && typeof window !== 'undefined') {
+    if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
-      const templateId = searchParams.get('templateId');
-      if (templateId && !selectedRecordId) {
-        loadFromRecord(templateId);
+
+      if (savedAllotments.length > 0) {
+        const templateId = searchParams.get('templateId');
+        if (templateId && !selectedRecordId) {
+          loadFromRecord(templateId);
+        }
+      }
+
+      const prefillRegistration = searchParams.get('prefillRegistration');
+      if (prefillRegistration === 'true') {
+        const storedReg = sessionStorage.getItem('allotmentPrefillRegistration');
+        if (storedReg) {
+          try {
+            const regData = JSON.parse(storedReg);
+            setFormData((prev) => {
+              let proj = regData.project || regData.property_interest;
+              if (proj) {
+                const projectMap: Record<string, string> = {
+                  'shyam-aangan': 'Shyam Aangan',
+                  'shyam-aangan-phase-1': 'Shyam Aangan Phase 1',
+                  'shyam-aangan-farm-house': 'Shyam Aangan Farm House',
+                  'shivani-vatika': 'Shivani Vatika',
+                  'phulera-smartcity': 'Phulera SmartCity',
+                };
+                proj = projectMap[proj.toLowerCase().trim()] || proj;
+              } else {
+                proj = prev.projectName;
+              }
+
+              return {
+                ...prev,
+                clientName: `${regData.name || ''} ${regData.last_name || ''}`.trim(),
+                address: regData.address || '',
+                projectName: proj,
+              };
+            });
+            // Clear so it doesn't re-apply on refresh
+            sessionStorage.removeItem('allotmentPrefillRegistration');
+          } catch (e) {
+            console.error('Failed to parse prefill registration', e);
+          }
+        }
       }
     }
   }, [savedAllotments, selectedRecordId]);

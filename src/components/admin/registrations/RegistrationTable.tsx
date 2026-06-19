@@ -1,6 +1,6 @@
 'use client';
 
-import { Users, Star, Eye, Trash2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Users, Star, Eye, Trash2, ChevronLeft, ChevronRight, Mail, FileText } from 'lucide-react';
 import { motion } from 'motion/react';
 import { STATUS_OPTIONS } from './types';
 import type { Registration } from './types';
@@ -235,19 +235,44 @@ export function RegistrationTable({
                     })}
                   </td>
                   <td className="px-6 py-4.5">
-                    <div className="flex items-center gap-1 opacity-0 transition-all group-hover:opacity-100">
+                    <div className="flex items-center justify-end gap-1.5 opacity-0 transition-all group-hover:opacity-100">
                       <button
                         onClick={() => onView(reg)}
-                        className="border-brand-gold/20 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex cursor-pointer items-center gap-1.5 rounded border px-3 py-1.5 text-[9px] font-bold tracking-wider uppercase"
+                        className="hover:text-brand-gold hover:bg-brand-gold/10 dark:hover:bg-brand-gold/10 dark:hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors"
+                        title="View Details"
                       >
-                        <Eye className="h-3 w-3" /> View
+                        <Eye className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          sessionStorage.setItem(
+                            'allotmentPrefillRegistration',
+                            JSON.stringify(reg)
+                          );
+                          window.location.href = '/admin/allotment-letter?prefillRegistration=true';
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                        title="Generate Document"
+                      >
+                        <FileText className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          sessionStorage.setItem('emailPrefillRegistration', JSON.stringify(reg));
+                          window.location.href =
+                            '/admin/email?tab=compose&prefillRegistration=true';
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-purple-50 hover:text-purple-600 dark:hover:bg-purple-500/10 dark:hover:text-purple-400"
+                        title="Email Client"
+                      >
+                        <Mail className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => onDelete(reg)}
-                        className="flex cursor-pointer items-center justify-center rounded p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-900/20"
                         title="Delete"
                       >
-                        <Trash2 className="h-3.5 w-3.5" />
+                        <Trash2 className="h-4 w-4" />
                       </button>
                     </div>
                   </td>
