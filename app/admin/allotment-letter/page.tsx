@@ -392,6 +392,7 @@ export default function AllotmentLetterPage() {
                 clientName: `${regData.name || ''} ${regData.last_name || ''}`.trim(),
                 address: regData.address || '',
                 projectName: proj,
+                ticketId: regData.submission_id || prev.ticketId,
               };
             });
             // Clear so it doesn't re-apply on refresh

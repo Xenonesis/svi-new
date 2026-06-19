@@ -1,6 +1,16 @@
 'use client';
 
-import { Users, Star, Eye, Trash2, ChevronLeft, ChevronRight, Mail, FileText } from 'lucide-react';
+import {
+  Users,
+  Star,
+  Eye,
+  Trash2,
+  ChevronLeft,
+  ChevronRight,
+  Mail,
+  FileText,
+  Receipt,
+} from 'lucide-react';
 import { motion } from 'motion/react';
 import { STATUS_OPTIONS } from './types';
 import type { Registration } from './types';
@@ -266,6 +276,16 @@ export function RegistrationTable({
                         title="Email Client"
                       >
                         <Mail className="h-4 w-4" />
+                      </button>
+                      <button
+                        onClick={() => {
+                          sessionStorage.setItem('receiptPrefillRegistration', JSON.stringify(reg));
+                          window.location.href = '/admin/payment-receipt?prefillRegistration=true';
+                        }}
+                        className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-green-50 hover:text-green-600 dark:hover:bg-green-500/10 dark:hover:text-green-400"
+                        title="Payment Receipt"
+                      >
+                        <Receipt className="h-4 w-4" />
                       </button>
                       <button
                         onClick={() => onDelete(reg)}

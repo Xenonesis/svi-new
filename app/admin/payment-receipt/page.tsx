@@ -116,6 +116,46 @@ export default function PaymentReceiptPage() {
     }
   }, [receipts]);
 
+  // Handle prefillRegistration from URL
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const prefillRegistration = searchParams.get('prefillRegistration');
+      if (prefillRegistration === 'true') {
+        const storedReg = sessionStorage.getItem('receiptPrefillRegistration');
+        if (storedReg) {
+          try {
+            const regData = JSON.parse(storedReg);
+
+            let proj = regData.project || regData.property_interest;
+            if (proj) {
+              const projectMap: Record<string, string> = {
+                'shyam-aangan': 'Shyam Aangan',
+                'shyam-aangan-phase-1': 'Shyam Aangan Phase 1',
+                'shyam-aangan-farm-house': 'Shyam Aangan Farm House',
+                'shivani-vatika': 'Shivani Vatika',
+                'phulera-smartcity': 'Phulera SmartCity',
+              };
+              proj = projectMap[proj.toLowerCase().trim()] || proj;
+            }
+
+            setFormData((prev) => ({
+              ...prev,
+              name: `${regData.name || ''} ${regData.last_name || ''}`.trim(),
+              account: proj || prev.account,
+              amount: regData.scheme_amount || prev.amount,
+              refId: regData.submission_id || prev.refId,
+            }));
+
+            sessionStorage.removeItem('receiptPrefillRegistration');
+          } catch (e) {
+            console.error('Failed to parse prefill registration', e);
+          }
+        }
+      }
+    }
+  }, []);
+
   // Function to convert number to words (Indian numbering system)
   const numberToWords = (num: string): string => {
     if (!num || num === '0') return '';
