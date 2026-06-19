@@ -148,8 +148,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           </span>
 
           <h1 className="animate-hero-2 mb-8 font-serif text-5xl leading-[1.05] text-white sm:text-6xl md:text-8xl">
-            {t('title')}
-            <br />
+            {t('title')} <br className="md:hidden" />
             <span
               className="text-gradient-gold animate-bg-pan inline-block pr-4 italic"
               style={{

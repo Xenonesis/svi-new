@@ -324,208 +324,250 @@ export default function RegistrationForm() {
             className="border border-gray-200 bg-white p-8 shadow-2xl md:p-12 dark:border-gray-700 dark:bg-gray-800"
             noValidate
           >
-            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-              <FormInput
-                name="firstName"
-                label="First Name"
-                value={formData.firstName}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter first name"
-              />
-              <FormInput
-                name="lastName"
-                label="Last Name"
-                value={formData.lastName}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter last name"
-              />
-
-              <FormInput
-                name="mobileNo"
-                label="Mobile No"
-                value={formData.mobileNo}
-                errors={errors}
-                onChange={handleChange}
-                type="tel"
-                placeholder="Enter mobile number"
-              />
-              <FormInput
-                name="email"
-                label="Email"
-                value={formData.email}
-                errors={errors}
-                onChange={handleChange}
-                type="email"
-                placeholder="Enter email address"
-              />
-
-              <FormInput
-                name="soWoDo"
-                label="S/O, W/O, D/O"
-                value={formData.soWoDo}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter relation"
-              />
-              <FormInput
-                name="dob"
-                label="Date"
-                value={formData.dob}
-                errors={errors}
-                onChange={handleChange}
-                type="date"
-              />
-
-              <FormFileUpload
-                type="photo"
-                label="Photo Upload"
-                file={photoFile}
-                errors={errors}
-                onFileChange={handleFileChange}
-                onRemoveFile={removeFile}
-              />
-              <FormFileUpload
-                type="panCard"
-                label="PAN Card Upload"
-                file={panCardFile}
-                errors={errors}
-                onFileChange={handleFileChange}
-                onRemoveFile={removeFile}
-              />
-
-              <FormInput
-                name="aadharNumber"
-                label="Aadhar Number"
-                value={formData.aadharNumber}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter 12-digit Aadhar"
-              />
-              <FormInput
-                name="panNumber"
-                label="PAN Number"
-                value={formData.panNumber}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter PAN number"
-              />
-
-              <FormInput
-                name="state"
-                label="State"
-                value={formData.state}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter state"
-              />
-              <FormInput
-                name="city"
-                label="City"
-                value={formData.city}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter city"
-              />
-
-              <FormInput
-                name="address"
-                label="Address"
-                value={formData.address}
-                errors={errors}
-                onChange={handleChange}
-                type="text"
-                placeholder="Enter full address"
-              />
-              <FormSelect
-                name="advisorName"
-                label="Advisor Name"
-                value={formData.advisorName}
-                options={advisors}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select advisor"
-              />
-
-              <FormSelect
-                name="project"
-                label="Select Projects"
-                value={formData.project}
-                options={projects}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select project"
-              />
-              <FormSelect
-                name="propertySize"
-                label="Property Size"
-                value={formData.propertySize}
-                options={PROPERTY_SIZES}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select size"
-              />
-
-              <FormSelect
-                name="propertyType"
-                label="Property Type"
-                value={formData.propertyType}
-                options={PROPERTY_TYPES}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select type"
-              />
-              <FormSelect
-                name="plotPreference"
-                label="Plot Preference"
-                value={formData.plotPreference}
-                options={PLOT_PREFERENCES}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select preference"
-              />
-
-              <FormSelect
-                name="paymentPlan"
-                label="Payment Plan"
-                value={formData.paymentPlan}
-                options={PAYMENT_PLANS}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select plan"
-              />
-              <FormSelect
-                name="paymentMode"
-                label="Payment Mode"
-                value={formData.paymentMode}
-                options={PAYMENT_MODES}
-                errors={errors}
-                onChange={handleChange}
-                placeholder="Select mode"
-              />
-
-              <div className="sm:col-span-2">
-                <FormInput
-                  name="schemeAmount"
-                  label="Scheme Amount"
-                  value={formData.schemeAmount}
-                  errors={errors}
-                  onChange={handleChange}
-                  type="text"
-                  placeholder="Enter scheme amount"
-                />
+            <div className="space-y-10">
+              {/* Section 1: Personal Details */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/40 p-6 shadow-sm sm:p-8 dark:border-gray-700/50 dark:bg-gray-800/40">
+                <div className="mb-6 border-b border-gray-200 pb-4 dark:border-gray-700">
+                  <h3 className="text-brand-navy font-serif text-2xl dark:text-gray-100">
+                    Personal Details
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Please provide your basic contact information.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormInput
+                    name="firstName"
+                    label="First Name"
+                    value={formData.firstName}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter first name"
+                  />
+                  <FormInput
+                    name="lastName"
+                    label="Last Name"
+                    value={formData.lastName}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter last name"
+                  />
+                  <FormInput
+                    name="mobileNo"
+                    label="Mobile No"
+                    value={formData.mobileNo}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="tel"
+                    placeholder="Enter mobile number"
+                  />
+                  <FormInput
+                    name="email"
+                    label="Email"
+                    value={formData.email}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="email"
+                    placeholder="Enter email address"
+                  />
+                  <FormInput
+                    name="soWoDo"
+                    label="S/O, W/O, D/O"
+                    value={formData.soWoDo}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter relation"
+                  />
+                  <FormInput
+                    name="dob"
+                    label="Date of Birth"
+                    value={formData.dob}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="date"
+                  />
+                </div>
               </div>
 
-              <div className="sm:col-span-2">
-                <Captcha onValidate={setCaptchaValid} error={captchaError} />
+              {/* Section 2: Identification & Address */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/40 p-6 shadow-sm sm:p-8 dark:border-gray-700/50 dark:bg-gray-800/40">
+                <div className="mb-6 border-b border-gray-200 pb-4 dark:border-gray-700">
+                  <h3 className="text-brand-navy font-serif text-2xl dark:text-gray-100">
+                    Identification & Address
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    KYC documents and current residential address.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormFileUpload
+                    type="photo"
+                    label="Photo Upload"
+                    file={photoFile}
+                    errors={errors}
+                    onFileChange={handleFileChange}
+                    onRemoveFile={removeFile}
+                  />
+                  <FormFileUpload
+                    type="panCard"
+                    label="PAN Card Upload"
+                    file={panCardFile}
+                    errors={errors}
+                    onFileChange={handleFileChange}
+                    onRemoveFile={removeFile}
+                  />
+                  <FormInput
+                    name="aadharNumber"
+                    label="Aadhar Number"
+                    value={formData.aadharNumber}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter 12-digit Aadhar"
+                  />
+                  <FormInput
+                    name="panNumber"
+                    label="PAN Number"
+                    value={formData.panNumber}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter PAN number"
+                  />
+                  <FormInput
+                    name="state"
+                    label="State"
+                    value={formData.state}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter state"
+                  />
+                  <FormInput
+                    name="city"
+                    label="City"
+                    value={formData.city}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter city"
+                  />
+                  <div className="sm:col-span-2">
+                    <FormInput
+                      name="address"
+                      label="Address"
+                      value={formData.address}
+                      errors={errors}
+                      onChange={handleChange}
+                      type="text"
+                      placeholder="Enter full address"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Section 3: Investment Details */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/40 p-6 shadow-sm sm:p-8 dark:border-gray-700/50 dark:bg-gray-800/40">
+                <div className="mb-6 border-b border-gray-200 pb-4 dark:border-gray-700">
+                  <h3 className="text-brand-navy font-serif text-2xl dark:text-gray-100">
+                    Investment Preferences
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Select your desired property and payment structure.
+                  </p>
+                </div>
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+                  <FormSelect
+                    name="advisorName"
+                    label="Advisor Name"
+                    value={formData.advisorName}
+                    options={advisors}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select advisor"
+                  />
+                  <FormSelect
+                    name="project"
+                    label="Select Project"
+                    value={formData.project}
+                    options={projects}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select project"
+                  />
+                  <FormSelect
+                    name="propertySize"
+                    label="Property Size"
+                    value={formData.propertySize}
+                    options={PROPERTY_SIZES}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select size"
+                  />
+                  <FormSelect
+                    name="propertyType"
+                    label="Property Type"
+                    value={formData.propertyType}
+                    options={PROPERTY_TYPES}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select type"
+                  />
+                  <FormSelect
+                    name="plotPreference"
+                    label="Plot Preference"
+                    value={formData.plotPreference}
+                    options={PLOT_PREFERENCES}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select preference"
+                  />
+                  <FormSelect
+                    name="paymentPlan"
+                    label="Payment Plan"
+                    value={formData.paymentPlan}
+                    options={PAYMENT_PLANS}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select plan"
+                  />
+                  <FormSelect
+                    name="paymentMode"
+                    label="Payment Mode"
+                    value={formData.paymentMode}
+                    options={PAYMENT_MODES}
+                    errors={errors}
+                    onChange={handleChange}
+                    placeholder="Select mode"
+                  />
+                  <FormInput
+                    name="schemeAmount"
+                    label="Scheme Amount"
+                    value={formData.schemeAmount}
+                    errors={errors}
+                    onChange={handleChange}
+                    type="text"
+                    placeholder="Enter scheme amount"
+                  />
+                </div>
+              </div>
+
+              {/* Section 4: Verification */}
+              <div className="rounded-2xl border border-gray-100 bg-gray-50/40 p-6 shadow-sm sm:p-8 dark:border-gray-700/50 dark:bg-gray-800/40">
+                <div className="mb-6 border-b border-gray-200 pb-4 dark:border-gray-700">
+                  <h3 className="text-brand-navy font-serif text-2xl dark:text-gray-100">
+                    Verification
+                  </h3>
+                  <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    Please solve the puzzle below to verify you are human.
+                  </p>
+                </div>
+                <div className="flex justify-center">
+                  <Captcha onValidate={setCaptchaValid} error={captchaError} />
+                </div>
               </div>
             </div>
 
