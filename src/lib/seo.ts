@@ -31,10 +31,18 @@ export function createMetadata({
   const imageUrl = absoluteUrl(image);
 
   return {
-    title,
+    title: {
+      default: title,
+      template: `%s | ${SITE_NAME}`,
+    },
     description,
     alternates: {
       canonical: url,
+      languages: {
+        'en-IN': absoluteUrl(`/en${path === '/' ? '' : path}`),
+        'hi-IN': absoluteUrl(`/hi${path === '/' ? '' : path}`),
+        'x-default': absoluteUrl(`/en${path === '/' ? '' : path}`),
+      },
     },
     robots: noIndex
       ? {

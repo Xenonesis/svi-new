@@ -65,8 +65,38 @@ export default async function BlogPost({ params }: Props) {
   // Get other posts for related section
   const relatedPosts = SHARED_BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 2);
 
+  const articleJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: title,
+    description: excerpt,
+    image: absoluteUrl(post.image),
+    author: {
+      '@type': 'Person',
+      name: post.author,
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: 'SVI Infra Solutions',
+      logo: {
+        '@type': 'ImageObject',
+        url: absoluteUrl('/logo.png'),
+      },
+    },
+    datePublished: new Date(post.date).toISOString(),
+    dateModified: new Date(post.date).toISOString(),
+    mainEntityOfPage: {
+      '@type': 'WebPage',
+      '@id': absoluteUrl(`/${locale}/blog/${slug}`),
+    },
+  };
+
   return (
     <div className="dark:bg-brand-dark-bg min-h-screen bg-gray-50 pt-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
       {/* Reading progress bar */}
       <ReadingProgress />
 

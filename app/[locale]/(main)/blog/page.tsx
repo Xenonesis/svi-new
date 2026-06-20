@@ -3,6 +3,7 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import dynamic from 'next/dynamic';
 import BlogHero from './BlogHero';
 import BlogCards from './BlogCards';
+import { BLOG_POSTS } from '@/src/lib/blog';
 
 const BlogFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'));
 
@@ -25,10 +26,12 @@ export default async function Blog({ params }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations('pages.blog');
 
+  const listPosts = BLOG_POSTS.map(({ content, contentHi, ...rest }) => rest);
+
   return (
     <div className="dark:bg-brand-dark-bg min-h-screen bg-gray-50 pt-24 pb-20">
       <BlogHero />
-      <BlogCards />
+      <BlogCards posts={listPosts} />
       <BlogFAQ />
     </div>
   );

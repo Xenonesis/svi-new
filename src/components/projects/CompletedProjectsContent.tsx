@@ -9,7 +9,10 @@ import HoverZoomImage from '@/src/components/ui/HoverZoomImage';
 import dynamic from 'next/dynamic';
 
 const ProjectsFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'), { ssr: false });
-const CompletedProjectsMap = lazy(() => import('@/src/components/properties/CompletedProjectsMap'));
+const CompletedProjectsMap = dynamic(
+  () => import('@/src/components/properties/CompletedProjectsMap'),
+  { ssr: false }
+);
 
 const GRADIENT_STYLE = {
   backgroundImage:

@@ -24,8 +24,25 @@ export default async function FAQPage({ params }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations('pages.faq');
 
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: ALL_FAQS.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer,
+      },
+    })),
+  };
+
   return (
     <div className="min-h-screen bg-white pt-20 pb-20 dark:bg-gray-900">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Hero */}
       <section className="bg-brand-navy relative py-20 text-center">
         <div className="relative z-10 container mx-auto px-4">

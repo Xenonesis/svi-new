@@ -15,7 +15,7 @@ const nextConfig = {
   compress: true,
   typescript: { ignoreBuildErrors: false },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'date-fns'],
+    optimizePackageImports: ['lucide-react', 'recharts', 'date-fns', 'motion', '@tiptap/react', '@tiptap/starter-kit'],
   },
   webpack: (config, { dev }) => {
     if (dev) {
@@ -48,6 +48,10 @@ const nextConfig = {
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
           { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com https://js.hcaptcha.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://hcaptcha.com https://*.hcaptcha.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://www.google-analytics.com; connect-src 'self' https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://www.google-analytics.com https://hcaptcha.com https://*.hcaptcha.com; frame-src 'self' https://newassets.hcaptcha.com https://js.hcaptcha.com; frame-ancestors 'none';",
+          },
         ],
       },
     ];

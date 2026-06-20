@@ -6,7 +6,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ArrowRight, Calendar, User, Clock, Bookmark } from 'lucide-react';
-import { BLOG_POSTS } from '@/src/lib/blog';
+import type { BlogPost } from '@/src/lib/blog';
 
 const CATEGORY_COLORS: Record<string, string> = {
   'Investment Tips': 'from-emerald-500 to-teal-600',
@@ -17,22 +17,22 @@ const CATEGORY_COLORS: Record<string, string> = {
   टेक्नोलॉजी: 'from-purple-500 to-pink-600',
 };
 
-export default function BlogCards() {
+export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' | 'contentHi'>[] }) {
   const locale = useLocale();
   const isHindi = locale === 'hi';
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
 
   // Get unique categories
   const categories = Array.from(
-    new Set(BLOG_POSTS.map((p) => (isHindi && p.categoryHi ? p.categoryHi : p.category)))
+    new Set(posts.map((p) => (isHindi && p.categoryHi ? p.categoryHi : p.category)))
   );
 
   const filteredPosts = activeCategory
-    ? BLOG_POSTS.filter((p) => {
+    ? posts.filter((p) => {
         const cat = isHindi && p.categoryHi ? p.categoryHi : p.category;
         return cat === activeCategory;
       })
-    : BLOG_POSTS;
+    : posts;
 
   const showFeatured = !activeCategory && filteredPosts.length > 1;
 

@@ -1,7 +1,7 @@
 import { MapPin, PhoneIcon, Mail, Clock } from 'lucide-react';
 import { SITE_URL } from '@/src/lib/seo';
 import ContactForm from '@/src/components/contact/ContactForm';
-import ContactMap from '@/src/components/contact/ContactMap';
+import ContactMapWrapper from '@/src/components/contact/ContactMapWrapper';
 import ContactFAQ from '@/src/components/faq/ContactFAQ';
 
 const localBusinessJsonLd = {
@@ -163,7 +163,7 @@ export default function Contact() {
 
             <div className="flex flex-col gap-6 md:gap-8 lg:w-2/3">
               <ContactForm />
-              <ContactMap />
+              <ContactMapWrapper />
             </div>
           </div>
         </div>

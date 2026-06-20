@@ -9,7 +9,7 @@ import { FilterPanel } from '@/src/components/admin/registrations/FilterPanel';
 import { RegistrationTable } from '@/src/components/admin/registrations/RegistrationTable';
 import { DetailModal } from '@/src/components/admin/registrations/DetailModal';
 import { DeleteConfirmModal } from '@/src/components/admin/registrations/DeleteConfirmModal';
-import { AdvisorSettingsModal } from '@/src/components/admin/registrations/AdvisorSettingsModal';
+import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
 
 export default function AdminRegistrations() {
   const h = useRegistrations();

@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   // Protect the cron endpoint
   const secret = process.env.CRON_SECRET;
   const authHeader = request.headers.get('authorization');
-  if (secret && authHeader !== `Bearer ${secret}`) {
+  if (!secret || authHeader !== `Bearer ${secret}`) {
     throw AppError.unauthorized();
   }
 

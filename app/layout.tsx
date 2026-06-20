@@ -4,6 +4,7 @@ import { COMPANY_NAME, SITE_NAME, SITE_URL, absoluteUrl } from '@/src/lib/seo';
 import { Outfit, Playfair_Display } from 'next/font/google';
 import Script from 'next/script';
 import type { Metadata, Viewport } from 'next';
+import { getLocale } from 'next-intl/server';
 
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
@@ -108,9 +109,10 @@ export const viewport: Viewport = {
   themeColor: '#111827',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <head suppressHydrationWarning>
         <script
           type="application/ld+json"
@@ -200,6 +202,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 'Premium residential and commercial real estate developer in Jaipur, Noida, and Phulera Smart City',
               publisher: {
                 '@id': 'https://sviiinfrasolutions.com/#organization',
+              },
+              speakable: {
+                '@type': 'SpeakableSpecification',
+                xpath: ['/html/head/title', "/html/head/meta[@name='description']/@content"],
               },
             }),
           }}

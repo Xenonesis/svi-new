@@ -3,6 +3,7 @@
 import { contactSchema } from '@/src/lib/api/schemas';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { escapeHtml } from '@/src/lib/utils/escape';
 
 interface ActionResult {
   success: boolean;
@@ -92,13 +93,13 @@ export async function submitContactForm(formData: FormData): Promise<ActionResul
               </div>
               <h2>New Contact Form Submission</h2>
               <table style="border-collapse:collapse;width:100%">
-                <tr><td style="padding:8px;font-weight:bold">Name:</td><td style="padding:8px">${name}</td></tr>
-                <tr><td style="padding:8px;font-weight:bold">Email:</td><td style="padding:8px">${email}</td></tr>
-                <tr><td style="padding:8px;font-weight:bold">Phone:</td><td style="padding:8px">${phone}</td></tr>
-                <tr><td style="padding:8px;font-weight:bold">Subject:</td><td style="padding:8px">${subject}</td></tr>
+                <tr><td style="padding:8px;font-weight:bold">Name:</td><td style="padding:8px">${escapeHtml(name)}</td></tr>
+                <tr><td style="padding:8px;font-weight:bold">Email:</td><td style="padding:8px">${escapeHtml(email)}</td></tr>
+                <tr><td style="padding:8px;font-weight:bold">Phone:</td><td style="padding:8px">${escapeHtml(phone)}</td></tr>
+                <tr><td style="padding:8px;font-weight:bold">Subject:</td><td style="padding:8px">${escapeHtml(subject)}</td></tr>
               </table>
               <p style="margin-top:16px"><strong>Message:</strong></p>
-              <p>${message.replace(/\n/g, '<br>')}</p>
+              <p>${escapeHtml(message).replace(/\n/g, '<br>')}</p>
             </div>
           `,
         });

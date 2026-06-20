@@ -81,11 +81,18 @@ export default function AdminDashboard() {
 
   // Auth check + parallel data fetch
   useEffect(() => {
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
-      if (!session) {
+    const controller = new AbortController();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (controller.signal.aborted) return;
+      if (!user) {
         router.replace('/admin');
         return;
       }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) return;
 
       // Profile check + properties fetch in parallel (no dependency between them)
       const [profileResult, propertiesResult] = await Promise.all([

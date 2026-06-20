@@ -28,12 +28,17 @@ function PropertiesContent() {
   // Auth verification check
   useEffect(() => {
     const controller = new AbortController();
-    supabase.auth.getSession().then(async ({ data: { session } }) => {
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (controller.signal.aborted) return;
-      if (!session) {
+      if (!user) {
         router.replace('/admin');
         return;
       }
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session) return;
 
       // Verify admin role
       const { data: profile } = await supabase
