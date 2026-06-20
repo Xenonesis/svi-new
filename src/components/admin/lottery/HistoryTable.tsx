@@ -1,6 +1,5 @@
-'use client';
-
-import { Award, Eye, Edit2, Mail, RefreshCw, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { Award, Eye, Edit2, Mail, RefreshCw, Trash2, ChevronDown } from 'lucide-react';
 import type { Lottery } from './types';
 
 interface HistoryTableProps {
@@ -11,6 +10,7 @@ interface HistoryTableProps {
   onEmailParticipants: (lottery: Lottery) => void;
   onResetDraw: (lotteryId: string) => void;
   onDelete: (lotteryId: string) => void;
+  onStatusChange?: (lotteryId: string, newStatus: 'active' | 'completed' | 'inactive') => void;
 }
 
 export function HistoryTable({
@@ -21,7 +21,9 @@ export function HistoryTable({
   onEmailParticipants,
   onResetDraw,
   onDelete,
+  onStatusChange,
 }: HistoryTableProps) {
+  const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
   if (!lotteries || lotteries.length === 0) {
     return (
       <div className="space-y-6">
@@ -62,18 +64,47 @@ export function HistoryTable({
                   <td className="px-8 py-5 text-slate-500 dark:text-gray-400">
                     {new Date(l.created_at).toLocaleDateString()}
                   </td>
-                  <td className="px-8 py-5">
-                    <span
-                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold tracking-wider uppercase ${
+                  <td className="relative px-8 py-5">
+                    <button
+                      onClick={() => setActiveDropdownId(activeDropdownId === l.id ? null : l.id)}
+                      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-bold tracking-wider uppercase transition-all hover:opacity-85 ${
                         l.status === 'active'
                           ? 'border-green-200 bg-green-50 text-green-600 dark:border-green-500/30 dark:bg-green-500/10 dark:text-green-400'
                           : l.status === 'completed'
-                            ? 'border-brand-gold/30 bg-brand-gold/10 text-brand-gold'
+                            ? 'border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:bg-brand-gold/5'
                             : 'border-slate-200 bg-slate-100 text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
                       }`}
                     >
                       {l.status}
-                    </span>
+                      <ChevronDown className="h-3 w-3 opacity-60" />
+                    </button>
+
+                    {activeDropdownId === l.id && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-30"
+                          onClick={() => setActiveDropdownId(null)}
+                        />
+                        <div className="absolute left-8 z-40 mt-1 w-32 rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl dark:border-white/10 dark:bg-[#0c0c12]">
+                          {(['active', 'inactive', 'completed'] as const).map((status) => (
+                            <button
+                              key={status}
+                              onClick={() => {
+                                onStatusChange?.(l.id, status);
+                                setActiveDropdownId(null);
+                              }}
+                              className={`flex w-full cursor-pointer items-center rounded-lg px-3 py-2 text-left text-xs font-bold capitalize transition-colors hover:bg-slate-50 dark:hover:bg-white/5 ${
+                                l.status === status
+                                  ? 'text-brand-gold bg-brand-gold/5 font-extrabold'
+                                  : 'text-slate-600 dark:text-gray-400'
+                              }`}
+                            >
+                              {status}
+                            </button>
+                          ))}
+                        </div>
+                      </>
+                    )}
                   </td>
                   <td className="px-8 py-5">
                     {l.winners && l.winners.length > 0 ? (
@@ -159,13 +190,13 @@ export function HistoryTable({
                         <span className="hidden sm:inline">Email</span>
                       </button>
                       <button
-                        title="Re-open Draw"
+                        title="Reset Draw"
                         onClick={() => onResetDraw(l.id)}
                         disabled={isPending}
                         className="hover:border-brand-gold/40 hover:bg-brand-gold/10 hover:text-brand-gold inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-600 transition-all dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
                       >
                         <RefreshCw className={`h-3.5 w-3.5 ${isPending ? 'animate-spin' : ''}`} />
-                        <span className="hidden sm:inline">Re-open</span>
+                        <span className="hidden sm:inline">Reset Draw</span>
                       </button>
                       <button
                         title="Delete Campaign"

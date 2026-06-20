@@ -264,6 +264,26 @@ export default function AdminLotteryPage() {
     );
   };
 
+  const handleStatusChange = async (
+    lotteryId: string,
+    newStatus: 'active' | 'completed' | 'inactive'
+  ) => {
+    try {
+      setErrorMessage(null);
+      setSuccessMessage(null);
+      const { error } = await supabase
+        .from('lotteries')
+        .update({ status: newStatus })
+        .eq('id', lotteryId);
+
+      if (error) throw error;
+      setSuccessMessage(`Campaign status successfully updated to ${newStatus.toUpperCase()}.`);
+      fetchLotteries();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Failed to update campaign status.');
+    }
+  };
+
   return (
     <>
       <div className="space-y-8 pb-12 text-slate-900 transition-colors duration-300 dark:text-slate-100">
@@ -464,6 +484,7 @@ export default function AdminLotteryPage() {
               onEmailParticipants={setEmailModalLottery}
               onResetDraw={(id) => resetDraw(id)}
               onDelete={(id) => setDeletingLotteryId(id)}
+              onStatusChange={handleStatusChange}
             />
           </div>
         )}
