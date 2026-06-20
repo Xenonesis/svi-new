@@ -15,7 +15,15 @@
     "faqStillQuestions": "अभी भी कोई सवाल है?",
     "faqContactTeam": "हमारी टीम से संपर्क करें",
     "subBrand": "प्रीमियम प्रॉपर्टी डेवलपर",
-    "backToTop": "ऊपर जाएं"
+    "backToTop": "ऊपर जाएं",
+    "switchLanguage": "भाषा बदलें",
+    "toggleTheme": "थीम बदलें",
+    "switchToLight": "लाइट मोड पर स्विच करें",
+    "switchToDark": "डार्क मोड पर स्विच करें",
+    "switchToSystem": "सिस्टम मोड पर स्विच करें",
+    "openChatAssistant": "चैट सहायक खोलें",
+    "emailLabel": "ईमेल",
+    "phoneLabel": "फ़ोन"
   },
   "timeline": {
     "subtitle": "विकास प्रक्रिया",

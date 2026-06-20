@@ -24,6 +24,7 @@ export default async function PrivacyPolicy({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('pages.privacy');
+  const tc = await getTranslations('common');
 
   const sections = [
     { title: t('s1Title'), content: t('s1Content') },
@@ -95,8 +96,8 @@ export default async function PrivacyPolicy({ params }: Props) {
                     SVI Infra Solutions Pvt. Ltd.
                   </p>
                   <p>A-61 Sector 65, Noida, Uttar Pradesh 201309</p>
-                  <p>Email: info@sviinfrasolutions.com</p>
-                  <p>Phone: +91 73000 07643</p>
+                  <p>{tc('emailLabel')}: info@sviinfrasolutions.com</p>
+                  <p>{tc('phoneLabel')}: +91 73000 07643</p>
                 </div>
               )}
             </section>

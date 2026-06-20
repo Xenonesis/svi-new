@@ -15,7 +15,15 @@
     "faqStillQuestions": "Still have questions?",
     "faqContactTeam": "Contact Our Team",
     "subBrand": "Premium Property Developers",
-    "backToTop": "Back to top"
+    "backToTop": "Back to top",
+    "switchLanguage": "Switch language",
+    "toggleTheme": "Toggle theme",
+    "switchToLight": "Switch to light mode",
+    "switchToDark": "Switch to dark mode",
+    "switchToSystem": "Switch to system mode",
+    "openChatAssistant": "Open chat assistant",
+    "emailLabel": "Email",
+    "phoneLabel": "Phone"
   },
   "timeline": {
     "subtitle": "Development Process",

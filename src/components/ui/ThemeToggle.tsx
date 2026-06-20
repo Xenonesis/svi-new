@@ -1,6 +1,7 @@
 'use client';
 
 import { Moon, Sun, Monitor } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ThemeToggleProps {
   theme: 'dark' | 'light' | 'system';
@@ -17,6 +18,7 @@ export function ThemeToggle({
   variant = 'desktop',
   isHomeTransparent,
 }: ThemeToggleProps) {
+  const t = useTranslations('common');
   const desktopBase =
     'text-brand-navy hover:border-brand-gold hover:text-brand-gold dark:hover:text-brand-gold border-gray-200/60 bg-gray-50/50 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-gray-200';
   const desktopTransparent =
@@ -34,11 +36,11 @@ export function ThemeToggle({
       aria-label={
         mounted
           ? theme === 'dark'
-            ? 'Switch to system mode'
+            ? t('switchToSystem')
             : theme === 'light'
-              ? 'Switch to dark mode'
-              : 'Switch to light mode'
-          : 'Toggle theme'
+              ? t('switchToDark')
+              : t('switchToLight')
+          : t('toggleTheme')
       }
     >
       {mounted ? (
