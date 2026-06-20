@@ -85,7 +85,7 @@ export default function LotteryCTA() {
         const { data, error } = await supabase
           .from('lotteries')
           .select('id, title, description, status, created_at, draw_date')
-          .eq('status', 'active')
+          .in('status', ['active', 'completed'])
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
@@ -211,14 +211,24 @@ export default function LotteryCTA() {
               >
                 <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
                   <Clock className="text-brand-gold h-3.5 w-3.5" />
-                  {expired
-                    ? t('shufflingProgress')
-                    : drawDate
-                      ? t('liveCountdown')
-                      : t('sessionActive')}
+                  {lottery.status === 'completed'
+                    ? 'Draw Completed'
+                    : expired
+                      ? t('shufflingProgress')
+                      : drawDate
+                        ? t('liveCountdown')
+                        : t('sessionActive')}
                 </div>
 
-                {drawDate && !expired ? (
+                {lottery.status === 'completed' ? (
+                  <div className="bg-brand-gold/10 border-brand-gold/30 rounded-2xl border px-8 py-4 text-center">
+                    <div className="text-brand-gold inline-flex items-center gap-2 text-lg font-black tracking-widest uppercase">
+                      <Trophy className="h-4 w-4" />
+                      Winners Declared!
+                    </div>
+                    <div className="mt-1 text-xs text-gray-500">Click to see who won</div>
+                  </div>
+                ) : drawDate && !expired ? (
                   <div className="flex items-end gap-3">
                     <CountdownUnit
                       value={timeLeft.days}

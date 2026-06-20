@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 3. Select winners (either predetermined or cryptographically secure random)
+    // 3. Select winners (predetermined/customisable only)
     let winners: typeof candidates;
     if (selectedWinnerIds.length > 0) {
       winners = candidates.filter((c) => selectedWinnerIds.includes(c.id));
@@ -86,8 +86,10 @@ export async function POST(request: NextRequest) {
         );
       }
     } else {
-      const randomIndex = crypto.randomInt(0, candidates.length);
-      winners = [candidates[randomIndex]];
+      return NextResponse.json(
+        { error: 'No predetermined winner selected. A winner must be chosen.' },
+        { status: 400 }
+      );
     }
 
     // 4. Update all winners to is_winner = true

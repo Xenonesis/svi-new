@@ -72,9 +72,14 @@ export function useLotteryDraw(): UseLotteryDrawReturn {
     if (participants.length > 0 && !initialSyncRef.current) {
       initialSyncRef.current = true;
       const dbWinners = participants.filter((p) => p.is_winner);
-      if (dbWinners.length > 0) setWinners(dbWinners);
+      if (dbWinners.length > 0 && activeLottery?.id) {
+        const isRevealed = localStorage.getItem(`lottery_revealed_${activeLottery.id}`);
+        if (isRevealed === 'true') {
+          setWinners(dbWinners);
+        }
+      }
     }
-  }, [participants]);
+  }, [participants, activeLottery]);
 
   const fetchActiveLottery = useCallback(async () => {
     initialSyncRef.current = false;
@@ -306,6 +311,9 @@ export function useLotteryDraw(): UseLotteryDrawReturn {
           playFanfareSound();
           triggerGrandFinale();
           setWinners(drawWinners);
+          if (activeLottery?.id) {
+            localStorage.setItem(`lottery_revealed_${activeLottery.id}`, 'true');
+          }
           fetchHallOfFame();
           return;
         }
@@ -328,9 +336,9 @@ export function useLotteryDraw(): UseLotteryDrawReturn {
   const startShuffleAnimation = () => {
     if (participants.length === 0 || isShuffling) return;
 
-    let drawWinners = winners.length > 0 ? winners : participants.filter((p) => p.is_winner);
+    const drawWinners = winners.length > 0 ? winners : participants.filter((p) => p.is_winner);
     if (drawWinners.length === 0) {
-      drawWinners = [participants[Math.floor(Math.random() * participants.length)]];
+      return;
     }
 
     setIsShuffling(true);

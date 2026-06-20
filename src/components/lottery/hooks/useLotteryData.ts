@@ -43,7 +43,7 @@ export function useLotteryData(): UseLotteryDataReturn {
       const { data: lotteryData, error: lError } = await supabase
         .from('lotteries')
         .select('*')
-        .eq('status', 'active')
+        .in('status', ['active', 'completed'])
         .order('created_at', { ascending: false })
         .limit(1);
 

@@ -11,6 +11,7 @@ import {
   AlertCircle,
   Trophy,
   Crown,
+  Clock,
 } from 'lucide-react';
 import { useLotteryDraw } from './hooks/useLotteryDraw';
 import { CountdownBanner } from './sections/CountdownBanner';
@@ -260,6 +261,22 @@ export default function LotteryDrawSection() {
                       </div>
                       <div className="mx-auto mt-2 text-xs text-slate-500">
                         {t('noParticipantsDesc')}
+                      </div>
+                    </motion.div>
+                  ) : !participants.some((p) => p.is_winner) ? (
+                    <motion.div
+                      key="awaiting-draw"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="w-full rounded-2xl border border-blue-500/20 bg-blue-50 p-8 text-center dark:border-blue-900/30 dark:bg-blue-950/10"
+                    >
+                      <Clock className="mx-auto mb-4 h-8 w-8 text-blue-500 dark:text-blue-400" />
+                      <div className="text-sm font-medium text-blue-600 dark:text-blue-400">
+                        Awaiting Live Draw
+                      </div>
+                      <div className="mx-auto mt-2 max-w-sm text-xs text-slate-500 dark:text-slate-400">
+                        The participant pool is locked. Stay tuned as the host conducts the lucky
+                        draw and reveals the winners shortly!
                       </div>
                     </motion.div>
                   ) : (

@@ -110,7 +110,7 @@ export default function AdminLotteryPage() {
   const [description, setDescription] = useState('');
 
   // ── Predetermined Winner Selection ──────────────────────────────────────
-  const [drawMethod, setDrawMethod] = useState<'random' | 'manual'>('random');
+  const [drawMethod, setDrawMethod] = useState<'random' | 'manual'>('manual');
   const [selectedPredeterminedWinners, setSelectedPredeterminedWinners] = useState<any[]>([]);
   const [dbParticipants, setDbParticipants] = useState<any[]>([]);
   const [dbParticipantsSearch, setDbParticipantsSearch] = useState('');
@@ -419,36 +419,6 @@ export default function AdminLotteryPage() {
             </div>
           </div>
         </div>
-
-        {/* ══ SCHEDULE DRAW PANEL ═══════════════════════════════════════ */}
-        {activeLottery && activeLottery.status === 'active' && activeWinners.length === 0 && (
-          <ScheduleDrawPanel
-            scheduleInputIST={scheduleInputIST}
-            preNotifyMinutes={preNotifyMinutes}
-            showCountdown={showCountdown}
-            includeCountdownInEmail={includeCountdownInEmail}
-            scheduleSaving={scheduleSaving}
-            scheduleLoading={scheduleLoading}
-            existingSchedule={existingSchedule}
-            onScheduleInputChange={setScheduleInputIST}
-            onPreNotifyChange={setPreNotifyMinutes}
-            onShowCountdownChange={setShowCountdown}
-            onIncludeCountdownInEmailChange={setIncludeCountdownInEmail}
-            onSaveSchedule={() =>
-              activeLottery &&
-              token &&
-              handleSaveSchedule(activeLottery.id, token, setErrorMessage, setSuccessMessage)
-            }
-            onCancelSchedule={() =>
-              activeLottery &&
-              token &&
-              handleCancelSchedule(activeLottery.id, token, setErrorMessage, setSuccessMessage)
-            }
-            onQuickTimeSelect={(_, mins) =>
-              setScheduleInputIST(getISTString(new Date(Date.now() + mins * 60000)))
-            }
-          />
-        )}
 
         {/* ══ DASHBOARD TAB ═════════════════════════════════════════════ */}
         {activeTab === 'dashboard' && (
