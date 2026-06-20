@@ -1,10 +1,11 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-
 import { ArrowUp } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 export default function BackToTop() {
+  const t = useTranslations();
   const [isVisible, setIsVisible] = useState(false);
   // const sentinelRef = useRef<HTMLDivElement>(null);
 
@@ -43,7 +44,7 @@ export default function BackToTop() {
         transform: isVisible ? 'none' : 'translateY(10px)',
         transition: 'opacity 0.3s ease, transform 0.3s ease',
       }}
-      aria-label="Back to top"
+      aria-label={t('common.backToTop')}
     >
       <ArrowUp size={20} />
     </button>

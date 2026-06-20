@@ -23,6 +23,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function Grievance({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
+  const t = await getTranslations('pages.grievance');
   return (
     <div className="bg-brand-bg min-h-screen pt-20 pb-20 dark:bg-gray-900">
       {/* Hero — static content */}
@@ -32,12 +33,11 @@ export default async function Grievance({ params }: Props) {
             <MessageSquareWarning size={32} />
           </div>
           <h1 className="text-brand-navy animate-hero-h1 mb-6 font-serif text-3xl leading-tight sm:text-4xl md:text-6xl dark:text-gray-100">
-            Raise a Grievance
+            {t('title')}
           </h1>
           <div className="bg-brand-gold animate-hero-divider mx-auto mb-6 h-px w-16"></div>
           <p className="animate-hero-subtitle mx-auto max-w-2xl text-base leading-relaxed text-gray-500 md:text-lg dark:text-gray-400">
-            We are committed to resolving your issues promptly. Please provide details of your
-            grievance or support request below.
+            {t('subtitle')}
           </p>
         </div>
       </section>

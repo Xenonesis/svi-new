@@ -46,7 +46,7 @@ export default function CookieConsent() {
           <button
             onClick={handleDecline}
             className="mt-1 shrink-0 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
-            aria-label="Dismiss"
+            aria-label={t('dismiss')}
           >
             <X size={16} />
           </button>

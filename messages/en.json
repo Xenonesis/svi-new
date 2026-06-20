@@ -14,7 +14,8 @@
     "faqTitleDefault": "Frequently Asked Questions",
     "faqStillQuestions": "Still have questions?",
     "faqContactTeam": "Contact Our Team",
-    "subBrand": "Premium Property Developers"
+    "subBrand": "Premium Property Developers",
+    "backToTop": "Back to top"
   },
   "timeline": {
     "subtitle": "Development Process",
@@ -115,7 +116,8 @@
     "message": "We use cookies to enhance your browsing experience and analyze website traffic. By clicking \"Accept\", you consent to our use of cookies.",
     "learnMore": "Learn more in our Privacy Policy",
     "decline": "Decline",
-    "accept": "Accept"
+    "accept": "Accept",
+    "dismiss": "Dismiss"
   },
   "floatingContact": {
     "call": "Call",
@@ -495,6 +497,7 @@
     "payment": {
       "title": "Make a Payment",
       "heading": "Pay Online",
+      "subtitle": "Secure online payment for registration, booking, and installments.",
       "secureMessage": "Your payment is secure and encrypted. Proceed with confidence.",
       "fullName": "Full Name",
       "email": "Email",
@@ -514,6 +517,7 @@
     "grievance": {
       "title": "Raise a Grievance",
       "heading": "Share Your Concern",
+      "subtitle": "We are committed to resolving your issues promptly. Please provide details of your grievance or support request below.",
       "fullName": "Full Name",
       "email": "Email",
       "phone": "Phone",
