@@ -186,10 +186,13 @@ export function ComposeTab({
               const area = parseFloat(fd.area) || 0;
               const bsp = parseFloat(fd.bsp) || 0;
               const plc = parseFloat(fd.plc) || 0;
+              const edc = parseFloat(fd.edc) || 0;
               const base = area * bsp;
-              const totalCost = base + base * (plc / 100);
-              const initialPayment =
-                totalCost * ((parseFloat(fd.bookingPaymentPercent) || 10) / 100);
+              const totalCost = base + base * (plc / 100) + edc;
+              const edcInEmi = String(fd.edcInEmi) === 'true';
+              const baseCost = totalCost - edc;
+              const bookingPercent = parseFloat(fd.bookingPaymentPercent) || 10;
+              const initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
 
               const vars: Record<string, string> = {
                 salutation: fd.salutation || 'Mr.',
@@ -207,12 +210,13 @@ export function ComposeTab({
                 }),
                 secondInstalmentRow:
                   fd.showSecondInstalment === 'true'
-                    ? `<tr><td style="padding:10px;color:#333333;">2</td><td style="padding:10px;color:#333333;">Second Instalment</td><td style="padding:10px;text-align:right;color:#333333;">20%</td><td style="padding:10px;text-align:right;font-weight:bold;color:#333333;">₹${(totalCost * 0.2).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td></tr>`
+                    ? `<tr><td style="padding:10px;color:#333333;">2</td><td style="padding:10px;color:#333333;">Second Instalment</td><td style="padding:10px;text-align:right;color:#333333;">20%</td><td style="padding:10px;text-align:right;font-weight:bold;color:#333333;">₹${((edcInEmi ? baseCost : totalCost) * 0.2).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td></tr>`
                     : '',
                 remainingPercent:
                   fd.showSecondInstalment === 'true'
-                    ? `${100 - (parseFloat(fd.bookingPaymentPercent) || 10) - 20}`
-                    : `${100 - (parseFloat(fd.bookingPaymentPercent) || 10)}`,
+                    ? `${100 - bookingPercent - 20}`
+                    : `${100 - bookingPercent}`,
+
                 emiCount: fd.emiCount || '12',
                 advisorName: fd.advisorName || '',
                 advisorNumber: fd.advisorNumber || '',
