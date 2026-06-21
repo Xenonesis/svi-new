@@ -2,6 +2,8 @@ export interface SentEmail {
   id: string;
   from: string;
   to: string[];
+  cc?: string[];
+  attachments?: any[];
   subject: string;
   created_at: string;
   last_event: string;

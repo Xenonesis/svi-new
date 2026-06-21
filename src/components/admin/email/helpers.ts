@@ -86,15 +86,15 @@ export function getDomainStatusColor(status: string) {
 
 function rowToDraftData(row: Record<string, unknown>): DraftData {
   return {
-    id: row.id,
-    to: row.to_emails || '',
-    cc: row.cc_emails || '',
-    bcc: row.bcc_emails || '',
-    subject: row.subject || '',
-    html: row.html_body || '',
-    replyTo: row.reply_to || '',
-    fromName: row.from_name || 'SVI Infra',
-    savedAt: new Date(row.updated_at || row.created_at).getTime(),
+    id: String(row.id || ''),
+    to: String(row.to_emails || ''),
+    cc: String(row.cc_emails || ''),
+    bcc: String(row.bcc_emails || ''),
+    subject: String(row.subject || ''),
+    html: String(row.html_body || ''),
+    replyTo: String(row.reply_to || ''),
+    fromName: String(row.from_name || 'SVI Infra'),
+    savedAt: new Date((row.updated_at || row.created_at) as string).getTime(),
   };
 }
 
