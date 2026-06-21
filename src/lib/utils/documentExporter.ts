@@ -11,7 +11,7 @@ export async function exportToPDF({
   filename,
   padding = '32px',
   scale = 3,
-  width = '210mm',
+  width = '1024px',
 }: ExportOptions): Promise<void> {
   if (typeof window === 'undefined') return;
 
@@ -62,7 +62,7 @@ export async function exportToPDF({
       removeContainer: true,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: 794,
+      windowWidth: 1024,
       windowHeight: clone.scrollHeight,
     });
 
@@ -75,38 +75,26 @@ export async function exportToPDF({
 
     const pdfWidth = pdf.internal.pageSize.getWidth(); // 210 mm
     const pdfHeight = pdf.internal.pageSize.getHeight(); // 297 mm
-
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
     // mm-per-canvas-pixel ratio (keeping full width)
     const scaleRatio = pdfWidth / canvasWidth;
+    const imgHeightMM = canvasHeight * scaleRatio;
 
-    // How many canvas pixels tall one A4 page is
-    const pageHeightPx = Math.floor(pdfHeight / scaleRatio);
+    const imgData = canvas.toDataURL('image/png', 1.0);
 
-    const totalPages = Math.ceil(canvasHeight / pageHeightPx);
+    let heightLeft = imgHeightMM;
+    let position = 0;
 
-    for (let page = 0; page < totalPages; page++) {
-      if (page > 0) pdf.addPage();
+    pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightMM);
+    heightLeft -= pdfHeight;
 
-      const srcY = page * pageHeightPx;
-      const srcH = Math.min(pageHeightPx, canvasHeight - srcY);
-
-      // Slice just this page's strip into a temp canvas
-      const pageCanvas = document.createElement('canvas');
-      pageCanvas.width = canvasWidth;
-      pageCanvas.height = srcH;
-
-      const ctx = pageCanvas.getContext('2d');
-      if (!ctx) continue;
-
-      ctx.drawImage(canvas, 0, srcY, canvasWidth, srcH, 0, 0, canvasWidth, srcH);
-
-      const pageImgData = pageCanvas.toDataURL('image/png', 1.0);
-      const imgHeightMM = srcH * scaleRatio;
-
-      pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, imgHeightMM);
+    while (heightLeft > 0) {
+      position = heightLeft - imgHeightMM; // This shifts the image up for the next page
+      pdf.addPage();
+      pdf.addImage(imgData, 'PNG', 0, position, pdfWidth, imgHeightMM);
+      heightLeft -= pdfHeight;
     }
 
     const outputFilename = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
@@ -123,7 +111,7 @@ export async function exportToImage({
   filename,
   padding = '32px',
   scale = 3,
-  width = '210mm',
+  width = '1024px',
 }: ExportOptions): Promise<void> {
   if (typeof window === 'undefined') return;
 
@@ -173,7 +161,7 @@ export async function exportToImage({
       removeContainer: true,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: 794,
+      windowWidth: 1024,
       windowHeight: clone.scrollHeight,
     });
 
