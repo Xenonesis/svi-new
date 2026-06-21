@@ -45,8 +45,11 @@ export function ComposeFields({
 }: ComposeFieldsProps) {
   const [showCcField, setShowCcField] = useState(false);
   const [showBccField, setShowBccField] = useState(false);
+  const defaultReplyVal = `info@sviiinfrasolutions.com, ${adminEmail}`;
+  const hasCustomReply = replyTo && replyTo !== defaultReplyVal && replyTo !== adminEmail;
+
   const [showSenderOptions, setShowSenderOptions] = useState(
-    !!replyTo || (!!fromName && fromName !== 'SVI Infra')
+    !!hasCustomReply || (!!fromName && fromName !== 'SVI Infra')
   );
   const [showScheduleOptions, setShowScheduleOptions] = useState(!!scheduledAt);
 
@@ -56,10 +59,10 @@ export function ComposeFields({
 
   // Synchronize internal visibility states with external prop updates (e.g. template loading, replies, forwards)
   useEffect(() => {
-    if (replyTo || (fromName && fromName !== 'SVI Infra')) {
+    if (hasCustomReply || (fromName && fromName !== 'SVI Infra')) {
       setShowSenderOptions(true);
     }
-  }, [replyTo, fromName]);
+  }, [replyTo, fromName, adminEmail]);
 
   useEffect(() => {
     if (scheduledAt) setShowScheduleOptions(true);

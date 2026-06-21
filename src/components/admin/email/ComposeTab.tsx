@@ -49,6 +49,7 @@ export function ComposeTab({
   const [to, setTo] = useState('');
   const [cc, setCc] = useState('');
   const [bcc, setBcc] = useState('');
+  const [subjectTemplate, setSubjectTemplate] = useState('');
   const [subject, setSubject] = useState('');
   const [html, setHtml] = useState('');
   const [replyTo, setReplyTo] = useState('');
@@ -75,13 +76,30 @@ export function ComposeTab({
     });
   }, []);
 
+  // Synchronize resolved subject with template variables and subject template
+  useEffect(() => {
+    setSubject(parseGetPreviewHtml(subjectTemplate, templateVars));
+  }, [subjectTemplate, templateVars]);
+
+  const handleSubjectChange = (val: string) => {
+    setSubject(val);
+    setSubjectTemplate(val);
+  };
+
+  // Prefill replyTo with default reply addresses (both info@sviiinfrasolutions.com and adminEmail)
+  useEffect(() => {
+    if (adminEmail && !replyTo) {
+      setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail}`);
+    }
+  }, [adminEmail]);
+
   // Apply forward/reply prefills
   useEffect(() => {
     if (forwardData) {
       setTo('');
       setCc('');
       setBcc('');
-      setSubject(forwardData.subject);
+      setSubjectTemplate(forwardData.subject);
       setHtml(forwardData.html);
       setTemplateHtml(null);
       setSelectedTemplate(null);
@@ -97,7 +115,7 @@ export function ComposeTab({
       setTo(replyData.to);
       setCc(replyData.cc?.join(', ') || '');
       setBcc('');
-      setSubject(replyData.subject);
+      setSubjectTemplate(replyData.subject);
       setHtml(replyData.html);
       setTemplateHtml(null);
       setSelectedTemplate(null);
@@ -111,7 +129,7 @@ export function ComposeTab({
   // Apply template prefill
   useEffect(() => {
     if (templatePrefill) {
-      setSubject(templatePrefill.subject);
+      setSubjectTemplate(templatePrefill.subject);
       setHtml(templatePrefill.html);
       setTemplateHtml(null);
       setSelectedTemplate(null);
@@ -127,7 +145,7 @@ export function ComposeTab({
       setTo(draftData.to || '');
       setCc(draftData.cc || '');
       setBcc(draftData.bcc || '');
-      setSubject(draftData.subject || '');
+      setSubjectTemplate(draftData.subject || '');
       setHtml(draftData.html || '');
       setReplyTo(draftData.replyTo || '');
       setFromName(draftData.fromName || 'SVI Infra');
@@ -158,7 +176,7 @@ export function ComposeTab({
               processedSubject = processedSubject.replace('{{projectName}}', fd.projectName || '');
               processedSubject = processedSubject.replace('{{unitNumber}}', fd.unitNumber || '');
 
-              setSubject(processedSubject);
+              setSubjectTemplate(processedSubject);
               setTemplateHtml(tpl.html);
               setSelectedTemplate('allotment_letter');
 
@@ -247,7 +265,7 @@ export function ComposeTab({
               );
               processedSubject = processedSubject.replace('{{name}}', fd.name || '');
 
-              setSubject(processedSubject);
+              setSubjectTemplate(processedSubject);
               setTemplateHtml(tpl.html);
               setSelectedTemplate('payment');
 
@@ -266,7 +284,7 @@ export function ComposeTab({
               setEditorKey((prev) => prev + 1);
             } else {
               // Fallback: prefill subject + plain body with receipt details when no template
-              setSubject(`Payment Receipt - ${fd.receiptNo || ''} - ${fd.name || ''}`);
+              setSubjectTemplate(`Payment Receipt - ${fd.receiptNo || ''} - ${fd.name || ''}`);
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
@@ -320,7 +338,7 @@ export function ComposeTab({
               processedSubject = processedSubject.replace('{{projectName}}', fd.projectName || '');
               processedSubject = processedSubject.replace('{{unitNumber}}', fd.unitNumber || '');
 
-              setSubject(processedSubject);
+              setSubjectTemplate(processedSubject);
               setTemplateHtml(tpl.html);
               setSelectedTemplate('bba_document');
 
@@ -348,7 +366,9 @@ export function ComposeTab({
               setHtml('');
               setPreviewMode(true);
             } else {
-              setSubject(`BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`);
+              setSubjectTemplate(
+                `BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`
+              );
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
@@ -405,7 +425,7 @@ export function ComposeTab({
               let processedSubject = tpl.subject;
               processedSubject = processedSubject.replace('{{designation}}', fd.designation || '');
 
-              setSubject(processedSubject);
+              setSubjectTemplate(processedSubject);
               setTemplateHtml(tpl.html);
               setSelectedTemplate('offer_letter');
 
@@ -429,7 +449,7 @@ export function ComposeTab({
               setHtml('');
               setPreviewMode(true);
             } else {
-              setSubject(`Offer Letter - ${fd.designation || ''} - ${fd.name || ''}`);
+              setSubjectTemplate(`Offer Letter - ${fd.designation || ''} - ${fd.name || ''}`);
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
@@ -479,13 +499,13 @@ export function ComposeTab({
 
             if (tpl) {
               let processedSubject = tpl.subject;
-              processedSubject = processedSubject.replace('{{firstName}}', reg.name || 'Client');
+              processedSubject = processedSubject.replace('firstName', reg.name || 'Client');
               processedSubject = processedSubject.replace(
                 '{{submissionId}}',
                 reg.submission_id || 'N/A'
               );
 
-              setSubject(processedSubject);
+              setSubjectTemplate(processedSubject);
               setTemplateHtml(tpl.html);
               setSelectedTemplate('registration_acknowledgment');
 
@@ -506,7 +526,7 @@ export function ComposeTab({
               setHtml('');
               setPreviewMode(true);
             } else {
-              setSubject(`Registration Update - SVI Infra`);
+              setSubjectTemplate(`Registration Update - SVI Infra`);
               setHtml(
                 `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
@@ -557,7 +577,7 @@ export function ComposeTab({
       setTo(saved.to || '');
       setCc(saved.cc || '');
       setBcc(saved.bcc || '');
-      setSubject(saved.subject || '');
+      setSubjectTemplate(saved.subject || '');
       setHtml(saved.html || '');
       setReplyTo(saved.replyTo || '');
       setFromName(saved.fromName || 'SVI Infra');
@@ -576,7 +596,7 @@ export function ComposeTab({
   const loadTemplate = (templateId: string) => {
     const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId);
     if (!tpl) return;
-    setSubject(tpl.subject);
+    setSubjectTemplate(tpl.subject);
     setTemplateHtml(tpl.html);
     const vars = extractTemplateVars(tpl.html);
     const initialVars: Record<string, string> = {};
@@ -659,9 +679,11 @@ export function ComposeTab({
           setTo('');
           setCc('');
           setBcc('');
-          setSubject('');
+          setSubjectTemplate('');
           setHtml('');
-          setReplyTo('');
+          setReplyTo(
+            `info@sviiinfrasolutions.com, ${adminEmail || 'hr.sviinfrasolutions@gmail.com'}`
+          );
           setInReplyToMessageId(null);
           setSelectedTemplate(null);
           setAttachments([]);
@@ -680,7 +702,7 @@ export function ComposeTab({
     setTo('');
     setCc('');
     setBcc('');
-    setSubject('');
+    setSubjectTemplate('');
     setHtml('');
     setTemplateHtml(null);
     setSelectedTemplate(null);
@@ -689,6 +711,7 @@ export function ComposeTab({
     setAttachments([]);
     setInReplyToMessageId(null);
     setScheduledAt(null);
+    setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail || 'hr.sviinfrasolutions@gmail.com'}`);
     await clearDraft();
   };
 
@@ -792,7 +815,7 @@ export function ComposeTab({
           onToChange={setTo}
           onCcChange={setCc}
           onBccChange={setBcc}
-          onSubjectChange={setSubject}
+          onSubjectChange={handleSubjectChange}
           onFromNameChange={setFromName}
           onReplyToChange={setReplyTo}
           onScheduledAtChange={setScheduledAt}

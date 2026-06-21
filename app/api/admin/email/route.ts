@@ -556,6 +556,19 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      let defaultReplyTo = 'info@sviiinfrasolutions.com, hr.sviinfrasolutions@gmail.com';
+      try {
+        const { data: settingsData } = await supabaseAdmin
+          .from('portal_settings')
+          .eq('key', 'email_settings')
+          .single();
+        if (settingsData?.value?.admin_email) {
+          defaultReplyTo = `info@sviiinfrasolutions.com, ${settingsData.value.admin_email}`;
+        }
+      } catch (err) {
+        // ignore
+      }
+
       const fromAddress = from || 'SVI Infra <noreply@sviiinfrasolutions.com>';
 
       // If scheduledAt is provided, queue it in the database instead of sending immediately
@@ -569,7 +582,7 @@ export async function POST(request: NextRequest) {
             bcc_emails: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : null,
             subject,
             html_body: html || text || '', // Fallback to text
-            reply_to: replyTo || null,
+            reply_to: replyTo || defaultReplyTo,
             in_reply_to: inReplyTo || null,
             scheduled_at: scheduledAt,
             status: 'pending',
@@ -663,7 +676,7 @@ export async function POST(request: NextRequest) {
         subject,
         html: html || undefined,
         text: text || undefined,
-        replyTo: replyTo || undefined,
+        replyTo: replyTo || defaultReplyTo,
         cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
         bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
         attachments: resendAttachments,

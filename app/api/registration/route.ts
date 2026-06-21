@@ -347,6 +347,7 @@ export async function POST(request: NextRequest) {
           to: primaryRecipient,
           subject: `[SYSTEM-AUTO] Registration: ${firstName} ${lastName || ''} - ${data.submission_id}`,
           html: emailHtmlContent,
+          replyTo: adminEmail,
           headers: {
             'X-Auto-Response': 'true',
             'X-System-Generated': 'true',
