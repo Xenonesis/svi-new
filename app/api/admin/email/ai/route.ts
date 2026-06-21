@@ -109,28 +109,101 @@ export async function POST(request: NextRequest) {
       // Build existing templates list for AI to match against
       const templatesList = getTemplatesSummary();
 
-      const prompt = `You are an email template assistant for SVI Infra Solutions.
+      const prompt = `You are an email HTML template generator for SVI Infra Solutions, a premium real estate developer.
 
 EXISTING TEMPLATES:
 ${templatesList}
 
+─── EXACT HTML STRUCTURE ───
+
+Always use this EXACT table-based skeleton (email-client compatible). No div-based layouts.
+
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>Title</title></head>
+<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 0;">
+    <tr><td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
+        ROWS HERE
+      </table>
+    </td></tr>
+  </table>
+</body>
+</html>
+
+─── COLOR SYSTEM ───
+- Header gradient: linear-gradient(135deg,#1a2744,#2d4080)
+- Gold accent: #D4AF37
+- Navy text: #1a2744
+- Body text: #555
+- Footer bg: #f9f9f9, text: #999
+- Button: bg #D4AF37, text #1a2744, radius 8px
+- Alert success: bg #e8f5e9, border #4caf50, text #2e7d32
+- Alert warning: bg #fff8e1, border #ffc107, text #f57c00
+- Alert error: bg #fdf2f2, border #f5c6cb, text #c62828
+
+─── ROWS PATTERNS (copy these EXACT styles) ───
+
+HEADER ROW:
+<tr><td style="background:linear-gradient(135deg,#1a2744,#2d4080);padding:40px;text-align:center;">
+  <h1 style="color:#D4AF37;font-size:28px;margin:0;font-family:Georgia,serif;">SVI Infra Solutions</h1>
+  <p style="color:rgba(255,255,255,0.7);margin:8px 0 0;font-size:13px;letter-spacing:2px;">CATEGORY LABEL</p>
+</td></tr>
+
+BODY ROW:
+<tr><td style="padding:40px;">
+  <h2 style="color:#1a2744;font-size:22px;margin:0 0 16px;">Dear {{name}},</h2>
+  <p style="color:#555;line-height:1.7;margin:0 0 24px;">Content</p>
+</td></tr>
+
+DETAIL TABLE (for structured data):
+<table width="100%" style="border-collapse:collapse;margin:24px 0;">
+  <tr style="background:#f9f9f9;"><td style="padding:12px 16px;font-weight:bold;color:#1a2744;width:40%;">Label</td><td style="padding:12px 16px;color:#555;">Value</td></tr>
+  <tr><td style="padding:12px 16px;font-weight:bold;color:#1a2744;">Label2</td><td style="padding:12px 16px;color:#555;">Value2</td></tr>
+</table>
+
+ALERT BOX:
+<div style="background:#e8f5e9;border-left:4px solid #4caf50;padding:16px;border-radius:4px;margin-bottom:24px;">
+  <p style="margin:0;color:#2e7d32;font-weight:bold;">✓ Success Message</p>
+</div>
+
+BUTTON:
+<div style="text-align:center;margin-top:32px;">
+  <a href="{{portal_url}}" style="background:#D4AF37;color:#1a2744;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">Action</a>
+</div>
+
+FOOTER ROW (required at end):
+<tr><td style="background:#f9f9f9;padding:24px;text-align:center;border-top:1px solid #eee;">
+  <p style="color:#999;font-size:12px;margin:0;">© ${new Date().getFullYear()} SVI Infra Solutions · All rights reserved</p>
+</td></tr>
+
+─── RULES ───
+- Use {{variable_name}} for ALL dynamic values (not {variable} or [variable])
+- EVERY email MUST have: HEADER + BODY (with greeting) + FOOTER
+- Use exact inline styles from patterns above
+- ₹ for currency. Arial body, Georgia for headings
+- Professional Indian English tone
+- Wrap data in DETAIL TABLE, never plain text lists
+- Footer always has copyright line
+
 TASK:
-Analyze the email subject below and do ONE of the following:
+Analyze the subject below and do ONE of:
 
-1) If the subject MATCHES an existing template above, respond with:
-   {"action":"template_match","templateId":"the_template_id","templateName":"Template Name","variables":{"var1":"value1",...}}
-   Then on the NEXT line, output the template HTML with all variables filled in using the recipient data.
+1) MATCHES existing template → respond with:
+   {"action":"template_match","templateId":"id","templateName":"Name","variables":{"var":"val"}}
+   Next line: template HTML with variables filled from recipient data.
 
-2) If the subject does NOT match any existing template, CREATE a new email template on the fly:
-   {"action":"ai_template","templateId":"_ai_generated","templateName":"A Short Descriptive Name","variables":{"var1":"suggested_value",...}}
-   Then on the NEXT line, output the complete email HTML. Use {{variable}} placeholders for dynamic values. Wrap the email in proper HTML structure matching SVI Infra's style (gold/navy header, professional body, footer). The footer MUST include "© ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved." and "For more information, please visit https://www.sviinfrasolutions.com".
+2) NO MATCH → CREATE new template on the fly:
+   {"action":"ai_template","templateId":"_ai_generated","templateName":"Short Name","variables":{"var":"val"}}
+   Next line: complete email HTML using above exact patterns with {{variable}} placeholders.
 
 RECIPIENT DATA:
 ${JSON.stringify(recipientData, null, 2)}
 
 EMAIL SUBJECT: ${subject}
 
-IMPORTANT: First line MUST be valid JSON only. Second line onwards is HTML. No other text.`;
+IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanations.`;
 
       const result = streamText({
         model: groq('llama-3.3-70b-versatile'),
