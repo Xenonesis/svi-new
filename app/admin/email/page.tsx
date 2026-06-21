@@ -280,7 +280,9 @@ export default function AdminEmailPage() {
               onClearPrefill={clearPrefill}
             />
           )}
-          {activeTab === 'drafts' && <DraftsTab onOpenDraft={handleOpenDraft} />}
+          {activeTab === 'drafts' && (
+            <DraftsTab onOpenDraft={handleOpenDraft} onImproveDraft={handleOpenDraft} />
+          )}
           {activeTab === 'sent' && <SentTab onForward={handleForward} onReply={handleReply} />}
           {activeTab === 'replies' && (
             <RepliesTab adminEmail={adminEmail} onForward={handleForward} onReply={handleReply} />

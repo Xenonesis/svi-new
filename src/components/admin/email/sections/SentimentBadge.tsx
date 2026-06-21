@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, X, Loader2, ArrowRight } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
@@ -63,13 +63,6 @@ export function SentimentBadge({ emailHtml, emailText, onSuggestionSelect }: Sen
     const data = await analyzeSentiment({ emailHtml, emailText });
     if (data) setResult(data as SentimentResult);
   };
-
-  // Auto-analyze on mount
-  useEffect(() => {
-    if (emailHtml || emailText) {
-      handleAnalyze();
-    }
-  }, [emailHtml, emailText]);
 
   const config = result ? SENTIMENT_CONFIG[result.sentiment] : null;
 

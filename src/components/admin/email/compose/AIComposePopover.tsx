@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, X, Loader2, Copy, Replace, ChevronDown } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
@@ -28,15 +28,25 @@ export function AIComposePopover({
   const [tone, setTone] = useState<string>('Professional');
   const [showToneDropdown, setShowToneDropdown] = useState(false);
   const [preview, setPreview] = useState('');
-  const [isStreaming, setIsStreaming] = useState(false);
-  const { generateContent, cancel } = useAIEmail();
+  const { generateContent, loading, cancel } = useAIEmail();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const mountedRef = useRef(true);
+
+  // Cleanup on unmount: cancel any in-flight request
+  useEffect(() => {
+    return () => {
+      mountedRef.current = false;
+      cancel();
+    };
+  }, [cancel]);
 
   // Auto-focus input on open
   useEffect(() => {
     if (open) {
       setTimeout(() => inputRef.current?.focus(), 100);
+      // Reset when opening fresh
+      if (!preview) setPrompt('');
     }
   }, [open]);
 
@@ -51,20 +61,19 @@ export function AIComposePopover({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
-  const handleGenerate = async () => {
-    if (!prompt.trim() || isStreaming) return;
+  const handleGenerate = useCallback(async () => {
+    if (!prompt.trim() || loading) return;
     setPreview('');
-    setIsStreaming(true);
 
     await generateContent({
       prompt: prompt.trim(),
       tone,
       context: { recipientName, subject },
-      onChunk: (text) => setPreview(text),
+      onChunk: (text) => {
+        if (mountedRef.current) setPreview(text);
+      },
     });
-
-    setIsStreaming(false);
-  };
+  }, [prompt, tone, recipientName, subject, generateContent, loading]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -86,10 +95,9 @@ export function AIComposePopover({
   };
 
   const handleClose = () => {
-    if (isStreaming) cancel();
+    cancel();
     setPrompt('');
     setPreview('');
-    setIsStreaming(false);
     onClose();
   };
 
@@ -133,7 +141,7 @@ export function AIComposePopover({
               placeholder="Describe the email you want to write..."
               rows={3}
               className="focus-gold w-full resize-none rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none dark:border-gray-600 dark:bg-gray-800/50 dark:text-white dark:placeholder-gray-500"
-              disabled={isStreaming}
+              disabled={loading}
             />
           </div>
 
@@ -171,10 +179,10 @@ export function AIComposePopover({
 
             <button
               onClick={handleGenerate}
-              disabled={!prompt.trim() || isStreaming}
+              disabled={!prompt.trim() || loading}
               className="bg-brand-gold text-brand-navy flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold tracking-wide transition-opacity hover:opacity-90 disabled:opacity-50"
             >
-              {isStreaming ? (
+              {loading ? (
                 <>
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
                   Generating...
@@ -203,7 +211,7 @@ export function AIComposePopover({
             <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-4 py-3 dark:border-gray-800">
               <button
                 onClick={handleInsert}
-                disabled={isStreaming}
+                disabled={loading}
                 className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
               >
                 <Copy className="h-3 w-3" />
@@ -211,7 +219,7 @@ export function AIComposePopover({
               </button>
               <button
                 onClick={handleReplace}
-                disabled={isStreaming}
+                disabled={loading}
                 className="bg-brand-gold text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
               >
                 <Replace className="h-3 w-3" />

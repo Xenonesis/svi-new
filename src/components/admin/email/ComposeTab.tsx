@@ -905,6 +905,8 @@ export function ComposeTab({
                 value={html}
                 onChange={setHtml}
                 placeholder="Write your email here... Use the toolbar above to format text."
+                recipientName={to.split(',')[0]?.trim()}
+                subject={subject}
               />
             </div>
           )}
