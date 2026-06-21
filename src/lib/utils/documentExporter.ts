@@ -11,7 +11,7 @@ export async function exportToPDF({
   filename,
   padding = '32px',
   scale = 3,
-  width = '1024px',
+  width = '1200px',
 }: ExportOptions): Promise<void> {
   if (typeof window === 'undefined') return;
 
@@ -28,6 +28,7 @@ export async function exportToPDF({
   clone.style.backgroundColor = 'white';
   clone.style.color = 'black';
   clone.style.width = width;
+  clone.style.maxWidth = 'none';
   clone.style.minHeight = element.offsetHeight + 'px';
   clone.style.position = 'absolute';
   clone.style.left = '-9999px';
@@ -62,7 +63,7 @@ export async function exportToPDF({
       removeContainer: true,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: 1024,
+      windowWidth: parseInt(width) || 1200,
       windowHeight: clone.scrollHeight,
     });
 
@@ -99,7 +100,7 @@ export async function exportToImage({
   filename,
   padding = '32px',
   scale = 3,
-  width = '1024px',
+  width = '1200px',
 }: ExportOptions): Promise<void> {
   if (typeof window === 'undefined') return;
 
@@ -115,6 +116,7 @@ export async function exportToImage({
   clone.style.backgroundColor = 'white';
   clone.style.color = 'black';
   clone.style.width = width;
+  clone.style.maxWidth = 'none';
   clone.style.minHeight = element.offsetHeight + 'px';
   clone.style.position = 'absolute';
   clone.style.left = '-9999px';
@@ -149,7 +151,7 @@ export async function exportToImage({
       removeContainer: true,
       scrollX: 0,
       scrollY: 0,
-      windowWidth: 1024,
+      windowWidth: parseInt(width) || 1200,
       windowHeight: clone.scrollHeight,
     });
 
