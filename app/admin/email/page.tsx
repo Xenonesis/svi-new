@@ -13,12 +13,19 @@ import {
   Settings,
   Trash2,
   Clock,
+  FileEdit,
 } from 'lucide-react';
 import { Toaster } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-import { Tab, ForwardData, ReplyData, TemplatePrefill } from '@/src/components/admin/email/types';
+import {
+  Tab,
+  ForwardData,
+  ReplyData,
+  TemplatePrefill,
+  DraftData,
+} from '@/src/components/admin/email/types';
 import { ComposeTab } from '@/src/components/admin/email/ComposeTab';
 import { SentTab } from '@/src/components/admin/email/SentTab';
 import { RepliesTab } from '@/src/components/admin/email/RepliesTab';
@@ -28,9 +35,11 @@ import { SettingsTab } from '@/src/components/admin/email/SettingsTab';
 import { CampaignsTab } from '@/src/components/admin/email/CampaignsTab';
 import { DeletedTab } from '@/src/components/admin/email/DeletedTab';
 import { ScheduledTab } from '@/src/components/admin/email/ScheduledTab';
+import { DraftsTab } from '@/src/components/admin/email/DraftsTab';
 
 const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
   { id: 'compose', label: 'Compose', icon: PenLine },
+  { id: 'drafts', label: 'Drafts', icon: FileEdit },
   { id: 'replies', label: 'Inbox', icon: Inbox },
   { id: 'sent', label: 'Sent', icon: Send },
   { id: 'campaigns', label: 'Campaigns', icon: Megaphone },
@@ -57,6 +66,7 @@ export default function AdminEmailPage() {
   const [forwardData, setForwardData] = useState<ForwardData | null>(null);
   const [replyData, setReplyData] = useState<ReplyData | null>(null);
   const [templatePrefill, setTemplatePrefill] = useState<TemplatePrefill | null>(null);
+  const [selectedDraft, setSelectedDraft] = useState<DraftData | null>(null);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -91,6 +101,15 @@ export default function AdminEmailPage() {
     setForwardData(null);
     setReplyData(null);
     setTemplatePrefill(null);
+    setSelectedDraft(null);
+  };
+
+  const handleOpenDraft = (draft: DraftData) => {
+    setSelectedDraft(draft);
+    setForwardData(null);
+    setReplyData(null);
+    setTemplatePrefill(null);
+    switchTab('compose');
   };
 
   const handleUseTemplate = useCallback(
@@ -257,9 +276,11 @@ export default function AdminEmailPage() {
               forwardData={forwardData}
               replyData={replyData}
               templatePrefill={templatePrefill}
+              draftData={selectedDraft}
               onClearPrefill={clearPrefill}
             />
           )}
+          {activeTab === 'drafts' && <DraftsTab onOpenDraft={handleOpenDraft} />}
           {activeTab === 'sent' && <SentTab onForward={handleForward} onReply={handleReply} />}
           {activeTab === 'replies' && (
             <RepliesTab adminEmail={adminEmail} onForward={handleForward} onReply={handleReply} />

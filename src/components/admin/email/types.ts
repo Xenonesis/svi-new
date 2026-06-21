@@ -53,6 +53,7 @@ export interface DnsRecord {
 
 export type Tab =
   | 'compose'
+  | 'drafts'
   | 'sent'
   | 'replies'
   | 'templates'
@@ -114,6 +115,7 @@ export interface ReplyData {
 }
 
 export interface DraftData {
+  id: string;
   to: string;
   cc: string;
   bcc: string;

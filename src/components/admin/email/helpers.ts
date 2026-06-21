@@ -1,4 +1,5 @@
 import { supabase } from '@/src/lib/supabase/client';
+import type { DraftData } from './types';
 
 export async function getToken(): Promise<string> {
   const { data } = await supabase.auth.getSession();
@@ -83,6 +84,45 @@ export function getDomainStatusColor(status: string) {
 
 // ─── Draft Save/Load ───────────────────────────────────────
 const DRAFT_KEY = 'svi-email-draft';
+const DRAFTS_KEY = 'svi-email-drafts';
+
+// Migration helper: move old single draft to new drafts array
+function migrateDraftIfNeeded(): void {
+  try {
+    const oldRaw = localStorage.getItem(DRAFT_KEY);
+    const newRaw = localStorage.getItem(DRAFTS_KEY);
+    if (oldRaw && !newRaw) {
+      const oldDraft = JSON.parse(oldRaw);
+      const draft: DraftData = {
+        id: 'migrated-' + Date.now(),
+        to: oldDraft.to || '',
+        cc: oldDraft.cc || '',
+        bcc: oldDraft.bcc || '',
+        subject: oldDraft.subject || '',
+        html: oldDraft.html || '',
+        replyTo: oldDraft.replyTo || '',
+        fromName: oldDraft.fromName || 'SVI Infra',
+        savedAt: oldDraft.savedAt || Date.now(),
+      };
+      localStorage.setItem(DRAFTS_KEY, JSON.stringify([draft]));
+      localStorage.removeItem(DRAFT_KEY);
+    }
+  } catch {
+    // ignore migration errors
+  }
+}
+
+export function getAllDrafts(): DraftData[] {
+  migrateDraftIfNeeded();
+  try {
+    const raw = localStorage.getItem(DRAFTS_KEY);
+    if (!raw) return [];
+    const drafts = JSON.parse(raw);
+    return Array.isArray(drafts) ? drafts : [];
+  } catch {
+    return [];
+  }
+}
 
 export function saveDraft(draft: {
   to: string;
@@ -94,27 +134,77 @@ export function saveDraft(draft: {
   fromName: string;
 }): boolean {
   try {
-    localStorage.setItem(DRAFT_KEY, JSON.stringify({ ...draft, savedAt: Date.now() }));
+    const drafts = getAllDrafts();
+    const idx = drafts.findIndex((d) => d.id === 'current');
+    const newDraft: DraftData = {
+      id: 'current',
+      ...draft,
+      savedAt: Date.now(),
+    };
+    if (idx >= 0) {
+      drafts[idx] = newDraft;
+    } else {
+      drafts.unshift(newDraft);
+    }
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
     return true;
   } catch {
     return false;
   }
 }
 
-export function loadDraft():
-  | ((typeof saveDraft extends (d: infer T) => void ? T : never) & { savedAt: number })
-  | null {
+export function loadDraft(): DraftData | null {
   try {
-    const raw = localStorage.getItem(DRAFT_KEY);
-    if (!raw) return null;
-    return JSON.parse(raw);
+    const drafts = getAllDrafts();
+    return drafts.find((d) => d.id === 'current') || null;
   } catch {
     return null;
   }
 }
 
 export function clearDraft(): void {
-  localStorage.removeItem(DRAFT_KEY);
+  try {
+    const drafts = getAllDrafts();
+    const filtered = drafts.filter((d) => d.id !== 'current');
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(filtered));
+  } catch {
+    // ignore
+  }
+}
+
+export function deleteDraft(id: string): boolean {
+  try {
+    const drafts = getAllDrafts();
+    const filtered = drafts.filter((d) => d.id !== id);
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(filtered));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function saveNewDraft(draft: {
+  to: string;
+  cc: string;
+  bcc: string;
+  subject: string;
+  html: string;
+  replyTo: string;
+  fromName: string;
+}): DraftData | null {
+  try {
+    const drafts = getAllDrafts();
+    const newDraft: DraftData = {
+      id: crypto.randomUUID(),
+      ...draft,
+      savedAt: Date.now(),
+    };
+    drafts.push(newDraft);
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+    return newDraft;
+  } catch {
+    return null;
+  }
 }
 
 // ─── Forward / Reply HTML Builders ──────────────────────────

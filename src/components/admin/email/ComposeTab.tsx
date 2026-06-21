@@ -27,13 +27,14 @@ import { ComposeFields } from './compose/ComposeFields';
 import { TemplateBanner } from './compose/TemplateBanner';
 import { AttachmentList } from './compose/AttachmentList';
 import { TemplatePicker } from './compose/TemplatePicker';
-import type { ForwardData, ReplyData, EmailAttachment, TemplatePrefill } from './types';
+import type { ForwardData, ReplyData, EmailAttachment, TemplatePrefill, DraftData } from './types';
 
 interface ComposeTabProps {
   adminEmail: string;
   forwardData?: ForwardData | null;
   replyData?: ReplyData | null;
   templatePrefill?: TemplatePrefill | null;
+  draftData?: DraftData | null;
   onClearPrefill?: () => void;
 }
 
@@ -42,6 +43,7 @@ export function ComposeTab({
   forwardData,
   replyData,
   templatePrefill,
+  draftData,
   onClearPrefill,
 }: ComposeTabProps) {
   const [to, setTo] = useState('');
@@ -117,6 +119,26 @@ export function ComposeTab({
       onClearPrefill?.();
     }
   }, [templatePrefill, onClearPrefill]);
+
+  // Apply draft prefill
+  useEffect(() => {
+    if (draftData) {
+      setTo(draftData.to || '');
+      setCc(draftData.cc || '');
+      setBcc(draftData.bcc || '');
+      setSubject(draftData.subject || '');
+      setHtml(draftData.html || '');
+      setReplyTo(draftData.replyTo || '');
+      setFromName(draftData.fromName || 'SVI Infra');
+      setTemplateHtml(null);
+      setSelectedTemplate(null);
+      setInReplyToMessageId(null);
+      setAttachments([]);
+      setScheduledAt(null);
+      setEditorKey((prev) => prev + 1);
+      onClearPrefill?.();
+    }
+  }, [draftData, onClearPrefill]);
 
   // Handle prefill from Allotment Records
   useEffect(() => {
