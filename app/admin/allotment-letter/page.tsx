@@ -308,6 +308,9 @@ export default function AllotmentLetterPage() {
 
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
+  const [duplicateRecordToOverwrite, setDuplicateRecordToOverwrite] = useState<any>(null);
 
   // Load from saved allotment records
   const [savedAllotments, setSavedAllotments] = useState<any[]>([]);
@@ -361,10 +364,55 @@ export default function AllotmentLetterPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const executeSave = async (targetId: string | null, forceInsert = false) => {
+    if (!token || isSaving) return;
+    setIsSaving(true);
+    try {
+      const url =
+        targetId && !forceInsert ? `/api/admin/documents/${targetId}` : '/api/admin/documents';
+      const method = targetId && !forceInsert ? 'PATCH' : 'POST';
+      const body =
+        targetId && !forceInsert
+          ? { form_data: formData, status: 'draft' }
+          : { document_type: 'allotment_letter', form_data: formData, status: 'draft' };
+
+      const response = await fetch(url, {
+        method,
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(body),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setDocumentId(data.document.id);
+        // Update savedAllotments state locally to keep list/dropdown in sync
+        setSavedAllotments((prev) => {
+          const index = prev.findIndex((item) => item.id === data.document.id);
+          if (index !== -1 && !forceInsert) {
+            const updated = [...prev];
+            updated[index] = data.document;
+            return updated;
+          } else {
+            return [data.document, ...prev];
+          }
+        });
+        setPreview(true);
+      }
+    } catch (error) {
+      console.error('Failed to save document:', error);
+    } finally {
+      setIsSaving(false);
+      setShowSaveModal(false);
+      setDuplicateRecordToOverwrite(null);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    let targetDocId = documentId;
+    if (isSaving) return;
 
     // Check if ticketId already exists in savedAllotments
     const existingRecord = savedAllotments.find(
@@ -372,54 +420,12 @@ export default function AllotmentLetterPage() {
     );
 
     if (existingRecord) {
-      const confirmOverwrite = window.confirm(
-        `Warning: An allotment letter with Ticket ID "${formData.ticketId}" already exists. Saving will overwrite the existing record. Do you want to proceed?`
-      );
-      if (!confirmOverwrite) {
-        return; // Abort saving
-      }
-      targetDocId = existingRecord.id;
+      setDuplicateRecordToOverwrite(existingRecord);
+      setShowSaveModal(true);
+      return;
     }
 
-    // Save document record to database
-    if (token) {
-      try {
-        const url = targetDocId ? `/api/admin/documents/${targetDocId}` : '/api/admin/documents';
-        const method = targetDocId ? 'PATCH' : 'POST';
-        const body = targetDocId
-          ? { form_data: formData, status: 'draft' }
-          : { document_type: 'allotment_letter', form_data: formData, status: 'draft' };
-
-        const response = await fetch(url, {
-          method,
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify(body),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setDocumentId(data.document.id);
-          // Update savedAllotments state locally to keep list/dropdown in sync
-          setSavedAllotments((prev) => {
-            const index = prev.findIndex((item) => item.id === data.document.id);
-            if (index !== -1) {
-              const updated = [...prev];
-              updated[index] = data.document;
-              return updated;
-            } else {
-              return [data.document, ...prev];
-            }
-          });
-        }
-      } catch (error) {
-        console.error('Failed to save document:', error);
-      }
-    }
-
-    setPreview(true);
+    await executeSave(documentId);
   };
 
   const handleDownloadPDF = async () => {
@@ -1076,9 +1082,11 @@ export default function AllotmentLetterPage() {
 
             <button
               type="submit"
-              className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all"
+              disabled={isSaving}
+              className={`bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-4 flex w-full items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all ${isSaving ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}
             >
-              <RefreshCw className="h-4 w-4" /> Generate Letter
+              <RefreshCw className={`h-4 w-4 ${isSaving ? 'animate-spin' : ''}`} />{' '}
+              {isSaving ? 'Generating...' : 'Generate Letter'}
             </button>
           </form>
         </div>
@@ -1482,6 +1490,44 @@ export default function AllotmentLetterPage() {
           />
         </div>
       </div>
+
+      {showSaveModal && (
+        <div className="animate-in fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm duration-200">
+          <div className="dark:bg-brand-dark-surface animate-in zoom-in-95 w-full max-w-md rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl duration-200 dark:border-white/10">
+            <h3 className="mb-2 font-serif text-lg font-bold text-gray-900 dark:text-white">
+              Duplicate Ticket ID Found
+            </h3>
+            <p className="mb-6 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+              An allotment letter with Ticket ID{' '}
+              <strong className="text-brand-gold">{formData.ticketId}</strong> is already saved in
+              the database. What would you like to do?
+            </p>
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={() => executeSave(duplicateRecordToOverwrite?.id)}
+                className="bg-brand-navy hover:bg-brand-navy/90 cursor-pointer rounded-xl px-4 py-3 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all"
+              >
+                🔄 Overwrite Old One
+              </button>
+              <button
+                onClick={() => executeSave(null, true)}
+                className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy cursor-pointer rounded-xl px-4 py-3 text-xs font-bold tracking-wider uppercase shadow-md transition-all"
+              >
+                ➕ Save as New
+              </button>
+              <button
+                onClick={() => {
+                  setShowSaveModal(false);
+                  setDuplicateRecordToOverwrite(null);
+                }}
+                className="cursor-pointer rounded-xl border border-gray-200 px-4 py-3 text-xs font-bold tracking-wider text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

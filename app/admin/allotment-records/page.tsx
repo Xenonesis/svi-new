@@ -145,6 +145,23 @@ export default function AllotmentRecordsPage() {
     return calculateTotalCost(formData) * 0.05;
   };
 
+  const formatDateTime = (dateStr: string) => {
+    try {
+      const d = new Date(dateStr);
+      if (isNaN(d.getTime())) return 'N/A';
+      return d.toLocaleString('en-IN', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true,
+      });
+    } catch {
+      return 'N/A';
+    }
+  };
+
   // Statistics calculation
   const totalCount = allotments.length;
   const totalValue = allotments.reduce(
@@ -389,14 +406,15 @@ export default function AllotmentRecordsPage() {
                     'Area',
                     'Total Cost',
                     'Plan',
+                    'Date & Time',
                     'Actions',
                   ].map((h, idx) => (
                     <th
                       key={h}
-                      className={`px-6 py-5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400 ${idx === 7 ? 'text-right' : 'text-left'}`}
+                      className={`px-6 py-5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400 ${idx === 8 ? 'text-right' : 'text-left'}`}
                     >
                       <div
-                        className={`h-3 rounded bg-gray-200 dark:bg-white/5 ${idx === 7 ? 'ml-auto w-16' : 'w-24'}`}
+                        className={`h-3 rounded bg-gray-200 dark:bg-white/5 ${idx === 8 ? 'ml-auto w-16' : 'w-24'}`}
                       />
                     </th>
                   ))}
@@ -426,6 +444,9 @@ export default function AllotmentRecordsPage() {
                     <td className="px-6 py-4.5">
                       <div className="h-4 w-16 rounded bg-gray-200 dark:bg-white/5" />
                     </td>
+                    <td className="px-6 py-4.5">
+                      <div className="h-4 w-24 rounded bg-gray-200 dark:bg-white/5" />
+                    </td>
                     <td className="px-6 py-4.5 text-right">
                       <div className="ml-auto h-8 w-28 rounded bg-gray-200 dark:bg-white/5" />
                     </td>
@@ -452,11 +473,12 @@ export default function AllotmentRecordsPage() {
                     'Area',
                     'Total Cost',
                     'Plan',
+                    'Date & Time',
                     'Actions',
                   ].map((h, idx) => (
                     <th
                       key={h}
-                      className={`px-6 py-5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400 ${idx === 7 ? 'text-right' : 'text-left'}`}
+                      className={`px-6 py-5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400 ${idx === 8 ? 'text-right' : 'text-left'}`}
                     >
                       {h}
                     </th>
@@ -515,6 +537,9 @@ export default function AllotmentRecordsPage() {
                         <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
                           {record.form_data?.paymentPlan || '12'} Months
                         </span>
+                      </td>
+                      <td className="px-6 py-4 text-gray-600 dark:text-gray-400">
+                        {record.created_at ? formatDateTime(record.created_at) : 'N/A'}
                       </td>
                       <td className="px-6 py-4 text-right">
                         <div className="flex items-center justify-end gap-1.5">
