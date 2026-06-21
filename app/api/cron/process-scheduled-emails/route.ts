@@ -74,6 +74,16 @@ export async function GET(request: Request) {
         }
       }
 
+      // Parse reply_to: may be comma-separated string, normalize to array
+      const parseReplyTo = (val: string | undefined | null): string[] | undefined => {
+        if (!val) return undefined;
+        const parts = String(val)
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        return parts.length > 0 ? parts : undefined;
+      };
+
       // Send email via Resend
       const result = await resend.emails.send({
         from: email.metadata?.from || 'SVI Infra <noreply@sviiinfrasolutions.com>',
@@ -82,7 +92,7 @@ export async function GET(request: Request) {
         bcc: email.bcc_emails || undefined,
         subject: email.subject,
         html: email.html_body,
-        replyTo: email.reply_to || undefined,
+        replyTo: parseReplyTo(email.reply_to),
         headers: email.in_reply_to
           ? {
               'In-Reply-To': email.in_reply_to,

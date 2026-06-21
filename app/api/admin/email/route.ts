@@ -583,7 +583,7 @@ export async function POST(request: NextRequest) {
             bcc_emails: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : null,
             subject,
             html_body: html || text || '', // Fallback to text
-            reply_to: replyTo || defaultReplyTo,
+            reply_to: Array.isArray(replyTo) ? replyTo.join(', ') : replyTo || defaultReplyTo,
             in_reply_to: inReplyTo || null,
             scheduled_at: scheduledAt,
             status: 'pending',
@@ -671,13 +671,25 @@ export async function POST(request: NextRequest) {
             }))
           : undefined;
 
+      // Parse replyTo: may be comma-separated string, normalize to array
+      const parseReplyTo = (val: string | undefined | null): string[] | undefined => {
+        if (!val) return undefined;
+        const parts = val
+          .split(',')
+          .map((s) => s.trim())
+          .filter(Boolean);
+        return parts.length > 0 ? parts : undefined;
+      };
+
+      const normalizedReplyTo = parseReplyTo(replyTo) || parseReplyTo(defaultReplyTo);
+
       const result = await resend.emails.send({
         from: fromAddress,
         to: Array.isArray(to) ? to : [to],
         subject,
         html: html || undefined,
         text: text || undefined,
-        replyTo: replyTo || defaultReplyTo,
+        replyTo: normalizedReplyTo,
         cc: cc ? (Array.isArray(cc) ? cc : [cc]) : undefined,
         bcc: bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : undefined,
         attachments: resendAttachments,

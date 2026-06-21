@@ -66,12 +66,12 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
     });
   };
 
-  const handleReply = () => {
+  const handleReply = (suggestionHtml?: string) => {
     if (!h.selected || !onReply) return;
     onReply({
       to: h.selected.from,
       subject: `Re: ${h.selected.subject}`,
-      html: buildReplyHtml(h.selected),
+      html: suggestionHtml || buildReplyHtml(h.selected),
       originalFrom: h.selected.from,
       originalDate: h.selected.created_at,
       originalSubject: h.selected.subject,

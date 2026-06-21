@@ -85,12 +85,12 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
     });
   };
 
-  const handleReply = () => {
+  const handleReply = (suggestionHtml?: string) => {
     if (!selectedReply || !onReply) return;
     onReply({
       to: selectedReply.from || (selectedReply as any).from_email || '',
       subject: `Re: ${selectedReply.subject}`,
-      html: buildReplyHtml(selectedReply as any),
+      html: suggestionHtml || buildReplyHtml(selectedReply as any),
       originalFrom: selectedReply.from || (selectedReply as any).from_email || '',
       originalDate: selectedReply.created_at,
       originalSubject: selectedReply.subject,
