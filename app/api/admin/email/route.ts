@@ -559,7 +559,7 @@ export async function POST(request: NextRequest) {
       let defaultReplyTo = 'info@sviiinfrasolutions.com, hr.sviinfrasolutions@gmail.com';
       try {
         const { data: settingsData } = await supabaseAdmin
-          .from('portal_settings')
+          .from('portal_settings' as any)
           .select('value')
           .eq('key', 'email_settings')
           .single();
