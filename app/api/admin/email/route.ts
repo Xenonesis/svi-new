@@ -560,6 +560,7 @@ export async function POST(request: NextRequest) {
       try {
         const { data: settingsData } = await supabaseAdmin
           .from('portal_settings')
+          .select('value')
           .eq('key', 'email_settings')
           .single();
         if (settingsData?.value?.admin_email) {
