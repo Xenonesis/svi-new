@@ -239,6 +239,17 @@ export default function AllotmentRecordsPage() {
     return matchesSearch && matchesProject;
   });
 
+  const ticketIdCounts: Record<string, number> = {};
+  allotments.forEach((r) => {
+    const tId = r.form_data?.ticketId;
+    if (tId) {
+      ticketIdCounts[tId] = (ticketIdCounts[tId] || 0) + 1;
+    }
+  });
+  const duplicateTicketIds = new Set(
+    Object.keys(ticketIdCounts).filter((tId) => ticketIdCounts[tId] > 1)
+  );
+
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
       <div className="mb-8 flex items-center justify-between">
@@ -470,9 +481,20 @@ export default function AllotmentRecordsPage() {
                       className="group transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5"
                     >
                       <td className="px-6 py-4">
-                        <span className="text-brand-gold border-brand-gold/20 bg-brand-gold/10 rounded-full border px-2 py-1 text-xs font-bold">
-                          {record.form_data?.ticketId || 'N/A'}
-                        </span>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="text-brand-gold border-brand-gold/20 bg-brand-gold/10 rounded-full border px-2 py-1 text-xs font-bold">
+                            {record.form_data?.ticketId || 'N/A'}
+                          </span>
+                          {record.form_data?.ticketId &&
+                            duplicateTicketIds.has(record.form_data.ticketId) && (
+                              <span
+                                className="inline-flex cursor-help items-center gap-1 rounded bg-amber-100 px-1.5 py-0.5 text-[10px] font-semibold text-amber-800 dark:bg-amber-900/30 dark:text-amber-300"
+                                title="Duplicate found! Check details using the Eye (View) icon, and safely delete older or incorrect copies using the Trash button on the right to resolve the duplication."
+                              >
+                                ⚠️ Duplicate
+                              </span>
+                            )}
+                        </div>
                       </td>
                       <td className="px-6 py-4 font-semibold text-gray-900 dark:text-white">
                         {record.form_data?.clientName || 'N/A'}

@@ -364,25 +364,55 @@ export default function AllotmentLetterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    let targetDocId = documentId;
+
+    // Check if ticketId already exists in savedAllotments
+    const existingRecord = savedAllotments.find(
+      (r) => r.form_data?.ticketId === formData.ticketId && r.id !== documentId
+    );
+
+    if (existingRecord) {
+      const confirmOverwrite = window.confirm(
+        `Warning: An allotment letter with Ticket ID "${formData.ticketId}" already exists. Saving will overwrite the existing record. Do you want to proceed?`
+      );
+      if (!confirmOverwrite) {
+        return; // Abort saving
+      }
+      targetDocId = existingRecord.id;
+    }
+
     // Save document record to database
     if (token) {
       try {
-        const response = await fetch('/api/admin/documents', {
-          method: 'POST',
+        const url = targetDocId ? `/api/admin/documents/${targetDocId}` : '/api/admin/documents';
+        const method = targetDocId ? 'PATCH' : 'POST';
+        const body = targetDocId
+          ? { form_data: formData, status: 'draft' }
+          : { document_type: 'allotment_letter', form_data: formData, status: 'draft' };
+
+        const response = await fetch(url, {
+          method,
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            document_type: 'allotment_letter',
-            form_data: formData,
-            status: 'draft',
-          }),
+          body: JSON.stringify(body),
         });
 
         if (response.ok) {
           const data = await response.json();
           setDocumentId(data.document.id);
+          // Update savedAllotments state locally to keep list/dropdown in sync
+          setSavedAllotments((prev) => {
+            const index = prev.findIndex((item) => item.id === data.document.id);
+            if (index !== -1) {
+              const updated = [...prev];
+              updated[index] = data.document;
+              return updated;
+            } else {
+              return [data.document, ...prev];
+            }
+          });
         }
       } catch (error) {
         console.error('Failed to save document:', error);
