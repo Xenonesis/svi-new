@@ -30,7 +30,7 @@ export function ProjectDropdown({
       onClick={onClick}
     >
       <span
-        className={`flex items-center gap-1 text-[10px] font-semibold tracking-widest uppercase transition-colors duration-200 xl:text-[11px] ${
+        className={`flex items-center gap-1 text-[clamp(10px,0.9vw,14px)] font-semibold tracking-widest uppercase transition-colors duration-200 ${
           currentPath.includes('/projects')
             ? 'text-brand-gold'
             : isHomeTransparent

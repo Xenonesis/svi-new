@@ -46,7 +46,10 @@ export async function GET(request: NextRequest) {
 
     let query = supabaseAdmin
       .from('registrations')
-      .select('*', { count: 'exact' })
+      .select(
+        'id,submission_id,name,last_name,email,phone,so_wo_do,preferred_date,aadhar_number,pan_number,photo_url,pan_card_file_url,state,city,address,advisor_name,project,property_size,property_type,plot_preference,payment_plan,payment_mode,scheme_amount,property_interest,message,status,is_important,created_at',
+        { count: 'exact' }
+      )
       .order(sortCol, { ascending })
       .range(offset, offset + limit - 1);
 

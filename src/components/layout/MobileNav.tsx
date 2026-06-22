@@ -43,7 +43,7 @@ function MobileLink({
   return (
     <Link
       href={href}
-      className={`block py-2.5 text-[16px] font-semibold tracking-wide transition-colors min-[380px]:text-[17px] ${
+      className={`block py-2.5 text-[clamp(15px,4vw,18px)] font-semibold tracking-wide transition-colors ${
         isActive
           ? 'text-brand-gold'
           : 'text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold dark:text-gray-100'
@@ -156,7 +156,7 @@ const MobileNav = memo(function MobileNav({
             >
               <button
                 onClick={onToggleProjects}
-                className="text-brand-navy group flex w-full items-center justify-between py-2.5 text-left text-[16px] font-semibold tracking-wide min-[380px]:text-[17px] dark:text-gray-100"
+                className="text-brand-navy group flex w-full items-center justify-between py-2.5 text-left text-[clamp(15px,4vw,18px)] font-semibold tracking-wide dark:text-gray-100"
               >
                 <span>{t('projects')}</span>
                 <ChevronDown
@@ -223,7 +223,7 @@ const MobileNav = memo(function MobileNav({
                 <Link
                   href="/lottery"
                   onClick={onClose}
-                  className={`block py-2.5 text-[16px] font-semibold tracking-wide transition-colors min-[380px]:text-[17px] ${
+                  className={`block py-2.5 text-[clamp(15px,4vw,18px)] font-semibold tracking-wide transition-colors ${
                     currentPath === '/lottery'
                       ? 'text-brand-gold'
                       : 'text-brand-gold/80 hover:text-brand-gold'
@@ -243,14 +243,14 @@ const MobileNav = memo(function MobileNav({
             <Link
               href="/login"
               onClick={onClose}
-              className="border-brand-navy dark:border-brand-gold/45 text-brand-navy dark:text-brand-gold block w-full rounded-full border py-2 text-center text-xs font-semibold tracking-widest uppercase transition-colors hover:bg-gray-50 min-[380px]:py-2.5 min-[380px]:text-sm dark:hover:bg-zinc-900"
+              className="border-brand-navy dark:border-brand-gold/45 text-brand-navy dark:text-brand-gold block w-full rounded-full border py-2.5 text-center text-[clamp(12px,3.5vw,14px)] font-semibold tracking-widest uppercase transition-colors hover:bg-gray-50 dark:hover:bg-zinc-900"
             >
               {t('clientLogin')}
             </Link>
             <Link
               href="/registration"
               onClick={onClose}
-              className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy block w-full rounded-full py-2 text-center text-xs font-semibold tracking-widest text-white uppercase min-[380px]:py-2.5 min-[380px]:text-sm"
+              className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy block w-full rounded-full py-2.5 text-center text-[clamp(12px,3.5vw,14px)] font-semibold tracking-widest text-white uppercase"
             >
               {t('registerNow')}
             </Link>

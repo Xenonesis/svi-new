@@ -20,7 +20,8 @@
     "generate-icons": "node scripts/generate-icons.js",
     "test:e2e": "playwright test --config=e2e/playwright.config.ts",
     "test:e2e:ui": "playwright test --ui --config=e2e/playwright.config.ts",
-    "test:e2e:debug": "playwright test --config=e2e/playwright.config.ts --debug"
+    "test:e2e:debug": "playwright test --config=e2e/playwright.config.ts --debug",
+    "test:db-performance": "tsx scripts/test-db-performance.ts"
   },
   "dependencies": {
     "@ai-sdk/groq": "^3.0.42",

@@ -4,13 +4,27 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
 // GET /api/admin/registrations/filters — returns distinct values for filter dropdowns
-// Fast: uses DISTINCT SQL queries, not full table scans
+// Fast: uses database-side RPC (get_distinct_registration_filters) with parallel fallback
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
-    // Run DISTINCT queries in parallel — each returns a small array
+    // 1. Try to run database-side RPC (ultra-fast, single query, handles distinct ordering)
+    const { data: rpcData, error: rpcError } = await supabaseAdmin.rpc(
+      'get_distinct_registration_filters'
+    );
+
+    if (!rpcError && rpcData) {
+      return NextResponse.json(rpcData);
+    }
+
+    // 2. Fallback: If migration hasn't been run yet, run parallel queries in JS
+    console.warn(
+      '[Performance Warning] Falling back to parallel distinct filter queries. Run migrations to enable get_distinct_registration_filters RPC.',
+      rpcError?.message
+    );
+
     const [projects, advisors, propTypes, propSizes, plotPrefs, payPlans, payModes] =
       await Promise.all([
         supabaseAdmin
@@ -54,13 +68,25 @@ export async function GET(request: NextRequest) {
     const unique = (arr: string[]) => [...new Set(arr)].filter(Boolean).sort();
 
     return NextResponse.json({
-      projects: unique((projects.data || []).map((r: any) => r.project)),
-      advisors: unique((advisors.data || []).map((r: any) => r.advisor_name)),
-      propertyTypes: unique((propTypes.data || []).map((r: any) => r.property_type)),
-      propertySizes: unique((propSizes.data || []).map((r: any) => r.property_size)),
-      plotPreferences: unique((plotPrefs.data || []).map((r: any) => r.plot_preference)),
-      paymentPlans: unique((payPlans.data || []).map((r: any) => r.payment_plan)),
-      paymentModes: unique((payModes.data || []).map((r: any) => r.payment_mode)),
+      projects: unique((projects.data || []).map((r: { project: string | null }) => r.project)),
+      advisors: unique(
+        (advisors.data || []).map((r: { advisor_name: string | null }) => r.advisor_name)
+      ),
+      propertyTypes: unique(
+        (propTypes.data || []).map((r: { property_type: string | null }) => r.property_type)
+      ),
+      propertySizes: unique(
+        (propSizes.data || []).map((r: { property_size: string | null }) => r.property_size)
+      ),
+      plotPreferences: unique(
+        (plotPrefs.data || []).map((r: { plot_preference: string | null }) => r.plot_preference)
+      ),
+      paymentPlans: unique(
+        (payPlans.data || []).map((r: { payment_plan: string | null }) => r.payment_plan)
+      ),
+      paymentModes: unique(
+        (payModes.data || []).map((r: { payment_mode: string | null }) => r.payment_mode)
+      ),
     });
   } catch (error) {
     return handleApiError(error);

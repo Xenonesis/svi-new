@@ -35,7 +35,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`group relative py-1 text-[10px] font-semibold tracking-widest uppercase transition-colors duration-200 xl:text-[11px] ${
+      className={`group relative py-1 text-[clamp(10px,0.9vw,14px)] font-semibold tracking-widest uppercase transition-colors duration-200 ${
         isActive
           ? 'text-brand-gold'
           : isHomeTransparent
@@ -110,7 +110,7 @@ const DesktopNav = memo(function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-2 py-1 text-[10px] font-semibold tracking-widest uppercase transition-colors duration-200 xl:px-3 xl:text-[11px] ${
+          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-2 py-1.5 text-[clamp(10px,0.9vw,14px)] font-semibold tracking-widest uppercase transition-colors duration-200 xl:px-4 ${
             currentPath === '/lottery'
               ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
               : 'text-brand-gold/80 hover:text-brand-gold'
@@ -125,7 +125,7 @@ const DesktopNav = memo(function DesktopNav({
       <div className="flex items-center border-l border-gray-200 lg:gap-2 lg:pl-3 xl:gap-4 xl:pl-6 dark:border-zinc-800">
         <Link
           href="/login"
-          className={`group/login relative py-1 text-[10px] font-semibold tracking-widest uppercase transition-all duration-200 xl:text-[11px] ${
+          className={`group/login relative py-1 text-[clamp(10px,0.9vw,14px)] font-semibold tracking-widest uppercase transition-all duration-200 ${
             isHomeTransparent
               ? 'hover:text-brand-gold text-white/95'
               : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
@@ -136,7 +136,7 @@ const DesktopNav = memo(function DesktopNav({
         </Link>
         <Link
           href="/registration"
-          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-3 py-1.5 text-[10px] font-semibold tracking-widest text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:text-[11px]"
+          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-3 py-1.5 text-[clamp(10px,0.9vw,14px)] font-semibold tracking-widest text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-5"
         >
           {t('register')}
         </Link>
