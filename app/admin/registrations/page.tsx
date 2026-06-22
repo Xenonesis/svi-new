@@ -72,13 +72,13 @@ export default function AdminRegistrations() {
           onSearchSubmit={h.handleSearch}
           onSearchClear={() => {
             h.setSearch('');
-            h.fetchRegistrations(h.token, '', 1);
+            h.setPage(1);
           }}
           onSortByChange={h.setSortBy}
           onSortOrderToggle={() => h.setSortOrder(h.sortOrder === 'asc' ? 'desc' : 'asc')}
           onFilterToggle={() => h.setShowFilters(!h.showFilters)}
           onExport={h.handleExportCSV}
-          onRefresh={() => h.fetchRegistrations(h.token, h.search, h.page)}
+          onRefresh={() => h.fetchRegistrations()}
           onManageAdvisors={() => h.setShowAdvisorSettings(true)}
         />
 
@@ -108,7 +108,7 @@ export default function AdminRegistrations() {
           onView={h.setSelectedReg}
           onDelete={h.setDeleteTarget}
           onClearFilters={h.clearFilters}
-          onPageChange={(p) => h.fetchRegistrations(h.token, h.search, p)}
+          onPageChange={(p) => h.setPage(p)}
         />
       </div>
 

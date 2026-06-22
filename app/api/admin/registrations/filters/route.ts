@@ -65,7 +65,7 @@ export async function GET(request: NextRequest) {
       ]);
 
     // Deduplicate in JS after DB returns sorted values
-    const unique = (arr: string[]) => [...new Set(arr)].filter(Boolean).sort();
+    const unique = (arr: (string | null)[]) => [...new Set(arr)].filter(Boolean) as string[];
 
     return NextResponse.json({
       projects: unique((projects.data || []).map((r: { project: string | null }) => r.project)),
