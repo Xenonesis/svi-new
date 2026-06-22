@@ -1,13 +1,7 @@
 'use client';
 
 import { Check } from 'lucide-react';
-
-export const ACCENTS = [
-  { id: 'gold', label: 'Imperial Gold', color: '#d4af37', light: '#dec070', dark: '#b08f36' },
-  { id: 'navy', label: 'Royal Navy', color: '#2a3b61', light: '#415582', dark: '#111827' },
-  { id: 'emerald', label: 'Emerald Luxe', color: '#10b981', light: '#34d399', dark: '#059669' },
-  { id: 'slate', label: 'Obsidian Slate', color: '#4b5563', light: '#6b7280', dark: '#374151' },
-];
+import { ACCENTS } from './helpers';
 
 interface AppearanceTabProps {
   theme: 'light' | 'dark' | 'system';

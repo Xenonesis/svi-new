@@ -16,6 +16,13 @@ export const getSettingsInputClass = (densityPadding: string) =>
 export const SETTINGS_LABEL_CLASS =
   'mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 dark:text-gray-400 uppercase font-sans';
 
+export const ACCENTS = [
+  { id: 'gold', label: 'Imperial Gold', color: '#d4af37', light: '#dec070', dark: '#b08f36' },
+  { id: 'navy', label: 'Royal Navy', color: '#2a3b61', light: '#415582', dark: '#111827' },
+  { id: 'emerald', label: 'Emerald Luxe', color: '#10b981', light: '#34d399', dark: '#059669' },
+  { id: 'slate', label: 'Obsidian Slate', color: '#4b5563', light: '#6b7280', dark: '#374151' },
+];
+
 export const getUserAgentInfo = () => {
   if (typeof window === 'undefined') {
     return { os: 'Windows PC', browser: 'Google Chrome', isMobile: false };
