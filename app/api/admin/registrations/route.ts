@@ -1,10 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
-const VALID_STATUSES = ['pending', 'contacted', 'approved', 'rejected'];
+// ── Zod schema: strictly typed, self-documenting, future-proof ────────────────
+const patchSchema = z
+  .object({
+    id: z.string().uuid('id must be a valid UUID'),
+    status: z.enum(['pending', 'contacted', 'approved', 'rejected']).optional(),
+    is_important: z.boolean().optional(),
+  })
+  .refine((d) => d.status !== undefined || d.is_important !== undefined, {
+    message: 'At least one of status or is_important must be provided',
+  });
+
+type PatchBody = z.infer<typeof patchSchema>;
+// ─────────────────────────────────────────────────────────────────────────────
 
 // GET /api/admin/registrations — list all registrations with pagination, search, filters, sort
 export async function GET(request: NextRequest) {
@@ -91,29 +104,23 @@ export async function PATCH(request: NextRequest) {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
-    let body: { id?: string; status?: string; is_important?: boolean };
+    let rawBody: unknown;
     try {
-      body = await request.json();
+      rawBody = await request.json();
     } catch {
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { id, status: newStatus, is_important } = body;
-    if (!id) throw AppError.badRequest('id is required');
+    const parsed = patchSchema.safeParse(rawBody);
+    if (!parsed.success) {
+      throw AppError.validationError(parsed.error.flatten());
+    }
 
-    const updatePayload: any = {};
-    if (newStatus !== undefined) {
-      if (!VALID_STATUSES.includes(newStatus)) {
-        throw AppError.badRequest(`Invalid status. Must be one of: ${VALID_STATUSES.join(', ')}`);
-      }
-      updatePayload.status = newStatus;
-    }
-    if (is_important !== undefined) {
-      updatePayload.is_important = is_important;
-    }
-    if (Object.keys(updatePayload).length === 0) {
-      throw AppError.badRequest('No update parameters provided');
-    }
+    const { id, status: newStatus, is_important } = parsed.data as PatchBody;
+
+    const updatePayload: Record<string, unknown> = {};
+    if (newStatus !== undefined) updatePayload.status = newStatus;
+    if (is_important !== undefined) updatePayload.is_important = is_important;
 
     const { data, error } = await supabaseAdmin
       .from('registrations')

@@ -1,10 +1,10 @@
 'use client';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import type { Registration, FilterOptions, Filters } from './types';
+import type { Registration, Filters } from './types';
 
 const DEFAULT_FILTERS: Filters = {
   project: '',
@@ -63,6 +63,35 @@ export function useRegistrations() {
       setToken(session.access_token);
     });
   }, [router]);
+
+  // ── Supabase Realtime: live-sync new registrations ──────────────────────────
+  const channelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+
+  useEffect(() => {
+    // Only subscribe once we have a valid admin token
+    if (!token) return;
+
+    // Tear down any previous channel before creating a new one
+    if (channelRef.current) {
+      supabase.removeChannel(channelRef.current);
+    }
+
+    const channel = supabase
+      .channel('realtime:registrations')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'registrations' }, () => {
+        // Any change (INSERT / UPDATE / DELETE) instantly refreshes the list
+        queryClient.invalidateQueries({ queryKey: ['registrations'] });
+      })
+      .subscribe();
+
+    channelRef.current = channel;
+
+    return () => {
+      supabase.removeChannel(channel);
+      channelRef.current = null;
+    };
+  }, [token, queryClient]);
+  // ────────────────────────────────────────────────────────────────────────────
 
   // Fetch filter options via React Query
   const {
@@ -180,13 +209,17 @@ export function useRegistrations() {
       const queryKey = ['registrations', token, search, page, sortBy, sortOrder, filters];
       const previousData = queryClient.getQueryData(queryKey);
 
-      queryClient.setQueryData(queryKey, (old: any) => {
+      queryClient.setQueryData<{
+        registrations: Registration[];
+        total: number;
+        page: number;
+        limit: number;
+        hasMore: boolean;
+      }>(queryKey, (old) => {
         if (!old) return old;
         return {
           ...old,
-          registrations: old.registrations.map((r: any) =>
-            r.id === id ? { ...r, is_important } : r
-          ),
+          registrations: old.registrations.map((r) => (r.id === id ? { ...r, is_important } : r)),
         };
       });
       return { previousData, queryKey };

@@ -1,9 +1,11 @@
 'use client';
 
-import { AlertCircle, CheckCircle2, FileText } from 'lucide-react';
+import { AlertCircle, CheckCircle2, FileText, Clock, CheckCheck } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
+import { useQuery } from '@tanstack/react-query';
 import { GRID_STYLE } from '@/src/components/admin/registrations/types';
 import { useRegistrations } from '@/src/components/admin/registrations/useRegistrations';
+import { RegistrationAnalytics } from '@/src/components/admin/registrations/RegistrationAnalytics';
 import { RegistrationsToolbar } from '@/src/components/admin/registrations/RegistrationsToolbar';
 import { FilterPanel } from '@/src/components/admin/registrations/FilterPanel';
 import { RegistrationTable } from '@/src/components/admin/registrations/RegistrationTable';
@@ -13,6 +15,27 @@ import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSetti
 
 export default function AdminRegistrations() {
   const h = useRegistrations();
+
+  // Fetch analytics for the quick-stat cards (pending + approved)
+  const { data: analyticsData } = useQuery<{
+    statusDistribution: { name: string; value: number; color: string }[];
+  }>({
+    queryKey: ['registrationAnalytics', h.token],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/registrations/analytics', {
+        headers: { Authorization: `Bearer ${h.token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch analytics');
+      return res.json();
+    },
+    enabled: !!h.token,
+    staleTime: 30_000,
+  });
+
+  const pendingCount =
+    analyticsData?.statusDistribution.find((s) => s.name === 'Pending')?.value ?? '—';
+  const approvedCount =
+    analyticsData?.statusDistribution.find((s) => s.name === 'Approved')?.value ?? '—';
 
   return (
     <div className="relative w-full font-sans">
@@ -45,6 +68,7 @@ export default function AdminRegistrations() {
 
         {/* Stats */}
         <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+          {/* Total */}
           <div className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 p-5 shadow-lg backdrop-blur-xl">
             <div className="via-brand-gold/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
             <div className="mb-3 flex items-center justify-between">
@@ -59,7 +83,42 @@ export default function AdminRegistrations() {
               Total Registrations
             </p>
           </div>
+
+          {/* Pending */}
+          <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-amber-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-amber-500/20">
+            <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-amber-200/60 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-900/20">
+                <Clock className="h-5 w-5 text-amber-500" />
+              </div>
+            </div>
+            <p className="text-3xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+              {pendingCount}
+            </p>
+            <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
+              Pending Review
+            </p>
+          </div>
+
+          {/* Approved */}
+          <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-emerald-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-emerald-500/20">
+            <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
+            <div className="mb-3 flex items-center justify-between">
+              <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-900/20">
+                <CheckCheck className="h-5 w-5 text-emerald-500" />
+              </div>
+            </div>
+            <p className="text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+              {approvedCount}
+            </p>
+            <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
+              Approved
+            </p>
+          </div>
         </div>
+
+        {/* Analytics Command Center */}
+        <RegistrationAnalytics token={h.token} />
 
         {/* Toolbar */}
         <RegistrationsToolbar
