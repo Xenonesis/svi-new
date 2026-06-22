@@ -71,7 +71,7 @@ const MobileNav = memo(function MobileNav({
   return (
     <>
       {/* Hamburger Button */}
-      <div className="flex items-center gap-3 lg:hidden">
+      <div className="flex items-center gap-3 xl:hidden">
         <button
           className="bg-brand-navy flex items-center justify-center rounded-full p-2 text-white shadow-sm transition-colors dark:bg-zinc-900 dark:text-gray-200"
           onClick={onToggle}
@@ -85,7 +85,7 @@ const MobileNav = memo(function MobileNav({
 
       {/* Backdrop */}
       <div
-        className={`fixed inset-0 z-40 bg-zinc-950/45 backdrop-blur-sm transition-opacity duration-300 lg:hidden ${
+        className={`fixed inset-0 z-40 bg-zinc-950/45 backdrop-blur-sm transition-opacity duration-300 xl:hidden ${
           isOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={onClose}
@@ -95,7 +95,7 @@ const MobileNav = memo(function MobileNav({
       {/* Side Drawer */}
       <div
         id="mobile-menu"
-        className={`fixed top-0 right-0 z-50 flex h-screen w-full max-w-sm flex-col border-l border-white/10 bg-white/95 px-5 pt-28 pb-8 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out min-[380px]:w-[80%] min-[380px]:px-6 lg:hidden dark:border-zinc-900/60 dark:bg-zinc-950/96 ${
+        className={`fixed top-0 right-0 z-50 flex h-screen w-full max-w-sm flex-col border-l border-white/10 bg-white/95 px-5 pt-28 pb-8 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out min-[380px]:w-[80%] min-[380px]:px-6 xl:hidden dark:border-zinc-900/60 dark:bg-zinc-950/96 ${
           isOpen ? 'pointer-events-auto translate-x-0' : 'pointer-events-none translate-x-full'
         }`}
         role="dialog"
