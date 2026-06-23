@@ -17,7 +17,7 @@ export default function AdminRegistrations() {
   const h = useRegistrations();
 
   // Fetch analytics for the quick-stat cards (pending + approved)
-  const { data: analyticsData } = useQuery<{
+  const { data: analyticsData, isLoading: analyticsLoading } = useQuery<{
     statusDistribution: { name: string; value: number; color: string }[];
   }>({
     queryKey: ['registrationAnalytics', h.token],
@@ -76,9 +76,13 @@ export default function AdminRegistrations() {
                 <FileText className="text-brand-gold h-5 w-5" />
               </div>
             </div>
-            <p className="text-brand-navy text-3xl font-bold tracking-tight dark:text-white">
-              {h.total}
-            </p>
+            {h.loading ? (
+              <div className="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+            ) : (
+              <p className="text-brand-navy text-3xl font-bold tracking-tight dark:text-white">
+                {h.total}
+              </p>
+            )}
             <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
               Total Registrations
             </p>
@@ -92,9 +96,13 @@ export default function AdminRegistrations() {
                 <Clock className="h-5 w-5 text-amber-500" />
               </div>
             </div>
-            <p className="text-3xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
-              {pendingCount}
-            </p>
+            {analyticsLoading ? (
+              <div className="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+            ) : (
+              <p className="text-3xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+                {pendingCount}
+              </p>
+            )}
             <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
               Pending Review
             </p>
@@ -108,9 +116,13 @@ export default function AdminRegistrations() {
                 <CheckCheck className="h-5 w-5 text-emerald-500" />
               </div>
             </div>
-            <p className="text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-              {approvedCount}
-            </p>
+            {analyticsLoading ? (
+              <div className="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
+            ) : (
+              <p className="text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+                {approvedCount}
+              </p>
+            )}
             <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
               Approved
             </p>
