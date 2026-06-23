@@ -139,12 +139,14 @@ function StarButton({
 
 const StatusBadge = ({ status }: { status: string }) => {
   const getStatusStyles = () => {
-    switch (status.toLowerCase()) {
+    switch (status) {
       case 'approved':
       case 'completed':
         return 'bg-emerald-100 text-emerald-700 border-emerald-200 dark:bg-emerald-500/10 dark:text-emerald-400 dark:border-emerald-500/20';
       case 'pending':
         return 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-500/10 dark:text-amber-400 dark:border-amber-500/20';
+      case 'contacted':
+        return 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20';
       case 'rejected':
       case 'cancelled':
         return 'bg-red-100 text-red-700 border-red-200 dark:bg-red-500/10 dark:text-red-400 dark:border-red-500/20';
@@ -154,12 +156,14 @@ const StatusBadge = ({ status }: { status: string }) => {
   };
 
   const getIcon = () => {
-    switch (status.toLowerCase()) {
+    switch (status) {
       case 'approved':
       case 'completed':
         return <CheckCircle2 className="mr-1 h-3 w-3" />;
       case 'pending':
         return <Clock className="mr-1 h-3 w-3" />;
+      case 'contacted':
+        return <CheckCircle2 className="mr-1 h-3 w-3" />;
       case 'rejected':
       case 'cancelled':
         return <XCircle className="mr-1 h-3 w-3" />;
