@@ -56,7 +56,7 @@ export async function POST(req: NextRequest) {
       throw AppError.badRequest('Name, phone, and email are required');
     }
 
-    const cleanPhone = phone.replace(/\s/g, '');
+    const cleanPhone = phone.replace(/[\s-]/g, '').replace(/^\+?91/, '');
     if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
       throw AppError.badRequest('Invalid phone number');
     }

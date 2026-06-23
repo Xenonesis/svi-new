@@ -84,14 +84,25 @@ export default function LotteryCTA() {
       try {
         const { data, error } = await supabase
           .from('lotteries')
-          .select('id, title, description, status, created_at, draw_date')
+          .select('id, title, description, status, created_at')
           .in('status', ['active', 'completed'])
           .order('created_at', { ascending: false })
           .limit(1)
           .maybeSingle();
 
         if (!error && data) {
-          setLottery(data);
+          // Fetch draw date from scheduled_draws
+          const { data: schedule } = await supabase
+            .from('scheduled_draws')
+            .select('scheduled_at')
+            .eq('lottery_id', data.id)
+            .in('status', ['pending', 'reminder_sent'])
+            .maybeSingle();
+
+          setLottery({
+            ...data,
+            draw_date: schedule?.scheduled_at ?? null,
+          });
         }
       } catch {
         // Silently skip — CTA simply won't show
