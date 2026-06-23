@@ -11,6 +11,7 @@ export function FloatingContact() {
   const t = useTranslations('floatingContact');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -115,13 +116,39 @@ export function FloatingContact() {
 
               <form
                 className="space-y-4 p-6"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
+                  if (isSubmitting) return;
+
+                  const form = e.target as HTMLFormElement;
+                  const fd = new FormData(form);
+
+                  setIsSubmitting(true);
                   track('book_visit_submit');
-                  alert(
-                    'Booking requested! In a real app, this would hit the Supabase leads table with lead_score.'
-                  );
-                  setIsModalOpen(false);
+
+                  try {
+                    const res = await fetch('/api/site-visit', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        name: fd.get('name'),
+                        phone: fd.get('phone'),
+                        email: fd.get('email'),
+                        project_interest: fd.get('project'),
+                        preferred_date: fd.get('date'),
+                      }),
+                    });
+
+                    if (!res.ok) throw new Error('Failed');
+
+                    form.reset();
+                    setIsModalOpen(false);
+                    alert(t('bookingSuccess'));
+                  } catch {
+                    alert(t('bookingError'));
+                  } finally {
+                    setIsSubmitting(false);
+                  }
                 }}
               >
                 <div>
@@ -129,6 +156,7 @@ export function FloatingContact() {
                     {t('name')}
                   </label>
                   <input
+                    name="name"
                     required
                     type="text"
                     className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -142,6 +170,7 @@ export function FloatingContact() {
                       {t('phone')}
                     </label>
                     <input
+                      name="phone"
                       required
                       type="tel"
                       className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -153,6 +182,7 @@ export function FloatingContact() {
                       {t('email')}
                     </label>
                     <input
+                      name="email"
                       required
                       type="email"
                       className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -165,7 +195,10 @@ export function FloatingContact() {
                   <label className="mb-1 block text-xs font-semibold text-gray-500 uppercase">
                     {t('projectInterest')}
                   </label>
-                  <select className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white">
+                  <select
+                    name="project"
+                    className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                  >
                     <option value="">{t('selectProject')}</option>
                     <option value="Shyam Aangan">Shyam Aangan</option>
                     <option value="Shivani Vatika">Shivani Vatika</option>
@@ -178,6 +211,7 @@ export function FloatingContact() {
                     {t('preferredDate')}
                   </label>
                   <input
+                    name="date"
                     required
                     type="date"
                     className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -186,9 +220,10 @@ export function FloatingContact() {
 
                 <button
                   type="submit"
-                  className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light mt-2 w-full rounded-md py-4 font-bold tracking-wider uppercase transition-colors"
+                  disabled={isSubmitting}
+                  className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light mt-2 w-full rounded-md py-4 font-bold tracking-wider uppercase transition-colors disabled:opacity-60"
                 >
-                  {t('confirmBooking')}
+                  {isSubmitting ? '...' : t('confirmBooking')}
                 </button>
               </form>
             </motion.div>

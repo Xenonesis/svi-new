@@ -140,6 +140,8 @@
     "selectProject": "Select a project",
     "preferredDate": "Preferred Visit Date",
     "confirmBooking": "Confirm Booking",
+    "bookingSuccess": "Booking requested! We will contact you soon.",
+    "bookingError": "Failed to submit booking. Please try again.",
     "namePlaceholder": "John Doe",
     "phonePlaceholder": "+91 00000 00000",
     "emailPlaceholder": "john@example.com",

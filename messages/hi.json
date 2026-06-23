@@ -140,6 +140,8 @@
     "selectProject": "एक प्रोजेक्ट चुनें",
     "preferredDate": "पसंदीदा विज़िट तारीख",
     "confirmBooking": "बुकिंग कन्फ़र्म करें",
+    "bookingSuccess": "बुकिंग अनुरोध सबमिट हो गया! हम जल्द ही आपसे संपर्क करेंगे।",
+    "bookingError": "बुकिंग सबमिट करने में विफल। कृपया पुनः प्रयास करें।",
     "namePlaceholder": "राहुल शर्मा",
     "phonePlaceholder": "+91 00000 00000",
     "emailPlaceholder": "rahul@example.com",
