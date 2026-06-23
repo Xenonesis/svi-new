@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Calendar,
@@ -32,11 +33,11 @@ export default function SiteVisitsPage() {
   const [token, setToken] = useState('');
 
   // Get token
-  useState(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session) setToken(session.access_token);
     });
-  });
+  }, []);
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['siteVisits', token, page],
