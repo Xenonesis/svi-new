@@ -9,9 +9,13 @@ import type { Registration } from './types';
 
 function Field({ label, value }: { label: string; value: string | null | undefined }) {
   return value ? (
-    <div>
-      <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">{label}</p>
-      <p className="text-sm font-medium text-gray-800 dark:text-gray-200">{value}</p>
+    <div className="min-w-0">
+      <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase sm:text-[10px]">
+        {label}
+      </p>
+      <p className="truncate text-xs font-medium text-gray-800 sm:text-sm dark:text-gray-200">
+        {value}
+      </p>
     </div>
   ) : null;
 }
@@ -112,13 +116,12 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
               <span className="bg-brand-gold/20 h-px flex-1" />
             </h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3">
-              <Field label="Submission ID" value={reg.submission_id} />
               <Field label="First Name" value={reg.name} />
               <Field label="Last Name" value={reg.last_name} />
-              <Field label="Mobile" value={reg.phone} />
-              <Field label="Email" value={reg.email} />
               <Field label="S/O, W/O, D/O" value={reg.so_wo_do} />
+              <Field label="Mobile" value={reg.phone} />
               <Field label="Date of Birth" value={reg.preferred_date} />
+              <Field label="Submission ID" value={reg.submission_id} />
             </div>
           </div>
 
