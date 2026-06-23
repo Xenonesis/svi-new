@@ -110,7 +110,7 @@ const DesktopNav = memo(function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-2 py-1.5 text-[clamp(9px,0.75vw,13px)] font-semibold tracking-wide uppercase transition-colors duration-200 xl:px-4 xl:tracking-widest ${
+          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-2 py-2 text-[clamp(9px,0.75vw,13px)] font-semibold tracking-wide uppercase transition-colors duration-200 xl:px-4 xl:tracking-widest ${
             currentPath === '/lottery'
               ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
               : 'text-brand-gold/80 hover:text-brand-gold'
@@ -136,7 +136,7 @@ const DesktopNav = memo(function DesktopNav({
         </Link>
         <Link
           href="/registration"
-          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-3 py-1.5 text-[clamp(9px,0.75vw,13px)] font-semibold tracking-wide text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-5 xl:tracking-widest"
+          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative overflow-hidden rounded-full px-3 py-2 text-[clamp(9px,0.75vw,13px)] font-semibold tracking-wide text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-5 xl:tracking-widest"
         >
           {t('register')}
         </Link>
