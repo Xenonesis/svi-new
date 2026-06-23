@@ -914,7 +914,7 @@
       "initiateShuffle": "Verify {count} entries and initiate secure shuffle",
       "initiateSequence": "Initiate Sequence",
       "shufflingText": "Encrypting & Shuffling...",
-      "auditedViaSupabase": "All draws are verified and cryptographically audited",
+      "auditedViaSupabase": "A lucky draw system where the lucky ones get an opportunity as per their luck",
       "muteAudio": "Mute audio",
       "unmuteAudio": "Unmute audio"
     }
