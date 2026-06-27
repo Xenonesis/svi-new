@@ -55,40 +55,46 @@ export default function AdminLogin() {
 
     setLoading(true);
 
-    const { data, error: authError } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    try {
+      const { data, error: authError } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
-    if (authError || !data.session) {
-      setError(authError?.message || 'Login failed. Please verify your credentials.');
+      if (authError || !data.session) {
+        setError(authError?.message || 'Login failed. Please verify your credentials.');
+        setShake(true);
+        setLoading(false);
+        return;
+      }
+
+      // Verify admin role server-side via profile lookup
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+
+      if (profile?.role !== 'admin') {
+        await supabase.auth.signOut();
+        setError('Access denied. This portal is for administrators only.');
+        setShake(true);
+        setLoading(false);
+        return;
+      }
+
+      // Show premium success overlay stage
+      setSuccess(true);
+
+      // Wait a brief moment to ensure cookies are set, then navigate
+      setTimeout(() => {
+        router.replace('/admin/dashboard');
+      }, 1800);
+    } catch (err: any) {
+      setError(err?.message || 'Network error: Failed to connect to the authentication server.');
       setShake(true);
       setLoading(false);
-      return;
     }
-
-    // Verify admin role server-side via profile lookup
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', data.user.id)
-      .single();
-
-    if (profile?.role !== 'admin') {
-      await supabase.auth.signOut();
-      setError('Access denied. This portal is for administrators only.');
-      setShake(true);
-      setLoading(false);
-      return;
-    }
-
-    // Show premium success overlay stage
-    setSuccess(true);
-
-    // Wait a brief moment to ensure cookies are set, then navigate
-    setTimeout(() => {
-      router.replace('/admin/dashboard');
-    }, 1800);
   };
 
   return (

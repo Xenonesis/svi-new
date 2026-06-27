@@ -15,6 +15,7 @@ interface Activity {
 
 interface ActivityTimelineProps {
   activities: Activity[];
+  isLoading?: boolean;
 }
 
 /* const getActivityIcon = (type: Activity['type']) => {
@@ -49,9 +50,35 @@ const getActivityColor = (type: Activity['type']) => {
   }
 };
 
-export default function ActivityTimeline({ activities }: ActivityTimelineProps) {
+export default function ActivityTimeline({ activities, isLoading }: ActivityTimelineProps) {
+  if (isLoading) {
+    return (
+      <div className="dark:bg-brand-dark-surface/65 animate-pulse rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
+        <div className="mb-6">
+          <div className="mb-2 h-6 w-36 rounded bg-gray-200 dark:bg-white/5" />
+          <div className="h-4 w-24 rounded bg-gray-200 dark:bg-white/5" />
+        </div>
+        <div className="space-y-6">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="relative ml-3 flex gap-4 border-l-2 border-gray-200 pb-4 pl-6 last:border-0 dark:border-gray-700"
+            >
+              <div className="absolute top-0 -left-[9px] h-4 w-4 rounded-full border-2 border-transparent bg-gray-200 dark:bg-white/5" />
+              <div className="min-w-0 flex-1 space-y-2">
+                <div className="h-4 w-1/3 rounded bg-gray-200 dark:bg-white/5" />
+                <div className="h-3 w-3/4 rounded bg-gray-200 dark:bg-white/5" />
+                <div className="h-2 w-16 rounded bg-gray-200 dark:bg-white/5" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dark:bg-brand-dark-surface/65 rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl">
+    <div className="dark:bg-brand-dark-surface/65 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">Recent Activity</h3>

@@ -17,15 +17,36 @@ interface DocumentStatsChartProps {
     name: string;
     count: number;
   }>;
+  isLoading?: boolean;
 }
 
 const COLORS = ['#d4af37', '#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
 
-export default function DocumentStatsChart({ data }: DocumentStatsChartProps) {
+export default function DocumentStatsChart({ data, isLoading }: DocumentStatsChartProps) {
   const mounted = useMounted();
 
+  if (isLoading) {
+    return (
+      <div className="dark:bg-brand-dark-surface/65 min-w-0 animate-pulse rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
+        <div className="mb-6">
+          <div className="mb-2 h-6 w-44 rounded bg-gray-200 dark:bg-white/5" />
+          <div className="h-4 w-24 rounded bg-gray-200 dark:bg-white/5" />
+        </div>
+        <div className="flex h-[300px] w-full items-end gap-6 px-4">
+          {[...Array(5)].map((_, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-t bg-gray-200 dark:bg-white/5"
+              style={{ height: `${30 + ((i * 15) % 60)}%` }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dark:bg-brand-dark-surface/65 min-w-0 rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl">
+    <div className="dark:bg-brand-dark-surface/65 min-w-0 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">Document Generation</h3>

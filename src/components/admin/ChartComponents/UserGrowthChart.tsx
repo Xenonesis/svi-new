@@ -16,13 +16,34 @@ interface UserGrowthChartProps {
     date: string;
     users: number;
   }>;
+  isLoading?: boolean;
 }
 
-export default function UserGrowthChart({ data }: UserGrowthChartProps) {
+export default function UserGrowthChart({ data, isLoading }: UserGrowthChartProps) {
   const mounted = useMounted();
 
+  if (isLoading) {
+    return (
+      <div className="dark:bg-brand-dark-surface/65 min-w-0 animate-pulse rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
+        <div className="mb-6">
+          <div className="mb-2 h-6 w-32 rounded bg-gray-200 dark:bg-white/5" />
+          <div className="h-4 w-20 rounded bg-gray-200 dark:bg-white/5" />
+        </div>
+        <div className="flex h-[300px] w-full items-end gap-3 px-2">
+          {[...Array(12)].map((_, i) => (
+            <div
+              key={i}
+              className="flex-1 rounded-t bg-gray-200 dark:bg-white/5"
+              style={{ height: `${25 + Math.sin(i) * 15 + ((i * 7) % 35)}%` }}
+            />
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="dark:bg-brand-dark-surface/65 min-w-0 rounded-2xl bg-white/80 p-6 shadow-xl backdrop-blur-xl">
+    <div className="dark:bg-brand-dark-surface/65 min-w-0 rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h3 className="text-lg font-bold text-gray-900 dark:text-white">User Growth</h3>

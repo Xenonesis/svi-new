@@ -68,11 +68,12 @@ export default function AdminDashboard() {
 
   // React Query hooks — data fetching with caching
   const { data: usersData, isLoading: usersLoading } = useUsers(token);
-  const { data: analytics } = useAnalytics(token);
-  const { data: activitiesData } = useActivities(token);
+  const { data: analytics, isLoading: analyticsLoading } = useAnalytics(token);
+  const { data: activitiesData, isLoading: activitiesLoading } = useActivities(token);
   const users = usersData?.users ?? [];
   const activities = activitiesData?.activities ?? [];
   const loading = authLoading || (usersLoading && !usersData);
+  const isStatsLoading = authLoading || analyticsLoading || (usersLoading && !usersData);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
     setToast({ type, msg });
@@ -266,13 +267,21 @@ export default function AdminDashboard() {
                 <div className={`h-11 w-11 rounded-lg ${iconBg} flex items-center justify-center`}>
                   <Icon className={`h-5 w-5 ${iconColor}`} />
                 </div>
-                <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-500">
-                  {trend}
-                </span>
+                {isStatsLoading ? (
+                  <div className="h-5 w-12 animate-pulse rounded bg-gray-200 dark:bg-white/5" />
+                ) : (
+                  <span className="rounded-full bg-emerald-500/10 px-2 py-1 text-xs font-bold text-emerald-500">
+                    {trend}
+                  </span>
+                )}
               </div>
-              <p className="text-brand-navy text-3xl font-bold tracking-tight transition-colors duration-300 dark:text-white">
-                {value}
-              </p>
+              {isStatsLoading ? (
+                <div className="my-0.5 h-9 w-20 animate-pulse rounded bg-gray-200 dark:bg-white/5" />
+              ) : (
+                <p className="text-brand-navy text-3xl font-bold tracking-tight transition-colors duration-300 dark:text-white">
+                  {value}
+                </p>
+              )}
               <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
                 {label}
               </p>
@@ -282,8 +291,8 @@ export default function AdminDashboard() {
 
         {/* Charts & Analytics Section */}
         <div className="mb-8 grid grid-cols-1 gap-6 xl:grid-cols-2">
-          <UserGrowthChart data={userGrowthData} />
-          <DocumentStatsChart data={documentStatsData} />
+          <UserGrowthChart data={userGrowthData} isLoading={isStatsLoading} />
+          <DocumentStatsChart data={documentStatsData} isLoading={isStatsLoading} />
         </div>
 
         {/* Quick Actions & Activity Timeline */}
@@ -292,7 +301,10 @@ export default function AdminDashboard() {
             <QuickActions />
           </div>
           <div className="min-w-0 xl:col-span-2">
-            <ActivityTimeline activities={recentActivities} />
+            <ActivityTimeline
+              activities={recentActivities}
+              isLoading={authLoading || activitiesLoading}
+            />
           </div>
         </div>
 
