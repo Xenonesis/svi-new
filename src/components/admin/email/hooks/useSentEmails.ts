@@ -384,10 +384,10 @@ export function useSentEmails(): UseSentEmailsReturn {
       });
     }
 
-    // From filter
+    // Recipient filter (linked to fromFilter)
     if (fromFilter.trim()) {
       const f = fromFilter.toLowerCase();
-      list = list.filter((e) => e.from?.toLowerCase().includes(f));
+      list = list.filter((e) => e.to?.some((t: string) => t.toLowerCase().includes(f)));
     }
 
     // Sort

@@ -512,7 +512,7 @@ export async function GET(request: NextRequest) {
         subject: e.subject,
         from: e.from,
         to: e.to,
-        last_event: e.status || 'sent',
+        last_event: e.last_event || e.status || 'sent',
       }));
 
     return NextResponse.json({

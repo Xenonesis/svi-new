@@ -13,6 +13,7 @@ import {
   Trash2,
   CheckSquare,
   Square,
+  MinusSquare,
   Loader2,
 } from 'lucide-react';
 import {
@@ -53,6 +54,7 @@ interface EmailToolbarProps {
   onSearchClear: () => void;
   // ─── Multi-select & Delete ───
   selectedCount: number;
+  isAllSelected: boolean;
   onSelectAll: () => void;
   onDeleteSelected: () => void;
   deleting: boolean;
@@ -85,6 +87,7 @@ export function EmailToolbar({
   onStarToggle,
   onSearchClear,
   selectedCount,
+  isAllSelected,
   onSelectAll,
   onDeleteSelected,
   deleting,
@@ -149,8 +152,10 @@ export function EmailToolbar({
             className="flex h-7 w-7 shrink-0 items-center justify-center rounded text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
             title="Toggle select all"
           >
-            {selectedCount > 0 ? (
+            {isAllSelected ? (
               <CheckSquare className="text-brand-gold h-4 w-4" />
+            ) : selectedCount > 0 ? (
+              <MinusSquare className="text-brand-gold h-4 w-4" />
             ) : (
               <Square className="h-4 w-4" />
             )}
@@ -384,16 +389,16 @@ function FilterPanel({
           </div>
         </div>
 
-        {/* From filter */}
+        {/* To filter */}
         <div>
           <label className="mb-2 text-xs font-semibold tracking-wide text-gray-500 uppercase">
-            From
+            To
           </label>
           <div className="relative">
             <User className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
-              placeholder="Filter by sender..."
+              placeholder="Filter by recipient..."
               value={fromFilter}
               onChange={(e) => onFromFilterChange(e.target.value)}
               className="focus-gold w-full rounded-lg border border-gray-200 bg-gray-50/80 py-1.5 pr-3 pl-9 text-sm text-gray-900 placeholder-gray-400 outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white"

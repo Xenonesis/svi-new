@@ -175,6 +175,7 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
           onSearchClear={() => h.setSearch('')}
           // Multi-select & Delete props
           selectedCount={h.selectedIds.size}
+          isAllSelected={h.isAllSelected}
           onSelectAll={h.selectAllEmails}
           onDeleteSelected={handleDeleteClick}
           deleting={h.deleting}
