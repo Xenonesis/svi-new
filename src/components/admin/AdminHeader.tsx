@@ -1,6 +1,6 @@
 'use client';
 
-import { Menu, Moon, Search, Sun } from 'lucide-react';
+import { Menu, Moon, Search, Sun, Monitor } from 'lucide-react';
 
 import NotificationDropdown from './NotificationDropdown';
 import { usePathname } from 'next/navigation';
@@ -12,6 +12,7 @@ interface AdminHeaderProps {
   adminName?: string;
   userId?: string;
   onMenuClick?: () => void;
+  theme?: 'light' | 'dark' | 'system';
 }
 
 export default function AdminHeader({
@@ -20,6 +21,7 @@ export default function AdminHeader({
   adminName = 'Admin',
   userId,
   onMenuClick,
+  theme,
 }: AdminHeaderProps) {
   const pathname = usePathname();
   // const router = useRouter();
@@ -81,7 +83,13 @@ export default function AdminHeader({
             aria-label="Toggle theme"
             className="hover:text-brand-gold cursor-pointer p-2 text-gray-500 transition-colors"
           >
-            {isDark ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+            {theme === 'system' ? (
+              <Monitor className="h-5 w-5" />
+            ) : theme === 'dark' || (theme === undefined && isDark) ? (
+              <Moon className="h-5 w-5" />
+            ) : (
+              <Sun className="h-5 w-5" />
+            )}
           </button>
 
           <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-white/10"></div>

@@ -64,6 +64,7 @@ function AdminLayoutInner({ children }: { children: ReactNode }) {
       <div className="relative flex h-screen min-w-0 flex-1 flex-col overflow-x-hidden">
         <AdminHeader
           isDark={isDark}
+          theme={theme}
           toggleTheme={toggleTheme}
           userId={userId || ''}
           adminName={profile?.full_name || 'Admin'}
