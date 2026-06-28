@@ -17,7 +17,7 @@ const GRADIENT_STYLE = {
 export default async function ThankYou({
   searchParams,
 }: {
-  searchParams: Promise<{ registered?: string }>;
+  searchParams: Promise<{ registered?: string; queued?: string }>;
 }) {
   // Only show thank-you if user actually submitted the registration form
   const params = await searchParams;
@@ -32,7 +32,7 @@ export default async function ThankYou({
         style={GRADIENT_STYLE}
       ></div>
       <div className="relative z-10 container mx-auto px-4 text-center">
-        <ThankYouCard />
+        <ThankYouCard registered={!!params.registered} queued={!!params.queued} />
       </div>
     </div>
   );

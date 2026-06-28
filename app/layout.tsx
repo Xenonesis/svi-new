@@ -9,6 +9,7 @@ import { getLocale } from 'next-intl/server';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import PwaRegister from '@/src/components/PwaRegister';
+import PwaPushPrompt from '@/src/components/PwaPushPrompt';
 import QueryProvider from '@/src/components/QueryProvider';
 import { ThemeScript } from '@/src/components/ThemeProvider';
 
@@ -225,6 +226,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <Analytics />
         <SpeedInsights />
         <PwaRegister />
+        <PwaPushPrompt />
       </body>
     </html>
   );

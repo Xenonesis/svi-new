@@ -3,6 +3,26 @@
 
 import createNextIntlPlugin from 'next-intl/plugin';
 
+// Debug JSON.parse errors globally in Next.js dev server
+const originalParse = JSON.parse;
+global.JSON.parse = function(text, reviver) {
+  try {
+    return originalParse(text, reviver);
+  } catch (err) {
+    if (typeof text === 'string' && (text.length === 1219 || text.length === 1734 || err.message.includes('Unexpected non-whitespace character'))) {
+      console.error('--- JSON PARSE ERROR DETECTED ---');
+      console.error('Error message:', err.message);
+      console.error('String length:', text.length);
+      console.error('First 100 chars:', text.substring(0, 100));
+      console.error('Last 100 chars:', text.substring(text.length - 100));
+      console.error('Stack trace:', new Error().stack);
+      console.error('---------------------------------');
+    }
+    throw err;
+  }
+};
+
+
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
 const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({

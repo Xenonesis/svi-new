@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { submitContactForm } from '@/src/actions/contact';
+import { queueSubmission } from '@/src/lib/pwa/backgroundSync';
 
 const DIGIT_REGEX = /\d/g;
 
@@ -57,6 +58,14 @@ export default function ContactForm() {
 
       setIsSubmitting(true);
       setSubmitError('');
+      // If offline, queue for background sync
+      if (typeof navigator !== 'undefined' && !navigator.onLine) {
+        const payload = JSON.stringify(formData);
+        queueSubmission('/api/contact', payload);
+        router.push('/thank-you?queued=1');
+        return;
+      }
+
       try {
         const fd = new FormData();
         Object.entries(formData).forEach(([key, value]) => fd.append(key, value));
@@ -67,7 +76,10 @@ export default function ContactForm() {
         }
         router.push('/thank-you');
       } catch {
-        setSubmitError(t('validation.submitError'));
+        // Queue on network error too
+        const payload = JSON.stringify(formData);
+        queueSubmission('/api/contact', payload);
+        router.push('/thank-you?queued=1');
       } finally {
         setIsSubmitting(false);
       }
