@@ -889,6 +889,7 @@
       "officialWinner": "Official Winner",
       "officialWinners": "{count} Official Winners",
       "winnerNumber": "Winner #{index} of {total}",
+      "winnerIndex": "Winner #{index}",
       "waitingData": "Waiting for Data",
       "noParticipantsDesc": "The participant list is being prepared. Please wait.",
       "winnerPrecomputed": "Winner Selected",

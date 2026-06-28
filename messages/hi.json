@@ -889,6 +889,7 @@
       "officialWinner": "आधिकारिक विजेता",
       "officialWinners": "{count} आधिकारिक विजेता",
       "winnerNumber": "विजेता #{index} का {total}",
+      "winnerIndex": "विजेता #{index}",
       "waitingData": "डेटा की प्रतीक्षा की जा रही है",
       "noParticipantsDesc": "प्रतिभागियों की सूची तैयार की जा रही है। कृपया प्रतीक्षा करें।",
       "winnerPrecomputed": "विजेता चयनित",

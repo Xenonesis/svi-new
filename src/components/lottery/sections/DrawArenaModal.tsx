@@ -47,7 +47,7 @@ export function DrawArenaModal({
           initial={{ opacity: 0, backdropFilter: 'blur(0px)' }}
           animate={{ opacity: 1, backdropFilter: 'blur(20px)' }}
           exit={{ opacity: 0, backdropFilter: 'blur(0px)' }}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-[#020617]/95 p-4"
+          className="fixed inset-0 z-50 flex items-start justify-center overflow-y-auto bg-[#020617]/95 p-4 sm:items-center"
         >
           <motion.div
             initial={{ scale: 0.92, y: 30, opacity: 0 }}
@@ -121,7 +121,7 @@ export function DrawArenaModal({
 
               {/* Revealed Winners */}
               {revealedWinners.length > 0 ? (
-                <div className="space-y-6">
+                <div className="custom-scrollbar max-h-[280px] space-y-6 overflow-y-auto pr-2 sm:max-h-[380px]">
                   <AnimatePresence>
                     {revealedWinners.filter(Boolean).map((w, idx) => (
                       <motion.div
@@ -236,6 +236,23 @@ export function DrawArenaModal({
           </motion.div>
         </motion.div>
       )}
+      <style jsx global>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.03);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: linear-gradient(180deg, rgba(212, 175, 55, 0.2), rgba(178, 134, 34, 0.2));
+          border-radius: 10px;
+          border: 1px solid rgba(212, 175, 55, 0.08);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: linear-gradient(180deg, rgba(212, 175, 55, 0.4), rgba(178, 134, 34, 0.4));
+        }
+      `}</style>
     </AnimatePresence>
   );
 }
