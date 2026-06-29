@@ -56,7 +56,7 @@ export function DrawArenaModal({
               animate={{ scale: 1, y: 0, opacity: 1 }}
               exit={{ scale: 0.92, y: 30, opacity: 0 }}
               transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
-              className="relative w-full max-w-3xl overflow-hidden rounded-[2rem] border border-[#D4AF37]/15 bg-gradient-to-b from-[#0B1120] to-[#060a14] p-6 text-center shadow-[0_0_100px_rgba(212,175,55,0.08)] sm:p-10 md:p-16"
+              className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] border border-[#D4AF37]/15 bg-gradient-to-b from-[#0B1120] to-[#060a14] p-6 text-center shadow-[0_0_100px_rgba(212,175,55,0.08)] sm:p-10 md:p-16"
             >
               <div className="pointer-events-none absolute -top-40 left-1/2 h-[500px] w-[500px] -translate-x-1/2 rounded-full bg-[#D4AF37]/5 blur-[100px]" />
 
@@ -69,7 +69,7 @@ export function DrawArenaModal({
                 </button>
               )}
 
-              <div className="relative mx-auto max-w-xl space-y-6 sm:space-y-10">
+              <div className="relative mx-auto w-full space-y-6 sm:space-y-10">
                 <div>
                   <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/5 px-4 py-1.5 text-[10px] font-medium tracking-[0.2em] text-[#B38728] uppercase dark:text-[#D4AF37]">
                     <Zap className="h-3 w-3 fill-[#D4AF37]" /> {t('secureArena')}
@@ -80,106 +80,138 @@ export function DrawArenaModal({
                 </div>
 
                 {/* Shuffle Cylinder */}
-                <div className="relative mx-auto my-6 h-40 w-full max-w-sm overflow-hidden rounded-2xl border border-[#D4AF37]/15 bg-[#020617] shadow-[inset_0_0_40px_rgba(212,175,55,0.04)] sm:my-10 md:my-12">
-                  <div
-                    className="pointer-events-none absolute inset-0 z-20 rounded-2xl border border-[#D4AF37]/10"
-                    style={{
-                      background:
-                        'linear-gradient(180deg, rgba(212,175,55,0.03) 0%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 80%, rgba(212,175,55,0.03) 100%)',
-                    }}
-                  />
-                  <div className="pointer-events-none absolute top-1/2 right-4 left-4 z-20 h-px -translate-y-1/2 bg-[#D4AF37]/40" />
-                  <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-[#020617] to-transparent" />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-[#020617] to-transparent" />
+                <AnimatePresence>
+                  {(isShuffling || revealedWinners.length === 0) && (
+                    <motion.div
+                      key="shuffle-cylinder"
+                      initial={{ opacity: 0, height: 0, marginTop: 0, marginBottom: 0 }}
+                      animate={{
+                        opacity: 1,
+                        height: 160,
+                        marginTop: 24,
+                        marginBottom: 24,
+                      }}
+                      exit={{
+                        opacity: 0,
+                        height: 0,
+                        marginTop: 0,
+                        marginBottom: 0,
+                        transition: { duration: 0.3 },
+                      }}
+                      className="relative mx-auto w-full max-w-sm overflow-hidden rounded-2xl border border-[#D4AF37]/15 bg-[#020617] shadow-[inset_0_0_40px_rgba(212,175,55,0.04)]"
+                    >
+                      <div
+                        className="pointer-events-none absolute inset-0 z-20 rounded-2xl border border-[#D4AF37]/10"
+                        style={{
+                          background:
+                            'linear-gradient(180deg, rgba(212,175,55,0.03) 0%, rgba(255,255,255,0) 20%, rgba(255,255,255,0) 80%, rgba(212,175,55,0.03) 100%)',
+                        }}
+                      />
+                      <div className="pointer-events-none absolute top-1/2 right-4 left-4 z-20 h-px -translate-y-1/2 bg-[#D4AF37]/40" />
+                      <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-12 bg-gradient-to-b from-[#020617] to-transparent" />
+                      <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-12 bg-gradient-to-t from-[#020617] to-transparent" />
 
-                  <div
-                    ref={shuffleContainerRef}
-                    className="flex flex-col pt-10 transition-transform duration-75 ease-linear"
-                  >
-                    {shuffledNames.length > 0 ? (
-                      shuffledNames.map((name, idx) => (
-                        <div
-                          key={idx}
-                          className="flex h-[80px] items-center justify-center px-6 text-center"
-                        >
-                          <span
-                            className={`block truncate ${
-                              drawWinnerCount > 0 && idx >= shuffledNames.length - drawWinnerCount
-                                ? 'scale-110 font-serif text-2xl font-medium text-[#D4AF37] transition-all duration-500 sm:text-3xl'
-                                : 'text-lg font-light text-white/20 sm:text-xl md:text-2xl'
-                            }`}
-                          >
-                            {name}
-                          </span>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="flex h-[80px] items-center justify-center text-xs font-medium tracking-widest text-slate-600 uppercase">
-                        {t('awaitingCommand')}
+                      <div
+                        ref={shuffleContainerRef}
+                        className="flex flex-col pt-10 transition-transform duration-75 ease-linear"
+                      >
+                        {shuffledNames.length > 0 ? (
+                          shuffledNames.map((name, idx) => (
+                            <div
+                              key={idx}
+                              className="flex h-[80px] items-center justify-center px-6 text-center"
+                            >
+                              <span
+                                className={`block truncate ${
+                                  drawWinnerCount > 0 &&
+                                  idx >= shuffledNames.length - drawWinnerCount
+                                    ? 'scale-110 font-serif text-2xl font-medium text-[#D4AF37] transition-all duration-500 sm:text-3xl'
+                                    : 'text-lg font-light text-white/20 sm:text-xl md:text-2xl'
+                                }`}
+                              >
+                                {name}
+                              </span>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="flex h-[80px] items-center justify-center text-xs font-medium tracking-widest text-slate-600 uppercase">
+                            {t('awaitingCommand')}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
                 {/* Revealed Winners */}
                 {revealedWinners.length > 0 ? (
-                  <div className="custom-scrollbar max-h-[280px] space-y-6 overflow-y-auto pr-2 sm:max-h-[380px]">
+                  <div className="custom-scrollbar max-h-[360px] overflow-y-auto pr-2 sm:max-h-[460px]">
                     <AnimatePresence>
-                      {revealedWinners.filter(Boolean).map((w, idx) => (
-                        <motion.div
-                          key={w.id || w.ticket_number || `winner-${idx}`}
-                          initial={{ opacity: 0, scale: 0.5, y: 40 }}
-                          animate={{ opacity: 1, scale: 1, y: 0 }}
-                          transition={{ type: 'spring', stiffness: 150, damping: 18, delay: 0.1 }}
-                          className="relative"
-                        >
+                      <div
+                        className={`grid gap-6 ${
+                          revealedWinners.length === 1
+                            ? 'mx-auto max-w-sm grid-cols-1'
+                            : revealedWinners.length === 2
+                              ? 'mx-auto max-w-2xl grid-cols-1 sm:grid-cols-2'
+                              : 'mx-auto max-w-4xl grid-cols-1 sm:grid-cols-2 md:grid-cols-3'
+                        }`}
+                      >
+                        {revealedWinners.filter(Boolean).map((w, idx) => (
                           <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            transition={{ delay: 0.2, duration: 0.6 }}
-                            className="pointer-events-none absolute inset-0 mx-auto w-full max-w-xs rounded-full bg-[#D4AF37]/5 blur-2xl"
-                          />
-
-                          {revealedWinners.length > 1 && (
+                            key={w.id || w.ticket_number || `winner-${idx}`}
+                            initial={{ opacity: 0, scale: 0.5, y: 40 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            transition={{ type: 'spring', stiffness: 150, damping: 18, delay: 0.1 }}
+                            className="relative flex flex-col items-center justify-between rounded-3xl border border-[#D4AF37]/15 bg-[#D4AF37]/5 p-6 text-center backdrop-blur-md"
+                          >
                             <motion.div
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                              transition={{ delay: 0.3 }}
-                              className="mb-2 flex items-center justify-center gap-2"
+                              initial={{ scale: 0, opacity: 0 }}
+                              animate={{ scale: 1, opacity: 1 }}
+                              transition={{ delay: 0.2, duration: 0.6 }}
+                              className="pointer-events-none absolute inset-0 mx-auto w-full max-w-xs rounded-full bg-[#D4AF37]/5 blur-2xl"
+                            />
+
+                            <div className="w-full">
+                              <motion.div
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                transition={{ delay: 0.3 }}
+                                className="mb-3 flex items-center justify-center gap-1.5"
+                              >
+                                <Star className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
+                                <span className="text-[10px] font-bold tracking-[0.15em] text-[#B38728] uppercase dark:text-[#D4AF37]">
+                                  {t('winnerIndex', {
+                                    defaultValue: 'Winner #{index}',
+                                    index: idx + 1,
+                                  })}
+                                </span>
+                                <Star className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
+                              </motion.div>
+
+                              <motion.h4
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                transition={{ delay: 0.25, type: 'spring', stiffness: 200 }}
+                                className="relative font-serif text-xl font-medium text-white sm:text-2xl"
+                              >
+                                {w.name}
+                              </motion.h4>
+                            </div>
+
+                            <motion.div
+                              initial={{ opacity: 0, y: 10 }}
+                              animate={{ opacity: 1, y: 0 }}
+                              transition={{ delay: 0.4 }}
+                              className="relative mx-auto mt-4 inline-flex items-center gap-2 rounded-full border border-[#D4AF37]/20 bg-[#D4AF37]/10 px-4 py-1.5"
                             >
-                              <Star className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
-                              <span className="text-[10px] font-semibold tracking-[0.2em] text-[#B38728] uppercase dark:text-[#D4AF37]">
-                                {t('winnerIndex', {
-                                  defaultValue: 'Winner #{index}',
-                                  index: idx + 1,
-                                })}
+                              <Ticket className="h-3.5 w-3.5 text-[#D4AF37]" />
+                              <span className="font-mono text-sm tracking-wider text-[#D4AF37]">
+                                {w.ticket_number}
                               </span>
-                              <Star className="h-3 w-3 fill-[#D4AF37] text-[#D4AF37]" />
                             </motion.div>
-                          )}
-
-                          <motion.h4
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.25, type: 'spring', stiffness: 200 }}
-                            className="relative font-serif text-2xl text-white sm:text-4xl md:text-5xl"
-                          >
-                            {w.name}
-                          </motion.h4>
-
-                          <motion.div
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.4 }}
-                            className="relative mx-auto mt-3 inline-flex items-center gap-3 rounded-full border border-[#D4AF37]/25 bg-[#D4AF37]/10 px-6 py-2"
-                          >
-                            <Ticket className="h-4 w-4 text-[#D4AF37]" />
-                            <span className="font-mono text-lg tracking-widest text-[#D4AF37]">
-                              {w.ticket_number}
-                            </span>
                           </motion.div>
-                        </motion.div>
-                      ))}
+                        ))}
+                      </div>
                     </AnimatePresence>
                   </div>
                 ) : (

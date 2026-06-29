@@ -66,23 +66,17 @@ export function useLotteryDraw(): UseLotteryDrawReturn {
   const revealTimerRef = useRef<NodeJS.Timeout | null>(null);
   const carouselTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const initialSyncRef = useRef(false);
-
   useEffect(() => {
-    if (participants.length > 0 && !initialSyncRef.current) {
-      initialSyncRef.current = true;
-      const dbWinners = participants.filter((p) => p.is_winner);
-      if (dbWinners.length > 0 && activeLottery?.id) {
-        const isRevealed = localStorage.getItem(`lottery_revealed_${activeLottery.id}`);
-        if (isRevealed === 'true') {
-          setWinners(dbWinners);
-        }
+    const dbWinners = participants.filter((p) => p.is_winner);
+    if (dbWinners.length > 0 && activeLottery?.id) {
+      const isRevealed = localStorage.getItem(`lottery_revealed_${activeLottery.id}`);
+      if (isRevealed === 'true') {
+        setWinners(dbWinners);
       }
     }
   }, [participants, activeLottery]);
 
   const fetchActiveLottery = useCallback(async () => {
-    initialSyncRef.current = false;
     setWinners([]);
     await fetchData();
   }, [fetchData]);
@@ -318,8 +312,9 @@ export function useLotteryDraw(): UseLotteryDrawReturn {
           return;
         }
 
-        setCurrentRevealIndex(idx);
-        setRevealedWinners((prev) => [...prev, drawWinners[idx]]);
+        const currentIdx = idx;
+        setCurrentRevealIndex(currentIdx);
+        setRevealedWinners((prev) => [...prev, drawWinners[currentIdx]]);
         playRevealSound();
         triggerWinnerConfetti();
         idx++;
@@ -336,7 +331,7 @@ export function useLotteryDraw(): UseLotteryDrawReturn {
   const startShuffleAnimation = () => {
     if (participants.length === 0 || isShuffling) return;
 
-    const drawWinners = winners.length > 0 ? winners : participants.filter((p) => p.is_winner);
+    const drawWinners = participants.filter((p) => p.is_winner);
     if (drawWinners.length === 0) {
       return;
     }
