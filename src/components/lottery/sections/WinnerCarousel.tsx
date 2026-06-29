@@ -35,7 +35,11 @@ export function WinnerCarousel({
       <div className="relative overflow-hidden rounded-2xl">
         <AnimatePresence mode="wait">
           <motion.div
-            key={winners[activeWinnerIndex]?.id ?? 'fallback'}
+            key={
+              winners[activeWinnerIndex]?.id ||
+              winners[activeWinnerIndex]?.ticket_number ||
+              'fallback'
+            }
             initial={{
               opacity: 0,
               x: winnerSwipeDir > 0 ? 120 : -120,
