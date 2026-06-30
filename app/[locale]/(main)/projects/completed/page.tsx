@@ -1,6 +1,25 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { SITE_URL } from '@/src/lib/seo';
+import type { Metadata } from 'next';
 import CompletedProjectsContent from '@/src/components/projects/CompletedProjectsContent';
+
+export async function generateMetadata({
+  params: paramsPromise,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await paramsPromise;
+  const t = await getTranslations({ locale, namespace: 'pages.projects' });
+  return {
+    title: `${t('completedTitle')} - SVI Infra Solutions`,
+    description: t('completedSubtitle'),
+    openGraph: {
+      title: `${t('completedTitle')} | SVI Infra Solutions`,
+      description: t('completedSubtitle'),
+      images: [{ url: `${SITE_URL}/images/project2.png`, width: 1200, height: 630 }],
+    },
+  };
+}
 
 const completedProjectsData = (t: any) => [
   {

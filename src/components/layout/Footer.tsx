@@ -176,24 +176,37 @@ const Footer = memo(function Footer() {
             </h4>
             <ul className="flex flex-col gap-5">
               <li className="flex items-start gap-3">
-                <MapPin className="text-brand-gold mt-1 shrink-0" size={18} />
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                  A-61 Sector 65, Noida,
-                  <br />
-                  Uttar Pradesh 201309
-                </span>
+                <a
+                  href="https://maps.google.com/?q=A-61+Sector+65+Noida+Uttar+Pradesh+201309"
+                  target="_blank"
+                  rel="noreferrer"
+                  className="flex items-start gap-3 transition-colors hover:opacity-80"
+                >
+                  <MapPin className="text-brand-gold mt-1 shrink-0" size={18} />
+                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                    A-61 Sector 65, Noida,
+                    <br />
+                    Uttar Pradesh 201309
+                  </span>
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="text-brand-gold shrink-0" size={18} />
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <a
+                  href="tel:+917300007643"
+                  className="hover:text-brand-gold dark:hover:text-brand-gold text-sm font-medium text-gray-600 transition-colors dark:text-gray-400"
+                >
                   +91 73000 07643
-                </span>
+                </a>
               </li>
               <li className="flex items-center gap-3">
                 <Mail className="text-brand-gold shrink-0" size={18} />
-                <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
+                <a
+                  href="mailto:info@sviinfrasolutions.com"
+                  className="hover:text-brand-gold dark:hover:text-brand-gold text-sm font-medium text-gray-600 transition-colors dark:text-gray-400"
+                >
                   info@sviinfrasolutions.com
-                </span>
+                </a>
               </li>
             </ul>
           </div>

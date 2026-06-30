@@ -16,6 +16,12 @@ const ChatBot = dynamic(() => import('@/src/components/home/ChatBot'), {
   loading: () => null,
 });
 
+const FloatingContact = dynamic(
+  () =>
+    import('@/src/components/layout/FloatingContact').then((m) => ({ default: m.FloatingContact })),
+  { ssr: false }
+);
+
 export default function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
@@ -24,6 +30,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         <Header />
         <main className="flex min-h-screen flex-grow flex-col overflow-x-hidden">{children}</main>
         <Footer />
+        <FloatingContact />
         <ChatBot />
         <BackToTop />
         <CookieConsent />

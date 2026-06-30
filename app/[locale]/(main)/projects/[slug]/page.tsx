@@ -1,10 +1,13 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, CheckCircle, Info, Calendar } from 'lucide-react';
+import { MapPin, CheckCircle, Info } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { SITE_URL } from '@/src/lib/seo';
 import AnalyticsTracker from '@/src/components/ui/AnalyticsTracker';
+import { EmiCalculator } from '@/src/components/properties/EmiCalculator';
+import { BreadcrumbSchema, RealEstateListingSchema } from '@/src/components/common/Schema';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -51,6 +54,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: `${project.title} - SVI Infra Solutions`,
     description: project.description,
+    openGraph: {
+      title: `${project.title} | SVI Infra Solutions`,
+      description: project.description.slice(0, 160),
+      images: [{ url: `${SITE_URL}${project.heroImage}`, width: 1200, height: 630 }],
+      type: 'website',
+      locale: 'en_IN',
+      siteName: 'SVI Infra Solutions',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: `${project.title} - SVI Infra Solutions`,
+      description: project.description.slice(0, 160),
+      images: [`${SITE_URL}${project.heroImage}`],
+    },
   };
 }
 
@@ -63,38 +80,23 @@ export default async function ProjectDetailPage({ params }: Props) {
     notFound();
   }
 
-  const schema = {
-    '@context': 'https://schema.org',
-    '@type': 'RealEstateListing',
-    name: project.title,
-    description: project.description,
-    image: `https://sviiinfrasolutions.com${project.heroImage}`,
-    datePosted: new Date().toISOString().split('T')[0],
-    itemOffered: {
-      '@type': 'Product',
-      name: project.title,
-      description: project.description,
-      image: project.gallery.map((img: string) => `https://sviiinfrasolutions.com${img}`),
-      offers: {
-        '@type': 'Offer',
-        availability: 'https://schema.org/InStock',
-        priceCurrency: 'INR',
-      },
-    },
-    address: {
-      '@type': 'PostalAddress',
-      addressLocality: project.location,
-      addressCountry: 'IN',
-    },
-  };
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 pb-20 dark:bg-gray-900">
-      <AnalyticsTracker event="project_view" data={{ slug }} />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', item: '/' },
+          { name: 'Projects', item: '/projects/current' },
+          { name: project.title, item: `/projects/${slug}` },
+        ]}
       />
+      <RealEstateListingSchema
+        name={project.title}
+        description={project.description}
+        image={project.heroImage}
+        location={project.location}
+        status={project.status}
+      />
+      <AnalyticsTracker event="project_view" data={{ slug }} />
 
       {/* Project Hero */}
       <section className="relative h-[60vh] min-h-[500px] w-full pt-20">
@@ -213,6 +215,11 @@ export default async function ProjectDetailPage({ params }: Props) {
                   Request Information
                 </button>
               </form>
+            </div>
+
+            {/* EMI Calculator */}
+            <div className="mt-8">
+              <EmiCalculator />
             </div>
           </div>
         </div>
