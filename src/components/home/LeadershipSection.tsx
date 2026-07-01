@@ -24,6 +24,7 @@ export default function LeadershipSection() {
                 src="/images/hero2.png"
                 alt="Leadership"
                 fill
+                sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"
                 quality={85}
               />

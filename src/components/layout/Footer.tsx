@@ -176,13 +176,14 @@ const Footer = memo(function Footer() {
             </h4>
             <ul className="flex flex-col gap-5">
               <li className="flex items-start gap-3">
+                <MapPin className="text-brand-gold mt-1 shrink-0" size={18} />
                 <a
                   href="https://maps.google.com/?q=A-61+Sector+65+Noida+Uttar+Pradesh+201309"
                   target="_blank"
                   rel="noreferrer"
-                  className="flex items-start gap-3 transition-colors hover:opacity-80"
+                  className="flex items-start transition-colors hover:opacity-80"
+                  suppressHydrationWarning
                 >
-                  <MapPin className="text-brand-gold mt-1 shrink-0" size={18} />
                   <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
                     A-61 Sector 65, Noida,
                     <br />
@@ -195,6 +196,7 @@ const Footer = memo(function Footer() {
                 <a
                   href="tel:+917300007643"
                   className="hover:text-brand-gold dark:hover:text-brand-gold text-sm font-medium text-gray-600 transition-colors dark:text-gray-400"
+                  suppressHydrationWarning
                 >
                   +91 73000 07643
                 </a>
