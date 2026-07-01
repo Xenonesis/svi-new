@@ -266,7 +266,7 @@ export default function ChatBot() {
     };
 
     recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error);
+      // Intentionally not using console.error here to avoid Next.js dev overlay for standard browser permission denials
       setIsListening(false);
 
       if (event.error === 'not-allowed') {
