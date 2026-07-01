@@ -102,8 +102,8 @@ const nextConfig = {
 export default withSentryConfig(
   withNextIntl(withBundleAnalyzer(nextConfig)),
   {
-    org: "svi-infra",
-    project: "svi-infra",
+    org: "svi-infra-solutions",
+    project: "javascript-nextjs",
     authToken: process.env.SENTRY_AUTH_TOKEN,
     widenClientFileUpload: true,
     tunnelRoute: "/monitoring",
