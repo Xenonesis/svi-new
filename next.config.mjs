@@ -2,6 +2,7 @@
 /* global process */
 
 import createNextIntlPlugin from 'next-intl/plugin';
+import { withSentryConfig } from '@sentry/nextjs';
 
 // Debug JSON.parse errors globally in Next.js dev server
 const originalParse = JSON.parse;
@@ -98,4 +99,14 @@ const nextConfig = {
   },
 };
 
-export default withNextIntl(withBundleAnalyzer(nextConfig));
+export default withSentryConfig(
+  withNextIntl(withBundleAnalyzer(nextConfig)),
+  {
+    org: "svi-infra",
+    project: "svi-infra",
+    authToken: process.env.SENTRY_AUTH_TOKEN,
+    widenClientFileUpload: true,
+    tunnelRoute: "/monitoring",
+    silent: !process.env.CI,
+  }
+);

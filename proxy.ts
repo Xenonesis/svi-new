@@ -82,6 +82,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    '/((?!_next|_vercel|images|favicons|manifest\\.json|opengraph-image|robots\\.txt|.*\\..*).*)',
+    '/((?!_next|_vercel|monitoring|images|favicons|manifest\\.json|opengraph-image|robots\\.txt|.*\\..*).*)',
   ],
 };
