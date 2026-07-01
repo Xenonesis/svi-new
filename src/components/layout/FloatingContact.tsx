@@ -65,26 +65,39 @@ export function FloatingContact() {
         </button>
       </div>
 
-      {/* Desktop FAB */}
-      <div className="fixed right-8 bottom-8 z-50 hidden flex-col items-end gap-3 md:flex">
-        <a
-          href={PHONE_HREF}
-          onClick={handleCallClick}
-          className="hover:text-brand-gold flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-700 shadow-xl transition-transform hover:scale-110 dark:bg-gray-800 dark:text-gray-200"
-          title={t('callTitle')}
-        >
-          <Phone size={20} />
-        </a>
-        <a
-          href={WHATSAPP_URL}
-          target="_blank"
-          rel="noreferrer"
-          onClick={handleWhatsAppClick}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-transform hover:scale-110"
-          title={t('whatsappTitle')}
-        >
-          <MessageCircle size={22} />
-        </a>
+      <div className="fixed right-8 bottom-8 z-50 hidden flex-col items-end gap-4 md:flex">
+        <div className="group relative">
+          <a
+            href={PHONE_HREF}
+            onClick={handleCallClick}
+            className="hover:text-brand-gold relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white text-gray-700 shadow-xl transition-transform hover:scale-110 dark:bg-gray-800 dark:text-gray-200"
+            aria-label={t('callTitle')}
+          >
+            <Phone size={20} />
+          </a>
+          <div className="pointer-events-none absolute top-1/2 right-full mr-3 -translate-y-1/2 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 dark:bg-white dark:text-gray-900">
+            {t('callTitle')}
+            <div className="absolute top-1/2 right-[-4px] -translate-y-1/2 border-y-4 border-l-4 border-transparent border-l-gray-900 dark:border-l-white"></div>
+          </div>
+        </div>
+
+        <div className="group relative">
+          <a
+            href={WHATSAPP_URL}
+            target="_blank"
+            rel="noreferrer"
+            onClick={handleWhatsAppClick}
+            className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-transform hover:scale-110"
+            aria-label={t('whatsappTitle')}
+          >
+            <MessageCircle size={22} />
+          </a>
+          <div className="absolute inset-0 animate-ping rounded-full bg-[#25D366] opacity-75"></div>
+          <div className="pointer-events-none absolute top-1/2 right-full mr-3 -translate-y-1/2 rounded-lg bg-gray-900 px-3 py-1.5 text-xs font-medium whitespace-nowrap text-white opacity-0 shadow-xl transition-opacity group-hover:opacity-100 dark:bg-white dark:text-gray-900">
+            {t('whatsappTitle')}
+            <div className="absolute top-1/2 right-[-4px] -translate-y-1/2 border-y-4 border-l-4 border-transparent border-l-gray-900 dark:border-l-white"></div>
+          </div>
+        </div>
         <button
           onClick={handleBookVisitOpen}
           className="bg-brand-gold text-brand-navy flex items-center gap-2 rounded-full px-5 py-3 font-semibold tracking-wider shadow-xl transition-transform hover:scale-105"

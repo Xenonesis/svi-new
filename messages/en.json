@@ -23,7 +23,8 @@
     "switchToSystem": "Switch to system mode",
     "openChatAssistant": "Open chat assistant",
     "emailLabel": "Email",
-    "phoneLabel": "Phone"
+    "phoneLabel": "Phone",
+    "whatsappContact": "Contact us on WhatsApp"
   },
   "timeline": {
     "subtitle": "Development Process",
