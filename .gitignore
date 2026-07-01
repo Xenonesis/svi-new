@@ -56,7 +56,6 @@ replace_bba_3.py
 
 # Temp image files
 *.jpeg
-*.png
 *.exe
 *.pdf
 salary*
