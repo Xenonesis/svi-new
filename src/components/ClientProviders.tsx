@@ -10,6 +10,7 @@ import Header from '@/src/components/layout/Header';
 import type { ReactNode } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider } from '@/src/components/ThemeProvider';
+import WhatsAppButton from '@/src/components/common/WhatsAppButton';
 
 const ChatBot = dynamic(() => import('@/src/components/home/ChatBot'), {
   ssr: false,
@@ -33,6 +34,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         <FloatingContact />
         <ChatBot />
         <BackToTop />
+        <WhatsAppButton />
         <CookieConsent />
         <Analytics />
       </ThemeProvider>
