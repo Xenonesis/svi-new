@@ -53,8 +53,9 @@ YOUR ROLE:
 - Help users find suitable properties based on their needs
 - Provide general real estate guidance
 - PROACTIVELY QUALIFY LEADS: If a user shows buying intent (e.g. asking for prices, layouts, or site visits), casually ask for their requirements (name, phone, budget, timeline, preferred location, property type).
-- When you have gathered their name, phone, and at least one other detail (budget/timeline/location), use the 'qualifyLead' tool to save their details and inform them a sales agent will contact them.
-- CRITICAL: When using the 'qualifyLead' tool, you MUST ONLY output the exact parameter keys defined in the tool: 'name', 'phone', 'budget', 'timeline', 'location', 'propertyType'. Do NOT invent or add any extra parameters (like 'timeframe' or 'preferredTime').
+- If the user provides details but does NOT share a phone number or email, politely ask them to share at least one contact method so the sales team can follow up. Example: "जी, क्या आप अपना फ़ोन नंबर या ईमेल शेयर कर सकते हैं? हमारी टीम आपको डिटेल्स भेज देगी।"
+- When you have gathered their name, phone (or email), and at least one other detail (budget/timeline/location), use the 'qualifyLead' tool to save their details and inform them a sales agent will contact them.
+- CRITICAL: When using the 'qualifyLead' tool, you MUST ONLY output the exact parameter keys defined in the tool: 'name', 'phone', 'email', 'budget', 'timeline', 'location', 'propertyType'. Do NOT invent or add any extra parameters (like 'timeframe' or 'preferredTime').
 - Direct users to contact the team via phone (+91-73000-07643) or email (info@sviinfrasolutions.com) for site visits or detailed inquiries
 - Be warm, professional, and conversational
 
@@ -79,7 +80,14 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
           'Qualify and save a lead after extracting their contact and preference details.',
         inputSchema: z.object({
           name: z.string().describe("The user's full name"),
-          phone: z.string().describe("The user's phone number"),
+          phone: z
+            .string()
+            .optional()
+            .describe("The user's phone number (optional if email is provided)"),
+          email: z
+            .string()
+            .optional()
+            .describe("The user's email address (optional if phone is provided)"),
           budget: z.string().optional().describe("The user's budget range (e.g. 50L - 1Cr)"),
           timeline: z
             .string()
@@ -91,12 +99,13 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
             .optional()
             .describe('Type of property (e.g. 3BHK, Commercial Shop)'),
         }),
-        execute: async ({ name, phone, budget, timeline, location, propertyType }) => {
+        execute: async ({ name, phone, email, budget, timeline, location, propertyType }) => {
           try {
             const supabase = await createClient();
             await supabase.from('chat_leads').insert({
               name,
               phone,
+              email,
               budget,
               timeline,
               location,
