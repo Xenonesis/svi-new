@@ -4,6 +4,7 @@ import { useChat } from '@ai-sdk/react';
 import { DefaultChatTransport } from 'ai';
 import { AnimatePresence, motion } from 'motion/react';
 import {
+  CheckCircle2,
   MessageCircle,
   Send,
   X,

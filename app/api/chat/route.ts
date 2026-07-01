@@ -77,7 +77,7 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
       qualifyLead: tool({
         description:
           'Qualify and save a lead after extracting their contact and preference details.',
-        parameters: z.object({
+        inputSchema: z.object({
           name: z.string().describe("The user's full name"),
           phone: z.string().describe("The user's phone number"),
           budget: z.string().optional().describe("The user's budget range (e.g. 50L - 1Cr)"),
@@ -111,7 +111,6 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
         },
       }),
     },
-    maxSteps: 3,
   });
 
   return result.toUIMessageStreamResponse();
