@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { Download, ArrowRight, MapPin, X, ChevronLeft, ChevronRight, Share2 } from 'lucide-react';
 import { FacebookIcon, TwitterIcon, LinkedinIcon } from '@/src/components/common/social-icons';
 import HoverZoomImage from '@/src/components/ui/HoverZoomImage';
+import ProjectCardSkeleton from '@/src/components/ui/ProjectCardSkeleton';
 import dynamic from 'next/dynamic';
 
 const ProjectsFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'), { ssr: false });
@@ -42,6 +43,13 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [highlightedProject, setHighlightedProject] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    // Simulate initial data loading to show skeleton and prevent content flash
+    const timer = setTimeout(() => setIsLoading(false), 500);
+    return () => clearTimeout(timer);
+  }, []);
 
   const openModal = useCallback((project: Project) => {
     setSelectedProject(project);
@@ -132,85 +140,89 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
       <section className="pt-8 pb-24">
         <div className="container mx-auto px-4 lg:px-8">
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3 lg:gap-12">
-            {projects.map((project, idx) => (
-              <motion.div
-                key={idx}
-                id={`project-${project.id}`}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '0px', amount: 0.05 }}
-                transition={{ duration: 0.5, delay: idx * 0.1, ease: 'easeOut' }}
-                className={`group overflow-hidden border bg-white dark:bg-gray-800 ${highlightedProject === project.id ? 'border-brand-gold dark:shadow-brand-gold/20 scale-[1.02] shadow-2xl' : 'dark:hover:shadow-brand-gold/20 hover:border-brand-gold border-gray-200 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl dark:border-gray-700'} flex h-full flex-col transition-all duration-400`}
-              >
-                <div
-                  className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100"
-                  onClick={() => openModal(project)}
-                >
-                  <div className="bg-brand-navy/10 pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 group-hover:opacity-0"></div>
-                  <HoverZoomImage src={project.img} alt={project.title} />
-                  <div className="text-brand-navy pointer-events-none absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
-                    {project.status}
-                  </div>
-                </div>
-
-                <div
-                  className="z-20 flex flex-grow cursor-pointer flex-col bg-white p-8 dark:bg-gray-800"
-                  onClick={() => openModal(project)}
-                >
-                  <div className="mb-4 flex flex-col">
-                    <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-                      {project.location}
-                    </span>
-                    <span className="text-brand-gold mt-1 text-xs font-bold tracking-widest uppercase">
-                      {project.type}
-                    </span>
-                  </div>
-
-                  <h3 className="text-brand-navy group-hover:text-brand-gold mb-4 font-serif text-2xl transition-colors dark:text-gray-100">
-                    {project.title}
-                  </h3>
-
-                  <p className="mb-8 flex-grow text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                    {project.description}
-                  </p>
-
-                  <button className="text-brand-gold mb-6 inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all group-hover:gap-3">
-                    {t('viewDetails')} <ArrowRight size={14} />
-                  </button>
-
-                  {project.pdf ? (
+            {isLoading
+              ? Array.from({ length: 3 }).map((_, idx) => (
+                  <ProjectCardSkeleton key={`skeleton-${idx}`} />
+                ))
+              : projects.map((project, idx) => (
+                  <motion.div
+                    key={idx}
+                    id={`project-${project.id}`}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: '0px', amount: 0.05 }}
+                    transition={{ duration: 0.5, delay: idx * 0.1, ease: 'easeOut' }}
+                    className={`group overflow-hidden border bg-white dark:bg-gray-800 ${highlightedProject === project.id ? 'border-brand-gold dark:shadow-brand-gold/20 scale-[1.02] shadow-2xl' : 'dark:hover:shadow-brand-gold/20 hover:border-brand-gold border-gray-200 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl dark:border-gray-700'} flex h-full flex-col transition-all duration-400`}
+                  >
                     <div
-                      className="mt-auto flex items-center justify-between border-t border-gray-100 bg-white pt-6 dark:border-gray-700 dark:bg-gray-800"
-                      onClick={(e) => e.stopPropagation()}
+                      className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100"
+                      onClick={() => openModal(project)}
                     >
-                      <div className="flex cursor-default flex-col">
+                      <div className="bg-brand-navy/10 pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 group-hover:opacity-0"></div>
+                      <HoverZoomImage src={project.img} alt={project.title} />
+                      <div className="text-brand-navy pointer-events-none absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                        {project.status}
+                      </div>
+                    </div>
+
+                    <div
+                      className="z-20 flex flex-grow cursor-pointer flex-col bg-white p-8 dark:bg-gray-800"
+                      onClick={() => openModal(project)}
+                    >
+                      <div className="mb-4 flex flex-col">
                         <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-                          {t('statusLabel')}
+                          {project.location}
                         </span>
                         <span className="text-brand-gold mt-1 text-xs font-bold tracking-widest uppercase">
-                          {project.status}
+                          {project.type}
                         </span>
                       </div>
-                      <button className="border-brand-gold text-brand-navy hover:text-brand-gold flex cursor-pointer items-center gap-2 border-b pb-1 text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200">
-                        <Download size={14} />
-                        {t('downloadPdf')}
+
+                      <h3 className="text-brand-navy group-hover:text-brand-gold mb-4 font-serif text-2xl transition-colors dark:text-gray-100">
+                        {project.title}
+                      </h3>
+
+                      <p className="mb-8 flex-grow text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                        {project.description}
+                      </p>
+
+                      <button className="text-brand-gold mb-6 inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all group-hover:gap-3">
+                        {t('viewDetails')} <ArrowRight size={14} />
                       </button>
+
+                      {project.pdf ? (
+                        <div
+                          className="mt-auto flex items-center justify-between border-t border-gray-100 bg-white pt-6 dark:border-gray-700 dark:bg-gray-800"
+                          onClick={(e) => e.stopPropagation()}
+                        >
+                          <div className="flex cursor-default flex-col">
+                            <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                              {t('statusLabel')}
+                            </span>
+                            <span className="text-brand-gold mt-1 text-xs font-bold tracking-widest uppercase">
+                              {project.status}
+                            </span>
+                          </div>
+                          <button className="border-brand-gold text-brand-navy hover:text-brand-gold flex cursor-pointer items-center gap-2 border-b pb-1 text-xs font-bold tracking-widest uppercase transition-colors dark:text-gray-200">
+                            <Download size={14} />
+                            {t('downloadPdf')}
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="mt-auto border-t border-gray-100 bg-white pt-6 dark:border-gray-700 dark:bg-gray-800">
+                          <div className="flex flex-col">
+                            <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                              {t('statusLabel')}
+                            </span>
+                            <span className="text-brand-gold mt-1 text-xs font-bold tracking-widest uppercase">
+                              {project.status}
+                            </span>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="mt-auto border-t border-gray-100 bg-white pt-6 dark:border-gray-700 dark:bg-gray-800">
-                      <div className="flex flex-col">
-                        <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
-                          {t('statusLabel')}
-                        </span>
-                        <span className="text-brand-gold mt-1 text-xs font-bold tracking-widest uppercase">
-                          {project.status}
-                        </span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-              </motion.div>
-            ))}
+                  </motion.div>
+                ))}
           </div>
         </div>
       </section>

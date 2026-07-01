@@ -1,7 +1,7 @@
 import './globals.css';
 
 import { COMPANY_NAME, SITE_NAME, SITE_URL, absoluteUrl } from '@/src/lib/seo';
-import { Outfit, Playfair_Display } from 'next/font/google';
+import { Outfit, Playfair_Display, Noto_Sans_Devanagari } from 'next/font/google';
 import Script from 'next/script';
 import type { Metadata, Viewport } from 'next';
 import { getLocale } from 'next-intl/server';
@@ -23,6 +23,14 @@ const outfit = Outfit({
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
+  display: 'swap',
+  preload: true,
+});
+
+const notoSansDevanagari = Noto_Sans_Devanagari({
+  subsets: ['devanagari'],
+  weight: ['400', '600', '700'],
+  variable: '--font-hindi',
   display: 'swap',
   preload: true,
 });
@@ -116,6 +124,8 @@ export const viewport: Viewport = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const locale = await getLocale();
+  const sansFontVariable = locale === 'hi' ? notoSansDevanagari.variable : outfit.variable;
+
   return (
     <html lang={locale} suppressHydrationWarning>
       <head suppressHydrationWarning>
@@ -220,7 +230,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
       </head>
-      <body className={`${outfit.variable} ${playfair.variable}`} suppressHydrationWarning>
+      <body className={`${sansFontVariable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />
         <QueryProvider>{children}</QueryProvider>
         <Analytics />
