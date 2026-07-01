@@ -408,6 +408,13 @@ export default function ChatBot() {
                   .map((p) => (p as any).text || '')
                   .join(' ');
 
+                const toolInvocations = message.parts.filter(
+                  (p) => p.type === 'tool-invocation'
+                ) as any[];
+                const hasLeadQualified = toolInvocations.some(
+                  (t) => t.toolInvocation?.toolName === 'qualifyLead'
+                );
+
                 return (
                   <div key={message.id} className="mb-4">
                     <div className={`flex ${isUser ? 'justify-end' : 'justify-start'}`}>
@@ -440,6 +447,14 @@ export default function ChatBot() {
                           >
                             {isUser ? textContent : <FormattedText text={textContent} />}
                           </div>
+
+                          {/* Tool Invocation UI */}
+                          {hasLeadQualified && (
+                            <div className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-green-200 bg-green-50 px-3 py-1 text-xs font-medium text-green-700 dark:border-green-900/50 dark:bg-green-900/20 dark:text-green-400">
+                              <CheckCircle2 size={12} />
+                              Lead captured!
+                            </div>
+                          )}
 
                           {/* Quick Actions (only on AI messages) */}
                           {!isUser && conversationCount > 0 && <QuickActions />}
