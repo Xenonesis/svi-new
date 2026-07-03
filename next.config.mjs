@@ -48,7 +48,7 @@ const nextConfig = {
     root: process.cwd(),
   },
   async headers() {
-    return [
+    const headersList = [
       {
         source: '/(.*)',
         headers: [
@@ -63,34 +63,41 @@ const nextConfig = {
           },
         ],
       },
-      {
-        source: '/_next/static/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=31536000, immutable',
-          },
-        ],
-      },
-      {
-        source: '/images/(.*)',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, must-revalidate',
-          },
-        ],
-      },
-      {
-        source: '/favicon.ico',
-        headers: [
-          {
-            key: 'Cache-Control',
-            value: 'public, max-age=86400, must-revalidate',
-          },
-        ],
-      },
     ];
+
+    if (process.env.NODE_ENV === 'production') {
+      headersList.push(
+        {
+          source: '/_next/static/(.*)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=31536000, immutable',
+            },
+          ],
+        },
+        {
+          source: '/images/(.*)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=86400, must-revalidate',
+            },
+          ],
+        },
+        {
+          source: '/favicon.ico',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=86400, must-revalidate',
+            },
+          ],
+        }
+      );
+    }
+
+    return headersList;
   },
   images: {
     remotePatterns: [
