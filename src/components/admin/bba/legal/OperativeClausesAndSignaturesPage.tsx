@@ -23,8 +23,11 @@ export function OperativeClausesAndSignaturesPage({
           Basadi, Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          2. The Allottee(s) has paid a sum of Rs. {(totalCost * 0.1).toLocaleString('en-IN')}/-
-          being part payment towards the Total Price at the time of Application, the receipt of
+          2. The Allottee(s) has paid a sum of Rs.{' '}
+          {((totalCost * parseFloat(formData.bookingPaymentPercent || '10')) / 100).toLocaleString(
+            'en-IN'
+          )}
+          /- being part payment towards the Total Price at the time of Application, the receipt of
           which the Firm both hereby acknowledge and the Allottee(s) agrees to pay the remaining
           price of the Plot//shop as prescribed in schedule of payments (annexure-A ) attached with
           this Agreement along with all other charges, Taxes and Cesses, securities, etc. as may be

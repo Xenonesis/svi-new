@@ -25,6 +25,13 @@ export interface BBALegalFormData {
   bookingDate?: string;
   fatherName?: string;
   age?: string | number;
+  bookingPaymentPercent?: string;
+  showSecondInstalment?: string;
+  zeroPercentEmi?: string;
+  emiPercentage?: string;
+  edcInEmi?: string;
+  emiCount?: string;
+  emiStartDate?: string;
 }
 
 export interface BBALegalCompanyInfo {

@@ -191,6 +191,7 @@ function BbaPageContent() {
     area: '',
     bsp: '',
     plc: '',
+    edc: '', // Added to calculate total cost
     paymentPlan: '12',
     bookingDate: '',
     secondPaymentDays: '15',
@@ -199,6 +200,13 @@ function BbaPageContent() {
     advisorEmail: '',
     onBookingPaymentRef: '',
     within15DaysPaymentRef: '',
+    bookingPaymentPercent: '10', // Added
+    showSecondInstalment: 'true', // Added
+    zeroPercentEmi: 'false', // Added
+    emiPercentage: '', // Added
+    edcInEmi: 'false', // Added
+    emiCount: '12', // Added
+    emiStartDate: '', // Added
   });
 
   // Synchronize isCustomAdvisor state based on loaded advisorName
@@ -216,10 +224,11 @@ function BbaPageContent() {
     const area = parseFloat(formData.area) || 0;
     const bsp = parseFloat(formData.bsp) || 0;
     const plc = parseFloat(formData.plc) || 0;
+    const edc = parseFloat(formData.edc) || 0;
 
     const base = area * bsp;
     const plcAmount = base * (plc / 100);
-    return base + plcAmount;
+    return base + plcAmount + edc;
   };
 
   const totalCost = calculateTotalCost();
@@ -324,6 +333,7 @@ function BbaPageContent() {
         area: '',
         bsp: '',
         plc: '',
+        edc: '',
         paymentPlan: '12',
         bookingDate: '',
         secondPaymentDays: '15',
@@ -332,6 +342,13 @@ function BbaPageContent() {
         advisorEmail: '',
         onBookingPaymentRef: '',
         within15DaysPaymentRef: '',
+        bookingPaymentPercent: '10',
+        showSecondInstalment: 'true',
+        zeroPercentEmi: 'false',
+        emiPercentage: '',
+        edcInEmi: 'false',
+        emiCount: '12',
+        emiStartDate: '',
       });
       return;
     }
@@ -501,6 +518,7 @@ function BbaPageContent() {
               area: allotmentData.area || '',
               bsp: allotmentData.bsp || '',
               plc: allotmentData.plc || '',
+              edc: allotmentData.edc || '',
               paymentPlan: allotmentData.paymentPlan || '12',
               bookingDate: allotmentData.bookingDate || '',
               secondPaymentDays: allotmentData.secondPaymentDays || '15',
@@ -509,6 +527,20 @@ function BbaPageContent() {
               advisorEmail: allotmentData.advisorEmail || '',
               onBookingPaymentRef: finalOnBookingRef,
               within15DaysPaymentRef: finalWithin15DaysRef,
+              bookingPaymentPercent: allotmentData.bookingPaymentPercent || '10',
+              showSecondInstalment:
+                allotmentData.showSecondInstalment !== undefined
+                  ? String(allotmentData.showSecondInstalment)
+                  : 'true',
+              zeroPercentEmi:
+                allotmentData.zeroPercentEmi !== undefined
+                  ? String(allotmentData.zeroPercentEmi)
+                  : 'false',
+              emiPercentage: allotmentData.emiPercentage || '',
+              edcInEmi:
+                allotmentData.edcInEmi !== undefined ? String(allotmentData.edcInEmi) : 'false',
+              emiCount: allotmentData.emiCount || allotmentData.paymentPlan || '12',
+              emiStartDate: allotmentData.emiStartDate || '',
             }));
           }
         }
