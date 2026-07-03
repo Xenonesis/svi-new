@@ -188,20 +188,7 @@ export function OperativeClausesAndSignaturesPage({
           law/court order, refund within reasonable time to the Allottee(s) the amounts received
           from the Allottee(s) after deducting Non Refundable Amounts, but without any interest or
           compensation and the decision of the Firm in this regard shall be final and binding on the
-          Allottee(s) save as otherwise provided herein, the Allottee(s) shall be left with no other
-          right, claim of whatsoever nature against the Firm under or in relation to this Agreement.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           9. The Allottee(s) authorizes the Firm to adjust/appropriate all payments that shall be
           made by the Allottee(s) under any head(s) of dues against outstanding heads in
