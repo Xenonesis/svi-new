@@ -555,17 +555,7 @@ export function OperativeClausesAndSignaturesPage({
             <p className="mb-1 text-[13px] leading-relaxed">(Authorized signatory)</p>
           </div>
         </div>
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mt-6 mb-4 text-justify text-[13px] leading-relaxed">
           IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
           subscribed their respective hands at the places and on the day, month and year mentioned
           under their respective signatures:
