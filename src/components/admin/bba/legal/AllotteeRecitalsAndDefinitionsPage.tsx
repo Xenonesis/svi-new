@@ -237,17 +237,6 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           in addition to the Total Price in accordance with the terms and conditions of the
           Agreement and as per the demand raised by the Firm from time to time.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>Interpretation</strong>
           <br />
