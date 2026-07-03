@@ -125,11 +125,36 @@ export async function exportToPDF({
 
     // ── Render slices into PDF ────────────────────────────────────────────────
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+    let pagesAdded = 0;
 
-    slices.forEach((slice, idx) => {
-      if (idx > 0) pdf.addPage();
-
+    slices.forEach((slice) => {
       const sliceH = slice.end - slice.start;
+      if (sliceH <= 0) return;
+
+      // Check if this slice is completely blank/white
+      const tmpCheck = document.createElement('canvas');
+      tmpCheck.width = canvasW;
+      tmpCheck.height = sliceH;
+      const ctxCheck = tmpCheck.getContext('2d');
+      if (ctxCheck) {
+        ctxCheck.drawImage(canvas, 0, slice.start, canvasW, sliceH, 0, 0, canvasW, sliceH);
+        const data = ctxCheck.getImageData(0, 0, canvasW, sliceH).data;
+        let isBlank = true;
+        for (let i = 0; i < data.length; i += 800) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+          if (a > 0 && (r < 245 || g < 245 || b < 245)) {
+            isBlank = false;
+            break;
+          }
+        }
+        if (isBlank) return; // Skip empty slice!
+      }
+
+      if (pagesAdded > 0) pdf.addPage();
+
       const tmp = document.createElement('canvas');
       tmp.width = canvasW;
       tmp.height = pxPerPage; // always full A4 height (white fills remainder)
@@ -150,6 +175,8 @@ export async function exportToPDF({
         undefined,
         'FAST'
       );
+
+      pagesAdded++;
     });
 
     const out = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
