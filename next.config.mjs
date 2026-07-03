@@ -3,11 +3,16 @@
 
 import createNextIntlPlugin from 'next-intl/plugin';
 import { withSentryConfig } from '@sentry/nextjs';
-
-
-
+import withSerwistInit from '@serwist/next';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
+
+const withSerwist = withSerwistInit({
+  swSrc: 'src/sw.ts',
+  swDest: 'public/sw.js',
+  register: false,
+  disable: process.env.NODE_ENV === 'development',
+});
 
 const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
   enabled: process.env.ANALYZE === 'true',
@@ -58,6 +63,33 @@ const nextConfig = {
           },
         ],
       },
+      {
+        source: '/_next/static/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
+          },
+        ],
+      },
+      {
+        source: '/images/(.*)',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, must-revalidate',
+          },
+        ],
+      },
+      {
+        source: '/favicon.ico',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=86400, must-revalidate',
+          },
+        ],
+      },
     ];
   },
   images: {
@@ -83,7 +115,7 @@ const nextConfig = {
 };
 
 export default withSentryConfig(
-  withNextIntl(withBundleAnalyzer(nextConfig)),
+  withNextIntl(withBundleAnalyzer(withSerwist(nextConfig))),
   {
     org: "svi-infra-solutions",
     project: "javascript-nextjs",

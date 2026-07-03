@@ -16,6 +16,7 @@ export default function NotFoundPage() {
   const router = useRouter();
   const [countdown, setCountdown] = useState(12);
   const [mounted, setMounted] = useState(false);
+  const [shouldRedirect, setShouldRedirect] = useState(true);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
   useEffect(() => {
@@ -24,7 +25,6 @@ export default function NotFoundPage() {
       setCountdown((prev) => {
         if (prev <= 1) {
           clearInterval(intervalRef.current!);
-          router.push('/');
           return 0;
         }
         return prev - 1;
@@ -33,11 +33,17 @@ export default function NotFoundPage() {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [router]);
+  }, []);
+
+  useEffect(() => {
+    if (countdown === 0 && shouldRedirect && mounted) {
+      router.push('/');
+    }
+  }, [countdown, shouldRedirect, router, mounted]);
 
   const cancelRedirect = () => {
     if (intervalRef.current) clearInterval(intervalRef.current);
-    setCountdown(0);
+    setShouldRedirect(false);
   };
 
   return (
@@ -166,7 +172,7 @@ export default function NotFoundPage() {
         </p>
 
         {/* Countdown auto-redirect */}
-        {countdown > 0 && (
+        {shouldRedirect && countdown > 0 && (
           <div className="mb-8 flex flex-col items-center gap-2">
             <div className="flex items-center gap-3 rounded-full border border-gray-200 bg-white px-5 py-2.5 shadow-sm dark:border-gray-700 dark:bg-gray-800/60">
               {/* Conic progress ring */}

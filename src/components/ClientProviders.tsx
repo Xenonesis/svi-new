@@ -23,6 +23,16 @@ const FloatingContact = dynamic(
   { ssr: false }
 );
 
+const PropertyComparisonTray = dynamic(
+  () => import('@/src/components/properties/PropertyComparisonTray'),
+  { ssr: false }
+);
+
+const PropertyComparisonModal = dynamic(
+  () => import('@/src/components/properties/PropertyComparisonModal'),
+  { ssr: false }
+);
+
 export default function ClientProviders({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
@@ -35,6 +45,8 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         <ChatBot />
         <BackToTop />
         <ExitIntentPopup />
+        <PropertyComparisonTray />
+        <PropertyComparisonModal />
         <CookieConsent />
         <Analytics />
       </ThemeProvider>

@@ -17,6 +17,7 @@ import { FacebookIcon, TwitterIcon, LinkedinIcon } from '@/src/components/common
 import HoverZoomImage from '@/src/components/ui/HoverZoomImage';
 import ProjectCardSkeleton from '@/src/components/ui/ProjectCardSkeleton';
 import dynamic from 'next/dynamic';
+import { useComparisonStore } from '@/src/stores/comparisonStore';
 
 const ProjectsFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'), { ssr: false });
 const CompletedProjectsMap = dynamic(
@@ -50,6 +51,21 @@ export default function CurrentProjectsContent({
   const [direction, setDirection] = useState(0);
   const [highlightedProject, setHighlightedProject] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+
+  const { compareList, addToCompare, removeFromCompare } = useComparisonStore();
+  const isInCompare = (id: string) => compareList.some((p) => p.id === id);
+  const handleCompareClick = (e: MouseEvent<HTMLButtonElement>, project: Project) => {
+    e.stopPropagation();
+    if (isInCompare(project.id)) {
+      removeFromCompare(project.id);
+    } else {
+      if (compareList.length >= 3) {
+        alert(t('maxCompareLimit') || 'You can compare a maximum of 3 properties.');
+        return;
+      }
+      addToCompare(project);
+    }
+  };
 
   useEffect(() => {
     async function fetchImages() {
@@ -224,9 +240,21 @@ export default function CurrentProjectsContent({
                           {project.description}
                         </p>
 
-                        <button className="text-brand-gold mb-6 inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all group-hover:gap-3">
-                          {t('viewDetails')} <ArrowRight size={14} />
-                        </button>
+                        <div className="mb-6 flex items-center justify-between">
+                          <button className="text-brand-gold inline-flex items-center gap-2 text-xs font-bold tracking-widest uppercase transition-all group-hover:gap-3">
+                            {t('viewDetails')} <ArrowRight size={14} />
+                          </button>
+                          <button
+                            onClick={(e) => handleCompareClick(e, project)}
+                            className={`rounded px-3 py-1 text-xs font-semibold transition-colors ${
+                              isInCompare(project.id)
+                                ? 'bg-brand-gold text-brand-navy'
+                                : 'bg-gray-150 dark:bg-gray-750 dark:hover:bg-gray-705 text-gray-700 hover:bg-gray-200 dark:text-gray-200'
+                            }`}
+                          >
+                            {isInCompare(project.id) ? t('removeFromCompare') : t('compare')}
+                          </button>
+                        </div>
 
                         <div
                           className="mt-auto flex items-center justify-between border-t border-gray-100 bg-white pt-6 dark:border-gray-700 dark:bg-gray-800"

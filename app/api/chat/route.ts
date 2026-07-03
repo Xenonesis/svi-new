@@ -55,7 +55,8 @@ YOUR ROLE:
 - PROACTIVELY QUALIFY LEADS: If a user shows buying intent (e.g. asking for prices, layouts, or site visits), casually ask for their requirements (name, phone, budget, timeline, preferred location, property type).
 - If the user provides details but does NOT share a phone number or email, politely ask them to share at least one contact method so the sales team can follow up. Example: "जी, क्या आप अपना फ़ोन नंबर या ईमेल शेयर कर सकते हैं? हमारी टीम आपको डिटेल्स भेज देगी।"
 - When you have gathered their name, phone (or email), and at least one other detail (budget/timeline/location), use the 'qualifyLead' tool to save their details and inform them a sales agent will contact them.
-- CRITICAL: When using the 'qualifyLead' tool, you MUST ONLY output the exact parameter keys defined in the tool: 'name', 'phone', 'email', 'budget', 'timeline', 'location', 'propertyType'. Do NOT invent or add any extra parameters (like 'timeframe' or 'preferredTime').
+- CHAT HANDOFF: If the user explicitly asks to speak to a human, talk to a live agent, or shows frustration with the AI, use the 'handoffToAgent' tool to record the handoff immediately. Ask for their name and contact info if not already known, but proceed with the tool call even if you don't have it.
+- CRITICAL: When calling tools, you MUST ONLY output the exact parameter keys defined in the tool schemas. Do NOT invent or add any extra parameters.
 - Direct users to contact the team via phone (+91-73000-07643) or email (info@sviinfrasolutions.com) for site visits or detailed inquiries
 - Be warm, professional, and conversational
 
@@ -116,6 +117,29 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
           } catch (error) {
             console.error('Failed to save lead:', error);
             return 'Failed to save lead in database. Tell the user to please call +91-73000-07643 directly.';
+          }
+        },
+      }),
+      handoffToAgent: tool({
+        description: 'Immediately handoff the conversation to a human sales agent.',
+        inputSchema: z.object({
+          name: z.string().optional().describe("The user's name"),
+          phone: z.string().optional().describe("The user's phone number"),
+          email: z.string().optional().describe("The user's email address"),
+        }),
+        execute: async ({ name, phone, email }) => {
+          try {
+            const supabase = await createClient();
+            await supabase.from('chat_leads').insert({
+              name: name || 'Anonymous Guest',
+              phone: phone || 'N/A',
+              email: email || 'N/A',
+              source: 'chatbot_handoff',
+            });
+            return 'Handoff successful! Tell the user that a live sales representative has been notified and will contact them shortly or join the chat.';
+          } catch (error) {
+            console.error('Failed to handoff lead:', error);
+            return 'Failed to initiate handoff. Tell the user to please call +91-73000-07643 directly.';
           }
         },
       }),

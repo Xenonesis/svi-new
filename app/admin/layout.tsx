@@ -9,6 +9,8 @@ import type { ReactNode } from 'react';
 import { ThemeProvider } from '@/src/components/ThemeProvider';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useUIStore } from '@/src/stores/uiStore';
+import { supabase } from '@/src/lib/supabase/client';
+import { toast, Toaster } from 'sonner';
 
 function AdminLayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
@@ -29,6 +31,64 @@ function AdminLayoutInner({ children }: { children: ReactNode }) {
   useEffect(() => {
     initialize();
   }, [initialize]);
+
+  // Listen for real-time registrations & chat leads
+  useEffect(() => {
+    // 1. Registrations listener
+    const registrationsChannel = supabase
+      .channel('admin-realtime-registrations')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'registrations' },
+        (payload) => {
+          const reg = payload.new;
+          toast.success(
+            `New Registration! ${reg.name} ${reg.last_name || ''} registered for ${reg.project || reg.property_interest || 'a project'}`,
+            {
+              duration: 8000,
+              action: {
+                label: 'View',
+                onClick: () => {
+                  window.location.href = '/admin/registrations';
+                },
+              },
+            }
+          );
+        }
+      )
+      .subscribe();
+
+    // 2. Chat leads listener
+    const chatLeadsChannel = supabase
+      .channel('admin-realtime-chat-leads')
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'chat_leads' },
+        (payload) => {
+          const lead = payload.new;
+          const isHandoff = lead.source === 'chatbot_handoff';
+          const msg = isHandoff
+            ? `⚠️ Human Agent Handoff Needed! Guest "${lead.name}" requested to chat with an agent.`
+            : `New Chat Lead! ${lead.name} (${lead.phone || lead.email || 'No contact'}) qualified.`;
+
+          toast(msg, {
+            duration: 10000,
+            action: {
+              label: 'View Logs',
+              onClick: () => {
+                window.location.href = '/admin/chat-logs';
+              },
+            },
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(registrationsChannel);
+      supabase.removeChannel(chatLeadsChannel);
+    };
+  }, []);
 
   // Sync isDark with system preference when theme is 'system'
   useEffect(() => {
@@ -81,6 +141,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <AdminLayoutInner>{children}</AdminLayoutInner>
+      <Toaster position="top-right" />
     </ThemeProvider>
   );
 }
