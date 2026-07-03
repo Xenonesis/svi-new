@@ -7,15 +7,7 @@ import { BbaPageFooter } from './BbaPageFooter';
  */
 export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
   return (
-    <div
-      style={{
-        pageBreakBefore: 'always',
-        paddingTop: '2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '257mm',
-      }}
-    >
+    <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
       <p className="mb-2 text-center text-lg font-bold uppercase">"SHYAM AANGAN"</p>
       <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
       <p className="mb-4 text-left text-[10px] font-semibold italic">

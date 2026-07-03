@@ -107,13 +107,30 @@ export async function exportToPDF({
 
     for (let i = 1; i < sortedBreaks.length; i++) {
       const nextBreak = sortedBreaks[i];
-      if (nextBreak - pageStart > pxPerPage) {
-        // Flush current page at the previous break point
+
+      // If the current break fits on the current page, we just wait for the next one
+      if (nextBreak - pageStart <= pxPerPage) {
+        continue;
+      }
+
+      // The next break exceeds the page limit.
+      // First, if we have accumulated smaller sections, flush them.
+      if (pageStart < sortedBreaks[i - 1]) {
         slices.push({ start: pageStart, end: sortedBreaks[i - 1] });
         pageStart = sortedBreaks[i - 1];
       }
+
+      // Now, if the single section between pageStart and nextBreak is STILL larger than a page,
+      // we MUST slice it strictly at pxPerPage intervals to avoid clipping content.
+      while (nextBreak - pageStart > pxPerPage) {
+        slices.push({ start: pageStart, end: pageStart + pxPerPage });
+        pageStart += pxPerPage;
+      }
     }
-    slices.push({ start: pageStart, end: canvasH }); // last page
+
+    if (pageStart < canvasH) {
+      slices.push({ start: pageStart, end: canvasH });
+    }
 
     // ── Render slices into PDF ────────────────────────────────────────────────
     const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });

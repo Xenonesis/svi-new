@@ -9,15 +9,7 @@ import { BbaPageFooter } from './BbaPageFooter';
 export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContext) {
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-left text-[13px] font-bold underline">
           Note: Please fill the BBA form completely in capital letters.
         </p>

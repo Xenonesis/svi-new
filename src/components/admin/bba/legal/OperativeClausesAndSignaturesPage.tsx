@@ -16,15 +16,7 @@ export function OperativeClausesAndSignaturesPage({
 }: BBALegalContext) {
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           1. That the Firm hereby agrees to sell/ convey/ Transfer the /shop/Plot NO.{' '}
           {formData.unitNumber} admeasuring {formData.area} SqYd in favour of Allottee, at Village
@@ -60,15 +52,7 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           4. The Allottee understands that the part advance given by him/them is towards provisional
           registration against to probable&apos;s allotments of plot(s)/shop(s)/in the ongoing
@@ -134,15 +118,7 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           7. The Allottee understands that the allotment shall be subject to due execution of the
           firms Agreement in its standard format including maintenance agreement IBMS as per
@@ -204,15 +180,7 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           9. The Allottee(s) authorizes the Firm to adjust/appropriate all payments that shall be
           made by the Allottee(s) under any head(s) of dues against outstanding heads in
@@ -264,15 +232,7 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           14. The Firm, upon obtaining necessary approvals from the Govt authority shall offer in
           writing possession of the Said Plot/shop to the Allottee(s). Within 30 days from the date
@@ -498,15 +458,7 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           Unless otherwise provided in this Agreement, upon the occurrence of any one or more of
           event(s) of default under this Agreement including but not limited to those specified
@@ -570,15 +522,7 @@ export function OperativeClausesAndSignaturesPage({
           </div>
         </div>
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
           subscribed their respective hands at the places and on the day, month and year mentioned
