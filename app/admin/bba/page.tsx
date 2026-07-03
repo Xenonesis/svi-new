@@ -175,6 +175,7 @@ export default function BbaPage() {
     clientName: '',
     aadharNumber: '',
     fatherName: '',
+    age: '',
     addressLine1: '',
     addressLine2: '',
     city: '',
@@ -299,6 +300,7 @@ export default function BbaPage() {
         clientName: '',
         aadharNumber: '',
         fatherName: '',
+        age: '',
         addressLine1: '',
         addressLine2: '',
         city: '',
@@ -462,6 +464,13 @@ export default function BbaPage() {
                 value={formData.fatherName}
                 onChange={handleChange}
                 placeholder="Son/Daughter/Wife of"
+              />
+              <FormField
+                label="Age (Years)"
+                name="age"
+                value={formData.age}
+                onChange={handleChange}
+                placeholder="e.g. 45"
               />
             </div>
 

@@ -50,6 +50,7 @@ interface SavedBba {
     advisorName: string;
     advisorNumber: string;
     advisorEmail?: string;
+    age?: string;
   };
 }
 

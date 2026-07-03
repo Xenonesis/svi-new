@@ -60,18 +60,23 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-0 text-[13px]">(FOR INDIVIDUALS)</p>
         <p className="mb-4 text-[13px]">1st ALLOTTEE</p>
         <p className="mb-1 text-[13px]">
-          <strong>Name:</strong> {formData.clientName} (Mr./Mrs.)
+          <strong>Name:</strong> {formData.salutation ? `${formData.salutation}. ` : ''}
+          {formData.clientName}
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>S/o, D/o, W/o:</strong> ______________________
+          <strong>S/o, D/o, W/o:</strong> {formData.fatherName || '______________________'}
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Age:</strong> _______ years
+          <strong>Age:</strong> {formData.age ? `${formData.age} years` : '_______ years'}
         </p>
         <p className="mb-1 text-[13px] font-bold">Permanent Address:</p>
-        <p className="mb-1 text-[13px]">{formData.address}</p>
-        <p className="mb-1 text-[13px] font-bold">{formData.addressLine2}</p>
-        <p className="mb-6 text-[13px] font-bold">______________</p>
+        <p className="mb-1 text-[13px]">
+          {formData.addressLine1 || formData.address}
+          {formData.addressLine2 ? `, ${formData.addressLine2}` : ''}
+        </p>
+        <p className="mb-1 text-[13px] font-bold">
+          {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
+        </p>
         <p className="my-6 text-center text-[13px] font-bold">AND</p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>

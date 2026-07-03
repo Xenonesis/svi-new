@@ -10,7 +10,11 @@ export interface BBALegalFormData {
   clientName: string;
   salutation?: string;
   address: string;
+  addressLine1?: string;
   addressLine2?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
   projectName: string;
   unitNumber: string;
   area: string | number;
@@ -19,6 +23,8 @@ export interface BBALegalFormData {
   edc?: string | number;
   paymentPlan?: string;
   bookingDate?: string;
+  fatherName?: string;
+  age?: string | number;
 }
 
 export interface BBALegalCompanyInfo {
