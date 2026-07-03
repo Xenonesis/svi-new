@@ -8,7 +8,15 @@ import { BbaPageFooter } from './BbaPageFooter';
 export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BBALegalContext) {
   return (
     <>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-[13px] font-bold">Allottee(s) Representations</p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>AND WHEREAS</strong> the Allottee(s) vide Application Dated{' '}
@@ -94,7 +102,15 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&apos;Allottee&apos;</strong> means the person(s) named and referred to as party
           and who is being allotted the Said Plot/shop and who has signed and executed the
@@ -157,7 +173,15 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&quot;Governmental Authority&quot;</strong> or{' '}
           <strong>&quot;Governmental Authorities&quot;</strong> shall mean any government authority,
@@ -226,7 +250,15 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <BbaPageFooter companyInfo={companyInfo} />
       </div>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>Interpretation</strong>
           <br />
