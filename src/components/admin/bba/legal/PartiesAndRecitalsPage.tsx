@@ -85,7 +85,63 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-1 text-[13px] font-bold">
           {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
         </p>
-
+        <p className="my-6 text-center text-[13px] font-bold">AND</p>
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mb-1 text-[13px] font-bold">2nd ALLOTTEE</p>
+        <p className="mb-1 text-[13px]">
+          <strong>Name:</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>S/o, D/o, W/o:</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>Age:</strong> _______ years
+        </p>
+        <p className="mb-6 text-[13px]">
+          <strong>Address:</strong> ______________________
+        </p>
+        <p className="my-6 text-center text-[13px] font-bold">AND</p>
+        <p className="mb-1 text-[13px] font-bold">3rd ALLOTTEE</p>
+        <p className="mb-1 text-[13px]">
+          <strong>Name:</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>S/o, D/o, W/o:</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>Age:</strong> _______ years
+        </p>
+        <p className="mb-4 text-[13px] font-bold">OR</p>
+        <p className="mb-1 text-[13px] font-bold">(FOR FIRMS)</p>
+        <p className="mb-1 text-[13px]">
+          <strong>M/s.</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>Through its Proprietor / Partner:</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>Address:</strong> ______________________
+        </p>
+        <p className="mb-4 text-[13px] font-bold">OR</p>
+        <p className="mb-1 text-[13px] font-bold">(FOR COMPANIES)</p>
+        <p className="mb-1 text-[13px]">
+          <strong>M/s.</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>Through its Director / Authorised Signatory:</strong> ______________________
+        </p>
+        <p className="mb-1 text-[13px]">
+          <strong>Address:</strong> ______________________
+        </p>
         <p className="mb-6 text-[13px]">(hereinafter referred to as the &apos;Allottee(s)&apos;)</p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           The party of the FIRST PART and the party of the SECOND PART shall be individually
