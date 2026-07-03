@@ -56,19 +56,7 @@ export function OperativeClausesAndSignaturesPage({
           and lien on the Said Plot/shop/Said Complex. This is in addition to any other
           remedy/right, which the Firm may have. If the amount paid by the Allottee(s) is less than
           the forfeitable amount, then the Allottee(s) undertakes to make good the shortfall of the
-          forfeitable amounts.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           4. The Allottee understands that the part advance given by him/them is towards provisional
           registration against to probable&apos;s allotments of plot(s)/shop(s)/in the ongoing
