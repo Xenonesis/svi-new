@@ -17,7 +17,7 @@ export async function POST(req: NextRequest) {
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { name, phone } = body;
+    const { name, phone, email, source = 'chatbot' } = body;
 
     if (!name?.trim() || !phone?.trim()) {
       throw AppError.badRequest('Name and phone are required');
@@ -33,7 +33,8 @@ export async function POST(req: NextRequest) {
       .insert({
         name: name.trim(),
         phone: cleanPhone,
-        source: 'chatbot',
+        email: email?.trim() || null,
+        source: source.trim(),
       })
       .select()
       .single();
