@@ -412,20 +412,90 @@ function BbaPageContent() {
               }
             }
 
+            // Set base formData
+            let finalAadhar = allotmentData.aadharNumber || '';
+            let finalFather = allotmentData.fatherName || '';
+            let finalOnBookingRef = allotmentData.onBookingPaymentRef || '';
+            let finalWithin15DaysRef = allotmentData.within15DaysPaymentRef || '';
+
+            const ticketId = allotmentData.ticketId || '';
+            if (ticketId) {
+              // 1. Fetch missing registration details (Aadhar, Father Name)
+              if (!finalAadhar || !finalFather) {
+                try {
+                  const regRes = await fetch(
+                    `/api/admin/registrations?search=${encodeURIComponent(ticketId)}`,
+                    {
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+                  if (regRes.ok) {
+                    const regData = await regRes.json();
+                    const match = regData.registrations?.find(
+                      (r: any) => r.submission_id?.toLowerCase() === ticketId.toLowerCase()
+                    );
+                    if (match) {
+                      if (!finalAadhar) finalAadhar = match.aadhar_number || '';
+                      if (!finalFather) finalFather = match.so_wo_do || '';
+                    }
+                  }
+                } catch (e) {
+                  console.error('Failed to lookup registration for BBA prefill:', e);
+                }
+              }
+
+              // 2. Fetch missing payment receipt references
+              if (!finalOnBookingRef || !finalWithin15DaysRef) {
+                try {
+                  const receiptRes = await fetch(
+                    `/api/admin/documents?type=payment_receipt&limit=500`,
+                    {
+                      headers: { Authorization: `Bearer ${token}` },
+                    }
+                  );
+                  if (receiptRes.ok) {
+                    const receiptData = await receiptRes.json();
+                    const docs = receiptData.documents || [];
+                    const matches = docs
+                      .filter(
+                        (d: any) => d.form_data?.refId?.toLowerCase() === ticketId.toLowerCase()
+                      )
+                      .sort(
+                        (a: any, b: any) =>
+                          new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+                      );
+
+                    if (matches.length > 0) {
+                      if (!finalOnBookingRef) {
+                        finalOnBookingRef = matches[0].form_data?.paymentRef || '';
+                      }
+                    }
+                    if (matches.length > 1) {
+                      if (!finalWithin15DaysRef) {
+                        finalWithin15DaysRef = matches[1].form_data?.paymentRef || '';
+                      }
+                    }
+                  }
+                } catch (e) {
+                  console.error('Failed to lookup payment receipts for BBA prefill:', e);
+                }
+              }
+            }
+
             // Pre-fill the BBA form with allotment data
             setFormData((prev) => ({
               ...prev,
               salutation: cleanSalutation,
               clientName: allotmentData.clientName || '',
-              fatherName: allotmentData.fatherName || '',
+              fatherName: finalFather,
               age: allotmentData.age || '',
-              aadharNumber: allotmentData.aadharNumber || '',
+              aadharNumber: finalAadhar,
               addressLine1: parsedAddr.addressLine1,
               addressLine2: parsedAddr.addressLine2,
               city: parsedAddr.city,
               state: parsedAddr.state,
               pincode: parsedAddr.pincode,
-              ticketId: allotmentData.ticketId || '',
+              ticketId: ticketId,
               projectName: allotmentData.projectName || 'Shyam Aangan',
               unitNumber: allotmentData.unitNumber || '',
               area: allotmentData.area || '',
@@ -437,8 +507,8 @@ function BbaPageContent() {
               advisorName: allotmentData.advisorName || '',
               advisorNumber: allotmentData.advisorNumber || '',
               advisorEmail: allotmentData.advisorEmail || '',
-              onBookingPaymentRef: allotmentData.onBookingPaymentRef || '',
-              within15DaysPaymentRef: allotmentData.within15DaysPaymentRef || '',
+              onBookingPaymentRef: finalOnBookingRef,
+              within15DaysPaymentRef: finalWithin15DaysRef,
             }));
           }
         }
