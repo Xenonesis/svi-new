@@ -377,6 +377,7 @@ export default function BbaPage() {
               city: allotmentData.city || '',
               state: allotmentData.state || '',
               pincode: allotmentData.pincode || '',
+              ticketId: allotmentData.ticketId || '',
               projectName: allotmentData.projectName || 'Shyam Aangan',
               unitNumber: allotmentData.unitNumber || '',
               area: allotmentData.area || '',
