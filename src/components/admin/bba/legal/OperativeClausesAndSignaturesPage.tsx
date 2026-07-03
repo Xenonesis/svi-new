@@ -56,6 +56,7 @@ export function OperativeClausesAndSignaturesPage({
           and lien on the Said Plot/shop/Said Complex. This is in addition to any other
           remedy/right, which the Firm may have. If the amount paid by the Allottee(s) is less than
           the forfeitable amount, then the Allottee(s) undertakes to make good the shortfall of the
+          forfeitable amounts.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           4. The Allottee understands that the part advance given by him/them is towards provisional
@@ -400,8 +401,18 @@ export function OperativeClausesAndSignaturesPage({
           draft in the final document to be executed at the appropriate time. The Firm further
           reserves the right to correct, modify, amend or change all the annexures attached to this
           Agreement and also annexures which are indicated to be tentative at any time prior to the
-          execution of the Conveyance Deed/intimation letter of the Said Plot//shop.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           23. The Allottee(s) agrees that the provisions of this Agreement, Maintenance Agreement,
           and those contained in other annexures are specific and applicable to plot//shops offered
