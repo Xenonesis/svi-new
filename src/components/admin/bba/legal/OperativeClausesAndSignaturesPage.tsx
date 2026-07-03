@@ -539,22 +539,6 @@ export function OperativeClausesAndSignaturesPage({
           32. This provisional agreement shall be null and void after final registration of
           plot/plots.
         </p>
-        <div className="mt-8 flex justify-between">
-          <div className="font-bold">
-            <p className="mb-1 text-[13px] leading-relaxed">For &amp; on Behalf of</p>
-            <p className="mb-1 text-[13px] leading-relaxed">
-              {companyInfo.company_name || 'SVI INFRA SOLUTIONS PVT LTD'}
-            </p>
-            <div className="my-1 h-8 w-24">
-              <img
-                src="/signature.png"
-                alt="Director Signature"
-                className="h-full w-full object-contain"
-              />
-            </div>
-            <p className="mb-1 text-[13px] leading-relaxed">(Authorized signatory)</p>
-          </div>
-        </div>
         <p className="mt-6 mb-4 text-justify text-[13px] leading-relaxed">
           IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
           subscribed their respective hands at the places and on the day, month and year mentioned
