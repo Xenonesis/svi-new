@@ -12,6 +12,19 @@ export default function PwaRegister() {
 
   // Register service worker
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then((registrations) => {
+          for (const registration of registrations) {
+            registration.unregister().then(() => {
+              console.log('Unregistered active service worker for development mode');
+            });
+          }
+        });
+      }
+      return;
+    }
+
     if (!('serviceWorker' in navigator)) return;
 
     navigator.serviceWorker
