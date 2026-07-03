@@ -8,7 +8,15 @@ import { BbaPageFooter } from './BbaPageFooter';
 export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BBALegalContext) {
   return (
     <>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-[13px] font-bold">Allottee(s) Representations</p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>AND WHEREAS</strong> the Allottee(s) vide Application Dated{' '}
@@ -92,6 +100,16 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           <strong>&apos;Agreement&apos;</strong> shall mean Builder Buyer&apos;s agreement, which is
           used by and between the firm and the Allottee;
         </p>
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&apos;Allottee&apos;</strong> means the person(s) named and referred to as party
           and who is being allotted the Said Plot/shop and who has signed and executed the
@@ -152,6 +170,16 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           future) by the Governmental Authority towards the cost of development of major
           infrastructure projects.
         </p>
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&quot;Governmental Authority&quot;</strong> or{' '}
           <strong>&quot;Governmental Authorities&quot;</strong> shall mean any government authority,
@@ -218,6 +246,16 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           in addition to the Total Price in accordance with the terms and conditions of the
           Agreement and as per the demand raised by the Firm from time to time.
         </p>
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>Interpretation</strong>
           <br />
