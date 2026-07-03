@@ -48,9 +48,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       .update(updateData)
       .eq('id', id)
       .select()
-      .single();
+      .maybeSingle();
 
     if (error) throw AppError.internal(error.message);
+    if (!data) throw AppError.notFound('Document not found or already deleted');
 
     if (status === 'completed') {
       try {

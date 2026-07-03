@@ -263,6 +263,7 @@ function BbaPageContent() {
     if (token) {
       try {
         if (documentId) {
+          console.log('[BBA] Updating existing document, ID:', documentId);
           const response = await fetch(`/api/admin/documents/${documentId}`, {
             method: 'PATCH',
             headers: {
@@ -274,7 +275,22 @@ function BbaPageContent() {
               status: 'draft',
             }),
           });
-          if (!response.ok) throw new Error('Failed to update document');
+          if (!response.ok) {
+            const errBody = await response.text();
+            console.error(
+              '[BBA] PATCH failed. documentId:',
+              documentId,
+              'Status:',
+              response.status,
+              'Body:',
+              errBody
+            );
+            if (response.status === 404) {
+              // Document was deleted externally — clear stale ID so next save creates a fresh record
+              setDocumentId(null);
+            }
+            throw new Error(`Failed to update document: ${errBody}`);
+          }
         } else {
           const response = await fetch('/api/admin/documents', {
             method: 'POST',
@@ -289,16 +305,21 @@ function BbaPageContent() {
             }),
           });
 
-          if (response.ok) {
-            const data = await response.json();
+          if (!response.ok) {
+            const errBody = await response.text();
+            throw new Error(`Failed to create document: ${errBody}`);
+          }
+
+          const data = await response.json();
+          if (data.document && data.document.id) {
             setDocumentId(data.document.id);
             // Refresh saved BBAs list
             const res = await fetch('/api/admin/documents?type=bba', {
               headers: { Authorization: `Bearer ${token}` },
             });
             if (res.ok) {
-              const bbaData = await res.json();
-              setSavedBbas(bbaData.documents || []);
+              const resData = await res.json();
+              setSavedBbas(resData.documents);
             }
           } else {
             throw new Error('Failed to save document');
@@ -365,7 +386,6 @@ function BbaPageContent() {
     if (savedBbas.length > 0 && templateId) {
       const selected = savedBbas.find((b) => b.id === templateId);
       if (selected && selected.form_data) {
-        setDocumentId(selected.id);
         setFormData((prev) => ({ ...prev, ...selected.form_data }));
       }
     }
