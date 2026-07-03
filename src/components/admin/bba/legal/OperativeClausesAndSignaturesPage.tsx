@@ -1,4 +1,5 @@
 import type { BBALegalContext } from './types';
+import { BbaPageFooter } from './BbaPageFooter';
 
 /**
  * Final pages of the BBA legal preview: numbered clauses 1-32,
@@ -46,6 +47,7 @@ export function OperativeClausesAndSignaturesPage({
           the forfeitable amount, then the Allottee(s) undertakes to make good the shortfall of the
           forfeitable amounts.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -111,6 +113,7 @@ export function OperativeClausesAndSignaturesPage({
           allotment only upon the intimations by the firm post sanctions of the plans provided all
           payments due have been paid timely.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -172,6 +175,7 @@ export function OperativeClausesAndSignaturesPage({
           Allottee(s) save as otherwise provided herein, the Allottee(s) shall be left with no other
           right, claim of whatsoever nature against the Firm under or in relation to this Agreement.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -223,6 +227,7 @@ export function OperativeClausesAndSignaturesPage({
           Allottee(s) shall have no right, interest or claim of any nature whatsoever on the Said
           Plot/shop.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -448,6 +453,7 @@ export function OperativeClausesAndSignaturesPage({
           confirms that the decision of the Firm in this regard shall be final and binding on the
           Allottee(s).
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -502,6 +508,13 @@ export function OperativeClausesAndSignaturesPage({
             <p className="mb-1 text-[13px] leading-relaxed">
               {companyInfo.company_name || 'SVI INFRA SOLUTIONS PVT LTD'}
             </p>
+            <div className="my-1 h-8 w-24">
+              <img
+                src="/signature.png"
+                alt="Director Signature"
+                className="h-full w-full object-contain"
+              />
+            </div>
             <p className="mb-1 text-[13px] leading-relaxed">(Authorized signatory)</p>
           </div>
         </div>
@@ -541,6 +554,13 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <p className="mb-4 text-[13px] leading-relaxed">on</p>
         <p className="mb-4 text-[13px] leading-relaxed">in the presence of:</p>
+        <div className="my-1 h-8 w-24">
+          <img
+            src="/signature.png"
+            alt="Director Signature"
+            className="h-full w-full object-contain"
+          />
+        </div>
         <p className="mb-4 text-[13px] leading-relaxed">
           <strong>(AUTHORISED SIGNATORY)</strong>
         </p>

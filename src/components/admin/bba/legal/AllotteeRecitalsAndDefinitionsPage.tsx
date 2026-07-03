@@ -1,10 +1,11 @@
 import type { BBALegalContext } from './types';
+import { BbaPageFooter } from './BbaPageFooter';
 
 /**
  * Pages 3-5 of the BBA: Allottee representations, the "WHEREAS" chain, and
  * the definitions + interpretation section.
  */
-export function AllotteeRecitalsAndDefinitionsPage({ formData }: BBALegalContext) {
+export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BBALegalContext) {
   return (
     <>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
@@ -89,8 +90,9 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData }: BBALegalContext
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&apos;Agreement&apos;</strong> shall mean Builder Buyer&apos;s agreement, which is
-          executed by and between the firm and the Allottee;
+          used by and between the firm and the Allottee;
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -141,18 +143,19 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData }: BBALegalContext
           matter of any suit / writ before a competent court or; for any reason whatsoever; (h) any
           event or circumstances analogous to the foregoing.
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
           <strong>&quot;IBMS&quot;</strong> means the interest bearing maintenance security to be
           paid by the Allottee(s) for the maintenance and upkeep of the Said Complex/ Said Building
           to be paid as per the Schedule of payments (attached as Annexure-B to this Agreement) to
           the firm.
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
           <strong>&apos;Infrastructure Development Charges (IDC)&apos;</strong> shall mean the
           infrastructure development charges levied/ leviable (by whatever name called, now or in
           future) by the Governmental Authority towards the cost of development of major
           infrastructure projects.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -221,6 +224,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData }: BBALegalContext
           in addition to the Total Price in accordance with the terms and conditions of the
           Agreement and as per the demand raised by the Firm from time to time.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
@@ -255,6 +259,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData }: BBALegalContext
           Firm may deem necessary and/or execute such documents/deeds in favour of the Firm at the
           first request without any protest or demur.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
     </>
   );

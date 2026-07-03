@@ -1,4 +1,5 @@
 import type { BBALegalContext } from './types';
+import { BbaPageFooter } from './BbaPageFooter';
 
 /**
  * Second page block of the BBA legal preview: title + party identification
@@ -72,6 +73,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-1 text-[13px] font-bold">{formData.addressLine2}</p>
         <p className="mb-6 text-[13px] font-bold">______________</p>
         <p className="my-6 text-center text-[13px] font-bold">AND</p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
       <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-1 text-[13px] font-bold">2nd ALLOTTEE</p>
@@ -138,6 +140,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
           Said Land and no impression of any kind has been given with regard to the constructions
           that may take place on the land outside the Said Land.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
     </>
   );

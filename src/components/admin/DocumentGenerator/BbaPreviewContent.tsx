@@ -1,5 +1,6 @@
 import React from 'react';
 import BbaLegalPages from '../../../../app/admin/bba/BbaLegalPages';
+import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
 
 export default function BbaPreviewContent({ formData, companyInfo }: any) {
   const isShyamAangan = formData?.projectName?.includes('Shyam Aangan');
@@ -136,6 +137,7 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           </tbody>
         </table>
       </div>
+      <BbaPageFooter companyInfo={companyInfo} />
 
       {/* Legal Pages (2-17) */}
       <BbaLegalPages formData={formData} companyInfo={companyInfo} totalCost={totalCost} />
@@ -418,7 +420,14 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           </div>
           <div className="flex flex-col items-end text-right">
             <p className="mb-2">With Best Regards</p>
-            <p className="mb-16">For {companyInfo?.company_name}</p>
+            <p className="mb-1">For {companyInfo?.company_name}</p>
+            <div className="my-1 h-8 w-24">
+              <img
+                src="/signature.png"
+                alt="Director Signature"
+                className="ml-auto h-full w-full object-contain"
+              />
+            </div>
             <div className="w-48 border-t border-black pt-2 text-center">
               <p>Director</p>
             </div>

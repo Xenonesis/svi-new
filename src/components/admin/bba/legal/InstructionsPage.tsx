@@ -1,10 +1,11 @@
 import type { BBALegalContext } from './types';
+import { BbaPageFooter } from './BbaPageFooter';
 
 /**
  * First page of the BBA: "Important Instructions to the Allottee(s)".
  * Includes the project header and the initial acknowledgement paragraph.
  */
-export function InstructionsPage({ formData }: BBALegalContext) {
+export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
   return (
     <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
       <p className="mb-2 text-center text-lg font-bold uppercase">"SHYAM AANGAN"</p>
@@ -64,6 +65,7 @@ export function InstructionsPage({ formData }: BBALegalContext) {
       </p>
       <p className="mt-8 text-[11px] font-bold">{formData.clientName}</p>
       <p className="mb-3 text-[10px]">(Allottee(s))</p>
+      <BbaPageFooter companyInfo={companyInfo} />
     </div>
   );
 }
