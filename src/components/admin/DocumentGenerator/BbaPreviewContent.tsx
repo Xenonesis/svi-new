@@ -211,7 +211,12 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                     <td className="border border-gray-400 p-2 font-bold">On Booking</td>
                     <td className="border border-gray-400 p-2">{formatPercent(bookingPercent)}</td>
                     <td className="border border-gray-400 p-2 font-bold">
-                      Rs. {initialPayment.toFixed(2)}
+                      Rs.{' '}
+                      {formData?.onBookingAmount
+                        ? parseFloat(formData.onBookingAmount).toLocaleString('en-IN', {
+                            minimumFractionDigits: 2,
+                          })
+                        : initialPayment.toFixed(2)}
                     </td>
                     <td className="border border-gray-400 p-2">
                       {formData?.onBookingPaymentRef || '-'}
@@ -236,7 +241,12 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                       </td>
                       <td className="border border-gray-400 p-2">{formatPercent(secondPercent)}</td>
                       <td className="border border-gray-400 p-2 font-bold">
-                        Rs. {secondPayment.toFixed(2)}
+                        Rs.{' '}
+                        {formData?.within15DaysAmount
+                          ? parseFloat(formData.within15DaysAmount).toLocaleString('en-IN', {
+                              minimumFractionDigits: 2,
+                            })
+                          : secondPayment.toFixed(2)}
                       </td>
                       <td className="border border-gray-400 p-2">
                         {formData?.within15DaysPaymentRef || '-'}

@@ -199,7 +199,9 @@ function BbaPageContent() {
     advisorNumber: '',
     advisorEmail: '',
     onBookingPaymentRef: '',
+    onBookingAmount: '',
     within15DaysPaymentRef: '',
+    within15DaysAmount: '',
     bookingPaymentPercent: '10', // Added
     showSecondInstalment: 'true', // Added
     zeroPercentEmi: 'false', // Added
@@ -356,7 +358,9 @@ function BbaPageContent() {
         advisorNumber: '',
         advisorEmail: '',
         onBookingPaymentRef: '',
+        onBookingAmount: '',
         within15DaysPaymentRef: '',
+        within15DaysAmount: '',
         bookingPaymentPercent: '10',
         showSecondInstalment: 'true',
         zeroPercentEmi: 'false',
@@ -832,11 +836,27 @@ function BbaPageContent() {
                 placeholder="e.g. Txn/Receipt No."
               />
               <FormField
+                label="Amount Paid (On Booking) ₹"
+                name="onBookingAmount"
+                value={formData.onBookingAmount}
+                onChange={handleChange}
+                placeholder="e.g. 106645"
+                type="number"
+              />
+              <FormField
                 label="Payment Reference No. (Within 15 Days)"
                 name="within15DaysPaymentRef"
                 value={formData.within15DaysPaymentRef}
                 onChange={handleChange}
                 placeholder="e.g. Txn/Receipt No."
+              />
+              <FormField
+                label="Amount Paid (Within 15 Days) ₹"
+                name="within15DaysAmount"
+                value={formData.within15DaysAmount}
+                onChange={handleChange}
+                placeholder="e.g. 213290"
+                type="number"
               />
 
               {isCustomAdvisor ? (
