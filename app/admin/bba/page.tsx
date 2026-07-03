@@ -496,26 +496,11 @@ function BbaPageContent() {
                           new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
                       );
 
-                    if (matches.length > 0) {
-                      const firstPayRef = matches[0].form_data?.paymentRef || '';
-                      // Check if first receipt has comma-separated refs (both payments in one record)
-                      const firstParts = firstPayRef
-                        .split(',')
-                        .map((s: string) => s.trim())
-                        .filter(Boolean);
-
-                      if (firstParts.length >= 2) {
-                        // Both refs are comma-separated in one receipt
-                        if (!finalOnBookingRef) finalOnBookingRef = firstParts[0];
-                        if (!finalWithin15DaysRef) finalWithin15DaysRef = firstParts[1];
-                      } else {
-                        // First receipt = on-booking ref
-                        if (!finalOnBookingRef) finalOnBookingRef = firstParts[0] || firstPayRef;
-                        // Second separate receipt = within-15-days ref
-                        if (matches.length > 1 && !finalWithin15DaysRef) {
-                          finalWithin15DaysRef = matches[1].form_data?.paymentRef || '';
-                        }
-                      }
+                    if (matches.length > 0 && !finalOnBookingRef) {
+                      finalOnBookingRef = matches[0].form_data?.paymentRef || '';
+                    }
+                    if (matches.length > 1 && !finalWithin15DaysRef) {
+                      finalWithin15DaysRef = matches[1].form_data?.paymentRef || '';
                     }
                   }
                 } catch (e) {

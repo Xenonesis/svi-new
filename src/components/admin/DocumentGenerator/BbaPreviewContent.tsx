@@ -219,8 +219,8 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                   </tr>
                 );
 
-                // 2. Second Instalment Row (if enabled)
-                if (showSecondInstalment) {
+                // 2. Second Instalment Row (if enabled OR ref is manually entered)
+                if (showSecondInstalment || formData?.within15DaysPaymentRef) {
                   let secondDateStr = '-';
                   if (formData?.bookingDate) {
                     const d = new Date(formData.bookingDate);
