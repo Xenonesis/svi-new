@@ -261,68 +261,62 @@ function BbaPageContent() {
 
     // Save document record to database
     if (token) {
+      const saveBody = {
+        document_type: 'bba',
+        form_data: formData,
+        status: 'draft',
+      };
+
+      const doPost = async () => {
+        const res = await fetch('/api/admin/documents', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+          body: JSON.stringify(saveBody),
+        });
+        if (!res.ok) {
+          const errBody = await res.text();
+          throw new Error(`Failed to create document: ${errBody}`);
+        }
+        return res.json();
+      };
+
       try {
+        let savedDoc: any = null;
+
         if (documentId) {
-          console.log('[BBA] Updating existing document, ID:', documentId);
-          const response = await fetch(`/api/admin/documents/${documentId}`, {
+          const patchRes = await fetch(`/api/admin/documents/${documentId}`, {
             method: 'PATCH',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              form_data: formData,
-              status: 'draft',
-            }),
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ form_data: formData, status: 'draft' }),
           });
-          if (!response.ok) {
-            const errBody = await response.text();
-            console.error(
-              '[BBA] PATCH failed. documentId:',
-              documentId,
-              'Status:',
-              response.status,
-              'Body:',
-              errBody
-            );
-            if (response.status === 404) {
-              // Document was deleted externally — clear stale ID so next save creates a fresh record
-              setDocumentId(null);
-            }
+
+          if (patchRes.status === 404) {
+            // Document was deleted — clear stale ID and create a new one
+            console.warn('[BBA] Document not found, creating new record instead.');
+            setDocumentId(null);
+            const data = await doPost();
+            savedDoc = data.document;
+          } else if (!patchRes.ok) {
+            const errBody = await patchRes.text();
             throw new Error(`Failed to update document: ${errBody}`);
+          } else {
+            const data = await patchRes.json();
+            savedDoc = data.document;
           }
         } else {
-          const response = await fetch('/api/admin/documents', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify({
-              document_type: 'bba',
-              form_data: formData,
-              status: 'draft',
-            }),
+          const data = await doPost();
+          savedDoc = data.document;
+        }
+
+        if (savedDoc?.id) {
+          setDocumentId(savedDoc.id);
+          // Refresh saved BBAs list so dropdown stays in sync
+          const listRes = await fetch('/api/admin/documents?type=bba', {
+            headers: { Authorization: `Bearer ${token}` },
           });
-
-          if (!response.ok) {
-            const errBody = await response.text();
-            throw new Error(`Failed to create document: ${errBody}`);
-          }
-
-          const data = await response.json();
-          if (data.document && data.document.id) {
-            setDocumentId(data.document.id);
-            // Refresh saved BBAs list
-            const res = await fetch('/api/admin/documents?type=bba', {
-              headers: { Authorization: `Bearer ${token}` },
-            });
-            if (res.ok) {
-              const resData = await res.json();
-              setSavedBbas(resData.documents);
-            }
-          } else {
-            throw new Error('Failed to save document');
+          if (listRes.ok) {
+            const listData = await listRes.json();
+            setSavedBbas(listData.documents || []);
           }
         }
       } catch (error) {
