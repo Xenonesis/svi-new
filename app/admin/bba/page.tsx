@@ -346,6 +346,59 @@ export default function BbaPage() {
     }
   }, [savedBbas]);
 
+  // Handle allotmentId from URL (to create BBA from Allotment Letter)
+  useEffect(() => {
+    if (!token || typeof window === 'undefined') return;
+
+    const searchParams = new URLSearchParams(window.location.search);
+    const allotmentId = searchParams.get('allotmentId');
+    if (!allotmentId) return;
+
+    async function loadAllotmentAsBba() {
+      try {
+        const res = await fetch(`/api/admin/documents/${allotmentId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          const allotment = data.document;
+          if (allotment && allotment.form_data) {
+            const allotmentData = allotment.form_data;
+            // Pre-fill the BBA form with allotment data
+            setFormData((prev) => ({
+              ...prev,
+              salutation: allotmentData.salutation || '',
+              clientName: allotmentData.clientName || '',
+              fatherName: allotmentData.fatherName || '',
+              age: allotmentData.age || '',
+              aadharNumber: allotmentData.aadharNumber || '',
+              addressLine1: allotmentData.addressLine1 || allotmentData.address || '',
+              addressLine2: allotmentData.addressLine2 || '',
+              city: allotmentData.city || '',
+              state: allotmentData.state || '',
+              pincode: allotmentData.pincode || '',
+              projectName: allotmentData.projectName || 'Shyam Aangan',
+              unitNumber: allotmentData.unitNumber || '',
+              area: allotmentData.area || '',
+              bsp: allotmentData.bsp || '',
+              plc: allotmentData.plc || '',
+              paymentPlan: allotmentData.paymentPlan || '12',
+              bookingDate: allotmentData.bookingDate || '',
+              secondPaymentDays: allotmentData.secondPaymentDays || '15',
+              advisorName: allotmentData.advisorName || '',
+              advisorNumber: allotmentData.advisorNumber || '',
+              advisorEmail: allotmentData.advisorEmail || '',
+            }));
+          }
+        }
+      } catch (err) {
+        console.error('Error loading allotment as template for BBA:', err);
+      }
+    }
+
+    loadAllotmentAsBba();
+  }, [token]);
+
   const handleDownloadPDF = async () => {
     try {
       await exportToPDF({

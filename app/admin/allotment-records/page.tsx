@@ -606,6 +606,13 @@ export default function AllotmentRecordsPage() {
                           >
                             <FileText className="h-4 w-4" />
                           </Link>
+                          <Link
+                            href={`/admin/bba?allotmentId=${record.id}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                            title="Create BBA"
+                          >
+                            <Building2 className="h-4 w-4" />
+                          </Link>
                           <button
                             onClick={() => {
                               sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));

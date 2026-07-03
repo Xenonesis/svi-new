@@ -4,6 +4,24 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
+// GET /api/admin/documents/[id] — get a specific document
+export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
+
+    const { id } = await params;
+    const { data, error } = await supabaseAdmin.from('documents').select('*').eq('id', id).single();
+
+    if (error) throw AppError.internal(error.message);
+    if (!data) throw AppError.notFound('Document not found');
+
+    return NextResponse.json({ document: data });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}
+
 // PATCH /api/admin/documents/[id] — update document status / urls
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
