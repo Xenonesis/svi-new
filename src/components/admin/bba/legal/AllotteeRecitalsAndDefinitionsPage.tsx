@@ -92,9 +92,6 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           <strong>&apos;Agreement&apos;</strong> shall mean Builder Buyer&apos;s agreement, which is
           used by and between the firm and the Allottee;
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&apos;Allottee&apos;</strong> means the person(s) named and referred to as party
           and who is being allotted the Said Plot/shop and who has signed and executed the
@@ -155,9 +152,6 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           future) by the Governmental Authority towards the cost of development of major
           infrastructure projects.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&quot;Governmental Authority&quot;</strong> or{' '}
           <strong>&quot;Governmental Authorities&quot;</strong> shall mean any government authority,
@@ -224,9 +218,6 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           in addition to the Total Price in accordance with the terms and conditions of the
           Agreement and as per the demand raised by the Firm from time to time.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>Interpretation</strong>
           <br />
