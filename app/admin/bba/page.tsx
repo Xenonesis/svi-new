@@ -437,6 +437,8 @@ function BbaPageContent() {
               advisorName: allotmentData.advisorName || '',
               advisorNumber: allotmentData.advisorNumber || '',
               advisorEmail: allotmentData.advisorEmail || '',
+              onBookingPaymentRef: allotmentData.onBookingPaymentRef || '',
+              within15DaysPaymentRef: allotmentData.within15DaysPaymentRef || '',
             }));
           }
         }

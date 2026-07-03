@@ -233,6 +233,10 @@ export default function AllotmentLetterPage() {
     salutation: 'Mr.', // Default salutation
     address: '',
     ticketId: '',
+    aadharNumber: '',
+    fatherName: '',
+    onBookingPaymentRef: '',
+    within15DaysPaymentRef: '',
     projectName: 'Shyam Aangan',
     unitNumber: '',
     area: '',
@@ -499,6 +503,10 @@ export default function AllotmentLetterPage() {
       advisorName: fd.advisorName || '',
       advisorNumber: fd.advisorNumber || '',
       advisorEmail: fd.advisorEmail || '',
+      aadharNumber: fd.aadharNumber || '',
+      fatherName: fd.fatherName || '',
+      onBookingPaymentRef: fd.onBookingPaymentRef || '',
+      within15DaysPaymentRef: fd.within15DaysPaymentRef || '',
       emiCount: fd.emiCount || '12',
       emiPercentage: fd.emiPercentage || '',
       emiStartDate: fd.emiStartDate || '',
@@ -612,6 +620,10 @@ export default function AllotmentLetterPage() {
                   salutation: 'Mr.',
                   address: '',
                   ticketId: '',
+                  aadharNumber: '',
+                  fatherName: '',
+                  onBookingPaymentRef: '',
+                  within15DaysPaymentRef: '',
                   projectName: 'Shyam Aangan',
                   unitNumber: '',
                   area: '',
@@ -687,6 +699,20 @@ export default function AllotmentLetterPage() {
                 value={formData.ticketId}
                 onChange={handleChange}
                 required
+              />
+              <FormField
+                label="Aadhar Number"
+                name="aadharNumber"
+                value={formData.aadharNumber || ''}
+                onChange={handleChange}
+                placeholder="e.g. 590415758951"
+              />
+              <FormField
+                label="Father / Husband Name"
+                name="fatherName"
+                value={formData.fatherName || ''}
+                onChange={handleChange}
+                placeholder="Son/Daughter/Wife of"
               />
 
               <FormSelect
@@ -867,6 +893,21 @@ export default function AllotmentLetterPage() {
                   ]}
                 />
               )}
+
+              <FormField
+                label="Payment Ref No. (On Booking)"
+                name="onBookingPaymentRef"
+                value={formData.onBookingPaymentRef || ''}
+                onChange={handleChange}
+                placeholder="e.g. UPI-928341"
+              />
+              <FormField
+                label="Payment Ref No. (Within 15 Days)"
+                name="within15DaysPaymentRef"
+                value={formData.within15DaysPaymentRef || ''}
+                onChange={handleChange}
+                placeholder="e.g. NEFT-928341"
+              />
 
               {!isCustomAdvisor && advisors.length === 0 && (
                 <div className="border-brand-gold/25 bg-brand-gold/5 animate-in fade-in slide-in-from-top-2 col-span-2 overflow-hidden rounded-xl border p-4.5 backdrop-blur-md transition-all duration-300">

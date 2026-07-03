@@ -47,6 +47,10 @@ interface SavedAllotment {
     advisorName: string;
     advisorNumber: string;
     advisorEmail?: string;
+    aadharNumber?: string;
+    fatherName?: string;
+    onBookingPaymentRef?: string;
+    within15DaysPaymentRef?: string;
   };
 }
 
