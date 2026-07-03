@@ -68,9 +68,12 @@ export default function CurrentProjectsContent({
   };
 
   useEffect(() => {
+    const controller = new AbortController();
+    const { signal } = controller;
+
     async function fetchImages() {
       try {
-        const res = await fetch('/api/project-images');
+        const res = await fetch('/api/project-images', { signal });
         if (!res.ok) throw new Error('Failed to fetch project images');
         const data = (await res.json()) as Record<string, string[]>;
 
@@ -87,14 +90,23 @@ export default function CurrentProjectsContent({
             return project;
           })
         );
-      } catch (err) {
+      } catch (err: any) {
+        if (err.name === 'AbortError') {
+          return;
+        }
         console.error('Error loading project images dynamically:', err);
       } finally {
-        setIsLoading(false);
+        if (!signal.aborted) {
+          setIsLoading(false);
+        }
       }
     }
 
     fetchImages();
+
+    return () => {
+      controller.abort();
+    };
   }, []);
 
   const openModal = useCallback((project: Project) => {
