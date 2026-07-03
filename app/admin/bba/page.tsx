@@ -201,6 +201,14 @@ function BbaPageContent() {
     within15DaysPaymentRef: '',
   });
 
+  // Synchronize isCustomAdvisor state based on loaded advisorName
+  useEffect(() => {
+    if (formData.advisorName && advisors.length > 0) {
+      const match = advisors.some((a) => a.full_name === formData.advisorName);
+      setIsCustomAdvisor(!match);
+    }
+  }, [advisors, formData.advisorName]);
+
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
 
@@ -360,19 +368,63 @@ function BbaPageContent() {
           const allotment = data.document;
           if (allotment && allotment.form_data) {
             const allotmentData = allotment.form_data;
-            // Pre-fill the BBA form with allotment data
-            setFormData((prev) => ({
-              ...prev,
-              salutation: allotmentData.salutation || '',
-              clientName: allotmentData.clientName || '',
-              fatherName: allotmentData.fatherName || '',
-              age: allotmentData.age || '',
-              aadharNumber: allotmentData.aadharNumber || '',
-              addressLine1: allotmentData.addressLine1 || allotmentData.address || '',
+
+            // Clean up salutation (remove trailing dot to match BBA option values)
+            const cleanSalutation = allotmentData.salutation
+              ? allotmentData.salutation.replace(/\.$/, '')
+              : '';
+
+            // Parse combined address if split fields are missing
+            const parsedAddr = {
+              addressLine1: allotmentData.addressLine1 || '',
               addressLine2: allotmentData.addressLine2 || '',
               city: allotmentData.city || '',
               state: allotmentData.state || '',
               pincode: allotmentData.pincode || '',
+            };
+
+            if (!parsedAddr.addressLine1 && allotmentData.address) {
+              const parts = allotmentData.address.split(',').map((p: string) => p.trim());
+              if (parts.length === 1) {
+                parsedAddr.addressLine1 = parts[0];
+              } else {
+                // Heuristic parsing
+                const lastPart = parts[parts.length - 1];
+                if (/^\d{6}$/.test(lastPart)) {
+                  parsedAddr.pincode = lastPart;
+                  parts.pop();
+                }
+                if (parts.length > 0) {
+                  parsedAddr.state = parts[parts.length - 1];
+                  parts.pop();
+                }
+                if (parts.length > 0) {
+                  parsedAddr.city = parts[parts.length - 1];
+                  parts.pop();
+                }
+                if (parts.length === 1) {
+                  parsedAddr.addressLine1 = parts[0];
+                } else if (parts.length > 1) {
+                  const mid = Math.ceil(parts.length / 2);
+                  parsedAddr.addressLine1 = parts.slice(0, mid).join(', ');
+                  parsedAddr.addressLine2 = parts.slice(mid).join(', ');
+                }
+              }
+            }
+
+            // Pre-fill the BBA form with allotment data
+            setFormData((prev) => ({
+              ...prev,
+              salutation: cleanSalutation,
+              clientName: allotmentData.clientName || '',
+              fatherName: allotmentData.fatherName || '',
+              age: allotmentData.age || '',
+              aadharNumber: allotmentData.aadharNumber || '',
+              addressLine1: parsedAddr.addressLine1,
+              addressLine2: parsedAddr.addressLine2,
+              city: parsedAddr.city,
+              state: parsedAddr.state,
+              pincode: parsedAddr.pincode,
               ticketId: allotmentData.ticketId || '',
               projectName: allotmentData.projectName || 'Shyam Aangan',
               unitNumber: allotmentData.unitNumber || '',
