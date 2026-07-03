@@ -86,16 +86,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
           {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
         </p>
         <p className="my-6 text-center text-[13px] font-bold">AND</p>
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+
         <p className="mb-1 text-[13px] font-bold">2nd ALLOTTEE</p>
         <p className="mb-1 text-[13px]">
           <strong>Name:</strong> ______________________
