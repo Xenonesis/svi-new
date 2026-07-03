@@ -68,23 +68,52 @@ export async function exportToPDF({
     });
 
     const pdfWidth = 210; // 210 mm (A4 width)
+    const pdfHeight = 297; // 297 mm (A4 height)
     const canvasWidth = canvas.width;
     const canvasHeight = canvas.height;
 
-    // mm-per-canvas-pixel ratio (keeping full width)
-    const scaleRatio = pdfWidth / canvasWidth;
-    const imgHeightMM = canvasHeight * scaleRatio;
+    // Pixel height of one A4 page on the high-res canvas
+    const pxPageHeight = Math.floor(canvasWidth * (pdfHeight / pdfWidth));
 
     const pdf = new jsPDF({
       orientation: 'portrait',
       unit: 'mm',
-      format: [pdfWidth, imgHeightMM],
+      format: 'a4',
       compress: true,
     });
 
-    const imgData = canvas.toDataURL('image/png', 1.0);
+    let yOffset = 0;
+    let pageNum = 1;
 
-    pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, imgHeightMM);
+    while (yOffset < canvasHeight) {
+      if (pageNum > 1) {
+        pdf.addPage();
+      }
+
+      const remainingHeight = canvasHeight - yOffset;
+      const sHeight = Math.min(pxPageHeight, remainingHeight);
+
+      // Create a temporary canvas for this slice
+      const tempCanvas = document.createElement('canvas');
+      tempCanvas.width = canvasWidth;
+      tempCanvas.height = pxPageHeight;
+      const tempCtx = tempCanvas.getContext('2d');
+
+      if (tempCtx) {
+        // Fill white background to avoid black borders if content is shorter than page height
+        tempCtx.fillStyle = '#ffffff';
+        tempCtx.fillRect(0, 0, canvasWidth, pxPageHeight);
+
+        // Draw the sliced section from the main canvas
+        tempCtx.drawImage(canvas, 0, yOffset, canvasWidth, sHeight, 0, 0, canvasWidth, sHeight);
+      }
+
+      const imgData = tempCanvas.toDataURL('image/jpeg', 0.95);
+      pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
+
+      yOffset += pxPageHeight;
+      pageNum++;
+    }
 
     const outputFilename = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
     pdf.save(outputFilename);
