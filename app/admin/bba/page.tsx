@@ -11,12 +11,16 @@ import { FileText, RefreshCw, ClipboardList } from 'lucide-react';
 
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import BbaPreviewContent from '@/src/components/admin/DocumentGenerator/BbaPreviewContent';
 
-export default function BbaPage() {
+function BbaPageContent() {
   const { token } = useAuthStore();
+  const searchParams = useSearchParams();
+  const templateId = searchParams.get('templateId');
+  const allotmentId = searchParams.get('allotmentId');
 
   const [savedBbas, setSavedBbas] = useState<any[]>([]);
 
@@ -333,26 +337,18 @@ export default function BbaPage() {
 
   // Handle templateId from URL (e.g. from BBA Records "Use as Template")
   useEffect(() => {
-    if (savedBbas.length > 0 && typeof window !== 'undefined') {
-      const searchParams = new URLSearchParams(window.location.search);
-      const templateId = searchParams.get('templateId');
-      if (templateId) {
-        const selected = savedBbas.find((b) => b.id === templateId);
-        if (selected && selected.form_data) {
-          setDocumentId(selected.id);
-          setFormData((prev) => ({ ...prev, ...selected.form_data }));
-        }
+    if (savedBbas.length > 0 && templateId) {
+      const selected = savedBbas.find((b) => b.id === templateId);
+      if (selected && selected.form_data) {
+        setDocumentId(selected.id);
+        setFormData((prev) => ({ ...prev, ...selected.form_data }));
       }
     }
-  }, [savedBbas]);
+  }, [savedBbas, templateId]);
 
   // Handle allotmentId from URL (to create BBA from Allotment Letter)
   useEffect(() => {
-    if (!token || typeof window === 'undefined') return;
-
-    const searchParams = new URLSearchParams(window.location.search);
-    const allotmentId = searchParams.get('allotmentId');
-    if (!allotmentId) return;
+    if (!token || !allotmentId) return;
 
     async function loadAllotmentAsBba() {
       try {
@@ -398,7 +394,7 @@ export default function BbaPage() {
     }
 
     loadAllotmentAsBba();
-  }, [token]);
+  }, [token, allotmentId]);
 
   const handleDownloadPDF = async () => {
     try {
@@ -866,5 +862,13 @@ export default function BbaPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function BbaPage() {
+  return (
+    <Suspense fallback={<div>Loading BBA Generator...</div>}>
+      <BbaPageContent />
+    </Suspense>
   );
 }
