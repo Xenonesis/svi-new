@@ -110,8 +110,17 @@ export default function BbaRecordsPage() {
     fetch('/api/admin/documents?type=bba&limit=1000', {
       headers: { Authorization: `Bearer ${token}` },
     })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch documents');
+      .then(async (res) => {
+        if (!res.ok) {
+          const text = await res.text();
+          console.error('Fetch Failed:', {
+            status: res.status,
+            statusText: res.statusText,
+            url: res.url,
+            text,
+          });
+          throw new Error(`Failed to fetch documents: ${res.status} ${res.statusText}`);
+        }
         return res.json();
       })
       .then((json) => {

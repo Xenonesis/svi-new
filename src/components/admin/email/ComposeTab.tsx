@@ -33,6 +33,8 @@ import { TemplatePicker } from './compose/TemplatePicker';
 import { AIImprovePanel } from './compose/AIImprovePanel';
 import type { ForwardData, ReplyData, EmailAttachment, TemplatePrefill, DraftData } from './types';
 import { useAIEmail } from './hooks/useAIEmail';
+import { useEmailPrefill } from './hooks/useEmailPrefill';
+import { useEmailDraft } from './hooks/useEmailDraft';
 
 interface ComposeTabProps {
   adminEmail: string;
@@ -78,15 +80,59 @@ export function ComposeTab({
   const [subjectSuggestions, setSubjectSuggestions] = useState<string[] | null>(null);
   const [showSubjectSuggestions, setShowSubjectSuggestions] = useState(false);
   const [subjectSuggesting, setSubjectSuggesting] = useState(false);
-  const [followUpSuggestion, setFollowUpSuggestion] = useState<{ suggestedDays: number; reason: string; message: string } | null>(null);
+  const [followUpSuggestion, setFollowUpSuggestion] = useState<{
+    suggestedDays: number;
+    reason: string;
+    message: string;
+  } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Load saved draft on mount
-  useEffect(() => {
-    loadDraft().then((saved) => {
-      if (saved && saved.to) setHasDraft(true);
-    });
-  }, []);
+  // Use custom hooks for prefill and drafts
+  useEmailPrefill({
+    adminEmail,
+    forwardData,
+    replyData,
+    templatePrefill,
+    draftData,
+    replyTo,
+    onClearPrefill,
+    setters: {
+      setTo,
+      setCc,
+      setBcc,
+      setSubjectTemplate,
+      setHtml,
+      setTemplateHtml,
+      setSelectedTemplate,
+      setInReplyToMessageId,
+      setAttachments,
+      setEditorKey,
+      setReplyTo,
+      setFromName,
+      setScheduledAt,
+      setTemplateVars,
+      setPreviewMode,
+    },
+  });
+
+  const { restoreDraft, handleClearDraft } = useEmailDraft({
+    to,
+    cc,
+    bcc,
+    subject,
+    html,
+    replyTo,
+    fromName,
+    setDraftSaved,
+    setHasDraft,
+    setTo,
+    setCc,
+    setBcc,
+    setSubjectTemplate,
+    setHtml,
+    setReplyTo,
+    setFromName,
+  });
 
   // Synchronize resolved subject with template variables and subject template
   useEffect(() => {
@@ -96,509 +142,6 @@ export function ComposeTab({
   const handleSubjectChange = (val: string) => {
     setSubject(val);
     setSubjectTemplate(val);
-  };
-
-  // Prefill replyTo with default reply addresses (both info@sviiinfrasolutions.com and adminEmail)
-  useEffect(() => {
-    if (adminEmail && !replyTo) {
-      setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail}`);
-    }
-  }, [adminEmail]);
-
-  // Apply forward/reply prefills
-  useEffect(() => {
-    if (forwardData) {
-      setTo('');
-      setCc('');
-      setBcc('');
-      setSubjectTemplate(forwardData.subject);
-      setHtml(forwardData.html);
-      setTemplateHtml(null);
-      setSelectedTemplate(null);
-      setInReplyToMessageId(null);
-      setAttachments(forwardData.attachments || []);
-      setEditorKey((prev) => prev + 1);
-      onClearPrefill?.();
-    }
-  }, [forwardData, onClearPrefill]);
-
-  useEffect(() => {
-    if (replyData) {
-      setTo(replyData.to);
-      setCc(replyData.cc?.join(', ') || '');
-      setBcc('');
-      setSubjectTemplate(replyData.subject);
-      setHtml(replyData.html);
-      setTemplateHtml(null);
-      setSelectedTemplate(null);
-      setInReplyToMessageId(replyData.originalMessageId || null);
-      setAttachments(replyData.attachments || []);
-      setEditorKey((prev) => prev + 1);
-      onClearPrefill?.();
-    }
-  }, [replyData, onClearPrefill]);
-
-  // Apply template prefill
-  useEffect(() => {
-    if (templatePrefill) {
-      setSubjectTemplate(templatePrefill.subject);
-      setHtml(templatePrefill.html);
-      setTemplateHtml(null);
-      setSelectedTemplate(null);
-      setInReplyToMessageId(null);
-      setEditorKey((prev) => prev + 1);
-      onClearPrefill?.();
-    }
-  }, [templatePrefill, onClearPrefill]);
-
-  // Apply draft prefill
-  useEffect(() => {
-    if (draftData) {
-      setTo(draftData.to || '');
-      setCc(draftData.cc || '');
-      setBcc(draftData.bcc || '');
-      setSubjectTemplate(draftData.subject || '');
-      setHtml(draftData.html || '');
-      setReplyTo(draftData.replyTo || '');
-      setFromName(draftData.fromName || 'SVI Infra');
-      setTemplateHtml(null);
-      setSelectedTemplate(null);
-      setInReplyToMessageId(null);
-      setAttachments([]);
-      setScheduledAt(null);
-      setEditorKey((prev) => prev + 1);
-      onClearPrefill?.();
-    }
-  }, [draftData, onClearPrefill]);
-
-  // Handle prefill from Allotment Records
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('prefillAllotment') === 'true') {
-        const stored = sessionStorage.getItem('emailPrefillRecord');
-        if (stored) {
-          try {
-            const record = JSON.parse(stored);
-            const fd = record.form_data;
-            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'allotment_letter');
-
-            if (tpl) {
-              let processedSubject = tpl.subject;
-              processedSubject = processedSubject.replace('{{projectName}}', fd.projectName || '');
-              processedSubject = processedSubject.replace('{{unitNumber}}', fd.unitNumber || '');
-
-              setSubjectTemplate(processedSubject);
-              setTemplateHtml(tpl.html);
-              setSelectedTemplate('allotment_letter');
-
-              const area = parseFloat(fd.area) || 0;
-              const bsp = parseFloat(fd.bsp) || 0;
-              const plc = parseFloat(fd.plc) || 0;
-              const edc = parseFloat(fd.edc) || 0;
-              const base = area * bsp;
-              const totalCost = base + base * (plc / 100) + edc;
-              const edcInEmi = String(fd.edcInEmi) === 'true';
-              const baseCost = totalCost - edc;
-              const bookingPercent = parseFloat(fd.bookingPaymentPercent) || 10;
-              const initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
-
-              const vars: Record<string, string> = {
-                salutation: fd.salutation || 'Mr.',
-                clientName: fd.clientName || '',
-                projectName: fd.projectName || '',
-                ticketId: fd.ticketId || '',
-                unitNumber: fd.unitNumber || '',
-                area: fd.area || '',
-                totalCost: totalCost.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
-                paymentPlan: fd.paymentPlan || '',
-                bookingDate: fd.bookingDate || '',
-                bookingPercent: fd.bookingPaymentPercent || '10',
-                initialPayment: initialPayment.toLocaleString('en-IN', {
-                  maximumFractionDigits: 0,
-                }),
-                secondInstalmentRow:
-                  fd.showSecondInstalment === 'true'
-                    ? `<tr><td style="padding:10px;color:#333333;">2</td><td style="padding:10px;color:#333333;">Second Instalment</td><td style="padding:10px;text-align:right;color:#333333;">20%</td><td style="padding:10px;text-align:right;font-weight:bold;color:#333333;">₹${((edcInEmi ? baseCost : totalCost) * 0.2).toLocaleString('en-IN', { maximumFractionDigits: 0 })}</td></tr>`
-                    : '',
-                remainingPercent:
-                  fd.showSecondInstalment === 'true'
-                    ? `${100 - bookingPercent - 20}`
-                    : `${100 - bookingPercent}`,
-
-                emiCount: fd.emiCount || '12',
-                advisorName: fd.advisorName || '',
-                advisorNumber: fd.advisorNumber || '',
-                advisorEmail: fd.advisorEmail || '',
-                bankAccountName: 'Svi Infra Solutions Pvt. Ltd',
-                bankAccountNo: '0894102000013837',
-                bankName: 'IDBI BANK',
-                bankIfsc: 'IBKL0000894',
-              };
-
-              setTemplateVars(vars);
-              setHtml('');
-              setPreviewMode(true);
-              setEditorKey((prev) => prev + 1);
-
-              if (fd.clientEmail) {
-                setTo(fd.clientEmail);
-              }
-            }
-
-            sessionStorage.removeItem('emailPrefillRecord');
-            const newUrl = window.location.pathname + '?tab=compose';
-            window.history.replaceState({}, '', newUrl);
-          } catch (e) {
-            console.error('Error prefilling allotment email:', e);
-          }
-        }
-      }
-    }
-  }, []);
-
-  // Handle prefill from Receipt Records
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('prefillReceipt') === 'true') {
-        const stored = sessionStorage.getItem('emailPrefillRecord');
-        if (stored) {
-          try {
-            const record = JSON.parse(stored);
-            const fd = record.form_data;
-            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'payment');
-
-            const amountFormatted = parseFloat(fd.amount || '0').toLocaleString('en-IN', {
-              maximumFractionDigits: 0,
-            });
-
-            if (tpl) {
-              let processedSubject = tpl.subject;
-              processedSubject = processedSubject.replace(
-                '{{property_name}}',
-                `Plot ${fd.plotNo || ''}`
-              );
-              processedSubject = processedSubject.replace('{{name}}', fd.name || '');
-
-              setSubjectTemplate(processedSubject);
-              setTemplateHtml(tpl.html);
-              setSelectedTemplate('payment');
-
-              const vars: Record<string, string> = {
-                name: fd.salutation ? `${fd.salutation} ${fd.name}` : fd.name || '',
-                property_name: `Plot ${fd.plotNo || ''} (${fd.plotSize || ''} Sq. Yds.)`,
-                amount: amountFormatted,
-                date: fd.date ? new Date(fd.date).toLocaleDateString('en-GB') : '',
-                receipt_no: fd.receiptNo || '',
-                portal_url: 'https://www.sviinfrasolutions.in',
-              };
-
-              setTemplateVars(vars);
-              setHtml('');
-              setPreviewMode(true);
-              setEditorKey((prev) => prev + 1);
-            } else {
-              // Fallback: prefill subject + plain body with receipt details when no template
-              setSubjectTemplate(`Payment Receipt - ${fd.receiptNo || ''} - ${fd.name || ''}`);
-              setHtml(
-                `
-<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <h2 style="color:#111827;">Payment Receipt</h2>
-  <p><strong>Receipt No:</strong> ${fd.receiptNo || 'N/A'}</p>
-  <p><strong>Date:</strong> ${fd.date ? new Date(fd.date).toLocaleDateString('en-GB') : 'N/A'}</p>
-  <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.name || 'N/A'}</p>
-  <p><strong>Amount:</strong> ₹${amountFormatted}</p>
-  <p><strong>Payment Method:</strong> ${fd.paymentMethod || 'N/A'}</p>
-  <p><strong>Plot No:</strong> ${fd.plotNo || 'N/A'} (${fd.plotSize || ''} Sq. Yds.)</p>
-  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
-  <p style="color:#666;font-size:13px;">Please find the payment receipt attached for your records.</p>
-</div>
-`.trim()
-              );
-              setEditorKey((prev) => prev + 1);
-            }
-
-            sessionStorage.removeItem('emailPrefillRecord');
-            const newUrl = window.location.pathname + '?tab=compose';
-            window.history.replaceState({}, '', newUrl);
-          } catch (e) {
-            console.error('Error prefilling receipt email:', e);
-          }
-        }
-      }
-    }
-  }, []);
-
-  // Handle prefill from BBA Records
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('prefillBba') === 'true') {
-        const stored = sessionStorage.getItem('emailPrefillRecord');
-        if (stored) {
-          try {
-            const record = JSON.parse(stored);
-            const fd = record.form_data;
-
-            const area = parseFloat(fd.area) || 0;
-            const bsp = parseFloat(fd.bsp) || 0;
-            const plc = parseFloat(fd.plc) || 0;
-            const totalCost = area * bsp + area * bsp * (plc / 100);
-            const formattedCost = totalCost.toLocaleString('en-IN', { maximumFractionDigits: 0 });
-
-            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'bba_document');
-
-            if (tpl) {
-              let processedSubject = tpl.subject;
-              processedSubject = processedSubject.replace('{{projectName}}', fd.projectName || '');
-              processedSubject = processedSubject.replace('{{unitNumber}}', fd.unitNumber || '');
-
-              setSubjectTemplate(processedSubject);
-              setTemplateHtml(tpl.html);
-              setSelectedTemplate('bba_document');
-
-              const vars: Record<string, string> = {
-                salutation: fd.salutation || 'Mr.',
-                clientName: fd.clientName || '',
-                projectName: fd.projectName || '',
-                unitNumber: fd.unitNumber || '',
-                area: fd.area || '',
-                totalCost: formattedCost,
-                paymentPlan: fd.paymentPlan || '12',
-                bookingDate: fd.bookingDate
-                  ? new Date(fd.bookingDate).toLocaleDateString('en-GB')
-                  : '',
-                advisorName: fd.advisorName || '',
-                advisorNumber: fd.advisorNumber || '',
-                advisorEmail: fd.advisorEmail || '',
-                bankAccountName: 'Svi Infra Solutions Pvt. Ltd',
-                bankAccountNo: '0894102000013837',
-                bankName: 'IDBI BANK',
-                bankIfsc: 'IBKL0000894',
-              };
-
-              setTemplateVars(vars);
-              setHtml('');
-              setPreviewMode(true);
-            } else {
-              setSubjectTemplate(
-                `BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`
-              );
-              setHtml(
-                `
-<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <h2 style="color:#111827;">Builder Buyer Agreement</h2>
-  <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.clientName || 'N/A'}</p>
-  <p><strong>Project:</strong> ${fd.projectName || 'N/A'}</p>
-  <p><strong>Unit / Plot:</strong> ${fd.unitNumber || 'N/A'} (${fd.area || ''} Sq. Yds.)</p>
-  <p><strong>Total Cost:</strong> ₹${formattedCost}</p>
-  <p><strong>Payment Plan:</strong> ${fd.paymentPlan || 'N/A'} Months</p>
-  <p><strong>Booking Date:</strong> ${fd.bookingDate ? new Date(fd.bookingDate).toLocaleDateString('en-GB') : 'N/A'}</p>
-  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
-  <p style="color:#666;font-size:13px;">Please find the BBA document attached for your records.</p>
-</div>
-`.trim()
-              );
-              setTemplateHtml(null);
-              setSelectedTemplate(null);
-              setPreviewMode(false);
-            }
-            setEditorKey((prev) => prev + 1);
-
-            if (fd.email) {
-              setTo(fd.email);
-            }
-
-            sessionStorage.removeItem('emailPrefillRecord');
-            const newUrl = window.location.pathname + '?tab=compose';
-            window.history.replaceState({}, '', newUrl);
-          } catch (e) {
-            console.error('Error prefilling BBA email:', e);
-          }
-        }
-      }
-    }
-  }, []);
-
-  // Handle prefill from Offer Letter Records
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('prefillOffer') === 'true') {
-        const stored = sessionStorage.getItem('emailPrefillRecord');
-        if (stored) {
-          try {
-            const record = JSON.parse(stored);
-            const fd = record.form_data;
-
-            const ctc = parseFloat(fd.salaryCtc) || 0;
-            const formattedCtc = ctc.toLocaleString('en-IN', { maximumFractionDigits: 0 });
-
-            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'offer_letter');
-
-            if (tpl) {
-              let processedSubject = tpl.subject;
-              processedSubject = processedSubject.replace('{{designation}}', fd.designation || '');
-
-              setSubjectTemplate(processedSubject);
-              setTemplateHtml(tpl.html);
-              setSelectedTemplate('offer_letter');
-
-              const vars: Record<string, string> = {
-                name: fd.name || '',
-                designation: fd.designation || '',
-                department: fd.department || '',
-                reportingTo: fd.reportingTo || '',
-                appointmentDate: fd.appointmentDate
-                  ? new Date(fd.appointmentDate).toLocaleDateString('en-GB')
-                  : '',
-                location: fd.location || '',
-                salaryCtc: formattedCtc,
-                workingHoursStart: fd.workingHoursStart || '10:30 am',
-                workingHoursEnd: fd.workingHoursEnd || '6:30 pm',
-                workingDays: fd.workingDays || 'Wednesday to Monday',
-                probationPeriod: fd.probationPeriod || '3',
-              };
-
-              setTemplateVars(vars);
-              setHtml('');
-              setPreviewMode(true);
-            } else {
-              setSubjectTemplate(`Offer Letter - ${fd.designation || ''} - ${fd.name || ''}`);
-              setHtml(
-                `
-<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <h2 style="color:#111827;">Offer Letter</h2>
-  <p><strong>Candidate:</strong> ${fd.name || 'N/A'}</p>
-  <p><strong>Designation:</strong> ${fd.designation || 'N/A'}</p>
-  <p><strong>Department:</strong> ${fd.department || 'N/A'}</p>
-  <p><strong>Location:</strong> ${fd.location || 'N/A'}</p>
-  <p><strong>Monthly CTC:</strong> ₹${formattedCtc}</p>
-  <p><strong>Date of Joining:</strong> ${fd.appointmentDate ? new Date(fd.appointmentDate).toLocaleDateString('en-GB') : 'N/A'}</p>
-  <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
-  <p style="color:#666;font-size:13px;">Please find the offer letter attached.</p>
-</div>
-`.trim()
-              );
-              setTemplateHtml(null);
-              setSelectedTemplate(null);
-              setPreviewMode(false);
-            }
-            setEditorKey((prev) => prev + 1);
-
-            if (fd.emailId) {
-              setTo(fd.emailId);
-            }
-
-            sessionStorage.removeItem('emailPrefillRecord');
-            const newUrl = window.location.pathname + '?tab=compose';
-            window.history.replaceState({}, '', newUrl);
-          } catch (e) {
-            console.error('Error prefilling offer letter email:', e);
-          }
-        }
-      }
-    }
-  }, []);
-
-  // Handle prefill from Registration Records
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      if (params.get('prefillRegistration') === 'true') {
-        const stored = sessionStorage.getItem('emailPrefillRegistration');
-        if (stored) {
-          try {
-            const reg = JSON.parse(stored);
-            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'registration_acknowledgment');
-
-            if (tpl) {
-              let processedSubject = tpl.subject;
-              processedSubject = processedSubject.replace('firstName', reg.name || 'Client');
-              processedSubject = processedSubject.replace(
-                '{{submissionId}}',
-                reg.submission_id || 'N/A'
-              );
-
-              setSubjectTemplate(processedSubject);
-              setTemplateHtml(tpl.html);
-              setSelectedTemplate('registration_acknowledgment');
-
-              const vars: Record<string, string> = {
-                firstName: reg.name || '',
-                lastName: reg.last_name || '',
-                submissionId: reg.submission_id || 'N/A',
-                project: reg.project || reg.property_interest || 'N/A',
-                propertyType: reg.property_type || 'N/A',
-                propertySize: reg.property_size || 'N/A',
-                advisorName: reg.advisor_name || 'N/A',
-                paymentPlan: reg.payment_plan || 'N/A',
-                schemeAmount: reg.scheme_amount || '0',
-                adminEmail: adminEmail || 'hr.sviinfrasolutions@gmail.com',
-              };
-
-              setTemplateVars(vars);
-              setHtml('');
-              setPreviewMode(true);
-            } else {
-              setSubjectTemplate(`Registration Update - SVI Infra`);
-              setHtml(
-                `
-<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
-  <p>Dear ${reg.name || 'Client'},</p>
-  <p>Thank you for registering with SVI Infra Solutions.</p>
-  <p>Project Interest: ${reg.project || reg.property_interest || 'N/A'}</p>
-  <br />
-  <p>Best regards,<br>SVI Infra Team</p>
-</div>
-`.trim()
-              );
-              setTemplateHtml(null);
-              setSelectedTemplate(null);
-              setPreviewMode(false);
-            }
-
-            setEditorKey((prev) => prev + 1);
-
-            if (reg.email) {
-              setTo(reg.email);
-            }
-
-            sessionStorage.removeItem('emailPrefillRegistration');
-            const newUrl = window.location.pathname + '?tab=compose';
-            window.history.replaceState({}, '', newUrl);
-          } catch (e) {
-            console.error('Error prefilling registration email:', e);
-          }
-        }
-      }
-    }
-  }, [adminEmail]);
-
-  // Auto-save draft every 5s
-  useEffect(() => {
-    if (!to && !subject && !html) return;
-    const timer = setInterval(() => {
-      saveDraft({ to, cc, bcc, subject, html, replyTo, fromName }).then();
-      setDraftSaved(true);
-      setTimeout(() => setDraftSaved(false), 2000);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [to, cc, bcc, subject, html, replyTo, fromName]);
-
-  const restoreDraft = async () => {
-    const saved = await loadDraft();
-    if (saved) {
-      setTo(saved.to || '');
-      setCc(saved.cc || '');
-      setBcc(saved.bcc || '');
-      setSubjectTemplate(saved.subject || '');
-      setHtml(saved.html || '');
-      setReplyTo(saved.replyTo || '');
-      setFromName(saved.fromName || 'SVI Infra');
-      setHasDraft(false);
-    }
   };
 
   const extractTemplateVars = (html: string): string[] => {
@@ -803,7 +346,7 @@ export function ComposeTab({
     setInReplyToMessageId(null);
     setScheduledAt(null);
     setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail || 'hr.sviinfrasolutions@gmail.com'}`);
-    await clearDraft();
+    await handleClearDraft();
   };
 
   return (
@@ -832,8 +375,7 @@ export function ComposeTab({
               </button>
               <button
                 onClick={async () => {
-                  await clearDraft();
-                  setHasDraft(false);
+                  await handleClearDraft();
                 }}
                 className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
               >
@@ -1041,7 +583,8 @@ export function ComposeTab({
                 <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
-                    Follow up in {followUpSuggestion.suggestedDays} day{followUpSuggestion.suggestedDays !== 1 ? 's' : ''}
+                    Follow up in {followUpSuggestion.suggestedDays} day
+                    {followUpSuggestion.suggestedDays !== 1 ? 's' : ''}
                   </p>
                   <p className="mt-0.5 text-xs text-blue-600/80 dark:text-blue-300/80">
                     {followUpSuggestion.message}
@@ -1102,7 +645,7 @@ export function ComposeTab({
               <button
                 onClick={handleSuggestSubject}
                 disabled={!html && !templateHtml}
-                className="text-amber-600 hover:bg-amber-50 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all disabled:opacity-50 dark:hover:bg-amber-500/10"
+                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-amber-600 transition-all hover:bg-amber-50 disabled:opacity-50 dark:hover:bg-amber-500/10"
               >
                 {subjectSuggesting ? (
                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -1113,7 +656,7 @@ export function ComposeTab({
               </button>
 
               {showSubjectSuggestions && subjectSuggestions && (
-                <div className="dark:bg-brand-dark-surface absolute bottom-full right-0 z-50 mb-2 w-72 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700">
+                <div className="dark:bg-brand-dark-surface absolute right-0 bottom-full z-50 mb-2 w-72 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700">
                   <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-800">
                     <span className="text-[10px] font-semibold tracking-wide text-gray-500 uppercase">
                       Suggested Subjects

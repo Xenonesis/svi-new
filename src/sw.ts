@@ -1,5 +1,5 @@
 import { defaultCache } from '@serwist/next/worker';
-import { type PrecacheEntry, Serwist } from 'serwist';
+import { type PrecacheEntry, Serwist, NetworkOnly } from 'serwist';
 
 declare const self: any;
 
@@ -40,7 +40,13 @@ const serwist = new Serwist({
     cleanupOutdatedCaches: true,
     concurrency: 10,
   },
-  runtimeCaching: defaultCache,
+  runtimeCaching: [
+    {
+      matcher: ({ url }) => url.pathname.startsWith('/api/'),
+      handler: new NetworkOnly(),
+    },
+    ...defaultCache,
+  ],
 });
 
 // Custom push notification handler

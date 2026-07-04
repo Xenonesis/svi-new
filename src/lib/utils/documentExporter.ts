@@ -44,7 +44,7 @@ export async function exportToPDF({
   elementId,
   filename,
   padding = '32px',
-  scale = 3,
+  scale = 2,
   width = '1200px',
 }: ExportOptions): Promise<void> {
   if (typeof window === 'undefined') return;
@@ -68,7 +68,7 @@ export async function exportToPDF({
       allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false,
-      imageTimeout: 15000,
+      imageTimeout: 2000,
       removeContainer: true,
       scrollX: 0,
       scrollY: 0,
@@ -140,7 +140,8 @@ export async function exportToPDF({
         ctxCheck.drawImage(canvas, 0, slice.start, canvasW, sliceH, 0, 0, canvasW, sliceH);
         const data = ctxCheck.getImageData(0, 0, canvasW, sliceH).data;
         let isBlank = true;
-        for (let i = 0; i < data.length; i += 800) {
+        // Step by 4000 (1000 pixels) for much faster blank detection
+        for (let i = 0; i < data.length; i += 4000) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
@@ -190,7 +191,7 @@ export async function exportToImage({
   elementId,
   filename,
   padding = '32px',
-  scale = 3,
+  scale = 2,
   width = '1200px',
 }: ExportOptions): Promise<void> {
   if (typeof window === 'undefined') return;
@@ -211,7 +212,7 @@ export async function exportToImage({
       allowTaint: true,
       backgroundColor: '#ffffff',
       logging: false,
-      imageTimeout: 15000,
+      imageTimeout: 2000,
       removeContainer: true,
       scrollX: 0,
       scrollY: 0,
