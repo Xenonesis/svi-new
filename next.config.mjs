@@ -24,17 +24,20 @@ const nextConfig = {
   compress: true,
   typescript: { ignoreBuildErrors: false },
   experimental: {
-    optimizePackageImports: ['lucide-react', 'recharts', 'date-fns', 'motion', '@tiptap/react', '@tiptap/starter-kit'],
+    optimizePackageImports: [
+      'lucide-react',
+      'recharts',
+      'date-fns',
+      'motion',
+      '@tiptap/react',
+      '@tiptap/starter-kit',
+    ],
   },
   webpack: (config, { dev }) => {
     if (dev) {
       config.watchOptions = {
         ...config.watchOptions,
-        ignored: [
-          '**/node_modules/**',
-          '**/.next/**',
-          '**/.git/**',
-        ],
+        ignored: ['**/node_modules/**', '**/.next/**', '**/.git/**'],
       };
     }
     return config;
@@ -56,10 +59,14 @@ const nextConfig = {
           { key: 'X-Frame-Options', value: 'DENY' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
-          { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains; preload' },
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com https://js.hcaptcha.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://hcaptcha.com https://*.hcaptcha.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://www.google-analytics.com https://*.openstreetmap.org https://api.qrserver.com; connect-src 'self' https://*.sentry.io https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://www.google-analytics.com https://hcaptcha.com https://*.hcaptcha.com https://*.openstreetmap.org https://api.qrserver.com; frame-src 'self' https://newassets.hcaptcha.com https://js.hcaptcha.com; frame-ancestors 'none';",
+            value:
+              "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com https://js.hcaptcha.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://hcaptcha.com https://*.hcaptcha.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://www.google-analytics.com https://*.openstreetmap.org https://api.qrserver.com; connect-src 'self' https://*.sentry.io https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://www.google-analytics.com https://hcaptcha.com https://*.hcaptcha.com https://*.openstreetmap.org https://api.qrserver.com; frame-src 'self' https://newassets.hcaptcha.com https://js.hcaptcha.com; frame-ancestors 'none';",
           },
         ],
       },
@@ -121,14 +128,11 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(
-  withNextIntl(withBundleAnalyzer(withSerwist(nextConfig))),
-  {
-    org: "svi-infra-solutions",
-    project: "javascript-nextjs",
-    authToken: process.env.SENTRY_AUTH_TOKEN,
-    widenClientFileUpload: true,
-    tunnelRoute: "/monitoring",
-    silent: !process.env.CI,
-  }
-);
+export default withSentryConfig(withNextIntl(withBundleAnalyzer(withSerwist(nextConfig))), {
+  org: 'svi-infra-solutions',
+  project: 'javascript-nextjs',
+  authToken: process.env.SENTRY_AUTH_TOKEN,
+  widenClientFileUpload: true,
+  tunnelRoute: '/monitoring',
+  silent: !process.env.CI,
+});

@@ -1,4 +1,3 @@
-/* eslint-disable no-undef */
 (function () {
   try {
     var t = document.documentElement,

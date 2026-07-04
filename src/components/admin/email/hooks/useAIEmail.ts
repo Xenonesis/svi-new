@@ -356,7 +356,10 @@ export function useAIEmail() {
 
   // Feature 7: Classify email (priority + category)
   const classifyEmail = useCallback(
-    async (content: { emailHtml?: string; emailText?: string }): Promise<{ priority: string; category: string; summary: string } | null> => {
+    async (content: {
+      emailHtml?: string;
+      emailText?: string;
+    }): Promise<{ priority: string; category: string; summary: string } | null> => {
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
@@ -364,7 +367,9 @@ export function useAIEmail() {
       try {
         const res = await apiCall({ action: 'classify_email', ...content }, controller.signal);
         const data = await res.json();
-        return data.success ? { priority: data.priority, category: data.category, summary: data.summary } : null;
+        return data.success
+          ? { priority: data.priority, category: data.category, summary: data.summary }
+          : null;
       } catch (err: any) {
         if (err.name === 'AbortError') return null;
         return null;
@@ -378,15 +383,23 @@ export function useAIEmail() {
 
   // Feature 8: Suggest follow-up
   const suggestFollowup = useCallback(
-    async (html: string, recipientName?: string): Promise<{ suggestedDays: number; reason: string; message: string } | null> => {
+    async (
+      html: string,
+      recipientName?: string
+    ): Promise<{ suggestedDays: number; reason: string; message: string } | null> => {
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
       setError(null);
       try {
-        const res = await apiCall({ action: 'suggest_followup', html, recipientName }, controller.signal);
+        const res = await apiCall(
+          { action: 'suggest_followup', html, recipientName },
+          controller.signal
+        );
         const data = await res.json();
-        return data.success ? { suggestedDays: data.suggestedDays, reason: data.reason, message: data.message } : null;
+        return data.success
+          ? { suggestedDays: data.suggestedDays, reason: data.reason, message: data.message }
+          : null;
       } catch (err: any) {
         if (err.name === 'AbortError') return null;
         return null;

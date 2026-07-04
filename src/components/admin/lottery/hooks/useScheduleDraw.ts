@@ -24,8 +24,18 @@ interface UseScheduleDrawReturn {
   setShowCountdown: React.Dispatch<React.SetStateAction<boolean>>;
   setIncludeCountdownInEmail: React.Dispatch<React.SetStateAction<boolean>>;
   fetchSchedule: (lotteryId: string, token: string) => Promise<void>;
-  handleSaveSchedule: (lotteryId: string, token: string, onError: (msg: string | null) => void, onSuccess: (msg: string | null) => void) => Promise<void>;
-  handleCancelSchedule: (lotteryId: string, token: string, onError: (msg: string | null) => void, onSuccess: (msg: string | null) => void) => Promise<void>;
+  handleSaveSchedule: (
+    lotteryId: string,
+    token: string,
+    onError: (msg: string | null) => void,
+    onSuccess: (msg: string | null) => void
+  ) => Promise<void>;
+  handleCancelSchedule: (
+    lotteryId: string,
+    token: string,
+    onError: (msg: string | null) => void,
+    onSuccess: (msg: string | null) => void
+  ) => Promise<void>;
   getISTString: (date: Date) => string;
   resetScheduleState: () => void;
 }
@@ -61,32 +71,35 @@ export function useScheduleDraw(): UseScheduleDrawReturn {
     return ist.toISOString().slice(0, 16);
   };
 
-  const fetchSchedule = useCallback(async (lotteryId: string, token: string) => {
-    setScheduleLoading(true);
-    try {
-      const res = await fetch(`/api/admin/lottery/schedule?lotteryId=${lotteryId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const json = await res.json();
-      setExistingSchedule(json.schedule || null);
-      if (json.schedule) {
-        const utcDate = new Date(json.schedule.scheduled_at);
-        const istOffset = 330 * 60 * 1000;
-        const istDate = new Date(utcDate.getTime() + istOffset);
-        const iso = istDate.toISOString().slice(0, 16);
-        setScheduleInputIST(iso);
-        setPreNotifyMinutes(json.schedule.pre_notify_minutes ?? 60);
-        setShowCountdown(json.schedule.show_countdown ?? true);
-        setIncludeCountdownInEmail(json.schedule.include_countdown_in_email ?? true);
-      } else {
-        resetScheduleState();
+  const fetchSchedule = useCallback(
+    async (lotteryId: string, token: string) => {
+      setScheduleLoading(true);
+      try {
+        const res = await fetch(`/api/admin/lottery/schedule?lotteryId=${lotteryId}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const json = await res.json();
+        setExistingSchedule(json.schedule || null);
+        if (json.schedule) {
+          const utcDate = new Date(json.schedule.scheduled_at);
+          const istOffset = 330 * 60 * 1000;
+          const istDate = new Date(utcDate.getTime() + istOffset);
+          const iso = istDate.toISOString().slice(0, 16);
+          setScheduleInputIST(iso);
+          setPreNotifyMinutes(json.schedule.pre_notify_minutes ?? 60);
+          setShowCountdown(json.schedule.show_countdown ?? true);
+          setIncludeCountdownInEmail(json.schedule.include_countdown_in_email ?? true);
+        } else {
+          resetScheduleState();
+        }
+      } catch {
+        // ignore
+      } finally {
+        setScheduleLoading(false);
       }
-    } catch {
-      // ignore
-    } finally {
-      setScheduleLoading(false);
-    }
-  }, [resetScheduleState]);
+    },
+    [resetScheduleState]
+  );
 
   const handleSaveSchedule = useCallback(
     async (

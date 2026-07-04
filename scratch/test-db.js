@@ -17,12 +17,15 @@ async function main() {
     console.error('Error fetching email_inbox:', error);
   } else {
     console.log('Total emails in local DB:', data.length);
-    console.log('Emails:', data.map(d => ({
-      email_id: d.email_id,
-      from: d.from_email,
-      subject: d.subject,
-      received_at: d.received_at
-    })));
+    console.log(
+      'Emails:',
+      data.map((d) => ({
+        email_id: d.email_id,
+        from: d.from_email,
+        subject: d.subject,
+        received_at: d.received_at,
+      }))
+    );
   }
 }
 

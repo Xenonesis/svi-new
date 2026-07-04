@@ -7,7 +7,7 @@ const { Resend } = require('resend');
 const envPath = path.join(__dirname, '..', '.env.local');
 const envContent = fs.readFileSync(envPath, 'utf8');
 const env = {};
-envContent.split('\n').forEach(line => {
+envContent.split('\n').forEach((line) => {
   const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
   if (match) {
     let value = match[2] ? match[2].trim() : '';
@@ -39,8 +39,10 @@ async function test() {
     console.error('Supabase error:', dbError);
   } else {
     console.log(`Found ${dbEmails.length} emails in Supabase email_inbox table:`);
-    dbEmails.forEach(e => {
-      console.log(`- DB ID: ${e.id} | Email ID: ${e.email_id} | From: ${e.from_email} | Subject: ${e.subject} | Received At: ${e.received_at}`);
+    dbEmails.forEach((e) => {
+      console.log(
+        `- DB ID: ${e.id} | Email ID: ${e.email_id} | From: ${e.from_email} | Subject: ${e.subject} | Received At: ${e.received_at}`
+      );
     });
   }
 
@@ -52,8 +54,10 @@ async function test() {
     } else {
       const data = resendEmails.data?.data || resendEmails.data || [];
       console.log(`Found ${data.length} emails in Resend receiving:`);
-      data.forEach(e => {
-        console.log(`- Resend ID: ${e.id} | From: ${e.from} | Subject: ${e.subject} | Created At: ${e.created_at}`);
+      data.forEach((e) => {
+        console.log(
+          `- Resend ID: ${e.id} | From: ${e.from} | Subject: ${e.subject} | Created At: ${e.created_at}`
+        );
       });
     }
   } catch (err) {

@@ -16,14 +16,7 @@ export interface NearbyPlace {
 }
 
 export type PlaceCategory =
-  | 'food'
-  | 'health'
-  | 'education'
-  | 'bank'
-  | 'shopping'
-  | 'transport'
-  | 'tourism'
-  | 'leisure';
+  'food' | 'health' | 'education' | 'bank' | 'shopping' | 'transport' | 'tourism' | 'leisure';
 
 export interface PlaceCategoryInfo {
   id: PlaceCategory;

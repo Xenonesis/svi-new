@@ -15,9 +15,7 @@ if (!supabaseUrl || !supabaseServiceKey) {
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function run() {
-  const { data: profiles, error: err } = await supabase
-    .from('profiles')
-    .select('*');
+  const { data: profiles, error: err } = await supabase.from('profiles').select('*');
 
   if (err) {
     console.error('Error fetching profiles:', err);

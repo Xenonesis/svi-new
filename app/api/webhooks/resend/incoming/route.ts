@@ -155,8 +155,7 @@ export async function POST(request: NextRequest) {
     const { error } = await supabaseAdmin.from('email_inbox').insert(insertData);
 
     if (error) {
-      const isColMissing = (msg: string) =>
-        msg?.includes('column') && msg?.includes('of relation');
+      const isColMissing = (msg: string) => msg?.includes('column') && msg?.includes('of relation');
       const isDuplicate = (msg: string) => msg?.includes('duplicate key');
 
       if (isDuplicate(error.message)) {

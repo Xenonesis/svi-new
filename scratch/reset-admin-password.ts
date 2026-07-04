@@ -25,7 +25,7 @@ async function run() {
     return;
   }
 
-  const user = usersData.users.find(u => u.email === email);
+  const user = usersData.users.find((u) => u.email === email);
   if (!user) {
     console.log(`User ${email} not found in auth.users. Creating user...`);
     const { data: createData, error: createError } = await supabase.auth.admin.createUser({
@@ -38,15 +38,19 @@ async function run() {
       return;
     }
     console.log('User created:', createData.user?.id);
-    
+
     // Check if profile exists
-    const { data: profile } = await supabase.from('profiles').select('id').eq('email', email).maybeSingle();
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('email', email)
+      .maybeSingle();
     if (!profile) {
       const { error: profileError } = await supabase.from('profiles').insert({
         id: createData.user?.id,
         email,
         full_name: 'System Admin',
-        role: 'admin'
+        role: 'admin',
       });
       if (profileError) {
         console.error('Error creating profile:', profileError);

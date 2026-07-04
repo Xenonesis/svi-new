@@ -6,7 +6,7 @@ const { Resend } = require('resend');
 const envPath = path.join(__dirname, '..', '.env.local');
 const envContent = fs.readFileSync(envPath, 'utf8');
 const env = {};
-envContent.split('\n').forEach(line => {
+envContent.split('\n').forEach((line) => {
   const match = line.match(/^\s*([\w.-]+)\s*=\s*(.*)?\s*$/);
   if (match) {
     let value = match[2] ? match[2].trim() : '';

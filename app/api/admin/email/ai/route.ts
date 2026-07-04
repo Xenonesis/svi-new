@@ -357,7 +357,8 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
 
       const { text } = await generateText({
         model: groq('llama-3.3-70b-versatile'),
-        system: 'You are an email subject line expert for SVI Infra Solutions, a real estate company.',
+        system:
+          'You are an email subject line expert for SVI Infra Solutions, a real estate company.',
         prompt: `Analyze this email body and suggest exactly 3 professional subject lines.
 Return ONLY a JSON array of strings, no other text.
 Make them specific to real estate (property, payment, allotment, site visit, etc.).
@@ -369,12 +370,18 @@ ${stripHtml(html)}`,
 
       try {
         const suggestions = JSON.parse(text);
-        return NextResponse.json({ success: true, suggestions: Array.isArray(suggestions) ? suggestions.slice(0, 3) : [] });
+        return NextResponse.json({
+          success: true,
+          suggestions: Array.isArray(suggestions) ? suggestions.slice(0, 3) : [],
+        });
       } catch {
         const arrMatch = text.match(/\[[\s\S]*?\]/);
         if (arrMatch) {
           const suggestions = JSON.parse(arrMatch[0]);
-          return NextResponse.json({ success: true, suggestions: Array.isArray(suggestions) ? suggestions.slice(0, 3) : [] });
+          return NextResponse.json({
+            success: true,
+            suggestions: Array.isArray(suggestions) ? suggestions.slice(0, 3) : [],
+          });
         }
         return NextResponse.json({ error: 'Failed to parse suggestions' }, { status: 500 });
       }
@@ -383,7 +390,8 @@ ${stripHtml(html)}`,
     // ─── Feature 7: Classify Email (priority + category) ─────
     if (action === 'classify_email') {
       const { emailHtml, emailText } = body;
-      if (!emailHtml && !emailText) return NextResponse.json({ error: 'Missing content' }, { status: 400 });
+      if (!emailHtml && !emailText)
+        return NextResponse.json({ error: 'Missing content' }, { status: 400 });
 
       const content = stripHtml(emailHtml || '') || emailText || '';
 
