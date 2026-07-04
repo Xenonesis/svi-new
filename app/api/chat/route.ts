@@ -102,6 +102,14 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
         }),
         execute: async ({ name, phone, email, budget, timeline, location, propertyType }) => {
           try {
+            let score = 0;
+            if (phone) score += 30;
+            if (email) score += 20;
+            if (budget) score += 20;
+            if (timeline) score += 10;
+            if (location) score += 10;
+            if (propertyType) score += 10;
+
             const supabase = await createClient();
             await supabase.from('chat_leads').insert({
               name,
@@ -112,7 +120,18 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
               location,
               property_type: propertyType,
               source: 'chatbot_qualified',
+              score,
             });
+
+            if (score >= 50) {
+              await supabase.from('notifications').insert({
+                title: 'High-Intent Chat Lead',
+                message: `${name} wants ${propertyType || 'property'} in ${location || 'any location'}. Budget: ${budget || 'N/A'}. Score: ${score}`,
+                type: 'lead',
+                action_link: '/admin/registrations',
+              });
+            }
+
             return 'Lead successfully saved! Tell the user that a sales representative has been notified and will contact them shortly with matching properties.';
           } catch (error) {
             console.error('Failed to save lead:', error);
