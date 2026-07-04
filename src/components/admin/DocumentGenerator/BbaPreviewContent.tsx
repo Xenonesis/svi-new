@@ -29,121 +29,138 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
 
   return (
     <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
-      <div className="mb-8 flex items-start justify-between">
-        <div>
-          <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-            {companyInfo?.company_name}
-          </h1>
-          <p className="text-gray-700">
-            Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email}
-          </p>
-          <p className="text-gray-700">Website: {companyInfo?.company_website}</p>
-          <p className="text-gray-700">Office Address : {companyInfo?.company_address}</p>
+      {/* Cover Page */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <div className="mb-8 flex items-start justify-between">
+          <div>
+            <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
+              {companyInfo?.company_name}
+            </h1>
+            <p className="text-gray-700">
+              Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email}
+            </p>
+            <p className="text-gray-700">Website: {companyInfo?.company_website}</p>
+            <p className="text-gray-700">Office Address : {companyInfo?.company_address}</p>
+          </div>
+          <div className="w-48">
+            <img
+              src="/logo.png"
+              alt={companyInfo?.company_name}
+              className="h-auto w-full object-contain"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          </div>
         </div>
-        <div className="w-48">
-          <img
-            src="/logo.png"
-            alt={companyInfo?.company_name}
-            className="h-auto w-full object-contain"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
-          />
-        </div>
-      </div>
 
-      {/* Date & To */}
-      <div className="mb-6">
-        <p className="mb-4 font-bold">
-          Dated:{' '}
-          {formData?.bookingDate ||
-            new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
-        </p>
-        <p className="font-bold">To,</p>
-        <p className="font-bold">{formData?.clientName || '[Client Name]'}</p>
-        {formData?.addressLine1 && <p className="font-bold">{formData?.addressLine1}</p>}
-        {formData?.addressLine2 && <p className="font-bold">{formData?.addressLine2}</p>}
-        {(formData?.city || formData?.state || formData?.pincode) && (
-          <p className="font-bold">
-            {[formData?.city, formData?.state, formData?.pincode].filter(Boolean).join(', ')}
+        {/* Date & To */}
+        <div className="mb-6">
+          <p className="mb-4 font-bold">
+            Dated:{' '}
+            {formData?.bookingDate ||
+              new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
           </p>
-        )}
-        {!formData?.addressLine1 && <p className="font-bold">[Address]</p>}
+          <p className="font-bold">To,</p>
+          <p className="font-bold">{formData?.clientName || '[Client Name]'}</p>
+          {formData?.addressLine1 && <p className="font-bold">{formData?.addressLine1}</p>}
+          {formData?.addressLine2 && <p className="font-bold">{formData?.addressLine2}</p>}
+          {(formData?.city || formData?.state || formData?.pincode) && (
+            <p className="font-bold">
+              {[formData?.city, formData?.state, formData?.pincode].filter(Boolean).join(', ')}
+            </p>
+          )}
+          {!formData?.addressLine1 && <p className="font-bold">[Address]</p>}
+        </div>
+
+        {/* Body */}
+        <div className="mb-6">
+          <p className="mb-2">
+            Dear {formData?.salutation || 'Mr./Mrs./Ms.'}{' '}
+            <span className="font-bold">{formData?.clientName || '[Client Name]'}</span>
+          </p>
+          <p className="mb-1 text-justify">
+            Congratulations from {companyInfo?.company_name} on your new investment in{' '}
+            {formData?.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect choice
+            and you are one of the few lucky ones to get unit at such reasonable rates.
+          </p>
+          <p className="mb-4 text-justify">
+            We at {companyInfo?.company_name} feel privileged to be part of your great investment.
+            We thank you for giving us an opportunity to assist you in making this very investment.
+            We sincerely hope that you are satisfied with our services and will refer us in your
+            circle.
+          </p>
+
+          <p className="mb-2 font-bold">Your Allotment is as Follows:</p>
+          <p>
+            Ticket Id : <span className="font-bold">{formData?.ticketId}</span>
+          </p>
+          <p>
+            Project Name : <span className="font-bold">{formData?.projectName}</span>
+          </p>
+          <p>
+            Unit Number : <span className="font-bold">{formData?.unitNumber}</span>
+          </p>
+
+          <p className="mt-4 mb-2">
+            Brief details about the total cost of the unit and payment plan are as follows:
+          </p>
+        </div>
+
+        {/* Details Table */}
+        <div className="mb-6 overflow-hidden border border-gray-400">
+          <table className="w-full border-collapse text-left">
+            <thead>
+              <tr className="bg-[#00b0f0] text-black">
+                <th className="border border-gray-400 p-2 font-bold">Client Name</th>
+                <th className="border border-gray-400 p-2 font-bold">Alloted Unit</th>
+                <th className="border border-gray-400 p-2 font-bold">Area (Sq-Yds.)</th>
+                <th className="border border-gray-400 p-2 font-bold">Payment Plan</th>
+                <th className="border border-gray-400 p-2 font-bold">BSP(PSq.Yd)</th>
+                <th className="border border-gray-400 p-2 font-bold">PLC(in%)</th>
+                <th className="border border-gray-400 p-2 font-bold">Total Cost</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td className="border border-gray-400 p-2 font-bold">{formData?.clientName}</td>
+                <td className="border border-gray-400 p-2 font-bold">{formData?.unitNumber}</td>
+                <td className="border border-gray-400 p-2 font-bold">{formData?.area}</td>
+                <td className="border border-gray-400 p-2 font-bold">
+                  {formData?.paymentPlan} Months
+                </td>
+                <td className="border border-gray-400 p-2 font-bold">
+                  {isShyamAangan
+                    ? `\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
+                    : formData?.bsp}
+                </td>
+                <td className="border border-gray-400 p-2 font-bold">{formData?.plc || ''}</td>
+                <td className="border border-gray-400 p-2 font-bold">
+                  {isShyamAangan ? fmtInr(totalCost) : totalCost.toFixed(2)}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
-
-      {/* Body */}
-      <div className="mb-6">
-        <p className="mb-2">
-          Dear {formData?.salutation || 'Mr./Mrs./Ms.'}{' '}
-          <span className="font-bold">{formData?.clientName || '[Client Name]'}</span>
-        </p>
-        <p className="mb-1 text-justify">
-          Congratulations from {companyInfo?.company_name} on your new investment in{' '}
-          {formData?.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect choice
-          and you are one of the few lucky ones to get unit at such reasonable rates.
-        </p>
-        <p className="mb-4 text-justify">
-          We at {companyInfo?.company_name} feel privileged to be part of your great investment. We
-          thank you for giving us an opportunity to assist you in making this very investment. We
-          sincerely hope that you are satisfied with our services and will refer us in your circle.
-        </p>
-
-        <p className="mb-2 font-bold">Your Allotment is as Follows:</p>
-        <p>
-          Ticket Id : <span className="font-bold">{formData?.ticketId}</span>
-        </p>
-        <p>
-          Project Name : <span className="font-bold">{formData?.projectName}</span>
-        </p>
-        <p>
-          Unit Number : <span className="font-bold">{formData?.unitNumber}</span>
-        </p>
-
-        <p className="mt-4 mb-2">
-          Brief details about the total cost of the unit and payment plan are as follows:
-        </p>
-      </div>
-
-      {/* Details Table */}
-      <div className="mb-6 overflow-hidden border border-gray-400">
-        <table className="w-full border-collapse text-left">
-          <thead>
-            <tr className="bg-[#00b0f0] text-black">
-              <th className="border border-gray-400 p-2 font-bold">Client Name</th>
-              <th className="border border-gray-400 p-2 font-bold">Alloted Unit</th>
-              <th className="border border-gray-400 p-2 font-bold">Area (Sq-Yds.)</th>
-              <th className="border border-gray-400 p-2 font-bold">Payment Plan</th>
-              <th className="border border-gray-400 p-2 font-bold">BSP(PSq.Yd)</th>
-              <th className="border border-gray-400 p-2 font-bold">PLC(in%)</th>
-              <th className="border border-gray-400 p-2 font-bold">Total Cost</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td className="border border-gray-400 p-2 font-bold">{formData?.clientName}</td>
-              <td className="border border-gray-400 p-2 font-bold">{formData?.unitNumber}</td>
-              <td className="border border-gray-400 p-2 font-bold">{formData?.area}</td>
-              <td className="border border-gray-400 p-2 font-bold">
-                {formData?.paymentPlan} Months
-              </td>
-              <td className="border border-gray-400 p-2 font-bold">
-                {isShyamAangan
-                  ? `\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-                  : formData?.bsp}
-              </td>
-              <td className="border border-gray-400 p-2 font-bold">{formData?.plc || ''}</td>
-              <td className="border border-gray-400 p-2 font-bold">
-                {isShyamAangan ? fmtInr(totalCost) : totalCost.toFixed(2)}
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <BbaPageFooter companyInfo={companyInfo} />
-
       {/* Legal Pages (2-17) */}
       <BbaLegalPages formData={formData} companyInfo={companyInfo} totalCost={totalCost} />
 
       {/* Payment Schedule Table (Page 18-19) */}
-      <div style={{ pageBreakBefore: 'always', paddingTop: '2rem' }}>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <h3 className="mb-2 text-lg font-bold text-gray-800">Payment Schedule</h3>
         <div className="mb-6 overflow-hidden border border-gray-400">
           <table className="w-full border-collapse text-left">
@@ -347,7 +364,7 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
         </div>
 
         {/* Footer details */}
-        <div className="flex items-end justify-between pb-8">
+        <div className="mt-auto flex items-end justify-between pb-8">
           <div>
             <p className="mb-2 font-bold">
               Payment can be transferred online using the following details:
