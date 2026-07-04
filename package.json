@@ -118,6 +118,7 @@
     "vitest": "^4.1.9"
   },
   "overrides": {
+    "typescript": "$typescript",
     "next": {
       "postcss": "^8.5.10"
     },
