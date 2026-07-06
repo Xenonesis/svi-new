@@ -20,6 +20,7 @@ import {
   Settings,
   X,
   Users,
+  Phone,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
 
@@ -57,6 +58,7 @@ const managementItems = [
   { name: 'Email Center', path: '/admin/email', icon: Mail },
   { name: 'Lottery Manager', path: '/admin/lottery', icon: Gift },
   { name: 'Chat Logs', path: '/admin/chat-logs', icon: MessageCircle },
+  { name: 'IVR Call Logs', path: '/admin/ivr', icon: Phone },
 ];
 
 // ─── Shared sidebar content ────────────────────────────────────────────────────

@@ -184,6 +184,8 @@ export default function AdminDashboard() {
   );
 
   const clientCount = users.filter((u) => u.role === 'client').length;
+  const employeeCount = users.filter((u) => u.role === 'employee').length;
+  const adminCount = users.filter((u) => u.role === 'admin').length;
 
   // Use real data or fallback to empty arrays
   const userGrowthData = analytics?.userGrowth || [];
@@ -223,7 +225,7 @@ export default function AdminDashboard() {
         </div>
 
         {/* Stats Row with explicitly styled cards */}
-        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
+        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {[
             {
               label: 'Total Accounts',
@@ -248,8 +250,19 @@ export default function AdminDashboard() {
               trend: analytics?.trends?.clientGrowth || '+0%',
             },
             {
+              label: 'Employees',
+              value: employeeCount,
+              icon: Briefcase,
+              bgCls:
+                'bg-white/80 dark:bg-brand-dark-surface/65 backdrop-blur-xl border border-gray-200 dark:border-white/8 hover:border-brand-gold/15 transition-colors relative overflow-hidden',
+              iconBg: 'bg-emerald-500/10 border border-emerald-500/20',
+              iconColor: 'text-emerald-500',
+              showLine: false,
+              trend: 'Active',
+            },
+            {
               label: 'Administrators',
-              value: users.length - clientCount,
+              value: adminCount,
               icon: Shield,
               bgCls:
                 'bg-white/80 dark:bg-brand-dark-surface/65 backdrop-blur-xl border border-gray-200 dark:border-white/8 hover:border-brand-gold/15 transition-colors relative overflow-hidden',
