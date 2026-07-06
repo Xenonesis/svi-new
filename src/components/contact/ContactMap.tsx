@@ -35,8 +35,10 @@ export default function ContactMap() {
           sources: {
             osm: {
               type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+              // Route through our server-side proxy to avoid CORS and cap zoom at 19
+              tiles: ['/api/map-tiles/{z}/{x}/{y}'],
               tileSize: 256,
+              maxzoom: 19,
               attribution:
                 '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
             },
