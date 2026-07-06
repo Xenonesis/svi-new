@@ -62,8 +62,14 @@ export default async function BlogPost({ params }: Props) {
   const readTime = isHindi && post.readTimeHi ? post.readTimeHi : post.readTime;
   const takeaways = isHindi && post.takeawaysHi ? post.takeawaysHi : post.takeaways;
 
-  // Get other posts for related section
-  const relatedPosts = SHARED_BLOG_POSTS.filter((p) => p.slug !== slug).slice(0, 2);
+  // Get other posts for related section (prefer same category)
+  const sameCategory = SHARED_BLOG_POSTS.filter(
+    (p) => p.slug !== slug && p.category === post.category
+  );
+  const otherCategory = SHARED_BLOG_POSTS.filter(
+    (p) => p.slug !== slug && p.category !== post.category
+  );
+  const relatedPosts = [...sameCategory, ...otherCategory].slice(0, 3);
 
   const articleJsonLd = {
     '@context': 'https://schema.org',

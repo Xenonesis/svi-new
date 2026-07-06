@@ -436,8 +436,8 @@ export default function CompletedProjectsMap({ projects, onProjectClick }: Props
 
       {/* Nearby Place Markers */}
       {mapInstance &&
-        filteredPlaces.map((place) => (
-          <NearbyPlaceMarker key={place.id} place={place} mapInstance={mapInstance} />
+        filteredPlaces.map((place, index) => (
+          <NearbyPlaceMarker key={`${place.id}-${index}`} place={place} mapInstance={mapInstance} />
         ))}
     </div>
   );

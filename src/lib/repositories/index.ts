@@ -12,3 +12,6 @@ export type { Team, AttendanceRecord, TeamMember } from './attendanceRepository'
 
 export { activityRepository } from './activityRepository';
 export type { ActivityLog } from './activityRepository';
+
+export { careerRepository } from './careerRepository';
+export type { Career } from './careerRepository';

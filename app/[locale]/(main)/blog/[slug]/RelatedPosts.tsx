@@ -24,7 +24,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
           <div className="bg-brand-gold mx-auto h-px w-12" />
         </div>
 
-        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {posts.map((post, idx) => {
             const title = isHindi && post.titleHi ? post.titleHi : post.title;
             const excerpt = isHindi && post.excerptHi ? post.excerptHi : post.excerpt;

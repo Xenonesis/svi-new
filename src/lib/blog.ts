@@ -23,6 +23,835 @@ export type BlogPost = {
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: 'DMIC Corridor Real Estate Opportunity: Why Investors Are Flocking to Industrial Hubs',
+    titleHi: 'DMIC कॉरिडोर रियल एस्टेट अवसर: इंडस्ट्रियल हब्स में क्यों बढ़ रहा है निवेश?',
+    slug: 'dmic-corridor-real-estate-investment',
+    excerpt:
+      'Discover why the Delhi-Mumbai Industrial Corridor is driving massive commercial and residential real estate appreciation in Rajasthan and Delhi-NCR.',
+    excerptHi:
+      'जानिए दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर कैसे राजस्थान और दिल्ली-NCR में कमर्शियल व रेजिडेंशियल रियल एस्टेट को नई ऊँचाइयों पर ले जा रहा है।',
+    content: `
+      <p>The <mark>Delhi-Mumbai Industrial Corridor (DMIC)</mark> is one of the world's largest infrastructure mega-projects, transforming land parcels along the Dedicated Freight Corridor into high-yield real estate hotspots.</p>
+
+      <h2>1. The Infrastructure Catalyst</h2>
+      <p>Spanning 1,504 km across six states, DMIC connects India's political capital with its financial hub. Key drivers include:</p>
+      <ul>
+        <li><mark>High-Speed Freight Logistics:</mark> Cuts cargo movement time from 14 days to under 24 hours.</li>
+        <li><mark>Smart Industrial Cities:</mark> Planned manufacturing clusters creating over 3 million new skilled jobs.</li>
+        <li><mark>Expressway Connectivity:</mark> Seamless integration with Delhi-Mumbai Expressway and Jaipur Ring Roads.</li>
+      </ul>
+
+      <h2>2. Prime Real Estate Nodes in Rajasthan</h2>
+      <p>Cities situated along the DMIC impact zone are seeing <mark>exponential property valuation gains</mark>:</p>
+      <ul>
+        <li><mark>Jaipur-Ajmer Highway Corridor:</mark> High demand for integrated logistics parks, warehousing, and residential townships.</li>
+        <li><mark>Neemrana & Bhiwadi Investment Regions:</mark> Japanese industrial zones driving demand for premium executive rental housing.</li>
+        <li><mark>Jagatpura & Sitapura Extension:</mark> Rising capital values for modern gated apartments catering to IT and industrial professionals.</li>
+      </ul>
+
+      <h2>3. Capital Appreciation & Rental Yield Prospects</h2>
+      <p>Properties along DMIC micro-markets have demonstrated an average <mark>annual capital appreciation of 12-16%</mark>, outperforming traditional metro central hubs.</p>
+
+      <h2>Conclusion</h2>
+      <p>Investing early in DMIC-aligned corridors offers investors unmatched long-term wealth creation. SVI Infra Solutions strategically locates its townships along these high-growth corridors.</p>
+    `,
+    contentHi: `
+      <p><mark>दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC)</mark> विश्व की सबसे बड़ी इंफ्रास्ट्रक्चर परियोजनाओं में से एक है, जो फ्रेट कॉरिडोर के आस-पास की ज़मीनों को उच्च रिटर्न देने वाले रियल एस्टेट हब में बदल रही है।</p>
+
+      <h2>1. इंफ्रास्ट्रक्चर क्रांति</h2>
+      <p>छह राज्यों में 1,504 किलोमीटर तक फैला DMIC भारत की राजधानी को आर्थिक राजधानी से जोड़ता है। मुख्य कारण:</p>
+      <ul>
+        <li><mark>हाई-स्पीड फ्रेट लॉजिस्टिक्स:</mark> माल ढुलाई का समय 14 दिनों से घटाकर 24 घंटे से भी कम कर दिया गया है।</li>
+        <li><mark>स्मार्ट इंडस्ट्रियल शहर:</mark> 30 लाख से अधिक नए रोज़गार पैदा करने वाले आधुनिक मैन्युफैक्चरिंग क्लस्टर।</li>
+        <li><mark>एक्सप्रेसवे कनेक्टिविटी:</mark> दिल्ली-मुंबई एक्सप्रेसवे और जयपुर रिंग रोड से सीधी कनेक्टिविटी।</li>
+      </ul>
+
+      <h2>2. राजस्थान के प्रमुख रियल एस्टेट ज़ोन</h2>
+      <p>DMIC प्रभाव क्षेत्र में आने वाले इलाकों में <mark>प्रॉपर्टी के दामों में तेज़ी से बढ़ोतरी</mark> हो रही है:</p>
+      <ul>
+        <li><mark>जयपुर-अजमेर हाईवे कॉरिडोर:</mark> वेयरहाउसिंग, लॉजिस्टिक्स पार्क और रेजिडेंशियल टाउनशिप की भारी माँग।</li>
+        <li><mark>नीमराना और भिवाड़ी ज़ोन:</mark> जापानी इंडस्ट्रियल ज़ोन के कारण लक्ज़री रेंटल हाउसिंग की माँग।</li>
+        <li><mark>जगतपुरा और सीतापुरा एक्सटेंशन:</mark> IT और इंडस्ट्रियल प्रोफेशनल्स के लिए फ्लैट्स के दामों में 12-16% सालाना वृद्धि।</li>
+      </ul>
+
+      <h2>3. निष्कर्ष</h2>
+      <p>DMIC कॉरिडोर के पास शुरुआती चरण में निवेश करना लंबी अवधि के लिए बेहतरीन संपत्ति निर्माण का अवसर प्रदान करता है।</p>
+    `,
+    takeaways: [
+      'DMIC connects Delhi to Mumbai, slashing logistics transport time to under 24 hours',
+      'Rajasthan nodes like Jaipur-Ajmer Road and Neemrana command 12-16% annual property appreciation',
+      'High rental demand from corporate executives and logistics hubs along the expressway',
+    ],
+    takeawaysHi: [
+      'DMIC दिल्ली और मुंबई को जोड़ता है जिससे माल ढुलाई का समय 24 घंटे से कम हो गया है',
+      'जयपुर-अजमेर रोड और नीमराना जैसे इलाकों में सालाना 12-16% प्रॉपर्टी वैल्यू बढ़ती है',
+      'एक्सप्रेसवे के पास कॉर्पोरेट एग्जीक्यूटिव्स और लॉजिस्टिक्स हब के कारण किराए की भारी माँग',
+    ],
+    author: 'SVI Market Research',
+    date: '2026-07-04',
+    category: 'Market Analysis',
+    categoryHi: 'बाज़ार विश्लेषण',
+    image: '/images/blog9.png',
+    tags: ['DMIC corridor', 'industrial hub', 'real estate ROI', 'Jaipur investments'],
+    tagsHi: ['DMIC कॉरिडोर', 'इंडस्ट्रियल हब', 'रियल एस्टेट रिटर्न', 'जयपुर निवेश'],
+    readTime: '7 min read',
+    readTimeHi: '7 मिनट पढ़ें',
+  },
+  {
+    title: 'NRI Property Investment Guide for India in 2026: Tax, Legal & Repatriation',
+    titleHi: 'NRI संपत्ति निवेश गाइड 2026: टैक्स, कानूनी नियम और रिपैट्रिएशन',
+    slug: 'nri-property-investment-guide-india',
+    excerpt:
+      'Complete legal framework for Non-Resident Indians investing in Indian residential & commercial property, including FEMA guidelines and tax repatriation.',
+    excerptHi:
+      'अनिवासी भारतीयों (NRI) के लिए भारत में रेजिडेंशियल व कमर्शियल संपत्ति खरीदने की पूरी गाइड — FEMA नियम, टैक्स छूट और पैसा विदेश वापस ले जाने की प्रक्रिया।',
+    content: `
+      <p>For Non-Resident Indians (NRIs) and Persons of Indian Origin (PIOs), investing in Indian real estate offers an attractive blend of <mark>strong currency yield advantage, emotional attachment, and rapid capital growth</mark>.</p>
+
+      <h2>1. Permissible Property Types Under FEMA</h2>
+      <p>Under Reserve Bank of India (RBI) and FEMA (Foreign Exchange Management Act) regulations:</p>
+      <ul>
+        <li>NRIs can freely purchase any <mark>residential or commercial property</mark> in India.</li>
+        <li>NRIs <mark>cannot purchase agricultural land, plantation property, or farmhouse land</mark> without explicit RBI approval or inheritance.</li>
+      </ul>
+
+      <h2>2. Approved Payment Channels</h2>
+      <p>All property purchases must be completed using inward remittances through standard banking channels via:</p>
+      <ul>
+        <li><mark>NRE (Non-Resident External) Account</mark></li>
+        <li><mark>NRO (Non-Resident Ordinary) Account</mark></li>
+        <li><mark>FCNR (Foreign Currency Non-Resident) Account</mark></li>
+      </ul>
+      <p>Payments via foreign currency notes or traveler checks are strictly prohibited.</p>
+
+      <h2>3. Income Tax & Repatriation Rules</h2>
+      <ul>
+        <li><mark>Rental Income:</mark> Subject to 30% TDS, but NRIs can file Indian IT returns to claim standard 30% deductions and lower actual tax brackets.</li>
+        <li><mark>Capital Gains Tax:</mark> Long-Term Capital Gains (LTCG) on property held over 24 months is taxed at 20% with indexation benefits.</li>
+        <li><mark>Repatriation of Sale Proceeds:</mark> NRIs can repatriate up to <mark>USD 1 Million per financial year</mark> out of India under the RBI automatic route.</li>
+      </ul>
+
+      <h2>4. Power of Attorney (PoA) Executions</h2>
+      <p>NRIs can complete registrations seamlessly through an authorized Power of Attorney holder in India, provided the PoA document is duly adjudicated by the local Indian Embassy/Consulate.</p>
+    `,
+    contentHi: `
+      <p>अनिवासी भारतीयों (NRI) और PIO के लिए भारत के रियल एस्टेट में निवेश करना <mark>मुद्रा लाभ, भावनात्मक जुड़ाव और तेज़ी से बढ़ते रिटर्न</mark> का बेहतरीन संयोजन प्रस्तुत करता है।</p>
+
+      <h2>1. FEMA के तहत अनुमत संपत्ति के प्रकार</h2>
+      <p>भारतीय रिज़र्व बैंक (RBI) और FEMA नियमों के तहत:</p>
+      <ul>
+        <li>NRI भारत में कोई भी <mark>रेजिडेंशियल या कमर्शियल संपत्ति</mark> स्वतंत्र रूप से खरीद सकते हैं।</li>
+        <li>NRI बिना विशेष अनुमति के <mark>कृषि भूमि, फार्महाउस या प्लांटेशन ज़मीन नहीं खरीद सकते</mark>।</li>
+      </ul>
+
+      <h2>2. स्वीकृत भुगतान के तरीके</h2>
+      <p>प्रॉपर्टी की खरीदारी केवल वैध बैंकिग चैनलों द्वारा की जा सकती है:</p>
+      <ul>
+        <li><mark>NRE (Non-Resident External) खाता</mark></li>
+        <li><mark>NRO (Non-Resident Ordinary) खाता</mark></li>
+        <li><mark>FCNR खाता</mark></li>
+      </ul>
+
+      <h2>3. टैक्स और रिपैट्रिएशन (पैसा वापस ले जाना)</h2>
+      <ul>
+        <li><mark>रेंटल इनकम:</mark> किराए पर 30% TDS कटता है, जिसे टैक्स रिटर्न भरकर कम किया जा सकता है।</li>
+        <li><mark>कैपिटल गेन्स टैक्स:</mark> 24 महीने से अधिक रखी गई प्रॉपर्टी पर 20% LTCG टैक्स लगता है।</li>
+        <li><mark>पैसा विदेश ले जाना:</mark> NRI बिक्री से प्राप्त राशि में से हर वित्त वर्ष <mark>USD 10 लाख तक</mark> आसानी से अपने विदेशी बैंक खाते में भेज सकते हैं।</li>
+      </ul>
+    `,
+    takeaways: [
+      'NRIs can freely buy residential & commercial property in India using NRE/NRO banking channels',
+      'Up to USD 1 Million per financial year can be repatriated outside India seamlessly',
+      'Power of Attorney attested by the Indian Embassy allows hassle-free property management in India',
+    ],
+    takeawaysHi: [
+      'NRI बैंकिंग चैनलों (NRE/NRO) द्वारा भारत में रेजिडेंशियल व कमर्शियल प्रॉपर्टी आसानी से खरीद सकते हैं',
+      'प्रतिवर्ष USD 10 लाख तक की बिक्री राशि बिना परेशानी विदेश ले जाई जा सकती है',
+      'भारतीय दूतावास द्वारा एटेस्टेड पावर ऑफ अटॉर्नी से भारत में प्रॉपर्टी का आसानी से प्रबंधन किया जा सकता है',
+    ],
+    author: 'SVI NRI Advisory Desk',
+    date: '2026-07-02',
+    category: 'Investment Tips',
+    categoryHi: 'निवेश टिप्स',
+    image: '/images/blog10.png',
+    tags: [
+      'NRI investment',
+      'FEMA rules',
+      'property tax India',
+      'repatriation',
+      'non-resident Indian',
+    ],
+    tagsHi: ['NRI निवेश', 'FEMA नियम', 'प्रॉपर्टी टैक्स भारत', 'रिपैट्रिएशन', 'अनिवारसी भारतीय'],
+    readTime: '8 min read',
+    readTimeHi: '8 मिनट पढ़ें',
+  },
+  {
+    title: 'Villa vs Apartment Living: Choosing the Right Property Type for Your Lifestyle',
+    titleHi: 'विला बनाम अपार्टमेंट लिविंग: अपनी जीवनशैली के लिए सही प्रॉपर्टी कैसे चुनें?',
+    slug: 'villa-vs-apartment-living-comparison',
+    excerpt:
+      'Detailed comparison of privacy, luxury amenities, maintenance overheads, security, and long-term resale value between villas and luxury apartments.',
+    excerptHi:
+      'विला और लक्ज़री अपार्टमेंट्स के बीच प्राइवेसी, मेंटेनेंस खर्च, सिक्योरिटी और रीसेल वैल्यू का विस्तृत तुलनात्मक विश्लेषण।',
+    content: `
+      <p>When selecting a dream home, buyers often grapple with the eternal dilemma: <mark>Should I buy an independent luxury villa or an high-rise luxury apartment?</mark></p>
+
+      <h2>1. Privacy & Space Ownership</h2>
+      <ul>
+        <li><mark>Villas:</mark> Offer unmatched private outdoor spaces, private garden lawns, terraces, and zero shared walls with neighbors. You own both the superstructure and undivided plot land.</li>
+        <li><mark>Apartments:</mark> Offer compact, optimized floor plans with shared vertical living space and community surroundings.</li>
+      </ul>
+
+      <h2>2. Amenities & Maintenance Overhead</h2>
+      <ul>
+        <li><mark>Apartments:</mark> Access to world-class clubhouse amenities — Olympic swimming pools, gyms, tennis courts, and kids play zones — supported by shared low-cost monthly maintenance.</li>
+        <li><mark>Villas:</mark> Personal maintenance of roofs, private gardens, and individual plumbing requires dedicated time and higher personal budget.</li>
+      </ul>
+
+      <h2>3. Security & Safety Infrastructure</h2>
+      <p>Apartments naturally excel in multi-tier security featuring gated manned access, CCTV coverage, and intercoms. Modern gated villa townships by developers like SVI Infra Solutions now bridge this gap by offering <mark>gated villa enclaves with 24/7 security</mark>.</p>
+
+      <h2>4. Capital Growth Comparison</h2>
+      <p>Villas generally enjoy higher overall land value appreciation over 10-15 years because land constitutes a larger portion of the total asset price. Apartments offer higher immediate rental liquidity.</p>
+    `,
+    contentHi: `
+      <p>सपनों का घर चुनते समय खरीदारों के मन में सबसे बड़ा सवाल होता है: <mark>इंडिपेंडेंट लक्ज़री विला लें या हाई-राइज अपार्टमेंट?</mark></p>
+
+      <h2>1. प्राइवेसी और ज़मीन की ओनरशिप</h2>
+      <ul>
+        <li><mark>विला:</mark> प्राइवेट गार्डन, छत और बिना किसी पड़ोसी की दीवार के पूरा अपना स्थान। आप मकान और ज़मीन दोनों के पूरे मालिक होते हैं।</li>
+        <li><mark>अपार्टमेंट:</mark> कॉम्पैक्ट और सुव्यवस्थित स्थान जहाँ मल्टी-स्टोरी बिल्डिंग में समुदाय के साथ रहने का अनुभव मिलता है।</li>
+      </ul>
+
+      <h2>2. सुविधाएँ और मेंटेनेंस खर्च</h2>
+      <ul>
+        <li><mark>अपार्टमेंट:</mark> स्विमिंग पूल, जिम, क्लबहाउस और पार्क जैसी बेहतरीन सुविधाएँ बहुत कम मेंटेनेंस खर्च में मिलती हैं।</li>
+        <li><mark>विला:</mark> गार्डन, छत और प्राइवेट इंफ्रास्ट्रक्चर का रखरखाव व्यक्तिगत रूप से करना होता है जिससे खर्च थोड़ा अधिक रहता है।</li>
+      </ul>
+
+      <h2>3. सुरक्षा (Security)</h2>
+      <p>अपार्टमेंट्स में 3-स्तरीय सुरक्षा (CCTV, गार्ड्स, बायोमेट्रिक) स्वतः मिलती है। अब SVI Infra Solutions जैसी कंपनियाँ <mark>गेटेड विला टाउनशिप</mark> बनाकर विला खरीदारों को भी वही 24/7 सुरक्षा दे रही हैं।</p>
+    `,
+    takeaways: [
+      'Villas deliver complete plot ownership, private outdoor gardens, and maximum living privacy',
+      'Apartments provide hassle-free shared maintenance and access to resort-style amenities',
+      'Gated villa communities combine individual home ownership with 24/7 township security',
+    ],
+    takeawaysHi: [
+      'विला में ज़मीन का पूरा मालिकाना हक, प्राइवेट गार्डन और पूरी प्राइवेसी मिलती है',
+      'अपार्टमेंट्स में कम खर्च में वर्ल्ड-क्लास क्लबहाउस और मेंटेनेंस की सुविधा मिलती है',
+      'गेटेड विला कम्युनिटी में इंडिपेंडेंट घर के साथ 24/7 सुरक्षा का फायदा मिलता है',
+    ],
+    author: 'SVI Infra Solutions',
+    date: '2026-06-30',
+    category: 'Lifestyle & Design',
+    categoryHi: 'लाइफ़स्टाइल व इंटीरियर',
+    image: '/images/blog11.png',
+    tags: ['luxury villa', 'apartment living', 'home buying guide', 'lifestyle comparison'],
+    tagsHi: ['लक्ज़री विला', 'अपार्टमेंट लिविंग', 'घर खरीद गाइड', 'लाइफ़स्टाइल तुलना'],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
+  {
+    title: 'Property Registration & Stamp Duty: Step-by-Step Guide for Buyers',
+    titleHi: 'प्रॉपर्टी रजिस्ट्रेशन और स्टैम्प ड्यूटी: खरीदारों के लिए स्टेप-बाय-स्टेप गाइड',
+    slug: 'property-registration-stamp-duty-guide',
+    excerpt:
+      'Complete breakdown of circle rates, stamp duty calculations, e-stamping, female buyer concessions, and sub-registrar verification.',
+    excerptHi:
+      'सर्किल रेट्स, स्टैम्प ड्यूटी की गणना, ई-स्टैम्पिंग प्रक्रिया, महिलाओं के लिए छूट और रजिस्ट्री ऑफिस की पूरी कानूनी गाइड।',
+    content: `
+      <p>Transferring legal property ownership in India requires completing <mark>Property Registration and Stamp Duty payment</mark>. Understanding the legal steps prevents last-minute delays and ensures clear title transfer.</p>
+
+      <h2>1. Understanding Stamp Duty & Registration Charges</h2>
+      <p>Stamp duty is a state government tax levied on property transactions, typically ranging from <mark>4% to 8%</mark> of the total property valuation.</p>
+      <ul>
+        <li><mark>Circle Rate vs Market Value:</mark> Stamp duty is calculated on whichever value is higher between the government Circle Rate and the actual Agreement Value.</li>
+        <li><mark>Registration Fee:</mark> Additional fee (usually 1% of total transaction value) paid for government record entry.</li>
+      </ul>
+
+      <h2>2. Special Concessions for Female Buyers</h2>
+      <p>Many Indian states (including Rajasthan, UP, and Delhi) offer a <mark>1% to 2% discount on stamp duty</mark> when property is registered solely or jointly in a woman's name, translating to savings of lakhs of rupees.</p>
+
+      <h2>3. Step-by-Step Registration Workflow</h2>
+      <ol>
+        <li><mark>Title Verification:</mark> Verify past 30-year chain deeds and non-encumbrance certificate (EC).</li>
+        <li><mark>E-Stamp Certificate Purchase:</mark> Pay stamp duty online through authorized SHCIL e-stamping portals.</li>
+        <li><mark>Sub-Registrar Slot Booking:</mark> Book appointment slot on the state government land revenue portal.</li>
+        <li><mark>Physical Execution:</mark> Buyer, seller, and 2 independent witnesses present physical ID documents for biometric verification.</li>
+      </ol>
+    `,
+    contentHi: `
+      <p>भारत में संपत्ति का कानूनी मालिकाना हक पाने के लिए <mark>प्रॉपर्टी रजिस्ट्रेशन और स्टैम्प ड्यूटी</mark> का भुगतान करना अनिवार्य कानूनी प्रक्रिया है।</p>
+
+      <h2>1. स्टैम्प ड्यूटी और रजिस्ट्रेशन शुल्क</h2>
+      <p>स्टैम्प ड्यूटी राज्य सरकार का टैक्स है जो आमतौर पर संपत्ति के मूल्य का <mark>4% से 8%</mark> होता है।</p>
+      <ul>
+        <li><mark>सर्किल रेट बनाम मार्केट वैल्यू:</mark> स्टैम्प ड्यूटी की गणना सरकारी सर्किल रेट और एग्रीमेंट वैल्यू में से जो भी अधिक हो, उस पर की जाती है।</li>
+        <li><mark>रजिस्ट्रेशन फीस:</mark> सरकारी रिकॉर्ड में नाम दर्ज कराने की फीस (आमतौर पर 1%)।</li>
+      </ul>
+
+      <h2>2. महिला खरीदारों के लिए विशेष छूट</h2>
+      <p>राजस्थान, दिल्ली और यूपी जैसे राज्यों में महिला के नाम पर या संयुक्त रूप से संपत्ति खरीदने पर <mark>1% से 2% तक स्टैम्प ड्यूटी में छूट</mark> मिलती है, जिससे लाखों रुपये की बचत होती है।</p>
+
+      <h2>3. रजिस्ट्रेशन की चरणबद्ध प्रक्रिया</h2>
+      <ol>
+        <li><mark>टाइटल की जाँच:</mark> पिछले 30 सालों के डॉक्यूमेंट्स और एनकंबरेंस सर्टिफिकेट (EC) चेक करें।</li>
+        <li><mark>ई-स्टैम्प चालान:</mark> ऑनलाइन SHCIL पोर्टल से स्टैम्प ड्यूटी का भुगतान करें।</li>
+        <li><mark>सब-रजिस्ट्रार अपॉइंटमेंट:</mark> सरकारी पोर्टल पर तारीख और समय का स्लॉट बुक करें।</li>
+        <li><mark>बायोमेट्रिक वेरिफिकेशन:</mark> खरीदार, विक्रेता और 2 गवाहों के साथ रजिस्ट्रार ऑफिस में हस्ताक्षर और बायोमेट्रिक दर्ज कराएं।</li>
+      </ol>
+    `,
+    takeaways: [
+      'Stamp duty is calculated on the higher amount between Circle Rate and Market Sale Agreement',
+      'Registering property in a female buyer name offers 1-2% stamp duty concession in many states',
+      'Always obtain an Encumbrance Certificate (EC) confirming zero pending litigation before registration',
+    ],
+    takeawaysHi: [
+      'स्टैम्प ड्यूटी की गणना सर्किल रेट और एग्रीमेंट मूल्य में से जो भी अधिक हो उस पर होती है',
+      'महिला के नाम पर रजिस्ट्री कराने से 1-2% स्टैम्प ड्यूटी में सीधी बचत होती है',
+      'रजिस्ट्री से पहले यह पुष्टि करने के लिए एनकंबरेंस सर्टिफिकेट (EC) ज़रूर लें कि ज़मीन पर कोई विवाद नहीं है',
+    ],
+    author: 'SVI Legal Desk',
+    date: '2026-06-27',
+    category: 'Legal & RERA',
+    categoryHi: 'लीगल एवं RERA',
+    image: '/images/blog12.png',
+    tags: ['stamp duty', 'property registration', 'e-stamping', 'sub registrar', 'legal tips'],
+    tagsHi: [
+      'स्टैम्प ड्यूटी',
+      'प्रॉपर्टी रजिस्ट्रेशन',
+      'ई-स्टैम्पिंग',
+      'सब रजिस्ट्रार',
+      'कानूनी टिप्स',
+    ],
+    readTime: '7 min read',
+    readTimeHi: '7 मिनट पढ़ें',
+  },
+  {
+    title: '10 Essential Things to Check During a Home Construction Quality Inspection',
+    titleHi: 'मकान निर्माण की गुणवत्ता जाँचते समय ध्यान रखने योग्य 10 ज़रूरी बातें',
+    slug: 'home-construction-quality-inspection-checklist',
+    excerpt:
+      'Civil engineering inspection guide covering concrete mix ratios, waterproofing, structural column alignment, and plumbing pressure tests.',
+    excerptHi:
+      'मकान की कंस्ट्रक्शन क्वालिटी जाँचने की सिविल इंजीनियरिंग गाइड — कंक्रीट मिक्स, वाटरप्रूफिंग, पिलर अलाइनमेंट और प्लंबिंग टेस्ट की पूरी जानकारी।',
+    content: `
+      <p>Building or buying a home is a life-long investment. Ensuring <mark>uncompromised construction quality</mark> protects your structural integrity and eliminates costly future repairs.</p>
+
+      <h2>1. Structural Core & Concrete Mix</h2>
+      <ul>
+        <li><mark>Concrete Grade:</mark> Ensure columns and beams use minimum M20/M25 grade ready-mix concrete.</li>
+        <li><mark>Curing Duration:</mark> Concrete structures must be water-cured continuously for <mark>14 to 21 days</mark> to achieve full compressive strength.</li>
+      </ul>
+
+      <h2>2. Wall Plastering & Masonry Alignment</h2>
+      <p>Check for hollow sounds by tapping plaster walls with a light wooden mallet. Ensure wall verticality using plumb-bobs and spirit levels to prevent uneven paint finishes.</p>
+
+      <h2>3. Waterproofing & Dampness Checks</h2>
+      <ul>
+        <li><mark>Bathroom & Terrace Slopes:</mark> Require 72-hour ponding tests to verify zero leakage to lower floors.</li>
+        <li><mark>DPC (Damp Proof Course):</mark> Ensure a 2-inch DPC layer above plinth level to stop ground moisture capillary action.</li>
+      </ul>
+
+      <h2>4. Electrical & Plumbing Testing</h2>
+      <p>Perform pressure testing on concealed PPR/CPVC plumbing pipes at <mark>10 bar pressure for 2 hours</mark>. Verify fire-retardant copper wiring and proper earthing connection points.</p>
+    `,
+    contentHi: `
+      <p>घर बनाना या खरीदना जीवन भर की पूँजी का निवेश है। <mark>निर्माण की उच्च गुणवत्ता</mark> सुनिश्चित करना आपके मकान को दशकों तक सुरक्षित और मजबूत रखता है।</p>
+
+      <h2>1. स्ट्रक्चर और कंक्रीट मिक्स</h2>
+      <ul>
+        <li><mark>कंक्रीट ग्रेड:</mark> पिलर और बीम में न्यूनतम M20/M25 ग्रेड कंक्रीट का उपयोग होना चाहिए।</li>
+        <li><mark>तराई (Curing):</mark> कंक्रीट की ढलाई के बाद <mark>14 से 21 दिनों तक</mark> लगातार पानी से तराई होना बेहद ज़रूरी है।</li>
+      </ul>
+
+      <h2>2. प्लास्टर और दीवार का अलाइनमेंट</h2>
+      <p>दीवारों पर थपथपाकर देखें कि प्लास्टर अंदर से खोखला तो नहीं है। साहुल (Plumb-bob) और स्पिरिट लेवल से दीवारों की सीध जाँचें।</p>
+
+      <h2>3. वाटरप्रूफिंग और सीलन से बचाव</h2>
+      <ul>
+        <li><mark>बाथरूम और छत पर वाटरप्रूफिंग:</mark> 72 घंटे तक पानी भरकर (Ponding test) लीकेज की जाँच करें।</li>
+        <li><mark>DPC लेयर:</mark> ज़मीन से आने वाली सीलन को रोकने के लिए प्लिंथ लेवल पर 2 इंच की DPC लेयर अनिवार्य है।</li>
+      </ul>
+
+      <h2>4. प्लंबिंग और इलेक्ट्रिकल चेकिंग</h2>
+      <p>सीपीवीसी प्लंबिंग पाइपों में <mark>10 बार प्रेशर</mark> देकर 2 घंटे तक लीकेज टेस्ट करें। बिजली की वायरिंग में फायर-प्रूफ तांबे के तार और उचित अर्थिंग ज़रूर देखें।</p>
+    `,
+    takeaways: [
+      'Ensure 14-21 days of continuous water curing for concrete beams and columns',
+      'Conduct a mandatory 72-hour water ponding test on bathroom slabs and terrace roofs',
+      'Verify 10-bar pressure testing on concealed plumbing lines before plastering',
+    ],
+    takeawaysHi: [
+      'कंक्रीट बीम और पिलर की 14-21 दिनों तक लगातार तराई होना आवश्यक है',
+      'छत और बाथरूम की स्लैब पर 72 घंटे का वाटर पोंडिंग लीकेज टेस्ट ज़रूर कराएँ',
+      'प्लास्टर से पहले छिपे हुए प्लंबिंग पाइपों का 10-बार प्रेशर टेस्ट सत्यापित करें',
+    ],
+    author: 'SVI Engineering Team',
+    date: '2026-06-23',
+    category: 'Technology',
+    categoryHi: 'टेक्नोलॉजी',
+    image: '/images/blog13.png',
+    tags: ['construction quality', 'home inspection', 'building standards', 'civil engineering'],
+    tagsHi: ['निर्माण गुणवत्ता', 'होम इंस्पेक्शन', 'बिल्डिंग मानक', 'सिविल इंजीनियरिंग'],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
+  {
+    title: 'Modern Gated Townships: Why Integrated Living Is the New Standard',
+    titleHi: 'आधुनिक गेटेड टाउनशिप: एकीकृत जीवनशैली ही नया मानक क्यों है?',
+    slug: 'gated-townships-integrated-living-advantages',
+    excerpt:
+      'Exploring the rising trend of master-planned township living with 3-tier security, luxury clubhouses, green parks, and hassle-free estate management.',
+    excerptHi:
+      'सुरक्षा, 3-स्तरीय सिक्यूरिटी, लक्ज़री क्लबहाउस, हरे-भरे पार्क और बेफिक्र मेंटेनेंस वाली गेटेड टाउनशिप लिविंग का पूरा विवरण।',
+    content: `
+      <p>Modern homebuyers are moving away from congested standalone plots toward <mark>master-planned gated townships</mark>. Integrated townships combine residential comfort, retail conveniences, and recreation within a single secure perimeter.</p>
+
+      <h2>1. 3-Tier Security Infrastructure</h2>
+      <p>Safety is the primary driver for township buyers:</p>
+      <ul>
+        <li><mark>Gated Access Points:</mark> RFID vehicle scanners and digital visitor verification via mobile apps.</li>
+        <li><mark>Surveillance:</mark> 24/7 CCTV monitoring of boundary walls, roads, and common parks.</li>
+        <li><mark>Patrolling Guards:</mark> Dedicated security team conducting regular night patrols.</li>
+      </ul>
+
+      <h2>2. Resort-Style Community Living</h2>
+      <p>Townships offer amenities that individual home plots cannot match:</p>
+      <ul>
+        <li>Grand clubhouses featuring indoor badminton courts, squash courts, and heated pools.</li>
+        <li>Jogging tracks, yoga pavilions, and dedicated kids play zones.</li>
+        <li>In-township convenience stores, pharmacies, and cafes.</li>
+      </ul>
+
+      <h2>3. Hassle-Free Estate Management</h2>
+      <p>Professional Facilities Management teams handle street lighting, garbage collection, landscaping, and water supply maintenance round the clock, preserving long-term township aesthetics.</p>
+    `,
+    contentHi: `
+      <p>आज के खरीदार अब भीड़भाड़ वाले एकाकी मकानों की बजाय <mark>वेल-प्लान्ड गेटेड टाउनशिप</mark> को प्राथमिकता दे रहे हैं। एकीकृत टाउनशिप एक ही सुरक्षित परिसर के भीतर रहने की जगह, शॉपिंग और मनोरंजन की सुविधा देती है।</p>
+
+      <h2>1. 3-स्तरीय सुरक्षा ढांचा</h2>
+      <ul>
+        <li><mark>गेटेड एंट्री:</mark> RFID व्हीकल स्कैनर और मोबाइल ऐप से डिजिटल विजिटर वेरिफिकेशन।</li>
+        <li><mark>सर्विलांस:</mark> मुख्य सड़कों और पार्कों की 24/7 CCTV निगरानी।</li>
+        <li><mark>सुरक्षा गार्ड:</mark> नियमित नाइट गश्त करने वाली समर्पित सिक्योरिटी टीम।</li>
+      </ul>
+
+      <h2>2. रिसॉर्ट जैसी सुविधाएं</h2>
+      <p>टाउनशिप में ऐसी सुविधाएँ मिलती हैं जो अकेले मकान में पाना असंभव है:</p>
+      <ul>
+        <li>स्विमिंग पूल, बैडमिंटन कोर्ट और जिम के साथ भव्य क्लबहाउस।</li>
+        <li>जॉगिंग ट्रैक, योगा मंडप और बच्चों के खेलने का सुरक्षित पार्क।</li>
+        <li>परिसर के अंदर ही ग्रॉसरी स्टोर और मेडिकल दुकानें।</li>
+      </ul>
+
+      <h2>3. तनावमुक्त मेंटेनेंस</h2>
+      <p>प्रोफेशनल फैसिलिटी मैनेजमेंट टीम कचरा उठाने, स्ट्रीट लाइट और हरियाली की देखभाल 24 घंटे करती है, जिससे आपकी प्रॉपर्टी का लुक हमेशा नया रहता है।</p>
+    `,
+    takeaways: [
+      'Gated townships offer 3-tier security with RFID entry, CCTV coverage, and 24/7 patrolling',
+      'Access to resort-style clubhouses, sports arenas, swimming pools, and landscaped parks',
+      'Professional facility management handles garbage, water, and lighting maintenance effortlessly',
+    ],
+    takeawaysHi: [
+      'गेटेड टाउनशिप में RFID एंट्री, CCTV और 24/7 गश्त के साथ 3-स्तरीय सुरक्षा मिलती है',
+      'क्लबहाउस, स्पोर्ट्स कोर्ट, स्विमिंग पूल और पार्कों का भरपूर आनंद',
+      'प्रोफेशनल फैसिलिटी टीम पानी, सफाई और लाइट की चिंता से मुक्ति देती है',
+    ],
+    author: 'SVI Infra Solutions',
+    date: '2026-06-21',
+    category: 'Sustainability',
+    categoryHi: 'ग्रीन होम व टिकाऊ निर्माण',
+    image: '/images/blog14.png',
+    tags: ['gated community', 'integrated township', 'amenities', 'modern living', 'security'],
+    tagsHi: ['गेटेड कम्युनिटी', 'एकीकृत टाउनशिप', 'सुविधाएँ', 'मॉडर्न लिविंग', 'सुरक्षा'],
+    readTime: '5 min read',
+    readTimeHi: '5 मिनट पढ़ें',
+  },
+  {
+    title: 'RERA & Property Buyer Protections in 2026: What Every Buyer Must Know',
+    titleHi: 'RERA और संपत्ति खरीदार सुरक्षा 2026: हर खरीदार को क्या जानना ज़रूरी है',
+    slug: 'rera-guide-homebuyers-2026',
+    excerpt:
+      'Comprehensive guide to how RERA safeguards property buyers, ensures timely project delivery, and regulates Indian real estate.',
+    excerptHi:
+      'RERA खरीदारों के अधिकारों की रक्षा कैसे करता है, समय पर कब्ज़ा सुनिश्चित करता है और रियल एस्टेट को पारदर्शी बनाता है — पूरी गाइड।',
+    content: `
+      <p>The <mark>Real Estate (Regulation and Development) Act (RERA)</mark> has fundamentally transformed the Indian real estate ecosystem. Designed to protect homebuyers from project delays, false promises, and financial irregularities, RERA ensures transparency and accountability at every stage of real estate transactions.</p>
+
+      <h2>1. Mandatory Project Registration & Escrow Accounts</h2>
+      <p>Under RERA, developers cannot advertise or sell any residential or commercial property without registering the project with the state RERA authority. Key safeguards include:</p>
+      <ul>
+        <li><mark>70% Escrow Rule:</mark> Developers must deposit 70% of funds collected from buyers into a dedicated project escrow account, usable only for land acquisition and construction.</li>
+        <li><mark>Clear Project Disclosure:</mark> Floor plans, sanction layouts, completion timelines, and legal approvals must be published on the RERA portal.</li>
+        <li><mark>Standardized Sales Agreement:</mark> Eliminates one-sided clauses that previously favored developers.</li>
+      </ul>
+
+      <h2>2. Strict Penalties for Project Delays</h2>
+      <p>One of RERA's strongest buyer protection mechanisms is its penalty structure for delayed possession:</p>
+      <ul>
+        <li>If a developer fails to hand over property by the specified date, they must pay <mark>monthly interest</mark> to the buyer at state-prescribed rates.</li>
+        <li>Buyers have the right to withdraw from the project and request a <mark>100% refund with interest</mark> if delivery timelines are breached.</li>
+      </ul>
+
+      <h2>3. Carpet Area Standardization</h2>
+      <p>Before RERA, builders used ambiguous terms like "super built-up area" to charge buyers. RERA mandates pricing based strictly on <mark>Carpet Area</mark> — the net usable floor area inside the apartment walls.</p>
+
+      <h2>4. 5-Year Structural Defect Guarantee</h2>
+      <p>Developers are legally bound to fix any <mark>structural defects or workmanship flaws</mark> within 5 years of handing over possession, without charging the homeowner any extra cost.</p>
+
+      <h2>Conclusion</h2>
+      <p>RERA has brought peace of mind to Indian property buyers. Always verify your builder's RERA registration number on the official state portal before making any financial commitment.</p>
+    `,
+    contentHi: `
+      <p><mark>रियल एस्टेट (रेगुलेशन एंड डेवलपमेंट) एक्ट (RERA)</mark> ने भारतीय रियल एस्टेट क्षेत्र में पारदर्शिता और जवाबदेही की एक नई मिसाल कायम की है। यह कानून खरीदारों को बिल्डरों की देरी, झूठे वादों और वित्तीय अनियमितताओं से सुरक्षा प्रदान करता है।</p>
+
+      <h2>1. अनिवार्य प्रोजेक्ट रजिस्ट्रेशन और एस्क्रो अकाउंट</h2>
+      <p>RERA के तहत कोई भी बिल्डर या डेवलपर राज्य RERA अथॉरिटी में रजिस्ट्रेशन कराए बिना अपनी प्रॉपर्टी का विज्ञापन या बिक्री नहीं कर सकता। मुख्य बिंदु:</p>
+      <ul>
+        <li><mark>70% एस्क्रो नियम:</mark> खरीदारों से प्राप्त 70% धनराशि को एक अलग प्रोजेक्ट एस्क्रो खाते में जमा करना अनिवार्य है, जिसका उपयोग केवल ज़मीन और निर्माण कार्य के लिए होगा।</li>
+        <li><mark>प्रोजेक्ट की पूरी जानकारी:</mark> फ्लोर प्लान, नक्शा, डिलीवरी डेट और लीगल मंज़ूरियों को RERA पोर्टल पर सार्वजनिक करना अनिवार्य है।</li>
+        <li><mark>मानकीकृत बिक्री समझौता:</mark> बिल्डरों द्वारा मनमाने ढंग से बनाए गए एकतरफ़ा समझौतों को खत्म कर दिया गया है।</li>
+      </ul>
+
+      <h2>2. प्रोजेक्ट देरी पर सख्त जुर्माना</h2>
+      <p>अगर डेवलपर तय समय सीमा के भीतर कब्ज़ा देने में विफल रहता है:</p>
+      <ul>
+        <li>बिल्डर को हर महीने की देरी के लिए खरीदार को निर्धारित <mark>ब्याज दरों के साथ ह हर्जाना</mark> देना होगा।</li>
+        <li>खरीदार चाहें तो प्रोजेक्ट से हटकर ब्याज सहित <mark>100% रिफंड</mark> की मांग कर सकते हैं।</li>
+      </ul>
+
+      <h2>3. कारपेट एरिया का स्पष्ट मानक</h2>
+      <p>RERA से पहले "सुपर बिल्ट-अप एरिया" के नाम पर खरीदारों से अधिक पैसा वसूला जाता था। RERA ने केवल <mark>कारपेट एरिया (वास्तविक इस्तेमाल की जगह)</mark> के आधार पर कीमत तय करने का नियम बनाया है।</p>
+
+      <h2>4. 5 साल की स्ट्रक्चरल वारंटी</h2>
+      <p>कब्ज़ा मिलने के 5 साल के भीतर अगर मकान के ढांचे (Structure) में कोई खराबी आती है, तो बिल्डर को बिना कोई अतिरिक्त शुल्क लिए उसे <mark>मुफ़्त में ठीक करना</mark> होगा।</p>
+
+      <h2>निष्कर्ष</h2>
+      <p>RERA ने प्रॉपर्टी खरीदारों के मन से डर को खत्म कर दिया है। किसी भी प्रॉपर्टी में निवेश करने से पहले आधिकारिक RERA पोर्टल पर रजिस्ट्रेशन नंबर की जाँच अवश्य करें।</p>
+    `,
+    takeaways: [
+      'RERA mandates that 70% of buyer funds be kept in a dedicated escrow account for construction',
+      'Developers must pay interest for construction delays at standard state RERA rates',
+      'Always cross-check the project RERA registration number on the official state portal before paying booking amounts',
+    ],
+    takeawaysHi: [
+      'RERA के तहत खरीदार के 70% पैसों को एस्क्रो अकाउंट में कंस्ट्रक्शन के लिए रखना अनिवार्य है',
+      'डिलीवरी में देरी होने पर बिल्डर को खरीदारों को ब्याज देना होगा',
+      'बुकिंग राशि देने से पहले राज्य के RERA पोर्टल पर प्रोजेक्ट का रजिस्ट्रेशन नंबर ज़रूर सत्यापित करें',
+    ],
+    author: 'SVI Legal Desk',
+    date: '2026-06-20',
+    category: 'Legal & RERA',
+    categoryHi: 'लीगल एवं RERA',
+    image: '/images/blog4.png',
+    tags: ['RERA', 'homebuyer rights', 'legal advice', 'property buying'],
+    tagsHi: ['RERA', 'खरीदार के अधिकार', 'कानूनी सलाह', 'प्रॉपर्टी खरीद'],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
+  {
+    title: 'Complete Guide to Home Loans & Tax Benefits in India (2026 Edition)',
+    titleHi: 'भारत में होम लोन और टैक्स छूट की पूरी गाइड (2026 एडिशन)',
+    slug: 'home-loans-tax-benefits-guide-2026',
+    excerpt:
+      'Strategic insights on interest rate optimization, maximum tax deductions under Sec 24(b) & 80C, and loan eligibility factors.',
+    excerptHi:
+      'होम लोन की ब्याज दरों को ऑप्टिमाइज़ करने, धारा 24(b) और 80C के तहत अधिकतम टैक्स बचत करने की पूरी जानकारी।',
+    content: `
+      <p>Buying a property is often accompanied by securing a home loan. When structured correctly, a home loan is not just a liability — it is a powerful tool to <mark>save significant income tax</mark> while building long-term real estate equity.</p>
+
+      <h2>1. Tax Deductions on Home Loan Interest (Section 24b)</h2>
+      <p>Under Section 24(b) of the Income Tax Act, self-occupied property owners can claim up to <mark>₹2,00,000 per financial year</mark> against interest paid on their home loan. Key details:</p>
+      <ul>
+        <li>Construction must be completed within 5 years of loan sanction.</li>
+        <li>If the property is rented out, there is <mark>no upper cap</mark> on interest deduction, subject to loss set-off rules.</li>
+      </ul>
+
+      <h2>2. Principal Repayment Deductions (Section 80C)</h2>
+      <p>You can claim up to <mark>₹1,50,000 annually</mark> under Section 80C for the principal component repaid during the financial year. Stamp duty and registration charges paid during property purchase also qualify under 80C limits.</p>
+
+      <h2>3. Double Tax Benefits through Joint Home Loans</h2>
+      <p>Applying for a home loan jointly with your spouse, parent, or sibling offers a massive tax advantage:</p>
+      <ul>
+        <li>Both co-borrowers who are co-owners can claim up to <mark>₹2 Lakhs each on interest</mark> (Total ₹4 Lakhs/year).</li>
+        <li>Both co-borrowers can claim up to <mark>₹1.5 Lakhs each on principal</mark> (Total ₹3 Lakhs/year).</li>
+      </ul>
+
+      <h2>4. Crucial Tips for Interest Rate Reduction</h2>
+      <p>To ensure your home loan EMIs remain affordable over a 15-20 year horizon:</p>
+      <ul>
+        <li>Maintain a credit score of <mark>750 or higher</mark> for concessionary interest rates.</li>
+        <li>Opt for annual partial pre-payments to cut overall interest payload by 30-40%.</li>
+        <li>Choose Repo-Rate Linked Lending Rate (RLLR) for fast transmission of RBI rate drops.</li>
+      </ul>
+    `,
+    contentHi: `
+      <p>प्रॉपर्टी खरीदना और होम लोन लेना एक-दूसरे से जुड़े हुए हैं। सही योजना के साथ लिया गया होम लोन केवल एक कर्ज़ नहीं है, बल्कि <mark>टैक्स बचाने और संपत्ति बनाने का बेहतरीन जरिया</mark> भी है।</p>
+
+      <h2>1. होम लोन ब्याज पर टैक्स छूट (धारा 24b)</h2>
+      <p>आयकर अधिनियम की धारा 24(b) के तहत, अपने रहने के लिए खरीदे गए मकान के होम लोन ब्याज पर हर साल <mark>₹2,00,000 तक की टैक्स छूट</mark> मिलती है।</p>
+      <ul>
+        <li>लोन लेने के 5 साल के भीतर निर्माण पूरा होना आवश्यक है।</li>
+        <li>यदि संपत्ति किराए पर दी गई है, तो सेट-ऑफ नियमों के तहत ब्याज छूट की कोई ऊपरी सीमा नहीं होती।</li>
+      </ul>
+
+      <h2>2. मूलधन भुगतान पर छूट (धारा 80C)</h2>
+      <p>धारा 80C के तहत होम लोन के मूलधन (Principal) भुगतान पर हर वित्त वर्ष में <mark>₹1,50,000 तक</mark> क्लेम किया जा सकता है। इसमें स्टैम्प ड्यूटी और रजिस्ट्रेशन शुल्क भी शामिल हैं।</p>
+
+      <h2>3. जॉइंट होम लोन से दोगुना टैक्स लाभ</h2>
+      <p>पति-पत्नी या माता-पिता के साथ मिलकर जॉइंट होम लोन लेने से दोहरा फायदा होता है:</p>
+      <ul>
+        <li>दोनों सह-आवेदक ब्याज पर <mark>₹2-2 लाख (कुल ₹4 लाख/वर्ष)</mark> तक की छूट पा सकते हैं।</li>
+        <li>दोनों मूलधन पर <mark>₹1.5-1.5 लाख (कुल ₹3 लाख/वर्ष)</mark> तक की छूट पा सकते हैं।</li>
+      </ul>
+
+      <h2>4. कम ब्याज दर पाने के अहम सुझाव</h2>
+      <p>15-20 साल के लोन की EMI कम रखने के लिए:</p>
+      <ul>
+        <li>अपना <mark>सिबिल स्कोर 750 से ऊपर</mark> बनाए रखें।</li>
+        <li>हर साल लोन का कुछ हिस्सा प्री-पे (Partial Prepayment) करें जिससे ब्याज 30-40% तक घट जाता है।</li>
+        <li>रेपो रेट लिंक्ड लेंडिंग रेट (RLLR) विकल्प चुनें।</li>
+      </ul>
+    `,
+    takeaways: [
+      'Maximise tax deductions up to ₹2 Lakhs under Sec 24(b) for interest and ₹1.5 Lakhs under Sec 80C for principal repayment',
+      'Joint home loans allow co-applicants to claim separate individual tax deduction limits',
+      'Keeping your CIBIL score above 750 can unlock up to 0.50% lower interest rates from major banks',
+    ],
+    takeawaysHi: [
+      'धारा 24(b) के तहत ब्याज पर ₹2 लाख और धारा 80C के तहत मूलधन पर ₹1.5 लाख तक की टैक्स छूट का लाभ उठाएँ',
+      'जॉइंट होम लोन में पति-पत्नी दोनों अलग-अलग पूरी टैक्स छूट क्लेम कर सकते हैं',
+      'सिबिल (CIBIL) स्कोर 750+ रखने से बैंकों से कम ब्याज दर पर लोन आसानी से मिल जाता है',
+    ],
+    author: 'SVI Financial Advisory',
+    date: '2026-06-12',
+    category: 'Investment Tips',
+    categoryHi: 'निवेश टिप्स',
+    image: '/images/blog5.png',
+    tags: ['home loan', 'tax benefits', 'section 24', 'section 80C', 'financial planning'],
+    tagsHi: ['होम लोन', 'टैक्स बचत', 'धारा 24', 'धारा 80C', 'वित्तीय नियोजन'],
+    readTime: '8 min read',
+    readTimeHi: '8 मिनट पढ़ें',
+  },
+  {
+    title: 'Commercial vs Residential Real Estate: Which Delivers Better ROI in 2026?',
+    titleHi: 'कमर्शियल बनाम रेजिडेंशियल रियल एस्टेट: 2026 में कौन देगा बेहतर रिटर्न?',
+    slug: 'commercial-vs-residential-real-estate-roi',
+    excerpt:
+      'Deep-dive comparison between commercial office/retail spaces and residential apartments in terms of rental yields, appreciation, and liquidity.',
+    excerptHi:
+      'कमर्शियल और रेजिडेंशियल प्रॉपर्टीज के रेंटल यील्ड, कैपिटल एप्रिसिएशन और रिस्क प्रोफाइल का विस्तृत तुलनात्मक विश्लेषण।',
+    content: `
+      <p>Investors entering the property market often face a critical question: <mark>Should I buy a residential flat or invest in commercial real estate?</mark> Both asset classes serve distinct financial objectives, risk profiles, and capital requirements.</p>
+
+      <h2>1. Rental Yield Comparison</h2>
+      <p>Rental yield measures annual rental income as a percentage of property value:</p>
+      <ul>
+        <li><mark>Commercial Real Estate:</mark> Yields range between <mark>7% to 10%</mark> per annum. Office spaces and retail shops in high-footfall areas generate strong cash flow.</li>
+        <li><mark>Residential Real Estate:</mark> Yields average between <mark>2.5% to 4%</mark> annually in Tier-1 and Tier-2 Indian cities.</li>
+      </ul>
+
+      <h2>2. Lease Terms & Tenant Stability</h2>
+      <p>Commercial leases are typically signed for <mark>3 to 9 years</mark> with locked-in escalation clauses (typically 12-15% increase every 3 years). Corporate tenants maintain the property meticulously. Residential leases, in contrast, are renewed annually with frequent tenant turnover.</p>
+
+      <h2>3. Capital Appreciation & Entry Threshold</h2>
+      <p>Residential properties generally have a lower entry price point (starting around ₹30-50 Lakhs) and benefit from <mark>steady long-term capital appreciation</mark> in emerging urban corridors. Commercial properties require higher capital outlay but offer rapid valuation gains near major highways and industrial corridors like DMIC.</p>
+
+      <h2>4. Strategic Investment Verdict</h2>
+      <ul>
+        <li>Choose <mark>Residential</mark> for lower risk, personal utility, easy home loan financing, and long-term wealth building.</li>
+        <li>Choose <mark>Commercial</mark> for regular high passive cash flow and institutional tenant stability.</li>
+      </ul>
+    `,
+    contentHi: `
+      <p>रियल एस्टेट निवेशकों के सामने सबसे बड़ा सवाल होता है: <mark>फ्लैट/मकान में निवेश करें या दुकान/ऑफ़िस स्पेस में?</mark> दोनों प्रकार के निवेश की अपनी विशेषताएँ, जोखिम और रिटर्न प्रोफाइल हैं।</p>
+
+      <h2>1. रेंटल यील्ड की तुलना</h2>
+      <p>रेंटल यील्ड (सालाना मिलने वाला किराया) का अनुपात:</p>
+      <ul>
+        <li><mark>कमर्शियल रियल एस्टेट:</mark> सालाना <mark>7% से 10% तक</mark> का रेंटल रिटर्न मिलता है। प्राइम लोकेशन की दुकानें और ऑफ़िस स्थिर पैसिव इनकम देते हैं।</li>
+        <li><mark>रेजिडेंशियल रियल एस्टेट:</mark> भारतीय शहरों में सालाना रेंटल यील्ड औसतन <mark>2.5% से 4%</mark> के बीच रहती है।</li>
+      </ul>
+
+      <h2>2. लीज़ अवधि और किराएदार की स्थिरता</h2>
+      <p>कमर्शियल लीज़ आमतौर पर <mark>3 से 9 साल</mark> के लिए होती है जिसमें हर 3 साल में 12-15% किराया बढ़ाने का क्लॉज़ होता है। कॉर्पोरेट किराएदार प्रॉपर्टी का रख-रखाव भी बढ़िया रखते हैं। वहीं रेजिडेंशियल लीज़ 11 महीने की होती है।</p>
+
+      <h2>3. कैपिटल एप्रिसिएशन और निवेश की न्यूनतम राशि</h2>
+      <p>रेजिडेंशियल प्रॉपर्टी में कम बजट (₹30-50 लाख) से शुरुआत की जा सकती है और लगातार <mark>कीमतों में इज़ाफा</mark> मिलता है। कमर्शियल प्रॉपर्टी में अधिक बजट की आवश्यकता होती है, लेकिन DMIC और इंडस्ट्रियल एरिया के पास रिटर्न तेज़ी से बढ़ता है।</p>
+
+      <h2>4. अंतिम निष्कर्ष</h2>
+      <ul>
+        <li><mark>रेजिडेंशियल</mark> चुनें: यदि आप कम रिस्क, आसान बैंक लोन और लॉन्ग टर्म वेल्थ चाहते हैं।</li>
+        <li><mark>कमर्शियल</mark> चुनें: यदि आप हर महीने ज्यादा पैसिव इनकम और लंबे लीज़ एग्रीमेंट चाहते हैं।</li>
+      </ul>
+    `,
+    takeaways: [
+      'Commercial properties offer higher rental yields (7-10%) with long lease terms (3-9 years)',
+      'Residential properties provide steady capital appreciation, lower entry costs, and higher liquidity',
+      'High-growth corridors like DMIC and Jaipur Outer Ring Road present prime commercial and township opportunities',
+    ],
+    takeawaysHi: [
+      'कमर्शियल प्रॉपर्टीज़ में बेहतर रेंटल यील्ड (7-10%) और लंबे लीज़ एग्रीमेंट (3-9 साल) मिलते हैं',
+      'रेजिडेंशियल प्रॉपर्टीज़ में कम लागत से शुरुआत, उच्च लिक्विडिटी और लगातार कैपिटल एप्रिसिएशन मिलता है',
+      'DMIC और जयपुर आउटर रिंग रोड जैसे ग्रोथ कॉरिडोर कमर्शियल और टाउनशिप निवेश के बेहतरीन विकल्प हैं',
+    ],
+    author: 'SVI Infra Solutions',
+    date: '2026-06-01',
+    category: 'Market Analysis',
+    categoryHi: 'बाज़ार विश्लेषण',
+    image: '/images/blog6.png',
+    tags: [
+      'commercial property',
+      'residential investment',
+      'rental yield',
+      'real estate ROI',
+      'Jaipur property',
+    ],
+    tagsHi: [
+      'कमर्शियल प्रॉपर्टी',
+      'रेजिडेंशियल निवेश',
+      'रेंटल यील्ड',
+      'रियल एस्टेट रिटर्न',
+      'जयपुर प्रॉपर्टी',
+    ],
+    readTime: '7 min read',
+    readTimeHi: '7 मिनट पढ़ें',
+  },
+  {
+    title: 'Sustainable & Green Housing: The Future of Indian Eco-Living',
+    titleHi: 'सस्टेनेबल और ग्रीन हाउसिंग: भारतीय इको-लिविंग का भविष्य',
+    slug: 'sustainable-green-housing-future-india',
+    excerpt:
+      'Exploring eco-friendly construction, rainwater harvesting, solar integration, and IGBC certified homes.',
+    excerptHi:
+      'पर्यावरण-अनुकूल निर्माण, सोलर एनर्जी, रेनवाटर हार्वेस्टिंग और IGBC सर्टिफाइड घरों की पूरी जानकारी।',
+    content: `
+      <p>Modern homebuyer consciousness has shifted dramatically towards <mark>environmental sustainability</mark>. Green housing in India is no longer an afterthought — it is a modern architectural movement delivering healthier living and lower utility expenses.</p>
+
+      <h2>1. IGBC & GRIHA Green Certification</h2>
+      <p>Projects designed according to the <mark>Indian Green Building Council (IGBC)</mark> guidelines focus on site conservation, water efficiency, energy management, and eco-friendly building materials. Certified green developments use fly-ash bricks, low-VOC paints, and thermal-insulated glass.</p>
+
+      <h2>2. Renewable Energy & Smart Grids</h2>
+      <p>Rooftop solar photovoltaic panels meet up to <mark>50% of common area electricity requirements</mark>, significantly reducing monthly maintenance charges for apartment owners.</p>
+
+      <h2>3. Advanced Water Management</h2>
+      <ul>
+        <li><mark>Rainwater Harvesting Systems:</mark> Replenishes groundwater aquifers during monsoon seasons.</li>
+        <li><mark>Sewage Treatment Plants (STP):</mark> Recycles greywater for landscape irrigation and flushing systems.</li>
+      </ul>
+
+      <h2>4. Long-Term Financial ROI of Green Homes</h2>
+      <p>Green homes consume up to 30% less electricity and 40% less potable water, resulting in substantial savings over decades while boosting long-term property resale value.</p>
+    `,
+    contentHi: `
+      <p>आज के समय में घर खरीदार केवल खूबसूरती नहीं, बल्कि <mark>पर्यावरण सुरक्षा और ऊर्जा बचत</mark> को भी प्राथमिकता दे रहे हैं। भारत में ग्रीन हाउसिंग एक ऐसा ट्रेंड बन चुका है जो स्वस्थ जीवन और कम खर्च दोनों देता है।</p>
+
+      <h2>1. IGBC और GRIHA ग्रीन सर्टिफिकेशन</h2>
+      <p><mark>इंडियन ग्रीन बिल्डिंग काउंसिल (IGBC)</mark> के मानकों पर बने घर पर्यावरण-अनुकूल सामग्री जैसे फ्लाई-ऐश ईंटों, कम-केमिकल वाले पेंट और इंसुलेटेड ग्लास का उपयोग करते हैं।</p>
+
+      <h2>2. नवीकरणीय ऊर्जा (सोलर पावर)</h2>
+      <p>छत पर लगे सोलर पैनल कॉमन एरिया की <mark>50% तक बिजली की ज़रूरत</mark> पूरी करते हैं, जिससे निवासियों का मासिक मेंटेनेंस खर्च काफी कम हो जाता है।</p>
+
+      <h2>3. जल प्रबंधन तकनीक</h2>
+      <ul>
+        <li><mark>रेनवाटर हार्वेस्टिंग:</mark> बारिश के पानी को ज़मीन में रीचार्ज करके वाटर टेबल बढ़ाता है।</li>
+        <li><mark>सीवेज ट्रीटमेंट प्लांट (STP):</mark> पानी को रीसायकल कर पौधों और फ्लशिंग में इस्तेमाल किया जाता है।</li>
+      </ul>
+
+      <h2>4. वित्तीय लाभ</h2>
+      <p>ग्रीन होम में 30% बिजली और 40% पानी की बचत होती है। इससे न केवल सालों-साल पैसों की बचत होती है बल्कि रीसेल वैल्यू भी 10-15% अधिक मिलती है।</p>
+    `,
+    takeaways: [
+      'IGBC green certified homes save up to 30% on electricity and 40% on water consumption',
+      'Solar rooftop integration and rainwater harvesting reduce long-term maintenance overheads',
+      'Eco-friendly residences command a 10-15% premium in resale value and higher tenant preference',
+    ],
+    takeawaysHi: [
+      'IGBC ग्रीन सर्टिफाइड घर बिजली के बिल में 30% और पानी की खपत में 40% तक की बचत करते हैं',
+      'सोलर रूफटॉप और रेनवाटर हार्वेस्टिंग से मेंटेनेंस का खर्च बहुत कम हो जाता है',
+      'पर्यावरण-अनुकूल घरों की रीसेल वैल्यू और किराए की माँग आम प्रॉपर्टीज की तुलना में 10-15% अधिक होती है',
+    ],
+    author: 'SVI Design Studio',
+    date: '2026-05-25',
+    category: 'Sustainability',
+    categoryHi: 'ग्रीन होम व टिकाऊ निर्माण',
+    image: '/images/blog7.png',
+    tags: ['green buildings', 'sustainability', 'solar power', 'IGBC', 'eco-friendly home'],
+    tagsHi: ['ग्रीन बिल्डिंग', 'टिकाऊ निर्माण', 'सोलर पावर', 'IGBC', 'इको-फ्रेंडली होम'],
+    readTime: '5 min read',
+    readTimeHi: '5 मिनट पढ़ें',
+  },
+  {
+    title: 'Luxury Interior Design Trends for Modern Apartments & Villas',
+    titleHi: 'लक्ज़री इंटीरियर डिज़ाइन ट्रेंड्स: आधुनिक अपार्टमेंट्स और विला के लिए',
+    slug: 'luxury-interior-design-trends-2026',
+    excerpt:
+      'Key design elements including warm minimalism, biophilic courtyards, smart ambient lighting, and bespoke marble finishes.',
+    excerptHi:
+      'वार्म मिनिमलिज्म, बायोफिलिक ग्रीनरी, स्मार्ट एम्बिएंट लाइटिंग और मार्बल फिनिश से सजाएँ अपना सपनों का घर।',
+    content: `
+      <p>Luxury interior architecture has shifted away from clutter and heavy ornamentation towards <mark>quiet luxury, organic textures, and spatial harmony</mark>. Discover the top design trends redefining premium residences in 2026.</p>
+
+      <h2>1. Warm Minimalism & Organic Textures</h2>
+      <p>Replacing cold white spaces, modern luxury relies on warm earth tones — beige, champagne, terracotta, and soft taupe. Natural materials like Italian travertine marble, fluted wood paneling, and brushed brass fixtures add understated elegance.</p>
+
+      <h2>2. Biophilic Integration</h2>
+      <p>Biophilic design connects indoor living spaces with nature:</p>
+      <ul>
+        <li>Double-height glass facades allowing abundant natural daylight.</li>
+        <li>Internal courtyard gardens and indoor water features.</li>
+        <li>Air-purifying flora like Monstera, Snake Plants, and Ficus.</li>
+      </ul>
+
+      <h2>3. Smart Layered Ambient Lighting</h2>
+      <p>Lighting is no longer just functional — it defines the home's emotional tone. Hidden LED coves, architectural magnetic track lights, and customizable scenes create seamless transitions from productive work hours to evening entertaining.</p>
+
+      <h2>4. Concealed Modular Kitchens</h2>
+      <p>Open floor layouts pair cooking spaces with living zones using concealed handleless cabinetry, integrated appliances, and waterfall marble island counters.</p>
+    `,
+    contentHi: `
+      <p>लक्ज़री इंटीरियर डिज़ाइन अब भारी-भरकम सजावट से हटकर <mark>शांत सुंदरता (Quiet Luxury), प्राकृतिक बनावट और प्राकृतिक रोशनी</mark> की तरफ बढ़ चुका है। जानिए 2026 के टॉप इंटीरियर ट्रेंड्स।</p>
+
+      <h2>1. वार्म मिनिमलिज्म और नेचुरल टेक्सचर</h2>
+      <p>ठंडे सफ़ेद रंगों की जगह अब बेज, शैम्पेन, टेराकोटा और सॉफ्ट न्यूट्रल कलर्स ले रहे हैं। इटैलियन ट्रैवर्टाइन मार्बल, वुडन पैनल्स और ब्रास फिनिश घर को एलिगेंट लुक देते हैं।</p>
+
+      <h2>2. बायोफिलिक डिज़ाइन (प्रकृति से जुड़ाव)</h2>
+      <p>घर के अंदर प्रकृति का अहसास कराने के लिए:</p>
+      <ul>
+        <li>बड़ी-बड़ी काँच की खिड़कियाँ और डबल-हाइट सीलिंग।</li>
+        <li>घर के बीचों-बीच इनडोर गार्डन या छोटा वाटर फ़ाउंटेन।</li>
+        <li>हवा साफ़ करने वाले पौधे जैसे स्नेक प्लांट और फिकस।</li>
+      </ul>
+
+      <h2>3. स्मार्ट लेयर्ड लाइटिंग</h2>
+      <p>लाइटिंग अब सिर्फ़ रोशनी के लिए नहीं, बल्कि घर का मूड सेट करने के लिए है। कंसील्ड LED कोव, मैग्नेटिक ट्रैक लाइट और मूड-बेस्ड डिमिंग से शाम का माहौल बेहद सुकून भरा बन जाता है।</p>
+
+      <h2>4. कंसील्ड मॉडर्न किचन</h2>
+      <p>ओपन किचन को लिविंग एरिया से जोड़ने के लिए हैंडल-लेस कैबिनेट्स, इन-बिल्ट एप्लायंसेज और मार्बल आइलैंड काउंटर टॉप का उपयोग बहुत पसंद किया जा रहा है।</p>
+    `,
+    takeaways: [
+      'Warm minimalist aesthetics with textured stone, natural wood, and muted tones dominate 2026 luxury homes',
+      'Open-concept biophilic designs bring nature indoors with courtyard greenery and maximum sunlight',
+      'Integrated smart ambient lighting creates seamless mood transitions from work to evening relaxation',
+    ],
+    takeawaysHi: [
+      '2026 में लक्ज़री घरों में वार्म मिनिमलिस्ट लुक, नेचुरल वुड, स्टोन फिनिश और शांत रंगों का बोलबाला है',
+      'बायोफिलिक डिज़ाइन प्राकृतिक रोशनी और इनडोर हरियाली को घर के केंद्र में लाता है',
+      'स्मार्ट एम्बिएंट लाइटिंग से घर के मूड को काम से लेकर शाम के सुकून तक तुरंत बदला जा सकता है',
+    ],
+    author: 'SVI Architecture Team',
+    date: '2026-05-18',
+    category: 'Lifestyle & Design',
+    categoryHi: 'लाइफ़स्टाइल व इंटीरियर',
+    image: '/images/blog8.png',
+    tags: ['interior design', 'luxury homes', 'home decor', 'biophilic design', 'villas'],
+    tagsHi: ['इंटीरियर डिज़ाइन', 'लक्ज़री होम', 'होम डेकोर', 'बायोफिलिक डिज़ाइन', 'विला'],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
+  {
     title: 'Top 5 Real Estate Investment Tips for First-Time Buyers',
     titleHi: 'पहली बार प्रॉपर्टी खरीदने वालों के लिए 5 ज़बरदस्त टिप्स',
     slug: 'top-5-real-estate-investment-tips',
@@ -282,7 +1111,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <h2>ज़रूरी स्मार्ट होम फ़ीचर्स</h2>
 
       <h3>1. ऑटोमेटेड लाइटिंग और क्लाइमेट कंट्रोल</h3>
-      <p>स्मार्ट लाइटिंग से आप मोबाइल ऐप या <mark>वॉइस कमांड</mark> से ब्राइटनेस, कलर और शेड्यूल कंट्रोल कर सकते हैं। वहीं <mark>स्मार्ट थर्मोस्टैट</mark> आपकी पसंद सीखते हैं और उसी हिसाब से कूलिंग/हीटिंग को ऑप्टिमाइज़ करते हैं।</p>
+      <p>स्मार्ट लाइटिंग से आप मोबाइल ऐप या <mark>वॉ兴स कमांड</mark> से ब्राइटनेस, कलर और शेड्यूल कंट्रोल कर सकते हैं। वहीं <mark>स्मार्ट थर्मोस्टैट</mark> आपकी पसंद सीखते हैं और उसी हिसाब से कूलिंग/हीटिंग को ऑप्टिमाइज़ करते हैं।</p>
 
       <h3>2. एडवांस्ड सिक्योरिटी सिस्टम</h3>
       <p>आधुनिक घरों में ये सुविधाएँ मिलती हैं:</p>

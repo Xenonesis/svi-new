@@ -2,6 +2,7 @@
 
 import {
   Bell,
+  Briefcase,
   Building2,
   Calculator,
   Calendar,
@@ -51,6 +52,7 @@ const managementItems = [
   { name: 'Employees', path: '/admin/employees', icon: Users },
   { name: 'Attendance', path: '/admin/attendance', icon: CheckSquare },
   { name: 'Properties', path: '/admin/properties', icon: Building2 },
+  { name: 'Careers', path: '/admin/careers', icon: Briefcase },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
   { name: 'Email Center', path: '/admin/email', icon: Mail },
   { name: 'Lottery Manager', path: '/admin/lottery', icon: Gift },

@@ -2,6 +2,7 @@
 
 import { useTranslations } from 'next-intl';
 import { motion } from 'motion/react';
+import { BLOG_POSTS } from '@/src/lib/blog';
 
 export default function BlogHero() {
   const t = useTranslations('pages.blog');
@@ -76,7 +77,7 @@ export default function BlogHero() {
           className="mt-10 flex items-center justify-center gap-8"
         >
           {[
-            { num: '3', label: t('stats.articles') || 'Articles' },
+            { num: String(BLOG_POSTS.length), label: t('stats.articles') || 'Articles' },
             { num: '5+', label: t('stats.mins') || 'Min Reads' },
             { num: '100%', label: t('stats.free') || 'Free' },
           ].map((s) => (

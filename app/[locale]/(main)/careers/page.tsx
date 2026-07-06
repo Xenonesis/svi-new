@@ -5,6 +5,7 @@ import { Send } from 'lucide-react';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import FreelancePerks from './FreelancePerks';
 import OnsiteRoles from './OnsiteRoles';
+import { careerRepository } from '@/src/lib/repositories';
 
 const CareersFAQ = dynamic(() => import('@/src/components/faq/AboutFAQ'));
 
@@ -26,6 +27,11 @@ export default async function Careers({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
   const t = await getTranslations('pages.careers');
+
+  // Fetch active careers from database server-side
+  const { data: careers } = await careerRepository.listActive();
+  const activeRoles = careers ?? [];
+
   return (
     <div className="bg-white pt-20 pb-16 dark:bg-gray-900">
       {/* Hero */}
@@ -56,8 +62,8 @@ export default async function Careers({ params }: Props) {
             </div>
           </div>
 
-          {/* Client leaf for motion animations */}
-          <OnsiteRoles />
+          {/* Dynamic roles from database */}
+          <OnsiteRoles roles={activeRoles} />
 
           <div className="text-center">
             <Link
