@@ -81,12 +81,14 @@ export function usePaginatedApi<TData = unknown>(
   queryKey: string[],
   url: string,
   params: Record<string, string>,
-  options?: { enabled?: boolean }
+  options?: { enabled?: boolean; staleTime?: number; gcTime?: number }
 ) {
   return useQuery<TData>({
     queryKey: [...queryKey, params],
     queryFn: () => apiFetch<TData>(url, 'GET', undefined, { params }),
     enabled: options?.enabled ?? true,
+    staleTime: options?.staleTime ?? 15_000,
+    gcTime: options?.gcTime ?? 5 * 60_000,
   });
 }
 

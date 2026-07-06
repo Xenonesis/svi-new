@@ -15,28 +15,9 @@ export async function GET(request: NextRequest) {
       .toISOString()
       .split('T')[0];
 
-    // Parallel queries
-    const [todayPresent, todayAbsent, todayHalfDay, todayLeave, recentRecords] = await Promise.all([
-      supabaseAdmin
-        .from('attendance_records')
-        .select('*', { count: 'exact', head: true })
-        .eq('date', today)
-        .eq('status', 'present'),
-      supabaseAdmin
-        .from('attendance_records')
-        .select('*', { count: 'exact', head: true })
-        .eq('date', today)
-        .eq('status', 'absent'),
-      supabaseAdmin
-        .from('attendance_records')
-        .select('*', { count: 'exact', head: true })
-        .eq('date', today)
-        .eq('status', 'half_day'),
-      supabaseAdmin
-        .from('attendance_records')
-        .select('*', { count: 'exact', head: true })
-        .eq('date', today)
-        .eq('status', 'leave'),
+    // Fetch recent records for trend (30 days) and today's stats (parallel)
+    const [todayStats, recentRecords] = await Promise.all([
+      supabaseAdmin.from('attendance_records').select('status').eq('date', today),
       supabaseAdmin
         .from('attendance_records')
         .select('date, status')
@@ -44,10 +25,17 @@ export async function GET(request: NextRequest) {
         .lte('date', today),
     ]);
 
-    const present = todayPresent.count || 0;
-    const absent = todayAbsent.count || 0;
-    const halfDay = todayHalfDay.count || 0;
-    const leave = todayLeave.count || 0;
+    let present = 0,
+      absent = 0,
+      halfDay = 0,
+      leave = 0;
+    for (const r of todayStats.data || []) {
+      if (r.status === 'present') present++;
+      else if (r.status === 'absent') absent++;
+      else if (r.status === 'half_day') halfDay++;
+      else if (r.status === 'leave') leave++;
+    }
+
     const total = present + absent + halfDay + leave;
     const rate = total > 0 ? Math.round(((present + halfDay * 0.5) / total) * 100) : 0;
 

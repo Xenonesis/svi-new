@@ -79,6 +79,8 @@ export default function DocumentStatsChart({ data, isLoading }: DocumentStatsCha
                   color: '#fff',
                   fontSize: '12px',
                 }}
+                itemStyle={{ color: '#fff' }}
+                labelStyle={{ color: '#fff', fontWeight: 'bold' }}
                 cursor={{ fill: 'rgba(212, 175, 55, 0.1)' }}
               />
               <Bar dataKey="count" radius={[4, 4, 0, 0]}>

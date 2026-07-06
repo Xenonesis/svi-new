@@ -35,13 +35,13 @@ export const activityRepository = {
 
     let query = supabaseAdmin
       .from('activity_logs')
-      .select('*', { count: 'exact' })
+      .select('*')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 
     if (userId) query = query.eq('user_id', userId);
 
-    const { data, count } = await query;
-    return { data, count };
+    const { data } = await query;
+    return { data, count: null };
   },
 };

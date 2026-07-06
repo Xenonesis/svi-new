@@ -249,6 +249,8 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
                           color: '#fff',
                           fontSize: '12px',
                         }}
+                        itemStyle={{ color: '#fff' }}
+                        labelStyle={{ color: '#fff', fontWeight: 'bold' }}
                       />
                       <Area
                         type="monotone"

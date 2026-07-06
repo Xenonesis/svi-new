@@ -86,6 +86,8 @@ export default function UserGrowthChart({ data, isLoading }: UserGrowthChartProp
                   color: '#fff',
                   fontSize: '12px',
                 }}
+                itemStyle={{ color: '#fff' }}
+                labelStyle={{ color: '#fff', fontWeight: 'bold' }}
                 cursor={{ stroke: '#d4af37', strokeWidth: 1, strokeDasharray: '3 3' }}
               />
               <Area
