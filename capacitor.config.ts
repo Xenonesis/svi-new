@@ -9,7 +9,8 @@ const config: CapacitorConfig = {
     // Replace with your actual Vercel production URL.
     // Example: 'https://svi-new.vercel.app'
     // ───────────────────────────────────────────────────────────────────────
-    url: 'https://YOUR_VERCEL_URL.vercel.app',
+    url: 'https://www.sviinfrasolutions.com/admin',
+    allowNavigation: ['www.sviinfrasolutions.com', 'sviinfrasolutions.com', '*.vercel.app'],
     cleartext: false, // HTTPS only — never allow cleartext HTTP in production
   },
   android: {
