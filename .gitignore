@@ -75,3 +75,14 @@ test-results/
 !.crew/artifacts/.gitkeep
 !.crew/graphs/.gitkeep.agents/skills/
 .agents/
+
+# Capacitor
+# Uncomment to ignore native platform folders (not recommended for team projects)
+# android/
+# ios/
+# Keep generated assets but ignore build outputs
+android/.gradle/
+android/app/build/
+android/build/
+ios/App/Pods/
+ios/App/App.xcworkspace/

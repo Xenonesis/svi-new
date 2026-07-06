@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Allow your Vercel production domain -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">vercel.app</domain>
+        <!-- Add your custom domain below if you have one, e.g.: -->
+        <!-- <domain includeSubdomains="true">sviinfrasolutions.com</domain> -->
+    </domain-config>
+
+    <!-- Supabase backend -->
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">supabase.co</domain>
+    </domain-config>
+
+    <!-- Strict HTTPS for everything else -->
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
