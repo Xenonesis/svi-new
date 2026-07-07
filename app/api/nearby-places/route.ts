@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 
 const OVERPASS_URLS = [
   'https://overpass-api.de/api/interpreter',
+  'https://lz4.overpass-api.de/api/interpreter',
+  'https://z.overpass-api.de/api/interpreter',
   'https://overpass.kumi.systems/api/interpreter',
 ];
 
@@ -25,7 +27,10 @@ export async function POST(req: NextRequest) {
     try {
       const response = await fetch(url, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+          'User-Agent': 'SVIInfraSolutions/1.0 (info@sviinfrasolutions.com; proxy-service)',
+        },
         body: new URLSearchParams({ data: query }),
         signal: controller.signal,
       });

@@ -190,7 +190,7 @@ export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' |
                       href={`/${locale}/blog/${post.slug}`}
                       className="relative block overflow-hidden"
                     >
-                      <div className="aspect-[4/3] overflow-hidden">
+                      <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
                           src={post.image}
                           alt={title}

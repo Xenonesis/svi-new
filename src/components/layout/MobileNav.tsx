@@ -112,7 +112,7 @@ const MobileNav = memo(function MobileNav({
               height={83}
               priority
               quality={100}
-              className="h-[26px] w-auto object-contain dark:drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]"
+              className="h-[26px] w-auto object-contain dark:rounded dark:bg-white dark:p-1"
             />
           </Link>
           <div className="flex items-center gap-2.5">
