@@ -55,7 +55,10 @@ export default function Breadcrumbs() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <nav aria-label={t('ariaLabel')} className="container mx-auto px-4 py-4">
+      <nav
+        aria-label={t('ariaLabel')}
+        className="breadcrumbs-nav container mx-auto px-4 pt-16 pb-4 md:pt-20"
+      >
         <ol className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
           {breadcrumbs.map((item, index) => (
             <li key={item.href} className="flex items-center gap-2">

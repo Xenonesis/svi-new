@@ -790,3 +790,8 @@ table {
   opacity: 1;
   filter: blur(8px);
 }
+
+/* Adjust subpages top padding when breadcrumbs are present to prevent overlap with fixed header and avoid double spacing */
+.breadcrumbs-nav + div {
+  padding-top: 0.5rem !important;
+}
