@@ -42,7 +42,7 @@ export default async function About({ params }: Props) {
       <section className="bg-white py-16 md:py-24 dark:bg-gray-900">
         <div className="container mx-auto px-4">
           <div className="mx-auto max-w-3xl text-center">
-            <h4 className="mb-6 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
+            <h4 className="mb-6 text-xs font-bold tracking-[0.3em] text-gray-400 uppercase sm:text-sm dark:text-gray-500">
               {t('subtitle')}
             </h4>
             <h2 className="text-brand-navy mb-8 font-serif text-3xl dark:text-gray-100">
@@ -74,7 +74,7 @@ export default async function About({ params }: Props) {
               />
             </div>
             <div className="w-full md:w-1/2">
-              <h4 className="mb-6 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
+              <h4 className="mb-6 text-xs font-bold tracking-[0.3em] text-gray-400 uppercase sm:text-sm dark:text-gray-500">
                 {t('expertise')}
               </h4>
               <h2 className="text-brand-navy mb-8 font-serif text-3xl sm:mb-10 sm:text-4xl dark:text-gray-100">
