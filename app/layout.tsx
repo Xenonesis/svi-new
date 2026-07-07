@@ -127,7 +127,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   const sansFontVariable = locale === 'hi' ? notoSansDevanagari.variable : outfit.variable;
 
   return (
-    <html lang={locale} suppressHydrationWarning>
+    <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head suppressHydrationWarning>
         <script
           type="application/ld+json"
