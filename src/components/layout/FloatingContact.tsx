@@ -120,7 +120,7 @@ export function FloatingContact() {
               initial={{ scale: 0.95, y: 20 }}
               animate={{ scale: 1, y: 0 }}
               exit={{ scale: 0.95, y: 20 }}
-              className="relative w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl dark:bg-gray-900"
+              className="relative max-h-[90dvh] w-full max-w-md overflow-hidden overflow-y-auto rounded-xl bg-white shadow-2xl dark:bg-gray-900"
             >
               <div className="bg-brand-navy relative p-6 text-white">
                 <button
@@ -257,7 +257,7 @@ export function FloatingContact() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed right-4 bottom-4 z-[200] flex items-center gap-3 rounded-xl border px-5 py-3.5 text-sm font-semibold shadow-2xl md:right-8 md:bottom-8 ${
+            className={`fixed right-4 bottom-20 z-[200] flex items-center gap-3 rounded-xl border px-5 py-3.5 text-sm font-semibold shadow-2xl md:right-8 md:bottom-8 ${
               toast.type === 'success'
                 ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-950/95 dark:text-emerald-300'
                 : 'border-red-200 bg-red-50 text-red-600 dark:border-red-500/30 dark:bg-red-950/95 dark:text-red-300'

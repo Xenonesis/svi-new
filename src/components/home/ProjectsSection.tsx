@@ -42,7 +42,7 @@ export default function ProjectsSection() {
       aria-label="Featured projects portfolio"
     >
       <div className="container mx-auto px-4">
-        <div className="mb-16 flex items-end justify-between border-b border-gray-200 pb-8 dark:border-gray-700">
+        <div className="mb-10 flex flex-col gap-4 border-b border-gray-200 pb-6 sm:mb-16 sm:pb-8 md:flex-row md:items-end md:justify-between dark:border-gray-700">
           <AnimatedSection type="fadeLeft">
             <h4 className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
               {t('sectionTitle')}
@@ -83,7 +83,7 @@ export default function ProjectsSection() {
                   transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
                   className="group block overflow-hidden border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
                 >
-                  <div className="bg-brand-navy img-zoom-container relative h-72 overflow-hidden">
+                  <div className="bg-brand-navy img-zoom-container relative h-52 overflow-hidden sm:h-64 md:h-72">
                     <div className="from-brand-navy/60 absolute inset-0 z-10 bg-gradient-to-t via-transparent to-transparent transition-opacity group-hover:opacity-70" />
                     <Image
                       src={project.img}
@@ -97,7 +97,7 @@ export default function ProjectsSection() {
                       {t('completed')}
                     </div>
                   </div>
-                  <div className="bg-gray-50 p-8 transition-colors dark:bg-gray-800">
+                  <div className="bg-gray-50 p-5 transition-colors sm:p-8 dark:bg-gray-800">
                     <p className="mb-2 text-[10px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                       {loc} · <span className="text-brand-gold">{type}</span>
                     </p>

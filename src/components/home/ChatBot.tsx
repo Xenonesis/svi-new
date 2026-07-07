@@ -204,6 +204,12 @@ export default function ChatBot() {
   const [input, setInput] = useState('');
   const [showSuggestions, setShowSuggestions] = useState(true);
 
+  useEffect(() => {
+    if (status === 'ready') {
+      setShowSuggestions(true);
+    }
+  }, [status]);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (input.trim() && status === 'ready') {

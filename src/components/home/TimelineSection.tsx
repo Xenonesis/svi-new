@@ -47,7 +47,7 @@ export default function TimelineSection() {
   return (
     <section
       ref={containerRef}
-      className="bg-brand-bg text-brand-navy dark:bg-brand-dark-bg relative overflow-hidden py-24 dark:text-white"
+      className="bg-brand-bg text-brand-navy dark:bg-brand-dark-bg relative overflow-hidden py-14 sm:py-20 md:py-24 dark:text-white"
       role="region"
       aria-label="Development Timeline"
     >
@@ -58,11 +58,11 @@ export default function TimelineSection() {
       </div>
 
       <div className="relative z-10 container mx-auto px-4">
-        <div className="mb-20 text-center">
-          <h4 className="text-brand-gold mb-4 text-sm font-semibold tracking-[0.2em] uppercase md:text-base">
+        <div className="mb-10 text-center sm:mb-16 md:mb-20">
+          <h4 className="text-brand-gold mb-3 text-xs font-semibold tracking-[0.2em] uppercase sm:mb-4 sm:text-sm md:text-base">
             {t('subtitle')}
           </h4>
-          <h2 className="font-serif text-3xl md:text-5xl">{t('title')}</h2>
+          <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl">{t('title')}</h2>
         </div>
 
         <div className="relative mx-auto max-w-3xl">

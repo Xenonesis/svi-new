@@ -22,13 +22,13 @@ export default function AboutSection() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-16 lg:flex-row">
           <AnimatedSection type="fadeLeft" className="w-full lg:w-1/2">
-            <h4 className="mb-4 text-lg font-semibold tracking-[0.2em] text-gray-400 uppercase md:text-xl dark:text-gray-500">
+            <h4 className="mb-3 text-base font-semibold tracking-[0.2em] text-gray-400 uppercase sm:mb-4 sm:text-lg md:text-xl dark:text-gray-500">
               {t('welcomeTitle')}
             </h4>
-            <h2 className="text-brand-navy mb-8 font-serif text-4xl leading-tight md:text-5xl dark:text-gray-100">
+            <h2 className="text-brand-navy mb-6 font-serif text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl dark:text-gray-100">
               {t('missionTitle')}
             </h2>
-            <p className="mb-8 text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+            <p className="mb-6 text-base leading-relaxed text-gray-600 sm:mb-8 sm:text-lg dark:text-gray-400">
               {t('description')}
             </p>
             <StaggerContainer className="mb-10 space-y-4">
@@ -66,7 +66,7 @@ export default function AboutSection() {
                 loading="lazy"
                 width={800}
                 height={500}
-                className="h-[500px] w-full object-cover"
+                className="h-[260px] w-full object-cover sm:h-[380px] lg:h-[500px]"
                 quality={85}
               />
             </div>

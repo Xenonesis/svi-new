@@ -48,7 +48,7 @@ export default async function About({ params }: Props) {
             <h2 className="text-brand-navy mb-8 font-serif text-3xl dark:text-gray-100">
               {t('heading')}
             </h2>
-            <div className="space-y-6 text-lg leading-relaxed text-gray-600 dark:text-gray-300">
+            <div className="space-y-6 text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-300">
               <p>{t('para1')}</p>
               <p>{t('para2')}</p>
             </div>
@@ -77,7 +77,7 @@ export default async function About({ params }: Props) {
               <h4 className="mb-6 text-[10px] font-bold tracking-[0.3em] text-gray-400 uppercase dark:text-gray-500">
                 {t('expertise')}
               </h4>
-              <h2 className="text-brand-navy mb-10 font-serif text-4xl dark:text-gray-100">
+              <h2 className="text-brand-navy mb-8 font-serif text-3xl sm:mb-10 sm:text-4xl dark:text-gray-100">
                 {t('services')}
               </h2>
               <ServicesList />

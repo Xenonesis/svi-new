@@ -37,21 +37,21 @@ export default function LeadershipSection() {
           </AnimatedSection>
 
           <AnimatedSection type="fadeLeft" className="w-full lg:w-7/12 lg:pl-12">
-            <h4 className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
+            <h4 className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase sm:mb-4 dark:text-gray-500">
               {t('sectionTitle')}
             </h4>
-            <h2 className="text-brand-navy mb-8 font-serif text-4xl leading-tight md:text-5xl dark:text-gray-100">
+            <h2 className="text-brand-navy mb-6 font-serif text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl dark:text-gray-100">
               {t('heading')}
             </h2>
 
-            <div className="relative mb-10">
-              <Quote className="text-brand-gold/20 absolute -top-4 -left-4 h-16 w-16" />
-              <p className="relative z-10 font-serif text-xl leading-relaxed text-gray-700 italic md:text-2xl dark:text-gray-300">
+            <div className="relative mb-8 md:mb-10">
+              <Quote className="text-brand-gold/20 absolute -top-4 -left-4 h-12 w-12 sm:h-16 sm:w-16" />
+              <p className="relative z-10 font-serif text-lg leading-relaxed text-gray-700 italic sm:text-xl md:text-2xl dark:text-gray-300">
                 "{t('visionStatement')}"
               </p>
             </div>
 
-            <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+            <p className="text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
               {t('founderStory')}
             </p>
           </AnimatedSection>

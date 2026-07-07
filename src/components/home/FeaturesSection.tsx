@@ -37,14 +37,17 @@ export default function FeaturesSection() {
       aria-label="Why investors choose SVI"
     >
       <div className="container mx-auto px-4">
-        <AnimatedSection type="fadeUp" className="mx-auto mb-20 max-w-3xl text-center">
+        <AnimatedSection
+          type="fadeUp"
+          className="mx-auto mb-10 max-w-3xl text-center sm:mb-16 md:mb-20"
+        >
           <h4 className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
             {t('sectionTitle')}
           </h4>
-          <h2 className="text-brand-navy mb-6 font-serif text-3xl md:text-5xl dark:text-gray-100">
+          <h2 className="text-brand-navy mb-4 font-serif text-2xl sm:mb-6 sm:text-3xl md:text-5xl dark:text-gray-100">
             {t('heading')}
           </h2>
-          <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
+          <p className="text-base leading-relaxed text-gray-600 sm:text-lg dark:text-gray-400">
             {t('description')}
           </p>
         </AnimatedSection>
@@ -55,7 +58,7 @@ export default function FeaturesSection() {
               <motion.div
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative h-full border border-gray-200 bg-white p-8 transition-shadow duration-300 hover:shadow-lg md:p-10 dark:border-gray-700 dark:bg-gray-900"
+                className="group relative h-full border border-gray-200 bg-white p-6 transition-shadow duration-300 hover:shadow-lg sm:p-8 md:p-10 dark:border-gray-700 dark:bg-gray-900"
               >
                 <div className="text-brand-gold mb-6 flex h-12 w-12 shrink-0 items-center justify-center">
                   {FEATURE_ICONS[idx]}

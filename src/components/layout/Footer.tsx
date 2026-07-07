@@ -29,9 +29,9 @@ const Footer = memo(function Footer() {
   );
 
   return (
-    <footer className="border-t border-gray-200 bg-white pt-16 pb-8 dark:border-gray-800 dark:bg-gray-900">
+    <footer className="border-t border-gray-200 bg-white pt-10 pb-8 sm:pt-16 dark:border-gray-800 dark:bg-gray-900">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="mb-12 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 md:mb-12 md:gap-12 lg:grid-cols-4">
           <div>
             <Link href="/" className="mb-6 inline-block">
               <Image
@@ -226,14 +226,14 @@ const Footer = memo(function Footer() {
             </div>
             <form
               onSubmit={handleNewsletterSubmit}
-              className="relative flex w-full flex-col gap-3 sm:flex-row md:w-auto"
+              className="relative flex w-full flex-col gap-3 sm:w-auto sm:flex-row md:w-auto"
             >
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('footer.enterEmail')}
-                className="text-brand-navy focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:outline-none sm:flex-1 md:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                className="text-brand-navy focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:outline-none sm:w-56 md:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 required
               />
               <motion.button

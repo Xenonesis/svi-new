@@ -56,6 +56,16 @@
     overflow-x: hidden;
   }
 
+  /* Ensure page content doesn't hide behind the mobile sticky contact bar */
+  main {
+    padding-bottom: 4rem; /* 64px — height of the mobile sticky bar */
+  }
+  @media (min-width: 768px) {
+    main {
+      padding-bottom: 0;
+    }
+  }
+
   h1,
   h2,
   h3,

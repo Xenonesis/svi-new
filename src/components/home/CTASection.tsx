@@ -19,7 +19,7 @@ export default function CTASection() {
       <div className="bg-brand-gold/5 absolute -bottom-32 -left-32 h-80 w-80 rounded-full blur-3xl" />
 
       <AnimatedSection type="fadeUp" className="relative z-10 container mx-auto px-4 text-center">
-        <h2 className="text-brand-navy mb-8 font-serif text-3xl md:text-5xl dark:text-white">
+        <h2 className="text-brand-navy mb-6 font-serif text-2xl sm:mb-8 sm:text-3xl md:text-5xl dark:text-white">
           {t('title')}
         </h2>
         <p className="mx-auto mb-8 max-w-2xl px-2 text-base leading-relaxed text-gray-600 md:mb-12 md:px-0 md:text-lg dark:text-gray-300">
