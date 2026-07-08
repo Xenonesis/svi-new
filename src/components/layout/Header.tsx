@@ -41,7 +41,7 @@ export default function Header() {
               height={83}
               priority
               quality={100}
-              className={`w-auto max-w-[130px] object-contain transition-all duration-500 min-[380px]:max-w-[170px] sm:max-w-none dark:rounded-lg dark:bg-white dark:p-1.5 ${
+              className={`w-auto max-w-[130px] object-contain transition-all duration-500 min-[380px]:max-w-[170px] sm:max-w-none dark:brightness-0 dark:invert ${
                 h.isScrolled
                   ? 'h-[20px] min-[380px]:h-[22px] sm:h-[24px] md:h-[26px]'
                   : 'h-[26px] min-[380px]:h-[28px] sm:h-[32px] md:h-[36px]'
