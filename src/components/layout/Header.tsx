@@ -11,8 +11,8 @@ export default function Header() {
 
   return (
     <>
-      {/* Vercel trigger update */}
       <header
+        suppressHydrationWarning
         className={`fixed z-50 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           h.isScrolled
             ? 'dark:border-zinc-850/60 top-2 left-1/2 w-[calc(100%-1rem)] -translate-x-1/2 rounded-full border border-white/40 bg-white/80 px-4 py-2 shadow-[0_8px_32px_rgba(0,0,0,0.12)] backdrop-blur-2xl sm:top-4 sm:w-[calc(100%-2rem)] md:py-2.5 xl:w-auto dark:bg-zinc-950/80'
@@ -32,7 +32,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className={`z-50 flex shrink-0 items-center gap-3 transition-transform duration-300 hover:scale-102 ${h.isScrolled ? 'mr-4' : ''}`}
+            className={`z-50 flex items-center gap-3 transition-transform duration-300 hover:scale-102 ${h.isScrolled ? 'mr-4' : ''}`}
           >
             <Image
               src="/logo.png"
