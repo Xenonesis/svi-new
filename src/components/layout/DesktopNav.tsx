@@ -68,7 +68,13 @@ const DesktopNav = memo(function DesktopNav({
 }: DesktopNavProps) {
   const t = useTranslations('nav');
   return (
-    <nav className="hidden shrink-0 items-center gap-[clamp(0.5rem,1.5vw,1.5rem)] xl:flex">
+    <nav
+      className={`hidden shrink-0 items-center gap-[clamp(0.5rem,1.5vw,1.5rem)] transition-all duration-300 xl:flex ${
+        isHomeTransparent
+          ? 'rounded-full border border-white/10 bg-[#09090B]/35 px-6 py-2 shadow-lg backdrop-blur-md'
+          : ''
+      }`}
+    >
       {NAV_LINKS.map((link) => (
         <NavLink
           key={link.nameKey}
@@ -143,7 +149,7 @@ const DesktopNav = memo(function DesktopNav({
       </div>
 
       {/* Language Toggle */}
-      <LanguageToggle />
+      <LanguageToggle isHomeTransparent={isHomeTransparent} />
 
       {/* Theme Toggle */}
       <ThemeToggle
