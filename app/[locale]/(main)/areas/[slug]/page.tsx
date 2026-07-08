@@ -149,16 +149,16 @@ export default async function AreaDetailPage({ params }: Props) {
                   return (
                     <div
                       key={projId}
-                      className="group dark:bg-gray-850 overflow-hidden border border-gray-200 bg-white shadow-md dark:border-gray-800"
+                      className="group overflow-hidden border border-gray-200 bg-white shadow-md dark:border-gray-800 dark:bg-gray-800"
                     >
-                      <div className="relative aspect-video w-full overflow-hidden bg-gray-100">
+                      <div className="relative aspect-video w-full overflow-hidden bg-gray-100 dark:bg-gray-900">
                         <Image
                           src={project.img}
                           alt={project.title}
                           fill
                           className="object-cover transition-transform group-hover:scale-105"
                         />
-                        <div className="text-brand-navy absolute top-3 right-3 z-10 bg-white px-2 py-0.5 text-[10px] font-bold uppercase shadow-sm">
+                        <div className="text-brand-navy absolute top-3 right-3 z-10 bg-white px-2 py-0.5 text-[10px] font-bold uppercase shadow-sm dark:bg-gray-800 dark:text-gray-100">
                           {project.status}
                         </div>
                       </div>

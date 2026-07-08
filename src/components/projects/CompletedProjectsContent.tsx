@@ -171,12 +171,12 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                     className={`group overflow-hidden border bg-white dark:bg-gray-800 ${highlightedProject === project.id ? 'border-brand-gold dark:shadow-brand-gold/20 scale-[1.02] shadow-2xl' : 'dark:hover:shadow-brand-gold/20 hover:border-brand-gold border-gray-200 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl dark:border-gray-700'} flex h-full flex-col transition-all duration-400`}
                   >
                     <div
-                      className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100"
+                      className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-900"
                       onClick={() => openModal(project)}
                     >
                       <div className="bg-brand-navy/10 pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 group-hover:opacity-0"></div>
                       <HoverZoomImage src={project.img} alt={project.title} />
-                      <div className="text-brand-navy pointer-events-none absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                      <div className="text-brand-navy pointer-events-none absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm dark:bg-gray-800 dark:text-gray-100">
                         {project.status}
                       </div>
                     </div>
@@ -289,15 +289,15 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
               animate={{ scale: 1, opacity: 1, y: 0 }}
               exit={{ scale: 0.95, opacity: 0, y: 30 }}
               transition={{ type: 'spring', damping: 25, stiffness: 300, mass: 1 }}
-              className="relative my-8 flex w-full max-w-5xl flex-col overflow-hidden bg-white shadow-2xl md:h-[600px] md:max-h-[85vh] md:flex-row"
+              className="relative my-8 flex w-full max-w-5xl flex-col overflow-hidden bg-white shadow-2xl md:h-[600px] md:max-h-[85vh] md:flex-row dark:bg-gray-800"
               onClick={(e) => e.stopPropagation()}
             >
               <button
                 onClick={closeModal}
-                className="absolute top-4 right-4 z-50 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white/50 backdrop-blur transition-colors hover:bg-white"
+                className="absolute top-4 right-4 z-50 flex h-10 w-10 items-center justify-center border border-gray-200 bg-white/50 backdrop-blur transition-colors hover:bg-white dark:border-gray-700 dark:bg-gray-800/50 dark:hover:bg-gray-800"
                 aria-label={t('closeModal')}
               >
-                <X size={20} className="text-brand-navy" />
+                <X size={20} className="text-brand-navy dark:text-gray-100" />
               </button>
 
               <div className="group relative flex min-h-[300px] items-center justify-center overflow-hidden bg-gray-100 md:h-full md:min-h-0 md:w-1/2">
@@ -331,14 +331,14 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                       <>
                         <button
                           onClick={prevImage}
-                          className="hover:text-brand-gold absolute top-1/2 left-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white"
+                          className="hover:text-brand-gold absolute top-1/2 left-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white dark:border-gray-700 dark:bg-gray-800/95 dark:text-gray-200 dark:hover:bg-gray-800"
                           aria-label={t('prevImage')}
                         >
                           <ChevronLeft size={20} />
                         </button>
                         <button
                           onClick={nextImage}
-                          className="hover:text-brand-gold absolute top-1/2 right-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white"
+                          className="hover:text-brand-gold absolute top-1/2 right-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white dark:border-gray-700 dark:bg-gray-800/95 dark:text-gray-200 dark:hover:bg-gray-800"
                           aria-label={t('nextImage')}
                         >
                           <ChevronRight size={20} />
@@ -358,7 +358,7 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                 ) : (
                   <HoverZoomImage src={selectedProject.img} alt={selectedProject.title} />
                 )}
-                <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm dark:bg-gray-800 dark:text-gray-100">
                   {selectedProject.status}
                 </div>
               </div>
@@ -374,22 +374,22 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                   </span>
                 </div>
 
-                <h3 className="text-brand-navy mb-6 font-serif text-3xl">
+                <h3 className="text-brand-navy mb-6 font-serif text-3xl dark:text-gray-100">
                   {selectedProject.title}
                 </h3>
 
-                <div className="prose prose-sm mb-8 leading-relaxed text-gray-600">
+                <div className="prose prose-sm mb-8 leading-relaxed text-gray-600 dark:text-gray-300">
                   <p>{selectedProject.fullDescription || selectedProject.description}</p>
                 </div>
 
                 {selectedProject.pdf ? (
-                  <button className="bg-brand-navy hover:bg-brand-gold hover:text-brand-navy flex w-full items-center justify-center gap-2 py-4 text-xs font-bold tracking-widest text-white uppercase transition-colors">
+                  <button className="bg-brand-navy hover:bg-brand-gold hover:text-brand-navy dark:hover:bg-brand-gold dark:hover:text-brand-navy flex w-full items-center justify-center gap-2 py-4 text-xs font-bold tracking-widest text-white uppercase transition-colors dark:border-gray-700 dark:bg-gray-700">
                     <Download size={16} />
                     {t('downloadBrochure')}
                   </button>
                 ) : null}
 
-                <div className="mt-8 mt-auto border-t border-gray-100 pt-8">
+                <div className="mt-8 mt-auto border-t border-gray-100 pt-8 dark:border-gray-700">
                   <div className="flex items-center gap-4">
                     <span className="flex items-center gap-2 text-[10px] font-bold tracking-widest text-gray-400 uppercase">
                       <Share2 size={12} /> {t('shareProject')}
@@ -399,7 +399,7 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                         href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-[#1877F2] hover:text-white"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-[#1877F2] hover:text-white dark:bg-gray-700 dark:text-gray-300"
                         aria-label={t('shareOnFacebook')}
                       >
                         <FacebookIcon size={14} />
@@ -408,7 +408,7 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                         href={`https://twitter.com/intent/tweet?url=${encodeURIComponent(currentUrl)}&text=${encodeURIComponent(`Check out ${selectedProject.title} by SVI Infra Solutions!`)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-[#1DA1F2] hover:text-white"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-[#1DA1F2] hover:text-white dark:bg-gray-700 dark:text-gray-300"
                         aria-label={t('shareOnTwitter')}
                       >
                         <TwitterIcon size={14} />
@@ -417,7 +417,7 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                         href={`https://www.linkedin.com/shareArticle?mini=true&url=${encodeURIComponent(currentUrl)}&title=${encodeURIComponent(selectedProject.title)}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-[#0A66C2] hover:text-white"
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-50 text-gray-400 transition-colors hover:bg-[#0A66C2] hover:text-white dark:bg-gray-700 dark:text-gray-300"
                         aria-label={t('shareOnLinkedIn')}
                       >
                         <LinkedinIcon size={14} />

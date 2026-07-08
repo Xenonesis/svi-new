@@ -221,12 +221,12 @@ export default function CurrentProjectsContent({
                       className={`group overflow-hidden border bg-white dark:bg-gray-800 ${highlightedProject === project.id ? 'border-brand-gold dark:shadow-brand-gold/20 scale-[1.02] shadow-2xl' : 'dark:hover:shadow-brand-gold/20 hover:border-brand-gold border-gray-200 hover:-translate-y-2 hover:scale-[1.02] hover:shadow-2xl dark:border-gray-700'} flex h-full flex-col transition-all duration-400`}
                     >
                       <div
-                        className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100"
+                        className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-900"
                         onClick={() => openModal(project)}
                       >
                         <div className="bg-brand-navy/10 pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 group-hover:opacity-0"></div>
                         <HoverZoomImage src={project.img} alt={project.title} />
-                        <div className="text-brand-navy pointer-events-none absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
+                        <div className="text-brand-navy pointer-events-none absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm dark:bg-gray-800 dark:text-gray-100">
                           {project.status}
                         </div>
                       </div>
@@ -378,14 +378,14 @@ export default function CurrentProjectsContent({
                       <>
                         <button
                           onClick={prevImage}
-                          className="hover:text-brand-gold absolute top-1/2 left-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white"
+                          className="hover:text-brand-gold absolute top-1/2 left-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white dark:border-gray-700 dark:bg-gray-800/95 dark:text-gray-200 dark:hover:bg-gray-800"
                           aria-label={t('prevImage')}
                         >
                           <ChevronLeft size={20} />
                         </button>
                         <button
                           onClick={nextImage}
-                          className="hover:text-brand-gold absolute top-1/2 right-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white"
+                          className="hover:text-brand-gold absolute top-1/2 right-4 z-30 flex h-10 w-10 -translate-y-1/2 items-center justify-center border border-gray-200 bg-white/95 shadow-lg backdrop-blur-sm transition-all hover:scale-105 hover:bg-white dark:border-gray-700 dark:bg-gray-800/95 dark:text-gray-200 dark:hover:bg-gray-800"
                           aria-label={t('nextImage')}
                         >
                           <ChevronRight size={20} />
