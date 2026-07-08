@@ -77,7 +77,7 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-[10px] font-semibold tracking-[0.2em] uppercase">
+            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
               {t('footer.quickLinks')}
             </h4>
             <ul className="flex flex-col gap-4">
@@ -141,7 +141,7 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-[10px] font-semibold tracking-[0.2em] uppercase">
+            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
               {t('footer.servicesSupport')}
             </h4>
             <ul className="flex flex-col gap-4">
@@ -174,7 +174,7 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-[10px] font-semibold tracking-[0.2em] uppercase">
+            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
               {t('footer.contactInfo')}
             </h4>
             <ul className="flex flex-col gap-5">
