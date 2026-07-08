@@ -68,7 +68,7 @@ const DesktopNav = memo(function DesktopNav({
 }: DesktopNavProps) {
   const t = useTranslations('nav');
   return (
-    <nav className="hidden items-center gap-[clamp(0.5rem,1.5vw,1.5rem)] xl:flex">
+    <nav className="hidden shrink-0 items-center gap-[clamp(0.5rem,1.5vw,1.5rem)] xl:flex">
       {NAV_LINKS.map((link) => (
         <NavLink
           key={link.nameKey}

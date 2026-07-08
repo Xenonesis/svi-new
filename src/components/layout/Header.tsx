@@ -32,7 +32,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className={`z-50 flex items-center gap-3 transition-transform duration-300 hover:scale-102 ${h.isScrolled ? 'mr-4' : ''}`}
+            className={`z-50 flex shrink-0 items-center gap-3 transition-transform duration-300 hover:scale-102 ${h.isScrolled ? 'mr-4' : ''}`}
           >
             <Image
               src="/logo.png"
