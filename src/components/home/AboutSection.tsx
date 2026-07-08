@@ -25,7 +25,10 @@ export default function AboutSection() {
             <h4 className="mb-3 text-base font-semibold tracking-[0.2em] text-gray-400 uppercase sm:mb-4 sm:text-lg md:text-xl dark:text-gray-500">
               {t('welcomeTitle')}
             </h4>
-            <h2 className="text-brand-navy mb-6 font-serif text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl dark:text-gray-100">
+            <h2
+              className="text-brand-navy mb-6 font-serif text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl dark:text-gray-100"
+              suppressHydrationWarning
+            >
               {t('missionTitle')}
             </h2>
             <p className="mb-6 text-base leading-relaxed text-gray-600 sm:mb-8 sm:text-lg dark:text-gray-400">
@@ -76,6 +79,7 @@ export default function AboutSection() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ delay: 0.4, duration: 0.5 }}
+              suppressHydrationWarning
             >
               <div className="font-serif text-4xl leading-none font-bold">15+</div>
               <div className="mt-1 text-[10px] font-semibold tracking-wider uppercase">

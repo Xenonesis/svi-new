@@ -73,6 +73,7 @@ export default function AnimatedSection({
         ease: [0.22, 1, 0.36, 1],
       }}
       className={className}
+      suppressHydrationWarning
     >
       {children}
     </motion.div>
@@ -114,6 +115,7 @@ export function StaggerContainer({
         },
       }}
       className={className}
+      suppressHydrationWarning
     >
       {children}
     </motion.div>
@@ -134,6 +136,7 @@ export function StaggerItem({
       variants={VARIANTS[type]}
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={className}
+      suppressHydrationWarning
     >
       {children}
     </motion.div>
