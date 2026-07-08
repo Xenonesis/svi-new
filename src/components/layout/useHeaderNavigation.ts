@@ -6,12 +6,7 @@ import { useTheme } from '@/src/components/ThemeProvider';
 import { useLotteryVisibility } from '@/src/lib/hooks/useLotteryVisibility';
 
 export function useHeaderNavigation() {
-  const [isScrolled, setIsScrolled] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return window.scrollY > 10;
-    }
-    return false;
-  });
+  const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
   const [isMobileProjectsOpen, setIsMobileProjectsOpen] = useState(false);
@@ -27,6 +22,10 @@ export function useHeaderNavigation() {
   }, []);
 
   useEffect(() => {
+    if (typeof window !== 'undefined' && window.scrollY > 10) {
+      setIsScrolled(true);
+    }
+
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
