@@ -5,8 +5,11 @@ import { useRef, useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import dynamic from 'next/dynamic';
 
 import { useTranslations } from 'next-intl';
+
+const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false });
 
 interface HeroImage {
   src: string;
@@ -89,10 +92,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
             />
           </div>
         ))}
-        {/* Dynamic Dark Gradient + Aurora Mesh */}
-        <div className="absolute inset-0 z-10 bg-gradient-to-r from-[#0b0c10]/90 via-[#0b0c10]/60 to-transparent mix-blend-multiply" />
-        <div className="absolute inset-0 z-10 bg-gradient-to-t from-[#0b0c10] via-transparent to-transparent" />
-        <div className="aurora-bg z-10" />
+        <div className="absolute inset-0 z-10 bg-[#0b0c10]/70" />
+        <HeroCanvas />
       </motion.div>
 
       {/* Navigation arrows */}
@@ -152,14 +153,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.05] text-white min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl">
             {t('title')}
             <br />
-            <span
-              className="text-gradient-gold animate-bg-pan inline-block pr-4 italic"
-              style={{
-                backgroundSize: '200% 200%',
-                backgroundImage:
-                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
-              }}
-            >
+            <span className="text-brand-gold inline-block pr-4 italic">
               {t('titleAccent')}
             </span>
           </h1>
@@ -175,7 +169,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
                 onClick={() => {
                   import('@vercel/analytics').then(({ track }) => track('hero_cta_click'));
                 }}
-                className="shimmer bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase shadow-[0_0_40px_rgba(212,175,55,0.3)] transition-all hover:shadow-[0_0_60px_rgba(212,175,55,0.5)]"
+                className="bg-brand-gold text-brand-navy hover:bg-white inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors"
               >
                 {t('cta')}
               </Link>
@@ -203,8 +197,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4, duration: 1 }}
       >
-        <div className="group relative max-w-[320px] overflow-hidden border border-white/10 bg-black/20 p-8 shadow-2xl backdrop-blur-xl">
-          <div className="from-brand-gold/10 absolute inset-0 bg-gradient-to-br to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+        <div className="group relative max-w-[320px] border border-white/20 bg-[#0b0c10] p-8 shadow-2xl transition-colors hover:border-brand-gold/50">
           <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none">
             15<span className="text-3xl">+</span>
           </h3>
@@ -212,8 +205,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         </div>
       </motion.div>
 
-      {/* Scroll Indicator — hidden on very small screens to avoid clutter */}
-      <div className="animate-hero-5 absolute bottom-8 left-1/2 hidden -translate-x-1/2 flex-col items-center gap-3 sm:flex md:hidden">
+      {/* Scroll Indicator */}
+      <div className="animate-hero-5 absolute bottom-8 left-1/2 flex -translate-x-1/2 flex-col items-center gap-3">
         <span className="text-[10px] font-bold tracking-[0.2em] text-white/50 uppercase">
           {t('scroll')}
         </span>
