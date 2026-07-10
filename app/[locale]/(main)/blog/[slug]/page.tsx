@@ -13,6 +13,9 @@ import ReadingProgress from './ReadingProgress';
 import TableOfContents, { BackToTop } from './TableOfContents';
 import FloatingShare from './FloatingShare';
 
+// ISR: revalidate blog detail pages every hour
+export const revalidate = 3600;
+
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };

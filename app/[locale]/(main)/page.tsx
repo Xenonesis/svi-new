@@ -3,6 +3,9 @@ import dynamic from 'next/dynamic';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
+// ISR: revalidate every 5 minutes — marketing content, fresh enough at this cadence
+export const revalidate = 300;
+
 const HeroSection = dynamic(() => import('@/src/components/home/HeroSection'), {
   ssr: true,
 });
@@ -13,16 +16,31 @@ const StaggerTestimonials = dynamic(() =>
   import('@/src/components/ui/stagger-testimonials').then((mod) => mod.StaggerTestimonials)
 );
 
+const HERO_BLUR_DATA: Record<string, string> = {
+  '/images/hero1.png':
+    'data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADwAQCdASoKAAoABUB8JZACdACqG05r0CAA/qlVVhA9VaE0rPDQV3HxqKXOpfCgs1oOGUBdVS8cJGgwt3eEG79QAAA=',
+  '/images/hero2.png':
+    'data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADQAQCdASoKAAoABUB8JQBOgBuCRWoMAADzyLr2msjgBxDUpQk6LGwZLuEX3Yu3yU6jwLPMP+iE7IAA',
+  '/images/hero3.png':
+    'data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADQAQCdASoKAAoABUB8JQBOgCHego7kwADeV1AT0ZY2IYzptbSLuYNuqO/a6x4Elu6AAA==',
+};
+
 const HERO_IMAGES = [
   {
     src: '/images/hero1.png',
     alt: 'SVI Infra luxury residential property in Jaipur with modern architecture',
+    blurDataURL: HERO_BLUR_DATA['/images/hero1.png'],
   },
   {
     src: '/images/hero2.png',
     alt: 'Premium commercial real estate development in Noida by SVI Infra',
+    blurDataURL: HERO_BLUR_DATA['/images/hero2.png'],
   },
-  { src: '/images/hero3.png', alt: 'Elegant apartment complex in Phulera Smart City Rajasthan' },
+  {
+    src: '/images/hero3.png',
+    alt: 'Elegant apartment complex in Phulera Smart City Rajasthan',
+    blurDataURL: HERO_BLUR_DATA['/images/hero3.png'],
+  },
 ];
 
 type Props = {

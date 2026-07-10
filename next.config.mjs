@@ -41,6 +41,12 @@ const nextConfig = {
       '@tiptap/react',
       '@tiptap/starter-kit',
     ],
+    scrollRestoration: true,
+  },
+  // Keep compiled pages in memory longer during dev (no production impact)
+  onDemandEntries: {
+    maxInactiveAge: 60 * 60 * 1000,
+    pagesBufferLength: 5,
   },
   webpack: (config, { dev }) => {
     if (dev) {
@@ -129,8 +135,14 @@ const nextConfig = {
         protocol: 'https',
         hostname: 'images.unsplash.com',
       },
+      {
+        // Supabase Storage for project/user images
+        protocol: 'https',
+        hostname: '**.supabase.co',
+        pathname: '/storage/v1/object/**',
+      },
     ],
-    formats: ['image/webp', 'image/avif'],
+    formats: ['image/avif', 'image/webp'],
     deviceSizes: [320, 420, 768, 1024, 1200, 1920],
     qualities: [75, 85, 90, 95, 100],
     minimumCacheTTL: 60 * 60 * 24 * 30,

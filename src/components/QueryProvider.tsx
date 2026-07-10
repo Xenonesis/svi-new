@@ -10,9 +10,12 @@ export default function QueryProvider({ children }: { children: ReactNode }) {
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 30 * 1000, // 30 seconds
-            gcTime: 5 * 60 * 1000, // 5 minutes (formerly cacheTime)
+            // 5 min stale time — marketing + project data doesn't change often
+            staleTime: 1000 * 60 * 5,
+            // Keep in cache 30 min for session continuity (admin panel, portal)
+            gcTime: 1000 * 60 * 30,
             retry: 1,
+            // Disable window-focus refetch for marketing pages to reduce unnecessary fetches
             refetchOnWindowFocus: false,
           },
         },

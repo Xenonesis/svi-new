@@ -3,6 +3,9 @@ import { SITE_URL } from '@/src/lib/seo';
 import type { Metadata } from 'next';
 import CurrentProjectsContent from '@/src/components/projects/CurrentProjectsContent';
 
+// ISR: revalidate daily — new projects are added infrequently
+export const revalidate = 86400;
+
 export async function generateMetadata({
   params: paramsPromise,
 }: {

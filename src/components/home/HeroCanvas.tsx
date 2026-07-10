@@ -1,8 +1,8 @@
 'use client';
 
-import { useRef, useMemo } from 'react';
+import { useRef, useMemo, useState, useEffect } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { Float } from '@react-three/drei';
+import { Float, AdaptiveDpr } from '@react-three/drei';
 import * as THREE from 'three';
 
 function ArchitecturalForms() {
@@ -51,26 +51,41 @@ function ArchitecturalForms() {
 
 function GridBackground() {
   return (
-    <gridHelper 
-      args={[40, 40, '#ffffff', '#ffffff']} 
-      position={[0, -2.5, 0]} 
-      material-opacity={0.08} 
-      material-transparent 
+    <gridHelper
+      args={[40, 40, '#ffffff', '#ffffff']}
+      position={[0, -2.5, 0]}
+      material-opacity={0.08}
+      material-transparent
     />
   );
 }
 
 export default function HeroCanvas() {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setPrefersReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setPrefersReducedMotion(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  // Respect vestibular disorder preference — skip the GPU-heavy canvas entirely
+  if (prefersReducedMotion) return null;
+
   return (
-    <div className="absolute inset-0 z-10 pointer-events-none mix-blend-screen">
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]}>
+    <div className="pointer-events-none absolute inset-0 z-10 mix-blend-screen">
+      {/* dpr capped at [1, 2], antialias off, AdaptiveDpr reduces quality when FPS drops */}
+      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]} gl={{ antialias: false }}>
+        <AdaptiveDpr pixelated />
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
         <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#d4af37" />
-        
+
         <ArchitecturalForms />
         <GridBackground />
-        
+
         <fog attach="fog" args={['#0b0c10', 5, 20]} />
       </Canvas>
     </div>

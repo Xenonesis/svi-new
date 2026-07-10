@@ -47,6 +47,31 @@ jobs:
       - name: TypeScript type check
         run: npx tsc --noEmit || true
 
+  perf-checks:
+    name: Performance Gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate image sizes (warn, don't block)
+        # Warns if unoptimized images exceed budget — run optimize:images to fix
+        run: node scripts/check-image-sizes.mjs || true
+
+      - name: Detect unused dependencies
+        # Warn only — requires manual cleanup review
+        run: npx depcheck --ignores="@types/*,typescript-eslint,vitest,prettier*,eslint*,autoprefixer,postcss,tailwindcss,editorconfig-checker,commitlint,husky,lint-staged,cross-env,tsx,esbuild,jsdom,globals" || true
+
+      - name: Check for duplicate packages
+        run: npx duplicate-package-checker-webpack-plugin || true
+
   build:
     name: Build
     runs-on: ubuntu-latest
@@ -62,12 +87,18 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build (skip image optimization in CI for speed)
+        # SKIP_IMAGE_OPTIMIZE lets the prebuild hook be bypassed in CI
         run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
           NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder
           SUPABASE_SERVICE_ROLE_KEY: placeholder
+          SKIP_IMAGE_OPTIMIZE: 'true'
+
+      - name: Bundle size check (warn, don't block)
+        # Reports if any chunk exceeds 100 KB budget
+        run: node scripts/perf-monitor.mjs || true
 
   test:
     name: Unit Tests (Vitest)

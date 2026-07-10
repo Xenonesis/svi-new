@@ -5,6 +5,9 @@ import BlogHero from './BlogHero';
 import BlogCards from './BlogCards';
 import { BLOG_POSTS } from '@/src/lib/blog';
 
+// ISR: revalidate every hour — blog posts update periodically
+export const revalidate = 3600;
+
 const BlogFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'));
 
 type Props = {

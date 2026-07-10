@@ -12,6 +12,7 @@ import PwaRegister from '@/src/components/PwaRegister';
 import PwaPushPrompt from '@/src/components/PwaPushPrompt';
 import QueryProvider from '@/src/components/QueryProvider';
 import { ThemeScript } from '@/src/components/ThemeProvider';
+import { WebVitals } from '@/src/components/WebVitals';
 
 const outfit = Outfit({
   subsets: ['latin'],
@@ -229,10 +230,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        {/* Preconnect to critical origins to reduce connection latency */}
+        <link rel="preconnect" href="https://supabase.co" />
+        <link rel="dns-prefetch" href="https://supabase.co" />
       </head>
       <body className={`${sansFontVariable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />
         <QueryProvider>{children}</QueryProvider>
+        <WebVitals />
         <Analytics />
         <SpeedInsights />
         <PwaRegister />

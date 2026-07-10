@@ -55,27 +55,9 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
 export default function ExclusiveOffersClient() {
   const t = useTranslations('pages.exclusiveOffers');
   const [isMounted, setIsMounted] = useState(false);
-  const [videoSrc, setVideoSrc] = useState('/a svi 1.mp4');
 
   useEffect(() => {
     setIsMounted(true);
-
-    // Detect slow network connections and fall back to low quality if available
-    if (typeof window !== 'undefined') {
-      const conn =
-        (navigator as any).connection ||
-        (navigator as any).mozConnection ||
-        (navigator as any).webkitConnection;
-      if (conn) {
-        const isSlow =
-          conn.saveData ||
-          ['slow-2g', '2g', '3g'].includes(conn.effectiveType) ||
-          (conn.downlink && conn.downlink < 2.0); // Connection speed under 2 Mbps
-        if (isSlow) {
-          setVideoSrc('/a svi 1_low.mp4');
-        }
-      }
-    }
   }, []);
 
   const [selectedSize, setSelectedSize] = useState('200 SQ. YRD.');
@@ -365,7 +347,6 @@ export default function ExclusiveOffersClient() {
             <div className="relative aspect-video w-full">
               {isMounted ? (
                 <video
-                  src={videoSrc}
                   controls
                   autoPlay
                   muted
@@ -373,14 +354,12 @@ export default function ExclusiveOffersClient() {
                   playsInline
                   preload="metadata"
                   className="h-full w-full bg-slate-950 object-contain"
-                  poster="/images/exclusive_offers_hero.png"
-                  onError={() => {
-                    // Fall back to high quality if the low quality video fails to load
-                    if (videoSrc !== '/a svi 1.mp4') {
-                      setVideoSrc('/a svi 1.mp4');
-                    }
-                  }}
-                />
+                  poster="/images/hero-poster.webp"
+                >
+                  <source src="/hero.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
+                  <source src="/hero.vp9.webm" type='video/webm; codecs="vp9"' />
+                  <source src="/hero.h264.mp4" type="video/mp4" />
+                </video>
               ) : (
                 <div
                   className="h-full w-full bg-slate-900"

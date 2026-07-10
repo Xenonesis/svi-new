@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import dynamic from 'next/dynamic';
+import lazyImport from 'next/dynamic';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import MissionValuesCards from './MissionValuesCards';
 import ServicesList from './ServicesList';
 
-const AboutFAQ = dynamic(() => import('@/src/components/faq/AboutFAQ'));
+// Static: About content rarely changes — generate at build time
+export const dynamic = 'force-static';
+
+const AboutFAQ = lazyImport(() => import('@/src/components/faq/AboutFAQ'));
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -71,6 +74,8 @@ export default async function About({ params }: Props) {
                 height={600}
                 className="w-full border shadow-2xl dark:border-gray-700 dark:shadow-none"
                 quality={85}
+                placeholder="blur"
+                blurDataURL="data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAAAQAgCdASoKAAoABUB8JZACdAEQ0m/ZDYwAAPzL5OrblLAjEk7uv2lNDo6fVZF0UC21LDA962qeAWEARCQ3FzCEAAA="
               />
             </div>
             <div className="w-full md:w-1/2">

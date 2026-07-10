@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import dynamic from 'next/dynamic';
+import lazyImport from 'next/dynamic';
 import Link from 'next/link';
 import { Send } from 'lucide-react';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
@@ -7,7 +7,10 @@ import FreelancePerks from './FreelancePerks';
 import OnsiteRoles from './OnsiteRoles';
 import { careerRepository } from '@/src/lib/repositories';
 
-const CareersFAQ = dynamic(() => import('@/src/components/faq/AboutFAQ'));
+// Static: careers content rarely changes
+export const dynamic = 'force-static';
+
+const CareersFAQ = lazyImport(() => import('@/src/components/faq/AboutFAQ'));
 
 type Props = {
   params: Promise<{ locale: string }>;

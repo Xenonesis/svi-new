@@ -795,3 +795,26 @@ table {
 .breadcrumbs-nav + div {
   padding-top: 0.5rem !important;
 }
+
+/* ============================================================
+   Accessibility: prefers-reduced-motion
+   Disables all CSS animations and transitions for users who
+   prefer reduced motion. Also reduces GPU/CPU work.
+   Three.js HeroCanvas is handled separately in JS (HeroCanvas.tsx).
+   ============================================================ */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable parallax and scroll-linked transforms */
+  .page-transition {
+    animation: none !important;
+  }
+}
+

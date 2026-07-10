@@ -14,6 +14,7 @@ const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false });
 interface HeroImage {
   src: string;
   alt: string;
+  blurDataURL?: string;
 }
 
 export default function HeroSection({ images }: { images: HeroImage[] }) {
@@ -86,9 +87,12 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
               alt={img.alt}
               fill
               priority={idx === 0}
+              fetchPriority={idx === 0 ? 'high' : 'auto'}
               quality={90}
               sizes="100vw"
               className="object-cover"
+              placeholder={img.blurDataURL ? 'blur' : 'empty'}
+              blurDataURL={img.blurDataURL}
             />
           </div>
         ))}
@@ -153,9 +157,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.05] text-white min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl">
             {t('title')}
             <br />
-            <span className="text-brand-gold inline-block pr-4 italic">
-              {t('titleAccent')}
-            </span>
+            <span className="text-brand-gold inline-block pr-4 italic">{t('titleAccent')}</span>
           </h1>
 
           <p className="animate-hero-3 mb-8 max-w-xl text-sm leading-relaxed font-light text-white/80 sm:mb-12 sm:text-base md:text-xl">
@@ -169,7 +171,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
                 onClick={() => {
                   import('@vercel/analytics').then(({ track }) => track('hero_cta_click'));
                 }}
-                className="bg-brand-gold text-brand-navy hover:bg-white inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors"
+                className="bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors hover:bg-white"
               >
                 {t('cta')}
               </Link>
@@ -197,7 +199,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4, duration: 1 }}
       >
-        <div className="group relative max-w-[320px] border border-white/20 bg-[#0b0c10] p-8 shadow-2xl transition-colors hover:border-brand-gold/50">
+        <div className="group hover:border-brand-gold/50 relative max-w-[320px] border border-white/20 bg-[#0b0c10] p-8 shadow-2xl transition-colors">
           <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none">
             15<span className="text-3xl">+</span>
           </h3>
