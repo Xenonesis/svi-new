@@ -32,7 +32,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className={`z-50 flex items-center gap-3 transition-transform duration-300 hover:scale-102 ${h.isScrolled ? 'mr-4' : ''}`}
+            className={`z-50 flex items-center gap-3 transition-all duration-300 hover:scale-102 dark:rounded-xl dark:bg-white dark:px-3 dark:py-1.5 dark:shadow-sm ${h.isScrolled ? 'mr-4' : ''}`}
           >
             <Image
               src="/logo.png"
@@ -41,7 +41,7 @@ export default function Header() {
               height={83}
               priority
               quality={100}
-              className={`w-auto max-w-[130px] object-contain transition-all duration-500 min-[380px]:max-w-[170px] sm:max-w-none dark:brightness-0 dark:invert ${
+              className={`w-auto max-w-[130px] object-contain transition-all duration-500 min-[380px]:max-w-[170px] sm:max-w-none ${
                 h.isScrolled
                   ? 'h-[20px] min-[380px]:h-[22px] sm:h-[24px] md:h-[26px]'
                   : 'h-[26px] min-[380px]:h-[28px] sm:h-[32px] md:h-[36px]'
