@@ -35,7 +35,9 @@ export async function createClient() {
           getAll() {
             return [];
           },
-          setAll() {},
+          setAll() {
+            // Ignore in fallback
+          },
         },
       }
     );

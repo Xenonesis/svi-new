@@ -25,6 +25,8 @@ export default tseslint.config(
       'public/sw.js.map',
       'public/workbox-*.js',
       'public/workbox-*.js.map',
+      '.github/**',
+      '.impeccable/**',
     ],
   },
   js.configs.recommended,
