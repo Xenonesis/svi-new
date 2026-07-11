@@ -10,7 +10,7 @@ export default function CTASection() {
   const t = useTranslations('cta');
   return (
     <section
-      className="bg-brand-bg dark:bg-brand-dark-bg dark:border-brand-gold/20 relative overflow-hidden py-20 dark:border-b"
+      className="bg-brand-bg dark:border-brand-gold/20 dark:bg-brand-dark-bg relative overflow-hidden border-b border-transparent py-20"
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 400px' }}
       role="region"
       aria-label="Call to action"

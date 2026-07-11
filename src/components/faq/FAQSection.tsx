@@ -98,7 +98,9 @@ export default function FAQSection({
           : '';
 
   return (
-    <div className={`${bgClass} py-16 md:py-24 ${className}`}>
+    <div
+      className={`${bgClass} dark:border-brand-gold/20 border-b border-transparent py-16 md:py-24 ${className}`}
+    >
       {showStructuredData && JSON_LD && (
         <script
           type="application/ld+json"

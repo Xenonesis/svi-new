@@ -127,7 +127,7 @@ export default function LotteryCTA() {
         animate={{ opacity: 1, y: 0 }}
         exit={{ opacity: 0, y: -20 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="relative overflow-hidden bg-gradient-to-br from-[#07070b] via-[#0e0e18] to-[#07070b] py-16 md:py-20"
+        className="dark:border-brand-gold/20 relative overflow-hidden border-b border-transparent bg-gradient-to-br from-[#07070b] via-[#0e0e18] to-[#07070b] py-16 md:py-20"
         role="region"
         aria-label={t('title')}
       >

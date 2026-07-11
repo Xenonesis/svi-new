@@ -47,7 +47,7 @@ export default function TimelineSection() {
   return (
     <section
       ref={containerRef}
-      className="bg-brand-bg text-brand-navy dark:bg-brand-dark-bg dark:border-brand-gold/20 relative overflow-hidden py-14 sm:py-20 md:py-24 dark:border-b dark:text-white"
+      className="bg-brand-bg text-brand-navy dark:border-brand-gold/20 dark:bg-brand-dark-bg relative overflow-hidden border-b border-transparent py-14 sm:py-20 md:py-24 dark:text-white"
       role="region"
       aria-label="Development Timeline"
     >
