@@ -17,7 +17,6 @@ if (process.env.SKIP_IMAGE_OPTIMIZE === 'true') {
   process.exit(0);
 }
 
-
 import { createRequire } from 'module';
 import { readdir, stat, mkdir } from 'fs/promises';
 import { join, dirname, extname, basename } from 'path';
@@ -79,14 +78,18 @@ async function generateBlurDataURL(inputPath) {
 
 async function optimizeImage(inputPath) {
   const name = basename(inputPath, extname(inputPath));
-  const relDir = dirname(inputPath).replace(INPUT_DIR, '').replace(/^[/\\]/, '');
+  const relDir = dirname(inputPath)
+    .replace(INPUT_DIR, '')
+    .replace(/^[/\\]/, '');
   const outDir = relDir ? join(OUTPUT_DIR, relDir) : OUTPUT_DIR;
   await ensureDir(outDir);
 
   const inputStat = await stat(inputPath);
   const inputSizeKB = inputStat.size / 1024;
 
-  console.log(`\n📷  Processing: ${relDir ? relDir + '/' : ''}${name}.png (${inputSizeKB.toFixed(0)} KB)`);
+  console.log(
+    `\n📷  Processing: ${relDir ? relDir + '/' : ''}${name}.png (${inputSizeKB.toFixed(0)} KB)`
+  );
 
   // Generate blur placeholder
   const blurDataURL = await generateBlurDataURL(inputPath);
@@ -111,11 +114,13 @@ async function optimizeImage(inputPath) {
     const webpKB = webpBuf.byteLength / 1024;
 
     if (webpKB > MAX_SIZE_WEBP_KB) {
-      warnings.push(`⚠️  ${name}-${size}w.webp is ${webpKB.toFixed(0)} KB (>${MAX_SIZE_WEBP_KB} KB limit)`);
+      warnings.push(
+        `⚠️  ${name}-${size}w.webp is ${webpKB.toFixed(0)} KB (>${MAX_SIZE_WEBP_KB} KB limit)`
+      );
     }
 
     await sharp(webpBuf).toFile(webpOut);
-    savedBytes += (inputStat.size / RESPONSIVE_SIZES.length) - webpBuf.byteLength;
+    savedBytes += inputStat.size / RESPONSIVE_SIZES.length - webpBuf.byteLength;
 
     // AVIF
     const avifOut = join(outDir, `${name}-${size}w.avif`);
@@ -126,21 +131,19 @@ async function optimizeImage(inputPath) {
     const avifKB = avifBuf.byteLength / 1024;
 
     if (avifKB > MAX_SIZE_AVIF_KB) {
-      warnings.push(`⚠️  ${name}-${size}w.avif is ${avifKB.toFixed(0)} KB (>${MAX_SIZE_AVIF_KB} KB limit)`);
+      warnings.push(
+        `⚠️  ${name}-${size}w.avif is ${avifKB.toFixed(0)} KB (>${MAX_SIZE_AVIF_KB} KB limit)`
+      );
     }
 
     await sharp(avifBuf).toFile(avifOut);
 
-    console.log(
-      `  ✅  ${size}w → WebP ${webpKB.toFixed(0)} KB | AVIF ${avifKB.toFixed(0)} KB`
-    );
+    console.log(`  ✅  ${size}w → WebP ${webpKB.toFixed(0)} KB | AVIF ${avifKB.toFixed(0)} KB`);
   }
 
   // Also generate a full-size WebP (no size suffix) as a fallback
   const webpFullOut = join(outDir, `${name}.webp`);
-  const webpFullBuf = await sharp(inputPath)
-    .webp({ quality: WEBP_QUALITY, effort: 4 })
-    .toBuffer();
+  const webpFullBuf = await sharp(inputPath).webp({ quality: WEBP_QUALITY, effort: 4 }).toBuffer();
   await sharp(webpFullBuf).toFile(webpFullOut);
   console.log(`  ✅  Full → WebP ${(webpFullBuf.byteLength / 1024).toFixed(0)} KB`);
 

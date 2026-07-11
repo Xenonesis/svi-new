@@ -14,7 +14,7 @@ const PROJECT_ROOT = join(__dirname, '..');
 const IMAGE_DIR = join(PROJECT_ROOT, 'public', 'images');
 
 const BUDGETS_KB = {
-  png: 100,   // raw PNGs should be converted → fail CI if forgotten
+  png: 100, // raw PNGs should be converted → fail CI if forgotten
   jpg: 100,
   jpeg: 100,
   webp: 150,

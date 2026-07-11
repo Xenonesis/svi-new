@@ -1,13 +1,15 @@
 'use client';
 
 import { memo } from 'react';
-import { ChevronDown, Building2, CheckSquare, Phone, Mail, Menu, X } from 'lucide-react';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
-import LanguageToggle from '@/src/components/ui/LanguageToggle';
-import { ThemeToggle } from '@/src/components/ui/ThemeToggle';
 import { NAV_LINKS } from './navLinks';
-import { PHONE_HREF } from '@/src/lib/constants';
+import { HamburgerButton } from './HamburgerButton';
+import { MobileDrawerHeader } from './MobileDrawerHeader';
+import { MobileNavLink } from './MobileNavLink';
+import { MobileProjectsAccordion } from './MobileProjectsAccordion';
+import { MobileNavActions } from './MobileNavActions';
+import { MobileNavFooter } from './MobileNavFooter';
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -30,29 +32,6 @@ function getStaggerStyle(isOpen: boolean, index: number) {
   };
 }
 
-function MobileLink({
-  href,
-  children,
-  isActive,
-}: {
-  href: string;
-  children: React.ReactNode;
-  isActive: boolean;
-}) {
-  return (
-    <Link
-      href={href}
-      className={`block py-2.5 text-[clamp(15px,4vw,18px)] font-semibold tracking-wide transition-colors ${
-        isActive
-          ? 'text-brand-gold'
-          : 'text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold dark:text-gray-100'
-      }`}
-    >
-      {children}
-    </Link>
-  );
-}
-
 const MobileNav = memo(function MobileNav({
   isOpen,
   isProjectsOpen,
@@ -66,21 +45,10 @@ const MobileNav = memo(function MobileNav({
   onToggleTheme,
 }: MobileNavProps) {
   const t = useTranslations('nav');
-  const tc = useTranslations('common');
   return (
     <>
       {/* Hamburger Button */}
-      <div className="flex items-center gap-3 xl:hidden">
-        <button
-          className="bg-brand-navy flex items-center justify-center rounded-full p-2 text-white shadow-sm transition-colors dark:bg-zinc-900 dark:text-gray-200"
-          onClick={onToggle}
-          aria-label={isOpen ? t('closeMenu') : t('openMenu')}
-          aria-expanded={isOpen}
-          aria-controls="mobile-menu"
-        >
-          <Menu size={20} />
-        </button>
-      </div>
+      <HamburgerButton isOpen={isOpen} onToggle={onToggle} />
 
       {/* Backdrop */}
       <div
@@ -102,24 +70,12 @@ const MobileNav = memo(function MobileNav({
         aria-label={t('mobileNavLabel')}
       >
         {/* Drawer Header */}
-        <div className="absolute top-5 right-5 left-5 flex items-center justify-end">
-          <div className="flex items-center gap-2.5">
-            <LanguageToggle />
-            <ThemeToggle
-              theme={theme}
-              mounted={mounted}
-              onToggle={onToggleTheme}
-              variant="mobile"
-            />
-            <button
-              onClick={onClose}
-              className="border-gray-150 text-brand-navy dark:hover:bg-zinc-850 rounded-full border bg-gray-50/70 p-2 transition-all duration-300 hover:bg-gray-100 dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-gray-200"
-              aria-label={t('closeMenu')}
-            >
-              <X size={16} />
-            </button>
-          </div>
-        </div>
+        <MobileDrawerHeader
+          theme={theme}
+          mounted={mounted}
+          onToggleTheme={onToggleTheme}
+          onClose={onClose}
+        />
 
         {/* Scrollable Content */}
         <div className="flex flex-grow flex-col gap-5.5 overflow-y-auto py-4 pr-1">
@@ -131,9 +87,9 @@ const MobileNav = memo(function MobileNav({
                 className="transition-all duration-300 ease-out"
                 style={getStaggerStyle(isOpen, index)}
               >
-                <MobileLink href={link.path} isActive={currentPath === link.path}>
+                <MobileNavLink href={link.path} isActive={currentPath === link.path}>
                   {t(link.nameKey)}
-                </MobileLink>
+                </MobileNavLink>
               </div>
             ))}
 
@@ -142,44 +98,11 @@ const MobileNav = memo(function MobileNav({
               className="flex flex-col gap-2 transition-all duration-300 ease-out"
               style={getStaggerStyle(isOpen, NAV_LINKS.length)}
             >
-              <button
-                onClick={onToggleProjects}
-                className="text-brand-navy group flex w-full items-center justify-between py-2.5 text-left text-[clamp(15px,4vw,18px)] font-semibold tracking-wide dark:text-gray-100"
-              >
-                <span>{t('projects')}</span>
-                <ChevronDown
-                  size={18}
-                  className={`text-brand-gold transition-transform duration-300 ${
-                    isProjectsOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-              <div
-                className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
-                  isProjectsOpen
-                    ? 'mt-1 grid-rows-[1fr] opacity-100'
-                    : 'pointer-events-none grid-rows-[0fr] opacity-0'
-                }`}
-              >
-                <div className="border-brand-gold/30 flex min-h-0 flex-col gap-2.5 border-l-2 pl-3.5">
-                  <Link
-                    href="/projects/current"
-                    onClick={onClose}
-                    className="hover:text-brand-gold flex items-center gap-2 py-2 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
-                  >
-                    <Building2 size={15} className="text-brand-gold/70" />
-                    {t('currentProjects')}
-                  </Link>
-                  <Link
-                    href="/projects/completed"
-                    onClick={onClose}
-                    className="hover:text-brand-gold flex items-center gap-2 py-2 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
-                  >
-                    <CheckSquare size={15} className="text-brand-gold/70" />
-                    {t('completedProjects')}
-                  </Link>
-                </div>
-              </div>
+              <MobileProjectsAccordion
+                isOpen={isProjectsOpen}
+                onToggle={onToggleProjects}
+                onClose={onClose}
+              />
             </div>
 
             {/* Payment */}
@@ -187,9 +110,9 @@ const MobileNav = memo(function MobileNav({
               className="transition-all duration-300 ease-out"
               style={getStaggerStyle(isOpen, NAV_LINKS.length + 1)}
             >
-              <MobileLink href="/payment" isActive={currentPath === '/payment'}>
+              <MobileNavLink href="/payment" isActive={currentPath === '/payment'}>
                 {t('payment')}
-              </MobileLink>
+              </MobileNavLink>
             </div>
 
             {/* Contact */}
@@ -197,9 +120,9 @@ const MobileNav = memo(function MobileNav({
               className="transition-all duration-300 ease-out"
               style={getStaggerStyle(isOpen, NAV_LINKS.length + 2)}
             >
-              <MobileLink href="/contact" isActive={currentPath === '/contact'}>
+              <MobileNavLink href="/contact" isActive={currentPath === '/contact'}>
                 {t('contactUs')}
-              </MobileLink>
+              </MobileNavLink>
             </div>
 
             {/* Lucky Draw */}
@@ -228,20 +151,7 @@ const MobileNav = memo(function MobileNav({
             className="mt-6 flex flex-col gap-2.5 transition-all duration-300 ease-out min-[380px]:gap-3"
             style={getStaggerStyle(isOpen, NAV_LINKS.length + 4)}
           >
-            <Link
-              href="/login"
-              onClick={onClose}
-              className="border-brand-navy dark:border-brand-gold/45 text-brand-navy dark:text-brand-gold block w-full rounded-full border py-2.5 text-center text-[clamp(12px,3.5vw,14px)] font-semibold tracking-widest uppercase transition-colors hover:bg-gray-50 dark:hover:bg-zinc-900"
-            >
-              {t('clientLogin')}
-            </Link>
-            <Link
-              href="/registration"
-              onClick={onClose}
-              className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy block w-full rounded-full py-2.5 text-center text-[clamp(12px,3.5vw,14px)] font-semibold tracking-widest text-white uppercase"
-            >
-              {t('registerNow')}
-            </Link>
+            <MobileNavActions onClose={onClose} />
           </div>
 
           {/* Footer */}
@@ -253,28 +163,7 @@ const MobileNav = memo(function MobileNav({
               transform: isOpen ? 'translateY(0)' : 'translateY(0.8rem)',
             }}
           >
-            <p className="text-brand-gold text-[10px] font-bold tracking-widest uppercase">
-              {tc('siteName')}
-            </p>
-            <p className="mt-1 text-[11px] text-gray-400 dark:text-gray-500">
-              {tc('tagline')?.includes('Premium') ? tc('tagline') : (tc('subBrand') ?? '')}
-            </p>
-            <div className="mt-3.5 flex flex-col gap-2">
-              <a
-                href={PHONE_HREF}
-                className="hover:text-brand-gold flex items-center gap-2 text-xs font-medium text-gray-600 transition-colors dark:text-gray-300"
-              >
-                <Phone size={13} className="text-brand-gold" />
-                +91-73000-07643
-              </a>
-              <a
-                href="mailto:info@sviinfrasolutions.com"
-                className="hover:text-brand-gold flex items-center gap-2 text-xs font-medium text-gray-600 transition-colors dark:text-gray-300"
-              >
-                <Mail size={13} className="text-brand-gold" />
-                info@sviinfrasolutions.com
-              </a>
-            </div>
+            <MobileNavFooter />
           </div>
         </div>
       </div>

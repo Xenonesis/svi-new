@@ -46,28 +46,52 @@ const __dirname = path.dirname(__filename);
 export const ENVELOPE_PREFIX = '[impeccable@1]';
 
 export const ALLOWED_EXTS = new Set([
-  '.tsx', '.jsx', '.html', '.htm', '.vue', '.svelte', '.astro',
-  '.css', '.scss', '.sass', '.less', '.ts', '.js',
+  '.tsx',
+  '.jsx',
+  '.html',
+  '.htm',
+  '.vue',
+  '.svelte',
+  '.astro',
+  '.css',
+  '.scss',
+  '.sass',
+  '.less',
+  '.ts',
+  '.js',
 ]);
 
 export const ACK_EXTS = new Set([
-  '.tsx', '.jsx', '.html', '.htm', '.vue', '.svelte', '.astro',
-  '.css', '.scss', '.sass', '.less',
+  '.tsx',
+  '.jsx',
+  '.html',
+  '.htm',
+  '.vue',
+  '.svelte',
+  '.astro',
+  '.css',
+  '.scss',
+  '.sass',
+  '.less',
 ]);
 
 // Hard-skip regex for sensitive files. Cannot be turned off via config.
 // Match tokenized secret/credential filenames, not UI names such as
 // CredentialForm.tsx, SecretPage.jsx, or secretary-dashboard.vue.
-export const SENSITIVE_PATH = new RegExp([
-  String.raw`(?:^|[/\\])\.env(?:\.|$)`,
-  String.raw`(?:^|[/\\])\.git(?:[/\\]|$)`,
-  String.raw`(?:^|[/\\])id_rsa(?:$|[._-])[^/\\]*$`,
-  String.raw`(?:^|[/\\])[^/\\]*\.pem$`,
-  String.raw`(?:^|[/\\])(?:[^/\\]*[._-])?(?:secret|secrets|credential|credentials)(?=[._-])[^/\\]*\.(?:json|ya?ml|toml|ini|conf|config|env|txt|key|cert|crt|pem|js|ts)$`,
-].join('|'), 'i');
+export const SENSITIVE_PATH = new RegExp(
+  [
+    String.raw`(?:^|[/\\])\.env(?:\.|$)`,
+    String.raw`(?:^|[/\\])\.git(?:[/\\]|$)`,
+    String.raw`(?:^|[/\\])id_rsa(?:$|[._-])[^/\\]*$`,
+    String.raw`(?:^|[/\\])[^/\\]*\.pem$`,
+    String.raw`(?:^|[/\\])(?:[^/\\]*[._-])?(?:secret|secrets|credential|credentials)(?=[._-])[^/\\]*\.(?:json|ya?ml|toml|ini|conf|config|env|txt|key|cert|crt|pem|js|ts)$`,
+  ].join('|'),
+  'i'
+);
 
 // Hard-skip regex for generated, lock, minified, and build-output paths.
-export const GENERATED_PATH = /(?:\.generated\.[a-z]+$|\.d\.ts$|\.min\.[a-z]+$|[/\\]node_modules[/\\]|[/\\](?:dist|build|out|\.next|\.cache|coverage)[/\\]|[/\\]?[^/\\]+\.lock(?:\.json)?$)/i;
+export const GENERATED_PATH =
+  /(?:\.generated\.[a-z]+$|\.d\.ts$|\.min\.[a-z]+$|[/\\]node_modules[/\\]|[/\\](?:dist|build|out|\.next|\.cache|coverage)[/\\]|[/\\]?[^/\\]+\.lock(?:\.json)?$)/i;
 
 export const TRUTHY = /^(1|true|yes|on)$/i;
 
@@ -131,15 +155,21 @@ export function getPendingPath(cwd) {
 }
 
 export function resolveProjectCwd(event, fallback = process.cwd()) {
-  return event?.cwd
-    || (Array.isArray(event?.workspace_roots) && event.workspace_roots[0])
-    || envProjectDir(fallback)
-    || fallback;
+  return (
+    event?.cwd ||
+    (Array.isArray(event?.workspace_roots) && event.workspace_roots[0]) ||
+    envProjectDir(fallback) ||
+    fallback
+  );
 }
 
 function looksLikeProjectRoot(dir) {
   return ['.git', 'package.json', '.impeccable'].some((marker) => {
-    try { return fs.existsSync(path.join(dir, marker)); } catch { return false; }
+    try {
+      return fs.existsSync(path.join(dir, marker));
+    } catch {
+      return false;
+    }
   });
 }
 
@@ -191,7 +221,9 @@ function hookSection(raw) {
 
 function detectorSection(raw) {
   if (!raw || typeof raw !== 'object') return null;
-  return raw.detector && typeof raw.detector === 'object' && !Array.isArray(raw.detector) ? raw.detector : null;
+  return raw.detector && typeof raw.detector === 'object' && !Array.isArray(raw.detector)
+    ? raw.detector
+    : null;
 }
 
 function numberOr(value, fallback) {
@@ -212,7 +244,11 @@ function cloneDefaultConfig() {
 
 function applyDetectorConfigSource(config, raw) {
   if (!raw || typeof raw !== 'object') return config;
-  if (raw.designSystem && typeof raw.designSystem === 'object' && !Array.isArray(raw.designSystem)) {
+  if (
+    raw.designSystem &&
+    typeof raw.designSystem === 'object' &&
+    !Array.isArray(raw.designSystem)
+  ) {
     config.designSystem = {
       ...config.designSystem,
       enabled: raw.designSystem.enabled === false ? false : true,
@@ -247,7 +283,7 @@ function normalizeExtensionEntries(entries) {
     let ext = raw.trim().toLowerCase();
     if (!ext) continue;
     if (!ext.startsWith('.')) ext = `.${ext}`;
-    const engine = (!(typeof entry === 'string') && entry?.engine === 'text') ? 'text' : 'html';
+    const engine = !(typeof entry === 'string') && entry?.engine === 'text' ? 'text' : 'html';
     out.push({ ext, engine });
   }
   return out;
@@ -268,8 +304,11 @@ export function matchConfiguredExtension(filePath, extensions) {
   // entry regardless of config order.
   let best = null;
   for (const entry of normalizeExtensionEntries(extensions)) {
-    if (name.length > entry.ext.length && name.endsWith(entry.ext)
-      && (!best || entry.ext.length > best.ext.length)) {
+    if (
+      name.length > entry.ext.length &&
+      name.endsWith(entry.ext) &&
+      (!best || entry.ext.length > best.ext.length)
+    ) {
       best = entry;
     }
   }
@@ -311,7 +350,9 @@ export function normalizeIgnoreValue(value) {
 }
 
 function normalizeIgnoreRule(rule) {
-  return String(rule || '').trim().toLowerCase();
+  return String(rule || '')
+    .trim()
+    .toLowerCase();
 }
 
 function colorIgnoreKey(value) {
@@ -321,7 +362,9 @@ function colorIgnoreKey(value) {
 }
 
 function parseIgnoreColor(value) {
-  const text = String(value || '').trim().toLowerCase();
+  const text = String(value || '')
+    .trim()
+    .toLowerCase();
   if (!text) return null;
 
   const hex = text.match(/^#([0-9a-f]{3,4}|[0-9a-f]{6}|[0-9a-f]{8})$/i);
@@ -373,15 +416,24 @@ function splitColorArgs(body) {
   const text = String(body || '').trim();
   if (!text) return [];
   if (text.includes(',')) {
-    const parts = text.split(',').map((part) => part.trim()).filter(Boolean);
+    const parts = text
+      .split(',')
+      .map((part) => part.trim())
+      .filter(Boolean);
     const last = parts[parts.length - 1];
     if (last && last.includes('/')) {
-      const split = last.split('/').map((part) => part.trim()).filter(Boolean);
+      const split = last
+        .split('/')
+        .map((part) => part.trim())
+        .filter(Boolean);
       return [...parts.slice(0, -1), ...split];
     }
     return parts;
   }
-  return text.replace(/\s*\/\s*/g, ' / ').split(/\s+/).filter((part) => part && part !== '/');
+  return text
+    .replace(/\s*\/\s*/g, ' / ')
+    .split(/\s+/)
+    .filter((part) => part && part !== '/');
 }
 
 function parseRgbChannel(raw) {
@@ -433,9 +485,10 @@ function hslToRgb(hue, saturation, lightness, alpha) {
     const gray = clampByte(Math.round(lightness * 255));
     return { r: gray, g: gray, b: gray, a: alpha };
   }
-  const q = lightness < 0.5
-    ? lightness * (1 + saturation)
-    : lightness + saturation - lightness * saturation;
+  const q =
+    lightness < 0.5
+      ? lightness * (1 + saturation)
+      : lightness + saturation - lightness * saturation;
   const p = 2 * lightness - q;
   const toRgb = (t) => {
     let channel = t;
@@ -476,7 +529,9 @@ export function normalizeIgnoreValueEntries(entries) {
     const normalized = { rule, value };
     const files = uniqueStrings([
       ...(typeof entry.file === 'string' && entry.file.trim() ? [entry.file.trim()] : []),
-      ...(Array.isArray(entry.files) ? entry.files.filter(v => typeof v === 'string' && v.trim()).map(v => v.trim()) : []),
+      ...(Array.isArray(entry.files)
+        ? entry.files.filter((v) => typeof v === 'string' && v.trim()).map((v) => v.trim())
+        : []),
     ]);
     if (files.length > 0) normalized.files = files;
     if (typeof entry.reason === 'string' && entry.reason.trim()) {
@@ -555,13 +610,16 @@ export function ensureHookGitExcludes(cwd = process.cwd()) {
     const markerClose = `${HOOK_IGNORE_MARKER_CLOSE} ${markerSuffix}`;
     const existing = fs.existsSync(target.path) ? fs.readFileSync(target.path, 'utf-8') : '';
     const block = [markerOpen, ...patterns, markerClose].join('\n');
-    const markerRe = new RegExp(`${escapeRegExp(markerOpen)}[\\s\\S]*?${escapeRegExp(markerClose)}`);
+    const markerRe = new RegExp(
+      `${escapeRegExp(markerOpen)}[\\s\\S]*?${escapeRegExp(markerClose)}`
+    );
 
     let updated;
     if (markerRe.test(existing)) {
       updated = existing.replace(markerRe, block);
     } else {
-      const prefix = existing.length === 0 ? '' : existing.endsWith('\n') ? existing : `${existing}\n`;
+      const prefix =
+        existing.length === 0 ? '' : existing.endsWith('\n') ? existing : `${existing}\n`;
       updated = `${prefix}${prefix.endsWith('\n\n') || prefix === '' ? '' : '\n'}${block}\n`;
     }
 
@@ -662,8 +720,15 @@ function globToRegex(glob) {
       i += 1;
     } else if (c === '{') {
       const end = glob.indexOf('}', i);
-      if (end === -1) { re += '\\{'; i += 1; continue; }
-      const parts = glob.slice(i + 1, end).split(',').map((p) => p.replace(/[.+^$()|[\]\\]/g, '\\$&'));
+      if (end === -1) {
+        re += '\\{';
+        i += 1;
+        continue;
+      }
+      const parts = glob
+        .slice(i + 1, end)
+        .split(',')
+        .map((p) => p.replace(/[.+^$()|[\]\\]/g, '\\$&'));
       re += `(?:${parts.join('|')})`;
       i = end + 1;
     } else if (/[.+^$()|[\]\\]/.test(c)) {
@@ -836,7 +901,9 @@ function findingCacheKey(finding) {
   if (line > 0 && value) return `${finding.antipattern}:${line}:${value}`;
   if (line > 0) return `${finding.antipattern}:${line}`;
   if (value) return `${finding.antipattern}:0:${value}`;
-  const snippet = String(finding?.snippet || '').trim().slice(0, 80);
+  const snippet = String(finding?.snippet || '')
+    .trim()
+    .slice(0, 80);
   return snippet ? `${finding.antipattern}:0:${snippet}` : `${finding.antipattern}:0`;
 }
 
@@ -854,9 +921,7 @@ export function renderTemplate(findings, filePath, config, opts = {}) {
 
   const header = `${ENVELOPE_PREFIX} Design hook findings requiring review in ${display} (${total} issue(s)):`;
   const lines = shown.map((f) => formatFindingLine(f));
-  const more = remaining > 0
-    ? `... and ${remaining} more (see /impeccable audit).`
-    : null;
+  const more = remaining > 0 ? `... and ${remaining} more (see /impeccable audit).` : null;
   const footer = directiveFooter(display);
 
   const blocks = [header, ...lines];
@@ -872,7 +937,9 @@ export function renderTemplate(findings, filePath, config, opts = {}) {
 }
 
 function renderGroupedTemplate(groups, config, opts = {}) {
-  const realGroups = groups.filter((group) => Array.isArray(group.findings) && group.findings.length > 0);
+  const realGroups = groups.filter(
+    (group) => Array.isArray(group.findings) && group.findings.length > 0
+  );
   if (realGroups.length === 0) return '';
   if (realGroups.length === 1) {
     const [group] = realGroups;
@@ -912,13 +979,14 @@ function renderGroupedTemplate(groups, config, opts = {}) {
 }
 
 function clampGroupedToBudget(header, lines, footer, maxChars) {
-  const assemble = (linesArr, omitted) => [
-    header,
-    ...linesArr,
-    ...(omitted ? ['... and more (see /impeccable audit).'] : []),
-    '',
-    footer,
-  ].join('\n');
+  const assemble = (linesArr, omitted) =>
+    [
+      header,
+      ...linesArr,
+      ...(omitted ? ['... and more (see /impeccable audit).'] : []),
+      '',
+      footer,
+    ].join('\n');
 
   let working = lines.slice();
   let omitted = false;
@@ -968,7 +1036,9 @@ function formatFindingLine(f) {
   const ignoreSegment = ignoreCommand
     ? ` If the user explicitly confirms this value is intentional: \`${ignoreCommand}\`.`
     : '';
-  return `${prefix} [${f.antipattern}] ${nameSegment} ${desc}${ignoreSegment}`.replace(/\s+/g, ' ').trim();
+  return `${prefix} [${f.antipattern}] ${nameSegment} ${desc}${ignoreSegment}`
+    .replace(/\s+/g, ' ')
+    .trim();
 }
 
 function formatFindingIgnoreCommand(finding) {
@@ -1048,9 +1118,13 @@ export function resolveHarness(env = {}, event = null) {
   if (explicit === 'claude' || explicit === 'codex') return 'claude';
   // GitHub Copilot's postToolUse event uses camelCase `toolName`/`toolArgs` and
   // has no `tool_name`/`tool_input`. That shape is the discriminator.
-  if (event && typeof event === 'object'
-    && (typeof event.toolName === 'string' || event.toolArgs !== undefined)
-    && event.tool_name === undefined && event.tool_input === undefined) {
+  if (
+    event &&
+    typeof event === 'object' &&
+    (typeof event.toolName === 'string' || event.toolArgs !== undefined) &&
+    event.tool_name === undefined &&
+    event.tool_input === undefined
+  ) {
     return 'github';
   }
   if (typeof event?.conversation_id === 'string' && event.conversation_id) return 'cursor';
@@ -1099,7 +1173,9 @@ function looksLikeApplyPatch(rawArgs) {
   try {
     const parsed = JSON.parse(rawArgs);
     if (parsed && typeof parsed === 'object') return false;
-  } catch { /* not JSON → genuine raw patch */ }
+  } catch {
+    /* not JSON → genuine raw patch */
+  }
   return true;
 }
 
@@ -1120,7 +1196,8 @@ function normalizeGitHubEvent(event, projectCwd) {
   const cwd = event.cwd || envProjectDir(projectCwd) || projectCwd;
   const sessionId = event.sessionId || event.session_id || 'unknown';
   const toolName = event.toolName || event.tool_name || null;
-  const toolInput = event.tool_input && typeof event.tool_input === 'object' ? { ...event.tool_input } : {};
+  const toolInput =
+    event.tool_input && typeof event.tool_input === 'object' ? { ...event.tool_input } : {};
   const rawArgs = event.toolArgs;
 
   let normalizedToolName = toolName;
@@ -1153,10 +1230,11 @@ export function normalizeHookEvent(event, projectCwd, harness = 'claude') {
   if (harness === 'github') return normalizeGitHubEvent(event, projectCwd);
   if (harness !== 'cursor') return event;
 
-  const cwd = event.cwd
-    || (Array.isArray(event.workspace_roots) && event.workspace_roots[0])
-    || envProjectDir(projectCwd)
-    || projectCwd;
+  const cwd =
+    event.cwd ||
+    (Array.isArray(event.workspace_roots) && event.workspace_roots[0]) ||
+    envProjectDir(projectCwd) ||
+    projectCwd;
   const sessionId = event.session_id || event.conversation_id || 'unknown';
 
   const ti = event.tool_input && typeof event.tool_input === 'object' ? event.tool_input : {};
@@ -1186,14 +1264,27 @@ function envProjectDir(fallback) {
 const UI_CODE_EXTS = new Set(['.jsx', '.tsx', '.vue', '.svelte', '.astro']);
 const STYLE_EXTS = new Set(['.css', '.scss', '.sass', '.less']);
 const CO_SCAN_STYLE_NAMES = [
-  'styles.css', 'styles.scss', 'styles.sass', 'styles.less',
-  'index.css', 'index.scss', 'index.sass', 'index.less',
-  'global.css', 'global.scss', 'global.sass', 'global.less',
-  'globals.css', 'globals.scss', 'globals.sass', 'globals.less',
+  'styles.css',
+  'styles.scss',
+  'styles.sass',
+  'styles.less',
+  'index.css',
+  'index.scss',
+  'index.sass',
+  'index.less',
+  'global.css',
+  'global.scss',
+  'global.sass',
+  'global.less',
+  'globals.css',
+  'globals.scss',
+  'globals.sass',
+  'globals.less',
 ];
 const MAX_SCAN_TARGETS = 6;
 
-const STATIC_STYLE_IMPORT_RE = /import\s+(?:[\w*{}\s,$]+\s+from\s+)?['"]([^'"]+\.(?:css|scss|sass|less))['"]/gi;
+const STATIC_STYLE_IMPORT_RE =
+  /import\s+(?:[\w*{}\s,$]+\s+from\s+)?['"]([^'"]+\.(?:css|scss|sass|less))['"]/gi;
 
 function hasPathTraversal(filePath) {
   return typeof filePath === 'string' && filePath.includes('..');
@@ -1274,7 +1365,7 @@ export function expandScanTargets(primaryTargets, projectCwd) {
   const baseCwd = projectCwd || process.cwd();
   const add = (p) => {
     if (ordered.length >= MAX_SCAN_TARGETS) return;
-    const abs = hasPathTraversal(p) ? p : (path.isAbsolute(p) ? p : path.resolve(baseCwd, p));
+    const abs = hasPathTraversal(p) ? p : path.isAbsolute(p) ? p : path.resolve(baseCwd, p);
     if (seen.has(abs)) return;
     seen.add(abs);
     ordered.push(abs);
@@ -1291,7 +1382,11 @@ export function expandScanTargets(primaryTargets, projectCwd) {
     if (STYLE_EXTS.has(ext) || !UI_CODE_EXTS.has(ext)) continue;
 
     let content = '';
-    try { content = fs.readFileSync(p, 'utf-8'); } catch { /* unreadable primary */ }
+    try {
+      content = fs.readFileSync(p, 'utf-8');
+    } catch {
+      /* unreadable primary */
+    }
 
     for (const imp of parseStaticStyleImports(content, p, projectCwd)) {
       add(imp);
@@ -1314,7 +1409,11 @@ export function writeAuditLog(env, entry, cwd = process.cwd()) {
   // Env wins; otherwise fall back to the unified config's hook.auditLog path.
   let target = env?.IMPECCABLE_HOOK_LOG;
   if (!target || typeof target !== 'string') {
-    try { target = readConfig(baseCwd).auditLog; } catch { target = null; }
+    try {
+      target = readConfig(baseCwd).auditLog;
+    } catch {
+      target = null;
+    }
   }
   if (!target || typeof target !== 'string') return false;
   try {
@@ -1386,7 +1485,8 @@ export function setDetectorForTesting(impl) {
 // session" so the model knows it's a re-mind, not a new finding.
 // ────────────────────────────────────────────────────────────────────────
 
-const STEER_LINE = 'That does not mean the design is good: keep following the project design system and the impeccable skill guidance.';
+const STEER_LINE =
+  'That does not mean the design is good: keep following the project design system and the impeccable skill guidance.';
 
 export function renderCleanAck(filePath, opts = {}) {
   const cwd = opts.cwd || process.cwd();
@@ -1461,7 +1561,13 @@ function directiveFooter(display, opts = {}) {
  *
  * Never throws. All errors are converted to `exitCode: 0` + audit entry.
  */
-export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = Date.now, detector } = {}) {
+export async function runHook({
+  stdinJson,
+  env = {},
+  cwd = process.cwd(),
+  now = Date.now,
+  detector,
+} = {}) {
   const audit = { ts: new Date(now()).toISOString(), event: 'PostToolUse' };
   const result = (extra) => ({ exitCode: 0, stdout: '', audit: { ...audit, ...extra } });
 
@@ -1511,7 +1617,7 @@ export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = 
 
     const cache = readCache(projectCwd);
     const sessionId = event.session_id || 'unknown';
-    const det = detector || await loadDetector();
+    const det = detector || (await loadDetector());
     if (!det || typeof det.detectText !== 'function') {
       // Cache is not mutated yet at this point; nothing to persist.
       return result({ skipped: 'detector-missing', durationMs: Date.now() - started });
@@ -1548,7 +1654,10 @@ export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = 
       }
 
       const relForMatch = relativize(filePath, projectCwd);
-      if (matchesAnyGlob(relForMatch, config.ignoreFiles) || matchesAnyGlob(filePath, config.ignoreFiles)) {
+      if (
+        matchesAnyGlob(relForMatch, config.ignoreFiles) ||
+        matchesAnyGlob(filePath, config.ignoreFiles)
+      ) {
         lastSkip = 'config-ignore-file';
         continue;
       }
@@ -1578,11 +1687,21 @@ export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = 
       let detectorThrew = false;
       const useHtmlEngine = configuredExt
         ? configuredExt.engine === 'html'
-        : (ext === '.html' || ext === '.htm');
+        : ext === '.html' || ext === '.htm';
       if (useHtmlEngine && typeof det.detectHtml === 'function') {
-        try { findings = await det.detectHtml(filePath, scanOptions); } catch { findings = []; detectorThrew = true; }
+        try {
+          findings = await det.detectHtml(filePath, scanOptions);
+        } catch {
+          findings = [];
+          detectorThrew = true;
+        }
       } else {
-        try { findings = await det.detectText(content, filePath, scanOptions); } catch { findings = []; detectorThrew = true; }
+        try {
+          findings = await det.detectText(content, filePath, scanOptions);
+        } catch {
+          findings = [];
+          detectorThrew = true;
+        }
       }
 
       const filtered = filterFindings(findings || [], content, ext, config);
@@ -1615,14 +1734,19 @@ export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = 
     // `.impeccable/` dir marks a project that opted in. A non-UI edit, or a
     // clean UI edit in a project with no Impeccable footprint, must be a
     // no-op on disk (issues #344, #305).
-    if (freshGroups.length > 0
-      || (cacheDirty && fs.existsSync(path.join(projectCwd, '.impeccable')))) {
+    if (
+      freshGroups.length > 0 ||
+      (cacheDirty && fs.existsSync(path.join(projectCwd, '.impeccable')))
+    ) {
       persistCache(projectCwd, cache);
     }
 
     if (freshGroups.length > 0) {
       const firstGroup = freshGroups[0];
-      const text = appendDesignSystemNote(renderGroupedTemplate(freshGroups, config, { cwd: projectCwd }), scanOptions);
+      const text = appendDesignSystemNote(
+        renderGroupedTemplate(freshGroups, config, { cwd: projectCwd }),
+        scanOptions
+      );
       const allFindings = freshGroups.flatMap((group) => group.findings);
       return {
         exitCode: 0,
@@ -1654,7 +1778,10 @@ export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = 
     }
 
     if (pendingWinner && shouldEmitAckForFile(pendingWinner.filePath, config)) {
-      const text = appendDesignSystemNote(renderPendingAck(pendingWinner.filePath, pendingWinner.known, { cwd: projectCwd }), scanOptions);
+      const text = appendDesignSystemNote(
+        renderPendingAck(pendingWinner.filePath, pendingWinner.known, { cwd: projectCwd }),
+        scanOptions
+      );
       return {
         exitCode: 0,
         stdout: payload(text, 'PostToolUse', harness),
@@ -1688,7 +1815,10 @@ export async function runHook({ stdinJson, env = {}, cwd = process.cwd(), now = 
     }
 
     if (cleanWinner && shouldEmitAckForFile(cleanWinner.filePath, config)) {
-      const text = appendDesignSystemNote(renderCleanAck(cleanWinner.filePath, { cwd: projectCwd }), scanOptions);
+      const text = appendDesignSystemNote(
+        renderCleanAck(cleanWinner.filePath, { cwd: projectCwd }),
+        scanOptions
+      );
       return {
         exitCode: 0,
         stdout: payload(text, 'PostToolUse', harness),

@@ -9,8 +9,7 @@ import { withSentryConfig } from '@sentry/nextjs';
 import withSerwistInit from '@serwist/next';
 
 // Dev-only allowance so impeccable live mode can load.
-const __impeccableLiveDev =
-  process.env.NODE_ENV === "development" ? " http://localhost:8400" : "";
+const __impeccableLiveDev = process.env.NODE_ENV === 'development' ? ' http://localhost:8400' : '';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -83,8 +82,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value:
-              `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com https://js.hcaptcha.com${__impeccableLiveDev}; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://hcaptcha.com https://*.hcaptcha.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://www.google-analytics.com https://*.openstreetmap.org https://api.qrserver.com; media-src 'self' https://*.supabase.co; connect-src 'self' https://*.sentry.io https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://www.google-analytics.com https://hcaptcha.com https://*.hcaptcha.com https://*.openstreetmap.org https://api.qrserver.com${__impeccableLiveDev}; frame-src 'self' https://newassets.hcaptcha.com https://js.hcaptcha.com; frame-ancestors 'none';`,
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com https://js.hcaptcha.com${__impeccableLiveDev}; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://hcaptcha.com https://*.hcaptcha.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://www.google-analytics.com https://*.openstreetmap.org https://api.qrserver.com; media-src 'self' https://*.supabase.co; connect-src 'self' https://*.sentry.io https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://www.google-analytics.com https://hcaptcha.com https://*.hcaptcha.com https://*.openstreetmap.org https://api.qrserver.com${__impeccableLiveDev}; frame-src 'self' https://newassets.hcaptcha.com https://js.hcaptcha.com; frame-ancestors 'none';`,
           },
         ],
       },

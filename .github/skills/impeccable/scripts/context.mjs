@@ -49,9 +49,13 @@ const WORKSPACE_DISCOVERY_IGNORED_DIRS = new Set([
 // silent on failure: a network problem, sandbox, or missing cache must never
 // block context output or print an error.
 
-const UPDATE_HOST = (process.env.IMPECCABLE_UPDATE_HOST || 'https://impeccable.style').replace(/\/$/, '');
+const UPDATE_HOST = (process.env.IMPECCABLE_UPDATE_HOST || 'https://impeccable.style').replace(
+  /\/$/,
+  ''
+);
 const UPDATE_CACHE_PATH =
-  process.env.IMPECCABLE_UPDATE_CACHE || path.join(os.homedir(), '.impeccable', 'update-check.json');
+  process.env.IMPECCABLE_UPDATE_CACHE ||
+  path.join(os.homedir(), '.impeccable', 'update-check.json');
 const CHECK_INTERVAL_MS = 24 * 60 * 60 * 1000; // throttle the network poll to once a day
 const RENOTIFY_INTERVAL_MS = 7 * 24 * 60 * 60 * 1000; // don't re-surface the same version for a week
 const FETCH_TIMEOUT_MS = 1200;
@@ -87,16 +91,17 @@ function resolveContext(cwd = process.cwd(), options = {}) {
   const absCwd = path.resolve(cwd);
   const project = resolveProject(absCwd, options);
   const projectContextDir = resolveLocalContextDir(project.projectRoot);
-  const rootContextDir = project.isMonorepo && project.repoRoot !== project.projectRoot
-    ? resolveLocalContextDir(project.repoRoot)
-    : null;
+  const rootContextDir =
+    project.isMonorepo && project.repoRoot !== project.projectRoot
+      ? resolveLocalContextDir(project.repoRoot)
+      : null;
 
   let productPath =
-    (projectContextDir ? firstExisting(projectContextDir, PRODUCT_NAMES) : null)
-    || (rootContextDir ? firstExisting(rootContextDir, PRODUCT_NAMES) : null);
+    (projectContextDir ? firstExisting(projectContextDir, PRODUCT_NAMES) : null) ||
+    (rootContextDir ? firstExisting(rootContextDir, PRODUCT_NAMES) : null);
   let designPath =
-    (projectContextDir ? firstExisting(projectContextDir, DESIGN_NAMES) : null)
-    || (rootContextDir ? firstExisting(rootContextDir, DESIGN_NAMES) : null);
+    (projectContextDir ? firstExisting(projectContextDir, DESIGN_NAMES) : null) ||
+    (rootContextDir ? firstExisting(rootContextDir, DESIGN_NAMES) : null);
 
   let envContextDir = null;
   if (!productPath && !designPath) {
@@ -130,10 +135,10 @@ export function resolveTargetSelection(cwd = process.cwd(), options = {}) {
   if (hasTargetOption(options)) return null;
   const project = resolveProject(cwd);
   if (
-    !project.isMonorepo
-    || !project.projectRoot
-    || !project.repoRoot
-    || path.resolve(project.projectRoot) !== path.resolve(project.repoRoot)
+    !project.isMonorepo ||
+    !project.projectRoot ||
+    !project.repoRoot ||
+    path.resolve(project.projectRoot) !== path.resolve(project.repoRoot)
   ) {
     return null;
   }
@@ -234,7 +239,12 @@ function findMonorepoRoot(startDir) {
 }
 
 function isMonorepoRoot(dir) {
-  if (readWorkspacePatterns(dir).some((pattern) => !normalizeWorkspacePattern(pattern).startsWith('!'))) return true;
+  if (
+    readWorkspacePatterns(dir).some(
+      (pattern) => !normalizeWorkspacePattern(pattern).startsWith('!')
+    )
+  )
+    return true;
   if (!MONOREPO_MARKER_FILES.some((file) => fs.existsSync(path.join(dir, file)))) return false;
   return hasFallbackWorkspaceChildren(dir);
 }
@@ -252,7 +262,8 @@ function hasFallbackWorkspaceChildren(dir) {
     } catch {
       continue;
     }
-    if (entries.some((entry) => entry.isDirectory() && !isIgnoredWorkspaceDiscoveryDir(entry.name))) return true;
+    if (entries.some((entry) => entry.isDirectory() && !isIgnoredWorkspaceDiscoveryDir(entry.name)))
+      return true;
   }
   return false;
 }
@@ -281,22 +292,24 @@ function discoverTargetCandidates(repoRoot) {
       }
     }
   }
-  return [...roots.entries()]
-    .filter(([rel]) => rel && !rel.startsWith('..'))
-    // Honor negated workspace patterns (e.g. "!packages/internal"). resolveWorkspaceProjectRoot
-    // sends an excluded package back to the repo root, so an excluded folder must not appear as a
-    // selectable target — choosing it would silently resolve to the root instead.
-    .filter(([rel]) => !isExcludedByWorkspacePattern(rel.split('/').filter(Boolean), patterns))
-    .sort(([a], [b]) => a.localeCompare(b))
-    .map(([rel, root]) => {
-      const targetExample = findTargetExample(repoRoot, root);
-      return {
-        name: path.basename(root),
-        path: rel,
-        targetExample,
-        ...resolveCandidateContextSummary(repoRoot, root, targetExample),
-      };
-    });
+  return (
+    [...roots.entries()]
+      .filter(([rel]) => rel && !rel.startsWith('..'))
+      // Honor negated workspace patterns (e.g. "!packages/internal"). resolveWorkspaceProjectRoot
+      // sends an excluded package back to the repo root, so an excluded folder must not appear as a
+      // selectable target — choosing it would silently resolve to the root instead.
+      .filter(([rel]) => !isExcludedByWorkspacePattern(rel.split('/').filter(Boolean), patterns))
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([rel, root]) => {
+        const targetExample = findTargetExample(repoRoot, root);
+        return {
+          name: path.basename(root),
+          path: rel,
+          targetExample,
+          ...resolveCandidateContextSummary(repoRoot, root, targetExample),
+        };
+      })
+  );
 }
 
 function resolveCandidateContextSummary(repoRoot, projectRoot, targetPath) {
@@ -374,14 +387,17 @@ function expandSimplePattern(repoRoot, patternSegments, index = 0, current = rep
   for (const entry of entries) {
     if (!entry.isDirectory() || isIgnoredWorkspaceDiscoveryDir(entry.name)) continue;
     if (!segmentMatches(segment, entry.name)) continue;
-    roots.push(...expandSimplePattern(repoRoot, patternSegments, index + 1, path.join(current, entry.name)));
+    roots.push(
+      ...expandSimplePattern(repoRoot, patternSegments, index + 1, path.join(current, entry.name))
+    );
   }
   return roots;
 }
 
 function directChildDirs(dir) {
   try {
-    return fs.readdirSync(dir, { withFileTypes: true })
+    return fs
+      .readdirSync(dir, { withFileTypes: true })
       .filter((entry) => entry.isDirectory() && !isIgnoredWorkspaceDiscoveryDir(entry.name))
       .map((entry) => path.join(dir, entry.name));
   } catch {
@@ -406,12 +422,12 @@ function walkDirs(root, visit) {
 
 function isCandidateProjectRoot(dir) {
   return !!(
-    fs.existsSync(path.join(dir, 'package.json'))
-    || firstExisting(dir, [...PRODUCT_NAMES, ...DESIGN_NAMES])
-    || fs.existsSync(path.join(dir, 'src'))
-    || fs.existsSync(path.join(dir, 'app'))
-    || fs.existsSync(path.join(dir, 'pages'))
-    || fs.existsSync(path.join(dir, 'public'))
+    fs.existsSync(path.join(dir, 'package.json')) ||
+    firstExisting(dir, [...PRODUCT_NAMES, ...DESIGN_NAMES]) ||
+    fs.existsSync(path.join(dir, 'src')) ||
+    fs.existsSync(path.join(dir, 'app')) ||
+    fs.existsSync(path.join(dir, 'pages')) ||
+    fs.existsSync(path.join(dir, 'public'))
   );
 }
 
@@ -451,10 +467,7 @@ function resolveWorkspaceProjectRoot(repoRoot, targetDir) {
     }
   }
   if (excluded) return repoRoot;
-  if (
-    relSegments.length >= 2
-    && MONOREPO_FALLBACK_PROJECT_DIRS.includes(relSegments[0])
-  ) {
+  if (relSegments.length >= 2 && MONOREPO_FALLBACK_PROJECT_DIRS.includes(relSegments[0])) {
     return path.join(repoRoot, relSegments[0], relSegments[1]);
   }
   const nearest = nearestProjectLikeRoot(repoRoot, targetDir);
@@ -475,8 +488,8 @@ function nearestProjectLikeRoot(repoRoot, targetDir) {
   const stop = path.resolve(repoRoot);
   while (dir && dir !== stop) {
     if (
-      firstExisting(dir, [...PRODUCT_NAMES, ...DESIGN_NAMES])
-      || fs.existsSync(path.join(dir, 'package.json'))
+      firstExisting(dir, [...PRODUCT_NAMES, ...DESIGN_NAMES]) ||
+      fs.existsSync(path.join(dir, 'package.json'))
     ) {
       return dir;
     }
@@ -509,9 +522,8 @@ function workspacePatternMatchesRel(pattern, relSegments) {
   if (!patternSegments.length) return false;
   if (patternSegments.includes('**')) {
     const firstGlobIndex = patternSegments.findIndex((segment) => segment.includes('*'));
-    const literalPrefix = firstGlobIndex === -1
-      ? patternSegments
-      : patternSegments.slice(0, firstGlobIndex);
+    const literalPrefix =
+      firstGlobIndex === -1 ? patternSegments : patternSegments.slice(0, firstGlobIndex);
     if (relSegments.length < literalPrefix.length + 1) return false;
     for (let i = 0; i < literalPrefix.length; i++) {
       if (!segmentMatches(literalPrefix[i], relSegments[i])) return false;
@@ -644,9 +656,8 @@ function projectRootFromWorkspacePattern(repoRoot, relSegments, rawPattern) {
 
 function projectRootFromDoubleStarPattern(repoRoot, relSegments, patternSegments) {
   const firstGlobIndex = patternSegments.findIndex((segment) => segment.includes('*'));
-  const literalPrefix = firstGlobIndex === -1
-    ? patternSegments
-    : patternSegments.slice(0, firstGlobIndex);
+  const literalPrefix =
+    firstGlobIndex === -1 ? patternSegments : patternSegments.slice(0, firstGlobIndex);
   if (relSegments.length < literalPrefix.length + 1) return null;
   for (let i = 0; i < literalPrefix.length; i++) {
     if (!segmentMatches(literalPrefix[i], relSegments[i])) return null;
@@ -751,8 +762,12 @@ function writeUpdateCache(cache) {
 
 /** Compare dotted numeric versions. Returns >0 when a is newer than b. */
 function compareSemver(a, b) {
-  const pa = String(a).split('.').map(n => parseInt(n, 10) || 0);
-  const pb = String(b).split('.').map(n => parseInt(n, 10) || 0);
+  const pa = String(a)
+    .split('.')
+    .map((n) => parseInt(n, 10) || 0);
+  const pb = String(b)
+    .split('.')
+    .map((n) => parseInt(n, 10) || 0);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
     const diff = (pa[i] || 0) - (pb[i] || 0);
     if (diff !== 0) return diff;
@@ -762,7 +777,9 @@ function compareSemver(a, b) {
 
 async function fetchLatestSkillVersion() {
   try {
-    const res = await fetch(`${UPDATE_HOST}/api/version`, { signal: AbortSignal.timeout(FETCH_TIMEOUT_MS) });
+    const res = await fetch(`${UPDATE_HOST}/api/version`, {
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    });
     if (!res.ok) return null;
     const data = await res.json();
     return typeof data?.skills === 'string' ? data.skills : null;
@@ -795,8 +812,11 @@ function updateCheckDisabledByConfig(cwd = process.cwd()) {
   for (const name of ['config.json', 'config.local.json']) {
     try {
       const raw = JSON.parse(fs.readFileSync(path.join(cwd, '.impeccable', name), 'utf-8'));
-      if (raw && typeof raw === 'object' && typeof raw.updateCheck === 'boolean') value = raw.updateCheck;
-    } catch { /* missing or malformed: ignore */ }
+      if (raw && typeof raw === 'object' && typeof raw.updateCheck === 'boolean')
+        value = raw.updateCheck;
+    } catch {
+      /* missing or malformed: ignore */
+    }
   }
   return value === false;
 }
@@ -823,7 +843,11 @@ async function computeUpdateDirective(now = Date.now()) {
     if (!latest || compareSemver(latest, localVersion) <= 0) return null;
 
     // Anti-nag: surface a given version at most once per RENOTIFY window.
-    if (cache.notifiedVersion === latest && cache.notifiedAt && now - cache.notifiedAt < RENOTIFY_INTERVAL_MS) {
+    if (
+      cache.notifiedVersion === latest &&
+      cache.notifiedAt &&
+      now - cache.notifiedAt < RENOTIFY_INTERVAL_MS
+    ) {
       return null;
     }
     cache.notifiedVersion = latest;
@@ -848,7 +872,9 @@ async function cli() {
     throw err;
   }
   const targetProvided = hasTargetOption(cliOptions);
-  const targetExists = targetProvided ? pathExistsForTarget(process.cwd(), cliOptions.targetPath) : null;
+  const targetExists = targetProvided
+    ? pathExistsForTarget(process.cwd(), cliOptions.targetPath)
+    : null;
   const selection = resolveTargetSelection(process.cwd(), cliOptions);
   if (selection) {
     process.stdout.write(buildTargetSelectionDirective(selection) + '\n');
@@ -862,11 +888,11 @@ async function cli() {
     // — cheap models miss the empty case more often than the explicit one.
     const parts = [
       'NO_PRODUCT_MD: This project has no PRODUCT.md yet. ' +
-      'Follow SKILL.md Setup step 1: for `init`, `teach`, `craft`, `shape`, ' +
-      'or wording that clearly maps to a from-scratch build/shape flow, load ' +
-      'reference/init.md and write PRODUCT.md first; for any other (scoped) ' +
-      'command against existing code, proceed using the code as context and ' +
-      'offer `/impeccable init` as a suggestion (do not block).',
+        'Follow SKILL.md Setup step 1: for `init`, `teach`, `craft`, `shape`, ' +
+        'or wording that clearly maps to a from-scratch build/shape flow, load ' +
+        'reference/init.md and write PRODUCT.md first; for any other (scoped) ' +
+        'command against existing code, proceed using the code as context and ' +
+        'offer `/impeccable init` as a suggestion (do not block).',
     ];
     parts.push(buildResolvedContextDirective(ctx, cliOptions, { targetExists }));
     if (shouldWarnMissingTarget(ctx, targetProvided, targetExists)) {
@@ -908,24 +934,28 @@ function pathExistsForTarget(cwd, targetPath) {
 
 function buildResolvedContextDirective(ctx, options, { targetExists = null } = {}) {
   const targetPath = hasTargetOption(options) ? options.targetPath : null;
-  return `RESOLVED_CONTEXT:\n${JSON.stringify({
-    targetPath,
-    ...(targetPath ? { targetExists } : {}),
-    projectRoot: ctx.projectRoot,
-    repoRoot: ctx.repoRoot,
-    productPath: ctx.productPath,
-    designPath: ctx.designPath,
-  }, null, 2)}`;
+  return `RESOLVED_CONTEXT:\n${JSON.stringify(
+    {
+      targetPath,
+      ...(targetPath ? { targetExists } : {}),
+      projectRoot: ctx.projectRoot,
+      repoRoot: ctx.repoRoot,
+      productPath: ctx.productPath,
+      designPath: ctx.designPath,
+    },
+    null,
+    2
+  )}`;
 }
 
 function shouldWarnMissingTarget(ctx, targetProvided, targetExists = null) {
   if (ctx.isMonorepo && targetProvided && targetExists === false) return true;
   return !!(
-    ctx.isMonorepo
-    && (!targetProvided || targetExists === false)
-    && ctx.projectRoot
-    && ctx.repoRoot
-    && path.resolve(ctx.projectRoot) === path.resolve(ctx.repoRoot)
+    ctx.isMonorepo &&
+    (!targetProvided || targetExists === false) &&
+    ctx.projectRoot &&
+    ctx.repoRoot &&
+    path.resolve(ctx.projectRoot) === path.resolve(ctx.repoRoot)
   );
 }
 

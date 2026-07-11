@@ -36,15 +36,20 @@ function printBudgetReport() {
   const cssDir = join(NEXT_BUILD_DIR, 'static', 'css');
 
   let chunkViolations = 0;
-  const chunks = walkDir(chunksDir, ['.js']).map((f) => ({
-    name: f.replace(chunksDir, '').replace(/^[\\/]/, ''),
-    kb: statSync(f).size / 1024,
-  })).sort((a, b) => b.kb - a.kb).slice(0, 15);
+  const chunks = walkDir(chunksDir, ['.js'])
+    .map((f) => ({
+      name: f.replace(chunksDir, '').replace(/^[\\/]/, ''),
+      kb: statSync(f).size / 1024,
+    }))
+    .sort((a, b) => b.kb - a.kb)
+    .slice(0, 15);
 
   for (const chunk of chunks) {
     const over = chunk.kb > CHUNK_BUDGET_KB;
     if (over) chunkViolations++;
-    console.log(`  ${over ? '🔴' : '✅'}  ${chunk.name} — ${chunk.kb.toFixed(1)} KB${over ? ` (>${CHUNK_BUDGET_KB} KB)` : ''}`);
+    console.log(
+      `  ${over ? '🔴' : '✅'}  ${chunk.name} — ${chunk.kb.toFixed(1)} KB${over ? ` (>${CHUNK_BUDGET_KB} KB)` : ''}`
+    );
   }
 
   console.log('\n🎨  CSS Files');
@@ -53,12 +58,16 @@ function printBudgetReport() {
     const kb = statSync(f).size / 1024;
     const over = kb > CSS_BUDGET_KB;
     const name = f.replace(cssDir, '').replace(/^[\\/]/, '');
-    console.log(`  ${over ? '🔴' : '✅'}  ${name} — ${kb.toFixed(1)} KB${over ? ` (>${CSS_BUDGET_KB} KB)` : ''}`);
+    console.log(
+      `  ${over ? '🔴' : '✅'}  ${name} — ${kb.toFixed(1)} KB${over ? ` (>${CSS_BUDGET_KB} KB)` : ''}`
+    );
   }
 
   console.log('\n' + '='.repeat(60));
   if (chunkViolations > 0) {
-    console.log(`⚠️  ${chunkViolations} chunk(s) exceed ${CHUNK_BUDGET_KB} KB. Consider dynamic imports or tree-shaking.\n`);
+    console.log(
+      `⚠️  ${chunkViolations} chunk(s) exceed ${CHUNK_BUDGET_KB} KB. Consider dynamic imports or tree-shaking.\n`
+    );
   } else {
     console.log('✅  All chunks within budget.\n');
   }
