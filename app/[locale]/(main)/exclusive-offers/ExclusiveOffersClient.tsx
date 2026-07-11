@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   Percent,
@@ -56,6 +56,13 @@ export default function ExclusiveOffersClient() {
   const t = useTranslations('pages.exclusiveOffers');
 
   const [selectedSize, setSelectedSize] = useState('200 SQ. YRD.');
+  const videoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+  }, []);
   const [plotValue, setPlotValue] = useState(4000000); // ₹40 Lakhs default
 
   const rates: { [key: string]: number } = {
@@ -341,6 +348,7 @@ export default function ExclusiveOffersClient() {
 
             <div className="relative aspect-video w-full">
               <video
+                ref={videoRef}
                 controls
                 autoPlay
                 muted
@@ -350,9 +358,18 @@ export default function ExclusiveOffersClient() {
                 className="h-full w-full bg-slate-950 object-contain"
                 poster="/images/hero-poster.webp"
               >
-                <source src="/hero.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
-                <source src="/hero.vp9.webm" type='video/webm; codecs="vp9"' />
-                <source src="/hero.h264.mp4" type="video/mp4" />
+                <source
+                  src="https://rfvhjgetfbalndgtkpaa.supabase.co/storage/v1/object/public/assets/hero.av1.mp4"
+                  type='video/mp4; codecs="av01.0.05M.08"'
+                />
+                <source
+                  src="https://rfvhjgetfbalndgtkpaa.supabase.co/storage/v1/object/public/assets/hero.vp9.webm"
+                  type='video/webm; codecs="vp9"'
+                />
+                <source
+                  src="https://rfvhjgetfbalndgtkpaa.supabase.co/storage/v1/object/public/assets/hero.h264.mp4"
+                  type="video/mp4"
+                />
               </video>
             </div>
           </motion.div>
