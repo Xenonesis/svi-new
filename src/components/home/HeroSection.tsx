@@ -199,11 +199,13 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4, duration: 1 }}
       >
-        <div className="group hover:border-brand-gold/50 relative max-w-[320px] border border-white/20 bg-[#0b0c10] p-8 shadow-2xl transition-colors">
+        <div className="group hover:border-brand-gold/50 border-brand-navy/10 relative max-w-[320px] border bg-white p-8 shadow-2xl transition-colors dark:border-white/20 dark:bg-[#0b0c10]">
           <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none">
             15<span className="text-3xl">+</span>
           </h3>
-          <p className="text-sm leading-relaxed font-light text-white/70">{t('statDescription')}</p>
+          <p className="text-brand-navy/70 text-sm leading-relaxed font-light dark:text-white/70">
+            {t('statDescription')}
+          </p>
         </div>
       </motion.div>
 

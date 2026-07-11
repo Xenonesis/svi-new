@@ -817,3 +817,15 @@ table {
     animation: none !important;
   }
 }
+
+/* ============================================================
+   DotField Background Integration
+   Make top-level page sections transparent so that the global fixed 
+   DotField canvas can show through. Keep nested cards, forms,
+   and components opaque.
+   ============================================================ */
+main > section,
+main > .page-transition > section {
+  background-color: transparent !important;
+}
+
