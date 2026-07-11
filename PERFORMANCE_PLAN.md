@@ -648,7 +648,7 @@ Security configurations can affect performance. Optimize both simultaneously:
 
 ---
 
-## Phase 4: Database & Backend Optimization (Week 3–4)
+## Phase 4: Database & Backend Optimization (Week 3–4) ✅ [COMPLETED]
 
 ### 4.1 Supabase Query Optimization
 
@@ -837,7 +837,9 @@ Add to root layout once — provides real-world data beyond lab tests.
 
 ---
 
-## Phase 7: Monitoring & Continuous Improvement (Ongoing)
+## Phase 7: Monitoring & Continuous Improvement (Ongoing) ✅ [COMPLETED]
+
+> **Note on Free Tier Monitoring:** Existing `@sentry/nextjs` and `@vercel/speed-insights` setup is verified and kept as-is. Since this is on the Vercel Hobby plan, we avoid adding any _new_ heavy monitoring tools (like Datadog/Checkly) to prevent hitting event limits (100k/mo). Monitoring is considered "done" for the MVP.
 
 ### 7.1 Monthly Performance Review
 

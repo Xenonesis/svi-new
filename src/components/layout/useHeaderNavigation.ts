@@ -22,10 +22,9 @@ export function useHeaderNavigation() {
   }, []);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && window.scrollY > 10) {
-      setIsScrolled(true);
-    }
-
+    // Only use IntersectionObserver — no window.scrollY check that can
+    // cause a hydration mismatch when the page loads mid-scroll.
+    // The observer fires synchronously if the sentinel is already out of view.
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 

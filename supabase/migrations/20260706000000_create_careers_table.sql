@@ -16,12 +16,14 @@ CREATE TABLE IF NOT EXISTS public.careers (
 ALTER TABLE public.careers ENABLE ROW LEVEL SECURITY;
 
 -- Public read policy: anyone can read active listings
+DROP POLICY IF EXISTS "careers_public_read" ON public.careers;
 CREATE POLICY "careers_public_read"
   ON public.careers
   FOR SELECT
   USING (is_active = true);
 
 -- Admin full access (service role bypasses RLS, but this covers authenticated admin)
+DROP POLICY IF EXISTS "careers_admin_all" ON public.careers;
 CREATE POLICY "careers_admin_all"
   ON public.careers
   FOR ALL

@@ -54,11 +54,6 @@ const InstagramIcon = (props: React.SVGProps<SVGSVGElement>) => (
 
 export default function ExclusiveOffersClient() {
   const t = useTranslations('pages.exclusiveOffers');
-  const [isMounted, setIsMounted] = useState(false);
-
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
 
   const [selectedSize, setSelectedSize] = useState('200 SQ. YRD.');
   const [plotValue, setPlotValue] = useState(4000000); // ₹40 Lakhs default
@@ -345,31 +340,20 @@ export default function ExclusiveOffersClient() {
             <div className="via-brand-gold absolute inset-x-0 top-0 z-10 h-1 bg-gradient-to-r from-transparent to-transparent" />
 
             <div className="relative aspect-video w-full">
-              {isMounted ? (
-                <video
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                  className="h-full w-full bg-slate-950 object-contain"
-                  poster="/images/hero-poster.webp"
-                >
-                  <source src="/hero.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
-                  <source src="/hero.vp9.webm" type='video/webm; codecs="vp9"' />
-                  <source src="/hero.h264.mp4" type="video/mp4" />
-                </video>
-              ) : (
-                <div
-                  className="h-full w-full bg-slate-900"
-                  style={{
-                    backgroundImage: 'url(/images/exclusive_offers_hero.png)',
-                    backgroundSize: 'cover',
-                    backgroundPosition: 'center',
-                  }}
-                />
-              )}
+              <video
+                controls
+                autoPlay
+                muted
+                loop
+                playsInline
+                preload="metadata"
+                className="h-full w-full bg-slate-950 object-contain"
+                poster="/images/hero-poster.webp"
+              >
+                <source src="/hero.av1.mp4" type='video/mp4; codecs="av01.0.05M.08"' />
+                <source src="/hero.vp9.webm" type='video/webm; codecs="vp9"' />
+                <source src="/hero.h264.mp4" type="video/mp4" />
+              </video>
             </div>
           </motion.div>
         </div>
