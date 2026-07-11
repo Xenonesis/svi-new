@@ -57,7 +57,7 @@ export default function LotteryDrawSection() {
   // ── Error State ────────────────────────────────────────────────────────
   if (error) {
     return (
-      <section className="bg-brand-bg relative overflow-hidden py-24 dark:bg-gray-900">
+      <section className="bg-brand-bg dark:bg-brand-dark-bg relative overflow-hidden py-24">
         <div className="relative z-10 container mx-auto max-w-md px-4 text-center">
           <div className="rounded-2xl border border-red-200 bg-white p-8 shadow-xl dark:border-red-900/50 dark:bg-slate-900">
             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-50 text-red-500 dark:bg-red-900/20 dark:text-red-400">
@@ -88,7 +88,7 @@ export default function LotteryDrawSection() {
 
   // ── Main Render ────────────────────────────────────────────────────────
   return (
-    <section className="bg-brand-bg relative overflow-hidden py-24 text-slate-800 transition-colors duration-500 dark:bg-gray-900 dark:text-slate-200">
+    <section className="bg-brand-bg dark:bg-brand-dark-bg relative overflow-hidden py-24 text-slate-800 transition-colors duration-500 dark:text-slate-200">
       {/* Background effects */}
       <div className="pointer-events-none absolute inset-0 bg-[url('/noise.png')] opacity-[0.03] mix-blend-overlay dark:opacity-[0.05]" />
       <div className="pointer-events-none absolute -top-[500px] left-1/2 h-[1000px] w-[1000px] -translate-x-1/2 rounded-full bg-gradient-to-b from-[#D4AF37]/10 to-transparent blur-3xl dark:from-[#D4AF37]/5" />

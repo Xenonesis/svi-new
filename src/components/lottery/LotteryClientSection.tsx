@@ -22,7 +22,7 @@ export default function LotteryClientSection() {
   // While checking, show a minimal theme-responsive loading screen (matches section bg)
   if (loading) {
     return (
-      <div className="bg-brand-bg flex min-h-[50vh] items-center justify-center dark:bg-gray-900">
+      <div className="bg-brand-bg dark:bg-brand-dark-bg flex min-h-[50vh] items-center justify-center">
         <div className="flex flex-col items-center gap-3">
           <div className="border-brand-gold h-8 w-8 animate-spin rounded-full border-2 border-t-transparent" />
           <p className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">

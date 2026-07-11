@@ -36,7 +36,7 @@ export default function ProjectsSection() {
   const tp = useTranslations('pages.projects');
   return (
     <section
-      className="bg-white py-16 md:py-24 dark:bg-gray-900"
+      className="dark:bg-brand-dark-bg dark:border-brand-gold/20 bg-white py-16 md:py-24 dark:border-b"
       style={{ contentVisibility: 'auto', containIntrinsicSize: '0 800px' }}
       role="region"
       aria-label="Featured projects portfolio"

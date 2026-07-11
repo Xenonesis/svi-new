@@ -29,7 +29,7 @@ const Footer = memo(function Footer() {
   );
 
   return (
-    <footer className="border-t border-gray-200 bg-white pt-10 pb-8 sm:pt-16 dark:border-zinc-800 dark:bg-[#09090B]">
+    <footer className="dark:bg-brand-dark-bg border-t border-gray-200 bg-white pt-10 pb-8 sm:pt-16 dark:border-zinc-800">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 md:mb-12 md:gap-12 lg:grid-cols-4">
           <div>

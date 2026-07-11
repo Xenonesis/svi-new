@@ -90,11 +90,11 @@ export default function FAQSection({
 
   const bgClass =
     variant === 'light'
-      ? 'bg-white dark:bg-gray-900'
+      ? 'bg-white dark:bg-brand-dark-bg'
       : variant === 'dark'
         ? 'bg-gray-50 dark:bg-brand-dark-bg'
         : variant === 'brand'
-          ? 'bg-brand-bg dark:bg-gray-900'
+          ? 'bg-brand-bg dark:bg-brand-dark-bg'
           : '';
 
   return (

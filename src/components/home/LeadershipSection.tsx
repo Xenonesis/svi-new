@@ -10,7 +10,7 @@ export default function LeadershipSection() {
 
   return (
     <section
-      className="relative bg-white py-16 md:py-32 dark:bg-gray-900"
+      className="dark:bg-brand-dark-bg dark:border-brand-gold/20 relative bg-white py-16 md:py-32 dark:border-b"
       role="region"
       aria-label="Leadership vision"
     >

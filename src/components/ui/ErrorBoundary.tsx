@@ -34,7 +34,7 @@ export default class ErrorBoundary extends Component<Props, State> {
       if (this.props.fallback) return this.props.fallback;
 
       return (
-        <div className="bg-brand-bg flex min-h-screen items-center justify-center p-4 dark:bg-gray-900">
+        <div className="bg-brand-bg dark:bg-brand-dark-bg flex min-h-screen items-center justify-center p-4">
           <div className="w-full max-w-lg rounded-lg bg-white p-8 text-center shadow-xl dark:bg-gray-800">
             <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 dark:bg-red-900/30">
               <svg
