@@ -7,6 +7,7 @@ import AnimatedSection, {
   StaggerContainer,
   StaggerItem,
 } from '@/src/components/ui/AnimatedSection';
+import { GlowCard } from '@/src/components/ui/spotlight-card';
 
 const FEATURE_ICONS = [
   <Network size={32} key="connectivity" />,
@@ -58,17 +59,23 @@ export default function FeaturesSection() {
               <motion.div
                 whileHover={{ y: -4 }}
                 transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="group relative h-full border border-gray-200 bg-white p-6 transition-shadow duration-300 hover:shadow-lg sm:p-8 md:p-10 dark:border-gray-700 dark:bg-gray-900"
+                className="h-full"
               >
-                <div className="text-brand-gold mb-6 flex h-12 w-12 shrink-0 items-center justify-center">
-                  {FEATURE_ICONS[idx]}
-                </div>
-                <h3 className="text-brand-navy mb-4 font-serif text-2xl dark:text-gray-200">
-                  {feature.title}
-                </h3>
-                <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                  {feature.desc}
-                </p>
+                <GlowCard
+                  customSize={true}
+                  glowColor="orange"
+                  className="group relative h-full cursor-pointer p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 md:p-10 dark:shadow-none"
+                >
+                  <div className="text-brand-gold mb-6 flex h-12 w-12 shrink-0 items-center justify-center">
+                    {FEATURE_ICONS[idx]}
+                  </div>
+                  <h3 className="text-brand-navy mb-4 font-serif text-2xl dark:text-gray-200">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
+                    {feature.desc}
+                  </p>
+                </GlowCard>
               </motion.div>
             </StaggerItem>
           ))}

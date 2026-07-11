@@ -829,3 +829,14 @@ main > .page-transition > section {
   background-color: transparent !important;
 }
 
+/* ============================================================
+   Spotlight Card Backdrop Tokens
+   ============================================================ */
+:root {
+  --glow-backdrop: rgba(255, 255, 255, 0.7);
+}
+.dark {
+  --glow-backdrop: rgba(20, 21, 26, 0.6);
+}
+
+
