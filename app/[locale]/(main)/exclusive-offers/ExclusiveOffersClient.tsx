@@ -359,15 +359,15 @@ export default function ExclusiveOffersClient() {
                 poster="/images/hero-poster.webp"
               >
                 <source
-                  src="https://rfvhjgetfbalndgtkpaa.supabase.co/storage/v1/object/public/assets/hero.av1.mp4"
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/assets/hero.av1.mp4`}
                   type='video/mp4; codecs="av01.0.05M.08"'
                 />
                 <source
-                  src="https://rfvhjgetfbalndgtkpaa.supabase.co/storage/v1/object/public/assets/hero.vp9.webm"
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/assets/hero.vp9.webm`}
                   type='video/webm; codecs="vp9"'
                 />
                 <source
-                  src="https://rfvhjgetfbalndgtkpaa.supabase.co/storage/v1/object/public/assets/hero.h264.mp4"
+                  src={`${process.env.NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/assets/hero.h264.mp4`}
                   type="video/mp4"
                 />
               </video>
