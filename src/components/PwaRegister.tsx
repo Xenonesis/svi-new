@@ -3,14 +3,10 @@
 import { useEffect, useState } from 'react';
 import { getPendingCount, replayQueue } from '@/src/lib/pwa/backgroundSync';
 
-type SwState = 'idle' | 'installing' | 'update-ready';
-
 export default function PwaRegister() {
-  const [state, setState] = useState<SwState>('idle');
-  const [swWaiting, setSwWaiting] = useState<ServiceWorker | null>(null);
   const [synced, setSynced] = useState(0);
 
-  // Register service worker
+  // Register service worker and handle auto-update
   useEffect(() => {
     if (process.env.NODE_ENV === 'development') {
       if ('serviceWorker' in navigator) {
@@ -27,23 +23,31 @@ export default function PwaRegister() {
 
     if (!('serviceWorker' in navigator)) return;
 
+    let refreshing = false;
+    const handleControllerChange = () => {
+      if (refreshing) return;
+      refreshing = true;
+      window.location.reload();
+    };
+
+    navigator.serviceWorker.addEventListener('controllerchange', handleControllerChange);
+
     navigator.serviceWorker
       .register('/sw.js')
       .then((reg) => {
+        // If there's already a waiting worker, trigger activation immediately
         if (reg.waiting) {
-          setSwWaiting(reg.waiting);
-          setState('update-ready');
+          reg.waiting.postMessage({ type: 'SKIP_WAITING' });
         }
 
         reg.addEventListener('updatefound', () => {
           const installing = reg.installing;
           if (!installing) return;
-          setState('installing');
 
           installing.addEventListener('statechange', () => {
+            // Once installed, activate immediately
             if (installing.state === 'installed' && navigator.serviceWorker.controller) {
-              setSwWaiting(installing);
-              setState('update-ready');
+              installing.postMessage({ type: 'SKIP_WAITING' });
             }
           });
         });
@@ -51,6 +55,10 @@ export default function PwaRegister() {
       .catch((err) => {
         console.error('Service worker registration failed:', err);
       });
+
+    return () => {
+      navigator.serviceWorker.removeEventListener('controllerchange', handleControllerChange);
+    };
   }, []);
 
   // Background sync: replay queued submissions when coming online
@@ -68,59 +76,8 @@ export default function PwaRegister() {
     return () => window.removeEventListener('online', handleOnline);
   }, []);
 
-  const handleUpdate = () => {
-    if (!swWaiting) return;
-    swWaiting.postMessage({ type: 'SKIP_WAITING' });
-    window.location.reload();
-  };
-
   return (
     <>
-      {/* ── Update banner ── */}
-      {state === 'update-ready' && (
-        <div className="animate-in slide-in-from-bottom-2 fixed right-4 bottom-4 z-50" role="alert">
-          <div className="border-brand-navy-light/20 bg-brand-navy dark:border-brand-gold/10 flex max-w-sm items-center gap-3 rounded-lg border px-5 py-3.5 shadow-xl">
-            <svg
-              className="text-brand-gold h-5 w-5 shrink-0"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={1.5}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-              />
-            </svg>
-            <p className="font-sans text-sm font-medium tracking-wide text-white">
-              Update available
-            </p>
-            <button
-              onClick={handleUpdate}
-              className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light ml-auto shrink-0 rounded px-3.5 py-1.5 font-sans text-xs font-bold tracking-wider uppercase transition-colors"
-            >
-              Update
-            </button>
-            <button
-              onClick={() => setState('idle')}
-              className="shrink-0 text-white/50 hover:text-white"
-              aria-label="Dismiss"
-            >
-              <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
-
       {/* ── Background sync success toast ── */}
       {synced > 0 && (
         <div
