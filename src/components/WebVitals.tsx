@@ -62,11 +62,24 @@ async function sendToAnalytics(metric: Metric) {
  */
 export function WebVitals() {
   useEffect(() => {
+    // Suppress THREE.Clock deprecation warning — it comes from
+    // @react-three/fiber's internal render loop (not user code).
+    // Awaiting R3F to migrate from Clock → Timer upstream.
+    const originalWarn = console.warn;
+    console.warn = (...args: any[]) => {
+      if (typeof args[0] === 'string' && args[0].includes('THREE.Clock')) return;
+      originalWarn.apply(console, args);
+    };
+
     onLCP(sendToAnalytics);
     onCLS(sendToAnalytics);
     onINP(sendToAnalytics);
     onTTFB(sendToAnalytics);
     onFCP(sendToAnalytics);
+
+    return () => {
+      console.warn = originalWarn;
+    };
   }, []);
 
   return null;

@@ -7,11 +7,13 @@ import * as THREE from 'three';
 
 function ArchitecturalForms() {
   const group = useRef<THREE.Group>(null);
+  const startTime = useRef(performance.now());
 
-  useFrame((state) => {
+  useFrame(() => {
     if (group.current) {
-      group.current.rotation.y = state.clock.getElapsedTime() * 0.05;
-      group.current.rotation.x = Math.sin(state.clock.getElapsedTime() * 0.1) * 0.1;
+      const t = (performance.now() - startTime.current) / 1000;
+      group.current.rotation.y = t * 0.05;
+      group.current.rotation.x = Math.sin(t * 0.1) * 0.1;
     }
   });
 
