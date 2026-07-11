@@ -69,7 +69,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
       '--radius': '14',
       '--border': '1',
       '--backdrop': 'var(--glow-backdrop, hsl(0 0% 60% / 0.12))',
-      '--backup-border': 'var(--backdrop)',
+      '--backup-border': 'var(--glow-border, var(--backdrop))',
       '--size': '200',
       '--outer': '1',
       '--border-size': 'calc(var(--border, 1) * 1px)',
@@ -79,7 +79,7 @@ const GlowCard: React.FC<GlowCardProps> = ({
         var(--spotlight-size) var(--spotlight-size) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 70) * 1%) / var(--bg-spot-opacity, 0.15)), transparent
+        hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--glow-lightness, 70) * 1%) / var(--active-bg-opacity, 0)), transparent
       )`,
       backgroundColor: 'var(--backdrop, transparent)',
       backgroundSize: 'calc(100% + (2 * var(--border-size))) calc(100% + (2 * var(--border-size)))',
@@ -90,7 +90,6 @@ const GlowCard: React.FC<GlowCardProps> = ({
       touchAction: 'none' as const,
     };
 
-    // Add width and height if provided
     if (width !== undefined) {
       baseStyles.width = typeof width === 'number' ? `${width}px` : width;
     }
@@ -102,6 +101,13 @@ const GlowCard: React.FC<GlowCardProps> = ({
   };
 
   const beforeAfterStyles = `
+    [data-glow] {
+      --active-bg-opacity: 0;
+    }
+    [data-glow]:hover {
+      --active-bg-opacity: var(--glow-bg-opacity, 0.15);
+    }
+
     [data-glow]::before,
     [data-glow]::after {
       pointer-events: none;
@@ -120,6 +126,14 @@ const GlowCard: React.FC<GlowCardProps> = ({
       -webkit-mask: linear-gradient(transparent, transparent), linear-gradient(white, white);
       -webkit-mask-clip: padding-box, border-box;
       -webkit-mask-composite: source-in, xor;
+      
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    [data-glow]:hover::before,
+    [data-glow]:hover::after {
+      opacity: 1;
     }
     
     [data-glow]::before {
@@ -127,9 +141,9 @@ const GlowCard: React.FC<GlowCardProps> = ({
         calc(var(--spotlight-size) * 0.75) calc(var(--spotlight-size) * 0.75) at
         calc(var(--x, 0) * 1px)
         calc(var(--y, 0) * 1px),
-        hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--lightness, 50) * 1%) / var(--border-spot-opacity, 1)), transparent 100%
+        hsl(var(--hue, 210) calc(var(--saturation, 100) * 1%) calc(var(--glow-lightness, 50) * 1%) / var(--glow-border-opacity, 0.8)), transparent 100%
       );
-      filter: brightness(2);
+      filter: brightness(1.5);
     }
     
     [data-glow]::after {
@@ -145,13 +159,18 @@ const GlowCard: React.FC<GlowCardProps> = ({
       position: absolute;
       inset: 0;
       will-change: filter;
-      opacity: var(--outer, 1);
+      opacity: 0;
       border-radius: calc(var(--radius) * 1px);
       border-width: calc(var(--border-size) * 20);
       filter: blur(calc(var(--border-size) * 10));
       background: none;
       pointer-events: none;
       border: none;
+      transition: opacity 0.3s ease;
+    }
+    
+    [data-glow]:hover > [data-glow] {
+      opacity: var(--outer, 1);
     }
     
     [data-glow] > [data-glow]::before {

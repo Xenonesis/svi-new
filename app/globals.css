@@ -833,10 +833,19 @@ main > .page-transition > section {
    Spotlight Card Backdrop Tokens
    ============================================================ */
 :root {
-  --glow-backdrop: rgba(255, 255, 255, 0.7);
+  --glow-backdrop: #ffffff;
+  --glow-border: rgba(17, 24, 39, 0.08);
+  --glow-lightness: 45;
+  --glow-bg-opacity: 0.18;
+  --glow-border-opacity: 0.7;
 }
 .dark {
   --glow-backdrop: rgba(20, 21, 26, 0.6);
+  --glow-border: rgba(255, 255, 255, 0.1);
+  --glow-lightness: 70;
+  --glow-bg-opacity: 0.12;
+  --glow-border-opacity: 0.4;
 }
+
 
 
