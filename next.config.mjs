@@ -1,6 +1,9 @@
 // @ts-check
 /* global process */
 
+// Serwist works fine with Turbopack during build — suppress the nag warning.
+process.env.SERWIST_SUPPRESS_TURBOPACK_WARNING = '1';
+
 import createNextIntlPlugin from 'next-intl/plugin';
 import { withSentryConfig } from '@sentry/nextjs';
 import withSerwistInit from '@serwist/next';

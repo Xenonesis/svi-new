@@ -42,8 +42,8 @@ const WEBP_QUALITY = 80;
 const AVIF_QUALITY = 60;
 const BLUR_SIZE = 10; // tiny placeholder size for blurDataURL
 
-const MAX_SIZE_WEBP_KB = 150;
-const MAX_SIZE_AVIF_KB = 100;
+const MAX_SIZE_WEBP_KB = 300;
+const MAX_SIZE_AVIF_KB = 250;
 
 let totalSaved = 0;
 let processedCount = 0;

@@ -29,6 +29,19 @@
 
 ---
 
+## 🚨 Vercel Free (Hobby) Plan Adjustments
+
+Since this project will be deployed on Vercel's Free (Hobby) tier, several strict limits apply. The performance plan must be adjusted to prevent hitting these quotas:
+
+| Vercel Hobby Limit                        | Impact on SVI Infra                                                                                                             | Required Adjustment                                                                                                                                                                                                                                                                                      |
+| ----------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Bandwidth (100 GB/mo)**                 | Serving the ~31 MB hero video variants directly from the `/public` folder will exhaust this limit after just ~3,200 page views. | **Migrate Videos:** Upload `hero.*.mp4/webm` to Supabase Storage or YouTube/Vimeo. Do NOT serve large videos directly from Vercel's network.                                                                                                                                                             |
+| **Image Optimization (1,000 images/mo)**  | Using Vercel's built-in `next/image` optimizer will quickly exhaust this limit.                                                 | **Use Custom Loader:** We have already built `src/lib/image-loader.ts` for Supabase images. Ensure all local static images are pre-optimized (using our `optimize:images` script) and bypass Vercel's optimization API where possible by setting `unoptimized: true` for local assets if traffic scales. |
+| **Serverless Function Timeout (10s max)** | Any API route, Server Action, or ISR revalidation (`revalidate: 3600`) that takes longer than 10 seconds will crash.            | **Optimize DB Queries:** Ensure Supabase queries are heavily indexed (Phase 4). Avoid long-running backend tasks; use Supabase Edge Functions or background workers if a task takes > 10s.                                                                                                               |
+| **Analytics (100k events/mo)**            | Vercel Analytics will stop tracking after 100k pageviews/events.                                                                | **Alternative Analytics:** Keep Vercel Analytics for now, but be prepared to swap to a free self-hosted solution (like PostHog via Supabase) or Google Analytics if traffic spikes.                                                                                                                      |
+
+---
+
 ## Phase 1: Baseline & Measurement (Week 1)
 
 ### 1.1 Lighthouse Baselines
