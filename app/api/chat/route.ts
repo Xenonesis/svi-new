@@ -30,7 +30,7 @@ ABOUT THE COMPANY:
 
 AREAS OF OPERATION:
 - Jaipur (residential & commercial)
-- Noida (commercial properties)
+- Khatu Shyam, Rajasthan (commercial properties)
 - Phulera Smart City (Rajasthan)
 - DMIC/DFC corridors
 
