@@ -3,7 +3,6 @@
 import { memo } from 'react';
 import { ChevronDown, Building2, CheckSquare, Phone, Mail, Menu, X } from 'lucide-react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 import LanguageToggle from '@/src/components/ui/LanguageToggle';
 import { ThemeToggle } from '@/src/components/ui/ThemeToggle';
@@ -103,18 +102,7 @@ const MobileNav = memo(function MobileNav({
         aria-label={t('mobileNavLabel')}
       >
         {/* Drawer Header */}
-        <div className="absolute top-5 right-5 left-5 flex items-center justify-between">
-          <Link href="/" onClick={onClose} className="flex items-center gap-2">
-            <Image
-              src="/logo.png"
-              alt="SVI Infra Solutions Logo"
-              width={282}
-              height={83}
-              priority
-              quality={100}
-              className="h-[26px] w-auto object-contain dark:rounded dark:bg-white dark:p-1"
-            />
-          </Link>
+        <div className="absolute top-5 right-5 left-5 flex items-center justify-end">
           <div className="flex items-center gap-2.5">
             <LanguageToggle />
             <ThemeToggle

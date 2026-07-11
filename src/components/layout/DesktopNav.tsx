@@ -35,7 +35,7 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`group relative py-1 text-[clamp(10px,1vw,14px)] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:tracking-widest ${
+      className={`group 3xl:text-sm relative py-1 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest ${
         isActive
           ? 'text-brand-gold'
           : isHomeTransparent
@@ -68,7 +68,7 @@ const DesktopNav = memo(function DesktopNav({
 }: DesktopNavProps) {
   const t = useTranslations('nav');
   return (
-    <nav className="hidden items-center gap-[clamp(0.5rem,1.5vw,1.5rem)] xl:flex">
+    <nav className="3xl:gap-6 hidden items-center gap-2 xl:flex xl:gap-3 2xl:gap-4">
       {NAV_LINKS.map((link) => (
         <NavLink
           key={link.nameKey}
@@ -110,7 +110,7 @@ const DesktopNav = memo(function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-[clamp(0.5rem,1.2vw,1rem)] py-[clamp(0.4rem,1vw,0.6rem)] text-[clamp(10px,1vw,14px)] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:tracking-widest ${
+          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold 3xl:text-sm rounded-full border px-3 py-1.5 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:px-4 xl:py-2 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest ${
             currentPath === '/lottery'
               ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
               : 'text-brand-gold/80 hover:text-brand-gold'
@@ -122,10 +122,10 @@ const DesktopNav = memo(function DesktopNav({
       )}
 
       {/* Action Buttons */}
-      <div className="flex items-center gap-[clamp(0.5rem,1vw,1rem)] border-l border-gray-200 pl-[clamp(0.75rem,2vw,1.5rem)] dark:border-zinc-800">
+      <div className="flex items-center gap-2 border-l border-gray-200 pl-3 xl:gap-3 xl:pl-4 2xl:gap-4 2xl:pl-6 dark:border-zinc-800">
         <Link
           href="/login"
-          className={`group/login relative py-1 text-[clamp(10px,1vw,14px)] font-semibold tracking-wide whitespace-nowrap uppercase transition-all duration-200 xl:tracking-widest ${
+          className={`group/login 3xl:text-sm relative py-1 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase transition-all duration-200 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest ${
             isHomeTransparent
               ? 'hover:text-brand-gold text-white/95'
               : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
@@ -136,7 +136,7 @@ const DesktopNav = memo(function DesktopNav({
         </Link>
         <Link
           href="/registration"
-          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative flex items-center justify-center overflow-hidden rounded-full px-[clamp(0.75rem,1.5vw,1.5rem)] py-[clamp(0.4rem,1vw,0.6rem)] text-center text-[clamp(10px,1vw,14px)] font-semibold tracking-wide whitespace-nowrap text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:tracking-widest"
+          className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy 3xl:text-sm relative flex items-center justify-center overflow-hidden rounded-full px-3 py-1.5 text-center text-[11px] font-semibold tracking-wide whitespace-nowrap text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:py-2 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest"
         >
           {t('register')}
         </Link>
