@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import dynamic from 'next/dynamic';
 import { ArrowRight, Users, ChevronDown, Award, Briefcase, Plus, Minus } from 'lucide-react';
