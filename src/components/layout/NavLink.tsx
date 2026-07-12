@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useLocale } from 'next-intl';
 
 interface NavLinkProps {
   href: string;
@@ -10,10 +11,17 @@ interface NavLinkProps {
 }
 
 export function NavLink({ href, children, isActive, isHomeTransparent }: NavLinkProps) {
+  const locale = useLocale();
+  const isHi = locale === 'hi';
+
   return (
     <Link
       href={href}
-      className={`group 3xl:text-sm relative py-1 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest ${
+      className={`group relative py-1 font-semibold whitespace-nowrap uppercase transition-colors duration-200 ${
+        isHi
+          ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
+          : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+      } ${
         isActive
           ? 'text-brand-gold'
           : isHomeTransparent

@@ -2,7 +2,7 @@
 
 import { ChevronDown, Building2, CheckSquare } from 'lucide-react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 
 interface ProjectDropdownProps {
   isOpen: boolean;
@@ -22,6 +22,8 @@ export function ProjectDropdown({
   onClick,
 }: ProjectDropdownProps) {
   const t = useTranslations('nav');
+  const locale = useLocale();
+  const isHi = locale === 'hi';
   return (
     <div
       className="group relative cursor-pointer py-1"
@@ -30,7 +32,11 @@ export function ProjectDropdown({
       onClick={onClick}
     >
       <span
-        className={`3xl:text-sm flex items-center gap-1 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest ${
+        className={`flex items-center gap-1 font-semibold whitespace-nowrap uppercase transition-colors duration-200 ${
+          isHi
+            ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
+            : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+        } ${
           currentPath.includes('/projects')
             ? 'text-brand-gold'
             : isHomeTransparent
@@ -61,10 +67,14 @@ export function ProjectDropdown({
               <Building2 size={15} />
             </div>
             <div>
-              <div className="text-brand-navy group-hover/item:text-brand-gold text-[11px] font-semibold tracking-widest uppercase transition-colors dark:text-gray-100">
+              <div
+                className={`text-brand-navy group-hover/item:text-brand-gold font-semibold uppercase transition-colors dark:text-gray-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
+              >
                 {t('currentProjects')}
               </div>
-              <div className="mt-0.5 text-[9.5px] leading-relaxed text-gray-500 dark:text-gray-300">
+              <div
+                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-300 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
+              >
                 {t('currentProjectsDesc')}
               </div>
             </div>
@@ -77,10 +87,14 @@ export function ProjectDropdown({
               <CheckSquare size={15} />
             </div>
             <div>
-              <div className="text-brand-navy group-hover/item:text-brand-gold text-[11px] font-semibold tracking-widest uppercase transition-colors dark:text-gray-100">
+              <div
+                className={`text-brand-navy group-hover/item:text-brand-gold font-semibold uppercase transition-colors dark:text-gray-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
+              >
                 {t('completedProjects')}
               </div>
-              <div className="mt-0.5 text-[9.5px] leading-relaxed text-gray-500 dark:text-gray-300">
+              <div
+                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-300 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
+              >
                 {t('completedProjectsDesc')}
               </div>
             </div>

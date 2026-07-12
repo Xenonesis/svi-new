@@ -2,7 +2,7 @@
 
 import { memo } from 'react';
 import Link from 'next/link';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { ProjectDropdown } from './ProjectDropdown';
 import LanguageToggle from '@/src/components/ui/LanguageToggle';
 import { ThemeToggle } from '@/src/components/ui/ThemeToggle';
@@ -36,6 +36,8 @@ const DesktopNav = memo(function DesktopNav({
   onToggleTheme,
 }: DesktopNavProps) {
   const t = useTranslations('nav');
+  const locale = useLocale();
+  const isHi = locale === 'hi';
   return (
     <nav className="3xl:gap-6 hidden items-center gap-2 xl:flex xl:gap-3 2xl:gap-4">
       {NAV_LINKS.map((link) => (
@@ -79,7 +81,11 @@ const DesktopNav = memo(function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold 3xl:text-sm rounded-full border px-3 py-1.5 text-[11px] font-semibold tracking-wide whitespace-nowrap uppercase transition-colors duration-200 xl:px-4 xl:py-2 xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest ${
+          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-3 py-1.5 font-semibold whitespace-nowrap uppercase transition-colors duration-200 xl:px-4 xl:py-2 ${
+            isHi
+              ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
+              : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+          } ${
             currentPath === '/lottery'
               ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
               : 'text-brand-gold/80 hover:text-brand-gold'
