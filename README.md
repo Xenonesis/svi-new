@@ -82,7 +82,7 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Landing page** — Hero with Motion entrance animations, animated stats counter, scroll-triggered reveals
 - **Project showcase** — Current and completed projects with **MapLibre GL** interactive maps, dynamic project detail pages at `/projects/[slug]`
 - **Company pages** — About, Leadership (team profiles), Careers, Blog (`/[slug]` dynamic posts)
-- **AI Chatbot** — Floating streaming chat widget powered by **Groq Llama 4** via Vercel AI SDK, with lead capture and conversation logging
+- **AI Chatbot** — Floating streaming chat widget powered by **Groq Llama 4** via Vercel AI SDK, with lead capture, conversation logging, contextual suggestions, and voice input support. Location-aware for properties in Jaipur, Khatu Shyam, and Phulera Smart City
 - **Lottery page** — Feature-flagged via `portal_settings.lottery_page_visible`; live draws, hall of fame, winner carousel
 - **Forms** — Contact, Registration, Grievance, Payment (all with hCaptcha + Resend delivery)
 - **Calculators** — Interactive financial calculators for property buyers
@@ -96,7 +96,7 @@ This repository hosts the company's full digital platform — a **public marketi
 
 ### 🛠️ Admin Portal
 
-> Protected by `middleware.ts` — Supabase SSR session + `profiles.role = 'admin'` check
+> Protected by `proxy.ts` — Supabase SSR session + `profiles.role = 'admin'` check
 
 - **Dashboard** — Recharts analytics (User Growth, Attendance Status, Attendance Trend, Document Stats), KPI cards, activity timeline, quick actions
 - **User management** — Full CRUD, role assignment, advisor linking
@@ -215,44 +215,49 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-### Admin Middleware Guard Pattern
+### Proxy / Middleware Guard Pattern
+
+> Next.js 16 uses `proxy.ts` convention (replaces deprecated `middleware.ts`)
+
+The app uses `proxy.ts` for two purposes:
+
+1. **i18n locale routing** — `next-intl` middleware rewrites public pages for English/Hindi
+2. **Admin auth guard** — Supabase SSR session check + role verification
 
 ```tsx
-// middleware.ts
+// proxy.ts
+import createIntlMiddleware from 'next-intl/middleware';
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Protect admin routes
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/admin/login')) {
-    const supabase = createServerClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-      {
-        cookies: {/* ... */},
-      }
-    );
+  // Admin auth guard
+  if (pathname.startsWith('/admin') && pathname !== '/admin') {
+    const supabase = createServerClient(/* ... */);
     const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) return NextResponse.redirect(new URL('/admin', request.url));
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/admin';
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
 
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', session.user.id)
-      .single();
-    if (profile?.role !== 'admin') return NextResponse.redirect(new URL('/', request.url));
+  // i18n locale routing (public pages)
+  if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
+    return intlMiddleware(request);
   }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/employee/:path*'],
+  matcher: ['/((?!_next|_vercel|monitoring|images|favicons|.*\..*).*)'],
 };
 ```
 
@@ -1153,7 +1158,7 @@ Initial release with:
 │          └──────────┬───────┴───────────┬─────────┘                    │
 │                     ▼                   ▼                              │
 │            ┌─────────────────┐  ┌──────────────────┐                   │
-│            │ middleware.ts   │  │  Zustand stores  │                   │
+│            │ proxy.ts        │  │  Zustand stores  │                   │
 │            │  (auth + role)  │  │  auth + ui       │                   │
 │            └────────┬────────┘  └──────────────────┘                   │
 │                     ▼                                                  │
@@ -1677,28 +1682,68 @@ QueryProvider              ← TanStack Query (devtools on client)
 
 Admin layout additionally wraps children in `AdminSessionProvider`.
 
+### Layout (`src/components/layout/`)
+
+| Component                 | Description                                                          |
+| ------------------------- | -------------------------------------------------------------------- |
+| `Header`                  | Fixed top header with transparent→solid scroll, backdrop blur        |
+| `DesktopNav`              | Desktop navigation bar with nav links, project dropdown, CTAs        |
+| `DesktopNavActions`       | Register + call buttons for desktop nav                              |
+| `NavLink`                 | Animated nav link with gold underline hover/active                   |
+| `ProjectDropdown`         | Mega-menu dropdown for projects (current/completed)                  |
+| `MobileNav`               | Full-screen slide-in mobile navigation drawer                        |
+| `MobileNavLink`           | Mobile nav link item                                                 |
+| `MobileNavActions`        | Login + register buttons for mobile nav                              |
+| `HamburgerButton`         | Animated hamburger menu toggle                                       |
+| `MobileDrawerHeader`      | Mobile drawer top bar with close button                              |
+| `MobileNavFooter`         | Mobile drawer bottom links                                           |
+| `MobileProjectsAccordion` | Accordion for project links in mobile drawer                         |
+| `Footer`                  | Site footer with columns, newsletter, social links, Google Maps link |
+| `FloatingContact`         | Sticky mobile contact bar + floating WhatsApp-style contact button   |
+
 ### Public UI primitives (`src/components/common/ui` and `src/components/ui`)
 
-| Component              | Description                             |
-| ---------------------- | --------------------------------------- |
-| `AnimatedSection`      | Scroll-reveal via `motion` `useInView`  |
-| `BackToTop`            | Floating scroll-to-top                  |
-| `Breadcrumbs`          | Auto-generated from URL path            |
-| `CookieConsent`        | GDPR consent banner w/ localStorage     |
-| `DynamicSkeleton`      | Loading placeholders                    |
-| `ErrorBoundary`        | React error boundary + fallback         |
-| `HoverZoomImage`       | CSS transform zoom on hover             |
-| `LanguageToggle`       | EN / हिं switcher                       |
-| `ReadingProgress`      | Top-of-page scroll indicator            |
-| `ScrollToTop`          | Auto-scroll on route change             |
-| `StatsCounter`         | Spring-physics count-up on scroll       |
-| `ThemeToggle`          | Light/dark/system switcher              |
-| `AnalyticsTracker`     | Vercel Analytics + Speed Insights mount |
-| `stagger-testimonials` | Staggered motion variants               |
+| Component             | Description                              |
+| --------------------- | ---------------------------------------- |
+| `AnimatedSection`     | Scroll-reveal via `motion` `useInView`   |
+| `BackToTop`           | Floating scroll-to-top                   |
+| `Breadcrumbs`         | Auto-generated from URL path             |
+| `CookieConsent`       | GDPR consent banner w/ localStorage      |
+| `DynamicSkeleton`     | Loading placeholders                     |
+| `ErrorBoundary`       | React error boundary + fallback          |
+| `HoverZoomImage`      | CSS transform zoom on hover              |
+| `LanguageToggle`      | EN / हिं switcher                        |
+| `ReadingProgress`     | Top-of-page scroll indicator             |
+| `ScrollToTop`         | Auto-scroll on route change              |
+| `StatsCounter`        | Spring-physics count-up on scroll        |
+| `ThemeToggle`         | Light/dark/system switcher               |
+| `AnalyticsTracker`    | Vercel Analytics + Speed Insights mount  |
+| `StaggerTestimonials` | Staggered motion variants                |
+| `SpotlightCard`       | Card with mouse-tracking spotlight glare |
+| `DotField`            | Background noise/dot texture pattern     |
+| `ProjectCardSkeleton` | Loading placeholder for project cards    |
 
 ### Home (`src/components/home/`)
 
-`HeroSection`, `AboutSection`, `FeaturesSection`, `ProjectsSection`, `CTASection`, `ChatBot`, `HomeFAQ`, `HomeSections` (orchestrator)
+| Component                                                                    | Description                                                     |
+| ---------------------------------------------------------------------------- | --------------------------------------------------------------- |
+| `HeroSection`                                                                | Parallax hero with image carousel, motion entrance animations   |
+| `AboutSection`                                                               | Company intro with stats                                        |
+| `FeaturesSection`                                                            | Why-invest feature grid                                         |
+| `TimelineSection`                                                            | Scroll-animated development timeline (`TimelineStep` per entry) |
+| `ProjectsSection`                                                            | Featured projects grid (`ProjectCard` per project)              |
+| `LeadershipSection`                                                          | Team/leadership highlights                                      |
+| `CTASection`                                                                 | Bottom call-to-action                                           |
+| `HomeFAQ`                                                                    | FAQ accordion (uses `FAQSection`)                               |
+| `HomeSections`                                                               | Orchestrator — dynamically loads all sections                   |
+| `ChatBot`                                                                    | Floating AI chatbot — orchestrates 8 sub-components:            |
+| `ChatButton`, `ChatHeader`, `ChatWelcome`, `ChatMessage`, `ChatSuggestions`, |
+| `ChatTypingIndicator`, `ChatFeedback`, `ChatInput`                           |
+| `ProjectCard`                                                                | Reusable project card (image, location, type, CTA)              |
+| `TimelineStep`                                                               | Single timeline entry (animated icon + content card)            |
+| `QuickActions`                                                               | Chat contextual action buttons                                  |
+| `LeadCapture`                                                                | Chat lead capture form                                          |
+| `FormattedText`                                                              | Rich text renderer (links, badges, highlights)                  |
 
 ### Admin (`src/components/admin/`)
 
@@ -1818,17 +1863,17 @@ Run in order against a fresh Supabase project:
 
 ## 🎨 Design System
 
-| Token           | Choice                                                                   |
-| --------------- | ------------------------------------------------------------------------ |
-| **Framework**   | Tailwind v4 with CSS variables (`@theme` block in `globals.css`)         |
-| **Type**        | System font stack via `next/font` (no external font requests)            |
-| **Color**       | Brand `primary` + semantic tokens; light/dark via `prefers-color-scheme` |
-| **Motion**      | `motion` (Framer Motion 12) for entrances & scroll-reveal                |
-| **Iconography** | `lucide-react` (1.21) — consistent stroke weight                         |
-| **Spacing**     | Tailwind scale (4px base)                                                |
-| **Radius**      | Tailwind `rounded-{sm,md,lg,xl,2xl,3xl,full}`                            |
-| **Shadow**      | Layered `shadow-{sm,md,lg,xl}` for elevation                             |
-| **Breakpoints** | Tailwind defaults — `sm` 640, `md` 768, `lg` 1024, `xl` 1280             |
+| Token           | Choice                                                                                                                                                                             |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Framework**   | Tailwind v4 with CSS variables (`@theme` block in `globals.css`)                                                                                                                   |
+| **Type**        | System font stack via `next/font` (no external font requests)                                                                                                                      |
+| **Color**       | Brand `primary` + semantic tokens; light/dark via `prefers-color-scheme`. Dark mode uses consistent `brand-dark-bg` (#0b0c10) across all sections with gold (`#d4af37`) separators |
+| **Motion**      | `motion` (Framer Motion 12) for entrances & scroll-reveal                                                                                                                          |
+| **Iconography** | `lucide-react` (1.21) — consistent stroke weight                                                                                                                                   |
+| **Spacing**     | Tailwind scale (4px base)                                                                                                                                                          |
+| **Radius**      | Tailwind `rounded-{sm,md,lg,xl,2xl,3xl,full}`                                                                                                                                      |
+| **Shadow**      | Layered `shadow-{sm,md,lg,xl}` for elevation                                                                                                                                       |
+| **Breakpoints** | Tailwind defaults — `sm` 640, `md` 768, `lg` 1024, `xl` 1280                                                                                                                       |
 
 ### Animation catalogue
 
@@ -1983,7 +2028,7 @@ git push origin main    # auto-deploys via GitHub integration
 | Emails not sending          | Verify `RESEND_API_KEY`; check sender domain verification status                 |
 | Lottery page not visible    | `portal_settings.lottery_page_visible` must be `true`                            |
 | Build failures              | `npm run clean`; `npx tsc --noEmit`; ensure all env vars are set                 |
-| Admin redirect loop         | Clear cookies; verify `profiles.role = 'admin'`; check middleware config         |
+| Admin redirect loop         | Clear cookies; verify `profiles.role = 'admin'`; check `proxy.ts` config         |
 | Locale not switching        | Confirm `next-intl` config in `src/i18n/routing.ts`; clear `NEXT_LOCALE` cookie  |
 | 3D scene not loading        | Check `three`/`@react-three/fiber` versions; look for WebGL errors               |
 | Dev server on wrong port    | Default is port 3001; check `npm run dev` script in `package.json`               |
