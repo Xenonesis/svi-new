@@ -12,7 +12,8 @@
   "iconLibrary": "lucide",
   "aliases": {
     "components": "@/src/components",
-    "utils": "@/src/lib/utils"
+    "utils": "@/src/lib/utils",
+    "lib": "@/src/lib"
   },
   "registries": {
     "@beui": "https://beui.dev/r/{name}.json"

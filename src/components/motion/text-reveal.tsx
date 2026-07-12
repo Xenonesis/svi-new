@@ -3,7 +3,7 @@
 
 import { motion, type Transition, useInView, useReducedMotion } from 'motion/react';
 import { useRef, type ElementType, type ReactNode } from 'react';
-import { EASE_OUT } from '@/lib/ease';
+import { EASE_OUT } from '@/src/lib/ease';
 import { cn } from '@/src/lib/utils';
 
 type SplitMode = 'word' | 'char';
