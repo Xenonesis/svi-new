@@ -1,7 +1,7 @@
 'use client';
 
 import { ChevronDown, Building2, CheckSquare } from 'lucide-react';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
 interface MobileProjectsAccordionProps {

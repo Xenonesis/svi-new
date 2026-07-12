@@ -1,7 +1,7 @@
 'use client';
 
 import { memo } from 'react';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import { useTranslations } from 'next-intl';
 import { NAV_LINKS } from './navLinks';
 import { HamburgerButton } from './HamburgerButton';
