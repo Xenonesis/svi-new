@@ -8,6 +8,7 @@ import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import dynamic from 'next/dynamic';
 
 import { useTranslations } from 'next-intl';
+import { TextReveal } from '@/src/components/motion/text-reveal';
 
 const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false });
 
@@ -155,9 +156,28 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           </span>
 
           <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.05] text-white min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl">
-            {t('title')}
+            <TextReveal
+              text={t('title')}
+              as="span"
+              split="word"
+              stagger={0.06}
+              blur={8}
+              yOffset="30%"
+              className="inline"
+            />{' '}
             <br />
-            <span className="text-brand-gold inline-block pr-4 italic">{t('titleAccent')}</span>
+            <span className="text-brand-gold inline-block pr-4 italic">
+              <TextReveal
+                text={t('titleAccent')}
+                as="span"
+                split="word"
+                stagger={0.06}
+                delay={0.5}
+                blur={8}
+                yOffset="30%"
+                className="inline"
+              />
+            </span>
           </h1>
 
           <p className="animate-hero-3 mb-8 max-w-xl text-sm leading-relaxed font-light text-white/80 sm:mb-12 sm:text-base md:text-xl">
