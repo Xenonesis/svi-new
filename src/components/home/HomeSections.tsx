@@ -6,6 +6,7 @@ const AboutSection = dynamic(() => import('@/src/components/home/AboutSection'))
 const FeaturesSection = dynamic(() => import('@/src/components/home/FeaturesSection'));
 const ProjectsSection = dynamic(() => import('@/src/components/home/ProjectsSection'));
 const LeadershipSection = dynamic(() => import('@/src/components/home/LeadershipSection'));
+const HomeBlogs = dynamic(() => import('@/src/components/home/HomeBlogs'));
 const TimelineSection = dynamic(() => import('@/src/components/home/TimelineSection'));
 const CTASection = dynamic(() => import('@/src/components/home/CTASection'));
 const HomeFAQ = dynamic(() => import('@/src/components/home/HomeFAQ'));
@@ -24,6 +25,7 @@ export default function HomeSections() {
       <TimelineSection />
       <ProjectsSection />
       <LeadershipSection />
+      <HomeBlogs />
       <LotteryCTA />
       <HomeFAQ />
       <CTASection />
