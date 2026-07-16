@@ -11,7 +11,7 @@ export function TabButton({
 }: {
   id: Tab;
   label: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<any>;
   active: boolean;
   onClick: () => void;
   badge?: number;

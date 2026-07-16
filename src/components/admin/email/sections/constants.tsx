@@ -13,7 +13,7 @@ export type DatePreset = 'all' | 'today' | '7d' | '30d' | '90d';
 export interface SortOption {
   field: SortField;
   label: string;
-  icon: React.ElementType;
+  icon: React.ComponentType<any>;
 }
 
 export const SORT_OPTIONS: SortOption[] = [

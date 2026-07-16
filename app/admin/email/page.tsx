@@ -37,7 +37,7 @@ import { DeletedTab } from '@/src/components/admin/email/DeletedTab';
 import { ScheduledTab } from '@/src/components/admin/email/ScheduledTab';
 import { DraftsTab } from '@/src/components/admin/email/DraftsTab';
 
-const tabs: { id: Tab; label: string; icon: React.ElementType }[] = [
+const tabs: { id: Tab; label: string; icon: React.ComponentType<any> }[] = [
   { id: 'compose', label: 'Compose', icon: PenLine },
   { id: 'drafts', label: 'Drafts', icon: FileEdit },
   { id: 'replies', label: 'Inbox', icon: Inbox },

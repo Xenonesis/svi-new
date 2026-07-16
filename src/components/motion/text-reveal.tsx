@@ -27,7 +27,7 @@ const DEFAULT_SPRING = { stiffness: 140, damping: 26, mass: 1.2 };
 
 export function TextReveal({
   text,
-  as: Comp = 'span',
+  as = 'span',
   className,
   split = 'word',
   stagger = 0.09,
@@ -39,6 +39,7 @@ export function TextReveal({
   whileInView = false,
   children,
 }: TextRevealProps) {
+  const Comp = as as any;
   const ref = useRef<HTMLElement>(null);
   const inView = useInView(ref, { once, amount: 0.4 });
   const reduce = useReducedMotion();

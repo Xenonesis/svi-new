@@ -42,7 +42,7 @@ const serwist = new Serwist({
   },
   runtimeCaching: [
     {
-      matcher: ({ url }) => url.pathname.startsWith('/api/'),
+      matcher: ({ url }: any) => url.pathname.startsWith('/api/'),
       handler: new NetworkOnly(),
     },
     ...defaultCache,

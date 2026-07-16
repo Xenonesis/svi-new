@@ -77,7 +77,7 @@ const DotField = memo(
       const canvas = canvasRef.current;
       const glowEl = glowRef.current;
       if (!canvas) return;
-      const ctx = canvas.getContext('2d', { alpha: true });
+      const ctx = canvas.getContext('2d', { alpha: true })!;
       if (!ctx) return;
       const dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
       let resizeTimer: NodeJS.Timeout;

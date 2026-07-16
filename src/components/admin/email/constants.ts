@@ -14,7 +14,7 @@ import {
 import rawTemplates from '@/src/data/email-templates.json';
 import type { ElementType } from 'react';
 
-const ICON_MAP: Record<string, ElementType> = {
+const ICON_MAP: Record<string, any> = {
   Check,
   Clock,
   FileText,
