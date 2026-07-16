@@ -30,6 +30,7 @@ export default function GalleryCarousel({ gallery, status }: GalleryCarouselProp
           src={gallery[currentIndex]}
           alt={`Gallery image ${currentIndex + 1}`}
           fill
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover"
           priority
         />
@@ -73,7 +74,13 @@ export default function GalleryCarousel({ gallery, status }: GalleryCarouselProp
                   : 'opacity-60 hover:opacity-100'
               }`}
             >
-              <Image src={img} alt={`Thumbnail ${idx + 1}`} fill className="object-cover" />
+              <Image
+                src={img}
+                alt={`Thumbnail ${idx + 1}`}
+                fill
+                sizes="(max-width: 768px) 25vw, 15vw"
+                className="object-cover"
+              />
             </button>
           ))}
         </div>

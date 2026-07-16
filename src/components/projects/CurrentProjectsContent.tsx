@@ -1,7 +1,7 @@
 'use client';
 
 import { Suspense, lazy, useCallback, useState, useEffect, type MouseEvent } from 'react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'motion/react';
 import Link from 'next/link';
 import {
@@ -45,6 +45,7 @@ export default function CurrentProjectsContent({
   projects: Project[];
 }) {
   const t = useTranslations('pages.projects');
+  const locale = useLocale();
   const [projects, setProjects] = useState(initialProjects);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
@@ -432,12 +433,12 @@ export default function CurrentProjectsContent({
                 </div>
 
                 <Link
-                  href="/registration"
+                  href={`/${locale}/projects/${selectedProject.id}`}
                   onClick={closeModal}
                   className="bg-brand-navy hover:bg-brand-gold hover:text-brand-navy flex w-full items-center justify-center gap-2 py-4 text-xs font-bold tracking-widest text-white uppercase transition-colors"
                 >
                   <ArrowRight size={16} />
-                  {t('getNotifiedFirst')}
+                  {t('viewDetails')}
                 </Link>
 
                 <div className="mt-8 mt-auto border-t border-gray-100 pt-8 dark:border-gray-700">

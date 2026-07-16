@@ -44,7 +44,7 @@ const PROJECTS_DB: Record<string, any> = {
     startingSize: '100-150 Sq. Yds.',
     availableSizes: ['100-150 Sq. Yds.', '150-200 Sq. Yds.', 'Above 200 Sq. Yds.'],
     mapEmbedUrl:
-      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113645.72763327663!2d75.25055239726563!3d27.3503923!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396ca303a1102dbf%3A0xe7fb3debbd0dc13c!2sKhatu%20Shyamji%2C%20Rajasthan%20332602!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
+      'https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1620.527332206488!2d75.422285!3d27.130247!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjfCsDA3JzUxLjIiTiA3NcKwMjUnMTkuMCJF!5e1!3m2!1sen!2sus!4v1784202961766!5m2!1sen!2sus',
     news: ['/images/news-1.png', '/images/news-2.png', '/images/news-3.png', '/images/news-4.png'],
     description:
       'Shivani Vatika 11th – A Promising Residential Society Near Khatu Shyam Ji. Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed on land acquired from Jaipur Development Authority – Pratap Nagar Cooperative Housing Society, ensuring complete transparency and trust for buyers. The township offers 198 residential plots ranging from 50 sq. yds. to 200 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure and essential facilities.',
