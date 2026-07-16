@@ -297,11 +297,9 @@ export default async function ProjectDetailPage({ params }: Props) {
       )}
 
       {/* News Section */}
-      {project.news && project.news.length > 0 && (
-        <div className="container mx-auto max-w-7xl px-4">
-          <NewsSection news={project.news} />
-        </div>
-      )}
+      <div className="container mx-auto max-w-7xl px-4">
+        <NewsSection />
+      </div>
     </div>
   );
 }
