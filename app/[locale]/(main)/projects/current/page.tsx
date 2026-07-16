@@ -26,6 +26,26 @@ export async function generateMetadata({
 
 const currentProjectsData = (t: any) => [
   {
+    id: 'shivani-vatika-11th',
+    title: t('data.shivaniVatika11th.title'),
+    location: t('data.shivaniVatika11th.location'),
+    lat: 27.27,
+    lng: 75.39,
+    type: t('data.shivaniVatika11th.type'),
+    description: t('data.shivaniVatika11th.description'),
+    fullDescription: t('data.shivaniVatika11th.fullDescription'),
+    status: t('data.shivaniVatika11th.status'),
+    img: '/images/shivani-vatika-11th.png',
+    gallery: [
+      '/images/shivani-vatika-11th.png',
+      '/images/shivani-vatika-11th-gallery-1.png',
+      '/images/shivani-vatika-11th-gallery-2.png',
+      '/images/shivani-vatika-11th-gallery-3.png',
+      '/images/shivani-vatika-11th-gallery-4.webp',
+      '/images/shivani-vatika-11th-gallery-5.jpeg',
+    ],
+  },
+  {
     id: 'shivani-vatika',
     title: t('data.shivaniVatika.title'),
     location: t('data.shivaniVatika.location'),

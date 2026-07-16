@@ -15,6 +15,30 @@ type Props = {
 
 // Mock data (in a real app, fetch from Supabase)
 const PROJECTS_DB: Record<string, any> = {
+  'shivani-vatika-11th': {
+    title: 'Shivani Vatika 11th',
+    location: 'Near Khatu Shyam Ji',
+    status: 'Pre-Launch',
+    type: 'Premier Residential Plots',
+    heroImage: '/images/shivani-vatika-11th.png',
+    gallery: [
+      '/images/shivani-vatika-11th.png',
+      '/images/shivani-vatika-11th-gallery-1.png',
+      '/images/shivani-vatika-11th-gallery-2.png',
+      '/images/shivani-vatika-11th-gallery-3.png',
+      '/images/shivani-vatika-11th-gallery-4.webp',
+      '/images/shivani-vatika-11th-gallery-5.jpeg',
+    ],
+    amenities: [
+      '30 ft. Internal Roads',
+      "Children's Park with Swings",
+      'Main Gate & Guard Room',
+      'Boundary Wall',
+      'Secure Community',
+    ],
+    description:
+      'Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha, offering 198 residential plots. Developed on land acquired from Jaipur Development Authority, it ensures transparency and provides essential modern amenities.',
+  },
   'shyam-aangan': {
     title: 'Shyam Aangan',
     location: 'Basri Khurd, Jaipur',
