@@ -251,7 +251,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               </Link>
               <div className="flex gap-4">
                 <a
-                  href="tel:+919999999999"
+                  href="tel:+919218300589"
                   className="bg-brand-navy hover:bg-brand-navy/90 dark:text-brand-navy flex flex-1 items-center justify-center gap-2 rounded-xl py-4 text-lg font-bold text-white shadow-md transition-all hover:-translate-y-1 dark:bg-white dark:hover:bg-gray-100"
                 >
                   <Phone size={20} />
