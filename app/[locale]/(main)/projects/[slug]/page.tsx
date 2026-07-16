@@ -1,13 +1,15 @@
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { MapPin, CheckCircle, Info } from 'lucide-react';
+import { MapPin, CheckCircle, Info, ArrowLeft, Phone, Mail, CalendarRange } from 'lucide-react';
 import { getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/src/lib/seo';
 import AnalyticsTracker from '@/src/components/ui/AnalyticsTracker';
-import { EmiCalculator } from '@/src/components/properties/EmiCalculator';
 import { BreadcrumbSchema, RealEstateListingSchema } from '@/src/components/common/Schema';
+import GalleryCarousel from '@/src/components/projects/GalleryCarousel';
+import NewsSection from '@/src/components/projects/NewsSection';
+import ExpandableDescription from '@/src/components/ui/ExpandableDescription';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -18,7 +20,7 @@ const PROJECTS_DB: Record<string, any> = {
   'shivani-vatika-11th': {
     title: 'Shivani Vatika 11th',
     location: 'Near Khatu Shyam Ji',
-    status: 'Pre-Launch',
+    status: 'Ongoing',
     type: 'Premier Residential Plots',
     heroImage: '/images/shivani-vatika-11th.png',
     gallery: [
@@ -30,14 +32,22 @@ const PROJECTS_DB: Record<string, any> = {
       '/images/shivani-vatika-11th-gallery-5.jpeg',
     ],
     amenities: [
-      '30 ft. Internal Roads',
-      "Children's Park with Swings",
-      'Main Gate & Guard Room',
-      'Boundary Wall',
-      'Secure Community',
+      'Park',
+      'Guard Room',
+      'Electricity',
+      'Water Supply',
+      'Boundary',
+      'Road',
+      'Care-Taker',
     ],
+    totalPlots: '198',
+    startingSize: '100-150 Sq. Yds.',
+    availableSizes: ['100-150 Sq. Yds.', '150-200 Sq. Yds.', 'Above 200 Sq. Yds.'],
+    mapEmbedUrl:
+      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113645.72763327663!2d75.25055239726563!3d27.3503923!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396ca303a1102dbf%3A0xe7fb3debbd0dc13c!2sKhatu%20Shyamji%2C%20Rajasthan%20332602!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
+    news: ['/images/news-1.png', '/images/news-2.png', '/images/news-3.png', '/images/news-4.png'],
     description:
-      'Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha, offering 198 residential plots. Developed on land acquired from Jaipur Development Authority, it ensures transparency and provides essential modern amenities.',
+      'Shivani Vatika 11th – A Promising Residential Society Near Khatu Shyam Ji. Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed on land acquired from Jaipur Development Authority – Pratap Nagar Cooperative Housing Society, ensuring complete transparency and trust for buyers. The township offers 198 residential plots ranging from 50 sq. yds. to 200 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure and essential facilities.',
   },
   'shyam-aangan': {
     title: 'Shyam Aangan',
@@ -54,6 +64,12 @@ const PROJECTS_DB: Record<string, any> = {
       'Temple',
       'Commercial Center',
     ],
+    totalPlots: '250+',
+    startingSize: '150 Sq. Yds.',
+    availableSizes: ['150-200 Sq. Yds.', 'Above 200 Sq. Yds.'],
+    mapEmbedUrl:
+      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113645.72763327663!2d75.75055239726563!3d26.8503923!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c57e281%3A0xce1c63a0cf22e09!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
+    news: [],
     description:
       'Shyam Aangan offers a premium integrated township experience in the heart of Jaipur. Designed for modern families, it features world-class amenities and 100% Vastu compliant plots.',
   },
@@ -65,6 +81,12 @@ const PROJECTS_DB: Record<string, any> = {
     heroImage: '/images/project2.png',
     gallery: ['/images/project2.png', '/images/hero2.png'],
     amenities: ['Gated Community', 'Kids Play Area', 'Gymnasium', 'Rainwater Harvesting'],
+    totalPlots: '100+',
+    startingSize: '100 Sq. Yds.',
+    availableSizes: ['100-150 Sq. Yds.'],
+    mapEmbedUrl:
+      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113645.72763327663!2d75.75055239726563!3d26.8503923!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c57e281%3A0xce1c63a0cf22e09!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
+    news: [],
     description:
       'Shivani Vatika brings premier residential living to Manpura Machedi. Surrounded by lush greenery, it provides a serene escape from the city bustle while maintaining excellent connectivity.',
   },
@@ -105,7 +127,7 @@ export default async function ProjectDetailPage({ params }: Props) {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col bg-gray-50 pb-20 dark:bg-gray-900">
+    <div className="flex min-h-screen w-full flex-col bg-[#fdfbf7] pb-20 dark:bg-gray-900">
       <BreadcrumbSchema
         items={[
           { name: 'Home', item: '/' },
@@ -122,132 +144,164 @@ export default async function ProjectDetailPage({ params }: Props) {
       />
       <AnalyticsTracker event="project_view" data={{ slug }} />
 
-      {/* Project Hero */}
-      <section className="relative h-[60vh] min-h-[500px] w-full pt-20">
-        <Image src={project.heroImage} alt={project.title} fill className="object-cover" priority />
-        <div className="from-brand-navy via-brand-navy/60 absolute inset-0 bg-gradient-to-t to-transparent" />
+      <div className="container mx-auto max-w-7xl px-4 pt-28 pb-8">
+        <Link
+          href={`/${locale}/projects/current`}
+          className="text-brand-navy hover:text-brand-gold mb-8 inline-flex items-center gap-2 font-semibold transition-colors dark:text-gray-300"
+        >
+          <ArrowLeft size={20} />
+          Back to Projects
+        </Link>
 
-        <div className="absolute bottom-0 left-0 w-full p-8 md:p-16">
-          <div className="container mx-auto">
-            <div className="bg-brand-gold text-brand-navy mb-4 inline-flex items-center gap-2 px-3 py-1 text-xs font-bold tracking-wider uppercase">
-              <Info size={14} />
-              {project.status}
-            </div>
-            <h1 className="mb-4 font-serif text-4xl text-white md:text-6xl">{project.title}</h1>
-            <div className="flex items-center gap-6 text-white/80">
-              <div className="flex items-center gap-2">
-                <MapPin size={18} className="text-brand-gold" />
-                <span className="text-lg">{project.location}</span>
-              </div>
-              <div className="h-6 w-px bg-white/30" />
-              <div className="text-lg">{project.type}</div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Content Layout */}
-      <div className="container mx-auto px-4 py-16">
-        <div className="flex flex-col gap-12 lg:flex-row">
-          {/* Main Content */}
-          <div className="w-full lg:w-2/3">
-            <section className="mb-16">
-              <h2 className="text-brand-navy mb-6 font-serif text-3xl dark:text-white">
-                About the Project
-              </h2>
-              <p className="text-lg leading-relaxed text-gray-600 dark:text-gray-400">
-                {project.description}
-              </p>
-            </section>
-
-            <section className="mb-16">
-              <h2 className="text-brand-navy mb-6 font-serif text-3xl dark:text-white">
-                Amenities
-              </h2>
-              <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
-                {project.amenities.map((amenity: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-gray-800"
-                  >
-                    <CheckCircle className="text-brand-gold h-5 w-5" />
-                    <span className="font-medium text-gray-700 dark:text-gray-200">{amenity}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="mb-16">
-              <h2 className="text-brand-navy mb-6 font-serif text-3xl dark:text-white">Gallery</h2>
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                {project.gallery.map((img: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="relative aspect-video overflow-hidden rounded-lg shadow-md"
-                  >
-                    <Image
-                      src={img}
-                      alt={`${project.title} gallery ${idx + 1}`}
-                      fill
-                      className="object-cover transition-transform hover:scale-105"
-                    />
-                  </div>
-                ))}
-              </div>
-            </section>
+        <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
+          {/* Left Column - Gallery */}
+          <div className="w-full">
+            <GalleryCarousel gallery={project.gallery} status={project.status} />
           </div>
 
-          {/* Sidebar Inquiry */}
-          <div className="w-full lg:w-1/3">
-            <div className="sticky top-24 rounded-xl border border-gray-200 bg-white p-8 shadow-xl dark:border-gray-800 dark:bg-gray-900">
-              <h3 className="text-brand-navy mb-2 font-serif text-2xl dark:text-white">
-                Interested in {project.title}?
-              </h3>
-              <p className="mb-6 text-sm text-gray-500 dark:text-gray-400">
-                Fill out the form below and our property experts will get back to you.
-              </p>
+          {/* Right Column - Details */}
+          <div className="flex w-full flex-col">
+            <div className="mb-3 flex items-center gap-2 text-sm font-semibold tracking-wide text-gray-500 uppercase dark:text-gray-400">
+              <MapPin size={16} className="text-brand-gold" />
+              <span>
+                {project.location} • {project.type}
+              </span>
+            </div>
 
-              <form className="space-y-4">
-                <div>
-                  <input
-                    required
-                    type="text"
-                    placeholder="Your Name"
-                    className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                  />
+            <h1 className="text-brand-navy mb-6 font-serif text-4xl leading-tight md:text-5xl lg:text-6xl dark:text-white">
+              {project.title}
+            </h1>
+
+            <div className="mb-10">
+              <ExpandableDescription text={project.description} />
+            </div>
+
+            {/* Stats Row */}
+            {(project.totalPlots || project.startingSize) && (
+              <div className="mb-10 grid grid-cols-2 gap-6">
+                {project.totalPlots && (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <span className="text-brand-navy mb-2 text-4xl font-bold dark:text-white">
+                      {project.totalPlots}
+                    </span>
+                    <span className="text-sm font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                      Total Plots
+                    </span>
+                  </div>
+                )}
+                {project.startingSize && (
+                  <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                    <span className="text-brand-navy mb-2 text-3xl font-bold dark:text-white">
+                      {project.startingSize}
+                    </span>
+                    <span className="text-sm font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                      Starting Size
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Amenities */}
+            {project.amenities && project.amenities.length > 0 && (
+              <div className="mb-10">
+                <h3 className="text-brand-navy mb-6 font-serif text-2xl dark:text-white">
+                  Amenities
+                </h3>
+                <div className="grid grid-cols-2 gap-x-6 gap-y-4">
+                  {project.amenities.map((amenity: string, idx: number) => (
+                    <div key={idx} className="flex items-center gap-3">
+                      <CheckCircle className="h-6 w-6 shrink-0 text-green-600" />
+                      <span className="text-lg font-semibold text-gray-800 dark:text-gray-300">
+                        {amenity}
+                      </span>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <input
-                    required
-                    type="tel"
-                    placeholder="Phone Number"
-                    className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                  />
+              </div>
+            )}
+
+            {/* Available Sizes */}
+            {project.availableSizes && project.availableSizes.length > 0 && (
+              <div className="mb-12">
+                <h3 className="text-brand-navy mb-6 font-serif text-2xl dark:text-white">
+                  Available Sizes
+                </h3>
+                <div className="flex flex-wrap gap-4">
+                  {project.availableSizes.map((size: string, idx: number) => (
+                    <span
+                      key={idx}
+                      className="bg-brand-gold/10 text-brand-navy dark:bg-brand-gold/20 dark:text-brand-gold border-brand-gold/20 rounded-full border px-6 py-2 text-sm font-bold"
+                    >
+                      {size}
+                    </span>
+                  ))}
                 </div>
-                <div>
-                  <input
-                    required
-                    type="email"
-                    placeholder="Email Address"
-                    className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-md border border-gray-200 bg-gray-50 p-3 text-sm outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light w-full rounded-md py-4 font-bold tracking-wider uppercase transition-colors"
+              </div>
+            )}
+
+            {/* Action Buttons */}
+            <div className="mt-auto flex flex-col gap-4">
+              <Link
+                href={`/${locale}/contact?project=${slug}`}
+                className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex w-full items-center justify-center gap-3 rounded-xl py-5 text-xl font-bold shadow-lg transition-all hover:-translate-y-1"
+              >
+                <CalendarRange size={24} />
+                Schedule a Site Visit
+              </Link>
+              <div className="flex gap-4">
+                <a
+                  href="tel:+919999999999"
+                  className="bg-brand-navy hover:bg-brand-navy/90 dark:text-brand-navy flex flex-1 items-center justify-center gap-2 rounded-xl py-4 text-lg font-bold text-white shadow-md transition-all hover:-translate-y-1 dark:bg-white dark:hover:bg-gray-100"
                 >
-                  Request Information
-                </button>
-              </form>
-            </div>
-
-            {/* EMI Calculator */}
-            <div className="mt-8">
-              <EmiCalculator />
+                  <Phone size={20} />
+                  Call Now
+                </a>
+                <a
+                  href="mailto:info@sviinfra.com"
+                  className="text-brand-navy flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-gray-200 bg-white py-4 text-lg font-bold shadow-md transition-all hover:-translate-y-1 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+                >
+                  <Mail size={20} />
+                  Email Us
+                </a>
+              </div>
             </div>
           </div>
         </div>
       </div>
+
+      {/* Location Map */}
+      {project.mapEmbedUrl && (
+        <section className="mt-24 w-full">
+          <div className="container mx-auto mb-10 px-4 text-center">
+            <h2 className="text-brand-navy mb-4 font-serif text-4xl md:text-5xl dark:text-white">
+              Location
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Explore the project location on the map
+            </p>
+          </div>
+          <div className="relative h-[500px] w-full shadow-inner md:h-[600px]">
+            <iframe
+              src={project.mapEmbedUrl}
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              allowFullScreen={true}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              className="h-full w-full contrast-[110%] grayscale-[20%]"
+            ></iframe>
+          </div>
+        </section>
+      )}
+
+      {/* News Section */}
+      {project.news && project.news.length > 0 && (
+        <div className="container mx-auto max-w-7xl px-4">
+          <NewsSection news={project.news} />
+        </div>
+      )}
     </div>
   );
 }
