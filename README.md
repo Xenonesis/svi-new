@@ -2020,7 +2020,7 @@ git push origin main    # auto-deploys via GitHub integration
 
 | Issue                       | Fix                                                                              |
 | --------------------------- | -------------------------------------------------------------------------------- |
-| Dev server won't start      | Node 20+; `rm -rf node_modules .next && pnpm install`; `pnpm clean`              |
+| Dev server won't start      | Node 22+; `rm -rf node_modules .next && pnpm install`; `pnpm clean`              |
 | Supabase connection errors  | Verify `.env.local` keys; check project is active; review IP allowlist           |
 | Auth not working            | Run **all** migrations in order; enable email/password in Supabase; set site URL |
 | MapLibre not rendering      | Check browser console for CORS; verify tile CDN reachable                        |
