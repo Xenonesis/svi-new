@@ -40,7 +40,6 @@
     "@ai-sdk/groq": "^4.0.5",
     "@ai-sdk/react": "^4.0.16",
     "@capacitor/android": "^8.4.1",
-    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "^8.4.1",
     "@capacitor/core": "^8.4.1",
     "@radix-ui/react-dialog": "^1.1.18",
@@ -148,10 +147,7 @@
       "postcss": "^8.5.10"
     },
     "serialize-javascript": "^7.0.5",
-    "uuid": "^11.1.1",
-    "tar": "^7.5.16",
-    "minimatch": "^3.1.4",
-    "replace": "^1.2.1"
+    "uuid": "^11.1.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
@@ -179,8 +175,5 @@
       "path": "./public/images/*.avif",
       "maxSize": "100KB"
     }
-  ],
-  "optionalDependencies": {
-    "@next/swc-win32-x64-msvc": "^16.2.10"
-  }
+  ]
 }
