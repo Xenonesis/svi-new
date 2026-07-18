@@ -40,7 +40,7 @@ export default tseslint.config(
     },
     languageOptions: {
       parser: tseslint.parser,
-      ecmaVersion: 2021,
+      ecmaVersion: 2024,
       sourceType: 'module',
       parserOptions: {
         ecmaFeatures: {

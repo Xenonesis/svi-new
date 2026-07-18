@@ -9,8 +9,8 @@ This project now has a comprehensive suite of development tools configured to en
 - **Purpose**: Automatic code formatting for consistent style
 - **Configuration**: `.prettierrc`
 - **Commands**:
-  - `npm run format` - Format all files
-  - `npm run format:check` - Check formatting without changes
+  - `pnpm format` - Format all files
+  - `pnpm format:check` - Check formatting without changes
 - **Features**:
   - Semi-colons enabled
   - Single quotes
@@ -24,8 +24,8 @@ This project now has a comprehensive suite of development tools configured to en
 - **Purpose**: Catch bugs, enforce best practices, find problematic patterns
 - **Configuration**: `eslint.config.js` (flat config format for ESLint 9)
 - **Commands**:
-  - `npm run lint` - Run linter
-  - `npm run lint:fix` - Auto-fix fixable issues
+  - `pnpm lint` - Run linter
+  - `pnpm lint:fix` - Auto-fix fixable issues
 - **Plugins**:
   - `@typescript-eslint` - TypeScript support
   - `eslint-plugin-react` - React-specific rules
@@ -82,7 +82,7 @@ This project now has a comprehensive suite of development tools configured to en
   - LF line endings
   - Insert final newline
   - Trim trailing whitespace
-- **Command**: `npm run editorconfig` - Check compliance
+- **Command**: `pnpm editorconfig` - Check compliance
 
 ### 7. **Import Sort** - Import Organization
 
@@ -90,26 +90,27 @@ This project now has a comprehensive suite of development tools configured to en
 - **Configuration**: `.importsortrc.json`
 - **Parser**: Babylon (Babel parser)
 - **Style**: Module style
-- **Integration**: Runs as part of `npm run format` and pre-commit hooks
+- **Integration**: Runs as part of `pnpm format` and pre-commit hooks
 
 ## 📋 Available NPM Scripts
 
 ```bash
 # Development
-npm run dev          # Start development server on port 3000
-npm run build        # Build for production
-npm run start        # Start production server
-npm run clean        # Remove .next build directory
+pnpm dev          # Start development server on port 3001
+pnpm build        # Build for production
+pnpm start        # Start production server
+pnpm clean        # Remove .next build directory
 
 # Code Quality
-npm run lint         # Run ESLint
-npm run lint:fix     # Run ESLint with auto-fix
-npm run format       # Format code with Prettier + Import Sort
-npm run format:check # Check formatting without changes
-npm run editorconfig # Check EditorConfig compliance
+pnpm lint         # Run ESLint
+pnpm lint:fix     # Run ESLint with auto-fix
+pnpm format       # Format code with Prettier + Import Sort
+pnpm format:check # Check formatting without changes
+pnpm editorconfig # Check EditorConfig compliance
+pnpm typecheck    # TypeScript type checking
 
 # Git Hooks
-npm run prepare      # Initialize Husky (runs automatically after npm install)
+pnpm prepare      # Initialize Husky (runs automatically after pnpm install)
 ```
 
 ## 🔄 Typical Workflow
@@ -119,10 +120,10 @@ npm run prepare      # Initialize Husky (runs automatically after npm install)
 ```bash
 # Your code is automatically formatted on save if your editor supports it
 # Or manually format:
-npm run format
+pnpm format
 
 # Check for linting issues:
-npm run lint
+pnpm lint
 ```
 
 ### 2. **Before Committing**

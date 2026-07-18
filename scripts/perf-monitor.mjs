@@ -3,7 +3,7 @@
  * Performance Monitor (dev-only)
  * Logs bundle sizes and image size compliance.
  *
- * Run: npm run perf:dev
+ * Run: pnpm perf:dev
  */
 
 import { statSync, existsSync, readdirSync } from 'fs';
@@ -97,7 +97,7 @@ function checkImageSizes() {
   if (violations === 0) {
     console.log('  ✅  All images within size budgets.');
   } else {
-    console.log(`\n  ⚠️  ${violations} image(s) exceed budget. Run: npm run optimize:images`);
+    console.log(`\n  ⚠️  ${violations} image(s) exceed budget. Run: pnpm optimize:images`);
   }
   console.log('='.repeat(60) + '\n');
 }
@@ -105,7 +105,7 @@ function checkImageSizes() {
 function main() {
   console.log('🔍  SVI Performance Monitor — ' + new Date().toLocaleString() + '\n');
   if (!existsSync(NEXT_BUILD_DIR)) {
-    console.log('ℹ️  No .next/ build found. Run `npm run build` first for bundle analysis.\n');
+    console.log('ℹ️  No .next/ build found. Run `pnpm build` first for bundle analysis.\n');
   } else {
     printBudgetReport();
   }

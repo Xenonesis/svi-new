@@ -1,22 +1,23 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
+// Set CAP_SERVER_URL to your dev server for local development, e.g.:
+//   CAP_SERVER_URL=http://192.168.1.100:3001 npx cap run android
+const serverUrl = process.env.CAP_SERVER_URL || 'https://www.sviinfrasolutions.com/admin';
+const isDev = !!process.env.CAP_SERVER_URL;
+
 const config: CapacitorConfig = {
   appId: 'com.svi.infrasolutions',
   appName: 'SVI Infra Solutions',
   webDir: 'out', // Not used in server mode, but required by Capacitor
   server: {
-    // ── IMPORTANT ──────────────────────────────────────────────────────────
-    // Replace with your actual Vercel production URL.
-    // Example: 'https://svi-new.vercel.app'
-    // ───────────────────────────────────────────────────────────────────────
-    url: 'https://www.sviinfrasolutions.com/admin',
+    url: serverUrl,
     allowNavigation: ['www.sviinfrasolutions.com', 'sviinfrasolutions.com', '*.vercel.app'],
-    cleartext: false, // HTTPS only — never allow cleartext HTTP in production
+    cleartext: isDev, // Allow cleartext HTTP only during local development
   },
   android: {
-    allowMixedContent: false,
+    allowMixedContent: isDev,
     captureInput: true,
-    webContentsDebuggingEnabled: false, // Set true only during development
+    webContentsDebuggingEnabled: isDev,
     backgroundColor: '#0a0a0a', // Matches your dark theme background
     // Minimum Android API level (Android 7.0+)
     minWebViewVersion: 60,

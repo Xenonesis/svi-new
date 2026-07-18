@@ -52,6 +52,6 @@ for (const f of files) {
 }
 
 if (exitCode !== 0) {
-  console.error('\n💡  Run: npm run optimize:images  to fix image sizes\n');
+  console.error('\n💡  Run: pnpm optimize:images  to fix image sizes\n');
 }
 process.exit(exitCode);

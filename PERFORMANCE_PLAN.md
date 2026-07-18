@@ -73,7 +73,7 @@ Using Chrome DevTools + `web-vitals` library:
 
 ### 1.3 Bundle Analysis
 
-Run `npm run analyze` (uses `@next/bundle-analyzer` — already configured):
+Run `pnpm analyze` (uses `@next/bundle-analyzer` — already configured):
 
 | Target                  | Budget   |
 | ----------------------- | -------- |
@@ -94,7 +94,7 @@ Inventory all assets in `public/images/` + `public/`:
 ### 1.5 Build Time Baseline
 
 ```bash
-npm run build
+pnpm build
 # Record total build time + page count
 ```
 
@@ -134,13 +134,13 @@ priority="true" ONLY on LCP image
 
 ```json
 // package.json
-"prebuild": "npm run optimize:images"
+"prebuild": "pnpm optimize:images"
 ```
 
 3. Add lint-staged rule (already using husky + lint-staged):
 
 ```yaml
-'*.{png,jpg,jpeg}': ['npm run optimize:images']
+'*.{png,jpg,jpeg}': ['pnpm optimize:images']
 ```
 
 ### 2.2 Hero Video Optimization

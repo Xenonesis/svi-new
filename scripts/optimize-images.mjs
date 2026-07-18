@@ -6,7 +6,7 @@
  * Outputs blurDataURL for next/image placeholder
  *
  * Run: node scripts/optimize-images.mjs
- * Or via: npm run optimize:images
+ * Or via: pnpm optimize:images
  *
  * Set SKIP_IMAGE_OPTIMIZE=true to bypass (e.g., in CI for faster builds).
  */
@@ -27,7 +27,7 @@ let sharp;
 try {
   sharp = require('sharp');
 } catch {
-  console.error('❌  sharp is not installed. Run: npm install --save-dev sharp');
+  console.error('❌  sharp is not installed. Run: pnpm add sharp');
   process.exit(1);
 }
 
@@ -167,7 +167,7 @@ async function main() {
   console.log(`   WebP quality: ${WEBP_QUALITY} | AVIF quality: ${AVIF_QUALITY}\n`);
 
   if (!sharp) {
-    console.error('❌  sharp is required. Run: npm install --save-dev sharp');
+    console.error('❌  sharp is required. Run: pnpm add sharp');
     process.exit(1);
   }
 

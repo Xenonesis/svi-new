@@ -43,7 +43,6 @@ const nextConfig = {
       '@tiptap/react',
       '@tiptap/starter-kit',
     ],
-    scrollRestoration: true,
   },
   // Keep compiled pages in memory longer during dev (no production impact)
   onDemandEntries: {

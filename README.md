@@ -513,7 +513,7 @@ Multiple performance index migrations have been applied:
 
 ```bash
 # Run bundle analyzer to inspect chunk sizes
-npm run analyze
+pnpm analyze
 # Opens a visualization of your bundle composition in the browser
 ```
 
@@ -526,11 +526,11 @@ npm run analyze
 ```
 Category          │ Tool        │ Location              │ Run command
 ──────────────────┼─────────────┼───────────────────────┼────────────────
-Unit tests        │ Vitest      │ __tests__/            │ npm test
-Integration tests │ Vitest      │ __tests__/api/        │ npm test
-Component tests   │ Vitest+TL   │ Co-located with components │ npm test
-E2E tests         │ Playwright  │ e2e/tests/            │ npm run test:e2e
-DB performance    │ Vitest+tsx  │ scripts/test-db-performance.ts │ npm run test:db-performance
+Unit tests        │ Vitest      │ __tests__/            │ pnpm test
+Integration tests │ Vitest      │ __tests__/api/        │ pnpm test
+Component tests   │ Vitest+TL   │ Co-located with components │ pnpm test
+E2E tests         │ Playwright  │ e2e/tests/            │ pnpm test:e2e
+DB performance    │ Vitest+tsx  │ scripts/test-db-performance.ts │ pnpm test:db-performance
 ```
 
 ### Writing Tests
@@ -594,23 +594,23 @@ User types message → POST /api/chat → Vercel AI SDK stream
 
 ```bash
 # Start dev server on port 3001
-npm run dev
+pnpm dev
 
 # Build for production locally
-npm run build
-npm run start
+pnpm build
+pnpm start
 
 # Run tests
-npm test
+pnpm test
 ```
 
 ### Environment Files
 
-| File              | Purpose                          | Used When                         |
-| ----------------- | -------------------------------- | --------------------------------- |
-| `.env.local`      | Local overrides (ignored by git) | `npm run dev`                     |
-| `.env.production` | Production overrides             | `npm run build` + `npm run start` |
-| Vercel Dashboard  | Production env vars              | Vercel deployment                 |
+| File              | Purpose                          | Used When                   |
+| ----------------- | -------------------------------- | --------------------------- |
+| `.env.local`      | Local overrides (ignored by git) | `pnpm dev`                  |
+| `.env.production` | Production overrides             | `pnpm build` + `pnpm start` |
+| Vercel Dashboard  | Production env vars              | Vercel deployment           |
 
 ### Vercel Configuration
 
@@ -619,7 +619,7 @@ npm test
   "framework": "nextjs",
   "buildCommand": "npm run build",
   "outputDirectory": ".next",
-  "installCommand": "npm install",
+  "installCommand": "pnpm install",
   "crons": [
     {
       "path": "/api/cron/lottery",
@@ -883,7 +883,7 @@ The app uses Vercel's built-in analytics and speed insights:
 
 ```bash
 # Generate bundle analysis report
-npm run analyze
+pnpm analyze
 # Opens http://localhost:8888 with interactive treemap visualization
 ```
 
@@ -1026,12 +1026,12 @@ Initial release with:
 | -------------------- | ---------------------------------------- | ----------------------------------------------- |
 | **API errors**       | Check Network tab in DevTools            | 4xx/5xx status codes, error messages            |
 | **Auth issues**      | Clear cookies, check `profiles` table    | Session expiry, missing role field              |
-| **Build failures**   | `npm run clean && npx tsc --noEmit`      | TypeScript errors, missing modules              |
+| **Build failures**   | `pnpm clean && pnpm typecheck`           | TypeScript errors, missing modules              |
 | **Console errors**   | Browser DevTools console                 | Uncaught exceptions, network failures           |
 | **Database queries** | Supabase Dashboard > Query Performance   | Slow queries, missing indexes                   |
 | **Email issues**     | Resend Dashboard > Logs                  | Delivery failures, bounce reasons               |
 | **PWA problems**     | DevTools > Application > Service Workers | Registration status, cache storage              |
-| **Bundle size**      | `npm run analyze`                        | Large chunks, duplicate dependencies            |
+| **Bundle size**      | `pnpm analyze`                           | Large chunks, duplicate dependencies            |
 | **Performance**      | Lighthouse audit                         | LCP, INP, CLS scores, render-blocking resources |
 
 ---
@@ -1475,7 +1475,7 @@ git clone https://github.com/Xenonesis/svi-new.git
 cd svi-new
 
 # 2. Install
-npm install
+pnpm install
 
 # 3. Environment
 cp .env.example .env.local
@@ -1489,7 +1489,7 @@ cp .env.example .env.local
 #   supabase/migrations/*.sql (timestamp order)
 
 # 5. Dev server
-npm run dev          # → http://localhost:3001
+pnpm dev          # → http://localhost:3001
 ```
 
 ---
@@ -1908,12 +1908,12 @@ __tests__/
 ```
 
 ```bash
-npm test            # all unit/integration
-npm run test:watch  # watch mode
-npm run test:e2e    # Playwright
-npm run test:e2e:ui # interactive UI
-npm run test:e2e:debug # debug mode
-npm run test:db-performance # database performance tests
+pnpm test            # all unit/integration
+pnpm test:watch  # watch mode
+pnpm test:e2e    # Playwright
+pnpm test:e2e:ui # interactive UI
+pnpm test:e2e:debug # debug mode
+pnpm test:db-performance # database performance tests
 ```
 
 ---
@@ -1976,18 +1976,18 @@ git push origin main    # auto-deploys via GitHub integration
 ```json
 {
   "framework": "nextjs",
-  "buildCommand": "npm run build",
+  "buildCommand": "pnpm build",
   "outputDirectory": ".next",
-  "installCommand": "npm install"
+  "installCommand": "pnpm install"
 }
 ```
 
 ### Other platforms
 
 - **AWS** — Amplify or ECS/Fargate
-- **Google Cloud Run** — wrap with a Dockerfile (`npm run build && npm run start`)
+- **Google Cloud Run** — wrap with a Dockerfile (`pnpm build && pnpm start`)
 - **Azure** — Static Web Apps
-- **Self-hosted** — `node` server running `npm run start`
+- **Self-hosted** — `node` server running `pnpm start`
 
 ---
 
@@ -2020,18 +2020,18 @@ git push origin main    # auto-deploys via GitHub integration
 
 | Issue                       | Fix                                                                              |
 | --------------------------- | -------------------------------------------------------------------------------- |
-| Dev server won't start      | Node 20+; `rm -rf node_modules .next && npm install`; `npm run clean`            |
+| Dev server won't start      | Node 20+; `rm -rf node_modules .next && pnpm install`; `pnpm clean`              |
 | Supabase connection errors  | Verify `.env.local` keys; check project is active; review IP allowlist           |
 | Auth not working            | Run **all** migrations in order; enable email/password in Supabase; set site URL |
 | MapLibre not rendering      | Check browser console for CORS; verify tile CDN reachable                        |
 | AI chatbot not responding   | Confirm `GROQ_API_KEY`; check Quota page on Groq                                 |
 | Emails not sending          | Verify `RESEND_API_KEY`; check sender domain verification status                 |
 | Lottery page not visible    | `portal_settings.lottery_page_visible` must be `true`                            |
-| Build failures              | `npm run clean`; `npx tsc --noEmit`; ensure all env vars are set                 |
+| Build failures              | `pnpm clean`; `pnpm typecheck`; ensure all env vars are set                      |
 | Admin redirect loop         | Clear cookies; verify `profiles.role = 'admin'`; check `proxy.ts` config         |
 | Locale not switching        | Confirm `next-intl` config in `src/i18n/routing.ts`; clear `NEXT_LOCALE` cookie  |
 | 3D scene not loading        | Check `three`/`@react-three/fiber` versions; look for WebGL errors               |
-| Dev server on wrong port    | Default is port 3001; check `npm run dev` script in `package.json`               |
+| Dev server on wrong port    | Default is port 3001; check `pnpm dev` script in `package.json`                  |
 | Push notifications fail     | Verify VAPID keys match between env and subscription; check browser permission   |
 | PWA not installable         | Ensure HTTPS (or localhost); verify manifest.json is valid; check service worker |
 | Email campaigns not sending | Check Resend domain verification; verify campaign status in admin panel          |
@@ -2043,7 +2043,7 @@ git push origin main    # auto-deploys via GitHub integration
 
 1. Fork & branch: `git checkout -b feat/your-feature`
 2. Code with TypeScript strict + tests for new behavior
-3. Quality gates: `npm test && npm run lint && npm run format:check`
+3. Quality gates: `pnpm test && pnpm lint && pnpm format:check`
 4. Commit conventionally: `feat(scope): description`
 5. Push & open a PR
 
@@ -2058,7 +2058,7 @@ git push origin main    # auto-deploys via GitHub integration
 - Trust Prettier's auto-sorted Tailwind class order
 - Always run migrations in timestamp order
 - Use `tsx` for running TypeScript scripts directly
-- Run `npm run prepare` after cloning to install Husky hooks
+- Run `pnpm prepare` after cloning to install Husky hooks
 
 ### Scripts directory
 

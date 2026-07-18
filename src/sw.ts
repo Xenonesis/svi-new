@@ -1,7 +1,10 @@
+/// <reference lib="webworker" />
+
 import { defaultCache } from '@serwist/next/worker';
 import { type PrecacheEntry, Serwist, NetworkOnly } from 'serwist';
 
-declare const self: any;
+// Augment the ServiceWorker global scope with Serwist-injected properties
+declare const self: ServiceWorkerGlobalScope & { __SW_MANIFEST?: PrecacheEntry[] };
 
 // ── Background Sync ─────────────────────────────────────
 const syncSubmissions = async () => {
@@ -35,14 +38,14 @@ const syncSubmissions = async () => {
 
 // Initialize Serwist
 const serwist = new Serwist({
-  precacheEntries: self.__SW_MANIFEST as PrecacheEntry[] | undefined,
+  precacheEntries: self.__SW_MANIFEST,
   precacheOptions: {
     cleanupOutdatedCaches: true,
     concurrency: 10,
   },
   runtimeCaching: [
     {
-      matcher: ({ url }: any) => url.pathname.startsWith('/api/'),
+      matcher: ({ url }) => url.pathname.startsWith('/api/'),
       handler: new NetworkOnly(),
     },
     ...defaultCache,
@@ -50,12 +53,12 @@ const serwist = new Serwist({
 });
 
 // Custom push notification handler
-self.addEventListener('push', (event: any) => {
+self.addEventListener('push', (event: PushEvent) => {
   if (!event.data) return;
 
   try {
     const data = event.data.json();
-    const options = {
+    const options: NotificationOptions = {
       body: data.body || '',
       icon: data.icon || '/icons/icon-192x192.png',
       badge: '/favicons/favicon_48x48.png',
@@ -80,33 +83,31 @@ self.addEventListener('push', (event: any) => {
 });
 
 // Notification click handler
-self.addEventListener('notificationclick', (event: any) => {
+self.addEventListener('notificationclick', (event: NotificationEvent) => {
   event.notification.close();
 
-  const url = event.notification.data?.url || '/';
+  const url = (event.notification.data as { url?: string })?.url || '/';
 
   event.waitUntil(
-    self.clients
-      .matchAll({ type: 'window', includeUncontrolled: true })
-      .then((clientList: any[]) => {
-        for (const client of clientList) {
-          if (client.url.startsWith(self.location.origin) && 'focus' in client) {
-            client.focus();
-            if ('navigate' in client) {
-              (client as any).navigate(url);
-            }
-            return;
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.startsWith(self.location.origin) && 'focus' in client) {
+          client.focus();
+          if ('navigate' in client) {
+            client.navigate(url);
           }
+          return;
         }
-        if (self.clients.openWindow) {
-          return self.clients.openWindow(url);
-        }
-      })
+      }
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(url);
+      }
+    })
   );
 });
 
 // Background Sync handler
-self.addEventListener('sync', (event: any) => {
+self.addEventListener('sync', (event: SyncEvent) => {
   if (event.tag === 'sync-submissions') {
     event.waitUntil(syncSubmissions());
   }
