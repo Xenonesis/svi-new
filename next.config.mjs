@@ -28,12 +28,6 @@ const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
-  typescript: {
-    // !! WARN !!
-    // Dangerously allow production builds to successfully complete even if
-    // your project has type errors. We do this because TS 7.0 RC crashes Next.js's internal type checker.
-    ignoreBuildErrors: true,
-  },
   experimental: {
     optimizePackageImports: [
       'lucide-react',

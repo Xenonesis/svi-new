@@ -58,7 +58,7 @@ self.addEventListener('push', (event: PushEvent) => {
 
   try {
     const data = event.data.json();
-    const options: NotificationOptions = {
+    const options = {
       body: data.body || '',
       icon: data.icon || '/icons/icon-192x192.png',
       badge: '/favicons/favicon_48x48.png',
@@ -72,7 +72,7 @@ self.addEventListener('push', (event: PushEvent) => {
       requireInteraction: data.requireInteraction || false,
       tag: data.tag || 'default',
       renotify: data.renotify || false,
-    };
+    } as unknown as NotificationOptions;
 
     event.waitUntil(
       self.registration.showNotification(data.title || 'SVI Infra Solutions', options)
