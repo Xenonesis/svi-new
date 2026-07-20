@@ -58,6 +58,7 @@ replace_bba_3.py
 *.jpeg
 *.exe
 *.pdf
+!public/Shivani Vatika/shivani-vatika-11th-brochure.pdf
 salary*
 .playwright-mcp/
 

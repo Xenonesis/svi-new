@@ -1,15 +1,33 @@
 import Link from 'next/link';
-import { CalendarRange, Phone, Mail } from 'lucide-react';
+import { CalendarRange, Phone, Mail, Download } from 'lucide-react';
 
 type ProjectActionsProps = {
   locale: string;
   slug: string;
   isHindi?: boolean;
+  brochureUrl?: string;
 };
 
-export default function ProjectActions({ locale, slug, isHindi }: ProjectActionsProps) {
+export default function ProjectActions({
+  locale,
+  slug,
+  isHindi,
+  brochureUrl,
+}: ProjectActionsProps) {
   return (
     <div className="mt-auto flex flex-col gap-4">
+      {brochureUrl && (
+        <a
+          href={brochureUrl}
+          download
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex w-full items-center justify-center gap-3 rounded-xl bg-[#0F1A2E] py-4 text-lg font-bold text-[#C9A84C] shadow-lg transition-all hover:-translate-y-1 hover:bg-[#0F1A2E]/90"
+        >
+          <Download size={20} />
+          {isHindi ? 'ब्रोशर डाउनलोड करें' : 'Download Brochure'}
+        </a>
+      )}
       <Link
         href={`/${locale}/contact?project=${slug}`}
         className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex w-full items-center justify-center gap-3 rounded-xl py-5 text-xl font-bold shadow-lg transition-all hover:-translate-y-1"

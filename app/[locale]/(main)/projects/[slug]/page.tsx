@@ -115,7 +115,12 @@ export default async function ProjectDetailPage({ params }: Props) {
 
             <ProjectSizes sizes={project.availableSizes || []} isHindi={isHindi} />
 
-            <ProjectActions locale={locale} slug={slug} isHindi={isHindi} />
+            <ProjectActions
+              locale={locale}
+              slug={slug}
+              isHindi={isHindi}
+              brochureUrl={project.brochureUrl}
+            />
           </div>
         </div>
       </div>

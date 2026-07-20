@@ -17,6 +17,7 @@ export type ProjectData = {
   mapEmbedUrl?: string;
   description: string;
   descriptionHi?: string;
+  brochureUrl?: string;
 };
 
 export const PROJECTS_DB: Record<string, ProjectData> = {
@@ -57,6 +58,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
       'Shivani Vatika 11th – A Promising Residential Society Near Khatu Shyam Ji. Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed on land acquired from Jaipur Development Authority – Pratap Nagar Cooperative Housing Society, ensuring complete transparency and trust for buyers. The township offers 230 residential plots ranging from 50 sq. yds. to 200 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure and essential facilities.',
     descriptionHi:
       'शिवानी वाटिका 11th – खाटू श्याम जी के पास एक शानदार आवासीय टाउनशिप। शिवानी वाटिका 11th एक सुनियोजित आवासीय परियोजना है जो 11.5 बीघा (लगभग 30,480 वर्ग गज) में फैली हुई है, जिसे जयपुर विकास प्राधिकरण – प्रताप नगर सहकारी आवास समिति से अधिग्रहित भूमि पर विकसित किया गया है, जो खरीदारों के लिए पूर्ण पारदर्शिता और विश्वास सुनिश्चित करता है। टाउनशिप में 50 वर्ग गज से 200 वर्ग गज तक के 230 आवासीय भूखंड हैं, जो परिवारों को अपनी आवश्यकता के अनुसार चुनने की सुविधा देते हैं। आधुनिक बुनियादी ढांचे और आवश्यक सुविधाओं के साथ डिज़ाइन किया गया है।',
+    brochureUrl: '/Shivani Vatika/shivani-vatika-11th-brochure.pdf',
   },
   'shyam-aangan': {
     title: 'Shyam Aangan',
