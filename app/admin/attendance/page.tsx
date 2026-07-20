@@ -16,16 +16,21 @@ import AttendanceDashboard from '@/src/components/admin/attendance/AttendanceDas
 import AttendanceReport from '@/src/components/admin/attendance/AttendanceReport';
 import MarkAttendance from '@/src/components/admin/attendance/MarkAttendance';
 import TeamsManager from '@/src/components/admin/attendance/TeamsManager';
+import LiveStatus from '@/src/components/admin/attendance/LiveStatus';
+import AttendanceSettings from '@/src/components/admin/attendance/AttendanceSettings';
+import LocationManager from '@/src/components/admin/attendance/LocationManager';
 import { supabase } from '@/src/lib/supabase/client';
 import type { Team } from '@/src/lib/supabase/types';
 
-type Tab = 'dashboard' | 'teams' | 'mark' | 'report';
+type Tab = 'live' | 'dashboard' | 'teams' | 'mark' | 'report' | 'settings';
 
 const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
+  { id: 'live', label: 'Live Status', icon: LayoutDashboard },
   { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { id: 'teams', label: 'Teams', icon: Users },
   { id: 'mark', label: 'Mark Attendance', icon: CalendarCheck },
   { id: 'report', label: 'Reports', icon: BarChart3 },
+  { id: 'settings', label: 'Settings', icon: LayoutDashboard },
 ];
 
 const GRID_STYLE = {
@@ -40,7 +45,9 @@ function AttendanceContent() {
   const [token, setToken] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const tab = searchParams.get('tab') as Tab | null;
-    return tab && ['dashboard', 'teams', 'mark', 'report'].includes(tab) ? tab : 'dashboard';
+    return tab && ['live', 'dashboard', 'teams', 'mark', 'report', 'settings'].includes(tab)
+      ? tab
+      : 'live';
   });
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
@@ -174,6 +181,7 @@ function AttendanceContent() {
         {/* Tab Content */}
         <div className="dark:bg-brand-dark-surface/65 relative rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
+          {activeTab === 'live' && token && <LiveStatus token={token} />}
           {activeTab === 'dashboard' && token && (
             <AttendanceDashboard token={token} showToast={showToast} />
           )}
@@ -201,6 +209,12 @@ function AttendanceContent() {
               teams={teams}
               teamsLoading={teamsLoading}
             />
+          )}
+          {activeTab === 'settings' && token && (
+            <div className="space-y-12">
+              <AttendanceSettings token={token} showToast={showToast} />
+              <LocationManager token={token} showToast={showToast} />
+            </div>
           )}
         </div>
       </div>

@@ -44,7 +44,7 @@ export interface TeamMember {
   email?: string;
 }
 
-export type AttendanceStatus = 'present' | 'absent' | 'half_day' | 'leave';
+export type AttendanceStatus = 'present' | 'absent' | 'half_day' | 'leave' | 'pending';
 
 export interface AttendanceRecord {
   id: string;
@@ -56,6 +56,18 @@ export interface AttendanceRecord {
   marked_by: string | null;
   created_at: string;
   updated_at: string;
+  // Punch-in/out fields
+  punch_in_time: string | null;
+  punch_out_time: string | null;
+  check_in_lat: number | null;
+  check_in_lon: number | null;
+  punch_out_lat: number | null;
+  punch_out_lon: number | null;
+  is_geofence_verified: boolean;
+  punch_out_geofence_verified: boolean;
+  geofence_distance_meters: number | null;
+  is_late: boolean;
+  total_hours: number | null;
   // Joined fields (from API)
   full_name?: string;
   email?: string;
@@ -86,4 +98,40 @@ export interface AttendanceReportRow {
   leave: number;
   total_days: number;
   attendance_percentage: number;
+}
+
+// ── Punch System ─────────────────────────────────────────────
+
+export interface GeofenceLocation {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  radius_meters: number;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+}
+
+export interface AttendanceSettingsMap {
+  punch_in_start: string; // "09:00"
+  punch_in_cutoff: string; // "10:30"
+  punch_out_start: string; // "17:00"
+  punch_out_end: string; // "21:00"
+  geofence_radius_meters: number; // 200
+}
+
+export type EmployeePunchStatus = 'not_punched' | 'punched_in' | 'punched_out';
+
+export interface EmployeeLiveStatus {
+  user_id: string;
+  full_name: string;
+  email: string;
+  status: EmployeePunchStatus;
+  punch_in_time: string | null;
+  punch_out_time: string | null;
+  total_hours: number | null;
+  is_late: boolean;
+  is_geofence_verified: boolean;
+  punch_out_geofence_verified: boolean;
 }

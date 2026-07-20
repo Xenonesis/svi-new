@@ -1,0 +1,130 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/src/lib/supabase/admin';
+import { createClient } from '@/src/lib/supabase/server';
+import { AppError, handleApiError } from '@/src/lib/api/errors';
+
+// Haversine formula
+function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const R = 6371e3;
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
+
+  const a =
+    Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+    Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return R * c;
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const supabase = await createClient();
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+
+    if (authError || !user) {
+      throw AppError.unauthorized('Please log in to punch out');
+    }
+
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      throw AppError.badRequest('Invalid JSON body');
+    }
+
+    const { lat, lon } = body;
+    if (lat === undefined || lon === undefined) {
+      throw AppError.badRequest('Location coordinates (lat, lon) are required');
+    }
+
+    const now = new Date();
+    const today = now.toISOString().split('T')[0];
+
+    // Find today's punch-in record
+    const { data: todayRecord } = await supabaseAdmin
+      .from('attendance_records')
+      .select('*')
+      .eq('user_id', user.id)
+      .eq('date', today)
+      .maybeSingle();
+
+    if (!todayRecord) {
+      throw AppError.badRequest('You have not punched in today');
+    }
+
+    if (todayRecord.punch_out_time) {
+      throw AppError.badRequest('You have already punched out today');
+    }
+
+    // Geofence verification against all active locations
+    const { data: locations } = await supabaseAdmin
+      .from('geofence_locations')
+      .select('*')
+      .eq('is_active', true);
+
+    let isGeofenceVerified = false;
+    let closestDistance: number | null = null;
+
+    if (locations && locations.length > 0) {
+      for (const loc of locations) {
+        const dist = calculateDistance(lat, lon, Number(loc.latitude), Number(loc.longitude));
+        const radius = Number(loc.radius_meters) || 200;
+
+        if (closestDistance === null || dist < closestDistance) {
+          closestDistance = Math.round(dist);
+        }
+
+        if (dist <= radius) {
+          isGeofenceVerified = true;
+          closestDistance = Math.round(dist);
+          break;
+        }
+      }
+    } else {
+      isGeofenceVerified = true;
+    }
+
+    // Calculate total hours
+    const punchInTime = new Date(todayRecord.punch_in_time);
+    const totalHours =
+      Math.round(((now.getTime() - punchInTime.getTime()) / (1000 * 60 * 60)) * 100) / 100;
+
+    // Update record with punch-out data
+    const { data: updatedRecord, error: updateError } = await supabaseAdmin
+      .from('attendance_records')
+      .update({
+        punch_out_time: now.toISOString(),
+        punch_out_lat: lat,
+        punch_out_lon: lon,
+        punch_out_geofence_verified: isGeofenceVerified,
+        total_hours: totalHours,
+        updated_at: now.toISOString(),
+      })
+      .eq('id', todayRecord.id)
+      .select()
+      .single();
+
+    if (updateError) {
+      console.error('Error updating punch-out record:', updateError);
+      throw AppError.internal('Failed to punch out');
+    }
+
+    return NextResponse.json({
+      success: true,
+      record: updatedRecord,
+      geofence: {
+        verified: isGeofenceVerified,
+        distance: closestDistance,
+      },
+      total_hours: totalHours,
+    });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}
