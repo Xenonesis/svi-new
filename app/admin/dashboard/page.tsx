@@ -29,13 +29,13 @@ import type { UserProfile } from '@/src/lib/supabase/types';
 import { supabase } from '@/src/lib/supabase/client';
 import { useRouter } from 'next/navigation';
 import { useUsers, useAnalytics, useActivities } from '@/src/hooks/useDashboard';
-import { Badge } from '@/src/components/admin/helpers/Badge';
+import { RoleSwitcher } from '@/src/components/admin/helpers/RoleSwitcher';
 import { renderPropertyInterestTags } from '@/src/components/admin/helpers/PropertyInterestTags';
 import { CreateUserModal } from '@/src/components/admin/modals/CreateUserModal';
 import { EditUserModal } from '@/src/components/admin/modals/EditUserModal';
 import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
-import { MakeEmployeeConfirm } from '@/src/components/admin/modals/MakeEmployeeConfirm';
+import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
 
 const GRID_STYLE = {
   backgroundImage:
@@ -57,12 +57,12 @@ export default function AdminDashboard() {
   // UI state
   const [search, setSearch] = useState('');
   const [showCreate, setShowCreate] = useState(false);
+  const [showAddEmployee, setShowAddEmployee] = useState(false);
   const [showAdvisorSettings, setShowAdvisorSettings] = useState(false);
   const [editTarget, setEditTarget] = useState<UserProfile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
-  const [employeeTarget, setEmployeeTarget] = useState<UserProfile | null>(null);
-  const [employeeLoading, setEmployeeLoading] = useState(false);
+  const [roleLoading, setRoleLoading] = useState<Record<string, boolean>>({});
   const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
 
@@ -149,29 +149,35 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleMakeEmployee = async () => {
-    if (!employeeTarget) return;
-    setEmployeeLoading(true);
+  const handleRoleChange = async (user: UserProfile, newRole: string) => {
+    if (user.role === newRole) return;
+
+    // Prevent removing own admin rights
+    if (user.id === currentAdminId && newRole !== 'admin') {
+      showToast('error', 'You cannot remove your own admin role.');
+      return;
+    }
+
+    setRoleLoading((prev) => ({ ...prev, [user.id]: true }));
     try {
-      const res = await fetch(`/api/admin/users/${employeeTarget.id}`, {
+      const res = await fetch(`/api/admin/users/${user.id}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ role: 'employee' }),
+        body: JSON.stringify({ role: newRole }),
       });
       if (!res.ok) {
         const j = await res.json();
         throw new Error(j.error || 'Failed to update role');
       }
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-      showToast('success', `${employeeTarget.full_name} is now an employee.`);
+      showToast('success', `${user.full_name}'s role updated to ${newRole}.`);
     } catch (err: unknown) {
       showToast('error', err instanceof Error ? err.message : 'Update failed');
     } finally {
-      setEmployeeLoading(false);
-      setEmployeeTarget(null);
+      setRoleLoading((prev) => ({ ...prev, [user.id]: false }));
     }
   };
 
@@ -350,10 +356,10 @@ export default function AdminDashboard() {
             <RefreshCw className="h-3.5 w-3.5" /> Refresh
           </button>
           <button
-            onClick={() => router.push('/admin/employees')}
+            onClick={() => setShowAddEmployee(true)}
             className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
           >
-            <Briefcase className="h-3.5 w-3.5" /> Manage Employees
+            <Briefcase className="h-3.5 w-3.5" /> Add Employee
           </button>
           <button
             onClick={() => setShowAdvisorSettings(true)}
@@ -492,7 +498,15 @@ export default function AdminDashboard() {
                               <span className="text-sm font-semibold text-gray-900 dark:text-white">
                                 {u.full_name}
                               </span>
-                              <Badge role={u.role} />
+                              {roleLoading[u.id] ? (
+                                <span className="border-brand-gold h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                              ) : (
+                                <RoleSwitcher
+                                  role={u.role}
+                                  onRoleChange={(newRole) => handleRoleChange(u, newRole)}
+                                  disabled={u.id === currentAdminId}
+                                />
+                              )}
                             </div>
                             <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
                               {u.email}
@@ -550,20 +564,11 @@ export default function AdminDashboard() {
                       </td>
 
                       {/* Actions */}
-                      <td className="w-[120px] px-6 py-4 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          {u.role === 'client' && (
-                            <button
-                              onClick={() => setEmployeeTarget(u)}
-                              className="text-brand-gold hover:bg-brand-gold/10 dark:hover:bg-brand-gold/10 flex h-8 w-8 items-center justify-center rounded-md transition-colors"
-                              title="Make Employee"
-                            >
-                              <Briefcase className="h-4 w-4" />
-                            </button>
-                          )}
+                      <td className="px-6 py-4 text-right">
+                        <div className="flex items-center justify-end gap-2">
                           <button
                             onClick={() => setEditTarget(u)}
-                            className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-300"
                             title="Edit User Profile"
                           >
                             <Pencil className="h-4 w-4" />
@@ -571,7 +576,7 @@ export default function AdminDashboard() {
                           {u.id !== currentAdminId && (
                             <button
                               onClick={() => setDeleteTarget(u)}
-                              className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
                               title="Delete User"
                             >
                               <Trash2 className="h-4 w-4" />
@@ -621,12 +626,16 @@ export default function AdminDashboard() {
             loading={deleteLoading}
           />
         )}
-        {employeeTarget && (
-          <MakeEmployeeConfirm
-            user={employeeTarget}
-            onClose={() => setEmployeeTarget(null)}
-            onConfirm={handleMakeEmployee}
-            loading={employeeLoading}
+
+        {showAddEmployee && (
+          <AddEmployeeModal
+            token={token}
+            onClose={() => setShowAddEmployee(false)}
+            onSuccess={() => {
+              setShowAddEmployee(false);
+              queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+              showToast('success', 'Employee created successfully!');
+            }}
           />
         )}
         {showAdvisorSettings && (

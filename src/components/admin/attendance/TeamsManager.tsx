@@ -244,7 +244,7 @@ export default function TeamsManager({
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to fetch user profiles');
-      setUsers(json.users.filter((u: UserProfile) => u.role === 'client'));
+      setUsers(json.users.filter((u: UserProfile) => u.role === 'employee'));
     } catch (err: any) {
       console.error('Error loading users list:', err);
       showToast('error', err.message || 'Failed to load user rosters.');

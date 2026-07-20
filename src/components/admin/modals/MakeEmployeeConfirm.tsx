@@ -52,7 +52,7 @@ export function MakeEmployeeConfirm({
             {loading ? (
               <span className="border-brand-navy/30 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
             ) : (
-              'Confirm'
+              'Promote to Employee'
             )}
           </button>
         </div>
