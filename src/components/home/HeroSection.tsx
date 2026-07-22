@@ -5,12 +5,9 @@ import { useRef, useState, useEffect, useCallback, useTransition } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
-import dynamic from 'next/dynamic';
 
 import { useTranslations } from 'next-intl';
 import { TextReveal } from '@/src/components/motion/text-reveal';
-
-const HeroCanvas = dynamic(() => import('./HeroCanvas'), { ssr: false });
 
 interface HeroImage {
   src: string;
@@ -99,7 +96,6 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         ))}
         <div className="absolute inset-0 z-10 bg-[#0b0c10]/70" />
       </motion.div>
-      <HeroCanvas />
 
       {/* Navigation arrows */}
       <button
