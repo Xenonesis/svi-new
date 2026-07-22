@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/src/lib/seo';
-import BreadcrumbSchema from '@/src/components/common/BreadcrumbSchema';
+import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
   title: 'Real Estate Blog & Insights | SVI Infra Solutions',
@@ -12,7 +12,7 @@ export const metadata: Metadata = createMetadata({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Blog', path: '/blog' }]} />
+      <BreadcrumbSchema items={[{ name: 'Blog', path: '/blog' }]} includeHome />
       {children}
     </>
   );

@@ -33,7 +33,8 @@ const ORG_SCHEMA = {
 
 interface BreadcrumbItem {
   name: string;
-  item: string;
+  item?: string;
+  path?: string;
 }
 
 interface RealEstateProps {
@@ -54,16 +55,28 @@ export function OrganizationSchema() {
   );
 }
 
-export function BreadcrumbSchema({ items }: { items: BreadcrumbItem[] }) {
+export function BreadcrumbSchema({
+  items,
+  includeHome,
+}: {
+  items: BreadcrumbItem[];
+  includeHome?: boolean;
+}) {
+  const homeItem = includeHome
+    ? [{ '@type': 'ListItem' as const, position: 1, name: 'Home', item: SITE_URL }]
+    : [];
+
+  const listItems = items.map((item, i) => ({
+    '@type': 'ListItem' as const,
+    position: includeHome ? i + 2 : i + 1,
+    name: item.name,
+    item: `${SITE_URL}${(item.path ?? item.item)!}`,
+  }));
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'BreadcrumbList',
-    itemListElement: items.map((item, i) => ({
-      '@type': 'ListItem',
-      position: i + 1,
-      name: item.name,
-      item: `${SITE_URL}${item.item}`,
-    })),
+    itemListElement: [...homeItem, ...listItems],
   };
   return (
     <script

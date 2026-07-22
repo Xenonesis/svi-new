@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/src/lib/seo';
-import BreadcrumbSchema from '@/src/components/common/BreadcrumbSchema';
+import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
   title: 'About SVI Infra Solutions - Our Story & Values',
@@ -25,7 +25,7 @@ const aboutSchema = {
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'About', path: '/about' }]} />
+      <BreadcrumbSchema items={[{ name: 'About', path: '/about' }]} includeHome />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(aboutSchema) }}

@@ -1,18 +1,18 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/src/lib/seo';
-import BreadcrumbSchema from '@/src/components/common/BreadcrumbSchema';
+import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Frequently Asked Questions (FAQ) | SVI Infra Solutions',
+  title: 'Frequently Asked Questions | SVI Infra Solutions',
   description:
-    'Find answers to common questions about buying property, investments, and our real estate projects at SVI Infra Solutions.',
+    'Find answers to frequently asked questions about property investment, payment plans, RERA compliance, and more at SVI Infra Solutions.',
   path: '/faq',
 });
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'FAQ', path: '/faq' }]} />
+      <BreadcrumbSchema items={[{ name: 'FAQ', path: '/faq' }]} includeHome />
       {children}
     </>
   );

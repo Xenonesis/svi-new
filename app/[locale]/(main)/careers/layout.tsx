@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { createMetadata } from '@/src/lib/seo';
-import BreadcrumbSchema from '@/src/components/common/BreadcrumbSchema';
+import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
   title: 'Careers at SVI Infra Solutions - Join Our Team',
@@ -12,7 +12,7 @@ export const metadata: Metadata = createMetadata({
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <>
-      <BreadcrumbSchema items={[{ name: 'Careers', path: '/careers' }]} />
+      <BreadcrumbSchema items={[{ name: 'Careers', path: '/careers' }]} includeHome />
       {children}
     </>
   );
