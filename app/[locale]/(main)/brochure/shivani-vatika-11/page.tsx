@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Image from 'next/image';
 import { Cormorant_Garamond, Manrope, Inter, Montserrat } from 'next/font/google';
+import BrochureGenerator from '@/src/components/brochure/BrochureGenerator';
 import {
   MapPin,
   Phone,
@@ -110,8 +111,13 @@ export default function ShivaniVatika11Brochure() {
         }}
       />
 
+      <BrochureGenerator />
+
       {/* PAGE 1: LUXURY COVER */}
-      <section className="relative flex h-screen w-full items-center justify-center overflow-hidden">
+      <section
+        id="page-1-cover"
+        className="relative flex h-screen w-full items-center justify-center overflow-hidden"
+      >
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop"
@@ -143,6 +149,10 @@ export default function ShivaniVatika11Brochure() {
               Premium Residential Plotted Township
             </p>
             <div className="mt-8 h-1 w-24 bg-[#D4AF37]"></div>
+            <div
+              id="brochure-client-name-placeholder"
+              className="font-subheading mt-8 hidden rounded-full border border-[#D4AF37]/50 bg-black/40 px-6 py-2 text-xl font-medium tracking-[0.2em] text-[#D4AF37] uppercase backdrop-blur-sm md:text-3xl"
+            ></div>
           </div>
 
           <div className="flex flex-col items-center justify-end pb-8">
@@ -154,7 +164,7 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 2: THE SVI PROMISE */}
-      <section className="bg-white py-24 md:py-40">
+      <section id="page-2-promise" className="bg-white py-24 md:py-40">
         <div className="brochure-container">
           <div className="flex flex-col items-center gap-16 md:flex-row lg:gap-32">
             <div className="w-full space-y-10 md:w-1/2">
@@ -238,7 +248,7 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 3: GROWTH DESTINATION */}
-      <section className="bg-[#F8F6F0] py-24 md:py-40">
+      <section id="page-3-growth" className="bg-[#F8F6F0] py-24 md:py-40">
         <div className="brochure-container">
           <div className="mx-auto mb-20 max-w-4xl text-center">
             <h2 className="font-heading mb-6 text-5xl text-[#0F1A2E] md:text-7xl">
@@ -311,7 +321,10 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 4: MASTERPLAN */}
-      <section className="relative overflow-hidden bg-[#0F1A2E] py-24 text-white md:py-40">
+      <section
+        id="page-4-masterplan"
+        className="relative overflow-hidden bg-[#0F1A2E] py-24 text-white md:py-40"
+      >
         <div className="brochure-container relative z-10">
           <div className="mb-16 flex flex-col items-end justify-between gap-8 md:flex-row">
             <div>
@@ -366,7 +379,7 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 5: LIFESTYLE */}
-      <section className="bg-white py-24 md:py-40">
+      <section id="page-5-lifestyle" className="bg-white py-24 md:py-40">
         <div className="brochure-container">
           <div className="mx-auto mb-20 max-w-3xl text-center">
             <h2 className="font-heading mb-6 text-5xl text-[#0F1A2E] md:text-7xl">
@@ -439,7 +452,7 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 6: INVESTMENT */}
-      <section className="bg-[#F8F6F0] py-24 md:py-40">
+      <section id="page-6-investment" className="bg-[#F8F6F0] py-24 md:py-40">
         <div className="brochure-container">
           <div className="flex flex-col gap-16 lg:flex-row">
             <div className="w-full lg:w-1/3">
@@ -554,7 +567,10 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 7: TRUST */}
-      <section className="relative flex flex-col justify-center bg-[#0F1A2E] py-32 text-white md:py-48">
+      <section
+        id="page-7-trust"
+        className="relative flex flex-col justify-center bg-[#0F1A2E] py-32 text-white md:py-48"
+      >
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1513694203232-719a280e022f?q=80&w=2069&auto=format&fit=crop')] bg-cover bg-center opacity-10 mix-blend-luminosity"></div>
 
         <div className="brochure-container relative z-10 text-center">
@@ -597,7 +613,10 @@ export default function ShivaniVatika11Brochure() {
       </section>
 
       {/* PAGE 8: CLOSING */}
-      <section className="relative flex min-h-[80vh] w-full items-end md:h-screen">
+      <section
+        id="page-8-closing"
+        className="relative flex min-h-[80vh] w-full items-end md:h-screen"
+      >
         <div className="absolute inset-0 z-0">
           <Image
             src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=2187&auto=format&fit=crop"
