@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, CheckCircle2, Save, UserCheck, XCircle } from 'lucide-react';
+import { Calendar, CheckCircle2, Save, UserCheck, XCircle, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
@@ -51,6 +51,13 @@ const STATUS_CONFIG: Record<
     hoverColor: 'hover:bg-blue-500/20',
     activeColor: 'border-blue-500 bg-blue-500 text-white',
     icon: UserCheck,
+  },
+  pending: {
+    label: 'Pending',
+    color: 'border-amber-500/20 bg-amber-500/10 text-amber-400',
+    hoverColor: 'hover:bg-amber-500/20',
+    activeColor: 'border-amber-500 bg-amber-500 text-white',
+    icon: Clock,
   },
 };
 
