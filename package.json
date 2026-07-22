@@ -148,12 +148,10 @@
     "typescript-eslint": "^8.64.0",
     "vitest": "^4.1.10"
   },
-  "pnpm": {
-    "overrides": {
-      "typescript": "$typescript",
-      "serialize-javascript": "^7.0.7",
-      "uuid": "^14.0.1"
-    }
+  "overrides": {
+    "typescript": "$typescript",
+    "serialize-javascript": "^7.0.7",
+    "uuid": "^14.0.1"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
