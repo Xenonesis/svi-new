@@ -20,6 +20,7 @@ export interface TextRevealProps {
   spring?: { stiffness?: number; damping?: number; mass?: number };
   once?: boolean;
   whileInView?: boolean;
+  duration?: number;
   children?: ReactNode;
 }
 
@@ -37,6 +38,7 @@ export function TextReveal({
   spring,
   once = true,
   whileInView = false,
+  duration = 0.7,
   children,
 }: TextRevealProps) {
   const Comp = as as any;
@@ -80,8 +82,8 @@ export function TextReveal({
                 ? { opacity: { duration: 0.25, ease: EASE_OUT, delay: d * 0.3 } }
                 : {
                     y: { type: 'spring' as const, ...s, delay: d },
-                    opacity: { duration: 0.7, ease: EASE_OUT, delay: d },
-                    filter: { duration: 0.9, ease: EASE_OUT, delay: d },
+                    opacity: { duration: duration, ease: EASE_OUT, delay: d },
+                    filter: { duration: duration, ease: EASE_OUT, delay: d },
                   };
               return (
                 <motion.span

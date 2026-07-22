@@ -156,9 +156,10 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
               text={t('title')}
               as="span"
               split="word"
-              stagger={0.06}
-              blur={8}
-              yOffset="30%"
+              stagger={0}
+              blur={0}
+              yOffset="0%"
+              duration={0.15}
               className="inline"
             />{' '}
             <br />
@@ -167,10 +168,11 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
                 text={t('titleAccent')}
                 as="span"
                 split="word"
-                stagger={0.06}
-                delay={0.5}
-                blur={8}
-                yOffset="30%"
+                stagger={0}
+                delay={0}
+                blur={0}
+                yOffset="0%"
+                duration={0.15}
                 className="inline"
               />
             </span>
