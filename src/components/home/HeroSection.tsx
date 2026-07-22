@@ -74,13 +74,13 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       {/* Parallax background with all hero images */}
       <motion.div
         className="bg-brand-navy absolute inset-0 z-0"
-        style={{ y: backgroundY, scale: heroScale }}
+        style={{ y: backgroundY, scale: heroScale, willChange: 'transform' }}
       >
         {images.map((img, idx) => (
           <div
             key={idx}
             className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-              idx === currentHeroIndex ? 'z-0 opacity-100' : '-z-10 opacity-0'
+              idx === currentHeroIndex ? 'z-0 opacity-100' : 'pointer-events-none -z-10 opacity-0'
             }`}
           >
             <Image
@@ -98,8 +98,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           </div>
         ))}
         <div className="absolute inset-0 z-10 bg-[#0b0c10]/70" />
-        <HeroCanvas />
       </motion.div>
+      <HeroCanvas />
 
       {/* Navigation arrows */}
       <button

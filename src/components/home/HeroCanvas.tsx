@@ -26,6 +26,7 @@ function ArchitecturalForms() {
         wireframe: true,
         transparent: true,
         opacity: 0.25,
+        blending: THREE.AdditiveBlending,
       }),
     []
   );
@@ -58,6 +59,7 @@ function GridBackground() {
       position={[0, -2.5, 0]}
       material-opacity={0.08}
       material-transparent
+      material-blending={THREE.AdditiveBlending}
     />
   );
 }
@@ -77,10 +79,13 @@ export default function HeroCanvas() {
   if (prefersReducedMotion) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 mix-blend-screen">
-      {/* dpr capped at [1, 2], antialias off, AdaptiveDpr reduces quality when FPS drops */}
-      <Canvas camera={{ position: [0, 0, 8], fov: 45 }} dpr={[1, 2]} gl={{ antialias: false }}>
-        <AdaptiveDpr pixelated />
+    <div className="pointer-events-none absolute inset-0 z-10">
+      {/* dpr capped at 1 for performance, antialias off */}
+      <Canvas
+        camera={{ position: [0, 0, 8], fov: 45 }}
+        dpr={1}
+        gl={{ antialias: false, powerPreference: 'high-performance' }}
+      >
         <ambientLight intensity={0.5} />
         <directionalLight position={[10, 10, 5]} intensity={1} color="#ffffff" />
         <directionalLight position={[-10, -10, -5]} intensity={0.5} color="#d4af37" />
