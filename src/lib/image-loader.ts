@@ -24,9 +24,9 @@ interface ImageLoaderParams {
  * Falls back gracefully for non-Supabase URLs.
  */
 export default function supabaseImageLoader({ src, width, quality }: ImageLoaderParams): string {
-  // For local/public images, return as-is — Next.js handles optimization natively
+  // For local/public images, include width for responsive image support
   if (src.startsWith('/') || src.startsWith('./')) {
-    return src;
+    return `${src}?w=${width}`;
   }
 
   // For Supabase Storage URLs, append transformation params
