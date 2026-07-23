@@ -1,10 +1,10 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import dynamic from 'next/dynamic';
+
 import { MessageSquareWarning } from 'lucide-react';
 import GrievanceForm from './GrievanceForm';
 
-const GrievanceFAQ = dynamic(() => import('@/src/components/faq/ContactFAQ'));
+import GrievanceFAQ from '@/src/components/faq/ContactFAQ';
 
 type Props = {
   params: Promise<{ locale: string }>;

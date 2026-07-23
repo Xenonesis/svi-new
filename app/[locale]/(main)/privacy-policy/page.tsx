@@ -2,12 +2,11 @@ import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import lazyImport from 'next/dynamic';
 
 // Static: legal content rarely changes
 export const dynamic = 'force-static';
 
-const PrivacyFAQ = lazyImport(() => import('@/src/components/faq/ProjectsFAQ'));
+import PrivacyFAQ from '@/src/components/faq/ProjectsFAQ';
 
 type Props = {
   params: Promise<{ locale: string }>;

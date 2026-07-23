@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import dynamic from 'next/dynamic';
+
 import BlogHero from './BlogHero';
 import BlogCards from './BlogCards';
 import { BLOG_POSTS } from '@/src/lib/blog';
@@ -8,7 +8,7 @@ import { BLOG_POSTS } from '@/src/lib/blog';
 // ISR: revalidate every hour — blog posts update periodically
 export const revalidate = 3600;
 
-const BlogFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'));
+import BlogFAQ from '@/src/components/faq/ProjectsFAQ';
 
 type Props = {
   params: Promise<{ locale: string }>;

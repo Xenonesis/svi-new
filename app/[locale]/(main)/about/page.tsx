@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import lazyImport from 'next/dynamic';
+
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import MissionValuesCards from './MissionValuesCards';
 import ServicesList from './ServicesList';
@@ -8,7 +8,7 @@ import ServicesList from './ServicesList';
 // Static: About content rarely changes — generate at build time
 export const dynamic = 'force-static';
 
-const AboutFAQ = lazyImport(() => import('@/src/components/faq/AboutFAQ'));
+import AboutFAQ from '@/src/components/faq/AboutFAQ';
 
 type Props = {
   params: Promise<{ locale: string }>;

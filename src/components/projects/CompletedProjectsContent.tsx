@@ -11,7 +11,7 @@ import ProjectCardSkeleton from '@/src/components/ui/ProjectCardSkeleton';
 import dynamic from 'next/dynamic';
 import { useComparisonStore } from '@/src/stores/comparisonStore';
 
-const ProjectsFAQ = dynamic(() => import('@/src/components/faq/ProjectsFAQ'), { ssr: false });
+import ProjectsFAQ from '@/src/components/faq/ProjectsFAQ';
 const CompletedProjectsMap = dynamic(
   () => import('@/src/components/properties/CompletedProjectsMap'),
   { ssr: false }

@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import lazyImport from 'next/dynamic';
+
 import Link from 'next/link';
 import { Send } from 'lucide-react';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
@@ -10,7 +10,7 @@ import { careerRepository } from '@/src/lib/repositories';
 // Static: careers content rarely changes
 export const dynamic = 'force-static';
 
-const CareersFAQ = lazyImport(() => import('@/src/components/faq/AboutFAQ'));
+import CareersFAQ from '@/src/components/faq/AboutFAQ';
 
 type Props = {
   params: Promise<{ locale: string }>;

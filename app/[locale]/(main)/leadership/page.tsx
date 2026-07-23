@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import dynamic from 'next/dynamic';
+
 import { ArrowRight, Users, ChevronDown, Award, Briefcase, Plus, Minus } from 'lucide-react';
 import Link from 'next/link';
 
-const LeadershipFAQ = dynamic(() => import('@/src/components/faq/AboutFAQ'), { ssr: false });
+import LeadershipFAQ from '@/src/components/faq/AboutFAQ';
 
 export default function Leadership() {
   const t = useTranslations('pages.leadership');

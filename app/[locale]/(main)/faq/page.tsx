@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import lazyImport from 'next/dynamic';
+
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { ALL_FAQS } from '@/src/data/faq/general';
 import { ALL_FAQS_HI } from '@/src/data/faq/hi';
@@ -8,7 +8,7 @@ import { ALL_FAQS_HI } from '@/src/data/faq/hi';
 // Static: FAQ content rarely changes — generate at build time
 export const dynamic = 'force-static';
 
-const FAQSection = lazyImport(() => import('@/src/components/faq/FAQSection'));
+import FAQSection from '@/src/components/faq/FAQSection';
 
 type Props = {
   params: Promise<{ locale: string }>;
