@@ -1,6 +1,7 @@
 'use client';
 
-import { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/lib/supabase/client';
 
 import {
@@ -18,18 +19,23 @@ import { NotificationPagination } from '@/src/components/admin/notifications/Not
 const ITEMS_PER_PAGE = 20;
 
 export default function AdminNotifications() {
-  // ── Auth & Data State ──
+  const queryClient = useQueryClient();
+
+  // ── Auth State ──
   const [userId, setUserId] = useState<string | null>(null);
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [totalCount, setTotalCount] = useState(0);
 
   // ── Filter & Sort State ──
   const [typeFilter, setTypeFilter] = useState<FilterType>('all');
   const [readFilter, setReadFilter] = useState<ReadFilter>('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortOption>('newest');
+
+  // ── Debounced Search for the Query Key ──
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+  useEffect(() => {
+    const handler = setTimeout(() => setDebouncedSearch(searchQuery), 400);
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
   // ── Pagination State ──
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,9 +46,6 @@ export default function AdminNotifications() {
   // ── Bulk Action Loading ──
   const [bulkActionLoading, setBulkActionLoading] = useState(false);
 
-  // ── Search debounce ref ──
-  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // ── Get current user ──
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -50,10 +53,24 @@ export default function AdminNotifications() {
     });
   }, []);
 
-  // ── Build Supabase query ──
-  const buildQuery = useCallback(
-    (page: number) => {
-      if (!userId) return null;
+  // ── React Query: Fetch notifications ──
+  const {
+    data,
+    isLoading: loading,
+    error: queryError,
+    refetch,
+  } = useQuery({
+    queryKey: [
+      'notifications',
+      userId,
+      typeFilter,
+      readFilter,
+      debouncedSearch,
+      sortBy,
+      currentPage,
+    ],
+    queryFn: async () => {
+      if (!userId) return { notifications: [], totalCount: 0 };
 
       let query = supabase
         .from('notifications')
@@ -61,20 +78,15 @@ export default function AdminNotifications() {
         .eq('user_id', userId);
 
       // Type filter
-      if (typeFilter !== 'all') {
-        query = query.eq('type', typeFilter);
-      }
+      if (typeFilter !== 'all') query = query.eq('type', typeFilter);
 
       // Read filter
-      if (readFilter === 'read') {
-        query = query.eq('is_read', true);
-      } else if (readFilter === 'unread') {
-        query = query.eq('is_read', false);
-      }
+      if (readFilter === 'read') query = query.eq('is_read', true);
+      else if (readFilter === 'unread') query = query.eq('is_read', false);
 
       // Search
-      if (searchQuery.trim()) {
-        const q = searchQuery.trim();
+      if (debouncedSearch.trim()) {
+        const q = debouncedSearch.trim();
         query = query.or(`title.ilike.%${q}%,message.ilike.%${q}%`);
       }
 
@@ -90,58 +102,22 @@ export default function AdminNotifications() {
       }
 
       // Pagination
-      const from = (page - 1) * ITEMS_PER_PAGE;
+      const from = (currentPage - 1) * ITEMS_PER_PAGE;
       const to = from + ITEMS_PER_PAGE - 1;
       query = query.range(from, to);
 
-      return query;
+      const { data, error, count } = await query;
+      if (error) throw error;
+
+      return { notifications: data as Notification[], totalCount: count ?? 0 };
     },
-    [userId, typeFilter, readFilter, searchQuery, sortBy]
-  );
+    enabled: !!userId,
+    staleTime: 1000 * 60 * 2, // 2 minutes
+  });
 
-  // ── Fetch notifications ──
-  const fetchNotifications = useCallback(
-    async (page: number = 1) => {
-      if (!userId) return;
-      setLoading(true);
-      setError(null);
-
-      try {
-        const query = buildQuery(page);
-        if (!query) return;
-
-        const { data, error: fetchError, count } = await query;
-        if (fetchError) throw fetchError;
-
-        setNotifications(data || []);
-        setTotalCount(count ?? 0);
-        setCurrentPage(page);
-        setSelectedIds(new Set());
-      } catch (err) {
-        console.error('Error fetching notifications:', err);
-        setError('Failed to load notifications. Please try again.');
-      } finally {
-        setLoading(false);
-      }
-    },
-    [userId, buildQuery]
-  );
-
-  // ── Fetch when filters/sort/page change ──
-  useEffect(() => {
-    fetchNotifications(currentPage);
-  }, [userId, typeFilter, readFilter, sortBy, currentPage, fetchNotifications]);
-
-  // ── Debounced search fetch ──
-  useEffect(() => {
-    if (debounceRef.current) clearTimeout(debounceRef.current);
-    debounceRef.current = setTimeout(() => {
-      fetchNotifications(1);
-    }, 400);
-    return () => {
-      if (debounceRef.current) clearTimeout(debounceRef.current);
-    };
-  }, [searchQuery, fetchNotifications]);
+  const notifications = data?.notifications || [];
+  const totalCount = data?.totalCount || 0;
+  const error = queryError ? queryError.message : null;
 
   // ── Real-time subscription ──
   useEffect(() => {
@@ -152,37 +128,14 @@ export default function AdminNotifications() {
       .on(
         'postgres_changes',
         {
-          event: 'INSERT',
+          event: '*',
           schema: 'public',
           table: 'notifications',
           filter: `user_id=eq.${userId}`,
         },
         () => {
-          fetchNotifications(currentPage);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'UPDATE',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        () => {
-          fetchNotifications(currentPage);
-        }
-      )
-      .on(
-        'postgres_changes',
-        {
-          event: 'DELETE',
-          schema: 'public',
-          table: 'notifications',
-          filter: `user_id=eq.${userId}`,
-        },
-        () => {
-          fetchNotifications(currentPage);
+          // Invalidate the cache to trigger a background refetch when data changes
+          queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
         }
       )
       .subscribe();
@@ -190,41 +143,70 @@ export default function AdminNotifications() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [userId, currentPage, fetchNotifications]);
+  }, [userId, queryClient]);
 
-  // ── Mark single as read ──
+  // ── Reset selection when page changes ──
+  useEffect(() => {
+    setSelectedIds(new Set());
+  }, [currentPage, typeFilter, readFilter, debouncedSearch, sortBy]);
+
+  // ── Helper to optimistically update cache ──
+  const updateCacheItem = (id: string, updates: Partial<Notification>) => {
+    queryClient.setQueriesData({ queryKey: ['notifications', userId] }, (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        notifications: old.notifications.map((n: Notification) =>
+          n.id === id ? { ...n, ...updates } : n
+        ),
+      };
+    });
+  };
+
+  const removeCacheItem = (id: string) => {
+    queryClient.setQueriesData({ queryKey: ['notifications', userId] }, (old: any) => {
+      if (!old) return old;
+      return {
+        ...old,
+        notifications: old.notifications.filter((n: Notification) => n.id !== id),
+        totalCount: Math.max(0, old.totalCount - 1),
+      };
+    });
+  };
+
+  // ── Actions ──
   const markAsRead = async (id: string) => {
     try {
+      updateCacheItem(id, { is_read: true });
       await supabase.from('notifications').update({ is_read: true }).eq('id', id);
-      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: true } : n)));
     } catch (err) {
       console.error('Error marking as read:', err);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   };
 
-  // ── Mark single as unread ──
   const markAsUnread = async (id: string) => {
     try {
+      updateCacheItem(id, { is_read: false });
       await supabase.from('notifications').update({ is_read: false }).eq('id', id);
-      setNotifications((prev) => prev.map((n) => (n.id === id ? { ...n, is_read: false } : n)));
     } catch (err) {
       console.error('Error marking as unread:', err);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   };
 
-  // ── Delete single ──
   const deleteNotification = async (id: string) => {
     try {
-      await supabase.from('notifications').delete().eq('id', id);
-      setNotifications((prev) => prev.filter((n) => n.id !== id));
-      setTotalCount((prev) => Math.max(0, prev - 1));
+      removeCacheItem(id);
       setSelectedIds((prev) => {
         const next = new Set(prev);
         next.delete(id);
         return next;
       });
+      await supabase.from('notifications').delete().eq('id', id);
     } catch (err) {
       console.error('Error deleting notification:', err);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   };
 
@@ -238,7 +220,6 @@ export default function AdminNotifications() {
     });
   };
 
-  // ── Select all on current page ──
   const toggleSelectAll = () => {
     if (selectedIds.size === notifications.length) {
       setSelectedIds(new Set());
@@ -247,75 +228,72 @@ export default function AdminNotifications() {
     }
   };
 
-  // ── Bulk mark as read ──
+  // ── Bulk Actions ──
   const bulkMarkAsRead = async () => {
     if (selectedIds.size === 0) return;
     setBulkActionLoading(true);
     try {
       const ids = Array.from(selectedIds);
+      ids.forEach((id) => updateCacheItem(id, { is_read: true }));
       await supabase.from('notifications').update({ is_read: true }).in('id', ids);
-      setNotifications((prev) =>
-        prev.map((n) => (selectedIds.has(n.id) ? { ...n, is_read: true } : n))
-      );
       setSelectedIds(new Set());
     } catch (err) {
       console.error('Error bulk marking as read:', err);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     } finally {
       setBulkActionLoading(false);
     }
   };
 
-  // ── Bulk mark as unread ──
   const bulkMarkAsUnread = async () => {
     if (selectedIds.size === 0) return;
     setBulkActionLoading(true);
     try {
       const ids = Array.from(selectedIds);
+      ids.forEach((id) => updateCacheItem(id, { is_read: false }));
       await supabase.from('notifications').update({ is_read: false }).in('id', ids);
-      setNotifications((prev) =>
-        prev.map((n) => (selectedIds.has(n.id) ? { ...n, is_read: false } : n))
-      );
       setSelectedIds(new Set());
     } catch (err) {
       console.error('Error bulk marking as unread:', err);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     } finally {
       setBulkActionLoading(false);
     }
   };
 
-  // ── Bulk delete ──
   const bulkDelete = async () => {
     if (selectedIds.size === 0) return;
     if (!confirm(`Delete ${selectedIds.size} notification(s)? This cannot be undone.`)) return;
     setBulkActionLoading(true);
     try {
       const ids = Array.from(selectedIds);
+      ids.forEach((id) => removeCacheItem(id));
       await supabase.from('notifications').delete().in('id', ids);
-      setNotifications((prev) => prev.filter((n) => !selectedIds.has(n.id)));
-      setTotalCount((prev) => Math.max(0, prev - selectedIds.size));
       setSelectedIds(new Set());
     } catch (err) {
       console.error('Error bulk deleting:', err);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     } finally {
       setBulkActionLoading(false);
     }
   };
 
-  // ── Mark all as read on server ──
   const markAllAsRead = async () => {
     if (!userId) return;
     setBulkActionLoading(true);
     try {
+      // Optimistic update all visible as read
+      notifications.forEach((n) => updateCacheItem(n.id, { is_read: true }));
       await supabase
         .from('notifications')
         .update({ is_read: true })
         .eq('user_id', userId)
         .eq('is_read', false);
-      setNotifications((prev) => prev.map((n) => ({ ...n, is_read: true })));
     } catch (err) {
       console.error('Error marking all as read:', err);
     } finally {
       setBulkActionLoading(false);
+      queryClient.invalidateQueries({ queryKey: ['notifications', userId] });
     }
   };
 
@@ -350,7 +328,7 @@ export default function AdminNotifications() {
         bulkActionLoading={bulkActionLoading}
         loading={loading}
         markAllAsRead={markAllAsRead}
-        fetchNotifications={() => fetchNotifications(currentPage)}
+        fetchNotifications={() => refetch()}
       />
 
       <NotificationFilters
@@ -388,7 +366,9 @@ export default function AdminNotifications() {
         markAsRead={markAsRead}
         markAsUnread={markAsUnread}
         deleteNotification={deleteNotification}
-        fetchNotifications={fetchNotifications}
+        fetchNotifications={(page) => {
+          setCurrentPage(page);
+        }}
         setTypeFilter={setTypeFilter}
         setReadFilter={setReadFilter}
         setSearchQuery={setSearchQuery}
@@ -398,7 +378,9 @@ export default function AdminNotifications() {
       <NotificationPagination
         currentPage={currentPage}
         totalPages={totalPages}
-        fetchNotifications={fetchNotifications}
+        fetchNotifications={(page) => {
+          setCurrentPage(page);
+        }}
         getPageNumbers={getPageNumbers}
       />
     </div>
