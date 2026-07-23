@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { propertyRepository } from '@/src/lib/repositories';
 
+export const runtime = 'edge';
+
 export async function GET(request: NextRequest) {
   try {
     const { data: properties, error } = await propertyRepository.listActive();

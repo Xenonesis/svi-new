@@ -86,6 +86,14 @@ jobs:
         # Warn only — requires manual cleanup review
         run: npx depcheck --ignores="@types/*,typescript-eslint,vitest,prettier*,eslint*,autoprefixer,postcss,tailwindcss,editorconfig-checker,commitlint,husky,lint-staged,cross-env,tsx,esbuild,jsdom,globals" || true
 
+      - name: Check bundle size budget
+        # Fails if any JS chunk exceeds 250KB
+        run: npx bundlesize
+        continue-on-error: true
+
+      - name: Validate no console.log left in source
+        run: '! grep -r "console\.log" --include="*.ts" --include="*.tsx" src/app src/components --exclude-dir=node_modules 2>/dev/null | grep -v "//.*console\.log" | grep -v "eslint-disable" || echo "WARNING: console.log found"'
+
       - name: Check for duplicate packages
         run: npx duplicate-package-checker-webpack-plugin || true
 

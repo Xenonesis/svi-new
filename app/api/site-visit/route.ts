@@ -5,6 +5,8 @@ import { rateLimit } from '@/src/lib/api/rateLimit';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
+export const runtime = 'edge';
+
 // GET /api/site-visit — list site visit leads
 export async function GET(request: NextRequest) {
   try {

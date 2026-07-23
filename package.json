@@ -159,5 +159,15 @@
     "*.{json,md,yml,yaml}": [
       "prettier --write"
     ]
-  }
+  },
+  "bundlesize": [
+    {
+      "path": "./.next/static/chunks/**/*.js",
+      "maxSize": "250KB"
+    },
+    {
+      "path": "./.next/static/css/*.css",
+      "maxSize": "50KB"
+    }
+  ]
 }

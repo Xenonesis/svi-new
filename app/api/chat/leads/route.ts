@@ -4,6 +4,8 @@ import { rateLimit } from '@/src/lib/api/rateLimit';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
+export const runtime = 'edge';
+
 export async function POST(req: NextRequest) {
   try {
     // Rate limit: 3 lead submissions per IP per minute

@@ -6,6 +6,7 @@ import { getChatContext, buildProjectsContext, buildFAQsContext } from '@/src/li
 import { type NextRequest } from 'next/server';
 import { createClient } from '@/src/lib/supabase/server';
 
+export const runtime = 'edge';
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {

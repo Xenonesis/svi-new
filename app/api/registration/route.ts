@@ -4,6 +4,8 @@ import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
+export const runtime = 'edge';
+
 const STORAGE_BUCKET = 'registration-docs';
 
 function escapeHtml(str: string): string {

@@ -6,6 +6,8 @@ import { validateBody } from '@/src/lib/api/validate';
 import { grievanceSchema } from '@/src/lib/api/schemas';
 import { created } from '@/src/lib/api/response';
 
+export const runtime = 'edge';
+
 function generateTicketId(): string {
   const digits = Math.floor(100000 + Math.random() * 900000);
   return `SVI-${digits}`;

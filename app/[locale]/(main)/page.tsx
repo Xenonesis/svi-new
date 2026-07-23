@@ -63,10 +63,10 @@ export default async function Home({ params }: Props) {
   return (
     <div className="page-transition flex w-full flex-col overflow-x-hidden">
       <HeroSection images={HERO_IMAGES} />
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="bg-brand-dark/20 h-96 w-full animate-pulse" />}>
         <HomeSections />
       </Suspense>
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="bg-brand-dark/20 h-64 w-full animate-pulse" />}>
         <StaggerTestimonials />
       </Suspense>
     </div>
