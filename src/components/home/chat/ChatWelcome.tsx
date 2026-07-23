@@ -16,9 +16,7 @@ export default function ChatWelcome({ defaultSuggestions, onSuggestionClick }: C
       <div className="bg-brand-gold/10 mb-4 flex h-16 w-16 items-center justify-center rounded-full">
         <Sparkles className="text-brand-gold h-8 w-8" />
       </div>
-      <h4 className="text-brand-navy mb-2 font-serif text-lg font-semibold dark:text-white">
-        {t('welcomeTitle')}
-      </h4>
+      <h4 className="text-brand-gold mb-2 font-serif text-lg font-semibold">{t('welcomeTitle')}</h4>
       <p className="mb-6 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
         {t('welcomeDesc')}
       </p>

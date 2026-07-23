@@ -22,9 +22,10 @@ export default function AboutSection() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-16 lg:flex-row">
           <AnimatedSection type="fadeLeft" className="w-full lg:w-1/2">
-            <h4 className="mb-3 text-base font-semibold tracking-[0.2em] text-gray-400 uppercase sm:mb-4 sm:text-lg md:text-xl dark:text-gray-500">
+            <h4 className="text-brand-gold mb-3 text-base font-semibold tracking-[0.2em] uppercase sm:mb-4 sm:text-lg md:text-xl">
               {t('welcomeTitle')}
             </h4>
+            <div className="bg-brand-gold/40 mx-auto mb-6 h-0.5 w-16 sm:mb-8" />
             <h2
               className="text-brand-navy mb-6 font-serif text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl dark:text-gray-100"
               suppressHydrationWarning
