@@ -6,15 +6,9 @@ import type { Metadata } from 'next';
 // ISR: revalidate every 5 minutes — marketing content, fresh enough at this cadence
 export const revalidate = 300;
 
-const HeroSection = dynamic(() => import('@/src/components/home/HeroSection'), {
-  ssr: true,
-});
-
-const HomeSections = dynamic(() => import('@/src/components/home/HomeSections'));
-
-const StaggerTestimonials = dynamic(() =>
-  import('@/src/components/ui/stagger-testimonials').then((mod) => mod.StaggerTestimonials)
-);
+import HeroSection from '@/src/components/home/HeroSection';
+import HomeSections from '@/src/components/home/HomeSections';
+import { StaggerTestimonials } from '@/src/components/ui/stagger-testimonials';
 
 const HERO_BLUR_DATA: Record<string, string> = {
   '/images/hero1.png':
