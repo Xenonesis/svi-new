@@ -38,6 +38,7 @@ export default function HeroBackground({
             alt={images[currentHeroIndex].alt}
             fill
             priority={true}
+            fetchPriority="high"
             quality={90}
             sizes="100vw"
             className="object-cover"
