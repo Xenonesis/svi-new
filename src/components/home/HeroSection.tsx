@@ -1,6 +1,6 @@
 'use client';
 
-import { useScroll, useTransform } from 'motion/react';
+import { useScroll, useTransform, useSpring } from 'motion/react';
 import { useRef, useState, useEffect, useCallback, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -18,9 +18,11 @@ export interface HeroImage {
 export default function HeroSection({ images }: { images: HeroImage[] }) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '50%']);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
-  const heroScale = useTransform(scrollYProgress, [1, 0], [1, 1.08]);
+
+  const smoothScroll = useSpring(scrollYProgress, { stiffness: 60, damping: 20, restDelta: 0.001 });
+  const backgroundY = useTransform(smoothScroll, [0, 1], ['0%', '50%']);
+  const heroOpacity = useTransform(smoothScroll, [0, 0.8], [1, 0]);
+  const heroScale = useTransform(smoothScroll, [1, 0], [1, 1.05]);
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);

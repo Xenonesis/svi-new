@@ -78,8 +78,8 @@ export default function AboutSection() {
               className="bg-brand-gold text-brand-navy absolute -bottom-5 -left-2 z-10 p-5 shadow-xl sm:-left-5"
               initial={{ opacity: 0, scale: 0.9 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4, duration: 0.5 }}
+              viewport={{ once: true, margin: '150px' }}
+              transition={{ delay: 0.1, duration: 0.3 }}
               suppressHydrationWarning
             >
               <div className="font-serif text-4xl leading-none font-bold">15+</div>

@@ -11,7 +11,6 @@ export default function CTASection() {
   return (
     <section
       className="bg-brand-bg dark:border-brand-gold/20 dark:bg-brand-dark-bg relative overflow-hidden border-b border-transparent py-20"
-      style={{ contentVisibility: 'auto', containIntrinsicSize: '0 400px' }}
       role="region"
       aria-label="Call to action"
     >

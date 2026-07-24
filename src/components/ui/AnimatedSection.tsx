@@ -65,11 +65,11 @@ export default function AnimatedSection({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once, margin: isMobile ? '0px' : '-60px', amount: 0.05 }}
+      viewport={{ once, margin: '150px', amount: 0 }}
       variants={VARIANTS[type]}
       transition={{
-        duration,
-        delay: isMobile ? Math.min(delay, 0.1) : delay,
+        duration: Math.min(duration, 0.4),
+        delay: isMobile ? Math.min(delay, 0.05) : delay,
         ease: [0.22, 1, 0.36, 1],
       }}
       className={className}
@@ -104,12 +104,12 @@ export function StaggerContainer({
     <motion.div
       initial="hidden"
       whileInView="visible"
-      viewport={{ once: true, margin: isMobile ? '0px' : '-40px', amount: 0.05 }}
+      viewport={{ once: true, margin: '150px', amount: 0 }}
       variants={{
         hidden: {},
         visible: {
           transition: {
-            staggerChildren: isMobile ? Math.min(staggerDelay, 0.08) : staggerDelay,
+            staggerChildren: isMobile ? Math.min(staggerDelay, 0.05) : staggerDelay,
             delayChildren: isMobile ? 0 : delayChildren,
           },
         },
@@ -134,7 +134,7 @@ export function StaggerItem({
   return (
     <motion.div
       variants={VARIANTS[type]}
-      transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
       className={className}
       suppressHydrationWarning
     >

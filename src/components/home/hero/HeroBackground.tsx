@@ -1,5 +1,5 @@
 'use client';
-import { motion, MotionValue } from 'motion/react';
+import { motion, MotionValue, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import { HeroImage } from '../HeroSection';
 
@@ -21,28 +21,32 @@ export default function HeroBackground({
       className="bg-brand-navy absolute inset-0 z-0"
       style={{ y: backgroundY, scale: heroScale, willChange: 'transform' }}
     >
-      {images.map((img, idx) => (
-        <div
-          key={idx}
-          className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${
-            idx === currentHeroIndex ? 'z-0 opacity-100' : 'pointer-events-none -z-10 opacity-0'
-          }`}
+      <AnimatePresence mode="popLayout" initial={false}>
+        <motion.div
+          key={currentHeroIndex}
+          initial={{ opacity: 0, scale: 1 }}
+          animate={{ opacity: 1, scale: 1.05 }}
+          exit={{ opacity: 0, scale: 1.05 }}
+          transition={{
+            opacity: { duration: 1.2, ease: 'easeInOut' },
+            scale: { duration: 10, ease: 'linear' },
+          }}
+          className="absolute inset-0"
         >
           <Image
-            src={img.src}
-            alt={img.alt}
+            src={images[currentHeroIndex].src}
+            alt={images[currentHeroIndex].alt}
             fill
-            priority={idx === 0}
-            fetchPriority={idx === 0 ? 'high' : 'auto'}
+            priority={true}
             quality={90}
             sizes="100vw"
             className="object-cover"
-            placeholder={img.blurDataURL ? 'blur' : 'empty'}
-            blurDataURL={img.blurDataURL}
+            placeholder={images[currentHeroIndex].blurDataURL ? 'blur' : 'empty'}
+            blurDataURL={images[currentHeroIndex].blurDataURL}
           />
-        </div>
-      ))}
-      <div className="absolute inset-0 z-10 bg-[#0b0c10]/70" />
+        </motion.div>
+      </AnimatePresence>
+      <div className="pointer-events-none absolute inset-0 z-10 bg-[#0b0c10]/70" />
     </motion.div>
   );
 }

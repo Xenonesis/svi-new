@@ -17,7 +17,7 @@ export default function TimelineStep({ icon, title, description, isEven }: Timel
       <motion.div
         initial={{ opacity: 0, scale: 0.5 }}
         whileInView={{ opacity: 1, scale: 1 }}
-        viewport={{ once: true, margin: '-100px' }}
+        viewport={{ once: true, margin: '150px' }}
         transition={{ duration: 0.5, delay: 0.2 }}
         className="border-brand-bg bg-brand-gold text-brand-navy dark:border-brand-dark-bg absolute left-8 z-10 flex h-12 w-12 -translate-x-1/2 items-center justify-center rounded-full border-4 shadow-[0_0_15px_rgba(212,175,55,0.4)] md:left-1/2"
       >
@@ -33,7 +33,7 @@ export default function TimelineStep({ icon, title, description, isEven }: Timel
         <motion.div
           initial={{ opacity: 0, x: isEven ? -30 : 30 }}
           whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
+          viewport={{ once: true, margin: '150px' }}
           transition={{ duration: 0.6, delay: 0.3 }}
           className="border-brand-navy/10 border bg-white/50 p-6 shadow-sm backdrop-blur-sm transition-colors hover:bg-white/80 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:hover:bg-white/10"
         >
