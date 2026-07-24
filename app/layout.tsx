@@ -233,6 +233,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         {/* Preconnect to critical origins to reduce connection latency */}
         <link rel="preconnect" href="https://supabase.co" />
         <link rel="dns-prefetch" href="https://supabase.co" />
+        <link rel="preconnect" href="https://api.qrserver.com" />
+        <link rel="dns-prefetch" href="https://api.qrserver.com" />
+        <link rel="preconnect" href="https://maps.googleapis.com" />
+        <link rel="dns-prefetch" href="https://maps.googleapis.com" />
       </head>
       <body className={`${sansFontVariable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />

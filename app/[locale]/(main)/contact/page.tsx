@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { MapPin, PhoneIcon, Mail, Clock, ArrowUpRight } from 'lucide-react';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { SITE_URL } from '@/src/lib/seo';
@@ -252,14 +253,44 @@ export default async function Contact(props: { params: Promise<{ locale: string 
 
             {/* ── Right: Form + Map ── */}
             <div className="flex flex-1 flex-col gap-6 md:gap-8">
-              <ContactForm />
-              <ContactMapWrapper />
+              <Suspense
+                fallback={
+                  <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg dark:border-gray-700 dark:bg-gray-900">
+                    <div className="mx-auto mb-6 h-8 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+                    <div className="space-y-4">
+                      <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+                      <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+                      <div className="h-24 w-full animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+                      <div className="h-12 w-full animate-pulse rounded-lg bg-gray-100 dark:bg-gray-800" />
+                    </div>
+                  </div>
+                }
+              >
+                <ContactForm />
+              </Suspense>
+              <Suspense
+                fallback={
+                  <div className="flex h-[400px] w-full animate-pulse items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800">
+                    <span className="text-xs text-gray-400">Loading map…</span>
+                  </div>
+                }
+              >
+                <ContactMapWrapper />
+              </Suspense>
             </div>
           </div>
         </div>
       </section>
 
-      <ContactFAQ />
+      <Suspense
+        fallback={
+          <div className="py-16 text-center">
+            <div className="mx-auto h-6 w-48 animate-pulse rounded bg-gray-200 dark:bg-gray-700" />
+          </div>
+        }
+      >
+        <ContactFAQ />
+      </Suspense>
     </div>
   );
 }
