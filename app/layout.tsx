@@ -18,14 +18,14 @@ const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-sans',
   display: 'swap',
-  preload: false,
+  preload: true,
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
   display: 'swap',
-  preload: false,
+  preload: true,
 });
 
 const notoSansDevanagari = Noto_Sans_Devanagari({
@@ -130,6 +130,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head suppressHydrationWarning>
+        {/* Preconnect to critical origins */}
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://*.supabase.co" />
+        <link rel="preconnect" href="https://maps.googleapis.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

@@ -12,7 +12,7 @@ import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
 import ExitIntentPopup from '@/src/components/common/ExitIntentPopup';
 
-const ChatBot = dynamic(() => import('@/src/components/home/ChatBot'), {
+const ChatLauncher = dynamic(() => import('@/src/components/home/ChatLauncher'), {
   ssr: false,
   loading: () => null,
 });
@@ -40,6 +40,16 @@ const DotField = dynamic(() => import('@/src/components/ui/DotField'), {
 function ThemeAwareBackground() {
   const { theme } = useTheme();
   const [resolvedTheme, setResolvedTheme] = useState<'light' | 'dark'>('dark');
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    // Defer DotField canvas rendering to free main thread for critical work
+    if (typeof requestIdleCallback !== 'undefined') {
+      requestIdleCallback(() => setReady(true), { timeout: 2000 });
+    } else {
+      setTimeout(() => setReady(true), 500);
+    }
+  }, []);
 
   useEffect(() => {
     const root = window.document.documentElement;
@@ -65,18 +75,20 @@ function ThemeAwareBackground() {
 
   return (
     <div className="pointer-events-none fixed inset-0 z-[-10] h-full w-full">
-      <DotField
-        dotRadius={1.5}
-        dotSpacing={14}
-        bulgeStrength={67}
-        glowRadius={160}
-        sparkle={false}
-        waveAmplitude={0}
-        fixed={true}
-        gradientFrom={gradientFrom}
-        gradientTo={gradientTo}
-        glowColor={glowColor}
-      />
+      {ready && (
+        <DotField
+          dotRadius={1.5}
+          dotSpacing={14}
+          bulgeStrength={67}
+          glowRadius={160}
+          sparkle={false}
+          waveAmplitude={0}
+          fixed={true}
+          gradientFrom={gradientFrom}
+          gradientTo={gradientTo}
+          glowColor={glowColor}
+        />
+      )}
     </div>
   );
 }
@@ -91,7 +103,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         <main className="flex min-h-screen flex-grow flex-col overflow-x-hidden">{children}</main>
         <Footer />
         <FloatingContact />
-        <ChatBot />
+        <ChatLauncher />
         <BackToTop />
         <ExitIntentPopup />
         <PropertyComparisonTray />

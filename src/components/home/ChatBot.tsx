@@ -7,7 +7,6 @@ import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import LeadCapture from '@/src/components/home/LeadCapture';
 import { useTranslations } from 'next-intl';
 
-import ChatButton from './chat/ChatButton';
 import ChatHeader from './chat/ChatHeader';
 import ChatWelcome from './chat/ChatWelcome';
 import ChatMessage from './chat/ChatMessage';
@@ -62,9 +61,8 @@ function generateSessionId(): string {
   return `svi_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-export default function ChatBot() {
+export default function ChatBot({ onClose }: { onClose: () => void }) {
   const t = useTranslations('chatbot');
-  const [isOpen, setIsOpen] = useState(false);
   const [showLeadCapture, setShowLeadCapture] = useState(false);
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const [leadDismissed, setLeadDismissed] = useState(false);
@@ -130,13 +128,12 @@ export default function ChatBot() {
   }, [sessionId]);
 
   useEffect(() => {
-    if (!isOpen) return;
     logSaveTimerRef.current = setInterval(saveLog, 30000);
     return () => {
       clearInterval(logSaveTimerRef.current);
       saveLog();
     };
-  }, [isOpen, saveLog]);
+  }, [saveLog]);
 
   useEffect(() => {
     return () => {
@@ -200,86 +197,76 @@ export default function ChatBot() {
   const isInputDisabled = status !== 'ready' && status !== 'error';
 
   return (
-    <>
-      <ChatButton isOpen={isOpen} onToggle={() => setIsOpen(!isOpen)} />
+    <AnimatePresence>
+      <motion.div
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.95 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+        className="fixed bottom-4 left-4 z-50 flex h-[min(580px,80vh)] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl max-sm:inset-0 max-sm:h-full max-sm:w-full max-sm:rounded-none max-sm:border-0 md:bottom-8 md:left-8 dark:border-gray-700 dark:bg-gray-900"
+      >
+        <ChatHeader isStreaming={isStreaming} onMinimize={onClose} onClose={onClose} />
 
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-            className="fixed bottom-4 left-4 z-50 flex h-[min(580px,80vh)] w-[min(400px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl max-sm:inset-0 max-sm:h-full max-sm:w-full max-sm:rounded-none max-sm:border-0 md:bottom-8 md:left-8 dark:border-gray-700 dark:bg-gray-900"
-          >
-            <ChatHeader
-              isStreaming={isStreaming}
-              onMinimize={() => setIsOpen(false)}
-              onClose={() => setIsOpen(false)}
+        <div className="scrollbar-gold flex-1 overflow-y-auto px-4 py-4">
+          {messages.length === 0 && (
+            <ChatWelcome
+              defaultSuggestions={suggestionPools.default || []}
+              onSuggestionClick={handleSuggestionClick}
             />
+          )}
 
-            <div className="scrollbar-gold flex-1 overflow-y-auto px-4 py-4">
-              {messages.length === 0 && (
-                <ChatWelcome
-                  defaultSuggestions={suggestionPools.default || []}
-                  onSuggestionClick={handleSuggestionClick}
-                />
-              )}
+          {messages.map((message) => (
+            <ChatMessage
+              key={message.id}
+              message={message}
+              conversationCount={conversationCount}
+              feedback={feedback}
+              onFeedback={handleFeedback}
+            />
+          ))}
 
-              {messages.map((message) => (
-                <ChatMessage
-                  key={message.id}
-                  message={message}
-                  conversationCount={conversationCount}
-                  feedback={feedback}
-                  onFeedback={handleFeedback}
-                />
-              ))}
-
-              {showSuggestions &&
-                messages.length > 0 &&
-                contextualSuggestions.length > 0 &&
-                status === 'ready' && (
-                  <ChatSuggestions
-                    suggestions={contextualSuggestions}
-                    onSuggestionClick={handleSuggestionClick}
-                  />
-                )}
-
-              {status === 'submitted' && <ChatTypingIndicator />}
-
-              {error && (
-                <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400">
-                  {t('error')}
-                </div>
-              )}
-
-              <div ref={messagesEndRef} />
-            </div>
-
-            {showLeadCapture && (
-              <LeadCapture
-                onClose={() => {
-                  setShowLeadCapture(false);
-                  setLeadDismissed(true);
-                }}
-                onSubmitted={() => setLeadSubmitted(true)}
+          {showSuggestions &&
+            messages.length > 0 &&
+            contextualSuggestions.length > 0 &&
+            status === 'ready' && (
+              <ChatSuggestions
+                suggestions={contextualSuggestions}
+                onSuggestionClick={handleSuggestionClick}
               />
             )}
 
-            <ChatInput
-              input={input}
-              setInput={setInput}
-              onSubmit={handleSubmit}
-              onStop={stop}
-              isStreaming={isStreaming}
-              disabled={isInputDisabled}
-              placeholder={t('placeholder')}
-              footerText={t('footer')}
-            />
-          </motion.div>
+          {status === 'submitted' && <ChatTypingIndicator />}
+
+          {error && (
+            <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-center text-sm text-red-600 dark:border-red-800 dark:bg-red-950/30 dark:text-red-400">
+              {t('error')}
+            </div>
+          )}
+
+          <div ref={messagesEndRef} />
+        </div>
+
+        {showLeadCapture && (
+          <LeadCapture
+            onClose={() => {
+              setShowLeadCapture(false);
+              setLeadDismissed(true);
+            }}
+            onSubmitted={() => setLeadSubmitted(true)}
+          />
         )}
-      </AnimatePresence>
-    </>
+
+        <ChatInput
+          input={input}
+          setInput={setInput}
+          onSubmit={handleSubmit}
+          onStop={stop}
+          isStreaming={isStreaming}
+          disabled={isInputDisabled}
+          placeholder={t('placeholder')}
+          footerText={t('footer')}
+        />
+      </motion.div>
+    </AnimatePresence>
   );
 }

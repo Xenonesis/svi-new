@@ -18,7 +18,7 @@ if (process.env.SKIP_IMAGE_OPTIMIZE === 'true') {
 }
 
 import { createRequire } from 'module';
-import { readdir, stat, mkdir } from 'fs/promises';
+import { readdir, stat, mkdir, access, readFile, writeFile } from 'fs/promises';
 import { join, dirname, extname, basename } from 'path';
 import { fileURLToPath } from 'url';
 
@@ -151,8 +151,17 @@ async function optimizeImage(inputPath) {
   processedCount++;
 }
 
+async function loadExistingBlurDataURLs() {
+  try {
+    const manifestPath = join(PROJECT_ROOT, 'src', 'data', 'blur-data-urls.json');
+    const content = await readFile(manifestPath, 'utf-8');
+    return JSON.parse(content);
+  } catch {
+    return {};
+  }
+}
+
 async function writeBlurURLsManifest() {
-  const { writeFile } = await import('fs/promises');
   const manifestPath = join(PROJECT_ROOT, 'src', 'data', 'blur-data-urls.json');
   await ensureDir(join(PROJECT_ROOT, 'src', 'data'));
   await writeFile(manifestPath, JSON.stringify(blurDataURLs, null, 2), 'utf-8');
@@ -180,12 +189,40 @@ async function main() {
 
   console.log(`Found ${files.length} image(s) to process...\n`);
 
+  // Load existing blur data URLs so we don't lose entries for already-processed images
+  const existingBlurDataURLs = await loadExistingBlurDataURLs();
+
   for (const file of files) {
     // Skip already-generated webp/avif files
     if (file.endsWith('.webp') || file.endsWith('.avif')) {
       skippedCount++;
       continue;
     }
+
+    // Check if this image has already been processed (full-size .webp exists)
+    const name = basename(file, extname(file));
+    const relDir = dirname(file).replace(INPUT_DIR, '').replace(/^[/\\]/, '');
+    const outDir = relDir ? join(OUTPUT_DIR, relDir) : OUTPUT_DIR;
+    const webpFullOut = join(outDir, `${name}.webp`);
+
+    let alreadyProcessed = false;
+    try {
+      await access(webpFullOut);
+      alreadyProcessed = true;
+    } catch {
+      /* .webp doesn't exist — needs processing */
+    }
+
+    if (alreadyProcessed) {
+      const key = file.replace(PROJECT_ROOT, '').replace(/\\/g, '/');
+      if (existingBlurDataURLs[key]) {
+        blurDataURLs[key] = existingBlurDataURLs[key];
+      }
+      console.log(`  ⏭️  ${name} — already processed`);
+      skippedCount++;
+      continue;
+    }
+
     try {
       await optimizeImage(file);
     } catch (err) {
