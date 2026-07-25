@@ -21,6 +21,25 @@ export type BlogPost = {
   takeawaysHi?: string[];
 };
 
+/**
+ * Subset of BlogPost with only card/listing fields.
+ * Excludes heavy content/takeaways to minimize client bundle and RSC payload.
+ */
+export type BlogPostCard = {
+  title: string;
+  slug: string;
+  excerpt: string;
+  author: string;
+  date: string;
+  category: string;
+  image: string;
+  readTime: string;
+  titleHi?: string;
+  excerptHi?: string;
+  categoryHi?: string;
+  readTimeHi?: string;
+};
+
 export const BLOG_POSTS: BlogPost[] = [
   {
     title: 'DMIC Corridor Real Estate Opportunity: Why Investors Are Flocking to Industrial Hubs',
@@ -1166,3 +1185,8 @@ export const BLOG_POSTS: BlogPost[] = [
 ];
 
 export const BLOG_POST_MAP = Object.fromEntries(BLOG_POSTS.map((post) => [post.slug, post]));
+
+/** Cards-only view of BLOG_POSTS (no content, tags, or takeaways) — minimizes client bundle size */
+export const BLOG_POST_CARDS: BlogPostCard[] = BLOG_POSTS.map(
+  ({ content, contentHi, tags, tagsHi, takeaways, takeawaysHi, ...card }) => card
+);

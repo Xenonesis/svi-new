@@ -3,7 +3,7 @@
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
-import { BLOG_POSTS } from '@/src/lib/blog';
+import { BLOG_POST_CARDS } from '@/src/lib/blog';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
 
 const CATEGORY_COLORS: Record<string, string> = {
@@ -24,7 +24,7 @@ const CATEGORY_COLORS: Record<string, string> = {
 export default function NewsSection() {
   const locale = useLocale();
   const isHindi = locale === 'hi';
-  const latestPosts = BLOG_POSTS.slice(0, 4);
+  const latestPosts = BLOG_POST_CARDS.slice(0, 4);
 
   return (
     <section className="mt-20">

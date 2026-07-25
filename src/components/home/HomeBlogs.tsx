@@ -4,7 +4,7 @@ import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowRight, Calendar, User, Clock } from 'lucide-react';
-import { BLOG_POSTS } from '@/src/lib/blog';
+import { BLOG_POST_CARDS } from '@/src/lib/blog';
 import AnimatedSection, {
   StaggerContainer,
   StaggerItem,
@@ -31,7 +31,7 @@ export default function HomeBlogs() {
   const t = useTranslations('pages.blog');
 
   // Display the 3 latest blog posts
-  const latestPosts = BLOG_POSTS.slice(0, 3);
+  const latestPosts = BLOG_POST_CARDS.slice(0, 3);
 
   return (
     <section

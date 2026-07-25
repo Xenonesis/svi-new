@@ -8,9 +8,10 @@ export default async function Registration(props: {
 }) {
   const { locale } = await props.params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: 'pages.registration' });
-
-  const searchParams = await props.searchParams;
+  const [t, searchParams] = await Promise.all([
+    getTranslations({ locale, namespace: 'pages.registration' }),
+    props.searchParams,
+  ]);
   const needRegistration = searchParams.needRegistration;
 
   return (

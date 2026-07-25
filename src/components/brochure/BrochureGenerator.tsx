@@ -2,8 +2,6 @@
 
 import { useState } from 'react';
 import { Download, Loader2, X } from 'lucide-react';
-import { jsPDF } from 'jspdf';
-import html2canvas from 'html2canvas';
 
 export default function BrochureGenerator() {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +24,11 @@ export default function BrochureGenerator() {
         placeholder.classList.remove('hidden');
       }
 
-      // 2. Initialize PDF
+      // 2. Initialize PDF — lazy import heavy libs
+      const [{ default: jsPDF }, html2canvas] = await Promise.all([
+        import('jspdf'),
+        import('html2canvas').then((m) => m.default),
+      ]);
       const pdf = new jsPDF('p', 'mm', 'a4');
       const pages = [
         'page-1-cover',

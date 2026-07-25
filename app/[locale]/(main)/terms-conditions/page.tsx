@@ -25,8 +25,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function TermsConditions({ params }: Props) {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations('pages.terms');
-  const tc = await getTranslations('common');
+  const [t, tc] = await Promise.all([getTranslations('pages.terms'), getTranslations('common')]);
 
   const sections = [
     { title: t('s1Title'), content: t('s1Content') },

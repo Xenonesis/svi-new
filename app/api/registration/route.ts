@@ -146,16 +146,26 @@ export async function POST(request: NextRequest) {
 
     let photoUrl: string | null = null;
     let panCardFileUrl: string | null = null;
+
+    // Upload both files in parallel — independent I/O operations
+    const uploadTasks: Promise<void>[] = [];
     if (photoFile && photoFile.size > 0) {
-      const result = await uploadFile(photoFile, 'photos');
-      if (!result) throw AppError.internal('Failed to upload photo');
-      photoUrl = result.url;
+      uploadTasks.push(
+        uploadFile(photoFile, 'photos').then((result) => {
+          if (!result) throw AppError.internal('Failed to upload photo');
+          photoUrl = result.url;
+        })
+      );
     }
     if (panCardFile && panCardFile.size > 0) {
-      const result = await uploadFile(panCardFile, 'pan-cards');
-      if (!result) throw AppError.internal('Failed to upload PAN card');
-      panCardFileUrl = result.url;
+      uploadTasks.push(
+        uploadFile(panCardFile, 'pan-cards').then((result) => {
+          if (!result) throw AppError.internal('Failed to upload PAN card');
+          panCardFileUrl = result.url;
+        })
+      );
     }
+    await Promise.all(uploadTasks);
 
     let data: any = null;
     let success = false;
