@@ -3,7 +3,6 @@ import { motion, MotionValue } from 'motion/react';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { TextReveal } from '@/src/components/motion/text-reveal';
 
 interface HeroContentProps {
   heroOpacity: MotionValue<number>;
@@ -23,29 +22,9 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
         </span>
 
         <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.05] text-white min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl">
-          <TextReveal
-            text={t('title')}
-            as="span"
-            split="word"
-            stagger={0}
-            blur={0}
-            yOffset="0%"
-            duration={0.15}
-            className="inline"
-          />{' '}
-          <br />
+          <span className="inline">{t('title')}</span> <br />
           <span className="text-brand-gold inline-block pr-4 italic">
-            <TextReveal
-              text={t('titleAccent')}
-              as="span"
-              split="word"
-              stagger={0}
-              delay={0}
-              blur={0}
-              yOffset="0%"
-              duration={0.15}
-              className="inline"
-            />
+            <span className="inline">{t('titleAccent')}</span>
           </span>
         </h1>
 
