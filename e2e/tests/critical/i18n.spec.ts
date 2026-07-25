@@ -28,11 +28,12 @@ test.describe('i18n — Multi-language', () => {
 
   test('language toggle switches content language', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('load');
+    await page.waitForTimeout(1000);
 
     // Find language toggle
     const toggle = page.locator(
-      'button[aria-label*="language" i], button[aria-label*="Language" i], [class*="language-toggle"], button:has-text("हिन्दी"), button:has-text("English")'
+      'button[aria-label="Switch language"], button:has-text("हिन्दी"), button:has-text("English")'
     );
     const toggleCount = await toggle.count();
 
@@ -57,7 +58,9 @@ test.describe('i18n — Multi-language', () => {
     ];
     for (const path of paths) {
       await page.goto(path);
-      await page.waitForLoadState('networkidle');
+      // Use 'load' instead of 'networkidle' to avoid timeouts on asset-heavy pages
+      await page.waitForLoadState('load');
+      await page.waitForTimeout(1000);
       expect(page.url()).not.toContain('/en');
       expect(page.url()).toContain(path);
     }

@@ -7,7 +7,9 @@ test.describe('Calculators', () => {
   });
 
   test('renders calculator page', async ({ page }) => {
-    await expect(page.locator('h1, h2').filter({ hasText: /Calculator|कैलकुलेटर/i })).toBeVisible();
+    await expect(
+      page.locator('h1').filter({ hasText: /Investment|Calculator|कैलकुलेटर/i })
+    ).toBeVisible();
   });
 
   test('EMI calculator has sliders', async ({ page }) => {

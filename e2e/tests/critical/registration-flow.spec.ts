@@ -52,7 +52,7 @@ test.describe('Registration Flow', () => {
     await page.locator('input[placeholder="?"]').fill(answer.toString());
 
     // Verify there are no immediate validation errors before submitting
-    const submitBtn = page.locator('button[type="submit"]');
+    const submitBtn = page.locator('button[type="submit"]').first();
     await expect(submitBtn).toBeVisible();
     await expect(submitBtn).toBeEnabled();
 

@@ -5,7 +5,7 @@ test.describe('Homepage', () => {
   test('should render hero section in English', async ({ page }) => {
     await goto(page, '/');
     await expect(page.locator('h1')).toBeVisible();
-    await expect(page.locator('h1')).toContainText(/SVI|Home|Properties|Investment/i);
+    await expect(page.locator('h1')).toContainText(/Where|Dreams|Address|SVI|Home|Properties/i);
   });
 
   test('should render hero section in Hindi', async ({ page }) => {

@@ -2,14 +2,13 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Admin Login', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/login');
+    // Admin login is at /admin (not /login — that's the client portal)
+    await page.goto('/admin');
     await page.waitForLoadState('networkidle');
   });
 
   test('renders login form', async ({ page }) => {
-    await expect(
-      page.locator('h1, h2').filter({ hasText: /Login|Sign In|Welcome|लॉगिन/i })
-    ).toBeVisible();
+    await expect(page.locator('h1').filter({ hasText: /Admin/i })).toBeVisible();
     // Email input should exist
     const emailInput = page.locator('input[type="email"], input[placeholder*="email" i]');
     await expect(emailInput).toBeVisible();
@@ -19,7 +18,7 @@ test.describe('Admin Login', () => {
   });
 
   test('shows validation errors for empty form', async ({ page }) => {
-    const submitBtn = page.locator('button[type="submit"]');
+    const submitBtn = page.locator('button[type="submit"]').first();
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
       await page.waitForTimeout(1000);
@@ -33,7 +32,7 @@ test.describe('Admin Login', () => {
   test('shows error for invalid credentials', async ({ page }) => {
     await page.fill('input[type="email"], input[placeholder*="email" i]', 'wrong@email.com');
     await page.fill('input[type="password"]', 'wrongpass');
-    const submitBtn = page.locator('button[type="submit"]');
+    const submitBtn = page.locator('button[type="submit"]').first();
     if (await submitBtn.isVisible()) {
       await submitBtn.click();
       await page.waitForTimeout(2000);

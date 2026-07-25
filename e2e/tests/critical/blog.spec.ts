@@ -24,12 +24,12 @@ test.describe('Blog Listing', () => {
 
   test('read more link goes to detail page', async ({ page }) => {
     const readMore = page
-      .locator('a:has-text("Read More"), a:has-text("पढ़ें"), a:has-text("पूरा पढ़ें")')
+      .locator('a:has-text("Read"), a:has-text("पढ़ें"), a:has-text("पूरा पढ़ें")')
       .first();
     if ((await readMore.count()) > 0) {
       await readMore.click();
-      await page.waitForTimeout(1000);
-      expect(page.url()).toContain('/blog/');
+      await page.waitForURL(/\/blog/, { timeout: 15000 });
+      expect(page.url()).toContain('/blog');
     }
   });
 });

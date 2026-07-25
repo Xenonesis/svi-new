@@ -15,7 +15,13 @@ test.describe('Static Pages', () => {
   for (const { path, name } of pages) {
     test(`${name} loads successfully`, async ({ page }) => {
       await page.goto(path);
-      await page.waitForLoadState('networkidle');
+      // Projects pages have heavy assets — use 'load' to avoid networkidle timeouts
+      if (path.includes('/projects/')) {
+        await page.waitForLoadState('load');
+        await page.waitForTimeout(2000);
+      } else {
+        await page.waitForLoadState('networkidle');
+      }
       // Page should have a heading and not be a 404
       const h1 = page.locator('h1');
       const count = await h1.count();
@@ -29,7 +35,12 @@ test.describe('Static Pages', () => {
 
     test(`${name} in Hindi loads successfully`, async ({ page }) => {
       await page.goto(`/hi${path}`);
-      await page.waitForLoadState('networkidle');
+      if (path.includes('/projects/')) {
+        await page.waitForLoadState('load');
+        await page.waitForTimeout(2000);
+      } else {
+        await page.waitForLoadState('networkidle');
+      }
       const h1 = page.locator('h1');
       const count = await h1.count();
       expect(count).toBeGreaterThanOrEqual(1);

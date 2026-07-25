@@ -8,7 +8,10 @@ test.describe('Registration Page', () => {
 
   test('renders registration form', async ({ page }) => {
     await expect(
-      page.locator('h1, h2').filter({ hasText: /Register|Registration|रजिस्ट्रेशन|दर्ज/i })
+      page
+        .locator('h1, h2')
+        .filter({ hasText: /Register|Registration|रजिस्ट्रेशन|दर्ज/i })
+        .first()
     ).toBeVisible();
     // Check form fields exist
     const inputs = page.locator('input, select, textarea');
