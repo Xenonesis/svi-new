@@ -25,7 +25,7 @@ export default function LanguageToggle() {
       onClick={toggleLocale}
       disabled={isPending}
       className="3xl:text-sm flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium text-gray-700 transition-colors hover:bg-gray-100 xl:gap-1.5 xl:px-3 xl:py-2 xl:text-[12.5px] 2xl:text-[13.5px] dark:text-gray-300 dark:hover:bg-gray-800"
-      aria-label={t('switchLanguage')}
+      aria-label={locale === 'en' ? 'Switch to Hindi' : 'Switch to English'}
     >
       <Globe className="h-4 w-4" />
       <span>{locale === 'en' ? 'हिन्दी' : 'English'}</span>

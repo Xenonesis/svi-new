@@ -96,6 +96,7 @@ export default function ROITab({
                 step={100000}
                 value={investmentAmount}
                 onChange={(e) => onInvestmentAmountChange(Number(e.target.value))}
+                aria-label="Investment Amount"
                 className={`${inputCls} mt-3`}
               />
               <div className="mt-1 flex justify-between text-xs text-gray-400">
@@ -119,6 +120,7 @@ export default function ROITab({
             step={0.5}
             value={growthRate}
             onChange={(e) => onGrowthRateChange(Number(e.target.value))}
+            aria-label="Growth Rate"
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">
@@ -140,6 +142,7 @@ export default function ROITab({
             step={1}
             value={investmentYears}
             onChange={(e) => onInvestmentYearsChange(Number(e.target.value))}
+            aria-label="Investment Period"
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">

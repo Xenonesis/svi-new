@@ -78,6 +78,7 @@ export default function ProjectSelector({
             step={10}
             value={plotSize}
             onChange={(e) => onPlotSizeChange(Number(e.target.value))}
+            aria-label="Plot Size"
             className="accent-brand-gold mt-3 h-2 w-full cursor-pointer appearance-none rounded-full bg-gray-200 outline-none dark:bg-gray-700"
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">

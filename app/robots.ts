@@ -36,6 +36,6 @@ export default function robots(): MetadataRoute.Robots {
         ],
       },
     ],
-    sitemap: 'https://sviiinfrasolutions.com/sitemap.xml',
+    sitemap: 'https://www.sviinfrasolutions.com/sitemap.xml',
   };
 }

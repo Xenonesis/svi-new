@@ -63,6 +63,7 @@ export default function EMITab({
             step={100000}
             value={loanAmount}
             onChange={(e) => onLoanAmountChange(Number(e.target.value))}
+            aria-label="Loan Amount"
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">
@@ -84,6 +85,7 @@ export default function EMITab({
             step={0.5}
             value={interestRate}
             onChange={(e) => onInterestRateChange(Number(e.target.value))}
+            aria-label="Interest Rate"
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">
@@ -105,6 +107,7 @@ export default function EMITab({
             step={1}
             value={tenureYears}
             onChange={(e) => onTenureYearsChange(Number(e.target.value))}
+            aria-label="Tenure Years"
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">
