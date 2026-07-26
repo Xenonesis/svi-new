@@ -1182,6 +1182,282 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: '6 min read',
     readTimeHi: '6 मिनट पढ़ें',
   },
+  {
+    title: 'Phulera & Sambhar Lake Industrial Region: The Emerging Real Estate Hotspot Near Jaipur',
+    titleHi: 'फुलेरा और सांभर लेक इंडस्ट्रियल रीजन: जयपुर के पास उभरता नया रियल एस्टेट हॉटस्पॉट',
+    slug: 'phulera-sambhar-lake-industrial-real-estate',
+    excerpt:
+      'Explore why the Phulera-Sambhar industrial region is witnessing unprecedented plot appreciation, DFC logistics connectivity, and government infrastructure investments.',
+    excerptHi:
+      'जानिए क्यों फुलेरा-सांभर इंडस्ट्रियल ज़ोन में प्लॉट्स के दामों में रिकॉर्ड बढ़ोतरी हो रही है — DFC फ्रेट कॉरिडोर, जयपुर रिंग रोड और सरकारी विकास योजनाओं की पूरी जानकारी।',
+    content: `
+      <p>Situated strategically near the historic Sambhar Lake and Jaipur outer boundaries, the <mark>Phulera Industrial Hub</mark> is emerging as one of Rajasthan's fastest-growing industrial and residential corridors.</p>
+
+      <h2>1. The DFC Freight Corridor Advantage</h2>
+      <p>Phulera serves as a pivotal railway junction along the <mark>Dedicated Freight Corridor (DFC)</mark>, linking cargo movement directly to Western sea ports and Delhi-NCR markets:</p>
+      <ul>
+        <li><mark>Logistics Expansion:</mark> Massive container depots and warehousing complexes are operational near Phulera station.</li>
+        <li><mark>Industrial Employment:</mark> Growing manufacturing units creating thousands of technical jobs for the youth.</li>
+      </ul>
+
+      <h2>2. Connectivity to Jaipur Metro Region</h2>
+      <p>With direct 4-lane highway access to the <mark>Jaipur-Ajmer Expressway</mark> and the upcoming Jaipur Ring Road Phase II, commuting between Phulera and central Jaipur takes under 45 minutes.</p>
+
+      <h2>3. High Capital Appreciation & Plot Investment Potential</h2>
+      <p>Residential plot schemes in Phulera offer an accessible entry price with potential for <mark>15-20% annual capital value growth</mark>, making it ideal for early-stage investors.</p>
+
+      <h2>Conclusion</h2>
+      <p>SVI Infra Solutions offers prime JDA-compliant township projects in the Phulera-Sambhar corridor, guaranteeing transparent titles and high investment security.</p>
+    `,
+    contentHi: `
+      <p>ऐतिहासिक सांभर झील और जयपुर की बाहरी सीमाओं के पास स्थित <mark>फुलेरा इंडस्ट्रियल हब</mark> राजस्थान का सबसे तेज़ी से उभरता रियल एस्टेट कॉरिडोर बन चुका है।</p>
+
+      <h2>1. DFC फ्रेट कॉरिडोर का बड़ा फायदा</h2>
+      <p>फुलेरा <mark>डेडिकेटेड फ्रेट कॉरिडोर (DFC)</mark> का एक प्रमुख रेलवे जंक्शन है, जो सीधे गुजरात के बंदरगाहों और दिल्ली-NCR को जोड़ता है:</p>
+      <ul>
+        <li><mark>लॉजिस्टिक्स पार्क:</mark> फुलेरा स्टेशन के पास बड़े वेयरहाउसिंग और कंटेनर डिपो बन रहे हैं।</li>
+        <li><mark>रोज़गार के अवसर:</mark> मैन्युफैक्चरिंग इकाइयों से हज़ारों युवाओं को नए रोज़गार मिल रहे हैं।</li>
+      </ul>
+
+      <h2>2. जयपुर से बेहतरीन कनेक्टिविटी</h2>
+      <p><mark>जयपुर-अजमेर एक्सप्रेसवे</mark> और जयपुर रिंग रोड फ़ेज़-2 के ज़रिए फुलेरा से जयपुर सेंटर तक का सफ़र 45 मिनट से भी कम समय में पूरा होता है।</p>
+
+      <h2>3. शानदार रिटर्न (ROI) की संभावना</h2>
+      <p>कम बजट में ज़मीन खरीदने के लिए फुलेरा सबसे बेहतरीन विकल्प है, जहाँ सालाना <mark>15-20% कैपिटल एप्रिसिएशन</mark> मिल रहा है।</p>
+
+      <h2>निष्कर्ष</h2>
+      <p>SVI Infra Solutions फुलेरा-सांभर रीजन में सरकारी अप्रूव्ड टाउनशिप प्रोजेक्ट्स प्रदान करता है, जहाँ आपकी पूँजी पूरी तरह सुरक्षित रहती है।</p>
+    `,
+    takeaways: [
+      'Phulera DFC junction cuts cargo logistics timelines, driving industrial warehousing demand',
+      'Under 45-minute connectivity to Jaipur via 4-lane Jaipur-Ajmer Expressway',
+      'Accessible entry price for residential plots with 15-20% projected annual appreciation',
+    ],
+    takeawaysHi: [
+      'फुलेरा DFC जंक्शन के कारण लॉजिस्टिक्स और वेयरहाउसिंग ज़मीन की भारी माँग है',
+      '4-लेन जयपुर-अजमेर एक्सप्रेसवे से जयपुर शहर तक 45 मिनट की आसान पहुँच',
+      'कम बजट में 15-20% सालाना रिटर्न देने वाले रेजिडेंशियल प्लॉट्स का सुनहरा मौका',
+    ],
+    author: 'SVI Market Research',
+    date: '2026-07-20',
+    category: 'Investment Tips',
+    categoryHi: 'निवेश टिप्स',
+    image: '/images/project1.png',
+    tags: ['Phulera real estate', 'Sambhar lake', 'Jaipur plots', 'DFC corridor', 'investment ROI'],
+    tagsHi: ['फुलेरा रियल एस्टेट', 'सांभर लेक', 'जयपुर प्लॉट्स', 'DFC कॉरिडोर', 'निवेश रिटर्न'],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
+  {
+    title: 'JDA Approved Plots vs Unapproved Colony Land: Complete Buyer Protection Guide',
+    titleHi: 'JDA अप्रूव्ड प्लॉट्स बनाम बिना मंज़ूरी की ज़मीन: खरीदारों के लिए पूरी कानूनी गाइड',
+    slug: 'jda-approved-plots-vs-unapproved-land-guide',
+    excerpt:
+      'Crucial differences between Jaipur Development Authority (JDA) approved plots and illegal colony land regarding bank loan financing, legal titles, and municipal amenities.',
+    excerptHi:
+      'जयपुर डेवलपमेंट अथॉरिटी (JDA) अप्रूव्ड प्लॉट्स और बिना अप्रूवल वाली ज़मीन के बीच बड़ा अंतर — बैंक लोन, पट्टा, सरकारी सुविधाएँ और कानूनी सुरक्षा की जानकारी।',
+    content: `
+      <p>Buying a residential plot in Rajasthan requires clear understanding of <mark>JDA (Jaipur Development Authority) approval status</mark>. Buying unapproved land to save upfront costs can lead to severe legal and financial consequences.</p>
+
+      <h2>1. Bank Loan & Mortgage Financing Eligibility</h2>
+      <ul>
+        <li><mark>JDA Approved Plots:</mark> Eligible for up to 80-90% home/land loans from all leading nationalized banks (SBI, HDFC, ICICI, Bank of Baroda).</li>
+        <li><mark>Unapproved Colony Land:</mark> Nationalized banks strictly refuse loans on unapproved land due to high title litigation risk.</li>
+      </ul>
+
+      <h2>2. Guaranteed Infrastructure & Civic Amenities</h2>
+      <p>JDA approved townships are legally mandated to provide:</p>
+      <ul>
+        <li>30-foot to 60-foot wide asphalt roads with proper drainage lines.</li>
+        <li>Underground electricity wiring and municipal water pipelines.</li>
+        <li>Dedicated green parks, community centers, and streetlights.</li>
+      </ul>
+
+      <h2>3. Title Security & 90-A Patta Immunity</h2>
+      <p>JDA approved plots come with official <mark>JDA Patta certificates</mark>, guaranteeing clear marketable title protected from government demolition orders or land acquisition disputes.</p>
+    `,
+    contentHi: `
+      <p>राजस्थान में रेजिडेंशियल प्लॉट खरीदते समय <mark>JDA (जयपुर विकास प्राधिकरण) अप्रूवल</mark> का ध्यान रखना सबसे महत्वपूर्ण है। सस्ते के चक्कर में बिना अप्रूवल वाली कॉलोनी में प्लॉट लेना भारी पड़ सकता है।</p>
+
+      <h2>1. बैंक लोन पाने में आसानी</h2>
+      <ul>
+        <li><mark>JDA अप्रूव्ड प्लॉट्स:</mark> SBI, HDFC, ICICI जैसे सभी प्रमुख राष्ट्रीयकृत बैंकों से <mark>80-90% तक आसान लोन</mark> मिलता है।</li>
+        <li><mark>बिना अप्रूवल वाली ज़मीन:</mark> कोई भी बड़ा बैंक ऐसी ज़मीन पर लोन नहीं देता क्योंकि उस पर कानूनी जोखिम रहता है।</li>
+      </ul>
+
+      <h2>2. पक्की सरकारी सुविधाएँ</h2>
+      <p>JDA अप्रूव्ड टाउनशिप में डेवलपर को ये सुविधाएँ देना अनिवार्य होता है:</p>
+      <ul>
+        <li>30 फीट से 60 फीट चौड़ी पक्की डामर सड़कें और नालियाँ।</li>
+        <li>भूमिगत बिजली तार और सरकारी पानी की पाइपलाइन।</li>
+        <li>पार्क, कम्युनिटी सेंटर और स्ट्रीट लाइट व्यवस्था।</li>
+      </ul>
+
+      <h2>3. जेडीए पट्टा और कानूनी सुरक्षा</h2>
+      <p>JDA अप्रूव्ड प्लॉट के साथ आधिकारिक <mark>JDA पट्टा</mark> मिलता है, जिससे आपकी संपत्ति पूरी तरह सुरक्षित रहती है और भविष्य में किसी तोड़फोड़ या अधिग्रहण का डर नहीं रहता।</p>
+    `,
+    takeaways: [
+      'JDA approved plots qualify for 80-90% instant land loans from all major nationalized banks',
+      'Mandated 30-60 ft asphalt roads, underground utilities, and park development in JDA townships',
+      'Official JDA Patta guarantees immunity from municipal demolition or title disputes',
+    ],
+    takeawaysHi: [
+      'JDA अप्रूव्ड प्लॉट पर राष्ट्रीयकृत बैंकों से 80-90% तक तुरंत लोन की सुविधा मिलती है',
+      '30-60 फीट चौड़ी सड़कें, अंडरग्राउंड बिजली और पार्कों का पक्का विकास',
+      'JDA पट्टा मिलने से ज़मीन के मालिकाना हक पर कोई विवाद या तोड़फोड़ का डर नहीं',
+    ],
+    author: 'SVI Legal Desk',
+    date: '2026-07-18',
+    category: 'Legal & RERA',
+    categoryHi: 'लीगल एवं RERA',
+    image: '/images/project2.png',
+    tags: [
+      'JDA approved plots',
+      'JDA patta',
+      'Jaipur real estate',
+      'bank loans',
+      'plot buying guide',
+    ],
+    tagsHi: ['JDA अप्रूव्ड प्लॉट्स', 'JDA पट्टा', 'जयपुर रियल एस्टेट', 'बैंक लोन', 'प्लॉट गाइड'],
+    readTime: '7 min read',
+    readTimeHi: '7 मिनट पढ़ें',
+  },
+  {
+    title: 'Demystifying 90-A Land Conversion & JDA Patta in Rajasthan Real Estate',
+    titleHi: 'राजस्थान रियल एस्टेट में 90-A ज़मीन रूपांतरण और JDA पट्टा की पूरी जानकारी',
+    slug: '90a-land-conversion-patta-rajasthan-guide',
+    excerpt:
+      'In-depth guide explaining Section 90-A agricultural land conversion, revenue surrender, JDA allotment letters, and title registration procedure in Rajasthan.',
+    excerptHi:
+      'धारा 90-A के तहत कृषि भूमि रूपांतरण, रेवेन्यू सरेंडर, JDA अलॉटमेंट लेटर और राजस्थान में पट्टा रजिस्ट्री की प्रक्रिया को सरलता से समझें।',
+    content: `
+      <p>Understanding <mark>Section 90-A of the Rajasthan Land Revenue Act</mark> is essential for anyone buying residential plots, commercial land, or townships in Jaipur and Rajasthan.</p>
+
+      <h2>1. What Is 90-A Land Conversion?</h2>
+      <p>Agricultural land in India cannot be legally used for residential building construction without official conversion. Under <mark>Section 90-A</mark>, agricultural land khatedars surrender land rights to the local authority (JDA, UIT, or Municipal Corporation), which converts the land use to non-agricultural status.</p>
+
+      <h2>2. The Step-by-Step 90-A Conversion Process</h2>
+      <ol>
+        <li><mark>Application & Revenue Report:</mark> Developer submits land Khasra details to the Tehsildar/JDA Officer.</li>
+        <li><mark>Public Notice:</mark> 15-day public objection notice issued in newspapers to ensure zero ownership disputes.</li>
+        <li><mark>Layout Sanction:</mark> Town Planning Committee approves road widths, open park spaces, and plot layouts.</li>
+        <li><mark>Issuance of 90-A Order:</mark> Government passes official order converting agricultural land to residential township status.</li>
+      </ol>
+
+      <h2>3. Difference Between 90-A Order & JDA Patta</h2>
+      <p>While 90-A converts the overall land use category, the <mark>JDA Patta</mark> is the individual title deed issued to each buyer after paying betterment and conversion charges.</p>
+    `,
+    contentHi: `
+      <p>राजस्थान में रेजिडेंशियल प्लॉट या टाउनशिप खरीदते समय <mark>राजस्थान भू-राजस्व अधिनियम की धारा 90-A</mark> की प्रक्रिया को समझना बहुत आवश्यक है।</p>
+
+      <h2>1. 90-A ज़मीन रूपांतरण क्या है?</h2>
+      <p>बिना सरकारी अनुमति के कृषि भूमि पर मकान या दुकान नहीं बनाई जा सकती। <mark>धारा 90-A</mark> के तहत खातेदार अपनी कृषि भूमि के अधिकार स्थानीय प्राधिकरण (JDA/UIT/नगर निगम) को सौंपता है, जो उस ज़मीन को गैर-कृषि (आवासीय/व्यावसायिक) घोषित करता है।</p>
+
+      <h2>2. 90-A रूपांतरण की चरणबद्ध प्रक्रिया</h2>
+      <ol>
+        <li><mark>आवेदन और रिपोर्ट:</mark> तहसीलदार और JDA अधिकारी के पास ज़मीन का खसरा और नक्शा जमा कराया जाता है।</li>
+        <li><mark>सार्वजनिक विज्ञप्ति:</mark> अखबारों में 15 दिनों का सार्वजनिक नोटिस जारी किया जाता है ताकि किसी विवाद की गुंजाइश न रहे।</li>
+        <li><mark>नक्शा पास होना:</mark> टाउन प्लानिंग कमेटी 30-60 फीट की सड़कों, पार्कों और प्लॉट्स के नक्शे को मंज़ूरी देती है।</li>
+        <li><mark>90-A आदेश जारी होना:</mark> सरकार ज़मीन को आधिकारिक रूप से आवासीय टाउनशिप का दर्जा देती है।</li>
+      </ol>
+
+      <h2>3. 90-A आदेश और JDA पट्टा में अंतर</h2>
+      <p>90-A आदेश पूरी टाउनशिप की ज़मीन का यूज़ बदलता है, जबकि <mark>JDA पट्टा</mark> प्रत्येक खरीदार के नाम पर जारी होने वाला व्यक्तिगत मालिकाना हक का दस्तावेज होता है।</p>
+    `,
+    takeaways: [
+      'Section 90-A officially converts agricultural land to residential non-agricultural status',
+      'Public notice period ensures converted land is completely litigation-free and clear titled',
+      'JDA Patta provides individual registered ownership deed backed by Rajasthan state government',
+    ],
+    takeawaysHi: [
+      'धारा 90-A कृषि भूमि को कानूनी रूप से गैर-कृषि या आवासीय भूमि में बदलती है',
+      'सार्वजनिक विज्ञप्ति से यह सुनिश्चित होता है कि ज़मीन पर कोई पुराना विवाद या मालिकाना झगड़ा नहीं है',
+      'JDA पट्टा राज्य सरकार द्वारा जारी पक्का व्यक्तिगत रजिस्ट्री दस्तावेज होता है',
+    ],
+    author: 'SVI Real Estate Desk',
+    date: '2026-07-15',
+    category: 'Market Analysis',
+    categoryHi: 'बाज़ार विश्लेषण',
+    image: '/images/shivani-vatika-11th.png',
+    tags: ['90-A conversion', 'JDA patta', 'land revenue act', 'Jaipur land laws', 'plot registry'],
+    tagsHi: ['90-A रूपांतरण', 'JDA पट्टा', 'भू राजस्व कानून', 'जयपुर भूमि नियम', 'प्लॉट रजिस्ट्री'],
+    readTime: '7 min read',
+    readTimeHi: '7 मिनट पढ़ें',
+  },
+  {
+    title:
+      'Delhi-Mumbai Expressway Commercial Corridors: Warehousing, Logistics Parks & Land Investment',
+    titleHi:
+      'दिल्ली-मुंबई एक्सप्रेसवे कमर्शियल कॉरिडोर: वेयरहाउसिंग, लॉजिस्टिक्स पार्क और भूमि निवेश',
+    slug: 'delhi-mumbai-expressway-commercial-real-estate',
+    excerpt:
+      'High-yield investment opportunities along the 12-lane Delhi-Mumbai Expressway near Jaipur, Dausa, and Lalsot interchanges for logistics hubs and commercial land.',
+    excerptHi:
+      'जयपुर, दौसा और लालसोट इंटरचेंज के पास 12-लेन दिल्ली-मुंबई एक्सप्रेसवे के किनारे लॉजिस्टिक्स हब, वेयरहाउसिंग और कमर्शियल ज़मीन के उच्च रिटर्न देने वाले अवसर।',
+    content: `
+      <p>The 1,386 km <mark>Delhi-Mumbai Expressway</mark> is India's longest access-controlled highway, creating unprecedented commercial real estate demand along its interchanges in Rajasthan.</p>
+
+      <h2>1. Strategic Interchanges Around Jaipur & Dausa</h2>
+      <p>Key exit nodes such as <mark>Dausa, Lalsot, Bandikui, and Jaipur Ring Road connection</mark> are seeing rapid land transformation into industrial logistics hubs:</p>
+      <ul>
+        <li><mark>Freight Transit Time:</mark> Reduces travel time between Delhi and Jaipur to under 3 hours.</li>
+        <li><mark>Wayside Amenities:</mark> Development of 93 wayside amenity complexes featuring food courts, fuel stations, and EV charging parks.</li>
+      </ul>
+
+      <h2>2. High Yield Logistics & Cold Storage Warehousing</h2>
+      <p>E-commerce giants and third-party logistics (3PL) operators are leasing large land parcels along the expressway to set up <mark>fulfillment centers and cold storage facilities</mark>.</p>
+
+      <h2>3. Capital Appreciation Expectations</h2>
+      <p>Commercial land parcels situated within 5 km of expressway interchanges have experienced <mark>20-30% capital value surges</mark> over the last 24 months, with strong future growth projections.</p>
+    `,
+    contentHi: `
+      <p>1,386 किलोमीटर लंबा <mark>दिल्ली-मुंबई एक्सप्रेसवे</mark> भारत का सबसे बड़ा एक्सेस-कंट्रोल्ड हाईवे है, जो राजस्थान के इंटरचेंज ज़ोन में कमर्शियल रियल एस्टेट की भारी माँग पैदा कर रहा है।</p>
+
+      <h2>1. जयपुर और दौसा के प्रमुख इंटरचेंज</h2>
+      <p><mark>दौसा, लालसोट, बांदीकुई और जयपुर रिंग रोड कनेक्ट</mark> जैसे मुख्य एग्जिट पॉइंट्स के पास की ज़मीनें तेज़ी से लॉजिस्टिक्स और कमर्शियल हब में बदल रही हैं:</p>
+      <ul>
+        <li><mark>कम समय में सफ़र:</mark> दिल्ली और जयपुर के बीच का सफ़र घटकर 3 घंटे से भी कम रह गया है।</li>
+        <li><mark>वेसाइड एमिनिटीज:</mark> फूड कोर्ट, पेट्रोल पंप और EV चार्जिंग स्टेशन वाले 93 बड़े कमर्शियल परिसर।</li>
+      </ul>
+
+      <h2>2. लॉजिस्टिक्स और कोल्ड स्टोरेज वेयरहाउसिंग</h2>
+      <p>ई-कॉमर्स कंपनियाँ और लॉजिस्टिक्स ऑपरेटर्स एक्सप्रेसवे के पास <mark>फुलफिलमेंट सेंटर और कोल्ड स्टोरेज</mark> बनाने के लिए ज़मीन लीज पर ले रहे हैं।</p>
+
+      <h2>3. ज़मीन के दामों में तेज़ उछाल</h2>
+      <p>एक्सप्रेसवे इंटरचेंज के 5 किमी के दायरे में कमर्शियल ज़मीनों के दामों में पिछले 2 सालों में <mark>20-30% का उछाल</mark> दर्ज किया गया है।</p>
+    `,
+    takeaways: [
+      'Delhi-Mumbai Expressway slashes Delhi to Jaipur drive time to under 3 hours',
+      'High commercial demand for logistics hubs, warehousing, and EV charging stations near Dausa & Lalsot',
+      'Land parcels near interchanges experiencing 20-30% capital value appreciation',
+    ],
+    takeawaysHi: [
+      'दिल्ली-मुंबई एक्सप्रेसवे से दिल्ली और जयपुर का सफ़र घटकर 3 घंटे से कम रह गया है',
+      'दौसा और लालसोट के पास वेयरहाउसिंग, लॉजिस्टिक्स और कमर्शियल ज़मीन की भारी माँग',
+      'इंटरचेंज के पास वाली कमर्शियल ज़मीनों में 20-30% तक की ज़बरदस्त वृद्धि',
+    ],
+    author: 'SVI Investment Advisory',
+    date: '2026-07-12',
+    category: 'Market Analysis',
+    categoryHi: 'बाज़ार विश्लेषण',
+    image: '/images/exclusive_offers_hero.png',
+    tags: [
+      'Delhi Mumbai Expressway',
+      'commercial land',
+      'warehousing',
+      'logistics park',
+      'Jaipur real estate',
+    ],
+    tagsHi: [
+      'दिल्ली मुंबई एक्सप्रेसवे',
+      'कमर्शियल ज़मीन',
+      'वेयरहाउसिंग',
+      'लॉजिस्टिक्स पार्क',
+      'जयपुर रियल एस्टेट',
+    ],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
 ];
 
 export const BLOG_POST_MAP = Object.fromEntries(BLOG_POSTS.map((post) => [post.slug, post]));
