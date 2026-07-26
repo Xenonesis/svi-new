@@ -10,6 +10,22 @@ export function absoluteUrl(path = '/') {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
+export function getAlternateLinks(path: string, locale = 'en') {
+  const cleanPath = path.startsWith('/') ? path : `/${path}`;
+  const currentUrl = absoluteUrl(`/${locale}${cleanPath}`);
+  const enUrl = absoluteUrl(`/en${cleanPath}`);
+  const hiUrl = absoluteUrl(`/hi${cleanPath}`);
+
+  return {
+    canonical: currentUrl,
+    languages: {
+      en: enUrl,
+      hi: hiUrl,
+      'x-default': enUrl,
+    },
+  };
+}
+
 type SeoOptions = {
   title: string;
   description: string;

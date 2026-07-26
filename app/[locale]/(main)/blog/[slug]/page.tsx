@@ -5,8 +5,10 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, User, Tag, Clock, Bookmark } from 'lucide-react';
 import { BLOG_POST_MAP, BLOG_POSTS as SHARED_BLOG_POSTS } from '@/src/lib/blog';
-import { absoluteUrl } from '@/src/lib/seo';
+import { absoluteUrl, getAlternateLinks } from '@/src/lib/seo';
 import BlogDetailFAQ from '@/src/components/faq/ProjectsFAQ';
+import { PROJECT_FAQS } from '@/src/data/faq/general';
+import { PROJECT_FAQS_HI } from '@/src/data/faq/hi';
 import ShareButtons from './ShareButtons';
 import RelatedPosts from './RelatedPosts';
 import ReadingProgress from './ReadingProgress';
@@ -37,14 +39,40 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const blogT = await getTranslations({ locale, namespace: 'pages.blog' });
   const title = locale === 'hi' && post.titleHi ? post.titleHi : post.title;
+  const excerpt = locale === 'hi' && post.excerptHi ? post.excerptHi : post.excerpt;
+  const tags = locale === 'hi' && post.tagsHi ? post.tagsHi : post.tags;
+
+  const currentUrl = absoluteUrl(`/${locale}/blog/${slug}`);
 
   return {
     title: `${title} | ${blogT('heading')}`,
-    description: locale === 'hi' && post.excerptHi ? post.excerptHi : post.excerpt,
+    description: excerpt,
+    alternates: getAlternateLinks(`/blog/${slug}`, locale),
     openGraph: {
+      type: 'article',
+      url: currentUrl,
       title,
-      description: locale === 'hi' && post.excerptHi ? post.excerptHi : post.excerpt,
-      images: [{ url: absoluteUrl(post.image), width: 1200, height: 630 }],
+      description: excerpt,
+      siteName: 'SVI Infra Solutions',
+      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
+      publishedTime: new Date(post.date).toISOString(),
+      modifiedTime: new Date(post.date).toISOString(),
+      authors: [post.author],
+      tags,
+      images: [
+        {
+          url: absoluteUrl(post.image),
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description: excerpt,
+      images: [absoluteUrl(post.image)],
     },
   };
 }
@@ -79,7 +107,9 @@ export default async function BlogPost({ params }: Props) {
     '@type': 'Article',
     headline: title,
     description: excerpt,
-    image: absoluteUrl(post.image),
+    image: [absoluteUrl(post.image)],
+    inLanguage: isHindi ? 'hi' : 'en',
+    keywords: tags ? tags.join(', ') : '',
     author: {
       '@type': 'Person',
       name: post.author,
@@ -100,11 +130,58 @@ export default async function BlogPost({ params }: Props) {
     },
   };
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: isHindi ? 'होम' : 'Home',
+        item: absoluteUrl(`/${locale}`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: isHindi ? 'ब्लॉग' : 'Blog',
+        item: absoluteUrl(`/${locale}/blog`),
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: title,
+        item: absoluteUrl(`/${locale}/blog/${slug}`),
+      },
+    ],
+  };
+
+  const faqs = isHindi ? PROJECT_FAQS_HI : PROJECT_FAQS;
+  const faqJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  };
+
   return (
     <div className="dark:bg-brand-dark-bg min-h-screen bg-gray-50 pt-20">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(articleJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
       {/* Reading progress bar */}
       <ReadingProgress />
