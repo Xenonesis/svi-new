@@ -1,16 +1,13 @@
 /**
- * Supabase Image Loader for next/image
+ * Custom Image Loader for next/image
  *
- * Usage in next.config.mjs (optional — enable only when using Supabase Storage images):
- *   images: {
- *     loader: 'custom',
- *     loaderFile: './src/lib/image-loader.ts',
- *   }
+ * For local images, uses full-size WebP by default — this is the safest approach
+ * since every image has a `.webp` variant. Responsive variants (320w, 640w, 1024w)
+ * are used only for widths we can guarantee exist (≤1024).
  *
- * Or use per-image with the `loader` prop on <Image />.
- *
- * Note: Supabase Storage supports basic image transformations via URL params.
- * See: https://supabase.com/docs/guides/storage/serving/image-transformations
+ * Images smaller than 1920px (like 1024px hero images) don't have a 1920w variant,
+ * so requesting `-1920w.webp` would 404. This loader avoids that by never requesting
+ * responsive variants above 1024w — it falls back to the full-size `.webp` instead.
  */
 
 interface ImageLoaderParams {
@@ -19,32 +16,28 @@ interface ImageLoaderParams {
   quality?: number;
 }
 
-// Generated responsive sizes from optimize-images.mjs
-const RESPONSIVE_SIZES = [320, 640, 1024, 1920];
+const SAFE_RESPONSIVE_SIZES = [320, 640, 1024];
 
-/**
- * Returns image URL optimized for the requested width.
- * For local images, uses pre-generated WebP responsive variants.
- * Falls back to full-size WebP for widths without a matching responsive file.
- */
-export default function supabaseImageLoader({ src, width, quality }: ImageLoaderParams): string {
-  // For local/public images, use pre-generated WebP responsive variants
+export default function supabaseImageLoader({ src, width }: ImageLoaderParams): string {
+  // Local images
   if (src.startsWith('/') || src.startsWith('./')) {
     const basePath = src.replace(/\.(png|jpg|jpeg)$/i, '');
-    // Find the closest responsive size that's >= requested width
-    const closest =
-      RESPONSIVE_SIZES.find((s) => s >= width) ?? RESPONSIVE_SIZES[RESPONSIVE_SIZES.length - 1];
-    return `${basePath}-${closest}w.webp`;
+
+    // Only use responsive variants for sizes we know always exist (≤1024w)
+    const match = SAFE_RESPONSIVE_SIZES.find((s) => s >= width);
+    if (match) return `${basePath}-${match}w.webp`;
+
+    // For larger requests (1200w, 1920w), use full-size WebP to avoid 404s
+    // since many images are 1024px originals without a 1920w variant
+    return `${basePath}.webp`;
   }
 
-  // For Supabase Storage URLs, append transformation params
+  // Supabase Storage URLs
   if (src.includes('supabase.co/storage')) {
     const url = new URL(src);
     url.searchParams.set('width', String(width));
-    if (quality) url.searchParams.set('quality', String(quality));
     return url.toString();
   }
 
-  // Default: return src unchanged (CDN or external)
   return src;
 }
