@@ -19,8 +19,8 @@ interface ImageLoaderParams {
 const SAFE_RESPONSIVE_SIZES = [320, 640, 1024];
 
 export default function supabaseImageLoader({ src, width }: ImageLoaderParams): string {
-  // Local images
-  if (src.startsWith('/') || src.startsWith('./')) {
+  // Local images in /images/ directory have pre-generated WebP responsive variants
+  if (src.startsWith('/images/') || src.startsWith('./images/')) {
     const basePath = src.replace(/\.(png|jpg|jpeg)$/i, '');
 
     // Only use responsive variants for sizes we know always exist (≤1024w)
