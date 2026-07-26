@@ -29,7 +29,7 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
 
     // For larger requests (1200w, 1920w), use full-size WebP to avoid 404s
     // since many images are 1024px originals without a 1920w variant
-    return `${basePath}.webp`;
+    return `${basePath}.webp?w=${width}`;
   }
 
   // Supabase Storage URLs
@@ -37,6 +37,11 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
     const url = new URL(src);
     url.searchParams.set('width', String(width));
     return url.toString();
+  }
+
+  // Default: return src with width query param for static root assets (/logo.png, etc.)
+  if (src.startsWith('/') || src.startsWith('./')) {
+    return `${src}?w=${width}`;
   }
 
   return src;
