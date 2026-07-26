@@ -19,14 +19,22 @@ interface ImageLoaderParams {
   quality?: number;
 }
 
+// Generated responsive sizes from optimize-images.mjs
+const RESPONSIVE_SIZES = [320, 640, 1024, 1920];
+
 /**
- * Returns a Supabase Storage URL with width + quality transformation params.
- * Falls back gracefully for non-Supabase URLs.
+ * Returns image URL optimized for the requested width.
+ * For local images, uses pre-generated WebP responsive variants.
+ * Falls back to full-size WebP for widths without a matching responsive file.
  */
 export default function supabaseImageLoader({ src, width, quality }: ImageLoaderParams): string {
-  // For local/public images, include width for responsive image support
+  // For local/public images, use pre-generated WebP responsive variants
   if (src.startsWith('/') || src.startsWith('./')) {
-    return `${src}?w=${width}`;
+    const basePath = src.replace(/\.(png|jpg|jpeg)$/i, '');
+    // Find the closest responsive size that's >= requested width
+    const closest =
+      RESPONSIVE_SIZES.find((s) => s >= width) ?? RESPONSIVE_SIZES[RESPONSIVE_SIZES.length - 1];
+    return `${basePath}-${closest}w.webp`;
   }
 
   // For Supabase Storage URLs, append transformation params

@@ -40,11 +40,11 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   applicationName: SITE_NAME,
   title: {
-    default: 'SVI Infra Solutions - Premium Real Estate Developer | Jaipur & Noida',
+    default: 'SVI Infra Solutions - Premium Real Estate Developer | Jaipur',
     template: '%s | SVI Infra Solutions',
   },
   description:
-    'SVI Infra Solutions Pvt. Ltd. - Premium residential and commercial real estate developer with 15+ years of experience. Specializing in Jaipur, Noida, Phulera Smart City, and DMIC/DFC corridors.',
+    'Premium real estate developer with 15+ years in Jaipur, Noida, and DMIC corridors. Specializing in residential flats and commercial properties across Rajasthan and UP.',
   keywords: [
     'Real Estate',
     'Infra Solutions',

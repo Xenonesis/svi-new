@@ -230,12 +230,18 @@ const Footer = memo(function Footer() {
             <form
               onSubmit={handleNewsletterSubmit}
               className="relative flex w-full flex-col gap-3 sm:w-auto sm:flex-row md:w-auto"
+              aria-label="Newsletter subscription"
             >
+              <label htmlFor="newsletter-email" className="sr-only">
+                {t('footer.enterEmail')}
+              </label>
               <input
+                id="newsletter-email"
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('footer.enterEmail')}
+                aria-label={t('footer.enterEmail')}
                 className="text-brand-navy focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:outline-none sm:w-56 md:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                 required
               />

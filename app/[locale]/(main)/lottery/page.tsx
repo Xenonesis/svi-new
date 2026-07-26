@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { absoluteUrl } from '@/src/lib/seo';
 import LotteryClientSection from '@/src/components/lottery/LotteryClientSection';
 import LotteryFAQ from '@/src/components/faq/ProjectsFAQ';
 
@@ -15,6 +16,7 @@ export async function generateMetadata(props: {
       title: `${t('title')} | SVI Infra Solutions`,
       description: t('description'),
       type: 'website',
+      images: [{ url: absoluteUrl('/images/hero1.png'), width: 1200, height: 630 }],
     },
   };
 }
