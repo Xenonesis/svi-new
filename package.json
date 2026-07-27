@@ -16,6 +16,7 @@
     "perf:bundle": "cross-env ANALYZE=true next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
+    "prepush": ".husky/pre-push",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint .",

@@ -1,0 +1,130 @@
+#!/usr/bin/env sh
+# Pre-push quality and security checks
+# Runs before `git push`. Blocks the push if any check fails.
+# Speed-ordered: fast checks first, TypeScript type check last.
+# Skip with: HUSKY=0 git push
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+pass_count=0
+fail_count=0
+
+pass() {
+  pass_count=$((pass_count + 1))
+  printf "  ${GREEN}ok${NC} %s\n" "$1"
+}
+
+fail() {
+  fail_count=$((fail_count + 1))
+  printf "  ${RED}XX${NC} %s\n" "$1"
+}
+
+summary() {
+  echo ""
+  if [ "$fail_count" -eq 0 ]; then
+    printf "${GREEN}${BOLD}All %d checks passed${NC}\n" "$pass_count"
+  else
+    printf "${RED}${BOLD}%d check(s) failed, %d passed${NC}\n" "$fail_count" "$pass_count"
+    exit 1
+  fi
+}
+
+# --- 1. Dependency security audit ---
+echo ""
+printf "${BOLD}1/5  Dependency Security Audit${NC}\n"
+if pnpm audit --audit-level=high 2>/dev/null; then
+  pass "No high/critical vulnerabilities"
+else
+  fail "pnpm audit found high/critical vulnerabilities"
+fi
+
+# --- 2. console.log leak check ---
+echo ""
+printf "${BOLD}2/5  console.log Leak Check${NC}\n"
+HAS_CONSOLE_LOG=0
+grep -r "console\.log" \
+  --include="*.ts" --include="*.tsx" src/app src/components \
+  --exclude-dir=node_modules 2>/dev/null \
+  | grep -v "//.*console\.log" \
+  | grep -v "eslint-disable" \
+  > /dev/null 2>&1 && HAS_CONSOLE_LOG=1 || true
+
+if [ "$HAS_CONSOLE_LOG" -eq 0 ]; then
+  pass "No console.log found in source"
+else
+  printf "  ${YELLOW}!!${NC} %s\n" "console.log found in source (warning only):"
+  grep -r "console\.log" \
+    --include="*.ts" --include="*.tsx" src/app src/components \
+    --exclude-dir=node_modules 2>/dev/null \
+    | grep -v "//.*console\.log" \
+    | grep -v "eslint-disable" \
+    | sed 's/^/    /'
+fi
+
+# --- 3. debugger statement check ---
+echo ""
+printf "${BOLD}3/5  debugger Statement Check${NC}\n"
+HAS_DEBUGGER=0
+grep -rn "debugger" \
+  --include="*.ts" --include="*.tsx" src/app src/components \
+  --exclude-dir=node_modules 2>/dev/null \
+  | grep -v "eslint-disable" \
+  > /dev/null 2>&1 && HAS_DEBUGGER=1 || true
+
+if [ "$HAS_DEBUGGER" -eq 0 ]; then
+  pass "No debugger statements found"
+else
+  fail "debugger statement found in source:"
+  grep -rn "debugger" \
+    --include="*.ts" --include="*.tsx" src/app src/components \
+    --exclude-dir=node_modules 2>/dev/null \
+    | grep -v "eslint-disable" \
+    | sed 's/^/    /'
+fi
+
+# --- 4. Hardcoded secret detection ---
+echo ""
+printf "${BOLD}4/5  Hardcoded Secret Detection${NC}\n"
+# Match actual hardcoded secrets (non-empty, non-placeholder)
+# - api_key = "sk-..." or pk-...
+# - password = "something" (but not empty '', 'N/A', or JSX rendering)
+# - secret/token = "something" (but not empty or placeholder)
+SECRET_RE='(api_key\s*[=:]\s*["'"'"'](sk-|pk-)|password\s*[=:]\s*["'"'"'][a-zA-Z0-9].|secret\s*[=:]\s*["'"'"'].{8,})'
+EXCLUDE_RE='placeholder|example|your-|test-|NEXT_PUBLIC_|process\.env|eslint-disable|TODO|FIXME|HACK|\.env|N/A'
+
+HAS_SECRET=0
+grep -rnE "$SECRET_RE" \
+  --include="*.ts" --include="*.tsx" --include="*.js" \
+  src/ app/ \
+  --exclude-dir=node_modules --exclude-dir=.next 2>/dev/null \
+  | grep -ivE "$EXCLUDE_RE" \
+  > /dev/null 2>&1 && HAS_SECRET=1 || true
+
+if [ "$HAS_SECRET" -eq 0 ]; then
+  pass "No hardcoded secrets detected"
+else
+  fail "Possible hardcoded secrets found:"
+  grep -rnE "$SECRET_RE" \
+    --include="*.ts" --include="*.tsx" --include="*.js" \
+    src/ app/ \
+    --exclude-dir=node_modules --exclude-dir=.next 2>/dev/null \
+    | grep -ivE "$EXCLUDE_RE" \
+    | sed 's/^/    /'
+fi
+
+# --- 5. TypeScript type check ---
+echo ""
+printf "${BOLD}5/5  TypeScript Type Check${NC}\n"
+if pnpm typecheck 2>/dev/null; then
+  pass "TypeScript type check passed"
+else
+  fail "TypeScript type errors found (run pnpm typecheck for details)"
+  pnpm typecheck 2>&1 | tail -20 | sed 's/^/    /'
+fi
+
+# --- Summary ---
+summary
