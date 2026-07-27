@@ -72,6 +72,7 @@ const DotField = memo(
     };
     const rebuildRef = useRef<(() => void) | null>(null);
     const glowIdRef = useRef(`dot-field-glow-${Math.random().toString(36).slice(2, 9)}`);
+    const speedIntervalRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
     useEffect(() => {
       const canvas = canvasRef.current;
@@ -81,6 +82,7 @@ const DotField = memo(
       if (!ctx) return;
       const dpr = Math.min(typeof window !== 'undefined' ? window.devicePixelRatio || 1 : 1, 2);
       let resizeTimer: NodeJS.Timeout;
+      let isPaused = false;
 
       function resize() {
         clearTimeout(resizeTimer);
@@ -155,11 +157,28 @@ const DotField = memo(
         m.prevY = m.y;
       }
 
-      const speedInterval = setInterval(updateMouseSpeed, 20);
+      speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
+
+      function onVisibilityChange() {
+        if (document.hidden) {
+          isPaused = true;
+          if (rafRef.current) cancelAnimationFrame(rafRef.current);
+          if (speedIntervalRef.current) clearInterval(speedIntervalRef.current);
+        } else {
+          isPaused = false;
+          speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
+          rafRef.current = requestAnimationFrame(tick);
+        }
+      }
+      document.addEventListener('visibilitychange', onVisibilityChange);
 
       let frameCount = 0;
 
       function tick() {
+        if (isPaused) {
+          rafRef.current = requestAnimationFrame(tick);
+          return;
+        }
         frameCount++;
         const dots = dotsRef.current;
         const m = mouseRef.current;
@@ -270,8 +289,9 @@ const DotField = memo(
 
       return () => {
         if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        clearInterval(speedInterval);
+        if (speedIntervalRef.current) clearInterval(speedIntervalRef.current);
         clearTimeout(resizeTimer);
+        document.removeEventListener('visibilitychange', onVisibilityChange);
         window.removeEventListener('resize', resize);
         window.removeEventListener('mousemove', onMouseMove);
       };

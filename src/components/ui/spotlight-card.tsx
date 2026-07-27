@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, ReactNode } from 'react';
+import React, { useEffect, useRef, ReactNode, useState } from 'react';
 
 interface GlowCardProps {
   children?: ReactNode;
@@ -35,11 +35,24 @@ const GlowCard: React.FC<GlowCardProps> = ({
 }) => {
   const cardRef = useRef<HTMLDivElement>(null);
   const innerRef = useRef<HTMLDivElement>(null);
+  const [inView, setInView] = useState(false);
+
+  // Only listen for pointermove when the card is in the viewport.
+  // This prevents all 6+ GlowCards from firing handlers on every pointer move.
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), {
+      rootMargin: '100px',
+    });
+    obs.observe(el);
+    return () => obs.disconnect();
+  }, []);
 
   useEffect(() => {
+    if (!inView) return;
     const syncPointer = (e: PointerEvent) => {
       const { clientX: x, clientY: y } = e;
-
       if (cardRef.current) {
         cardRef.current.style.setProperty('--x', x.toFixed(2));
         cardRef.current.style.setProperty('--xp', (x / window.innerWidth).toFixed(2));
@@ -47,10 +60,9 @@ const GlowCard: React.FC<GlowCardProps> = ({
         cardRef.current.style.setProperty('--yp', (y / window.innerHeight).toFixed(2));
       }
     };
-
     document.addEventListener('pointermove', syncPointer);
     return () => document.removeEventListener('pointermove', syncPointer);
-  }, []);
+  }, [inView]);
 
   const { base, spread } = glowColorMap[glowColor];
 

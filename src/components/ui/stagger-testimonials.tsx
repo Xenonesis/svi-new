@@ -1,12 +1,14 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { cn } from '@/src/lib/utils';
 import Image from 'next/image';
 import { useTranslations } from 'next-intl';
 
 const SQRT_5000 = Math.sqrt(5000);
+const TOTAL = 20;
+const VISIBLE_RANGE = 3; // render positions -3..+3 (7 cards visible)
 
 const testimonialImages = [
   '/images/testimonials/client_male_1.png',
@@ -21,168 +23,10 @@ const testimonialImages = [
   '/images/testimonials/client_female_1.png',
 ];
 
-const testimonials = [
-  {
-    tempId: 0,
-    id: 0,
-    testimonial:
-      'Investing in their completed commercial project in Noida was the best decision. The footfall is amazing and the rental potential is excellent.',
-    by: 'Arjun, Commercial Investor',
-    imgSrc: testimonialImages[0],
-  },
-  {
-    tempId: 1,
-    id: 1,
-    testimonial:
-      "We shifted to our new flat last month. The construction quality is top-class and it's 100% Vastu compliant. Very happy with SVI Infra.",
-    by: 'Rohan, Homeowner',
-    imgSrc: testimonialImages[1],
-  },
-  {
-    tempId: 2,
-    id: 2,
-    testimonial:
-      "Possession was given exactly on time! Usually, builders delay a lot, but SVI Infra's completed projects are proof of their commitment.",
-    by: 'Priya, Resident',
-    imgSrc: testimonialImages[2],
-  },
-  {
-    tempId: 3,
-    id: 3,
-    testimonial:
-      'The location of their existing projects in Jaipur is prime. Perfect connectivity for daily commute and great neighborhood.',
-    by: 'Vikram, Real Estate Investor',
-    imgSrc: testimonialImages[3],
-  },
-  {
-    tempId: 4,
-    id: 4,
-    testimonial:
-      'Unki property management team bohot cooperative hai. Maintenance in the completed towers is excellent and hassle-free.',
-    by: 'Ananya, Business Owner',
-    imgSrc: testimonialImages[4],
-  },
-  {
-    tempId: 5,
-    id: 5,
-    testimonial:
-      'Visited their site in Noida. The society is fully secure and the amenities for kids are really good. Finalized our booking the same day.',
-    by: 'Karan, Property Buyer',
-    imgSrc: testimonialImages[5],
-  },
-  {
-    tempId: 6,
-    id: 6,
-    testimonial:
-      'Retail space in their completed project has given my shop a huge boost. Parking and security is totally tension-free.',
-    by: 'Amit, Retail Entrepreneur',
-    imgSrc: testimonialImages[6],
-  },
-  {
-    tempId: 7,
-    id: 7,
-    testimonial:
-      'I only trust SVI Infra for investment. Unke existing projects ki resale value aur demand hamesha market mein high rehti hai.',
-    by: 'Siddharth, Financial Analyst',
-    imgSrc: testimonialImages[7],
-  },
-  {
-    tempId: 8,
-    id: 8,
-    testimonial:
-      'My parents are really happy with the new apartment. Society temple nearby and a great park for their evening walks.',
-    by: 'Neha, Homeowner',
-    imgSrc: testimonialImages[8],
-  },
-  {
-    tempId: 9,
-    id: 9,
-    testimonial:
-      'The value growth in the Noida completed project has been outstanding. Definitely a great choice for NRI investors.',
-    by: 'Kritika, Asset Manager',
-    imgSrc: testimonialImages[9],
-  },
-  {
-    tempId: 10,
-    id: 10,
-    testimonial:
-      'SVI Infra literally delivers what they promise in the brochure. No hidden charges and super transparent booking process.',
-    by: 'Varun, Homeowner',
-    imgSrc: testimonialImages[0],
-  },
-  {
-    tempId: 11,
-    id: 11,
-    testimonial:
-      'Existing projects ki maintenance itni achi hai ki society abhi bhi brand new lagti hai. Very proactive facility team.',
-    by: 'Rahul, Community Resident',
-    imgSrc: testimonialImages[1],
-  },
-  {
-    tempId: 12,
-    id: 12,
-    testimonial:
-      'Leased an office space in their IT park. Electricity backup and internet connectivity is flawless. Great corporate vibe.',
-    by: 'Sneha, Startup Founder',
-    imgSrc: testimonialImages[2],
-  },
-  {
-    tempId: 13,
-    id: 13,
-    testimonial:
-      'Clubhouse and green area in their residential project is amazing. Weekend pe bahaar jaane ki zarurat hi nahi padti ab.',
-    by: 'Manish, Property Buyer',
-    imgSrc: testimonialImages[3],
-  },
-  {
-    tempId: 14,
-    id: 14,
-    testimonial:
-      "SVI Infra's completed commercial hubs have the best corporate crowd. Very premium feel and the layout is very spacious.",
-    by: 'Deepika, Corporate Client',
-    imgSrc: testimonialImages[4],
-  },
-  {
-    tempId: 15,
-    id: 15,
-    testimonial:
-      "Property papers and registry process was handled so smoothly. Really appreciate their legal team's support.",
-    by: 'Rajesh, Portfolio Investor',
-    imgSrc: testimonialImages[5],
-  },
-  {
-    tempId: 16,
-    id: 16,
-    testimonial:
-      'The floor plan is very spacious. Natural light aur ventilation ka poora dhyan rakha gaya hai apartments mein.',
-    by: 'Kunal, Interior Designer',
-    imgSrc: testimonialImages[6],
-  },
-  {
-    tempId: 17,
-    id: 17,
-    testimonial:
-      "We checked multiple options in NCR, but SVI's existing projects offer the best value for money and lifestyle.",
-    by: 'Ankit, Prospective Buyer',
-    imgSrc: testimonialImages[7],
-  },
-  {
-    tempId: 18,
-    id: 18,
-    testimonial:
-      'Key handover ceremony was beautifully organized. Really felt like a VIP customer when taking possession.',
-    by: 'Simran, First-time Buyer',
-    imgSrc: testimonialImages[8],
-  },
-  {
-    tempId: 19,
-    id: 19,
-    testimonial:
-      "Trust is everything in real estate, and SVI's track record with completed projects speaks for itself. Ekdum genuine builder.",
-    by: 'Meera, Real Estate Consultant',
-    imgSrc: testimonialImages[9],
-  },
-];
+const testimonials = Array.from({ length: TOTAL }, (_, i) => ({
+  id: i % 10,
+  imgSrc: testimonialImages[i % 10],
+}));
 
 interface TestimonialCardProps {
   position: number;
@@ -237,10 +81,12 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         className="dark:bg-brand-dark-bg relative mb-4 h-14 w-12 bg-gray-100"
         style={{ boxShadow: '3px 3px 0px var(--color-brand-bg)' }}
       >
-        <img
+        <Image
           src={testimonial.imgSrc}
           alt={`${t(`list.t${testimonial.id}.by`).split(',')[0]}`}
-          className="h-full w-full object-cover object-top grayscale transition-all duration-300 hover:grayscale-0"
+          fill
+          sizes="48px"
+          className="object-cover object-top grayscale transition-all duration-300 hover:grayscale-0"
         />
       </div>
       <h3
@@ -249,7 +95,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           isCenter ? 'text-brand-navy' : 'text-brand-navy dark:text-gray-100'
         )}
       >
-        "{t(`list.t${testimonial.id}.text`)}"
+        &ldquo;{t(`list.t${testimonial.id}.text`)}&rdquo;
       </h3>
       <p
         className={cn(
@@ -266,44 +112,43 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
 export const StaggerTestimonials: React.FC = () => {
   const t = useTranslations('testimonials');
   const [cardSize, setCardSize] = useState(365);
-  const [testimonialsList, setTestimonialsList] = useState(testimonials);
+  const [rotationOffset, setRotationOffset] = useState(0);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const autoPlayRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
 
-  const handleMove = (steps: number) => {
-    const newList = [...testimonialsList];
-    if (steps > 0) {
-      for (let i = steps; i > 0; i--) {
-        const item = newList.shift();
-        if (!item) return;
-        newList.push({ ...item, tempId: Math.random() });
-      }
-    } else {
-      for (let i = steps; i < 0; i++) {
-        const item = newList.pop();
-        if (!item) return;
-        newList.unshift({ ...item, tempId: Math.random() });
-      }
-    }
-    setTestimonialsList(newList);
-  };
+  // Check prefers-reduced-motion on mount
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
+    mq.addEventListener('change', handler);
+    return () => mq.removeEventListener('change', handler);
+  }, []);
+
+  const handleMove = useCallback((steps: number) => {
+    setRotationOffset((prev) => (prev + steps + TOTAL) % TOTAL);
+  }, []);
 
   useEffect(() => {
     const updateSize = () => {
       const { matches } = window.matchMedia('(min-width: 640px)');
       setCardSize(matches ? 365 : 290);
     };
-
     updateSize();
     window.addEventListener('resize', updateSize);
     return () => window.removeEventListener('resize', updateSize);
   }, []);
 
-  // Auto-play functionality
+  // Auto-play — skip when user prefers reduced motion
   useEffect(() => {
-    const interval = setInterval(() => {
-      handleMove(1);
+    if (reducedMotion) return;
+    autoPlayRef.current = setInterval(() => {
+      setRotationOffset((prev) => (prev + 1 + TOTAL) % TOTAL);
     }, 3000);
-    return () => clearInterval(interval);
-  }, [testimonialsList]);
+    return () => clearInterval(autoPlayRef.current);
+  }, [reducedMotion]);
+
+  const centerOffset = TOTAL % 2 === 0 ? TOTAL / 2 : (TOTAL - 1) / 2;
 
   return (
     <section className="bg-brand-bg dark:bg-brand-dark-bg relative overflow-hidden py-24">
@@ -314,14 +159,17 @@ export const StaggerTestimonials: React.FC = () => {
         <p className="mx-auto max-w-2xl text-gray-600 dark:text-gray-400">{t('subtitle')}</p>
       </div>
       <div className="relative w-full overflow-hidden" style={{ height: 600 }}>
-        {testimonialsList.map((testimonial, index) => {
-          const position =
-            testimonialsList.length % 2
-              ? index - (testimonialsList.length + 1) / 2
-              : index - testimonialsList.length / 2;
+        {testimonials.map((testimonial, index) => {
+          // Compute position using rotation offset (stable keys, no array mutations)
+          const visualIndex = (index - rotationOffset + TOTAL) % TOTAL;
+          const position = visualIndex - centerOffset;
+
+          // Only render cards in the visible window — 7 out of 20
+          if (Math.abs(position) > VISIBLE_RANGE) return null;
+
           return (
             <TestimonialCard
-              key={testimonial.tempId}
+              key={index}
               testimonial={testimonial}
               handleMove={handleMove}
               position={position}

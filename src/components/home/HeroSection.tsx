@@ -19,7 +19,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
   const heroRef = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
 
-  const smoothScroll = useSpring(scrollYProgress, { stiffness: 60, damping: 20, restDelta: 0.001 });
+  const smoothScroll = useSpring(scrollYProgress, { stiffness: 60, damping: 20, restDelta: 0.01 });
   const backgroundY = useTransform(smoothScroll, [0, 1], ['0%', '50%']);
   const heroOpacity = useTransform(smoothScroll, [0, 0.8], [1, 0]);
   const heroScale = useTransform(smoothScroll, [1, 0], [1, 1.05]);
