@@ -2,13 +2,13 @@
 
 import { useLocale, useTranslations } from 'next-intl';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, Calendar, User, Clock } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { BLOG_POST_CARDS } from '@/src/lib/blog';
 import AnimatedSection, {
   StaggerContainer,
   StaggerItem,
 } from '@/src/components/ui/AnimatedSection';
+import BlogCard from './BlogCard';
 
 const CATEGORY_COLORS: Record<string, string> = {
   'Investment Tips': 'from-emerald-500 to-teal-600',
@@ -71,88 +71,13 @@ export default function HomeBlogs() {
 
         {/* Blogs grid */}
         <StaggerContainer className="grid grid-cols-1 gap-8 md:grid-cols-3">
-          {latestPosts.map((post, idx) => {
-            const title = isHindi && post.titleHi ? post.titleHi : post.title;
-            const excerpt = isHindi && post.excerptHi ? post.excerptHi : post.excerpt;
+          {latestPosts.map((post) => {
             const category = isHindi && post.categoryHi ? post.categoryHi : post.category;
-            const readTime = isHindi && post.readTimeHi ? post.readTimeHi : post.readTime;
             const gradient = CATEGORY_COLORS[category] || 'from-brand-gold to-amber-600';
 
             return (
               <StaggerItem key={post.slug}>
-                <article className="blog-card-glow group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200/60 bg-white shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:border-gray-700/60 dark:bg-gray-900">
-                  <Link
-                    href={`/${locale}/blog/${post.slug}`}
-                    className="relative block overflow-hidden"
-                  >
-                    <div className="relative aspect-[16/10] w-full overflow-hidden">
-                      <Image
-                        src={post.image}
-                        alt={title}
-                        fill
-                        sizes="(max-width: 768px) 100vw, 33vw"
-                        className="object-cover transition-all duration-700 group-hover:scale-110"
-                        quality={85}
-                      />
-                    </div>
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-                    <div className="absolute top-4 left-4 z-10">
-                      <span
-                        className={`inline-block rounded-full bg-gradient-to-r px-3 py-1 text-[10px] font-bold tracking-wider text-white uppercase shadow-md ${gradient}`}
-                      >
-                        {category}
-                      </span>
-                    </div>
-                    <div className="absolute right-4 bottom-4 z-10">
-                      <span className="inline-flex items-center gap-1 rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-semibold text-gray-700 shadow-sm backdrop-blur-sm dark:bg-gray-900/90 dark:text-gray-300">
-                        <Clock size={10} />
-                        {readTime}
-                      </span>
-                    </div>
-                  </Link>
-
-                  <div className="flex flex-1 flex-col p-6">
-                    <div className="mb-3 flex items-center gap-3 text-[10px] text-gray-400 dark:text-gray-500">
-                      <span className="flex items-center gap-1">
-                        <Calendar size={11} />
-                        {new Date(post.date).toLocaleDateString(isHindi ? 'hi-IN' : 'en-IN', {
-                          day: 'numeric',
-                          month: 'short',
-                          year: 'numeric',
-                        })}
-                      </span>
-                      <span className="h-0.5 w-0.5 rounded-full bg-gray-300" />
-                      <span className="flex items-center gap-1">
-                        <User size={11} />
-                        {post.author}
-                      </span>
-                    </div>
-
-                    <h3 className="text-brand-navy group-hover:text-brand-gold mb-3 line-clamp-2 font-serif text-lg leading-snug transition-colors duration-300 dark:text-gray-100">
-                      <Link href={`/${locale}/blog/${post.slug}`}>{title}</Link>
-                    </h3>
-
-                    <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
-                      {excerpt}
-                    </p>
-
-                    <div className="mt-auto">
-                      <Link
-                        href={`/${locale}/blog/${post.slug}`}
-                        className="group/link text-brand-gold hover:text-brand-navy inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase transition-colors dark:hover:text-gray-200"
-                      >
-                        <span className="relative">
-                          {isHindi ? 'पढ़ें' : 'Read More'}
-                          <span className="bg-brand-gold/30 absolute -bottom-0.5 left-0 h-px w-0 transition-all duration-300 group-hover/link:w-full" />
-                        </span>
-                        <ArrowRight
-                          size={13}
-                          className="transition-transform group-hover/link:translate-x-1"
-                        />
-                      </Link>
-                    </div>
-                  </div>
-                </article>
+                <BlogCard post={post} locale={locale} isHindi={isHindi} gradient={gradient} />
               </StaggerItem>
             );
           })}

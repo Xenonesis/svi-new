@@ -3,9 +3,10 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ArrowRight, Filter, ShieldCheck, Check } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Check } from 'lucide-react';
 import AnimatedSection, { StaggerContainer } from '@/src/components/ui/AnimatedSection';
 import ProjectCard from './ProjectCard';
+import ProjectFilterTabs from './ProjectFilterTabs';
 
 const ALL_PROJECTS = [
   {
@@ -57,29 +58,7 @@ export default function ProjectsSection() {
             </h2>
           </AnimatedSection>
 
-          {/* Interactive Category Filter Tabs */}
-          <AnimatedSection type="fadeRight">
-            <div className="flex flex-wrap items-center gap-2">
-              {[
-                { id: 'all', label: 'All Projects' },
-                { id: 'plots', label: 'JDA Approved Plots' },
-                { id: 'townships', label: 'Gated Townships' },
-                { id: 'commercial', label: 'Commercial Hubs' },
-              ].map((tab) => (
-                <button
-                  key={tab.id}
-                  onClick={() => setActiveCategory(tab.id)}
-                  className={`rounded-full border px-4 py-2 text-xs font-semibold transition-all duration-300 ${
-                    activeCategory === tab.id
-                      ? 'bg-brand-gold border-brand-gold text-brand-navy scale-105 shadow-md'
-                      : 'hover:border-brand-gold/50 border-gray-200 text-gray-600 hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800'
-                  }`}
-                >
-                  {tab.label}
-                </button>
-              ))}
-            </div>
-          </AnimatedSection>
+          <ProjectFilterTabs activeCategory={activeCategory} onCategoryChange={setActiveCategory} />
         </div>
 
         <StaggerContainer className="grid grid-cols-1 gap-8 md:grid-cols-3">
