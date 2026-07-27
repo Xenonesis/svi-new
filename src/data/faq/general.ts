@@ -95,7 +95,7 @@ export const PROJECT_FAQS: FAQItem[] = [
     category: 'Project-Specific',
     question: 'Are all your projects government approved?',
     answer:
-      'Yes, all our projects undergo rigorous legal and technical due diligence and have the necessary approvals from local development authorities like JDA, RERA, and municipal corporations.',
+      'Yes, all our projects undergo rigorous legal and technical due diligence and have the necessary approvals from local development authorities like JDA and municipal corporations.',
   },
   {
     category: 'Project-Specific',
@@ -144,9 +144,9 @@ export const LEGAL_FAQS: FAQItem[] = [
   },
   {
     category: 'Legal & Compliance',
-    question: 'Is SVI Infra RERA registered?',
+    question: 'Is SVI Infra JDA approved?',
     answer:
-      'Yes, all our eligible projects are registered with the Real Estate Regulatory Authority (RERA). You can verify our registration details on the respective state RERA websites.',
+      'Yes, all our eligible projects are approved by the Jaipur Development Authority (JDA). We hold clear JDA Patta titles and all necessary approvals from local development authorities, ensuring full legal compliance and transparent documentation.',
   },
   {
     category: 'Legal & Compliance',

@@ -227,10 +227,10 @@ export default function PropertyComparisonModal() {
                         ))}
                     </tr>
 
-                    {/* RERA Approved */}
+                    {/* JDA Approved */}
                     <tr>
                       <td className="py-4 pr-4 font-semibold text-gray-900 dark:text-white">
-                        RERA Approved
+                        JDA Approved
                       </td>
                       {compareList.map((project) => {
                         const extra = PROJECT_EXTRA_DETAILS[project.id];

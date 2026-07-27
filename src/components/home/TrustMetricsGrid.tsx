@@ -5,7 +5,7 @@ import { ShieldCheck, Award, Building2, Landmark } from 'lucide-react';
 const TRUST_METRICS = [
   {
     icon: ShieldCheck,
-    title: 'RERA Registered',
+    title: 'JDA Approved',
     desc: '100% compliant projects & clear land titles',
   },
   { icon: Landmark, title: 'Bank Loan Approval', desc: 'Up to 80-90% instant land & home loans' },

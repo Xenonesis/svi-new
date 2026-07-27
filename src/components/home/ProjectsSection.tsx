@@ -13,21 +13,18 @@ const ALL_PROJECTS = [
     key: 'shyamAangan',
     img: '/images/project1.png',
     category: 'plots',
-    rera: 'RAJ/P/2024/1102',
     startingPrice: '₹ 15 Lakhs*',
   },
   {
     key: 'shivaniVatika',
     img: '/images/project2.png',
     category: 'townships',
-    rera: 'RAJ/P/2024/1105',
     startingPrice: '₹ 22 Lakhs*',
   },
   {
     key: 'shreeShyamResidency',
     img: '/images/hero1.png',
     category: 'commercial',
-    rera: 'RAJ/P/2024/1109',
     startingPrice: '₹ 35 Lakhs*',
   },
 ] as const;
@@ -78,7 +75,7 @@ export default function ProjectsSection() {
                 />
                 <div className="bg-brand-navy/90 text-brand-gold border-brand-gold/30 absolute top-4 left-4 z-20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-semibold backdrop-blur-md">
                   <ShieldCheck size={12} />
-                  <span>RERA: {project.rera}</span>
+                  <span>JDA Approved</span>
                 </div>
               </div>
             );
