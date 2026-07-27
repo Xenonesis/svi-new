@@ -1,7 +1,10 @@
 'use client';
+
+import { useState } from 'react';
 import { motion, MotionValue } from 'motion/react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { ArrowRight, Search, MapPin, Building, Banknote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 
 interface HeroContentProps {
@@ -10,13 +13,23 @@ interface HeroContentProps {
 
 export default function HeroContent({ heroOpacity }: HeroContentProps) {
   const t = useTranslations('hero');
+  const router = useRouter();
+
+  const [location, setLocation] = useState('all');
+  const [propertyType, setPropertyType] = useState('all');
+  const [budget, setBudget] = useState('all');
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    router.push(`/projects/current?location=${location}&type=${propertyType}&budget=${budget}`);
+  };
 
   return (
     <motion.div
       className="z-30 container mx-auto flex w-full flex-col items-start px-4 text-left drop-shadow-2xl sm:px-8 md:px-16"
       style={{ opacity: heroOpacity }}
     >
-      <div className="max-w-3xl">
+      <div className="max-w-4xl">
         <span className="text-brand-gold animate-hero-1 mb-4 inline-block text-xs font-bold tracking-[0.2em] uppercase opacity-90 sm:mb-8 sm:text-base sm:tracking-[0.3em]">
           {t('badge')}
         </span>
@@ -28,18 +41,18 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           </span>
         </h1>
 
-        <p className="animate-hero-3 mb-8 max-w-xl text-sm leading-relaxed font-light text-white/80 sm:mb-12 sm:text-base md:text-xl">
+        <p className="animate-hero-3 mb-8 max-w-xl text-sm leading-relaxed font-light text-white/80 sm:mb-10 sm:text-base md:text-xl">
           {t('subtitle')}
         </p>
 
-        <div className="animate-hero-4 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+        <div className="animate-hero-4 mb-10 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
           <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
             <Link
               href="/projects/current"
               onClick={() => {
                 import('@vercel/analytics').then(({ track }) => track('hero_cta_click'));
               }}
-              className="bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase transition-colors hover:bg-white"
+              className="bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase shadow-lg transition-colors hover:bg-white"
             >
               {t('cta')}
             </Link>
@@ -57,6 +70,98 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
             />
           </Link>
         </div>
+
+        {/* Quick Search Widget */}
+        <form
+          onSubmit={handleSearch}
+          className="bg-brand-navy/85 border-brand-gold/40 grid w-full grid-cols-1 gap-3 rounded-2xl border p-4 text-white shadow-2xl backdrop-blur-xl sm:grid-cols-3 md:p-5 lg:grid-cols-4"
+        >
+          {/* Location Dropdown */}
+          <div className="flex flex-col gap-1">
+            <label className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase">
+              <MapPin size={12} /> Location
+            </label>
+            <select
+              value={location}
+              onChange={(e) => setLocation(e.target.value)}
+              className="focus:border-brand-gold rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs text-white outline-none"
+            >
+              <option value="all" className="text-gray-900">
+                All Locations
+              </option>
+              <option value="jaipur" className="text-gray-900">
+                Jaipur - Ajmer Highway
+              </option>
+              <option value="phulera" className="text-gray-900">
+                Phulera Smart City
+              </option>
+              <option value="noida" className="text-gray-900">
+                Noida Express
+              </option>
+            </select>
+          </div>
+
+          {/* Type Dropdown */}
+          <div className="flex flex-col gap-1">
+            <label className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase">
+              <Building size={12} /> Property Type
+            </label>
+            <select
+              value={propertyType}
+              onChange={(e) => setPropertyType(e.target.value)}
+              className="focus:border-brand-gold rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs text-white outline-none"
+            >
+              <option value="all" className="text-gray-900">
+                All Categories
+              </option>
+              <option value="plots" className="text-gray-900">
+                JDA Approved Plots
+              </option>
+              <option value="townships" className="text-gray-900">
+                Gated Townships
+              </option>
+              <option value="commercial" className="text-gray-900">
+                Commercial Hubs
+              </option>
+            </select>
+          </div>
+
+          {/* Budget Dropdown */}
+          <div className="flex flex-col gap-1">
+            <label className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase">
+              <Banknote size={12} /> Budget Range
+            </label>
+            <select
+              value={budget}
+              onChange={(e) => setBudget(e.target.value)}
+              className="focus:border-brand-gold rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs text-white outline-none"
+            >
+              <option value="all" className="text-gray-900">
+                Any Budget
+              </option>
+              <option value="under25" className="text-gray-900">
+                Under ₹ 25 Lakhs
+              </option>
+              <option value="25to50" className="text-gray-900">
+                ₹ 25L - ₹ 50 Lakhs
+              </option>
+              <option value="50plus" className="text-gray-900">
+                ₹ 50 Lakhs+
+              </option>
+            </select>
+          </div>
+
+          {/* Submit Button */}
+          <div className="flex items-end">
+            <button
+              type="submit"
+              className="bg-brand-gold text-brand-navy flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-xs font-bold tracking-wider uppercase shadow-md transition-all hover:bg-white"
+            >
+              <Search size={14} />
+              <span>Search</span>
+            </button>
+          </div>
+        </form>
       </div>
     </motion.div>
   );

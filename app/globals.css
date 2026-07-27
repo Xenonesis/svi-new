@@ -17,6 +17,8 @@
   /* Dark mode specific brand colors */
   --color-brand-dark-bg: #0b0c10;
   --color-brand-dark-surface: #14151a;
+  --color-brand-dark-card: #141824;
+  --color-brand-dark-card-hover: #1e2334;
   --color-brand-dark-border: #262833;
 
   --color-gray-900: #111827;

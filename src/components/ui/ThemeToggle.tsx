@@ -29,10 +29,18 @@ export function ThemeToggle({
   const variantClass =
     variant === 'desktop' ? (isHomeTransparent ? desktopTransparent : desktopBase) : mobileBase;
 
+  const getThemeLabel = () => {
+    if (!mounted) return 'Toggle Theme';
+    if (theme === 'dark') return 'Dark Mode (Click for System)';
+    if (theme === 'light') return 'Light Mode (Click for Dark)';
+    return 'System Mode (Click for Light)';
+  };
+
   return (
     <button
       onClick={onToggle}
-      className={`flex items-center justify-center rounded-full border p-2 transition-all duration-300 hover:shadow-sm ${variantClass}`}
+      className={`group relative flex items-center justify-center rounded-full border p-2 transition-all duration-300 hover:shadow-sm ${variantClass}`}
+      title={getThemeLabel()}
       aria-label={
         mounted
           ? theme === 'dark'
@@ -47,17 +55,17 @@ export function ThemeToggle({
         theme === 'dark' ? (
           <Sun
             size={variant === 'desktop' ? 16 : 15}
-            className="transition-transform duration-500 hover:rotate-45"
+            className="text-amber-400 transition-transform duration-500 hover:rotate-90"
           />
         ) : theme === 'light' ? (
           <Moon
             size={variant === 'desktop' ? 16 : 15}
-            className="transition-transform duration-500 hover:-rotate-12"
+            className="text-slate-700 transition-transform duration-500 hover:-rotate-12 dark:text-slate-200"
           />
         ) : (
           <Monitor
             size={variant === 'desktop' ? 16 : 15}
-            className="transition-transform duration-500 hover:scale-105"
+            className="text-brand-gold transition-transform duration-500 hover:scale-110"
           />
         )
       ) : (
