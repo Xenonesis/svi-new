@@ -8,7 +8,11 @@ const TRUST_METRICS = [
     title: 'JDA Approved',
     desc: '100% compliant projects & clear land titles',
   },
-  { icon: Landmark, title: 'Bank Loan Approval', desc: 'Up to 80-90% instant land & home loans' },
+  {
+    icon: Landmark,
+    title: 'Bank Loan Approval',
+    desc: 'Instant sanctions from SBI, HDFC, ICICI & more',
+  },
   {
     icon: Award,
     title: 'ISO 9001:2015',
