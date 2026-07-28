@@ -294,6 +294,19 @@ export default function RegistrationForm() {
     }
 
     setErrors(newErrors);
+    setAttempted(true);
+
+    // Scroll to the first error field
+    const errorFields = Object.keys(newErrors);
+    if (errorFields.length > 0) {
+      // Small delay to let React render errors
+      setTimeout(() => {
+        const firstErrorEl = document.getElementById(errorFields[0]);
+        firstErrorEl?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        firstErrorEl?.focus();
+      }, 100);
+    }
+
     return Object.keys(newErrors).length === 0;
   }, [formData, captchaValid, t]);
 
@@ -410,8 +423,39 @@ export default function RegistrationForm() {
             className="border border-gray-200 bg-white p-8 shadow-2xl md:p-12 dark:border-gray-700 dark:bg-gray-800"
             noValidate
           >
+            {attempted && Object.keys(errors).length > 0 && (
+              <div
+                className="mb-6 rounded border border-red-200 bg-red-50 p-4 dark:border-red-800 dark:bg-red-950"
+                role="alert"
+              >
+                <p className="flex items-center gap-1 text-sm font-medium text-red-800 dark:text-red-200">
+                  <AlertCircle size={16} />
+                  {Object.keys(errors).length} field{Object.keys(errors).length > 1 ? 's' : ''} need
+                  {Object.keys(errors).length === 1 ? 's' : ''} your attention
+                </p>
+                <ul className="mt-2 list-inside list-disc text-xs text-red-600 dark:text-red-300">
+                  {Object.entries(errors).map(([field, msg]) => (
+                    <li key={field}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          document
+                            .getElementById(field)
+                            ?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                          document.getElementById(field)?.focus();
+                        }}
+                        className="underline hover:no-underline"
+                      >
+                        {msg}
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
               <FormInput
+                attempted={attempted}
                 name="firstName"
                 label={t('firstName')}
                 value={formData.firstName}
@@ -421,6 +465,7 @@ export default function RegistrationForm() {
                 placeholder={t('firstNamePlaceholder')}
               />
               <FormInput
+                attempted={attempted}
                 name="lastName"
                 label={t('lastName')}
                 value={formData.lastName}
@@ -431,6 +476,7 @@ export default function RegistrationForm() {
               />
 
               <FormInput
+                attempted={attempted}
                 name="mobileNo"
                 label={t('mobileNo')}
                 value={formData.mobileNo}
@@ -440,6 +486,7 @@ export default function RegistrationForm() {
                 placeholder={t('mobilePlaceholder')}
               />
               <FormInput
+                attempted={attempted}
                 name="email"
                 label={t('email')}
                 value={formData.email}
@@ -450,6 +497,7 @@ export default function RegistrationForm() {
               />
 
               <FormInput
+                attempted={attempted}
                 name="soWoDo"
                 label={t('soWoDo')}
                 value={formData.soWoDo}
@@ -459,6 +507,7 @@ export default function RegistrationForm() {
                 placeholder={t('soWoDoPlaceholder')}
               />
               <FormInput
+                attempted={attempted}
                 name="dob"
                 label={t('dob')}
                 value={formData.dob}
@@ -487,6 +536,7 @@ export default function RegistrationForm() {
               />
 
               <FormInput
+                attempted={attempted}
                 name="aadharNumber"
                 label={t('aadharNumber')}
                 value={formData.aadharNumber}
@@ -496,6 +546,7 @@ export default function RegistrationForm() {
                 placeholder={t('aadharPlaceholder')}
               />
               <FormInput
+                attempted={attempted}
                 name="panNumber"
                 label={t('panNumber')}
                 value={formData.panNumber}
@@ -506,6 +557,7 @@ export default function RegistrationForm() {
               />
 
               <FormInput
+                attempted={attempted}
                 name="state"
                 label={t('state')}
                 value={formData.state}
@@ -515,6 +567,7 @@ export default function RegistrationForm() {
                 placeholder={t('statePlaceholder')}
               />
               <FormInput
+                attempted={attempted}
                 name="city"
                 label={t('city')}
                 value={formData.city}
@@ -525,6 +578,7 @@ export default function RegistrationForm() {
               />
 
               <FormInput
+                attempted={attempted}
                 name="address"
                 label={t('address')}
                 value={formData.address}
@@ -534,6 +588,7 @@ export default function RegistrationForm() {
                 placeholder={t('addressPlaceholder')}
               />
               <FormSelect
+                attempted={attempted}
                 name="advisorName"
                 label={t('advisorName')}
                 value={formData.advisorName}
@@ -544,6 +599,7 @@ export default function RegistrationForm() {
               />
 
               <FormSelect
+                attempted={attempted}
                 name="project"
                 label={t('selectProjects')}
                 value={formData.project}
@@ -553,6 +609,7 @@ export default function RegistrationForm() {
                 placeholder={t('projectPlaceholder')}
               />
               <FormSelect
+                attempted={attempted}
                 name="propertySize"
                 label={t('propertySize')}
                 value={formData.propertySize}
@@ -563,6 +620,7 @@ export default function RegistrationForm() {
               />
 
               <FormSelect
+                attempted={attempted}
                 name="propertyType"
                 label={t('propertyType')}
                 value={formData.propertyType}
@@ -572,6 +630,7 @@ export default function RegistrationForm() {
                 placeholder={t('typePlaceholder')}
               />
               <FormSelect
+                attempted={attempted}
                 name="plotPreference"
                 label={t('plotPreference')}
                 value={formData.plotPreference}
@@ -582,6 +641,7 @@ export default function RegistrationForm() {
               />
 
               <FormSelect
+                attempted={attempted}
                 name="paymentPlan"
                 label={t('paymentPlan')}
                 value={formData.paymentPlan}
@@ -591,6 +651,7 @@ export default function RegistrationForm() {
                 placeholder={t('planPlaceholder')}
               />
               <FormSelect
+                attempted={attempted}
                 name="paymentMode"
                 label={t('paymentMode')}
                 value={formData.paymentMode}
@@ -602,6 +663,7 @@ export default function RegistrationForm() {
 
               <div className="sm:col-span-2">
                 <FormInput
+                  attempted={attempted}
                   name="schemeAmount"
                   label={t('schemeAmount')}
                   value={formData.schemeAmount}
