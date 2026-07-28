@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { useTranslations } from 'next-intl';
 import { FormInput, FormSelect, FormFileUpload } from './FormElements';
 import Captcha from '@/src/components/Captcha';
+import { compressImage } from '@/src/lib/image-compression';
 import dynamic from 'next/dynamic';
 
 const RegistrationFAQ = dynamic(() => import('@/src/components/faq/RegistrationFAQ'), {
@@ -105,6 +106,7 @@ export default function RegistrationForm() {
   const [panCardFile, setPanCardFile] = useState<File | null>(null);
   const [captchaValid, setCaptchaValid] = useState(false);
   const [captchaError, setCaptchaError] = useState('');
+  const [compressing, setCompressing] = useState<'photo' | 'panCard' | null>(null);
   const [advisors, setAdvisors] = useState<string[]>([]);
   const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -289,14 +291,9 @@ export default function RegistrationForm() {
   );
 
   const handleFileChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>, type: 'photo' | 'panCard') => {
+    async (e: ChangeEvent<HTMLInputElement>, type: 'photo' | 'panCard') => {
       const file = e.target.files?.[0];
       if (!file) return;
-
-      if (file.size > 150 * 1024) {
-        setErrors((prev) => ({ ...prev, [type]: t('validation.fileSize') }));
-        return;
-      }
 
       const allowedTypes = [
         'image/jpeg',
@@ -307,6 +304,30 @@ export default function RegistrationForm() {
       ];
       if (!allowedTypes.includes(file.type)) {
         setErrors((prev) => ({ ...prev, [type]: t('validation.fileType') }));
+        return;
+      }
+
+      // Auto-compress oversized images
+      if (file.size > 150 * 1024 && file.type.startsWith('image/')) {
+        setCompressing(type);
+        try {
+          const compressed = await compressImage(file, 150 * 1024);
+          if (type === 'photo') setPhotoFile(compressed);
+          else setPanCardFile(compressed);
+          setErrors((prev) => ({ ...prev, [type]: '' }));
+        } catch {
+          // Compression failed — keep the original, show a warning
+          if (type === 'photo') setPhotoFile(file);
+          else setPanCardFile(file);
+          setErrors((prev) => ({ ...prev, [type]: t('validation.fileCompressFailed') }));
+        } finally {
+          setCompressing(null);
+        }
+        return;
+      }
+
+      if (file.size > 150 * 1024) {
+        setErrors((prev) => ({ ...prev, [type]: t('validation.fileSize') }));
         return;
       }
 
@@ -433,6 +454,7 @@ export default function RegistrationForm() {
                 errors={errors}
                 onFileChange={handleFileChange}
                 onRemoveFile={removeFile}
+                compressing={compressing === 'photo'}
               />
               <FormFileUpload
                 type="panCard"
@@ -441,6 +463,7 @@ export default function RegistrationForm() {
                 errors={errors}
                 onFileChange={handleFileChange}
                 onRemoveFile={removeFile}
+                compressing={compressing === 'panCard'}
               />
 
               <FormInput

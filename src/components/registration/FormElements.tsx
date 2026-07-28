@@ -136,6 +136,7 @@ interface FormFileUploadProps {
   errors: Record<string, string>;
   onFileChange: (e: React.ChangeEvent<HTMLInputElement>, type: 'photo' | 'panCard') => void;
   onRemoveFile: (type: 'photo' | 'panCard') => void;
+  compressing?: boolean;
 }
 
 export function FormFileUpload({
@@ -145,13 +146,33 @@ export function FormFileUpload({
   errors,
   onFileChange,
   onRemoveFile,
+  compressing,
 }: FormFileUploadProps) {
+  // Show a "Compressing..." state while client-side image compression runs
+  if (compressing) {
+    return (
+      <div className="space-y-2">
+        <label className={LABEL_CLASS}>{label}</label>
+        <div className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50/50 px-4 py-5 dark:border-gray-700 dark:bg-gray-900">
+          <div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-400 border-t-transparent"></div>
+          <span className="text-sm text-gray-500">
+            Compressing... Reducing file size automatically...
+          </span>
+        </div>
+      </div>
+    );
+  }
   return (
     <div className="space-y-2">
       <label className={LABEL_CLASS}>{label}</label>
       {file ? (
         <div className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50/50 px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
-          <span className="flex-1 truncate text-sm">{file.name}</span>
+          <span className="flex-1 truncate text-sm">
+            {file.name}
+            <span className="ml-2 text-[10px] text-gray-400">
+              ({(file.size / 1024).toFixed(0)} KB)
+            </span>
+          </span>
           <button
             type="button"
             onClick={() => onRemoveFile(type)}
@@ -174,7 +195,7 @@ export function FormFileUpload({
           </button>
         </div>
       ) : (
-        <label className="hover:border-brand-gold hover:text-brand-gold flex cursor-pointer items-center gap-2 rounded border border-dashed border-gray-300 bg-gray-50/50 px-4 py-6 text-sm text-gray-400 transition-colors dark:border-gray-700 dark:bg-gray-900">
+        <label className="hover:border-brand-gold hover:text-brand-gold flex cursor-pointer flex-col items-center gap-1 rounded border border-dashed border-gray-300 bg-gray-50/50 px-4 py-5 text-sm text-gray-400 transition-colors dark:border-gray-700 dark:bg-gray-900">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="16"
@@ -191,6 +212,7 @@ export function FormFileUpload({
             <line x1="12" y1="3" x2="12" y2="15" />
           </svg>
           <span>Choose file</span>
+          <span className="text-[10px] text-gray-400">Photo or PDF under 150 KB</span>
           <input
             type="file"
             accept="image/*,application/pdf"
