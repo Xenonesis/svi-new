@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useEffect, useRef, useState, useCallback } from 'react';
-import maplibregl, { NavigationControl } from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   fetchNearbyPlaces,
@@ -308,7 +308,7 @@ export default function CompletedProjectsMap({ projects, onProjectClick }: Props
       zoom: 9,
     });
 
-    map.addControl(new NavigationControl(), 'top-right');
+    map.addControl(new maplibregl.NavigationControl(), 'top-right');
 
     map.on('load', () => {
       setMapLoaded(true);

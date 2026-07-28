@@ -94,26 +94,29 @@ vi.mock('@/src/lib/api/rateLimit', () => {
 
 import { POST } from '@/app/api/registration/route';
 
+const CSRF_TOKEN = 'test-csrf-token';
+
 function createMockRegistrationFormData(overrides: Record<string, string | File> = {}): FormData {
   const formData = new FormData();
+  formData.append('csrf', CSRF_TOKEN);
   formData.append('firstName', 'John');
   formData.append('lastName', 'Doe');
   formData.append('mobileNo', '9876543210');
   formData.append('email', 'john.doe@example.com');
   formData.append('soWoDo', 'S/O Jane Doe');
   formData.append('dob', '1995-05-15');
-  formData.append('aadharNumber', '123456789012');
+  formData.append('aadharNumber', '234567890123');
   formData.append('panNumber', 'ABCDE1234F');
   formData.append('state', 'State');
   formData.append('city', 'City');
   formData.append('address', '123 Main St');
   formData.append('advisorName', 'Advisor Name');
-  formData.append('project', 'Project Name');
-  formData.append('propertySize', '1200 sqft');
-  formData.append('propertyType', 'Plot');
-  formData.append('plotPreference', 'Corner');
-  formData.append('paymentPlan', 'Down Payment');
-  formData.append('paymentMode', 'Net Banking');
+  formData.append('project', 'luxury-farm-house');
+  formData.append('propertySize', '1000-1500');
+  formData.append('propertyType', 'residential-plot');
+  formData.append('plotPreference', 'corner');
+  formData.append('paymentPlan', '12-months');
+  formData.append('paymentMode', 'net-banking');
   formData.append('schemeAmount', '500000');
 
   Object.entries(overrides).forEach(([key, val]) => {
@@ -126,8 +129,9 @@ function createMockRegistrationFormData(overrides: Record<string, string | File>
 
 describe('POST /api/registration - Automatic Submission ID Generation', () => {
   beforeEach(() => {
-    vi.clearAllMocks();
+    vi.resetAllMocks();
     process.env.RESEND_API_KEY = 're_mock_key';
+    process.env.NEXT_PUBLIC_DISABLE_CAPTCHA = 'true';
   });
 
   it('should handle the base case of an empty database by assigning SVI2200 to the first user', async () => {
@@ -150,6 +154,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
     const req = new NextRequest('http://localhost/api/registration', {
       method: 'POST',
       body: formData,
+      headers: { Cookie: 'csrf=' + CSRF_TOKEN },
     });
 
     const res = await POST(req);
@@ -185,6 +190,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
     const req = new NextRequest('http://localhost/api/registration', {
       method: 'POST',
       body: formData,
+      headers: { Cookie: 'csrf=' + CSRF_TOKEN },
     });
 
     const res = await POST(req);
@@ -217,6 +223,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
     const req = new NextRequest('http://localhost/api/registration', {
       method: 'POST',
       body: formData,
+      headers: { Cookie: 'csrf=' + CSRF_TOKEN },
     });
 
     const res = await POST(req);
@@ -257,6 +264,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
     const req = new NextRequest('http://localhost/api/registration', {
       method: 'POST',
       body: formData,
+      headers: { Cookie: 'csrf=' + CSRF_TOKEN },
     });
 
     const res = await POST(req);
@@ -290,6 +298,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
     const req = new NextRequest('http://localhost/api/registration', {
       method: 'POST',
       body: formData,
+      headers: { Cookie: 'csrf=' + CSRF_TOKEN },
     });
 
     const res = await POST(req);
@@ -311,6 +320,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
     const req = new NextRequest('http://localhost/api/registration', {
       method: 'POST',
       body: formData,
+      headers: { Cookie: 'csrf=' + CSRF_TOKEN },
     });
 
     const res = await POST(req);
@@ -343,6 +353,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
       const req = new NextRequest('http://localhost/api/registration', {
         method: 'POST',
         body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
       });
 
       const res = await POST(req);
@@ -379,13 +390,14 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
 
       mockSend.mockResolvedValueOnce({ data: { id: 'email-sent-success-2' }, error: null });
 
-      // Missing or invalid applicant email
+      // Applicant email is valid (Zod-validated), so it routes to user with admin in bcc
       const formData = createMockRegistrationFormData({
-        email: 'invalid-email-format',
+        email: 'applicant@example.com',
       });
       const req = new NextRequest('http://localhost/api/registration', {
         method: 'POST',
         body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
       });
 
       const res = await POST(req);
@@ -394,10 +406,10 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
       const body = await res.json();
       expect(body.emailStatus.sent).toBe(true);
 
-      // Should route primary email "to" the admin email, and only copy the advisor in bcc (if advisor is present)
+      // Email routes to the applicant with admin in bcc
       expect(mockSend).toHaveBeenCalledWith(
         expect.objectContaining({
-          to: 'hr.sviinfrasolutions@gmail.com',
+          to: 'applicant@example.com',
         })
       );
     });
@@ -422,6 +434,7 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
       const req = new NextRequest('http://localhost/api/registration', {
         method: 'POST',
         body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
       });
 
       // Avoid long timeouts in tests by temporarily stubbing setTimeout
