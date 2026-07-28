@@ -12,6 +12,27 @@ export const INPUT_CLASS = (field: string, errors: Record<string, string>, attem
 
 export const LABEL_CLASS = 'text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase';
 
+interface SectionDividerProps {
+  label: string;
+}
+
+export function SectionDivider({ label }: SectionDividerProps) {
+  return (
+    <div className="sm:col-span-2">
+      <div className="relative py-4">
+        <div className="absolute inset-0 flex items-center" aria-hidden="true">
+          <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+        </div>
+        <div className="relative flex justify-start">
+          <span className="bg-white pr-4 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase dark:bg-gray-800">
+            {label}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 interface FieldErrorProps {
   field: string;
   errors: Record<string, string>;
@@ -36,6 +57,8 @@ interface FormInputProps {
   ) => void;
   type?: string;
   placeholder?: string;
+  hint?: string;
+  maxLen?: number;
   attempted?: boolean;
 }
 
@@ -47,14 +70,25 @@ export function FormInput({
   onChange,
   type = 'text',
   placeholder = '',
+  hint,
+  maxLen,
   attempted,
 }: FormInputProps) {
   const errorId = `${name}-error`;
   return (
     <div className="space-y-2">
-      <label htmlFor={name} className={LABEL_CLASS}>
-        {label} *
-      </label>
+      <div className="flex items-center justify-between">
+        <label htmlFor={name} className={LABEL_CLASS}>
+          {label} *
+        </label>
+        {maxLen && value.length > 0 && (
+          <span
+            className={`text-[10px] ${value.length >= maxLen ? 'font-medium text-green-600' : 'text-gray-400'}`}
+          >
+            {value.length}/{maxLen}
+          </span>
+        )}
+      </div>
       <input
         type={type}
         id={name}
@@ -63,9 +97,11 @@ export function FormInput({
         onChange={onChange}
         className={INPUT_CLASS(name, errors, attempted)}
         placeholder={placeholder}
+        maxLength={maxLen}
         aria-invalid={errors[name] ? 'true' : undefined}
         aria-describedby={errors[name] ? errorId : undefined}
       />
+      {hint && !errors[name] && <p className="text-[10px] text-gray-400">{hint}</p>}
       <FieldError field={name} errors={errors} />
     </div>
   );
@@ -181,17 +217,29 @@ export function FormFileUpload({
     <div className="space-y-2">
       <label className={LABEL_CLASS}>{label}</label>
       {file ? (
-        <div className="flex items-center gap-2 rounded border border-gray-200 bg-gray-50/50 px-4 py-3 dark:border-gray-700 dark:bg-gray-900">
-          <span className="flex-1 truncate text-sm">
-            {file.name}
-            <span className="ml-2 text-[10px] text-gray-400">
-              ({(file.size / 1024).toFixed(0)} KB)
-            </span>
-          </span>
+        <div className="flex items-center gap-3 rounded border border-gray-200 bg-gray-50/50 px-3 py-2 dark:border-gray-700 dark:bg-gray-900">
+          {file.type.startsWith('image/') && (
+            <img
+              src={URL.createObjectURL(file)}
+              alt="Preview"
+              className="h-12 w-12 rounded border border-gray-200 object-cover dark:border-gray-600"
+              onLoad={(e) => {
+                // Revoke old blob URL after load to free memory
+                const old = e.currentTarget.getAttribute('data-src');
+                if (old) URL.revokeObjectURL(old);
+                e.currentTarget.setAttribute('data-src', e.currentTarget.src);
+              }}
+            />
+          )}
+          <div className="flex-1 truncate">
+            <p className="truncate text-sm">{file.name}</p>
+            <p className="text-[10px] text-gray-400">{(file.size / 1024).toFixed(0)} KB</p>
+          </div>
           <button
             type="button"
             onClick={() => onRemoveFile(type)}
-            className="text-gray-400 hover:text-red-500"
+            className="shrink-0 rounded-full p-1 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-950"
+            aria-label="Remove file"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"

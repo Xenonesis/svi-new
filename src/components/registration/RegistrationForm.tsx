@@ -116,6 +116,7 @@ export default function RegistrationForm() {
   const [advisors, setAdvisors] = useState<string[]>([]);
   const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const [showReview, setShowReview] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [draftRestored, setDraftRestored] = useState(false);
   const [attempted, setAttempted] = useState(false);
@@ -200,6 +201,18 @@ export default function RegistrationForm() {
       setTimeout(() => setDraftRestored(false), 5000);
     }
   }, []);
+
+  // Warn before leaving if form has data
+  useEffect(() => {
+    const hasData = Object.values(formData).some((v) => v !== '');
+    if (!hasData) return;
+
+    const handler = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener('beforeunload', handler);
+    return () => window.removeEventListener('beforeunload', handler);
+  }, [formData]);
 
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
@@ -313,8 +326,19 @@ export default function RegistrationForm() {
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-      setFormData((prev) => ({ ...prev, [name]: value }));
-      saveFormDraft({ ...formData, [name]: value });
+
+      // Auto-format specific fields
+      let formatted = value;
+      if (name === 'panNumber') {
+        formatted = value.toUpperCase();
+      } else if (name === 'aadharNumber') {
+        formatted = value.replace(/[^0-9]/g, '');
+      } else if (name === 'mobileNo') {
+        formatted = value.replace(/[^0-9]/g, '');
+      }
+
+      setFormData((prev) => ({ ...prev, [name]: formatted }));
+      saveFormDraft({ ...formData, [name]: formatted });
       if (errors[name]) {
         setErrors((prev) => ({ ...prev, [name]: '' }));
       }
@@ -379,7 +403,8 @@ export default function RegistrationForm() {
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       if (!validateForm()) return;
-      setIsPaymentModalOpen(true);
+      setShowReview(true);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     },
     [validateForm]
   );
@@ -457,6 +482,7 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="firstName"
+                hint={t('firstNameHint')}
                 label={t('firstName')}
                 value={formData.firstName}
                 errors={errors}
@@ -467,6 +493,7 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="lastName"
+                hint={t('lastNameHint')}
                 label={t('lastName')}
                 value={formData.lastName}
                 errors={errors}
@@ -478,6 +505,8 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="mobileNo"
+                maxLen={10}
+                hint={t('mobileHint')}
                 label={t('mobileNo')}
                 value={formData.mobileNo}
                 errors={errors}
@@ -488,6 +517,7 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="email"
+                hint={t('emailHint')}
                 label={t('email')}
                 value={formData.email}
                 errors={errors}
@@ -499,6 +529,7 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="soWoDo"
+                hint={t('soWoDoHint')}
                 label={t('soWoDo')}
                 value={formData.soWoDo}
                 errors={errors}
@@ -515,6 +546,19 @@ export default function RegistrationForm() {
                 onChange={handleChange}
                 type="date"
               />
+
+              <div className="sm:col-span-2">
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+                  </div>
+                  <div className="relative flex justify-start">
+                    <span className="bg-white pr-4 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase dark:bg-gray-800">
+                      {t('sectionDocuments')}
+                    </span>
+                  </div>
+                </div>
+              </div>
 
               <FormFileUpload
                 type="photo"
@@ -538,6 +582,8 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="aadharNumber"
+                maxLen={12}
+                hint={t('aadharHint')}
                 label={t('aadharNumber')}
                 value={formData.aadharNumber}
                 errors={errors}
@@ -548,6 +594,8 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="panNumber"
+                maxLen={10}
+                hint={t('panHint')}
                 label={t('panNumber')}
                 value={formData.panNumber}
                 errors={errors}
@@ -556,9 +604,23 @@ export default function RegistrationForm() {
                 placeholder={t('panPlaceholder')}
               />
 
+              <div className="sm:col-span-2">
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+                  </div>
+                  <div className="relative flex justify-start">
+                    <span className="bg-white pr-4 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase dark:bg-gray-800">
+                      {t('sectionAddress')}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
               <FormInput
                 attempted={attempted}
                 name="state"
+                hint={t('stateHint')}
                 label={t('state')}
                 value={formData.state}
                 errors={errors}
@@ -569,6 +631,7 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="city"
+                hint={t('cityHint')}
                 label={t('city')}
                 value={formData.city}
                 errors={errors}
@@ -580,6 +643,7 @@ export default function RegistrationForm() {
               <FormInput
                 attempted={attempted}
                 name="address"
+                hint={t('addressHint')}
                 label={t('address')}
                 value={formData.address}
                 errors={errors}
@@ -587,6 +651,18 @@ export default function RegistrationForm() {
                 type="text"
                 placeholder={t('addressPlaceholder')}
               />
+              <div className="sm:col-span-2">
+                <div className="relative py-4">
+                  <div className="absolute inset-0 flex items-center" aria-hidden="true">
+                    <div className="w-full border-t border-gray-200 dark:border-gray-700" />
+                  </div>
+                  <div className="relative flex justify-start">
+                    <span className="bg-white pr-4 text-[11px] font-bold tracking-[0.2em] text-gray-400 uppercase dark:bg-gray-800">
+                      {t('sectionProperty')}
+                    </span>
+                  </div>
+                </div>
+              </div>
               <FormSelect
                 attempted={attempted}
                 name="advisorName"
@@ -665,6 +741,7 @@ export default function RegistrationForm() {
                 <FormInput
                   attempted={attempted}
                   name="schemeAmount"
+                  hint={t('schemeAmountHint')}
                   label={t('schemeAmount')}
                   value={formData.schemeAmount}
                   errors={errors}
