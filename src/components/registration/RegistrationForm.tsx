@@ -1194,20 +1194,3 @@ export default function RegistrationForm() {
     </>
   );
 }
-
-function ReviewRow({
-  label,
-  value,
-  className = '',
-}: {
-  label: string;
-  value: string;
-  className?: string;
-}) {
-  return (
-    <div className={className}>
-      <span className="text-[11px] font-medium text-gray-400 uppercase">{label}</span>
-      <p className="mt-0.5 text-sm text-gray-800 dark:text-gray-200">{value || '—'}</p>
-    </div>
-  );
-}
