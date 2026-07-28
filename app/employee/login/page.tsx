@@ -211,6 +211,9 @@ export default function EmployeeLogin() {
               </div>
               <input
                 type="password"
+                minLength={10}
+                pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w]).{10,}"
+                title="Password must be at least 10 characters with uppercase, lowercase, number, and special character"
                 value={password}
                 onChange={(e) => {
                   setPassword(e.target.value);

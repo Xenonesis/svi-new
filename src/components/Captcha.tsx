@@ -15,6 +15,7 @@ function generateChallenge() {
 }
 
 export default function Captcha({ onValidate, error }: CaptchaProps) {
+  const [mounted, setMounted] = useState(false);
   const [challenge, setChallenge] = useState<{ a: number; b: number; answer: number } | null>(null);
   const [input, setInput] = useState('');
 
@@ -24,8 +25,8 @@ export default function Captcha({ onValidate, error }: CaptchaProps) {
     onValidate(false);
   }, [onValidate]);
 
-  // Generate challenge only on client mount to prevent hydration mismatch
   useEffect(() => {
+    setMounted(true);
     setChallenge(generateChallenge());
   }, []);
 
@@ -35,6 +36,26 @@ export default function Captcha({ onValidate, error }: CaptchaProps) {
     onValidate(isValid);
   }, [input, challenge, onValidate]);
 
+  // Before mount, render a static placeholder with <noscript> fallback.
+  // The input+button are hidden from React's hydration reconciler to
+  // avoid the disabled-attribute mismatch in React 19 SSR.
+  if (!mounted) {
+    return (
+      <div className="space-y-2">
+        <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
+          Verification *
+        </label>
+        <div className="flex items-center gap-3">
+          <div className="flex min-h-[46px] min-w-[90px] items-center justify-center gap-2 rounded border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm font-semibold select-none dark:border-gray-700 dark:bg-gray-900">
+            <span className="text-xs text-gray-400">...</span>
+          </div>
+          <div className="h-[46px] w-24 rounded border border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-900" />
+          <div className="h-10 w-10 rounded border border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-900" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-2">
       <label className="text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
@@ -42,17 +63,11 @@ export default function Captcha({ onValidate, error }: CaptchaProps) {
       </label>
       <div className="flex items-center gap-3">
         <div className="flex min-h-[46px] min-w-[90px] items-center justify-center gap-2 rounded border border-gray-200 bg-gray-50/50 px-4 py-3 text-sm font-semibold select-none dark:border-gray-700 dark:bg-gray-900">
-          {challenge ? (
-            <>
-              <span>{challenge.a}</span>
-              <span className="text-gray-400">+</span>
-              <span>{challenge.b}</span>
-              <span className="text-gray-400">=</span>
-              <span className="text-gray-400">?</span>
-            </>
-          ) : (
-            <span className="text-xs text-gray-400">...</span>
-          )}
+          <span>{challenge!.a}</span>
+          <span className="text-gray-400">+</span>
+          <span>{challenge!.b}</span>
+          <span className="text-gray-400">=</span>
+          <span className="text-gray-400">?</span>
         </div>
         <input
           type="number"
@@ -65,14 +80,12 @@ export default function Captcha({ onValidate, error }: CaptchaProps) {
           }`}
           placeholder="?"
           required
-          disabled={!challenge}
         />
         <button
           type="button"
           onClick={refresh}
           className="hover:border-brand-gold hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded border border-gray-200 text-gray-400 transition-colors dark:border-gray-700"
           aria-label="Refresh captcha"
-          disabled={!challenge}
         >
           <RefreshCw size={16} />
         </button>

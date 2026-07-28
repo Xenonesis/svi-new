@@ -3,6 +3,8 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { RegistrationSchema } from '@/src/lib/schemas/registration';
+import { verifyHCaptcha } from '@/src/lib/hcaptcha';
 
 export const runtime = 'edge';
 
@@ -78,46 +80,84 @@ export async function POST(request: NextRequest) {
       throw AppError.badRequest('Invalid form data');
     }
 
-    const firstName = formData.get('firstName') as string;
-    const lastName = formData.get('lastName') as string;
-    const mobileNo = formData.get('mobileNo') as string;
-    const email = formData.get('email') as string;
-    const soWoDo = formData.get('soWoDo') as string;
-    const dob = formData.get('dob') as string;
-    const aadharNumber = formData.get('aadharNumber') as string;
-    const panNumber = formData.get('panNumber') as string;
-    const state = formData.get('state') as string;
-    const city = formData.get('city') as string;
-    const address = formData.get('address') as string;
-    const advisorName = formData.get('advisorName') as string;
-    const project = formData.get('project') as string;
-    const propertySize = formData.get('propertySize') as string;
-    const propertyType = formData.get('propertyType') as string;
-    const plotPreference = formData.get('plotPreference') as string;
-    const paymentPlan = formData.get('paymentPlan') as string;
-    const paymentMode = formData.get('paymentMode') as string;
-    const schemeAmount = formData.get('schemeAmount') as string;
+    // CSRF check
+    const cookieToken = request.cookies.get('csrf')?.value;
+    const formToken = formData.get('csrf') as string;
+    if (!cookieToken || !formToken || cookieToken !== formToken) {
+      return NextResponse.json({ error: 'CSRF check failed' }, { status: 403 });
+    }
 
-    if (
-      !firstName ||
-      !mobileNo ||
-      !email ||
-      !soWoDo ||
-      !dob ||
-      !aadharNumber ||
-      !state ||
-      !city ||
-      !address ||
-      !advisorName ||
-      !project ||
-      !propertySize ||
-      !propertyType ||
-      !plotPreference ||
-      !paymentPlan ||
-      !paymentMode ||
-      !schemeAmount
-    ) {
-      throw AppError.badRequest('All required fields must be filled');
+    // Build validation object from form data
+    const fieldKeys = [
+      'firstName',
+      'lastName',
+      'mobileNo',
+      'email',
+      'soWoDo',
+      'dob',
+      'aadharNumber',
+      'panNumber',
+      'state',
+      'city',
+      'address',
+      'advisorName',
+      'project',
+      'propertySize',
+      'propertyType',
+      'plotPreference',
+      'paymentPlan',
+      'paymentMode',
+      'schemeAmount',
+      'captchaToken',
+    ] as const;
+    const raw: Record<string, string> = {};
+    for (const key of fieldKeys) {
+      const val = formData.get(key);
+      raw[key] = typeof val === 'string' ? val : '';
+    }
+
+    // Zod server-side validation
+    const parsed = RegistrationSchema.safeParse(raw);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: 'Invalid form data', issues: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    const {
+      firstName,
+      lastName,
+      mobileNo,
+      email,
+      soWoDo,
+      dob,
+      aadharNumber,
+      panNumber,
+      state,
+      city,
+      address,
+      advisorName,
+      project,
+      propertySize,
+      propertyType,
+      plotPreference,
+      paymentPlan,
+      paymentMode,
+      schemeAmount,
+    } = parsed.data;
+
+    // hCaptcha verification (if enabled)
+    if (process.env.NEXT_PUBLIC_DISABLE_CAPTCHA !== 'true') {
+      const ip =
+        request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
+      const captchaResult = await verifyHCaptcha(parsed.data.captchaToken, ip);
+      if (!captchaResult.success) {
+        return NextResponse.json(
+          { error: 'Captcha verification failed', detail: captchaResult.error },
+          { status: 400 }
+        );
+      }
     }
 
     const photoFile = formData.get('photo') as File | null;
@@ -416,7 +456,7 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET /api/registration — retrieve active advisor names
+// GET /api/registration — retrieve active advisor names (used by registration form)
 export async function GET(request: NextRequest) {
   try {
     const { data: settingData, error: settingError } = await supabaseAdmin

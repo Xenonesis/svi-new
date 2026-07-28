@@ -1,0 +1,5 @@
+[auth.rate_limit]
+email_sent       = "1/2min"   # OTP / password reset
+token_refresh    = "30/min"
+sign_in_sign_ups = "10/min"
+verify_otp       = "10/min"

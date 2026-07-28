@@ -342,12 +342,19 @@ export default function RegistrationForm() {
       if (photoFile) body.append('photo', photoFile);
       if (panCardFile) body.append('panCard', panCardFile);
 
+      // CSRF token from cookie
+      const csrfMatch = document.cookie.match(/(?:^|;\s*)csrf=([^;]+)/);
+      if (csrfMatch) body.append('csrf', decodeURIComponent(csrfMatch[1]));
+
       const res = await fetch('/api/registration', { method: 'POST', body });
-      if (!res.ok) throw new Error('Submission failed');
+      if (!res.ok) {
+        const errData = await res.json().catch(() => ({}));
+        throw new Error(errData.error || 'Submission failed');
+      }
       setIsPaymentModalOpen(false);
       router.push('/thank-you?registered=1');
     } catch (err) {
-      setSubmitError(t('validation.submitError'));
+      setSubmitError(err instanceof Error ? err.message : t('validation.submitError'));
     } finally {
       setIsSubmitting(false);
     }
