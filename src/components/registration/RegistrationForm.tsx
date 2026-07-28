@@ -8,6 +8,12 @@ import { useTranslations } from 'next-intl';
 import { FormInput, FormSelect, FormFileUpload } from './FormElements';
 import Captcha from '@/src/components/Captcha';
 import { compressImage } from '@/src/lib/image-compression';
+import {
+  saveFormDraft,
+  loadFormDraft,
+  clearFormDraft,
+  getDraftAge,
+} from '@/src/lib/form-persistence';
 import dynamic from 'next/dynamic';
 
 const RegistrationFAQ = dynamic(() => import('@/src/components/faq/RegistrationFAQ'), {
@@ -111,6 +117,8 @@ export default function RegistrationForm() {
   const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+  const [draftRestored, setDraftRestored] = useState(false);
+  const [attempted, setAttempted] = useState(false);
 
   const propertySizes = [
     { value: '50-100', label: t('sizes.50-100') },
@@ -181,6 +189,16 @@ export default function RegistrationForm() {
     return () => {
       active = false;
     };
+  }, []);
+
+  // Restore form draft from localStorage on mount
+  useEffect(() => {
+    const draft = loadFormDraft();
+    if (draft && Object.values(draft).some((v) => v !== '')) {
+      setFormData((prev) => ({ ...prev, ...draft }));
+      setDraftRestored(true);
+      setTimeout(() => setDraftRestored(false), 5000);
+    }
   }, []);
 
   const validateForm = useCallback(() => {
@@ -283,11 +301,12 @@ export default function RegistrationForm() {
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
       setFormData((prev) => ({ ...prev, [name]: value }));
+      saveFormDraft({ ...formData, [name]: value });
       if (errors[name]) {
         setErrors((prev) => ({ ...prev, [name]: '' }));
       }
     },
-    [errors]
+    [errors, formData]
   );
 
   const handleFileChange = useCallback(
@@ -373,6 +392,7 @@ export default function RegistrationForm() {
         throw new Error(errData.error || 'Submission failed');
       }
       setIsPaymentModalOpen(false);
+      clearFormDraft();
       router.push('/thank-you?registered=1');
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : t('validation.submitError'));
@@ -598,6 +618,11 @@ export default function RegistrationForm() {
             </div>
 
             <div className="mt-8">
+              {draftRestored && (
+                <p className="mb-4 flex items-center gap-1 text-xs text-amber-600">
+                  <AlertCircle size={12} /> Draft recovered from your last session
+                </p>
+              )}
               {submitError && (
                 <p className="mb-4 flex items-center gap-1 text-xs text-red-500">
                   <AlertCircle size={12} /> {submitError}

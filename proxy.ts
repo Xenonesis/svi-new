@@ -9,25 +9,25 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
+  // Run intl middleware first so locale detection/redirect works
+  const response = intlMiddleware(request);
+
   // Set CSRF cookie for registration page
-  // The pathname check covers both default-locale and prefixed paths
   if (url.pathname.endsWith('/registration')) {
     const existing = request.cookies.get('csrf')?.value;
     if (!existing) {
       const token = randomBytes(24).toString('hex');
-      const response = NextResponse.next();
       response.cookies.set('csrf', token, {
         httpOnly: false,
         sameSite: 'lax',
-        secure: true,
+        secure: request.nextUrl.protocol === 'https:',
         path: '/',
         maxAge: 60 * 60, // 1 hour
       });
-      return response;
     }
   }
 
-  return intlMiddleware(request);
+  return response;
 }
 
 export const config = {

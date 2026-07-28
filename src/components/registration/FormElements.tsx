@@ -2,8 +2,13 @@
 
 import { AlertCircle } from 'lucide-react';
 
-export const INPUT_CLASS = (field: string, errors: Record<string, string>) =>
-  `w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white ${errors[field] ? 'border-red-500' : 'border-gray-200 focus:border-brand-gold dark:border-gray-700 dark:focus:border-brand-gold'}`;
+export const INPUT_CLASS = (field: string, errors: Record<string, string>, attempted?: boolean) => {
+  if (errors[field])
+    return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-red-500';
+  if (attempted)
+    return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-green-500 focus:border-green-500 dark:border-green-500 dark:focus:border-green-500';
+  return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-gray-200 focus:border-brand-gold dark:border-gray-700 dark:focus:border-brand-gold';
+};
 
 export const LABEL_CLASS = 'text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase';
 
@@ -15,7 +20,7 @@ interface FieldErrorProps {
 export function FieldError({ field, errors }: FieldErrorProps) {
   if (!errors[field]) return null;
   return (
-    <p className="mt-1 flex items-center gap-1 text-xs text-red-500">
+    <p id={`${field}-error`} className="mt-1 flex items-center gap-1 text-xs text-red-500">
       <AlertCircle size={12} /> {errors[field]}
     </p>
   );
@@ -31,6 +36,7 @@ interface FormInputProps {
   ) => void;
   type?: string;
   placeholder?: string;
+  attempted?: boolean;
 }
 
 export function FormInput({
@@ -41,7 +47,9 @@ export function FormInput({
   onChange,
   type = 'text',
   placeholder = '',
+  attempted,
 }: FormInputProps) {
+  const errorId = `${name}-error`;
   return (
     <div className="space-y-2">
       <label htmlFor={name} className={LABEL_CLASS}>
@@ -53,8 +61,10 @@ export function FormInput({
         name={name}
         value={value}
         onChange={onChange}
-        className={INPUT_CLASS(name, errors)}
+        className={INPUT_CLASS(name, errors, attempted)}
         placeholder={placeholder}
+        aria-invalid={errors[name] ? 'true' : undefined}
+        aria-describedby={errors[name] ? errorId : undefined}
       />
       <FieldError field={name} errors={errors} />
     </div>
@@ -71,6 +81,7 @@ interface FormSelectProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
   placeholder: string;
+  attempted?: boolean;
 }
 
 export function FormSelect({
@@ -81,7 +92,9 @@ export function FormSelect({
   errors,
   onChange,
   placeholder,
+  attempted,
 }: FormSelectProps) {
+  const errorId = `${name}-error`;
   return (
     <div className="space-y-2">
       <label htmlFor={name} className={LABEL_CLASS}>
@@ -93,7 +106,9 @@ export function FormSelect({
           id={name}
           value={value}
           onChange={onChange}
-          className={`appearance-none ${INPUT_CLASS(name, errors)} pr-10`}
+          className={`appearance-none ${INPUT_CLASS(name, errors, attempted)} pr-10`}
+          aria-invalid={errors[name] ? 'true' : undefined}
+          aria-describedby={errors[name] ? errorId : undefined}
         >
           <option value="">{placeholder}</option>
           {options.map((opt) =>
