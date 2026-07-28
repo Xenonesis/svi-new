@@ -59,6 +59,7 @@ interface FormInputProps {
   placeholder?: string;
   hint?: string;
   maxLen?: number;
+  autoComplete?: string;
   attempted?: boolean;
 }
 
@@ -72,6 +73,7 @@ export function FormInput({
   placeholder = '',
   hint,
   maxLen,
+  autoComplete,
   attempted,
 }: FormInputProps) {
   const errorId = `${name}-error`;
@@ -98,6 +100,7 @@ export function FormInput({
         className={INPUT_CLASS(name, errors, attempted)}
         placeholder={placeholder}
         maxLength={maxLen}
+        autoComplete={autoComplete}
         aria-invalid={errors[name] ? 'true' : undefined}
         aria-describedby={errors[name] ? errorId : undefined}
       />
@@ -285,6 +288,21 @@ export function FormFileUpload({
         </label>
       )}
       <FieldError field={type} errors={errors} />
+    </div>
+  );
+}
+
+type ReviewRowProps = {
+  label: string;
+  value: string;
+  className?: string;
+};
+
+export function ReviewRow({ label, value, className }: ReviewRowProps) {
+  return (
+    <div className={className}>
+      <p className="text-[10px] font-bold tracking-[0.2em] text-gray-400 uppercase">{label}</p>
+      <p className="mt-0.5 text-sm font-medium text-gray-800 dark:text-gray-200">{value}</p>
     </div>
   );
 }
