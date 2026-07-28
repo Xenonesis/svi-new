@@ -36,7 +36,6 @@ async function sendEmailWithRetry(
       attempt++;
       const result = await resend.emails.send(payload);
       if (result.error) throw new Error(result.error.message || 'Resend API error');
-      console.log(`[Email] Sent on attempt ${attempt} (ID: ${result.data?.id})`);
       return result;
     } catch (err: any) {
       console.error(`[Email] Attempt ${attempt} failed: ${err.message}`);
@@ -277,10 +276,6 @@ export async function POST(request: NextRequest) {
 
     if (!success) throw AppError.internal('Concurrent registration conflict. Please try again.');
 
-    console.log(
-      `[Registration] Submission ID: ${data.submission_id} for ${firstName} at ${data.created_at || new Date().toISOString()}`
-    );
-
     // Send email notification (non-blocking)
     const emailStatus = { sent: false, error: null as string | null };
     let primaryRecipient = email;
@@ -320,7 +315,6 @@ export async function POST(request: NextRequest) {
         }
 
         if (!notifyOnRegistration) {
-          console.log('[Registration] Email alerts disabled in settings.');
           emailStatus.sent = false;
           emailStatus.error = 'Disabled in settings';
           return NextResponse.json({

@@ -12,9 +12,7 @@ export default function PwaRegister() {
       if ('serviceWorker' in navigator) {
         navigator.serviceWorker.getRegistrations().then((registrations) => {
           for (const registration of registrations) {
-            registration.unregister().then(() => {
-              console.log('Unregistered active service worker for development mode');
-            });
+            registration.unregister().then(() => {});
           }
         });
       }

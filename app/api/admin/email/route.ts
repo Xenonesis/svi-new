@@ -47,7 +47,6 @@ async function ensureAttachmentBucket() {
         public: true,
         fileSizeLimit: 10 * 1024 * 1024, // 10 MB
       });
-      console.log('[STORAGE] Created email-attachments bucket');
     }
   } catch (err) {
     console.warn('[STORAGE] Could not ensure email-attachments bucket:', err);
@@ -78,8 +77,6 @@ async function syncInboundEmails(resend: Resend) {
     const missingEmails = emails.filter((e: any) => !existingIds.has(e.id));
 
     if (missingEmails.length === 0) return;
-
-    console.log(`[SYNC] Found ${missingEmails.length} missing inbound emails. Syncing now...`);
 
     // Process missing emails in parallel batches (concurrency = 5)
     const CONCURRENCY = 5;
@@ -654,7 +651,6 @@ export async function POST(request: NextRequest) {
             .eq('id', admin.id)
             .single();
           const adminName = profileData?.full_name || admin.email || 'Admin';
-          console.log(`[Admin Email] Email scheduled by ${adminName} for ${scheduledAt}`);
         } catch (notifErr) {
           // ignore
         }

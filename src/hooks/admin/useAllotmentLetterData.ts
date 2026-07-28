@@ -190,7 +190,6 @@ export function useAllotmentLetterData(token: string | null) {
               parsed.secondPaymentDays !== '28';
             setIsCustomSecondPaymentDays(!!isCustomDays);
           } else {
-            console.log('Draft version mismatch, ignoring stale draft');
             localStorage.removeItem('allotment_letter_form_draft');
           }
         } catch (e) {

@@ -49,7 +49,6 @@ export async function POST(request: NextRequest) {
 
     // Only handle email.received events
     if (payload.type !== 'email.received') {
-      console.log(`[WEBHOOK] Ignoring event type: ${payload.type}`);
       return NextResponse.json({ received: true, ignored: true });
     }
 
@@ -74,7 +73,6 @@ export async function POST(request: NextRequest) {
       .maybeSingle();
 
     if (existing) {
-      console.log(`[WEBHOOK] Duplicate email ignored: ${emailId}`);
       return NextResponse.json({ received: true, duplicate: true });
     }
 
@@ -129,9 +127,6 @@ export async function POST(request: NextRequest) {
           }));
         }
       }
-      console.log(
-        `[WEBHOOK] Fetched email body for ${emailId}: html=${!!htmlContent}, text=${!!textContent}, attachments=${attachments?.length ?? 0}`
-      );
     } catch (fetchErr) {
       // If fetching fails, still store the email metadata — body will be empty
       console.warn('[WEBHOOK] Could not fetch full email body:', fetchErr);
@@ -159,7 +154,6 @@ export async function POST(request: NextRequest) {
       const isDuplicate = (msg: string) => msg?.includes('duplicate key');
 
       if (isDuplicate(error.message)) {
-        console.log(`[WEBHOOK] Duplicate on insert, ignoring: ${emailId}`);
         return NextResponse.json({ received: true, duplicate: true });
       }
 
@@ -178,7 +172,6 @@ export async function POST(request: NextRequest) {
       throw AppError.internal('Failed to store incoming email');
     }
 
-    console.log(`[WEBHOOK] ✅ Stored email: "${data.subject}" from ${fromEmail} (id: ${emailId})`);
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('[WEBHOOK] Error:', error);

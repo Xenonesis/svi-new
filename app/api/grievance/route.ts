@@ -160,9 +160,7 @@ async function sendGrievanceResponse(
           console.error('Failed to log email dispatched system alert:', notifErr);
         }
       } else {
-        console.log(
-          '[Email Audit] Grievance alerts are disabled in settings. Skipping email dispatch.'
-        );
+        // Grievance alerts disabled in settings — skip email dispatch
       }
     }
   } catch (emailError: any) {

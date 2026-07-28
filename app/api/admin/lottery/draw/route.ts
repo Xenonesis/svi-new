@@ -159,7 +159,6 @@ export async function POST(request: NextRequest) {
                   drawnAt: now,
                 }),
               });
-              console.log(`Manual draw: Winner email successfully sent to ${w.email}`);
               emailsSentCount++;
             } catch (winnerEmailErr: any) {
               console.error(
@@ -176,9 +175,6 @@ export async function POST(request: NextRequest) {
         );
 
         if (runnerUps.length > 0) {
-          console.log(
-            `Manual draw: Dispatching results emails to ${runnerUps.length} runner-up participants...`
-          );
           const BATCH_SIZE = 10;
           for (let i = 0; i < runnerUps.length; i += BATCH_SIZE) {
             const batch = runnerUps.slice(i, i + BATCH_SIZE);
@@ -213,7 +209,6 @@ export async function POST(request: NextRequest) {
             }
           }
         }
-        console.log(`Manual draw: Finished sending ${emailsSentCount} email notifications.`);
       } catch (emailBlockErr) {
         console.error('Manual draw: Unexpected error in email notification block:', emailBlockErr);
       }

@@ -30,10 +30,6 @@ async function sendToAnalytics(metric: Metric) {
         : metric.rating === 'needs-improvement'
           ? '#eab308'
           : '#ef4444';
-    console.log(
-      `%c[Web Vitals] ${metric.name}: ${metric.value.toFixed(2)} (${metric.rating})`,
-      `color: ${color}; font-weight: bold`
-    );
   }
 
   // Send to Vercel Analytics custom event (non-blocking)
