@@ -16,7 +16,7 @@ import {
 import Link from 'next/link';
 import { useMemo } from 'react';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
-import { StatCardSkeleton, TableSkeleton } from '@/src/components/admin/Shared/AdminSkeleton';
+import { StatCardSkeleton, TableSkeleton } from '@/src/components/admin/shared/AdminSkeleton';
 
 interface SavedOfferLetter {
   id: string;

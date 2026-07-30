@@ -1,8 +1,8 @@
 'use client';
 
 import { FileSignature, IndianRupee, Briefcase, BadgeCheck } from 'lucide-react';
-import { StatCardSkeleton } from '@/src/components/admin/Shared/AdminSkeleton';
-import { AdminStatsCard } from '@/src/components/admin/Shared/AdminStatsCard';
+import { StatCardSkeleton } from '@/src/components/admin/shared/AdminSkeleton';
+import { AdminStatsCard } from '@/src/components/admin/shared/AdminStatsCard';
 
 interface OfferLetterStatsCardsProps {
   loading: boolean;
