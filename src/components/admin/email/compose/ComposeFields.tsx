@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { X, Sparkles, Loader2 } from 'lucide-react';
+import { RecipientInput } from './RecipientInput';
+import type { Recipient } from '../types';
 
 interface ComposeFieldsProps {
   to: string;
@@ -24,6 +26,9 @@ interface ComposeFieldsProps {
   onFromNameChange: (value: string) => void;
   onReplyToChange: (value: string) => void;
   onScheduledAtChange?: (value: string | null) => void;
+  toRecipients?: Recipient[];
+  onToRecipientsChange?: (recipients: Recipient[]) => void;
+  onOpenContactPicker?: () => void;
 }
 
 export function ComposeFields({
@@ -46,6 +51,9 @@ export function ComposeFields({
   onScheduledAtChange,
   autoComposing,
   onAutoCompose,
+  toRecipients,
+  onToRecipientsChange,
+  onOpenContactPicker,
 }: ComposeFieldsProps) {
   const [showCcField, setShowCcField] = useState(false);
   const [showBccField, setShowBccField] = useState(false);
@@ -75,18 +83,27 @@ export function ComposeFields({
   return (
     <div>
       {/* To */}
-      <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
-        <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+      <div className="flex items-start border-b border-gray-100 px-6 pt-2 pb-2 dark:border-gray-800">
+        <label className="mt-2 w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
           To
         </label>
-        <input
-          type="text"
-          value={to}
-          onChange={(e) => onToChange(e.target.value)}
-          placeholder="recipient@example.com"
-          className="flex-1 bg-transparent py-3.5 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
-        />
-        <div className="ml-2 flex shrink-0 items-center gap-1.5">
+        {toRecipients !== undefined && onToRecipientsChange ? (
+          <RecipientInput
+            recipients={toRecipients}
+            onChange={onToRecipientsChange}
+            placeholder="Add recipients (email, or press Enter to add)"
+            onOpenContactPicker={onOpenContactPicker}
+          />
+        ) : (
+          <input
+            type="text"
+            value={to}
+            onChange={(e) => onToChange(e.target.value)}
+            placeholder="recipient@example.com"
+            className="flex-1 bg-transparent py-3.5 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+          />
+        )}
+        <div className="mt-2 ml-2 flex shrink-0 items-center gap-1.5">
           {!showCc && (
             <button
               type="button"

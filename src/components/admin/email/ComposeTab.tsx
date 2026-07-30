@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   AlertTriangle,
@@ -31,7 +31,17 @@ import { TemplateBanner } from './compose/TemplateBanner';
 import { AttachmentList } from './compose/AttachmentList';
 import { TemplatePicker } from './compose/TemplatePicker';
 import { AIImprovePanel } from './compose/AIImprovePanel';
-import type { ForwardData, ReplyData, EmailAttachment, TemplatePrefill, DraftData } from './types';
+import type {
+  ForwardData,
+  ReplyData,
+  EmailAttachment,
+  TemplatePrefill,
+  DraftData,
+  Recipient,
+  Contact,
+} from './types';
+import { isValidEmail } from '@/src/lib/utils/emailValidation';
+import { ContactPicker } from './compose/ContactPicker';
 import { useAIEmail } from './hooks/useAIEmail';
 import { useEmailPrefill } from './hooks/useEmailPrefill';
 import { useEmailDraft } from './hooks/useEmailDraft';
@@ -53,7 +63,75 @@ export function ComposeTab({
   draftData,
   onClearPrefill,
 }: ComposeTabProps) {
-  const [to, setTo] = useState('');
+  const [toRecipients, setToRecipients] = useState<Recipient[]>([]);
+  const toStr = toRecipients.map((r) => r.email).join(', ');
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const contactsCache = useRef<Contact[] | null>(null);
+
+  // Fetch contacts from API with caching
+  const fetchContacts = useCallback(async (): Promise<Contact[]> => {
+    if (contactsCache.current) return contactsCache.current;
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/admin/contacts', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return [];
+      const data: { contacts?: Contact[] } = await res.json();
+      contactsCache.current = data.contacts ?? null;
+      return contactsCache.current ?? [];
+    } catch {
+      return [];
+    }
+  }, []);
+
+  // Set of already-selected email addresses (lowercased for dedup)
+  const selectedEmailSet = useMemo(
+    () => new Set(toRecipients.map((r) => r.email.toLowerCase())),
+    [toRecipients]
+  );
+
+  // Toggle a contact in the recipient list
+  const handleToggleContact = useCallback(
+    (contact: Contact) => {
+      const emailLower = contact.email.toLowerCase();
+      if (selectedEmailSet.has(emailLower)) {
+        setToRecipients((prev) => prev.filter((r) => r.email.toLowerCase() !== emailLower));
+      } else {
+        setToRecipients((prev) => [
+          ...prev,
+          {
+            email: contact.email,
+            name: contact.full_name,
+            type: contact.role as Recipient['type'],
+            valid: true,
+          },
+        ]);
+      }
+    },
+    [selectedEmailSet]
+  );
+
+  // Select all contacts from the picker
+  const handleSelectAllContacts = useCallback(async () => {
+    const allContacts = await fetchContacts();
+    setToRecipients((prev) => {
+      const existingEmails = new Set(prev.map((r) => r.email.toLowerCase()));
+      const newOnes = allContacts
+        .filter((c) => !existingEmails.has(c.email.toLowerCase()))
+        .map(
+          (c) =>
+            ({
+              email: c.email,
+              name: c.full_name,
+              type: c.role as Recipient['type'],
+              valid: true,
+            }) as Recipient
+        );
+      return [...prev, ...newOnes];
+    });
+  }, [fetchContacts]);
+
   const [cc, setCc] = useState('');
   const [bcc, setBcc] = useState('');
   const [subjectTemplate, setSubjectTemplate] = useState('');
@@ -87,6 +165,21 @@ export function ComposeTab({
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // Callback to convert a comma-separated string (from draft/prefill) to Recipient[]
+  const handleToChange = useCallback((val: string) => {
+    const parsed = val
+      .split(',')
+      .map((e) => e.trim())
+      .filter(Boolean);
+    setToRecipients(
+      parsed.map((email) => ({
+        email,
+        type: 'manual' as const,
+        valid: isValidEmail(email),
+      }))
+    );
+  }, []);
+
   // Use custom hooks for prefill and drafts
   useEmailPrefill({
     adminEmail,
@@ -97,7 +190,7 @@ export function ComposeTab({
     replyTo,
     onClearPrefill,
     setters: {
-      setTo,
+      setTo: handleToChange,
       setCc,
       setBcc,
       setSubjectTemplate,
@@ -116,7 +209,7 @@ export function ComposeTab({
   });
 
   const { restoreDraft, handleClearDraft } = useEmailDraft({
-    to,
+    to: toStr,
     cc,
     bcc,
     subject,
@@ -125,7 +218,7 @@ export function ComposeTab({
     fromName,
     setDraftSaved,
     setHasDraft,
-    setTo,
+    setTo: handleToChange,
     setCc,
     setBcc,
     setSubjectTemplate,
@@ -184,8 +277,12 @@ export function ComposeTab({
 
   const handleSend = async () => {
     const finalHtml = getPreviewHtml() || html;
-    if (!to.trim() || !subject.trim() || !finalHtml.trim()) {
+    if (toRecipients.length === 0 || !subject.trim() || !finalHtml.trim()) {
       setError('Please fill in To, Subject, and Body fields.');
+      return;
+    }
+    if (toRecipients.some((r) => !r.valid)) {
+      setError('Some recipient email addresses are invalid.');
       return;
     }
     setSending(true);
@@ -197,10 +294,7 @@ export function ComposeTab({
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({
           action: 'send',
-          to: to
-            .split(',')
-            .map((e) => e.trim())
-            .filter(Boolean),
+          to: toRecipients.map((r) => r.email),
           cc: cc
             ? cc
                 .split(',')
@@ -236,14 +330,14 @@ export function ComposeTab({
 
         // Suggest follow-up in background
         const finalBody = getPreviewHtml() || html;
-        const recipient = to.split(',')[0]?.trim();
+        const recipient = toRecipients[0]?.email;
         suggestFollowup(finalBody, recipient).then((followUp) => {
           if (followUp) setFollowUpSuggestion(followUp);
         });
 
         setTimeout(() => {
           setSent(false);
-          setTo('');
+          setToRecipients([]);
           setCc('');
           setBcc('');
           setSubjectTemplate('');
@@ -272,7 +366,7 @@ export function ComposeTab({
 
     const result = await autoCompose({
       subject: subject.trim(),
-      to,
+      to: toStr,
       cc,
       onChunk: (html) => setHtml(html),
     });
@@ -333,7 +427,7 @@ export function ComposeTab({
   };
 
   const discardAll = async () => {
-    setTo('');
+    setToRecipients([]);
     setCc('');
     setBcc('');
     setSubjectTemplate('');
@@ -435,7 +529,7 @@ export function ComposeTab({
 
         {/* Fields */}
         <ComposeFields
-          to={to}
+          to={toStr}
           cc={cc}
           bcc={bcc}
           subject={subject}
@@ -447,13 +541,16 @@ export function ComposeTab({
           scheduledAt={scheduledAt}
           autoComposing={aiLoading}
           onAutoCompose={handleAutoCompose}
-          onToChange={setTo}
+          onToChange={handleToChange}
           onCcChange={setCc}
           onBccChange={setBcc}
           onSubjectChange={handleSubjectChange}
           onFromNameChange={setFromName}
           onReplyToChange={setReplyTo}
           onScheduledAtChange={setScheduledAt}
+          toRecipients={toRecipients}
+          onToRecipientsChange={setToRecipients}
+          onOpenContactPicker={() => setPickerOpen(true)}
         />
 
         {/* Attachments */}
@@ -469,7 +566,7 @@ export function ComposeTab({
           templateName={
             selectedTemplate === '_ai_generated' ? autoComposeName || 'AI Generated' : undefined
           }
-          recipientEmail={to}
+          recipientEmail={toStr}
           onEditTemplate={() => {
             if (!html && templateHtml) {
               setHtml(getPreviewHtml());
@@ -540,7 +637,7 @@ export function ComposeTab({
                 value={html}
                 onChange={setHtml}
                 placeholder="Write your email here... Use the toolbar above to format text."
-                recipientName={to.split(',')[0]?.trim()}
+                recipientName={toStr.split(',')[0]?.trim()}
                 subject={subject}
               />
             </div>
@@ -704,6 +801,14 @@ export function ComposeTab({
           </div>
         </div>
       </div>
+
+      <ContactPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        selectedEmails={selectedEmailSet}
+        onToggle={handleToggleContact}
+        onSelectAll={handleSelectAllContacts}
+      />
     </div>
   );
 }

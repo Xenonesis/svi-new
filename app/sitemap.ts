@@ -55,6 +55,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...getSitemapEntry('/grievance', currentDate, 'monthly', 0.4),
     ...getSitemapEntry('/calculators', currentDate, 'monthly', 0.7),
     ...getSitemapEntry('/lottery', currentDate, 'weekly', 0.6),
+    ...getSitemapEntry('/changelog', currentDate, 'weekly', 0.5),
   ];
 
   const blogRoutes: MetadataRoute.Sitemap = BLOG_POSTS.flatMap((post) =>

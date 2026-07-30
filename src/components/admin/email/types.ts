@@ -1,3 +1,18 @@
+export interface Recipient {
+  email: string;
+  name?: string;
+  type: 'manual' | 'employee' | 'client' | 'admin';
+  valid: boolean;
+}
+
+export interface Contact {
+  id: string;
+  full_name: string;
+  email: string;
+  real_email: string | null;
+  role: 'admin' | 'employee' | 'client';
+}
+
 export interface SentEmail {
   id: string;
   from: string;

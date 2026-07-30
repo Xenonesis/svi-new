@@ -137,6 +137,14 @@ const Footer = memo(function Footer() {
                   {t('nav.contactUs')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/changelog"
+                  className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
+                >
+                  {t('footer.changelog')}
+                </Link>
+              </li>
             </ul>
           </div>
 

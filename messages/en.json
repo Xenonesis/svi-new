@@ -82,6 +82,7 @@
     "quickLinks": "Quick Links",
     "servicesSupport": "Services & Support",
     "contactInfo": "Contact Info",
+    "changelog": "Changelog",
     "stayUpdated": "Stay Updated",
     "newsletterDesc": "Get the latest property updates and exclusive offers in your inbox.",
     "subscribe": "Subscribe",
@@ -360,7 +361,8 @@
       "privacy-policy": "Privacy Policy",
       "terms-conditions": "Terms & Conditions",
       "thank-you": "Thank You",
-      "exclusive-offers": "Exclusive Offers"
+      "exclusive-offers": "Exclusive Offers",
+      "changelog": "Changelog"
     }
   },
   "pages": {
@@ -991,6 +993,49 @@
       "auditedViaSupabase": "A lucky draw system where the lucky ones get an opportunity as per their luck",
       "muteAudio": "Mute audio",
       "unmuteAudio": "Unmute audio"
+    },
+    "changelog": {
+      "title": "Changelog",
+      "heading": "What's New",
+      "subtitle": "Every release, every fix, every improvement — straight from the source.",
+      "eyebrow": "Release Notes",
+      "intro": "Follow the evolution of the SVI Infra Solutions platform. We publish every release so you can see what changed, when it changed, and why it matters.",
+      "latest": "Latest",
+      "preRelease": "Pre-release",
+      "draft": "Draft",
+      "viewOnGithub": "View on GitHub",
+      "viewAllReleases": "All releases on GitHub",
+      "downloads": "Downloads",
+      "publishedOn": "Published",
+      "searchPlaceholder": "Search releases…",
+      "filterAll": "All",
+      "filterStable": "Stable",
+      "filterPrerelease": "Pre-release",
+      "noResults": "No releases match your search.",
+      "clearSearch": "Clear search",
+      "errorTitle": "Could not load releases",
+      "errorDesc": "We were unable to fetch the latest releases from GitHub. This is usually temporary — please try again in a moment.",
+      "retry": "Try again",
+      "openGithub": "Open GitHub directly",
+      "rateLimitTitle": "Rate limit reached",
+      "rateLimitDesc": "GitHub is throttling anonymous requests. Showing the most recent cached releases.",
+      "emptyTitle": "No releases yet",
+      "emptyDesc": "Once a release is published on GitHub, it will appear here automatically.",
+      "subscribeTitle": "Stay in the loop",
+      "subscribeDesc": "Subscribe to our GitHub repository to get notified the moment we ship a new release.",
+      "subscribeCta": "Watch on GitHub",
+      "statsTitle": "At a glance",
+      "totalReleases": "Total releases",
+      "latestVersion": "Latest version",
+      "lastPublished": "Last published",
+      "activeChannel": "Active channel",
+      "stable": "Stable",
+      "content": "Release notes",
+      "assets": "Assets",
+      "size": "Size",
+      "downloadCount": "{count} downloads",
+      "openAsset": "Open",
+      "backToTop": "Back to top"
     }
   }
 }

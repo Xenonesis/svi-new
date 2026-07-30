@@ -94,7 +94,8 @@
     "propertyManagement": "प्रॉपर्टी मैनेजमेंट",
     "enterEmail": "अपना ईमेल दर्ज करें",
     "done": "✓ हो गया!",
-    "register": "रजिस्टर"
+    "register": "रजिस्टर",
+    "changelog": "चेंजलॉग"
   },
   "hero": {
     "badge": "बेहतरीन की मिसाल",
@@ -360,7 +361,8 @@
       "privacy-policy": "गोपनीयता नीति",
       "terms-conditions": "नियम और शर्तें",
       "thank-you": "धन्यवाद",
-      "exclusive-offers": "विशेष ऑफर्स"
+      "exclusive-offers": "विशेष ऑफर्स",
+      "changelog": "चेंजलॉग"
     }
   },
   "pages": {
@@ -991,6 +993,49 @@
       "auditedViaSupabase": "एक लकी ड्रॉ सिस्टम जहां भाग्यशाली लोगों को उनकी किस्मत के अनुसार अवसर मिलता है",
       "muteAudio": "ऑडियो म्यूट करें",
       "unmuteAudio": "ऑडियो अनम्यूट करें"
+    },
+    "changelog": {
+      "title": "चेंजलॉग",
+      "heading": "नया क्या है",
+      "subtitle": "हर रिलीज़, हर फ़िक्स, हर सुधार — सीधे स्रोत से।",
+      "eyebrow": "रिलीज़ नोट्स",
+      "intro": "SVI Infra Solutions प्लेटफ़ॉर्म के विकास को फ़ॉलो करें। हम हर रिलीज़ प्रकाशित करते हैं ताकि आप देख सकें क्या बदला, कब बदला, और यह क्यों ज़रूरी है।",
+      "latest": "नवीनतम",
+      "preRelease": "प्री-रिलीज़",
+      "draft": "ड्राफ़्ट",
+      "viewOnGithub": "GitHub पर देखें",
+      "viewAllReleases": "GitHub पर सभी रिलीज़",
+      "downloads": "डाउनलोड",
+      "publishedOn": "प्रकाशित",
+      "searchPlaceholder": "रिलीज़ खोजें…",
+      "filterAll": "सभी",
+      "filterStable": "स्टेबल",
+      "filterPrerelease": "प्री-रिलीज़",
+      "noResults": "कोई रिलीज़ आपकी खोज से मेल नहीं खाती।",
+      "clearSearch": "खोज साफ़ करें",
+      "errorTitle": "रिलीज़ लोड नहीं हो सकीं",
+      "errorDesc": "हम GitHub से नवीनतम रिलीज़ लाने में असमर्थ रहे। यह आमतौर पर अस्थायी होता है — कृपया एक पल में पुनः प्रयास करें।",
+      "retry": "पुनः प्रयास करें",
+      "openGithub": "GitHub सीधे खोलें",
+      "rateLimitTitle": "रेट लिमिट पूरी हो गई",
+      "rateLimitDesc": "GitHub अनाम अनुरोधों को सीमित कर रहा है। नवीनतम कैश्ड रिलीज़ दिखाई जा रही हैं।",
+      "emptyTitle": "अभी कोई रिलीज़ नहीं",
+      "emptyDesc": "जैसे ही GitHub पर कोई रिलीज़ प्रकाशित होगी, वह यहाँ अपने-आप दिखाई देगी।",
+      "subscribeTitle": "अपडेट रहें",
+      "subscribeDesc": "हमारे GitHub रिपॉज़िटरी को सब्सक्राइब करें ताकि नई रिलीज़ के प्रकाशित होते ही आपको सूचना मिले।",
+      "subscribeCta": "GitHub पर वॉच करें",
+      "statsTitle": "एक नज़र में",
+      "totalReleases": "कुल रिलीज़",
+      "latestVersion": "नवीनतम वर्ज़न",
+      "lastPublished": "अंतिम प्रकाशन",
+      "activeChannel": "सक्रिय चैनल",
+      "stable": "स्टेबल",
+      "content": "रिलीज़ नोट्स",
+      "assets": "एसेट्स",
+      "size": "साइज़",
+      "downloadCount": "{count} डाउनलोड",
+      "openAsset": "खोलें",
+      "backToTop": "ऊपर जाएँ"
     }
   }
 }
