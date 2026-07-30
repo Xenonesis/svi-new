@@ -31,5 +31,7 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|admin|attendance|employee|share|opengraph-image|.*\\..*).*)'],
+  matcher: [
+    '/((?!api|_next|_vercel|admin|attendance|employee|share|opengraph-image|@vite|.*\\..*).*)',
+  ],
 };

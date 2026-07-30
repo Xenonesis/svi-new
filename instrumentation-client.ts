@@ -11,7 +11,7 @@ Sentry.init({
   },
 
   // Reduced from 100% in dev → 10% across the board.
-  tracesSampleRate: 0.1,
+  tracesSampleRate: process.env.NODE_ENV === 'development' ? 0 : 0.1,
 
   enableLogs: false,
 
