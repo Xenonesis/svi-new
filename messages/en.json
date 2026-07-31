@@ -704,6 +704,7 @@
         "none": "None"
       },
       "plans": {
+        "one-time": "One Time Payment",
         "3-months": "3 Months",
         "6-months": "6 Months",
         "12-months": "12 Months",

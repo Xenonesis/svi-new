@@ -2,7 +2,7 @@
 
 interface EMISlidersProps {
   loanAmountLakhs: number;
-  tenureYears: number;
+  tenureMonths: number;
   interestRate: number;
   onLoanAmountChange: (val: number) => void;
   onTenureChange: (val: number) => void;
@@ -11,7 +11,7 @@ interface EMISlidersProps {
 
 export default function EMISliders({
   loanAmountLakhs,
-  tenureYears,
+  tenureMonths,
   interestRate,
   onLoanAmountChange,
   onTenureChange,
@@ -45,29 +45,29 @@ export default function EMISliders({
         </div>
       </div>
 
-      {/* Slider 2: Loan Tenure */}
+      {/* Slider 2: Loan Tenure (Months) */}
       <div>
         <div className="mb-2 flex items-center justify-between">
           <label className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200">
-            Loan Tenure (Years)
+            Loan Tenure (Months)
           </label>
           <span className="dark:text-brand-gold text-lg font-bold text-amber-600">
-            {tenureYears} Years
+            {tenureMonths} {tenureMonths === 1 ? 'Month' : 'Months'}
           </span>
         </div>
         <input
           type="range"
-          min={3}
-          max={30}
+          min={1}
+          max={24}
           step={1}
-          value={tenureYears}
+          value={tenureMonths}
           onChange={(e) => onTenureChange(Number(e.target.value))}
           className="dark:accent-brand-gold h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-amber-500 dark:bg-gray-700"
         />
         <div className="mt-1 flex justify-between text-[10px] font-semibold text-gray-500 dark:text-gray-400">
-          <span>3 Yrs</span>
-          <span>15 Yrs</span>
-          <span>30 Yrs</span>
+          <span>1 Mo</span>
+          <span>12 Mo</span>
+          <span>24 Mo</span>
         </div>
       </div>
 

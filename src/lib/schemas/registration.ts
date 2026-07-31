@@ -23,6 +23,7 @@ export const ALLOWED_TYPES = ['residential-plot', 'commercial-shop', 'luxury-far
 export const ALLOWED_PREFS = ['main-road', 'park', 'corner', 'none'] as const;
 
 export const ALLOWED_PLANS = [
+  'one-time',
   '3-months',
   '6-months',
   '12-months',

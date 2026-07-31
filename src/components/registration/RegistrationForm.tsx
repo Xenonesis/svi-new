@@ -44,6 +44,7 @@ const PLOT_PREFERENCES = [
 ];
 
 const PAYMENT_PLANS = [
+  { value: 'one-time', label: 'One Time Payment' },
   { value: '3-months', label: '3 Months' },
   { value: '6-months', label: '6 Months' },
   { value: '12-months', label: '12 Months' },
@@ -145,6 +146,7 @@ export default function RegistrationForm() {
   ];
 
   const paymentPlans = [
+    { value: 'one-time', label: t('plans.one-time') },
     { value: '3-months', label: t('plans.3-months') },
     { value: '6-months', label: t('plans.6-months') },
     { value: '12-months', label: t('plans.12-months') },
