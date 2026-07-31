@@ -131,6 +131,12 @@ export interface ReplyData {
   attachments?: any[];
 }
 
+export interface DraftRecipientData {
+  email: string;
+  name?: string;
+  type?: 'manual' | 'employee' | 'client' | 'admin';
+}
+
 export interface DraftData {
   id: string;
   to: string;
@@ -141,6 +147,10 @@ export interface DraftData {
   replyTo: string;
   fromName: string;
   savedAt: number;
+  /** Structured recipient data (JSON stringified) for preserving names */
+  toRecipients?: DraftRecipientData[];
+  ccRecipients?: DraftRecipientData[];
+  bccRecipients?: DraftRecipientData[];
 }
 
 export interface EmailAttachment {
@@ -153,6 +163,25 @@ export interface EmailAttachment {
 export interface TemplatePrefill {
   subject: string;
   html: string;
+}
+
+export interface ContactGroup {
+  id: string;
+  name: string;
+  description: string;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+  member_count?: number;
+  members?: ContactGroupMember[];
+}
+
+export interface ContactGroupMember {
+  id: string;
+  group_id: string;
+  contact_email: string;
+  contact_name?: string;
+  added_at: string;
 }
 
 export interface Campaign {
