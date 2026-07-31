@@ -32,7 +32,7 @@ export default function Header() {
           {/* Logo */}
           <Link
             href="/"
-            className="flex shrink-0 items-center justify-center rounded-xl bg-white px-3 py-1.5 transition-transform hover:scale-105"
+            className="flex shrink-0 items-center justify-center rounded-full bg-white px-3 py-1.5 shadow-sm transition-transform hover:scale-105 xl:px-4 xl:py-2"
             aria-label="Home"
           >
             <Image
@@ -40,7 +40,7 @@ export default function Header() {
               alt="SVI Infra Solutions"
               width={160}
               height={45}
-              className="h-8 w-auto xl:h-10"
+              className="h-6 w-auto sm:h-7 xl:h-8"
               priority
             />
           </Link>
