@@ -8,7 +8,11 @@
   "devCommand": "next dev --port 3000",
   "headers": [
     {
-      "source": "/api/admin(?:/.*)?",
+      "source": "/api/admin/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/api/admin",
       "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
     }
   ],
