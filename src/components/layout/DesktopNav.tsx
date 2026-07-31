@@ -39,7 +39,7 @@ const DesktopNav = memo(function DesktopNav({
   const locale = useLocale();
   const isHi = locale === 'hi';
   return (
-    <nav className="3xl:gap-6 hidden items-center gap-1.5 xl:flex xl:gap-2 2xl:gap-3">
+    <nav className="3xl:gap-6 hidden items-center gap-2 xl:flex xl:gap-3 2xl:gap-4">
       {NAV_LINKS.map((link) => (
         <NavLink
           key={link.nameKey}
