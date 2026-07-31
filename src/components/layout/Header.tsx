@@ -3,6 +3,8 @@
 import { useHeaderNavigation } from '@/src/components/layout/useHeaderNavigation';
 import { DesktopNav } from '@/src/components/layout/DesktopNav';
 import { MobileNav } from '@/src/components/layout/MobileNav';
+import { Link } from '@/src/i18n/navigation';
+import Image from 'next/image';
 
 export default function Header() {
   const h = useHeaderNavigation();
@@ -25,8 +27,24 @@ export default function Header() {
           aria-hidden="true"
         />
         <div
-          className={`mx-auto flex items-center justify-end ${h.isScrolled ? 'w-full' : 'container'}`}
+          className={`mx-auto flex items-center justify-between ${h.isScrolled ? 'w-full' : 'container'}`}
         >
+          {/* Logo */}
+          <Link
+            href="/"
+            className="flex shrink-0 items-center justify-center rounded-xl bg-white px-3 py-1.5 transition-transform hover:scale-105"
+            aria-label="Home"
+          >
+            <Image
+              src="/logo.png"
+              alt="SVI Infra Solutions"
+              width={160}
+              height={45}
+              className="h-8 w-auto xl:h-10"
+              priority
+            />
+          </Link>
+
           {/* Desktop Navigation */}
           <DesktopNav
             currentPath={h.pathname}
