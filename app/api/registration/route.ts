@@ -4,7 +4,6 @@ import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { RegistrationSchema } from '@/src/lib/schemas/registration';
-import { verifyHCaptcha } from '@/src/lib/hcaptcha';
 
 export const runtime = 'edge';
 
@@ -145,19 +144,6 @@ export async function POST(request: NextRequest) {
       paymentMode,
       schemeAmount,
     } = parsed.data;
-
-    // hCaptcha verification (if enabled)
-    if (process.env.NEXT_PUBLIC_DISABLE_CAPTCHA !== 'true') {
-      const ip =
-        request.headers.get('x-forwarded-for') || request.headers.get('x-real-ip') || '127.0.0.1';
-      const captchaResult = await verifyHCaptcha(parsed.data.captchaToken, ip);
-      if (!captchaResult.success) {
-        return NextResponse.json(
-          { error: 'Captcha verification failed', detail: captchaResult.error },
-          { status: 400 }
-        );
-      }
-    }
 
     const photoFile = formData.get('photo') as File | null;
     const panCardFile = formData.get('panCard') as File | null;
