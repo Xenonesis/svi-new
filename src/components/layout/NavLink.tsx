@@ -20,7 +20,7 @@ export function NavLink({ href, children, isActive, isHomeTransparent }: NavLink
       className={`group relative py-1 font-semibold whitespace-nowrap uppercase transition-colors duration-200 ${
         isHi
           ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-          : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+          : '3xl:text-sm text-[11px] tracking-wide xl:text-[11.5px] 2xl:text-[12.5px] 2xl:tracking-wider'
       } ${
         isActive
           ? 'text-brand-gold'

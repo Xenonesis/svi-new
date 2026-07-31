@@ -12,13 +12,13 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
   const locale = useLocale();
   const isHi = locale === 'hi';
   return (
-    <div className="flex items-center gap-2 border-l border-gray-200 pl-3 xl:gap-3 xl:pl-4 2xl:gap-4 2xl:pl-6 dark:border-zinc-800">
+    <div className="flex items-center gap-1.5 border-l border-gray-200 pl-2 xl:gap-2 xl:pl-3 2xl:gap-3 2xl:pl-4 dark:border-zinc-800">
       <Link
         href="/login"
         className={`group/login relative py-1 font-semibold whitespace-nowrap uppercase transition-all duration-200 ${
           isHi
             ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-            : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+            : '3xl:text-sm text-[11px] tracking-wide xl:text-[11.5px] 2xl:text-[12.5px] 2xl:tracking-wider'
         } ${
           isHomeTransparent
             ? 'hover:text-brand-gold text-white/95'
@@ -30,10 +30,10 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
       </Link>
       <Link
         href="/registration"
-        className={`bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative flex items-center justify-center overflow-hidden rounded-full px-3 py-1.5 text-center font-semibold whitespace-nowrap text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:py-2 ${
+        className={`bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative flex items-center justify-center overflow-hidden rounded-full px-3 py-1.5 text-center font-semibold whitespace-nowrap text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-3.5 xl:py-1.5 ${
           isHi
             ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-            : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+            : '3xl:text-sm text-[11px] tracking-wide xl:text-[11.5px] 2xl:text-[12.5px] 2xl:tracking-wider'
         }`}
       >
         {t('register')}
