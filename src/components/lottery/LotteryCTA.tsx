@@ -223,7 +223,7 @@ export default function LotteryCTA() {
                 <div className="flex items-center gap-1.5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase">
                   <Clock className="text-brand-gold h-3.5 w-3.5" />
                   {lottery.status === 'completed'
-                    ? 'Draw Completed'
+                    ? t('drawCompleted', { defaultValue: 'Draw Completed' })
                     : expired
                       ? t('shufflingProgress')
                       : drawDate
@@ -235,9 +235,11 @@ export default function LotteryCTA() {
                   <div className="bg-brand-gold/10 border-brand-gold/30 rounded-2xl border px-8 py-4 text-center">
                     <div className="text-brand-gold inline-flex items-center gap-2 text-lg font-black tracking-widest uppercase">
                       <Trophy className="h-4 w-4" />
-                      Winners Declared!
+                      {t('winnersDeclared', { defaultValue: 'Winners Declared!' })}
                     </div>
-                    <div className="mt-1 text-xs text-gray-500">Click to see who won</div>
+                    <div className="mt-1 text-xs text-gray-500">
+                      {t('clickToSeeWinners', { defaultValue: 'Click to see who won' })}
+                    </div>
                   </div>
                 ) : drawDate && !expired ? (
                   <div className="flex items-end gap-3">
