@@ -13,7 +13,7 @@ export function HamburgerButton({ isOpen, onToggle }: HamburgerButtonProps) {
   return (
     <div className="flex items-center gap-3 xl:hidden">
       <button
-        className="bg-brand-navy flex items-center justify-center rounded-full p-2 text-white shadow-sm transition-colors dark:bg-zinc-900 dark:text-gray-200"
+        className="bg-brand-navy hover:bg-brand-navy-light dark:bg-brand-navy flex items-center justify-center rounded-full p-2 text-white shadow-sm transition-colors dark:text-white"
         onClick={onToggle}
         aria-label={isOpen ? t('closeMenu') : t('openMenu')}
         aria-expanded={isOpen}
