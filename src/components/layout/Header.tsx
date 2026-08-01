@@ -26,7 +26,13 @@ export default function Header() {
         >
           <Link
             href="/"
-            className="group relative flex items-center gap-2 transition-transform duration-300 outline-none hover:scale-[1.02] active:scale-[0.98]"
+            className={`group relative inline-flex items-center gap-2 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] ${
+              h.isHomeTransparent
+                ? 'rounded-xl bg-white px-2.5 py-1 shadow-sm'
+                : h.isMobileMenuOpen
+                  ? 'max-xl:pointer-events-none max-xl:opacity-0'
+                  : ''
+            }`}
             aria-label="SVI Infra Solutions Pvt. Ltd."
           >
             <Image
@@ -36,7 +42,7 @@ export default function Header() {
               height={83}
               quality={100}
               priority
-              className="h-8 w-auto object-contain transition-all duration-300 xl:h-10"
+              className="h-8 w-auto object-contain transition-all duration-300 xl:h-9"
             />
           </Link>
           <div className="flex items-center justify-end">

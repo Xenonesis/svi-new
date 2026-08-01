@@ -24,7 +24,7 @@ export function ThemeToggle({
   const desktopTransparent =
     'hover:border-brand-gold hover:text-brand-gold border-white/30 bg-black/30 text-white backdrop-blur-sm';
   const mobileBase =
-    'border-gray-200/80 text-brand-navy bg-gray-100/70 dark:border-gray-200/80 dark:bg-gray-100/70 dark:text-brand-navy';
+    'border-gray-200/80 text-brand-navy bg-gray-100/70 dark:border-white/15 dark:bg-white/10 dark:text-gray-200';
 
   const variantClass =
     variant === 'desktop' ? (isHomeTransparent ? desktopTransparent : desktopBase) : mobileBase;

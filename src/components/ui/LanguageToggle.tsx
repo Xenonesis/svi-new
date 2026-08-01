@@ -26,8 +26,8 @@ export default function LanguageToggle({ isHomeTransparent }: { isHomeTransparen
       disabled={isPending}
       className={`3xl:text-sm flex cursor-pointer items-center gap-1 rounded-lg px-2 py-1.5 text-[11px] font-medium transition-colors xl:gap-1.5 xl:px-3 xl:py-2 xl:text-[12.5px] 2xl:text-[13.5px] ${
         isHomeTransparent
-          ? 'hover:text-brand-gold hover:border-brand-gold border border-white/30 bg-black/30 text-white backdrop-blur-sm'
-          : 'border border-transparent text-gray-800 hover:bg-gray-200/70 dark:text-gray-800 dark:hover:bg-gray-200/70'
+          ? 'hover:border-brand-gold hover:text-brand-gold border border-white/30 bg-black/30 text-white backdrop-blur-sm'
+          : 'dark:hover:text-brand-gold border border-transparent text-gray-800 hover:bg-gray-200/70 dark:text-gray-200 dark:hover:bg-white/10'
       }`}
       aria-label={locale === 'en' ? 'Hindi' : 'English'}
     >
