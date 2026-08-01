@@ -1,6 +1,6 @@
 'use client';
 
-import { useScroll, useTransform, useSpring } from 'motion/react';
+import { useScroll, useTransform, useSpring, useMotionValue } from 'motion/react';
 import { useRef, useState, useEffect, useCallback, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -17,7 +17,22 @@ export interface HeroImage {
 
 export default function HeroSection({ images }: { images: HeroImage[] }) {
   const heroRef = useRef<HTMLElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    // Only need to check once — parallax is removed on mobile
+    window.addEventListener('resize', check, { passive: true });
+    return () => window.removeEventListener('resize', check);
+  }, []);
+
   const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
+
+  // Static fallback motion values for mobile (no spring computation)
+  const staticY = useMotionValue('0%');
+  const staticScale = useMotionValue(1);
+  const staticOpacity = useMotionValue(1);
 
   const smoothScroll = useSpring(scrollYProgress, { stiffness: 60, damping: 20, restDelta: 0.01 });
   const backgroundY = useTransform(smoothScroll, [0, 1], ['0%', '50%']);
@@ -79,8 +94,9 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       <HeroBackground
         images={images}
         currentHeroIndex={currentHeroIndex}
-        backgroundY={backgroundY}
-        heroScale={heroScale}
+        backgroundY={isMobile ? staticY : backgroundY}
+        heroScale={isMobile ? staticScale : heroScale}
+        isMobile={isMobile}
       />
 
       <HeroControls
@@ -91,7 +107,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         onSelect={handleSelect}
       />
 
-      <HeroContent heroOpacity={heroOpacity} />
+      <HeroContent heroOpacity={isMobile ? staticOpacity : heroOpacity} />
 
       <HeroStatCard />
     </section>

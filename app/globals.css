@@ -248,6 +248,20 @@
     animation-direction: reverse;
     animation-duration: 35s;
   }
+
+  /* On mobile: disable expensive blur+rotate animations on aurora and timeline blobs */
+  @media (max-width: 767px) {
+    .aurora-bg::before,
+    .aurora-bg::after {
+      animation: none;
+      filter: none;
+      opacity: 0;
+    }
+    /* Also remove timeline section blur blobs on mobile */
+    .timeline-blob {
+      display: none;
+    }
+  }
 }
 
 @keyframes shimmer {

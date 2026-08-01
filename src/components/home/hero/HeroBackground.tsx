@@ -8,6 +8,7 @@ interface HeroBackgroundProps {
   currentHeroIndex: number;
   backgroundY: MotionValue<string>;
   heroScale: MotionValue<number>;
+  isMobile?: boolean;
 }
 
 export default function HeroBackground({
@@ -15,21 +16,19 @@ export default function HeroBackground({
   currentHeroIndex,
   backgroundY,
   heroScale,
+  isMobile = false,
 }: HeroBackgroundProps) {
-  return (
-    <motion.div
-      className="bg-brand-navy absolute inset-0 z-0"
-      style={{ y: backgroundY, scale: heroScale, willChange: 'transform' }}
-    >
+  const inner = (
+    <>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={currentHeroIndex}
           initial={{ opacity: 0, scale: 1 }}
-          animate={{ opacity: 1, scale: 1.05 }}
-          exit={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: isMobile ? 1 : 1.05 }}
+          exit={{ opacity: 0, scale: isMobile ? 1 : 1.05 }}
           transition={{
             opacity: { duration: 1.2, ease: 'easeInOut' },
-            scale: { duration: 10, ease: 'linear' },
+            scale: { duration: isMobile ? 0 : 10, ease: 'linear' },
           }}
           className="absolute inset-0"
         >
@@ -39,7 +38,7 @@ export default function HeroBackground({
             fill
             priority={true}
             fetchPriority="high"
-            quality={90}
+            quality={isMobile ? 75 : 90}
             sizes="100vw"
             className="object-cover"
             placeholder={images[currentHeroIndex].blurDataURL ? 'blur' : 'empty'}
@@ -48,6 +47,19 @@ export default function HeroBackground({
         </motion.div>
       </AnimatePresence>
       <div className="pointer-events-none absolute inset-0 z-10 bg-[#0b0c10]/70" />
+    </>
+  );
+
+  if (isMobile) {
+    return <div className="bg-brand-navy absolute inset-0 z-0">{inner}</div>;
+  }
+
+  return (
+    <motion.div
+      className="bg-brand-navy absolute inset-0 z-0"
+      style={{ y: backgroundY, scale: heroScale, willChange: 'transform' }}
+    >
+      {inner}
     </motion.div>
   );
 }

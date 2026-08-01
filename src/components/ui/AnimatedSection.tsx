@@ -1,7 +1,8 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode } from 'react';
 import { Variants, motion } from 'motion/react';
+import { useMobileDetect } from '@/src/lib/hooks/useMobileDetect';
 
 type AnimationType = 'fadeUp' | 'fadeIn' | 'fadeLeft' | 'fadeRight' | 'scale' | 'stagger';
 
@@ -50,16 +51,8 @@ export default function AnimatedSection({
   className = '',
   once = true,
 }: AnimatedSectionProps) {
-  // On mobile (small viewports), use no negative margin so whileInView
-  // triggers as soon as the element enters the viewport at all.
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check, { passive: true });
-    return () => window.removeEventListener('resize', check);
-  }, []);
+  // Single shared listener via singleton — no per-instance resize overhead
+  const isMobile = useMobileDetect();
 
   return (
     <motion.div
@@ -91,14 +84,8 @@ export function StaggerContainer({
   staggerDelay?: number;
   delayChildren?: number;
 }) {
-  const [isMobile, setIsMobile] = useState(false);
-
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
-    check();
-    window.addEventListener('resize', check, { passive: true });
-    return () => window.removeEventListener('resize', check);
-  }, []);
+  // Single shared listener via singleton — no per-instance resize overhead
+  const isMobile = useMobileDetect();
 
   return (
     <motion.div
