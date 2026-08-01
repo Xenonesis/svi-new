@@ -62,7 +62,7 @@ const MobileNav = memo(function MobileNav({
       {/* Side Drawer */}
       <div
         id="mobile-menu"
-        className={`fixed top-0 right-0 z-50 flex h-screen w-full max-w-sm flex-col border-l border-white/10 bg-white/95 px-5 pt-28 pb-8 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out min-[380px]:w-[80%] min-[380px]:px-6 xl:hidden dark:border-zinc-900/60 dark:bg-zinc-950/96 ${
+        className={`fixed top-0 right-0 z-50 flex h-screen w-full max-w-sm flex-col border-l border-white/10 bg-white/95 px-5 pt-28 pb-8 shadow-2xl backdrop-blur-xl transition-all duration-300 ease-in-out min-[380px]:w-[80%] min-[380px]:px-6 xl:hidden dark:border-white/10 dark:bg-[#0b0c10]/95 ${
           isOpen ? 'pointer-events-auto translate-x-0' : 'pointer-events-none translate-x-full'
         }`}
         role="dialog"

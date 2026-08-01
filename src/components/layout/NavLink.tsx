@@ -26,7 +26,7 @@ export function NavLink({ href, children, isActive, isHomeTransparent }: NavLink
           ? 'text-brand-gold'
           : isHomeTransparent
             ? 'hover:text-brand-gold text-white/95'
-            : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
+            : 'text-brand-navy hover:text-brand-gold dark:text-brand-navy dark:hover:text-brand-gold'
       }`}
       aria-current={isActive ? 'page' : undefined}
     >

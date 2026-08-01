@@ -12,7 +12,9 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
   const locale = useLocale();
   const isHi = locale === 'hi';
   return (
-    <div className="flex items-center gap-2 border-l border-gray-200 pl-3 xl:gap-3 xl:pl-4 2xl:gap-4 2xl:pl-6 dark:border-zinc-800">
+    <div
+      className={`flex items-center gap-2 border-l pl-3 xl:gap-3 xl:pl-4 2xl:gap-4 2xl:pl-6 ${isHomeTransparent ? 'border-white/30' : 'border-gray-200 dark:border-gray-200'}`}
+    >
       <Link
         href="/login"
         className={`group/login relative py-1 font-semibold whitespace-nowrap uppercase transition-all duration-200 ${
@@ -22,7 +24,7 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
         } ${
           isHomeTransparent
             ? 'hover:text-brand-gold text-white/95'
-            : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
+            : 'text-brand-navy hover:text-brand-gold dark:text-brand-navy dark:hover:text-brand-gold'
         }`}
       >
         {t('clientLogin')}
@@ -30,7 +32,11 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
       </Link>
       <Link
         href="/registration"
-        className={`bg-brand-navy dark:bg-brand-gold dark:text-brand-navy relative flex items-center justify-center overflow-hidden rounded-full px-3 py-1.5 text-center font-semibold whitespace-nowrap text-white uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:py-2 ${
+        className={`relative flex items-center justify-center overflow-hidden rounded-full px-3 py-1.5 text-center font-semibold whitespace-nowrap uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:py-2 ${
+          isHomeTransparent
+            ? 'bg-brand-gold text-brand-navy hover:bg-brand-gold-light shadow-md'
+            : 'bg-brand-navy dark:bg-brand-navy text-white dark:text-white'
+        } ${
           isHi
             ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
             : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'

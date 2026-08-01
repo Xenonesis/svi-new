@@ -41,7 +41,7 @@ export function ProjectDropdown({
             ? 'text-brand-gold'
             : isHomeTransparent
               ? 'hover:text-brand-gold text-white/95'
-              : 'text-brand-navy hover:text-brand-gold dark:text-gray-200'
+              : 'text-brand-navy hover:text-brand-gold dark:text-brand-navy dark:hover:text-brand-gold'
         }`}
       >
         {t('projects')}{' '}
@@ -58,10 +58,10 @@ export function ProjectDropdown({
             : 'pointer-events-none invisible translate-y-2 opacity-0'
         }`}
       >
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-zinc-800 dark:bg-zinc-900/95">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-gray-100 dark:bg-white/95">
           <Link
             href="/projects/current"
-            className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-zinc-800/50"
+            className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
             <div className="bg-brand-gold/10 text-brand-gold group-hover/item:bg-brand-navy dark:group-hover/item:bg-brand-gold dark:group-hover/item:text-brand-navy flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors group-hover/item:text-white">
               <Building2 size={15} />
@@ -81,7 +81,7 @@ export function ProjectDropdown({
           </Link>
           <Link
             href="/projects/completed"
-            className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-zinc-800/50"
+            className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
             <div className="bg-brand-gold/10 text-brand-gold group-hover/item:bg-brand-navy dark:group-hover/item:bg-brand-gold dark:group-hover/item:text-brand-navy flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors group-hover/item:text-white">
               <CheckSquare size={15} />

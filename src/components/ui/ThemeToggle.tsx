@@ -20,11 +20,11 @@ export function ThemeToggle({
 }: ThemeToggleProps) {
   const t = useTranslations('common');
   const desktopBase =
-    'text-brand-navy hover:border-brand-gold hover:text-brand-gold dark:hover:text-brand-gold border-gray-200/60 bg-gray-50/50 dark:border-zinc-800 dark:bg-zinc-900/50 dark:text-gray-200';
+    'text-brand-navy hover:border-brand-gold hover:text-brand-gold dark:hover:text-brand-gold border-gray-200/80 bg-gray-100/70 dark:border-gray-200/80 dark:bg-gray-100/70 dark:text-brand-navy';
   const desktopTransparent =
-    'hover:border-brand-gold hover:text-brand-gold border-white/20 bg-white/10 text-white/90';
+    'hover:border-brand-gold hover:text-brand-gold border-white/30 bg-black/30 text-white backdrop-blur-sm';
   const mobileBase =
-    'border-gray-150 text-brand-navy bg-gray-50/70 dark:border-zinc-800 dark:bg-zinc-900/70 dark:text-gray-200';
+    'border-gray-200/80 text-brand-navy bg-gray-100/70 dark:border-gray-200/80 dark:bg-gray-100/70 dark:text-brand-navy';
 
   const variantClass =
     variant === 'desktop' ? (isHomeTransparent ? desktopTransparent : desktopBase) : mobileBase;

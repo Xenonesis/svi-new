@@ -100,7 +100,7 @@ const DesktopNav = memo(function DesktopNav({
       <DesktopNavActions isHomeTransparent={isHomeTransparent} />
 
       {/* Language Toggle */}
-      <LanguageToggle />
+      <LanguageToggle isHomeTransparent={isHomeTransparent} />
 
       {/* Theme Toggle */}
       <ThemeToggle

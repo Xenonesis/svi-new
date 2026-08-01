@@ -13,7 +13,6 @@ export function useHeaderNavigation() {
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
   const { theme, setTheme } = useTheme();
-  const sentinelRef = useRef<HTMLDivElement>(null);
   const { visible: lotteryVisible } = useLotteryVisibility();
   const isHomeTransparent = pathname === '/' && !isScrolled;
 
@@ -22,18 +21,16 @@ export function useHeaderNavigation() {
   }, []);
 
   useEffect(() => {
-    // Only use IntersectionObserver — no window.scrollY check that can
-    // cause a hydration mismatch when the page loads mid-scroll.
-    // The observer fires synchronously if the sentinel is already out of view.
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
+    const handleScroll = () => {
+      // 10px threshold to trigger the header transition
+      setIsScrolled(window.scrollY > 10);
+    };
 
-    const observer = new IntersectionObserver(([entry]) => setIsScrolled(!entry.isIntersecting), {
-      threshold: [1],
-      rootMargin: '-20px 0px 0px 0px',
-    });
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    // Check initial scroll position
+    handleScroll();
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   useEffect(() => {
@@ -94,7 +91,6 @@ export function useHeaderNavigation() {
     theme,
     lotteryVisible,
     isHomeTransparent,
-    sentinelRef,
 
     // Actions
     setTheme,
