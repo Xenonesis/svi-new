@@ -76,7 +76,12 @@
     "register": "Register",
     "followUs": "Follow us on {social}",
     "currentProjectsDesc": "Ongoing developments & infrastructure mappings.",
-    "completedProjectsDesc": "Landmark properties successfully delivered."
+    "completedProjectsDesc": "Landmark properties successfully delivered.",
+    "more": "More",
+    "calculatorsDesc": "EMI & ROI investment planning tools",
+    "careersDesc": "Join our growing real estate team",
+    "blogDesc": "Latest property insights & updates",
+    "paymentDesc": "Quick & secure online project payments"
   },
   "footer": {
     "quickLinks": "Quick Links",

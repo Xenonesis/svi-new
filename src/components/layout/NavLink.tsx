@@ -23,16 +23,16 @@ export function NavLink({ href, children, isActive, isHomeTransparent }: NavLink
           : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
       } ${
         isActive
-          ? 'text-brand-gold'
+          ? 'text-amber-400'
           : isHomeTransparent
-            ? 'hover:text-brand-gold text-white/95'
-            : 'text-brand-navy hover:text-brand-gold dark:text-brand-navy dark:hover:text-brand-gold'
+            ? 'text-white/95 hover:text-amber-400'
+            : 'text-slate-800 hover:text-amber-500 dark:text-slate-100 dark:hover:text-amber-400'
       }`}
       aria-current={isActive ? 'page' : undefined}
     >
       {children}
       <span
-        className={`bg-brand-gold absolute -bottom-0.5 left-1/2 h-[1.5px] -translate-x-1/2 transition-all duration-300 ease-out ${
+        className={`absolute -bottom-0.5 left-1/2 h-[1.5px] -translate-x-1/2 bg-amber-400 transition-all duration-300 ease-out ${
           isActive ? 'w-full' : 'w-0 group-hover:w-full'
         }`}
       />

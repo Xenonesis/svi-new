@@ -11,35 +11,35 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
   const t = useTranslations('nav');
   const locale = useLocale();
   const isHi = locale === 'hi';
+
   return (
     <div
-      className={`flex items-center gap-2 border-l pl-3 xl:gap-3 xl:pl-4 2xl:gap-4 2xl:pl-6 ${isHomeTransparent ? 'border-white/30' : 'border-gray-200 dark:border-gray-200'}`}
+      className={`flex items-center gap-2 border-l pl-3 xl:gap-3 xl:pl-4 2xl:gap-3.5 2xl:pl-5 ${
+        isHomeTransparent ? 'border-white/25' : 'border-slate-200 dark:border-white/15'
+      }`}
     >
       <Link
         href="/login"
         className={`group/login relative py-1 font-semibold whitespace-nowrap uppercase transition-all duration-200 ${
           isHi
-            ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-            : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+            ? 'text-[12.5px] tracking-wide 2xl:text-[14px]'
+            : 'text-[10.5px] tracking-wider 2xl:text-[12px] 2xl:tracking-widest'
         } ${
           isHomeTransparent
-            ? 'hover:text-brand-gold text-white/95'
-            : 'text-brand-navy hover:text-brand-gold dark:text-brand-navy dark:hover:text-brand-gold'
+            ? 'text-white/90 hover:text-amber-400'
+            : 'text-slate-800 hover:text-amber-500 dark:text-slate-100 dark:hover:text-amber-400'
         }`}
       >
         {t('clientLogin')}
-        <span className="bg-brand-gold absolute bottom-0 left-0 h-[1.5px] w-0 transition-all duration-300 group-hover/login:w-full" />
+        <span className="absolute bottom-0 left-0 h-[1.5px] w-0 bg-amber-400 transition-all duration-300 group-hover/login:w-full" />
       </Link>
+
       <Link
         href="/registration"
-        className={`relative flex items-center justify-center overflow-hidden rounded-full px-3 py-1.5 text-center font-semibold whitespace-nowrap uppercase transition-all duration-300 hover:-translate-y-0.5 hover:brightness-105 active:translate-y-0 xl:px-4 xl:py-2 ${
-          isHomeTransparent
-            ? 'bg-brand-gold text-brand-navy hover:bg-brand-gold-light shadow-md'
-            : 'bg-brand-navy dark:bg-brand-navy text-white dark:text-white'
-        } ${
+        className={`relative inline-flex items-center justify-center overflow-hidden rounded-full bg-amber-400 px-4 py-2 font-extrabold whitespace-nowrap text-slate-950 uppercase shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:bg-amber-300 hover:shadow-amber-500/25 active:translate-y-0 dark:bg-amber-400 dark:text-slate-950 dark:hover:bg-amber-300 ${
           isHi
-            ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-            : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+            ? 'text-[12.5px] tracking-wide 2xl:text-[14px]'
+            : 'text-[10.5px] tracking-wider 2xl:text-[12px] 2xl:tracking-widest'
         }`}
       >
         {t('register')}

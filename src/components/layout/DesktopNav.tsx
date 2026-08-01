@@ -4,6 +4,7 @@ import { memo } from 'react';
 import { Link } from '@/src/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 import { ProjectDropdown } from './ProjectDropdown';
+import { MoreDropdown } from './MoreDropdown';
 import LanguageToggle from '@/src/components/ui/LanguageToggle';
 import { ThemeToggle } from '@/src/components/ui/ThemeToggle';
 import { NAV_LINKS } from './navLinks';
@@ -15,11 +16,15 @@ interface DesktopNavProps {
   isHomeTransparent: boolean;
   lotteryVisible: boolean;
   projectsOpen: boolean;
+  moreOpen: boolean;
   mounted: boolean;
   theme: 'dark' | 'light' | 'system';
   onProjectsMouseEnter: () => void;
   onProjectsMouseLeave: () => void;
   onProjectsClick: () => void;
+  onMoreMouseEnter: () => void;
+  onMoreMouseLeave: () => void;
+  onMoreClick: () => void;
   onToggleTheme: () => void;
 }
 
@@ -28,28 +33,37 @@ const DesktopNav = memo(function DesktopNav({
   isHomeTransparent,
   lotteryVisible,
   projectsOpen,
+  moreOpen,
   mounted,
   theme,
   onProjectsMouseEnter,
   onProjectsMouseLeave,
   onProjectsClick,
+  onMoreMouseEnter,
+  onMoreMouseLeave,
+  onMoreClick,
   onToggleTheme,
 }: DesktopNavProps) {
   const t = useTranslations('nav');
   const locale = useLocale();
   const isHi = locale === 'hi';
+
+  const homeLink = NAV_LINKS.find((l) => l.path === '/');
+  const aboutLink = NAV_LINKS.find((l) => l.path === '/about');
+  const offersLink = NAV_LINKS.find((l) => l.path === '/exclusive-offers');
+
   return (
-    <nav className="3xl:gap-6 hidden items-center gap-2 xl:flex xl:gap-3 2xl:gap-4">
-      {NAV_LINKS.map((link) => (
+    <nav className="3xl:gap-6 flex items-center gap-3 xl:gap-4 2xl:gap-5">
+      {/* Home Link */}
+      {homeLink && (
         <NavLink
-          key={link.nameKey}
-          href={link.path}
-          isActive={currentPath === link.path}
+          href={homeLink.path}
+          isActive={currentPath === homeLink.path}
           isHomeTransparent={isHomeTransparent}
         >
-          {t(link.nameKey)}
+          {t(homeLink.nameKey)}
         </NavLink>
-      ))}
+      )}
 
       {/* Projects Dropdown */}
       <ProjectDropdown
@@ -61,14 +75,39 @@ const DesktopNav = memo(function DesktopNav({
         onClick={onProjectsClick}
       />
 
-      <NavLink
-        href="/payment"
-        isActive={currentPath === '/payment'}
-        isHomeTransparent={isHomeTransparent}
-      >
-        {t('payment')}
-      </NavLink>
+      {/* About Us */}
+      {aboutLink && (
+        <NavLink
+          href={aboutLink.path}
+          isActive={currentPath === aboutLink.path}
+          isHomeTransparent={isHomeTransparent}
+        >
+          {t(aboutLink.nameKey)}
+        </NavLink>
+      )}
 
+      {/* Exclusive Offers */}
+      {offersLink && (
+        <NavLink
+          href={offersLink.path}
+          isActive={currentPath === offersLink.path}
+          isHomeTransparent={isHomeTransparent}
+        >
+          {t(offersLink.nameKey)}
+        </NavLink>
+      )}
+
+      {/* More Dropdown (Calculators, Careers, Blog, Payment) */}
+      <MoreDropdown
+        isOpen={moreOpen}
+        currentPath={currentPath}
+        isHomeTransparent={isHomeTransparent}
+        onMouseEnter={onMoreMouseEnter}
+        onMouseLeave={onMoreMouseLeave}
+        onClick={onMoreClick}
+      />
+
+      {/* Contact */}
       <NavLink
         href="/contact"
         isActive={currentPath === '/contact'}
@@ -77,21 +116,25 @@ const DesktopNav = memo(function DesktopNav({
         {t('contact')}
       </NavLink>
 
-      {/* Lucky Draw Button */}
+      {/* Lucky Draw Badge */}
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`border-brand-gold/30 hover:bg-brand-gold/10 hover:border-brand-gold rounded-full border px-3 py-1.5 font-semibold whitespace-nowrap uppercase transition-colors duration-200 xl:px-4 xl:py-2 ${
+          className={`relative inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 font-bold whitespace-nowrap uppercase transition-all duration-300 hover:scale-105 hover:border-amber-400 hover:bg-amber-400/20 xl:px-3.5 xl:py-1.5 ${
             isHi
-              ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-              : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+              ? 'text-[12.5px] tracking-wide 2xl:text-[14px]'
+              : 'text-[10.5px] tracking-wider 2xl:text-[12px] 2xl:tracking-widest'
           } ${
             currentPath === '/lottery'
-              ? 'text-brand-gold border-brand-gold bg-brand-gold/5'
-              : 'text-brand-gold/80 hover:text-brand-gold'
+              ? 'border-amber-400 bg-amber-400/25 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.35)]'
+              : 'text-amber-400 hover:text-amber-300'
           }`}
           aria-label={t('luckyDraw')}
         >
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400"></span>
+          </span>
           {t('luckyDraw')}
         </Link>
       )}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import { useTheme } from '@/src/components/ThemeProvider';
 import { useLotteryVisibility } from '@/src/lib/hooks/useLotteryVisibility';
@@ -9,6 +9,7 @@ export function useHeaderNavigation() {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProjectsOpen, setIsProjectsOpen] = useState(false);
+  const [isMoreOpen, setIsMoreOpen] = useState(false);
   const [isMobileProjectsOpen, setIsMobileProjectsOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const pathname = usePathname();
@@ -36,6 +37,7 @@ export function useHeaderNavigation() {
   useEffect(() => {
     setIsMobileMenuOpen(false);
     setIsProjectsOpen(false);
+    setIsMoreOpen(false);
     setIsMobileProjectsOpen(false);
   }, [pathname]);
 
@@ -76,6 +78,10 @@ export function useHeaderNavigation() {
   const handleMouseLeave = useCallback(() => setIsProjectsOpen(false), []);
   const toggleProjects = useCallback(() => setIsProjectsOpen((prev) => !prev), []);
 
+  const handleMoreMouseEnter = useCallback(() => setIsMoreOpen(true), []);
+  const handleMoreMouseLeave = useCallback(() => setIsMoreOpen(false), []);
+  const toggleMore = useCallback(() => setIsMoreOpen((prev) => !prev), []);
+
   const toggleMobileProjects = useCallback(() => {
     setIsMobileProjectsOpen((prev) => !prev);
   }, []);
@@ -85,6 +91,7 @@ export function useHeaderNavigation() {
     isScrolled,
     isMobileMenuOpen,
     isProjectsOpen,
+    isMoreOpen,
     isMobileProjectsOpen,
     mounted,
     pathname,
@@ -100,6 +107,9 @@ export function useHeaderNavigation() {
     handleMouseEnter,
     handleMouseLeave,
     toggleProjects,
+    handleMoreMouseEnter,
+    handleMoreMouseLeave,
+    toggleMore,
     toggleMobileProjects,
     setIsMobileMenuOpen,
     setIsMobileProjectsOpen,

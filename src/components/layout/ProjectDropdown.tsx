@@ -38,10 +38,10 @@ export function ProjectDropdown({
             : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
         } ${
           currentPath.includes('/projects')
-            ? 'text-brand-gold'
+            ? 'text-amber-400'
             : isHomeTransparent
-              ? 'hover:text-brand-gold text-white/95'
-              : 'text-brand-navy hover:text-brand-gold dark:text-brand-navy dark:hover:text-brand-gold'
+              ? 'text-white/95 hover:text-amber-400'
+              : 'text-slate-800 hover:text-amber-500 dark:text-slate-100 dark:hover:text-amber-400'
         }`}
       >
         {t('projects')}{' '}
@@ -58,22 +58,22 @@ export function ProjectDropdown({
             : 'pointer-events-none invisible translate-y-2 opacity-0'
         }`}
       >
-        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-gray-100 dark:bg-white/95">
+        <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-900/95">
           <Link
             href="/projects/current"
             className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
-            <div className="bg-brand-gold/10 text-brand-gold group-hover/item:bg-brand-navy dark:group-hover/item:bg-brand-gold dark:group-hover/item:text-brand-navy flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors group-hover/item:text-white">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 text-amber-500 transition-colors group-hover/item:bg-slate-900 group-hover/item:text-white dark:group-hover/item:bg-amber-400 dark:group-hover/item:text-slate-950">
               <Building2 size={15} />
             </div>
             <div>
               <div
-                className={`text-brand-navy group-hover/item:text-brand-gold font-semibold uppercase transition-colors dark:text-gray-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
+                className={`font-semibold text-slate-900 uppercase transition-colors group-hover/item:text-amber-500 dark:text-slate-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
               >
                 {t('currentProjects')}
               </div>
               <div
-                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-300 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
+                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-400 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
               >
                 {t('currentProjectsDesc')}
               </div>
@@ -83,17 +83,17 @@ export function ProjectDropdown({
             href="/projects/completed"
             className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
-            <div className="bg-brand-gold/10 text-brand-gold group-hover/item:bg-brand-navy dark:group-hover/item:bg-brand-gold dark:group-hover/item:text-brand-navy flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors group-hover/item:text-white">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 text-amber-500 transition-colors group-hover/item:bg-slate-900 group-hover/item:text-white dark:group-hover/item:bg-amber-400 dark:group-hover/item:text-slate-950">
               <CheckSquare size={15} />
             </div>
             <div>
               <div
-                className={`text-brand-navy group-hover/item:text-brand-gold font-semibold uppercase transition-colors dark:text-gray-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
+                className={`font-semibold text-slate-900 uppercase transition-colors group-hover/item:text-amber-500 dark:text-slate-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
               >
                 {t('completedProjects')}
               </div>
               <div
-                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-300 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
+                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-400 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
               >
                 {t('completedProjectsDesc')}
               </div>
