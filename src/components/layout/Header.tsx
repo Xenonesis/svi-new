@@ -15,7 +15,7 @@ export default function Header() {
         suppressHydrationWarning
         className={`fixed z-50 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           h.isScrolled
-            ? 'top-2.5 left-1/2 w-[calc(100%-1.5rem)] max-w-6xl -translate-x-1/2 rounded-full border border-slate-200/80 bg-white/95 px-6 py-2.5 shadow-[0_8px_32px_rgba(0,0,0,0.18)] backdrop-blur-2xl sm:top-3.5 sm:w-auto xl:px-8 xl:py-3.5 dark:border-white/15 dark:bg-slate-950/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]'
+            ? 'top-2.5 left-1/2 w-[calc(100%-1.5rem)] max-w-7xl -translate-x-1/2 rounded-full border border-slate-200/80 bg-white/95 px-6 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.18)] backdrop-blur-2xl sm:top-3.5 sm:w-auto xl:px-10 xl:py-4 dark:border-white/15 dark:bg-slate-950/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]'
             : h.pathname === '/'
               ? 'top-0 right-0 left-0 rounded-none border-b border-transparent bg-gradient-to-b from-slate-950/85 via-slate-950/45 to-transparent px-4 py-3 md:py-4 xl:px-8'
               : 'top-0 right-0 left-0 rounded-none border-b border-slate-200/60 bg-white/95 px-4 py-2.5 backdrop-blur-md md:py-3 xl:px-8 dark:border-white/10 dark:bg-slate-950/95'

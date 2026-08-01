@@ -22,7 +22,7 @@ export default function LanguageToggle({ isHomeTransparent }: { isHomeTransparen
     <button
       onClick={toggleLocale}
       disabled={isPending}
-      className={`3xl:text-sm flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all duration-200 xl:text-[12.5px] 2xl:text-[13.5px] ${
+      className={`3xl:text-sm flex cursor-pointer items-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all duration-200 xl:px-3.5 xl:py-2 xl:text-[12.5px] 2xl:text-[13.5px] ${
         isHomeTransparent
           ? 'border-white/30 bg-black/40 text-white backdrop-blur-sm hover:border-amber-400 hover:text-amber-400'
           : 'border-slate-200/80 bg-slate-100/80 text-slate-800 hover:border-amber-400 hover:text-amber-500 dark:border-white/15 dark:bg-white/10 dark:text-slate-100 dark:hover:border-amber-400 dark:hover:text-amber-400'

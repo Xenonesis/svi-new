@@ -55,7 +55,7 @@ export function MoreDropdown({
 
   return (
     <div
-      className="group relative cursor-pointer py-1"
+      className="group relative cursor-pointer py-1.5 xl:py-2"
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={onClick}

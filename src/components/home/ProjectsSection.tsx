@@ -85,7 +85,7 @@ export default function ProjectsSection() {
         <div className="mt-12 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <Check size={14} className="text-emerald-500" />
-            <span>100% JDA Patta & Clear Marketable Title Deeds</span>
+            <span>100% Government Approved & Clear Legal Title Deeds</span>
           </div>
           <Link
             href="/projects/completed"

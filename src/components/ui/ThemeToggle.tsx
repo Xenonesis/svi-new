@@ -39,7 +39,7 @@ export function ThemeToggle({
   return (
     <button
       onClick={onToggle}
-      className={`group relative flex items-center justify-center rounded-full border p-2 transition-all duration-300 hover:shadow-sm ${variantClass}`}
+      className={`group relative flex items-center justify-center rounded-full border p-2 transition-all duration-300 hover:shadow-sm xl:p-2.5 ${variantClass}`}
       title={getThemeLabel()}
       aria-label={
         mounted

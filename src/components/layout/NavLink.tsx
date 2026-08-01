@@ -17,7 +17,7 @@ export function NavLink({ href, children, isActive, isHomeTransparent }: NavLink
   return (
     <Link
       href={href}
-      className={`group relative py-1 font-semibold whitespace-nowrap uppercase transition-colors duration-200 ${
+      className={`group relative py-1.5 font-semibold whitespace-nowrap uppercase transition-colors duration-200 xl:py-2 ${
         isHi
           ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
           : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
@@ -32,7 +32,7 @@ export function NavLink({ href, children, isActive, isHomeTransparent }: NavLink
     >
       {children}
       <span
-        className={`absolute -bottom-0.5 left-1/2 h-[1.5px] -translate-x-1/2 bg-amber-400 transition-all duration-300 ease-out ${
+        className={`absolute bottom-0 left-1/2 h-[1.5px] -translate-x-1/2 bg-amber-400 transition-all duration-300 ease-out ${
           isActive ? 'w-full' : 'w-0 group-hover:w-full'
         }`}
       />
