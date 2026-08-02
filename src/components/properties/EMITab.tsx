@@ -80,7 +80,7 @@ export default function EMITab({
           </div>
           <input
             type="range"
-            min={1}
+            min={0}
             max={20}
             step={0.5}
             value={interestRate}
@@ -89,7 +89,7 @@ export default function EMITab({
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">
-            <span>1%</span>
+            <span>0%</span>
             <span>20%</span>
           </div>
         </div>

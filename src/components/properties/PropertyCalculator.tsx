@@ -28,7 +28,7 @@ export default function PropertyCalculator() {
 
   // ── EMI State ──────────────────────────────────────────────────────────────
   const [loanAmount, setLoanAmount] = useState(5000000);
-  const [interestRate, setInterestRate] = useState(8.5);
+  const [interestRate, setInterestRate] = useState(0);
   const [tenureYears, setTenureYears] = useState(20);
 
   const tenureMonths = tenureYears * 12;
