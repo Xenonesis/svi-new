@@ -118,7 +118,7 @@ async function sendGrievanceResponse(
       // Trigger email send only if notify_on_grievance setting is enabled
       if (notifyOnGrievance) {
         const mailSubject = `[SYSTEM-AUTO] New Grievance #${ticketId}: ${data.subject}`;
-        await resend.emails.send({
+        const { data: emailData, error: sendErr } = await resend.emails.send({
           from: `${senderName} <${senderEmail}>`,
           to: adminEmail,
           subject: mailSubject,
@@ -152,13 +152,19 @@ async function sendGrievanceResponse(
             </div>
           `,
         });
-
-        // Trigger dynamic admin notification center alert
-        try {
-          await NotificationHelper.emailDispatched(adminEmail, mailSubject, ticketId);
-        } catch (notifErr) {
-          console.error('Failed to log email dispatched system alert:', notifErr);
-        }
+        if (sendErr || !emailData?.id) {
+            console.error(
+              'Grievance email notification failed:',
+              sendErr?.message ?? 'no message id returned'
+            );
+          } else {
+            // Trigger dynamic admin notification center alert
+            try {
+              await NotificationHelper.emailDispatched(adminEmail, mailSubject, ticketId);
+            } catch (notifErr) {
+              console.error('Failed to log email dispatched system alert:', notifErr);
+            }
+          }
       } else {
         // Grievance alerts disabled in settings — skip email dispatch
       }

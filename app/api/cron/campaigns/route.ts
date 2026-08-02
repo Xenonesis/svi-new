@@ -46,10 +46,25 @@ async function sendBatched(
     await Promise.allSettled(
       batch.map(async (r) => {
         try {
-          await resend.emails.send({ from: FROM_ADDRESS, to: [r.email], subject, html });
-          sent++;
-        } catch (err: any) {
-          console.error(`Campaign email failed for ${r.email}:`, err.message);
+          const { data: emailData, error: sendErr } = await resend.emails.send({
+            from: FROM_ADDRESS,
+            to: [r.email],
+            subject,
+            html,
+          });
+          if (sendErr || !emailData?.id) {
+            console.error(
+              `Campaign email failed for ${r.email}:`,
+              sendErr?.message ?? 'no message id returned'
+            );
+          } else {
+            sent++;
+          }
+        } catch (err: unknown) {
+          console.error(
+            `Campaign email failed for ${r.email}:`,
+            err instanceof Error ? err.message : String(err)
+          );
         }
       })
     );

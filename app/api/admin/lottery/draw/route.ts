@@ -148,7 +148,7 @@ export async function POST(request: NextRequest) {
         for (const w of winners) {
           if (w.email) {
             try {
-              await resend.emails.send({
+              const { data: emailData, error: sendErr } = await resend.emails.send({
                 from: FROM_ADDRESS,
                 to: [w.email],
                 subject: `🏆 Congratulations! You won the ${lottery.title}!`,
@@ -159,11 +159,18 @@ export async function POST(request: NextRequest) {
                   drawnAt: now,
                 }),
               });
-              emailsSentCount++;
-            } catch (winnerEmailErr: any) {
+              if (sendErr || !emailData?.id) {
+                console.error(
+                  `Manual draw: Winner email failed for ${w.email}:`,
+                  sendErr?.message ?? 'no message id returned'
+                );
+              } else {
+                emailsSentCount++;
+              }
+            } catch (winnerEmailErr: unknown) {
               console.error(
                 `Manual draw: Winner email failed for ${w.email}:`,
-                winnerEmailErr.message
+                winnerEmailErr instanceof Error ? winnerEmailErr.message : String(winnerEmailErr)
               );
             }
           }
@@ -181,7 +188,7 @@ export async function POST(request: NextRequest) {
             await Promise.allSettled(
               batch.map(async (p: any) => {
                 try {
-                  await resend.emails.send({
+                  const { data: emailData, error: sendErr } = await resend.emails.send({
                     from: FROM_ADDRESS,
                     to: [p.email],
                     subject: `Draw Results — ${lottery.title}`,
@@ -193,11 +200,18 @@ export async function POST(request: NextRequest) {
                       drawnAt: now,
                     }),
                   });
-                  emailsSentCount++;
-                } catch (emailErr: any) {
+                  if (sendErr || !emailData?.id) {
+                    console.error(
+                      `Manual draw: Runner-up email failed for ${p.email}:`,
+                      sendErr?.message ?? 'no message id returned'
+                    );
+                  } else {
+                    emailsSentCount++;
+                  }
+                } catch (emailErr: unknown) {
                   console.error(
                     `Manual draw: Runner-up email failed for ${p.email}:`,
-                    emailErr.message
+                    emailErr instanceof Error ? emailErr.message : String(emailErr)
                   );
                 }
               })

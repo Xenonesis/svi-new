@@ -111,7 +111,7 @@ export async function GET(request: NextRequest) {
           if (winner.email) {
             try {
               const resend = getResend();
-              await resend.emails.send({
+              const { data: emailData, error: sendErr } = await resend.emails.send({
                 from: FROM_ADDRESS,
                 to: [winner.email],
                 subject: `🏆 Congratulations! You won the ${lottery.title}!`,
@@ -122,9 +122,17 @@ export async function GET(request: NextRequest) {
                   drawnAt: now,
                 }),
               });
-              results.push(`  → Winner email sent to ${winner.email}`);
-            } catch (emailErr: any) {
-              results.push(`  → Winner email failed: ${emailErr.message}`);
+              if (sendErr || !emailData?.id) {
+                results.push(
+                  `  → Winner email failed: ${sendErr?.message ?? 'no message id returned'}`
+                );
+              } else {
+                results.push(`  → Winner email sent to ${winner.email}`);
+              }
+            } catch (emailErr: unknown) {
+              results.push(
+                `  → Winner email failed: ${emailErr instanceof Error ? emailErr.message : String(emailErr)}`
+              );
             }
           }
 
@@ -138,7 +146,7 @@ export async function GET(request: NextRequest) {
               batch.map(async (p) => {
                 try {
                   const resend = getResend();
-                  await resend.emails.send({
+                  const { data: emailData, error: sendErr } = await resend.emails.send({
                     from: FROM_ADDRESS,
                     to: [p.email],
                     subject: `Draw Results — ${lottery.title}`,
@@ -150,9 +158,19 @@ export async function GET(request: NextRequest) {
                       drawnAt: now,
                     }),
                   });
-                  nonWinnerEmailCount++;
-                } catch (emailErr: any) {
-                  console.error(`Non-winner email failed for ${p.email}:`, emailErr.message);
+                  if (sendErr || !emailData?.id) {
+                    console.error(
+                      `Non-winner email failed for ${p.email}:`,
+                      sendErr?.message ?? 'no message id returned'
+                    );
+                  } else {
+                    nonWinnerEmailCount++;
+                  }
+                } catch (emailErr: unknown) {
+                  console.error(
+                    `Non-winner email failed for ${p.email}:`,
+                    emailErr instanceof Error ? emailErr.message : String(emailErr)
+                  );
                 }
               })
             );
@@ -217,7 +235,7 @@ export async function GET(request: NextRequest) {
                 batch.map(async (p) => {
                   try {
                     const resend = getResend();
-                    await resend.emails.send({
+                    const { data: emailData, error: sendErr } = await resend.emails.send({
                       from: FROM_ADDRESS,
                       to: [p.email],
                       subject: `⏰ Reminder: ${lottery.title} draw is happening soon!`,
@@ -229,9 +247,19 @@ export async function GET(request: NextRequest) {
                         includeCountdown: draw.include_countdown_in_email,
                       }),
                     });
-                    reminderCount++;
-                  } catch (emailErr: any) {
-                    console.error(`Reminder email failed for ${p.email}:`, emailErr.message);
+                    if (sendErr || !emailData?.id) {
+                      console.error(
+                        `Reminder email failed for ${p.email}:`,
+                        sendErr?.message ?? 'no message id returned'
+                      );
+                    } else {
+                      reminderCount++;
+                    }
+                  } catch (emailErr: unknown) {
+                    console.error(
+                      `Reminder email failed for ${p.email}:`,
+                      emailErr instanceof Error ? emailErr.message : String(emailErr)
+                    );
                   }
                 })
               );

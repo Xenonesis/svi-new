@@ -100,12 +100,18 @@ export async function POST(request: NextRequest) {
         if (resendApiKey) {
           const { Resend } = await import('resend');
           const resend = new Resend(resendApiKey);
-          await resend.emails.send({
+          const { data: emailData, error: sendErr } = await resend.emails.send({
             from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
             to: userProfile.real_email,
             subject: `Your ${document_type.replace(/_/g, ' ')} is Ready`,
             html: `<p>Dear ${userProfile.full_name},<br>Your ${document_type.replace(/_/g, ' ')} has been generated.</p>`,
           });
+          if (sendErr || !emailData?.id) {
+            console.error(
+              'Document email notification failed:',
+              sendErr?.message ?? 'no message id returned'
+            );
+          }
         }
       }
     } catch (emailErr) {

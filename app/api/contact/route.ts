@@ -75,7 +75,7 @@ export async function POST(request: NextRequest) {
 
         if (notifyOnContact) {
           const mailSubject = `[SYSTEM-AUTO] New Contact Form: ${subject}`;
-          await resend.emails.send({
+          const { data: emailData, error: sendErr } = await resend.emails.send({
             from: `${senderName} <${senderEmail}>`,
             to: adminEmail,
             subject: mailSubject,
@@ -107,11 +107,17 @@ export async function POST(request: NextRequest) {
               </div>
             `,
           });
-
-          try {
-            await NotificationHelper.emailDispatched(adminEmail, mailSubject, data.id);
-          } catch (notifErr) {
-            console.error('Failed to log email dispatched system alert:', notifErr);
+          if (sendErr || !emailData?.id) {
+            console.error(
+              'Contact notification email failed:',
+              sendErr?.message ?? 'no message id returned'
+            );
+          } else {
+            try {
+              await NotificationHelper.emailDispatched(adminEmail, mailSubject, data.id);
+            } catch (notifErr) {
+              console.error('Failed to log email dispatched system alert:', notifErr);
+            }
           }
         }
       }

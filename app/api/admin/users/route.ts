@@ -128,7 +128,7 @@ export async function POST(request: NextRequest) {
           if (resendApiKey) {
             const { Resend } = await import('resend');
             const resend = new Resend(resendApiKey);
-            await resend.emails.send({
+            const { data: emailData, error: sendErr } = await resend.emails.send({
               from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
               to: real_email,
               subject: 'Your SVI Infra Portal Account is Ready',
@@ -148,6 +148,12 @@ export async function POST(request: NextRequest) {
               </div>
             `,
             });
+            if (sendErr || !emailData?.id) {
+              console.error(
+                'Failed to dispatch welcome email to client real email address:',
+                sendErr?.message ?? 'no message id returned'
+              );
+            }
           }
         }
       } catch (emailErr) {
