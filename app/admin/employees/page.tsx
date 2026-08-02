@@ -6,12 +6,9 @@ import {
   Plus,
   Search,
   Trash2,
-  Eye,
-  EyeOff,
   UserCircle2,
   Mail,
   Phone,
-  Lock,
   Calendar,
   FileText,
   Copy,
@@ -176,28 +173,14 @@ export default function EmployeesPage() {
 }
 
 function EmployeeCard({ employee, onDelete }: { employee: Employee; onDelete: () => void }) {
-  const [showPassword, setShowPassword] = useState(false);
   const [copiedId, setCopiedId] = useState(false);
-  const [copiedPass, setCopiedPass] = useState(false);
 
-  // Extract password from notes if present
-  let password = 'N/A';
-  let cleanNotes = employee.notes || '';
-  const passMatch = cleanNotes.match(/\[EMP_PASS:\s*(.*?)\]/);
-  if (passMatch) {
-    password = passMatch[1];
-    cleanNotes = cleanNotes.replace(/\[EMP_PASS:\s*(.*?)\]/, '').trim();
-  }
+  const cleanNotes = employee.notes || '';
 
-  const handleCopy = (text: string, type: 'id' | 'pass') => {
+  const handleCopy = (text: string) => {
     navigator.clipboard.writeText(text);
-    if (type === 'id') {
-      setCopiedId(true);
-      setTimeout(() => setCopiedId(false), 2000);
-    } else {
-      setCopiedPass(true);
-      setTimeout(() => setCopiedPass(false), 2000);
-    }
+    setCopiedId(true);
+    setTimeout(() => setCopiedId(false), 2000);
   };
 
   return (
@@ -222,7 +205,7 @@ function EmployeeCard({ employee, onDelete }: { employee: Employee; onDelete: ()
                 ID: {employee.id}
               </p>
               <button
-                onClick={() => handleCopy(employee.id, 'id')}
+                onClick={() => handleCopy(employee.id)}
                 className="hover:text-brand-gold shrink-0 text-gray-400 transition-colors"
                 title="Copy ID"
               >
@@ -254,42 +237,6 @@ function EmployeeCard({ employee, onDelete }: { employee: Employee; onDelete: ()
             <span>{employee.phone}</span>
           </div>
         )}
-
-        <div className="flex items-center justify-between rounded-lg border border-gray-100 bg-gray-50 p-3 dark:border-white/5 dark:bg-white/5">
-          <div className="flex items-center gap-3 overflow-hidden">
-            <Lock size={16} className="shrink-0 text-gray-400" />
-            <div className="flex flex-col overflow-hidden">
-              <span className="mb-0.5 text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Password
-              </span>
-              <span className="truncate font-mono text-sm text-gray-900 dark:text-white">
-                {showPassword ? password : '••••••••'}
-              </span>
-            </div>
-          </div>
-          {password !== 'N/A' && (
-            <div className="ml-2 flex shrink-0 items-center gap-1">
-              <button
-                onClick={() => handleCopy(password, 'pass')}
-                className="hover:text-brand-gold p-1.5 text-gray-400 transition-colors"
-                title="Copy Password"
-              >
-                {copiedPass ? (
-                  <CheckCircle2 size={16} className="text-emerald-500" />
-                ) : (
-                  <Copy size={16} />
-                )}
-              </button>
-              <button
-                onClick={() => setShowPassword(!showPassword)}
-                className="hover:text-brand-gold p-1.5 text-gray-400 transition-colors"
-                title={showPassword ? 'Hide Password' : 'Show Password'}
-              >
-                {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-              </button>
-            </div>
-          )}
-        </div>
 
         {cleanNotes && (
           <div className="mt-4 border-t border-gray-100 pt-4 dark:border-white/10">

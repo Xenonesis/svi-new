@@ -55,12 +55,6 @@ export async function POST(request: NextRequest) {
       throw AppError.badRequest('Name, Email, and Password are required');
     }
 
-    // Embed the password into notes for admin reference since it is requested
-    // Format: [CREDENTIAL_PASS: password]
-    let updatedNotes = notes || '';
-    updatedNotes += updatedNotes ? `\n\n` : '';
-    updatedNotes += `[EMP_PASS: ${password}]`;
-
     // 1. Create the auth user via admin API
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -80,7 +74,7 @@ export async function POST(request: NextRequest) {
         email,
         full_name,
         phone: phone || null,
-        notes: updatedNotes,
+        notes: notes || null,
         role: 'employee',
         created_by: admin.id,
       })
