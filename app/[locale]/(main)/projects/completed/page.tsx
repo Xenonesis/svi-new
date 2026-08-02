@@ -100,8 +100,8 @@ export default async function CompletedProjectsPage(props: {
             : 'https://schema.org/InStock',
         priceStatus: 'https://schema.org/InquirePrice',
       },
-      image: `https://sviiinfrasolutions.com${project.img}`,
-      url: `https://sviiinfrasolutions.com/projects/completed#${project.id}`,
+      image: `https://www.sviinfrasolutions.com${project.img}`,
+      url: `https://www.sviinfrasolutions.com/projects/completed#${project.id}`,
     })),
   };
 

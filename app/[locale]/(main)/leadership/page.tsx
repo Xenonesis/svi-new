@@ -61,9 +61,9 @@ export default function Leadership() {
       worksFor: {
         '@type': 'Organization',
         name: 'SVI Infra Solutions Private Limited',
-        url: 'https://sviiinfrasolutions.com',
+        url: 'https://www.sviinfrasolutions.com',
       },
-      url: 'https://sviiinfrasolutions.com/leadership',
+      url: 'https://www.sviinfrasolutions.com/leadership',
     })),
   };
 

@@ -12,11 +12,11 @@ export const metadata: Metadata = createMetadata({
 const contactSchema = {
   '@context': 'https://schema.org',
   '@type': 'LocalBusiness',
-  '@id': 'https://sviiinfrasolutions.com/#contact',
+  '@id': 'https://www.sviinfrasolutions.com/#contact',
   name: 'SVI Infra Solutions Pvt. Ltd.',
   description:
     'Premium residential and commercial real estate developer in Jaipur, Noida, and Phulera Smart City.',
-  url: 'https://sviiinfrasolutions.com/contact',
+  url: 'https://www.sviinfrasolutions.com/contact',
   telephone: '+91-73000-07643',
   email: 'info@sviinfrasolutions.com',
   address: {
@@ -38,7 +38,7 @@ const contactSchema = {
     opens: '10:00',
     closes: '18:00',
   },
-  image: 'https://sviiinfrasolutions.com/logo.png',
+  image: 'https://www.sviinfrasolutions.com/logo.png',
   priceRange: '$$$',
 };
 

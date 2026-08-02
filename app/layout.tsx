@@ -140,13 +140,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': ['Organization', 'RealEstateAgent'],
-              '@id': 'https://sviiinfrasolutions.com/#organization',
+              '@id': 'https://www.sviinfrasolutions.com/#organization',
               name: 'SVI Infra Solutions Pvt. Ltd.',
               description:
                 'Premium residential and commercial real estate developer with 15+ years of experience in Jaipur, Noida, and DMIC/DFC corridors.',
-              url: 'https://sviiinfrasolutions.com/',
-              logo: 'https://sviiinfrasolutions.com/logo.png',
-              image: 'https://sviiinfrasolutions.com/logo.png',
+              url: 'https://www.sviinfrasolutions.com/',
+              logo: 'https://www.sviinfrasolutions.com/logo.png',
+              image: 'https://www.sviinfrasolutions.com/logo.png',
               telephone: '+91-73000-07643',
               email: 'info@sviinfrasolutions.com',
               address: {
@@ -215,13 +215,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             __html: JSON.stringify({
               '@context': 'https://schema.org',
               '@type': 'WebSite',
-              '@id': 'https://sviiinfrasolutions.com/#website',
-              url: 'https://sviiinfrasolutions.com',
+              '@id': 'https://www.sviinfrasolutions.com/#website',
+              url: 'https://www.sviinfrasolutions.com',
               name: 'SVI Infra Solutions',
               description:
                 'Premium residential and commercial real estate developer in Jaipur, Noida, and Phulera Smart City',
               publisher: {
-                '@id': 'https://sviiinfrasolutions.com/#organization',
+                '@id': 'https://www.sviinfrasolutions.com/#organization',
               },
               speakable: {
                 '@type': 'SpeakableSpecification',

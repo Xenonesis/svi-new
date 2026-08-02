@@ -8,7 +8,7 @@ import { Resend } from 'resend';
  *
  * Configure in Resend Dashboard:
  * 1. Go to https://resend.com/emails/receiving → Add inbound address
- * 2. Set webhook URL: https://sviiinfrasolutions.com/api/webhooks/resend/incoming
+ * 2. Set webhook URL: https://www.sviinfrasolutions.com/api/webhooks/resend/incoming
  *
  * IMPORTANT: Resend's inbound webhook does NOT include email body/HTML.
  * It only sends metadata. We must call resend.emails.receiving.get() to fetch the body.
@@ -39,6 +39,45 @@ function getResend() {
 export async function POST(request: NextRequest) {
   try {
     const rawBody = await request.text();
+
+    // ── Signature verification (REQUIRED) ─────────────────────────────────
+    // Verify the webhook genuinely came from Resend (svix HMAC-SHA256).
+    // Must use the RAW body — parsing JSON first would break verification.
+    // Fail closed: reject unverifiable requests instead of processing them.
+    const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.error('[WEBHOOK] RESEND_WEBHOOK_SECRET is not configured');
+      return NextResponse.json(
+        { error: 'Webhook verification not configured' },
+        { status: 503 }
+      );
+    }
+
+    let resend: Resend;
+    try {
+      resend = getResend();
+    } catch (keyErr) {
+      console.error('[WEBHOOK] Resend client unavailable:', keyErr);
+      return NextResponse.json(
+        { error: 'Webhook verification not configured' },
+        { status: 503 }
+      );
+    }
+
+    try {
+      resend.webhooks.verify({
+        payload: rawBody,
+        headers: {
+          id: request.headers.get('svix-id') ?? '',
+          timestamp: request.headers.get('svix-timestamp') ?? '',
+          signature: request.headers.get('svix-signature') ?? '',
+        },
+        webhookSecret,
+      });
+    } catch (verifyErr) {
+      console.error('[WEBHOOK] Signature verification failed:', verifyErr);
+      return NextResponse.json({ error: 'Invalid signature' }, { status: 400 });
+    }
 
     let payload;
     try {
@@ -101,8 +140,7 @@ export async function POST(request: NextRequest) {
     let attachments: any[] | null = null;
 
     try {
-      const resend = getResend();
-      // resend.emails.receiving.get() fetches the full inbound email body
+      // resend is already constructed and verified above
       const { data: emailData, error: fetchError } = await resend.emails.receiving.get(emailId);
       if (fetchError) {
         console.warn('[WEBHOOK] Resend API error fetching email body:', fetchError);

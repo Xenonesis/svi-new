@@ -12,13 +12,13 @@ export const metadata: Metadata = createMetadata({
 const aboutSchema = {
   '@context': 'https://schema.org',
   '@type': 'AboutPage',
-  '@id': 'https://sviiinfrasolutions.com/about#page',
+  '@id': 'https://www.sviinfrasolutions.com/about#page',
   name: 'About SVI Infra Solutions',
   description:
     'Learn about SVI Infra Solutions Pvt. Ltd., our core values, mission, and our 15+ years of legacy in building premium real estate in Jaipur and Noida.',
-  url: 'https://sviiinfrasolutions.com/about',
+  url: 'https://www.sviinfrasolutions.com/about',
   mainEntity: {
-    '@id': 'https://sviiinfrasolutions.com/#organization',
+    '@id': 'https://www.sviinfrasolutions.com/#organization',
   },
 };
 

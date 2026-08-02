@@ -98,7 +98,7 @@ export default async function Image() {
             marginTop: '30px',
           }}
         >
-          sviiinfrasolutions.com
+          sviinfrasolutions.com
         </div>
       </div>
     </div>,

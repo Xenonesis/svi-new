@@ -27,7 +27,7 @@ ABOUT THE COMPANY:
 - Premium real estate developer with 15+ years of experience
 - Headquarters: A-61 Sector 65, Noida, Uttar Pradesh 201309
 - Phone: +91-73000-07643 | Email: info@sviinfrasolutions.com
-- Website: https://sviinfrasolutions.com , https://sviiinfrasolutions.com 
+- Website: https://www.sviinfrasolutions.com 
 
 AREAS OF OPERATION:
 - Jaipur (residential & commercial)

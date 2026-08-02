@@ -102,8 +102,8 @@ export default async function CurrentProjectsPage(props: { params: Promise<{ loc
         availability: 'https://schema.org/PreOrderAction',
         priceStatus: 'https://schema.org/InquirePrice',
       },
-      image: `https://sviiinfrasolutions.com${project.img}`,
-      url: `https://sviiinfrasolutions.com/projects/current#${project.id}`,
+      image: `https://www.sviinfrasolutions.com${project.img}`,
+      url: `https://www.sviinfrasolutions.com/projects/current#${project.id}`,
     })),
   };
 
