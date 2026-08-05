@@ -2,8 +2,7 @@ import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
 
 /**
- * First page of the BBA: "Important Instructions to the Allottee(s)".
- * Includes the project header and the initial acknowledgement paragraph.
+ * First page of the BBA (Hindi): "आवंटी(यों) को महत्वपूर्ण निर्देश"
  */
 export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext) {
   return (
@@ -17,64 +16,60 @@ export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext
       }}
     >
       <p className="mb-2 text-center text-lg font-bold uppercase">
-        "{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}"
+        &quot;{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;
       </p>
-      <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
+      <p className="mb-4 text-center text-sm font-bold uppercase">जयपुर, राजस्थान</p>
       <p className="mb-4 text-left text-[10px] font-semibold italic">
-        Please read carefully..........
+        कृपया ध्यानपूर्वक पढ़ें..........
       </p>
       <p className="mb-6 text-left text-[11px] font-bold underline">
-        Important Instructions to the Allottee(s)
+        आवंटी(यों) को महत्वपूर्ण निर्देश
       </p>
       <p className="mb-3 text-justify text-[13px] leading-relaxed">
-        The Allottee(s) states and confirms that the firm has made the Allottee(s) aware of the
-        availability of the Builder Buyers' Agreement (hereinafter defined) at the head office of
-        the firm. The Allottee(s) confirms that the Allottee(s) has read and perused the Agreement,
-        containing the detailed terms and conditions and in addition, the Allottee(s) further
-        confirms to have fully understood the terms and conditions of the Agreement (including the
-        Firms limitations) and the Allottee(s) is agreeable to perform his obligations as per the
-        conditions stipulated in the Agreement.
+        आवंटी(यां) यह कथन करते हैं और पुष्टि करते हैं कि फर्म ने आवंटी(यों) को फर्म के प्रधान
+        कार्यालय में बिल्डर-बायर्स करार (जो आगे परिभाषित है) की उपलब्धता के बारे में अवगत कराया है।
+        आवंटी(यां) पुष्टि करते हैं कि आवंटी(यों) ने इस करार को पढ़ा और परखा है, जिसमें विस्तृत नियम
+        और शर्तें हैं, और आवंटी(यां) आगे पुष्टि करते हैं कि उन्होंने करार के नियम और शर्तों (फर्म की
+        सीमाओं सहित) को पूरी तरह से समझ लिया है और आवंटी(यां) करार में निर्धारित शर्तों के अनुसार
+        अपने दायित्वों को पूरा करने के लिए सहमत हैं।
       </p>
       <p className="mb-3 text-justify text-[13px] leading-relaxed">
-        Thereafter the Allottee(s) has applied for allotment of a plot/shop in the Said Complex and
-        has requested the firm to allot a plot/shop. The Allottee(s) agrees and confirms to sign the
-        Agreement in entirety and to abide by the terms and conditions of the Agreement and the
-        terms and conditions, as mentioned herein. The Allottee(s) will execute two (2) copies of
-        the Agreement for each plot/shop to be purchased. The Agreement sets forth in detail the
-        terms and conditions of sale with respect to the plot//shop(s). The Allottee(s) agrees and
-        understands that if the Allottee(s) fails to execute and deliver the Agreement along with
-        all annexures in its original form and all amounts due and payable as per the schedule of
-        payment within thirty (30) days from the date of its dispatch by the firm, then the
-        Allottee(s) authorizes the firm to cancel the allotment and on such cancelation, the
-        Allottee(s) consents and authorizes the firm to forfeit the Earnest Money along with Non
-        Refundable Amounts. Thereafter the Allottee(s) shall be left with no right, title or
-        interest whatsoever in the Said Plot/shop.
+        तत्पश्चात् आवंटी(यों) ने उक्त परिसर में एक भूखंड/दुकान के आवंटन के लिए आवेदन किया है और फर्म
+        से एक भूखंड/दुकान आवंटित करने का अनुरोध किया है। आवंटी(यां) सहमत हैं और पुष्टि करते हैं कि
+        वे करार पर संपूर्ण रूप से हस्ताक्षर करेंगे और करार के नियमों और शर्तों का पालन करेंगे।
+        आवंटी(यां) प्रत्येक भूखंड/दुकान के लिए खरीदे जाने वाले करार की दो (2) प्रतियाँ निष्पादित
+        करेंगे। करार भूखंड/दुकान के संबंध में बिक्री के नियमों और शर्तों को विस्तार से निर्धारित
+        करता है। आवंटी(यां) सहमत हैं और समझते हैं कि यदि आवंटी(यां) फर्म द्वारा प्रेषण की तारीख से
+        तीस (30) दिनों के भीतर सभी अनुबंधों के साथ मूल रूप में करार को निष्पादित और सुपुर्द करने में
+        विफल रहते हैं, तो आवंटी(यां) फर्म को आवंटन रद्द करने के लिए प्राधिकृत करते हैं, और ऐसे
+        रद्दीकरण पर, आवंटी(यां) फर्म को बयाना राशि के साथ-साथ गैर-वापसी योग्य राशियों को जब्त करने
+        के लिए सहमति देते हैं और प्राधिकृत करते हैं। इसके बाद आवंटी(यों) का उक्त भूखंड/दुकान में
+        किसी भी प्रकार का कोई अधिकार, स्वामित्व या हित नहीं रहेगा।
       </p>
       <p className="mb-3 text-justify text-[13px] leading-relaxed">
-        The Allottee(s) further agrees and understands that the firm is not obliged to send any
-        notice/reminders in this regard.
+        आवंटी(यां) आगे सहमत हैं और समझते हैं कि फर्म इस संबंध में कोई भी सूचना/अनुस्मारक भेजने के
+        लिए बाध्य नहीं है।
       </p>
       <p className="mb-3 text-justify text-[13px] leading-relaxed">
-        The Agreement shall not be binding on the firm until executed by the firm through it's
-        authorized signatory. The firm reserves the right to request information as it may so desire
-        concerning the Allottee(s). The firm will not execute any Agreement wherein the Allottee(s)
-        has made any corrections/ cancellations / alterations / modifications. The firm also has the
-        right to reject any Agreement executed by any allottee(s) without any cause or explanation
-        or without assigning any reasons thereof and the decision of the firm shall be final and
-        binding on the Allottee(s).
+        यह करार फर्म पर तब तक बाध्यकारी नहीं होगा जब तक कि इसे फर्म के अधिकृत हस्ताक्षरकर्ता द्वारा
+        निष्पादित नहीं किया जाता। फर्म आवंटी(यों) के बारे में जैसी भी जानकारी चाहे, उसकी मांग करने
+        का अधिकार सुरक्षित रखती है। फर्म ऐसा कोई करार निष्पादित नहीं करेगी जिसमें आवंटी(यों) ने कोई
+        सुधार/रद्दीकरण/परिवर्तन/संशोधन किया हो। फर्म को किसी भी आवंटी(यों) द्वारा निष्पादित किसी भी
+        करार को बिना किसी कारण या स्पष्टीकरण के अस्वीकार करने का भी अधिकार है और फर्म का निर्णय
+        आवंटी(यों) पर अंतिम और बाध्यकारी होगा।
       </p>
       <p className="mb-3 text-justify text-[13px] leading-relaxed">
         <strong>
-          Now, therefore, the Allottee(s) has read and perused the entire Agreement, including
-          Annexures and is signing the same with full knowledge and consent.
+          अतः, आवंटी(यों) ने अनुबंधों सहित सम्पूर्ण करार को पढ़ और परख लिया है और पूर्ण ज्ञान एवं
+          सहमति से इस पर हस्ताक्षर कर रहे हैं।
         </strong>
       </p>
       <p className="mb-3 text-justify text-[13px] leading-relaxed">
-        In witness whereof, the parties hereto have signed this Agreement on the date first
-        mentioned above.
+        इसकी साक्ष्य में, इस करार के पक्षों ने उपरोक्त उल्लिखित तिथि पर इस करार पर हस्ताक्षर किए
+        हैं।
       </p>
       <p className="mt-8 text-[11px] font-bold">{formData.clientName}</p>
-      <p className="mb-3 text-[10px]">(Allottee(s))</p>
+      <p className="mb-3 text-[10px]">(आवंटी(यां))</p>
       <BbaPageFooterHindi companyInfo={companyInfo} />
     </div>
   );

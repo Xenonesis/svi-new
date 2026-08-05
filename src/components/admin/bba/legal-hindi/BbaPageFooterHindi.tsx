@@ -22,7 +22,7 @@ export function BbaPageFooterHindi({ companyInfo }: { companyInfo?: BBALegalComp
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
         </div>
-        <span className="font-bold text-gray-600">Director</span>
+        <span className="font-bold text-gray-600">निदेशक</span>
       </div>
     </div>
   );

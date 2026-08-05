@@ -2,12 +2,8 @@ import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
 
 /**
- * Final pages of the BBA legal preview: numbered clauses 1-32,
+ * Final pages of the BBA legal preview (Hindi): numbered clauses 1-32,
  * payment schedule, and the signature blocks for both parties.
- *
- * This is the longest section because the operative obligations
- * are detailed legal text; splitting further would not improve
- * readability meaningfully.
  */
 export function OperativeClausesAndSignaturesPageHindi({
   formData,
@@ -16,9 +12,9 @@ export function OperativeClausesAndSignaturesPageHindi({
 }: BBALegalContext) {
   const getProjectLocation = (projectName: string) => {
     if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return 'Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan';
+      return 'ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान';
     }
-    return 'Village Basadi, Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan';
+    return 'ग्राम बसादी, तहसील किशन गढ़ रेनवाल, जिला जयपुर, राज्य – राजस्थान';
   };
 
   return (
@@ -33,100 +29,76 @@ export function OperativeClausesAndSignaturesPageHindi({
         }}
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          1. That the Firm hereby agrees to sell/ convey/ Transfer the /shop/Plot NO.{' '}
-          {formData.unitNumber} admeasuring {formData.area} SqYd in favour of Allottee, at{' '}
-          {getProjectLocation(formData?.projectName)}.
+          1. फर्म एतद्द्वारा आवंटी के पक्ष में {getProjectLocation(formData?.projectName)} पर स्थित
+          दुकान/भूखंड सं. {formData.unitNumber} क्षेत्रफल {formData.area} वर्ग गज को
+          बेचने/हस्तांतरित/स्थानांतरित करने के लिए सहमत होती है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          2. The Allottee(s) has paid a sum of Rs.{' '}
+          2. आवंटी(यों) ने आवेदन के समय कुल मूल्य की ओर भाग भुगतान के रूप में रु.{' '}
           {((totalCost * parseFloat(formData.bookingPaymentPercent || '10')) / 100).toLocaleString(
             'en-IN'
           )}
-          /- being part payment towards the Total Price at the time of Application, the receipt of
-          which the Firm both hereby acknowledge and the Allottee(s) agrees to pay the remaining
-          price of the Plot//shop as prescribed in schedule of payments (annexure-A ) attached with
-          this Agreement along with all other charges, Taxes and Cesses, securities, etc. as may be
-          demanded by the Firm within the time and in the manner specified therein.
+          /- की राशि का भुगतान किया है, जिसकी प्राप्ति फर्म स्वीकार करती है, और आवंटी(यां) इस करार
+          के साथ संलग्न भुगतान अनुसूची (अनुबंध-ए) में निर्धारित भूखंड/दुकान की शेष राशि के साथ-साथ
+          फर्म द्वारा निर्धारित समय में और निर्धारित तरीके से सभी अन्य शुल्कों, करों, उपकरों,
+          प्रतिभूतियों आदि का भुगतान करने के लिए सहमत हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          3. The Allottee(s) agrees and confirms that out of the total amount(s) paid/payable by the
-          Allottee(s) for the Said Plot/shop, 30% of the Total Price of the Said Plot/shop shall be
-          treated as Earnest Money to ensure fulfillment of the terms and conditions as contained in
-          the Application and this Agreement. In the event, the Allottee(s) fails to perform any
-          obligations or commit breach of any of the terms and conditions, mentioned in the
-          Application and/or this Agreement, including but not limited to the occurrence of any
-          event of default as stated in this Agreement and the failure of the Allottee(s) to sign
-          and return this Agreement in original to the Firm within 30 days of dispatch, the
-          Allottee(s) agrees, consents and authorizes the Firm to cancel the allotment and on such
-          cancellation, the Allottee(s) authorizes the Firm to forfeit the Earnest Money along with
-          Non Refundable Amounts. Thereafter the Allottee(s) shall be left with no right, interest
-          and lien on the Said Plot/shop/Said Complex. This is in addition to any other
-          remedy/right, which the Firm may have. If the amount paid by the Allottee(s) is less than
-          the forfeitable amount, then the Allottee(s) undertakes to make good the shortfall of the
-          forfeitable amounts.
+          3. आवंटी(यां) सहमत हैं और पुष्टि करते हैं कि उक्त भूखंड/दुकान के लिए आवंटी(यों) द्वारा
+          भुगतान की गई/देय कुल राशि में से, उक्त भूखंड/दुकान के कुल मूल्य का 30% बयाना राशि के रूप
+          में माना जाएगा। यदि आवंटी(यां) किसी भी दायित्व को पूरा करने में विफल रहते हैं या आवेदन
+          और/या इस करार में उल्लिखित किसी भी नियम और शर्त का उल्लंघन करते हैं, तो आवंटी(यां) फर्म को
+          आवंटन रद्द करने के लिए सहमति देते हैं, प्राधिकृत करते हैं और ऐसे रद्दीकरण पर, आवंटी(यों)
+          द्वारा भुगतान की गई राशि यदि जब्त करने योग्य राशि से कम है तो आवंटी(यां) कमी को पूरा करने
+          का वचन देते हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          4. The Allottee understands that the part advance given by him/them is towards provisional
-          registration against to probable&apos;s allotments of plot(s)/shop(s)/in the ongoing
-          project. That further Understand the Allotee at the provisional registration against a
-          probable&apos;s allotment is subject to the following conditions:
+          4. आवंटी समझते हैं कि उनके द्वारा दिया गया आंशिक अग्रिम चल रही परियोजना में
+          भूखंड(ओं)/दुकान(ों) के संभावित आवंटन के विरुद्ध अनंतिम पंजीकरण की ओर है। आवंटी आगे समझते
+          हैं कि संभावित आवंटन के विरुद्ध अनंतिम पंजीकरण निम्नलिखित शर्तों के अधीन है:
           <br />
-          I. II. EDC And IDC shall be charged extra @ 150/Sq. yard for plots and @ 50 /Sq. ft. for
-          shop. PLC(s) determined by the firm shall be charged extra and will be charged
-          proportionally with every Advances payment installments. There will be three types of PLC
-          applicable on both plots and Shops (1) Corner, (2) Wide Road, (3) park facing, (4)
-          facility. Payment for PLC&apos;s will be as Follows: one PLC&apos;s- 6% of BSP, Two
-          PLC&apos;s- 9% of BSP, Three PLC&apos;s 12% of BSP.
+          I. II. ईडीसी और आईडीसी अतिरिक्त रूप से भूखंडों के लिए ₹150/वर्ग गज और दुकानों के लिए
+          ₹50/वर्ग फुट की दर से लिया जाएगा। फर्म द्वारा निर्धारित पीएलसी अतिरिक्त रूप से लिया जाएगा
+          और प्रत्येक अग्रिम भुगतान किश्त के साथ आनुपातिक रूप से लिया जाएगा। भूखंड और दुकान दोनों पर
+          तीन प्रकार के पीएलसी लागू होंगे: (1) कोना, (2) चौड़ी सड़क, (3) पार्क सामना, (4) सुविधा।
+          पीएलसी के लिए भुगतान इस प्रकार होगा: एक पीएलसी – बीएसपी का 6%, दो पीएलसी – बीएसपी का 9%,
+          तीन पीएलसी – बीएसपी का 12%।
           <br />
-          III. IV. V. In the case any PDC is dishonored, firm reserves the right to cancel the
-          provisional registration without any notice.
+          III. IV. V. किसी भी पीडीसी के अनादरण की स्थिति में, फर्म बिना किसी नोटिस के अनंतिम पंजीकरण
+          रद्द करने का अधिकार सुरक्षित रखती है।
           <br />
-          All other charges like maintenance deposits and such other charges as may be determined by
-          the firm at the time of allotment/possession, shall be charged extra and compulsory to
-          initiate final registration process. Registration charge, stamp duty and service tax will
-          be extra as per the applicable rate. The all PDC&apos;s towards part advance payment
-          installments for provisional registration must be honored. In the first instance. It is
-          further understood that, without any prejudice to firms any right in case of the dishonor
-          of Allottee part advance payment cheque, firm may at its own discretion are paid by the
-          Allottee along with simple interest @ 18% p.a in addition to cheque bouncing charge of Rs
-          1500/ instance and cheque collection charge of Rs 1500/ Instance within 7 days from the
-          date of cheque bouncing. Any variation in the total sale consideration, due to change in
-          EDC, infrastructure development charges or any other charges so demanded by the state
-          government and /or authorities or any other government department, the Agreement as
-          apportioned by the firm shall be final and bindings on Allottee.
+          रखरखाव जमा राशि जैसे सभी अन्य शुल्क और आवंटन/कब्जे के समय फर्म द्वारा निर्धारित अन्य शुल्क
+          अतिरिक्त रूप से लिए जाएंगे और अंतिम पंजीकरण प्रक्रिया शुरू करने के लिए अनिवार्य होंगे।
+          पंजीकरण शुल्क, स्टाम्प शुल्क और सेवा कर लागू दर के अनुसार अतिरिक्त होंगे।
         </p>
         <div className="my-6">
           <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
-            The Allottee(s) shall make all payments within the stipulated time as mentioned in the
-            schedule of payments as given in Annexure-A annexed to this Agreement and other charges
-            and amounts, as may be demanded by the Firm from time to time, without any reminders
-            from the Firm, through A/c payee cheque(s)/ demand draft(s) in favour of &apos;SVI INFRA
-            SOLUTIONS PVT LTD&apos; or transfer online to:
+            आवंटी(यां) इस करार के साथ संलग्न भुगतान अनुसूची (अनुबंध-ए) में उल्लिखित निर्धारित समय के
+            भीतर, फर्म की किसी भी याद दिलाने के बिना, सभी भुगतान &apos;SVI INFRA SOLUTIONS PVT
+            LTD&apos; के पक्ष में A/c payee चेक/डिमांड ड्राफ्ट या ऑनलाइन स्थानांतरण द्वारा करेंगे:
           </p>
           <div className="ml-8 text-[13px] leading-relaxed font-bold">
             <div className="grid grid-cols-[150px_1fr] gap-1">
-              <span>Account Name:</span>
+              <span>खाता नाम:</span>
               <span>{companyInfo.bank_account_name ?? 'SVI INFRA SOLUTIONS PVT LTD'}</span>
-              <span>Account Number:</span>
+              <span>खाता संख्या:</span>
               <span>{companyInfo.bank_account_no ?? '0894102000013837'}</span>
-              <span>Bank:</span>
+              <span>बैंक:</span>
               <span>{companyInfo.bank_name ?? 'IDBI BANK'}</span>
-              <span>IFSC CODE:</span>
+              <span>आईएफएससी कोड:</span>
               <span>{companyInfo.bank_ifsc ?? 'IBKL0000894'}</span>
             </div>
           </div>
         </div>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          5. The Allottee understands that the project is still at the concept stage and decision
-          and developments will to an extent depend on the kind of Allottee response as generated by
-          this and like request besides the completions of land acquisition, conversion and approval
-          of plans.
+          5. आवंटी समझते हैं कि परियोजना अभी भी संकल्पना स्तर पर है और निर्णय और विकास काफी हद तक इस
+          और इसी प्रकार के अनुरोध से उत्पन्न आवंटी प्रतिक्रिया के साथ-साथ भूमि अधिग्रहण, रूपांतरण और
+          योजनाओं के अनुमोदन की पूर्णता पर निर्भर करेंगे।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          6. The Allottee further understands that the Agreement paid hereby and through the
-          provisional registration against a probable&apos;s allotment shall be converted into
-          allotment only upon the intimations by the firm post sanctions of the plans provided all
-          payments due have been paid timely.
+          6. आवंटी आगे समझते हैं कि अनंतिम पंजीकरण के विरुद्ध यहाँ और संभावित आवंटन के माध्यम से
+          किया गया भुगतान केवल तभी आवंटन में परिवर्तित होगा जब फर्म द्वारा योजनाओं की मंजूरी के बाद
+          सूचना दी जाए, बशर्ते सभी देय भुगतान समय पर किए गए हों।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
@@ -140,110 +112,63 @@ export function OperativeClausesAndSignaturesPageHindi({
         }}
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          7. The Allottee understands that the allotment shall be subject to due execution of the
-          firms Agreement in its standard format including maintenance agreement IBMS as per
-          Annexure B and acceptance by him/ them of all term and condition of the firm.
+          7. आवंटी समझते हैं कि आवंटन फर्म के मानक प्रारूप में करार के उचित निष्पादन के अधीन होगा
+          जिसमें अनुबंध-बी के अनुसार रखरखाव करार आईबीएमएस और फर्म की सभी नियमों और शर्तों की उनके
+          द्वारा/उनके द्वारा स्वीकृति शामिल है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          8. A. The Allottee understands that there is a lock in period of 12 months from the date
-          of the realization of first part advance payment with a grace period of 6 months in order
-          to claim 18% interest for delay on possession on the paid amount unless there shall be
-          delay or failure due to Force Majeure conditions including but not limited to failure of
-          the Allottee(s) to pay in time the Total Price and other charges and dues/payments
-          mentioned in this Agreement or any failure on the part of the Allottee(s) to abide by all
-          or any of the terms and conditions of this Agreement during which the Allottee understands
-          that he /she will not be entitled to any refund of the money from the firm.
+          8. क. आवंटी समझते हैं कि पहली आंशिक अग्रिम भुगतान की प्राप्ति की तारीख से 12 महीने की
+          लॉक-इन अवधि है और भुगतान की गई राशि पर कब्जे में देरी के लिए 18% ब्याज का दावा करने के लिए
+          6 महीने की छूट अवधि है, जब तक कि अप्रत्याशित घटना की स्थितियों के कारण देरी या विफलता न
+          हो। इस अवधि के दौरान आवंटी समझते हैं कि वे फर्म से किसी भी धनराशि की वापसी के हकदार नहीं
+          होंगे।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          B. Possession will be given within lock in period of 12 months along with 6 months grace
-          period. If the possession of the Said Plot/shop is delayed due to Force Majeure
-          conditions, then the Firm shall be entitled to extension of time for delivery of
-          possession of the Said Plot/shop. The Firm during the continuance of the Force Majeure,
-          reserves the right to alter or vary the terms and conditions of this Agreement or if the
-          circumstances so warrant, the Firm may also suspend the development of the project for
-          such period as is considered expedient, the Allottee(s) agrees and consents that the
-          Allottee(s) shall have no right to raise any claim, compensation of any nature whatsoever
-          for or with regard to such suspension. The Allottee(s) agrees and understands that if the
-          Force Majeure condition continues for a long period, then the Firm alone in its own
-          judgment and discretion, may terminate this Agreement and in such case the only liability
-          of the Firm shall be to refund the amounts without any interest or compensation
-          whatsoever. The Allottee(s) agrees that the Allottee(s) shall have no right or claim of
-          any nature whatsoever and the Firm shall be released and discharged of all its obligations
-          and liabilities under this Agreement.
+          ख. 12 महीने की लॉक-इन अवधि के साथ 6 महीने की छूट अवधि के भीतर कब्जा दिया जाएगा। यदि
+          अप्रत्याशित घटना की स्थितियों के कारण उक्त भूखंड/दुकान के कब्जे में देरी होती है, तो फर्म
+          उक्त भूखंड/दुकान के कब्जे की सुपुर्दगी के लिए समय विस्तार की हकदार होगी। यदि अप्रत्याशित
+          घटना की स्थिति लंबे समय तक जारी रहती है, तो फर्म अकेले अपने निर्णय और विवेक से यह करार
+          समाप्त कर सकती है और ऐसे मामले में फर्म की एकमात्र देनदारी बिना किसी ब्याज या मुआवजे के
+          राशियाँ वापस करना होगी।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          C. The builder will provide basic facilities like internal Roads, Parks, External Boundary
-          Walls/Fencing, Street Lights, Security System, etc…..
+          ग. बिल्डर आंतरिक सड़कें, पार्क, बाहरी सीमा दीवारें/बाड़, स्ट्रीट लाइटें, सुरक्षा प्रणाली
+          आदि जैसी बुनियादी सुविधाएँ प्रदान करेगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          D. If the Firm is unable to construct/continue or complete the construction of the Said
-          Building/Said Complex due to Force Majeure conditions or due to any government/regulatory
-          authority&apos;s action, inaction or omission, then the Firm may challenge the same by
-          moving the appropriate courts, tribunal(s) and / or authority. In such a situation, the
-          amount(s) paid by the Allottee(s) shall continue to remain with the Firm and the
-          Allottee(s) shall not have a right to terminate this Agreement and ask for refund of his
-          money and this Agreement shall remain in abeyance till final determination by the court(s)
-          / tribunal(s) / authority (ies). However, the Allottee(s) may, if so desires become a
-          party along with the Firm in such litigation to protect Allottee&apos;s rights arising
-          under this Agreement. In the event the Firm succeeding in its challenge to the impugned
-          legislation or rule, regulation, order or notification as the case may be, it is hereby
-          agreed that this Agreement shall stand revived and the Allottee(s) shall be liable to
-          fulfill all obligations as provided in this Agreement. It is further agreed that in the
-          event of the aforesaid challenge of the Firm to the impugned legislation, order, rules,
-          regulations, notifications, and the said legislation, order, rules, regulations,
-          notifications become final, absolute and binding, the Firm will, subject to provisions of
-          law/court order, refund within reasonable time to the Allottee(s) the amounts received
-          from the Allottee(s) after deducting Non Refundable Amounts, but without any interest or
-          compensation and the decision of the Firm in this regard shall be final and binding on the
+          घ. यदि फर्म अप्रत्याशित घटना की स्थितियों या किसी सरकारी/नियामक प्राधिकरण की कार्रवाई,
+          निष्क्रियता या चूक के कारण उक्त भवन/उक्त परिसर का निर्माण/जारी रखने या पूरा करने में
+          असमर्थ है, तो फर्म उचित न्यायालयों, न्यायाधिकरणों और/या प्राधिकरण में आवेदन करके इसे
+          चुनौती दे सकती है। ऐसी स्थिति में, आवंटी(यों) द्वारा भुगतान की गई राशियाँ फर्म के पास बनी
+          रहेंगी और यह करार न्यायालयों/न्यायाधिकरणों/प्राधिकरणों के अंतिम निर्णय तक स्थगित रहेगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          9. The Allottee(s) authorizes the Firm to adjust/appropriate all payments that shall be
-          made by the Allottee(s) under any head(s) of dues against outstanding heads in
-          Allottee&apos;s name and the Allottee(s) shall not have a right to object/demand/direct
-          the Firm to adjust the payments in any manner otherwise than as decided by the Firm.
+          9. आवंटी(यां) फर्म को अधिकृत करते हैं कि वह आवंटी(यों) के नाम पर बकाया मदों के विरुद्ध
+          आवंटी(यों) द्वारा किसी भी शीर्ष के तहत किए गए सभी भुगतानों को समायोजित/नियत करे और
+          आवंटी(यों) को फर्म द्वारा तय तरीके के अलावा किसी अन्य तरीके से भुगतान समायोजित करने की
+          मांग/आपत्ति/निर्देश देने का अधिकार नहीं होगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          10. The Allottee(s) agrees that time is essence with respect to payment of Total Price and
-          other charges, deposits and amounts payable by the Allottee(s) as per this Agreement
-          and/or as demanded by the Firm from time to time and also to perform/observe all the other
-          obligations of the Allottee(s) under this Agreement. The Firm is not under any obligation
-          to send any reminders for the payments to be made by the Allottee(s) as per the schedule
-          of payments and for the payments to be made as per demand by the Firm or otherwise.
+          10. आवंटी(यां) सहमत हैं कि इस करार के अनुसार और/या समय-समय पर फर्म द्वारा मांगे गए कुल
+          मूल्य और अन्य शुल्कों, जमाओं और राशियों के भुगतान के संबंध में समय का बहुत महत्व है। फर्म
+          भुगतान अनुसूची के अनुसार आवंटी(यों) द्वारा किए जाने वाले भुगतानों के लिए कोई भी अनुस्मारक
+          भेजने के लिए बाध्य नहीं है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          11. If any delay in due payment, then the firm will charge 18% p.a interest on pro-rata
-          basis and if such delay continue for 90 days then allotment will automatically get
-          transfer to Market Payment Plan.
+          11. यदि देय भुगतान में कोई देरी होती है, तो फर्म प्रो-राता आधार पर 18% प्रति वर्ष की दर से
+          ब्याज लेगी और यदि ऐसी देरी 90 दिनों तक जारी रहती है तो आवंटन स्वतः बाजार भुगतान योजना में
+          स्थानांतरित हो जाएगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          12. The Allottee(s) has seen and accepted the schedule of payments, (as given in
-          Annexure-A) .The Firm may in its sole discretion or as may be directed by any Governmental
-          Authority (ies) or due to Force Majeure conditions carry out, such additions, alterations,
-          deletions and/ or modifications in the plot//shop floor plans, specifications, etc.,
-          including but not limited to change in the position of the Said Plot//shop, change in the
-          number of Said Plot//shop, change in the area and/ or change in the dimension of the Said
-          Plot//shop at any time thereafter till the grant of Conveyance Deed/Registry. The
-          Allottee(s) agrees and understands that the construction will commence only after all
-          necessary approvals are received from the concerned authorities.
+          12. आवंटी(यों) ने भुगतान अनुसूची (अनुबंध-ए) को देखा और स्वीकार किया है। फर्म अपने एकल
+          विवेक से या किसी सरकारी प्राधिकरण के निर्देश पर या अप्रत्याशित घटना की स्थितियों के कारण
+          भूखंड/दुकान की मंजिल योजनाओं, विशिष्टताओं आदि में परिवर्तन कर सकती है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          13. In case of any alteration/modifications resulting in (+)(-)10% change in the plot Area
-          of the Said Plot/shop any time prior to and upon the grant of intimation letter/Conveyance
-          Deed/ registration, the Firm shall intimate in writing to the Allottee(s) the changes
-          thereof and the resultant change, if any, in the Total Price of the Said Plot/shop to be
-          paid by the Allottee(s) and the Allottee(s) agrees to deliver to the Firm written consent
-          or objections to the changes within thirty (30) days from the date of dispatch by the
-          Firm. In case the Allottee(s) does not send his written consent, the Allottee(s) shall be
-          deemed to have given unconditional consent to all such alterations/modifications and for
-          payments, if any, to be paid in consequence thereof. If the Allottee(s) objects to such
-          alterations/modifications indicating his non-consent/objections in writing then in such
-          case alone the Firm may at its sole discretion decide to cancel this Agreement without
-          further notice and refund the entire money received from the Allottee(s) in six equal
-          installments within ninety (90) days from the date of intimation received by the Firm from
-          the Allottee(s). Upon the decision of the Firm to cancel the Said Plot/shop, the Firm
-          shall be discharged from all its obligations and liabilities under this Agreement and the
-          Allottee(s) shall have no right, interest or claim of any nature whatsoever on the Said
-          Plot/shop.
+          13. किसी भी परिवर्तन/संशोधन के परिणामस्वरूप उक्त भूखंड/दुकान के भूखंड क्षेत्र में (+)(-)
+          10% परिवर्तन की स्थिति में, फर्म आवंटी(यों) को लिखित में परिवर्तनों की सूचना देगी और यदि
+          आवंटी(यों) फर्म को 30 दिनों के भीतर लिखित सहमति या आपत्ति नहीं भेजते हैं, तो आवंटी(यों) को
+          सभी परिवर्तनों के लिए बिना शर्त सहमति दी गई मानी जाएगी।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
@@ -257,144 +182,61 @@ export function OperativeClausesAndSignaturesPageHindi({
         }}
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          14. The Firm, upon obtaining necessary approvals from the Govt authority shall offer in
-          writing possession of the Said Plot/shop to the Allottee(s). Within 30 days from the date
-          of issue of such notice and the Firm shall give possession of the Said Plot/shop to the
-          Allottee(s) provided the Allottee(s) is not in default of any of the terms and conditions
-          of this Agreement and has complied with all provisions, formalities, documentation, etc.,
-          as may be prescribed by the Firm in this regard. The Allottee(s) shall be liable to pay
-          the Maintenance Charges from the date of grant of the intimation letter or Conveyance deed
-          whichever is earlier irrespective of the date on which the Allottee(s) takes possession of
-          the Said Plot/shop.
+          14. फर्म, सरकारी प्राधिकरण से आवश्यक अनुमोदन प्राप्त करने पर, आवंटी(यों) को लिखित में उक्त
+          भूखंड/दुकान का कब्जा देने की पेशकश करेगी। ऐसी नोटिस जारी होने की तारीख से 30 दिनों के भीतर
+          फर्म उक्त भूखंड/दुकान का कब्जा आवंटी(यों) को देगी, बशर्ते आवंटी(यां) इस करार के किसी भी
+          नियम और शर्त के उल्लंघन में न हों।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          15. Upon receiving a written intimation from the Firm in terms of clause 13 above, the
-          Allottee(s) shall within the time stipulated by the Firm, take possession of the Said
-          Plot//shop from the Firm by executing necessary indemnities, undertakings, and such other
-          documentation as the Firm may prescribe and by making all the payments to the Firm of all
-          charges/dues as specified in this Agreement and the Firm shall after satisfactory
-          execution of such documents give possession of the Said Plot/shop to the Allottee(s),
-          provided the Allottee(s) is not in breach of any other term of this Agreement. If the
-          Allottee(s) fails to take the possession of the Said Plot/shop as aforesaid within the
-          time limit prescribed by the Firm in its notice, then the Said Plot/shop shall be at the
-          risk and cost of the Allottee(s) and the Firm shall have no liability or concern thereof.
-          Further it is agreed by the Allottee(s) that in the event of the Allottee&apos;s failure
-          to take possession of the Said Plot/shop in the manner as aforesaid, the Firm shall `have
-          the option to cancel this Agreement and avail the remedies as are available in Law
-          including as stipulated in clause 28 of this Agreement or the Firm may, without prejudice
-          to its rights under any of the clauses of this Agreement and at its sole discretion,
-          decide to condone the delay by the Allottee(s) in taking possession of the Said Plot//shop
-          in the manner as stated in this clause on the condition that the Allottee(s) shall pay to
-          the Firm holding charges @ Rs30/- per sq. yd/month. of the Plot Area per month for any
-          delay of full one month or any part thereof in taking possession of the entire period of
-          delay. The Allottee (s)acknowledges that the charges stipulated above are just, fair and
-          reasonable which the Firm will suffer on account of delay in taking possession of the Said
-          Plot//shop by the Allottee(s) That on such condition and after receiving entire amount of
-          charges together with all other amounts due and payable under this Agreement (along with
-          due interest, if any, thereon) the Firm shall hand over the possession of the Said
-          Plot/shop to the Allottee(s). For the avoidance of any doubt it is clarified that these
-          charges are in addition to maintenance or any other charges as provided in this Agreement.
-          Further, the Allottee(s) agrees that in the event of the Allottee&apos;s failure to take
-          possession of the Said Plot/shop within the time stipulated by the Firm in its notice, the
-          Allottee(s) shall have no right or claim in respect of any item of work in the Said
-          Plot//shop which the Allottee(s) may allege not to have been carried out or completed or
-          in respect of any design specifications, building materials or any other reason whatsoever
-          and the Allottee(s) shall be deemed to have been fully satisfied in all respects
-          concerning construction and all other work relating to the Said Plot/shop/Said
-          Building/Said Complex.
+          15. उपरोक्त खंड 13 के तहत फर्म से लिखित सूचना प्राप्त होने पर, आवंटी(यां) फर्म द्वारा
+          निर्धारित समय के भीतर, आवश्यक क्षतिपूर्ति, वचनपत्र और ऐसे अन्य दस्तावेजों को निष्पादित
+          करके और सभी शुल्कों/देय राशियों का भुगतान करके उक्त भूखंड/दुकान का कब्जा लेंगे। यदि
+          आवंटी(यां) फर्म की नोटिस में निर्धारित समय सीमा के भीतर उक्त भूखंड/दुकान का कब्जा लेने में
+          विफल रहते हैं, तो उक्त भूखंड/दुकान आवंटी(यों) के जोखिम और लागत पर होगी।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          16. If for any reasons other than those given in clauses 8(b), 8(c) and clause 28, the
-          Firm is unable to or fails to deliver possession of the Said Plot//shop to the Allottee(s)
-          within Twenty Four(24) months with a grace period of 6 months from the date of Application
-          or within any extended period or periods as envisaged under this Agreement, then in such
-          case, the Allottee(s) shall be entitled to give notice to the Firm, within ninety (90)
-          days from the expiry of said period of Twelve (12) months with a grace period of 6 months
-          or such extended periods, as the case may be, for terminating this Agreement. In that
-          event, the Firm shall be at liberty to sell and/or dispose of the Said Plot//shop and the
-          Parking Space(s) to any other party at such price and upon such terms and conditions, as
-          the Firm may deem fit and thereafter the Firm shall within ninety (90) days from the date
-          of full realization of the sale price after sale of Said Plot//shop refund to the
-          Allottee(s), in six equal installments, without any interest, the amounts paid by the
-          Allottee(s) in respect of the Said Plot//shop without deduction of Earnest Money but after
-          deduction of brokerage paid by the Firm to the broker / sales organizer in case the
-          booking is done through a broker/sales organizer. For the avoidance of doubt, it is stated
-          that the Allottee (s)shall have no other right or claim against the Firm in respect of the
-          Said Plot/shop and Parking Space(s). If the Allottee(s) fails to exercise the right of
-          termination within the time limit as aforesaid, then the Allottee&apos;s right to
-          terminate this Agreement shall stand waived off and the Allottee(s) shall continue to be
-          bound by the provisions of this Agreement.
+          16. यदि खंड 8(ब), 8(स) और खंड 28 में दिए गए कारणों के अलावा किसी अन्य कारण से फर्म आवेदन
+          की तारीख से 24 (चौबीस) महीने की अवधि के भीतर 6 महीने की छूट अवधि के साथ उक्त भूखंड/दुकान
+          का कब्जा आवंटी(यों) को देने में असमर्थ है या विफल रहती है, तो ऐसे मामले में आवंटी(यां)
+          उक्त 12 (बारह) महीने की अवधि की समाप्ति से 90 (नब्बे) दिनों के भीतर फर्म को इस करार को
+          समाप्त करने की नोटिस देने के हकदार होंगे।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          17. Subject to the terms and conditions of the Agreement, in case of any delay other than
-          clause 28 and conditions as mentioned in clause 8(b) and 8(c) by the Firm incompletion of
-          handing over possession of the Said Plot/shop, the Firm shall pay compensation @ Rs. 20
-          per sq. Yd/ft.of the Super Area of the Said Plot/shop per month or any part thereof only
-          to the first named Allottee(s) and not to anyone else. The Allottee(s) agrees and confirms
-          that the compensation herein is a just and equitable estimate of the damages which the
-          Allottee(s) may suffer and the Allottee(s) agrees that it shall have no other right claims
-          whatsoever. The adjustment of such compensation shall be done only at the time of
-          execution of conveyance deed of the Said Plot/shop to the Allottee(s) first named.
+          17. इस करार की शर्तों के अधीन, खंड 28 और खंड 8(ब) और 8(स) में उल्लिखित शर्तों के अलावा,
+          उक्त भूखंड/दुकान का कब्जा सुपुर्द करने में फर्म की ओर से किसी भी देरी की स्थिति में, फर्म
+          केवल प्रथम नाम के आवंटी(यों) को उक्त भूखंड/दुकान के सुपर एरिया के प्रति वर्ग गज/फुट प्रति
+          माह ₹20 की दर से मुआवजा देगी।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          18. The Firm, its associates/subsidiaries shall execute a Conveyance Deed to convey the
-          title, of the Said Plot/shop in favor of the Allottee(s), provided the Allottee(s) has
-          paid the Total Price and other charges in accordance with this Agreement and the
-          Allottee(s) is not in breach of all or any of the terms of this Agreement.
+          18. फर्म, उसके सहयोगी/सहायक उक्त भूखंड/दुकान का स्वामित्व आवंटी(यों) के पक्ष में
+          हस्तांतरित करने के लिए विक्रय-पत्र निष्पादित करेगी, बशर्ते आवंटी(यों) ने इस करार के अनुसार
+          कुल मूल्य और अन्य शुल्कों का भुगतान किया हो।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          19. In order to provide necessary maintenance services, upon the completion of the Said
-          Building/Said Complex the maintenance of the Said Building / Said Complex may be handed
-          over to the Maintenance Agency. The Allottee(s) agrees to execute Maintenance Agreement
-          (draft given in annexure-B to this Agreement) with the Maintenance Agency or any other
-          nominee/agency or other body/association of plot//shop owners as may be appointed by the
-          Building/Said Complex, the maintenance of the Said Building/Said Complex may be handed
-          over to the Maintenance Agency. The Allottee(s) agrees to execute a Maintenance Agreement
-          (draft given in Annexure-B to this Agreement) with the Maintenance Agency or any other
-          nominee/agency or other body/association of plot/shop owners as may be appointed by the
-          Firm from time to time for the maintenance and upkeep of the Said Building/Said Complex.
-          The Allottee(s) further undertakes to abide by the terms and conditions of the
-          Maintenance.
+          19. आवश्यक रखरखाव सेवाएँ प्रदान करने के लिए, उक्त भवन/उक्त परिसर के पूरा होने पर उक्त
+          भवन/उक्त परिसर का रखरखाव रखरखाव एजेंसी को सौंपा जा सकता है। आवंटी(यां) रखरखाव एजेंसी या
+          फर्म द्वारा नियुक्त किसी अन्य नामांकित व्यक्ति/एजेंसी या अन्य निकाय/भूखंड/दुकान मालिकों के
+          संघ के साथ रखरखाव करार (अनुबंध-बी में मसौदा दिया गया) निष्पादित करने के लिए सहमत हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          20. The total Maintenance Charges shall be more elaborately described in the Maintenance
-          Agreement (draft given in annexure -_B_). The Allottee(s) undertakes to pay the same
-          promptly. It is agreed by the Allottee(s) that the payment of Maintenance Charges will be
-          applicable whether or not the possession of Said Plot//shop is taken by the Allottee(s).
-          The Maintenance Charges shall be recovered on such estimated basis which may also include
-          the overhead cost on monthly / quarterly intervals as may be decided by the Maintenance
-          Agency and adjusted against the actual audited expenses as determined at every end of the
-          financial year and any surplus/deficit thereof shall be carried forward and adjusted in
-          the maintenance bills of the subsequent financial year. The estimates of the Maintenance
-          Agency shall be final and binding on the Allottee(s). The Allottee(s) agrees and
-          undertakes to pay the maintenance bills on or before due date as intimated by the
-          Maintenance Agency.
+          20. कुल रखरखाव शुल्कों का अधिक विस्तार से रखरखाव करार (अनुबंध-बी में मसौदा दिया गया) में
+          वर्णन किया जाएगा। आवंटी(यां) समय पर उनका भुगतान करने का वचन देते हैं। यह आवंटी(यों) द्वारा
+          सहमत है कि रखरखाव शुल्क का भुगतान चाहे आवंटी(यों) ने उक्त भूखंड/दुकान का कब्जा लिया हो या
+          नहीं, लागू होगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          21. The Allottee(s) shall not use the Said Plot//shop for any purpose other than for
-          residential purpose or commercial use, as prescribed; or use the same in a manner that may
-          cause nuisance or annoyance to other plot/shop owners or residents of the Said Complex; or
-          for any commercial or illegal or immoral purpose; or to do or cause anything to be done in
-          or around the Said Plot//shop which tends to cause interference to any adjacent plot(s) /
-          building(s) or in any manner interfere with the use of roads or amenities available for
-          common use. The Allottee(s) shall indemnify the Firm against any action, damages or loss
-          due to misuse for which the Allottee(s) / occupant shall be solely responsible.
+          21. आवंटी(यां) उक्त भूखंड/दुकान का उपयोग निर्धारित आवासीय प्रयोजन या वाणिज्यिक उपयोग के
+          अलावा किसी अन्य उद्देश्य के लिए नहीं करेंगे; या इस तरह से उपयोग नहीं करेंगे जिससे उक्त
+          परिसर के अन्य भूखंड/दुकान मालिकों या निवासियों को उपद्रव या असुविधा हो; या किसी वाणिज्यिक
+          या अवैध या अनैतिक उद्देश्य के लिए नहीं करेंगे।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          22. (a). The Allottee(s) agrees and understands that terms and conditions of the Agreement
-          may be modified/amended by the Firm in accordance with any directions/order of any court
-          of law, Governmental Authority, in compliance with applicable law and such amendment shall
-          be binding on the Allottee(s). (b). The Allottee(s) further agrees that the Maintenance
-          Schedule (annexure-_B_) attached to this Agreement is annexed to acquaint the Allottee(s)
-          with the terms and conditions as may be stipulated as and when it is finally executed at
-          the appropriate time to be notified by the Firm. The Allottee(s) consents to the terms and
-          conditions contained in the draft which shall substantially be the same in the final
-          document to be executed at the appropriate time to be notified by the Firm. The
-          Allottee(s) further understands that the Firm shall have the right to impose additional
-          terms and conditions or to modify/amend/change the terms and conditions as stated in this
-          draft in the final document to be executed at the appropriate time. The Firm further
-          reserves the right to correct, modify, amend or change all the annexures attached to this
-          Agreement and also annexures which are indicated to be tentative at any time prior to the
+          22. (क). आवंटी(यां) सहमत हैं और समझते हैं कि करार के नियमों और शर्तों को किसी भी न्यायालय
+          के निर्देश/आदेश, सरकारी प्राधिकरण के अनुसार, लागू कानून के अनुपालन में फर्म द्वारा
+          संशोधित/परिवर्तित किया जा सकता है और ऐसा संशोधन आवंटी(यों) पर बाध्यकारी होगा। (ख).
+          आवंटी(यां) आगे सहमत हैं कि इस करार के साथ संलग्न रखरखाव अनुसूची (अनुबंध-बी) आवंटी(यों) को
+          उन नियमों और शर्तों से परिचित कराने के लिए जोड़ी गई है जो उचित समय पर अंतिम रूप दिए जाने
+          पर लागू हो सकती हैं।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
@@ -408,86 +250,68 @@ export function OperativeClausesAndSignaturesPageHindi({
         }}
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          23. The Allottee(s) agrees that the provisions of this Agreement, Maintenance Agreement,
-          and those contained in other annexures are specific and applicable to plot//shops offered
-          for sale in the Said Complex and these provisions cannot be read in evidence or
-          interpreted in any manner in or for the purpose of any suit or proceedings before any
-          Court(s), Commission, Consumer Forum(s) or any other judicial forum involving any other
-          Disputes plot//shop(s)/building(s)/project(s) of the Firm/ its associates/subsidiaries,
-          partnership firms in which the Firm is partner or interested.
+          23. आवंटी(यां) सहमत हैं कि इस करार, रखरखाव करार और अन्य अनुबंधों में शामिल प्रावधान उक्त
+          परिसर में बिक्री के लिए प्रस्तावित भूखंड/दुकानों के लिए विशिष्ट और लागू हैं और इन
+          प्रावधानों को फर्म/उसके सहयोगियों/सहायकों के किसी अन्य भूखंड/दुकान/भवन/परियोजना से संबंधित
+          किसी भी न्यायालय/आयोग/उपभोक्ता फोरम में किसी भी प्रकार से पढ़ा या व्याख्यायित नहीं किया जा
+          सकता।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          24. The Allottee(s) agrees and understands that if any provision of this Agreement is
-          determined to be void or unenforceable under applicable law, such provisions shall be
-          deemed amended or deleted in so far as reasonably inconsistent with the purpose of this
-          Agreement and to the extent necessary to conform to applicable law and the remaining
-          provisions of this Agreement shall remain valid and enforceable as applicable at the time
-          of execution of this Agreement.
+          24. आवंटी(यां) सहमत हैं और समझते हैं कि यदि इस करार के किसी भी प्रावधान को लागू कानून के
+          तहत शून्य या अप्रवर्तनीय माना जाता है, तो ऐसे प्रावधान को इस करार के उद्देश्य के साथ
+          यथासंभव असंगतता की सीमा तक और लागू कानून के अनुरूप होने के लिए आवश्यक सीमा तक संशोधित या
+          हटाया हुआ माना जाएगा और इस करार के शेष प्रावधान करार निष्पादन के समय यथा लागू वैध और
+          प्रवर्तनीय रहेंगे।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          25. The Firm shall not be responsible or liable for not performing any of its obligations
-          or undertakings provided for in this Agreement if such performance is prevented due to
-          Force Majeure conditions.
+          25. फर्म इस करार में प्रदान किए गए अपने किसी भी दायित्व या वचनों को पूरा न करने के लिए
+          जिम्मेदार या उत्तरदायी नहीं होगी यदि ऐसा निष्पादन अप्रत्याशित घटना की स्थितियों के कारण
+          बाधित हो।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          26. The execution of this Agreement will be complete only upon its execution by the Firm
-          through its authorized signatory at the Firms head office at, A-61 Sector-65 Noida Uttar
-          Pradesh 201309, after the copies are duly executed by the Allottee(s) and are received by
-          the Firm .
+          26. इस करार का निष्पादन तभी पूर्ण होगा जब आवंटी(यों) द्वारा इसकी प्रतियों पर विधिवत
+          हस्ताक्षर करके फर्म को प्राप्त होने के बाद फर्म के अधिकृत हस्ताक्षरकर्ता द्वारा A-61
+          सेक्टर-65 नोएडा उत्तर प्रदेश 201309 में फर्म के प्रधान कार्यालय में निष्पादित किया जाए।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          27. All notices are to be served on the Allottee(s) as contemplated in this Agreement
-          shall be deemed to have been duly served if sent to the Allottee(s) or the Firm by
-          registered post at their respective addresses specified below:
+          27. इस करार में परिकल्पित सभी नोटिस आवंटी(यों) को उनके नीचे निर्दिष्ट पते पर पंजीकृत डाक
+          से भेजी जाने पर विधिवत सेवित मानी जाएंगी।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
           {formData.address}
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          It shall be the duty of the Allottee(s) to inform the Firm of any change subsequent to the
-          execution of this Agreement in the above address by Registered Post failing which all
-          communications and letters posted at the above address shall be deemed to have been
-          received by the Allottee(s).
+          इस करार के निष्पादन के बाद उपरोक्त पते में किसी भी परिवर्तन की सूचना पंजीकृत डाक द्वारा
+          फर्म को देना आवंटी(यों) का कर्तव्य होगा, अन्यथा उपरोक्त पते पर भेजे गए सभी पत्र-व्यवहार और
+          पत्र आवंटी(यों) द्वारा प्राप्त माने जाएंगे।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          28. The Allottee(s) agrees that all defaults, breaches and/or non-compliance of any of the
-          terms and conditions of this Agreement shall be deemed to be events of defaults liable for
-          consequences stipulated herein. Some of the indicative events of defaults are mentioned
-          below which are merely illustrative and are not exhaustive.
+          28. आवंटी(यां) सहमत हैं कि इस करार के किसी भी नियम और शर्त के सभी उल्लंघन, भंग और/या
+          अनुपालन न करने को चूक की घटनाएँ माना जाएगा। चूक की कुछ संकेतक घटनाएँ नीचे उल्लिखित हैं जो
+          केवल दृष्टांत हैं और संपूर्ण नहीं हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          i) Failure to make payments within the time as stipulated in the schedule of payments as
-          given in annexure-A and failure to pay the stamp duty, legal, registration, any incidental
-          charges, any increases in security including but not limited to IBMS as demanded by the
-          Firm, any other charges, deposits for bulk supply of electrical energy, Taxes etc. as may
-          be notified by the Firm to the Allottee(s) under the terms of this Agreement, and all
-          other defaults of similar nature.
+          i) अनुबंध-ए में दी गई भुगतान अनुसूची में निर्धारित समय के भीतर भुगतान न करना और स्टाम्प
+          शुल्क, कानूनी, पंजीकरण, आनुषंगिक शुल्क, IBMS सहित किसी भी सुरक्षा में वृद्धि का भुगतान न
+          करना।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          ii) Failure to take possession of the Said Plot//shop within the time stipulated by the
-          Firm.
+          ii) फर्म द्वारा निर्धारित समय के भीतर उक्त भूखंड/दुकान का कब्जा न लेना।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          iii) Failure to execute Maintenance Agreement and/or to pay on or before its due date the
-          Maintenance Charges, maintenance security deposits, deposits/charges for bulk supply of
-          electrical energy or any increases in respect thereof, as demanded by the Firm, its
-          nominee, other Body or Association of Plot/shop Owners/Association of Condominium, as the
-          case may be.
+          iii) रखरखाव करार निष्पादित करने में विफलता और/या निर्धारित तिथि पर रखरखाव शुल्क, रखरखाव
+          सुरक्षा जमा आदि का भुगतान न करना।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          iv) Assignment of this Agreement or any interest of the Allottee(s) in this Agreement
-          without prior written consent of the Firm.
+          iv) फर्म की पूर्व लिखित सहमति के बिना इस करार या आवंटी(यों) के किसी हित का समनुदेशन।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          v) Dishonour of any cheque(s) given by the Allottee(s) for any reason whatsoever.
+          v) किसी भी कारण से आवंटी(यों) द्वारा दिए गए किसी भी चेक का अनादरण।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">vi) Escalation Charges.</p>
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">vi) वृद्धि शुल्क।</p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          vii) Any other acts, deeds or things which the Allottee(s) may commit, omit or fail to
-          perform undertaking, affidavit/Agreement/indemnity etc. or as demanded by the Firm which
-          in the opinion of the Firm amounts to an event of default and the Allottee(s) agrees and
-          confirms that the decision of the Firm in this regard shall be final and binding on the
-          Allottee(s).
+          vii) कोई भी अन्य कार्य, विलेख या बातें जो आवंटी(यों) कर सकते हैं, छोड़ सकते हैं या करने
+          में विफल हो सकते हैं और जो फर्म की राय में चूक की घटना के रूप में मानी जाती हैं।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
@@ -501,112 +325,92 @@ export function OperativeClausesAndSignaturesPageHindi({
         }}
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          Unless otherwise provided in this Agreement, upon the occurrence of any one or more of
-          event(s) of default under this Agreement including but not limited to those specified
-          above, the Firm may, in its sole discretion, by notice to the Allottee(s), cancel this
-          Agreement by giving in writing thirty (30) days from the date of issue of notice to
-          rectify the default as specified in that notice. In default of the above, this Agreement
-          shall stand cancelled without any further notice. If the default is not rectified within
-          such thirty (30)days, this Agreement shall stand cancelled without any further notice or
-          intimation and the Firm shall have the right to retain Earnest Money along with the
-          interest on delayed payments, any interest paid, due or payable, any other amount of a
-          non-refundable nature. The Allottee(s) acknowledges that upon such cancellation of this
-          Agreement, the Allottee(s) shall have no right or interest on the Said Plot//shop and the
-          Firm shall be discharged of all liabilities and obligations under this Agreement and the
-          Firm shall have the right to sell or deal with the Said Plot//shop in the manner in which
-          it may deem fit as if this Agreement had never been executed. There fund, if any, shall be
-          refunded by the Firm by registered post only after realizing amount on further sale/resale
-          to any other party and without any interest or compensation whatsoever to the Allottee(s).
-          This will be without prejudice to any other remedies and rights of the Firm to claim other
-          liquidated damages which the Firm might have suffered due to such breach committed by the
-          Allottee(s).
+          जब तक इस करार में अन्यथा प्रदान नहीं किया गया है, इस करार के तहत चूक की एक या अधिक घटनाओं
+          की स्थिति में, फर्म अपने एकल विवेक से, आवंटी(यों) को 30 दिनों का नोटिस देकर इस करार को
+          रद्द कर सकती है। यदि उक्त 30 दिनों के भीतर चूक को सुधारा नहीं जाता है, तो यह करार बिना
+          किसी आगे की नोटिस के रद्द माना जाएगा और फर्म को बयाना राशि के साथ विलंबित भुगतानों पर
+          ब्याज और गैर-वापसी योग्य प्रकृति की किसी भी अन्य राशि को रखने का अधिकार होगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          29. All or any disputes arising out or touching upon or in relation to the terms this
-          Builder Buyer Agreement including the interpretation and validity of the terms thereof and
-          the respective rights and obligations of the parties, which cannot be amicably settled,
-          shall be settled through arbitration. The arbitration proceedings shall be governed by the
-          Arbitration and Conciliation Act, 1996 or any statutory amendments / modifications thereof
-          for the time being in force. The arbitration proceedings shall be held by a sole
-          arbitrator who shall be appointed by the Managing Director of the Firm. The Allottee
-          hereby confirms that he / she shall have no objection in this appointment. In case of any
-          proceeding, reference etc. touching upon the arbitration subject including any award, the
-          territorial jurisdiction shall lie with the competent courts of Rajasthan.
+          29. इस बिल्डर-बायर करार के नियमों से उत्पन्न या उससे संबंधित या उसकी व्याख्या और वैधता और
+          पक्षों के संबंधित अधिकारों और दायित्वों से संबंधित सभी या कोई भी विवाद, जिन्हें
+          सौहार्दपूर्ण ढंग से नहीं सुलझाया जा सकता, मध्यस्थता के माध्यम से सुलझाए जाएंगे। मध्यस्थता
+          कार्यवाही मध्यस्थता और सुलह अधिनियम, 1996 या उसके वैधानिक संशोधनों/परिवर्तनों द्वारा
+          नियंत्रित होगी। मध्यस्थता कार्यवाही फर्म के प्रबंध निदेशक द्वारा नियुक्त एकल मध्यस्थ
+          द्वारा आयोजित की जाएगी। क्षेत्रीय अधिकारिता राजस्थान के सक्षम न्यायालयों में होगी।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          30. That no Allottee shall have any rights to invoke jurisdiction of Civil Court directly
-          without availing remedy of Arbitration.
+          30. कोई भी आवंटी मध्यस्थता का उपाय अपनाए बिना सीधे दीवानी न्यायालय के क्षेत्राधिकार को
+          लागू करने का अधिकार नहीं रखेगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          31. You are requested to keep one copy of this Agreement with you and return the second
-          copy to us duly signed within 7 days failing of which we will presume that the given terms
-          &amp; conditions of this Agreement are acceptable to you.
+          31. आपसे अनुरोध है कि इस करार की एक प्रति अपने पास रखें और दूसरी प्रति 7 दिनों के भीतर
+          विधिवत हस्ताक्षरित करके हमें वापस करें, अन्यथा हम मान लेंगे कि इस करार के दिए गए नियम और
+          शर्तें आपको स्वीकार्य हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          32. This provisional agreement shall be null and void after final registration of
-          plot/plots.
+          32. यह अनंतिम करार भूखंड/भूखंडों के अंतिम पंजीकरण के बाद शून्य और अमान्य हो जाएगा।
         </p>
         <p className="mt-6 mb-4 text-justify text-[13px] leading-relaxed">
-          IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
-          subscribed their respective hands at the places and on the day, month and year mentioned
-          under their respective signatures:
+          इसकी साक्ष्य में पक्षों ने उनके संबंधित हस्ताक्षरों के नीचे उल्लिखित स्थानों और तारीख, माह
+          और वर्ष पर इस करार और उसकी डुप्लीकेट प्रति पर अपने संबंधित हाथ और हस्ताक्षर लगाए हैं:
         </p>
         <p className="mb-4 text-[13px] leading-relaxed">
-          <strong>SIGNED AND DELIVERED BY THE WITHIN NAMED Allottee:</strong> (including joint
-          Allottees) (1) (2) at
+          <strong>उक्त नाम के आवंटी(यों) द्वारा हस्ताक्षरित और सुपुर्द:</strong> (संयुक्त आवंटितियों
+          सहित) (1) (2) पर
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">in the presence of:</p>
-        <p className="mb-4 text-[13px] leading-relaxed">on</p>
+        <p className="mb-4 text-[13px] leading-relaxed">की उपस्थिति में:</p>
+        <p className="mb-4 text-[13px] leading-relaxed">दिनांक</p>
         <p className="mb-4 text-[13px] leading-relaxed">
-          <strong>WITNESSES:</strong>
+          <strong>साक्षी:</strong>
           <br />
-          1. Signature
+          1. हस्ताक्षर
           <br />
-          Name
+          नाम
           <br />
-          Address
+          पता
           <br />
-          (to be completed by the Allottee(s)
+          (आवंटी(यों) द्वारा पूर्ण किया जाना है)
         </p>
         <p className="mb-4 text-[13px] leading-relaxed">
-          2. Signature
+          2. हस्ताक्षर
           <br />
-          Name
+          नाम
           <br />
-          Address
+          पता
         </p>
         <p className="mt-8 mb-4 text-[13px] leading-relaxed">
-          <strong>SIGNED AND DELIVERED by the within named Firm at</strong>
+          <strong>उक्त नाम की फर्म द्वारा हस्ताक्षरित और सुपुर्द</strong>
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">on</p>
-        <p className="mb-4 text-[13px] leading-relaxed">in the presence of:</p>
+        <p className="mb-4 text-[13px] leading-relaxed">दिनांक</p>
+        <p className="mb-4 text-[13px] leading-relaxed">की उपस्थिति में:</p>
         <div className="my-1 h-8 w-24">
           <img
             src="/signature.png"
-            alt="Director Signature"
+            alt="निदेशक हस्ताक्षर"
             className="h-full w-full object-contain"
           />
         </div>
         <p className="mb-4 text-[13px] leading-relaxed">
-          <strong>(AUTHORISED SIGNATORY)</strong>
+          <strong>(अधिकृत हस्ताक्षरकर्ता)</strong>
         </p>
         <p className="mt-8 mb-4 text-[13px] leading-relaxed">
-          <strong>WITNESSES:</strong>
+          <strong>साक्षी:</strong>
           <br />
-          1. Signature
+          1. हस्ताक्षर
           <br />
-          Name
+          नाम
           <br />
-          Address
+          पता
         </p>
         <p className="mb-4 text-[13px] leading-relaxed">
-          FOR AND ON BEHALF
+          की ओर से और उसकी ओर से
           <br />
-          2. Signature
+          2. हस्ताक्षर
           <br />
-          Name
+          नाम
           <br />
-          Address
+          पता
         </p>
       </div>
     </>

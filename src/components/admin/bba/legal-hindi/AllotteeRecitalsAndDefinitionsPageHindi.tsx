@@ -2,8 +2,7 @@ import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
 
 /**
- * Pages 3-5 of the BBA: Allottee representations, the "WHEREAS" chain, and
- * the definitions + interpretation section.
+ * Pages 3-5 of the BBA (Hindi): Allottee representations, WHEREAS chain, definitions & interpretation.
  */
 export function AllotteeRecitalsAndDefinitionsPageHindi({
   formData,
@@ -11,9 +10,9 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
 }: BBALegalContext) {
   const getProjectLocationName = (projectName: string) => {
     if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return 'HARSOLI, TEHSIL RENWAL, DISTRICT JAIPUR, RAJASTHAN';
+      return 'हरसोली, तहसील रेनवाल, जिला जयपुर, राजस्थान';
     }
-    return 'BASADI, KISHAN GARH RENWAL, JAIPUR, RAJASTHAN';
+    return 'बसादी, किशन गढ़ रेनवाल, जयपुर, राजस्थान';
   };
 
   return (
@@ -27,149 +26,140 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-[13px] font-bold">Allottee(s) Representations</p>
+        <p className="mb-4 text-[13px] font-bold">आवंटी(यों) के प्रतिनिधित्व</p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the Allottee(s) vide Application Dated{' '}
+          <strong>और चूँकि</strong> आवंटी(यों) ने दिनांक{' '}
           <strong>
-            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('hi-IN', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
             })}
           </strong>{' '}
-          applied for allotment of Said Plot//shop (herein after defined) in the Said Complex after
-          perusal and understanding the terms and conditions of this Agreement.
+          के आवेदन के माध्यम से इस करार के नियमों और शर्तों को पढ़ने और समझने के पश्चात् उक्त परिसर
+          में उक्त भूखंड/दुकान (जो आगे परिभाषित है) के आवंटन के लिए आवेदन किया है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the Allottee after fully satisfying himself with the stated
-          facts applied to the firm is in the process of developing the Residential Colony on the
-          said Land, and in pursuance thereof, it is understood and agreed by the Allottee that the
-          Plot//shop area and location of Plot/shop, which the Allottee is intending to buy are
-          tentative and are subject to change.
+          <strong>और चूँकि</strong> आवंटी ने कथित तथ्यों से पूरी तरह संतुष्ट होने के पश्चात् फर्म
+          में आवेदन किया है जो उक्त भूमि पर आवासीय कॉलोनी विकसित करने की प्रक्रिया में है, और
+          तदनुसार, यह आवंटी द्वारा समझा और सहमति व्यक्त की जाती है कि भूखंड का क्षेत्र और स्थान जिसे
+          आवंटी खरीदने का इरादा रखते हैं, अनुमानित है और परिवर्तन के अधीन है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the Allottee after fully satisfying himself about the right,
-          title, interest and limitation of the firm in the said land / complex has shown interest
-          in the Complex and has approached the Firm for allotment of Plot/shop admeasuring{' '}
-          <strong>{formData.area} sq.yd</strong> vide application form dated{' '}
+          <strong>और चूँकि</strong> आवंटी ने उक्त भूमि/परिसर में फर्म के अधिकार, स्वामित्व, हित और
+          सीमा के बारे में पूरी तरह संतुष्ट होने के पश्चात् परिसर में रुचि दिखाई है और दिनांक{' '}
           <strong>
-            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
-              day: 'numeric',
-              month: 'long',
-              year: 'numeric',
-            })}
-          </strong>
-          .
-        </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the Allottee has read and understood the advance payment
-          plans offered by SVI INFRA SOLUTIONS PVT LTD, and hereby agree to abide by the conditions
-          mentioned in it and the Allottee has/have chosen to pay the balance advance/subscription
-          Agreement towards the provisional registration against a probable allotment of
-          plot(s)/shops as per detailed in Annexure- A.
-        </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> in pursuance to the aforesaid application for allotment the
-          firm accepted the application of the Allottee and allotted{' '}
-          <strong>Plot No – {formData.unitNumber}</strong> in{' '}
-          <strong>{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}</strong> on dated{' '}
-          <strong>
-            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('hi-IN', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
             })}
           </strong>{' '}
-          to the Allottee and the Allottee has verified and satisfied with the records which entitle
-          the firm to execute this Agreement.
+          के आवेदन पत्र के माध्यम से <strong>{formData.area} वर्ग गज</strong> का भूखंड/दुकान आवंटन
+          के लिए फर्म से संपर्क किया है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the Allottee hereby undertakes that he/she shall abide by all
-          laws, rules, regulations, notifications and terms and conditions of Rajasthan Government,
-          as per law and any alteration(s)/amendment(s)/modification(s) thereto, and shall be liable
-          for defaults and/or breaches of any of the conditions, rules or regulations as may be
-          applicable to the said land/complex from time to time.
+          <strong>और चूँकि</strong> आवंटी ने SVI INFRA SOLUTIONS PVT LTD द्वारा प्रस्तावित अग्रिम
+          भुगतान योजनाओं को पढ़ और समझ लिया है, और एतद्द्वारा इसमें उल्लिखित शर्तों का पालन करने के
+          लिए सहमत हैं, और आवंटी ने अनुबंध-ए में विस्तृत भूखंड(ओं)/दुकान(ों) के संभावित आवंटन के
+          विरुद्ध अनंतिम पंजीकरण हेतु शेष अग्रिम/अभिदान करार का भुगतान करने का विकल्प चुना है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the Allottee has represented and warranted to the firm that
-          the Allottee has the power, competence and authority to enter into and perform this
-          Agreement and has clearly understood his / her rights, duties, responsibilities and
-          obligations under the Agreement.
+          <strong>और चूँकि</strong> आवंटन के लिए उक्त आवेदन के अनुसरण में, फर्म ने आवंटी के आवेदन को
+          स्वीकार किया और दिनांक{' '}
+          <strong>
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('hi-IN', {
+              day: 'numeric',
+              month: 'long',
+              year: 'numeric',
+            })}
+          </strong>{' '}
+          को <strong>{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}</strong> में{' '}
+          <strong>भूखंड सं. – {formData.unitNumber}</strong> आवंटी को आवंटित किया, और आवंटी ने उन
+          अभिलेखों की जाँच की और उनसे संतुष्ट हुए हैं जो फर्म को यह करार निष्पादित करने का अधिकार
+          देते हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> the firm relying on the confirmations, representations and
-          assurances of the Allottee(s) to faithfully abide by all the terms, conditions and
-          stipulations contained in this Agreement has accepted in good faith the Application to
-          allot the Said Plot/shop and is now willing to enter into this Agreement on the terms and
-          conditions appearing hereinafter.
+          <strong>और चूँकि</strong> आवंटी एतद्द्वारा वचन देते हैं कि वे राजस्थान सरकार के सभी
+          कानूनों, नियमों, विनियमों, अधिसूचनाओं और नियमों व शर्तों का पालन करेंगे, जैसा कि कानून के
+          अनुसार और किसी भी परिवर्तन/संशोधन के अनुसार होगा, और समय-समय पर उक्त भूमि/परिसर पर लागू
+          होने वाली किसी भी शर्त, नियम या विनियमन के उल्लंघन और/या अनुपालन न करने के लिए उत्तरदायी
+          होंगे।
+        </p>
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>और चूँकि</strong> आवंटी ने फर्म के साथ यह प्रतिनिधित्व किया और वारंटी दी है कि
+          आवंटी के पास इस करार में प्रवेश करने और इसे निष्पादित करने की शक्ति, योग्यता और प्राधिकार
+          है और उन्होंने करार के तहत अपने अधिकारों, कर्तव्यों, जिम्मेदारियों और दायित्वों को स्पष्ट
+          रूप से समझ लिया है।
+        </p>
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          <strong>और चूँकि</strong> फर्म ने आवंटी(यों) की पुष्टि, प्रतिनिधित्व और आश्वासनों पर भरोसा
+          करते हुए कि वे इस करार में निहित सभी नियमों, शर्तों और उपबंधों का ईमानदारी से पालन करेंगे,
+          उक्त भूखंड/दुकान के आवंटन के लिए सद्भावना में आवेदन स्वीकार कर लिया है और अब आगे उल्लिखित
+          नियमों और शर्तों पर इस करार में प्रवेश करने के लिए तैयार है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
-          NOW, THEREFORE, THIS INDENTURE WITNESSETH AND IT IS HEREBY AGREED AND DECLARED BY AND
-          BETWEEN THE PARTIES HERETO AS FOLLOWS:
+          अब, इसलिए, यह विलेख साक्ष्य देता है और एतद्द्वारा पक्षों के बीच निम्नानुसार सहमति और घोषणा
+          की जाती है:
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&apos;Agreement&apos;</strong> shall mean Builder Buyer&apos;s agreement, which is
-          used by and between the firm and the Allottee;
+          <strong>&apos;करार&apos;</strong> का अर्थ बिल्डर बायर का करार है, जो फर्म और आवंटी के बीच
+          उपयोग में लाया जाता है;
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&apos;Allottee&apos;</strong> means the person(s) named and referred to as party
-          and who is being allotted the Said Plot/shop and who has signed and executed the
-          Agreement.
+          <strong>&apos;आवंटी&apos;</strong> का अर्थ उस व्यक्ति/व्यक्तियों से है जिनका नाम पक्ष के
+          रूप में उल्लिखित है और जिन्हें उक्त भूखंड/दुकान आवंटित किया जा रहा है और जिन्होंने करार पर
+          हस्ताक्षर और निष्पादन किया है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&apos;Date of Possession&apos;</strong> shall mean the date on which the actual
-          physical possession is taken or deemed to have been taken by the Allottee.
+          <strong>&apos;कब्जे की तिथि&apos;</strong> का अर्थ उस तिथि से होगा जिस पर आवंटी द्वारा
+          वास्तविक भौतिक कब्जा लिया जाता है या लिया हुआ माना जाता है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&apos;Deemed Possession&apos;</strong> shall mean the possession of the Plot/shop,
-          if not taken, by the Allottee possession be deemed to be delivered on the next succeeding
-          day after the expiry date of the notice of possession.
+          <strong>&apos;अभिकल्पित कब्जा&apos;</strong> का अर्थ भूखंड/दुकान के कब्जे से होगा, यदि
+          आवंटी द्वारा कब्जा नहीं लिया जाता है तो कब्जे की सूचना की समाप्ति तिथि के अगले दिन कब्जा
+          सुपुर्द किया हुआ माना जाएगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Earnest Money&quot;</strong> means 50% of the Total Price, of the Said
-          Plot/shop payable by the Allottee(s) and more clearly setout in schedule of payments,
-          Annexure A.
+          <strong>&quot;बयाना राशि&quot;</strong> का अर्थ उक्त भूखंड/दुकान के कुल मूल्य का 50% है जो
+          आवंटी(यों) द्वारा देय है और जो भुगतान अनुसूची, अनुबंध-ए में अधिक स्पष्ट रूप से दर्शाया गया
+          है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&apos;External Developmental Charges (EDC)&apos;</strong> means the charges levied
-          or leviable on the Said Complex/ Said Land (whatever name called or in whatever form) by
-          the Government of Rajasthan or any other Governmental Authority and with all such
-          conditions imposed to be paid by the Allottee(s) and also includes any further increase in
-          such charges.
+          <strong>&apos;बाह्य विकास शुल्क (ईडीसी)&apos;</strong> का अर्थ राजस्थान सरकार या किसी अन्य
+          सरकारी प्राधिकरण द्वारा उक्त परिसर/उक्त भूमि पर लगाए गए या लगाए जाने योग्य शुल्कों से है
+          (चाहे जिस भी नाम से पुकारा जाए) और इसमें ऐसे शुल्कों में किसी भी वृद्धि को भी शामिल किया
+          गया है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Force Majeure&quot;</strong> means any event or combination of events or
-          circumstances beyond the control of the firm which cannot (a) by the exercise of
-          reasonable diligence, or (b) despite the adoption of reasonable precaution and/or
-          alternative measures, be prevented, or caused to be prevented, and which adversely affects
-          the Firms ability to perform obligations under this Agreement, which shall include but not
-          be limited to: (a) acts of God i.e. fire, drought, flood, earthquake, epidemics, natural
-          disasters; (b) explosions or accidents, air crashes and shipwrecks, act of terrorism; (c)
-          strikes or lock outs, industrial dispute; (d) non-availability of cement, steel or other
-          construction material due to strikes of manufacturers, suppliers, transporters or other
-          intermediaries or due to any reason whatsoever; (e) war and hostilities of war, riots,
-          bandh, act of terrorism or civil commotion; (f) the promulgation of or amendment in any
-          law, rule or regulation or the issue of any injunction, court order or direction from any
-          Governmental Authority that prevents or restricts a party from complying with any or all
-          the terms and conditions as agreed in this Agreement; (g) any legislation, order or rule
-          or regulation made or issued by the Govt. or any other Authority or if any Governmental
-          Authority(ies) refuses, delays, withholds, denies the grant of necessary approvals for the
-          Said Complex/ Said Building or if any matters, issues relating to such approvals,
-          permissions, notices, notifications by the Governmental Authority(ies) become subject
-          matter of any suit / writ before a competent court or; for any reason whatsoever; (h) any
-          event or circumstances analogous to the foregoing.
+          <strong>&quot;अप्रत्याशित घटना (Force Majeure)&quot;</strong> का अर्थ ऐसी कोई घटना या
+          घटनाओं का संयोजन या परिस्थितियाँ हैं जो फर्म के नियंत्रण से परे हों और जिन्हें (क) उचित
+          परिश्रम के प्रयोग से, या (ख) उचित सावधानियों और/या वैकल्पिक उपायों को अपनाने के बावजूद,
+          रोका नहीं जा सकता, और जो इस करार के तहत दायित्वों का निर्वहन करने की फर्म की क्षमता को
+          प्रतिकूल रूप से प्रभावित करती हैं, जिसमें शामिल हैं लेकिन इन्हीं तक सीमित नहीं: (क)
+          ईश्वरीय कृत्य यानी आग, सूखा, बाढ़, भूकंप, महामारी, प्राकृतिक आपदाएँ; (ख) विस्फोट या
+          दुर्घटनाएँ, वायु दुर्घटनाएँ और जहाज दुर्घटनाएँ, आतंकवाद के कृत्य; (ग) हड़ताल या तालाबंदी,
+          औद्योगिक विवाद; (घ) निर्माताओं, आपूर्तिकर्ताओं, परिवाहकों या अन्य मध्यस्थों की हड़ताल के
+          कारण या किसी भी कारण से सीमेंट, स्टील या अन्य निर्माण सामग्री की अनुपलब्धता; (ङ) युद्ध और
+          युद्ध की शत्रुताएँ, दंगे, बंद, आतंकवाद के कृत्य या नागरिक अशांति; (च) किसी भी कानून, नियम
+          या विनियमन का प्रख्यापन या संशोधन या किसी सरकारी प्राधिकरण से किसी निषेधाज्ञा, न्यायालय
+          आदेश या निर्देश का जारी होना जो किसी पक्ष को इस करार की किसी भी या सभी नियमों और शर्तों का
+          अनुपालन करने से रोकता या प्रतिबंधित करता है; (छ) सरकार या किसी अन्य प्राधिकरण द्वारा बनाया
+          या जारी किया गया कोई भी कानून, आदेश, नियम या विनियमन या यदि कोई सरकारी प्राधिकरण उक्त
+          परिसर/उक्त भवन के लिए आवश्यक अनुमोदनों को देने से इनकार करता है, विलंब करता है, रोकता है,
+          नकारता है या यदि ऐसे अनुमोदनों, अनुमतियों, नोटिसों, अधिसूचनाओं से संबंधित कोई मामला किसी
+          सक्षम न्यायालय के समक्ष किसी मुकदमे/रिट का विषय बन जाता है; या किसी भी कारण से; (ज)
+          उपरोक्त के सादृश्य कोई भी घटना या परिस्थिति।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
-          <strong>&quot;IBMS&quot;</strong> means the interest bearing maintenance security to be
-          paid by the Allottee(s) for the maintenance and upkeep of the Said Complex/ Said Building
-          to be paid as per the Schedule of payments (attached as Annexure-B to this Agreement) to
-          the firm.
+          <strong>&quot;आईबीएमएस&quot;</strong> का अर्थ ब्याज वहन रखरखाव सुरक्षा राशि से है जो
+          आवंटी(यों) द्वारा उक्त परिसर/उक्त भवन के रखरखाव और उपयोग के लिए भुगतान अनुसूची के अनुसार
+          (इस करार के अनुबंध-बी के रूप में संलग्न) फर्म को दी जानी है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
-          <strong>&apos;Infrastructure Development Charges (IDC)&apos;</strong> shall mean the
-          infrastructure development charges levied/ leviable (by whatever name called, now or in
-          future) by the Governmental Authority towards the cost of development of major
-          infrastructure projects.
+          <strong>&apos;अवसंरचना विकास शुल्क (आईडीसी)&apos;</strong> का अर्थ सरकारी प्राधिकरण द्वारा
+          प्रमुख अवसंरचना परियोजनाओं के विकास की लागत हेतु लगाए/लगाए जाने योग्य अवसंरचना विकास
+          शुल्कों से होगा (चाहे वर्तमान में या भविष्य में जिस भी नाम से पुकारा जाए)।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
@@ -183,104 +173,93 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
         }}
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Governmental Authority&quot;</strong> or{' '}
-          <strong>&quot;Governmental Authorities&quot;</strong> shall mean any government authority,
-          statutory authority, competent authority, government department, agency, commission,
-          board, tribunal or court or other law, rule or regulation making entity having or
-          purporting to have jurisdiction on behalf of the Republic of India or any state or other
-          subdivision thereof or any municipality, district or other subdivision thereof, and any
-          other municipal/ local authority having jurisdiction over the land on which the Said
-          Complex/ Said Building is situated;
+          <strong>&quot;सरकारी प्राधिकरण&quot;</strong> या{' '}
+          <strong>&quot;सरकारी प्राधिकरणगण&quot;</strong> का अर्थ किसी भी सरकारी प्राधिकरण, वैधानिक
+          प्राधिकरण, सक्षम प्राधिकरण, सरकारी विभाग, एजेंसी, आयोग, बोर्ड, न्यायाधिकरण या न्यायालय या
+          भारत गणराज्य या किसी राज्य या उसके अन्य उपविभाजन या किसी नगरपालिका, जिले या उसके अन्य
+          उपविभाजन की ओर से क्षेत्राधिकार रखने या रखने का दावा करने वाली अन्य कानून, नियम या विनियमन
+          बनाने वाली संस्था, और उक्त परिसर/उक्त भवन जिस भूमि पर स्थित है उस पर क्षेत्राधिकार रखने
+          वाले किसी भी अन्य नगरपालिका/स्थानीय प्राधिकरण से है;
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Maintenance Agency&quot;</strong> means the Firm, its nominee(s) or
-          association of plot/shop allottee&apos;s or such other agency/ body/ Firm/ association of
-          condominium to whom the Firm may handover the maintenance and who shall be responsible for
-          carrying out the maintenance of the Said Complex/ Said Building.
+          <strong>&quot;रखरखाव एजेंसी&quot;</strong> का अर्थ फर्म, उसके नामांकित व्यक्ति(यों) या
+          भूखंड/दुकान आवंटितियों के संघ या ऐसी अन्य एजेंसी/निकाय/फर्म/कॉन्डोमिनियम के संघ से है जिसे
+          फर्म रखरखाव सौंप सकती है और जो उक्त परिसर/उक्त भवन का रखरखाव करने के लिए उत्तरदायी होगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Maintenance Charges&quot;</strong> shall mean the charges payable by the
-          Allottee(s) to the Maintenance Agency for the maintenance services of the Said
-          Building/Said Complex, including common areas and facilities but does not include; (a) the
-          charges for actual consumption of utilities in the Said Plot/shop including but not
-          limited to electricity, water, which shall be charged based on actual consumption on
-          monthly basis and (b) any statutory payments, taxes, with regard to the Said
-          Plot/shop/Said Building/Said Complex. The details of Maintenance Charges shall be more
-          elaborately described in the Maintenance Agreement.
+          <strong>&quot;रखरखाव शुल्क&quot;</strong> का अर्थ आवंटी(यों) द्वारा उक्त भवन/उक्त परिसर की
+          रखरखाव सेवाओं के लिए रखरखाव एजेंसी को देय शुल्कों से होगा, जिसमें सामान्य क्षेत्र और
+          सुविधाएँ शामिल हैं, लेकिन इसमें शामिल नहीं हैं: (क) बिजली, पानी सहित उक्त भूखंड/दुकान में
+          उपयोगिताओं की वास्तविक खपत के लिए शुल्क जो मासिक आधार पर वास्तविक खपत के आधार पर लिए
+          जाएंगे, और (ख) उक्त भूखंड/दुकान/उक्त भवन/उक्त परिसर के संबंध में कोई भी वैधानिक भुगतान,
+          कर। रखरखाव शुल्क के विवरण का रखरखाव करार में अधिक विस्तार से वर्णन किया जाएगा।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Non Refundable Amounts&quot;</strong> means the interest paid or payable on
-          delayed payments, brokerage paid/payable by the Firm, if any, etc.
+          <strong>&quot;गैर-वापसी योग्य राशियाँ&quot;</strong> का अर्थ विलंबित भुगतानों पर दिए गए या
+          देय ब्याज, फर्म द्वारा दिए/देय दलाली आदि से है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Preferential Location Charges (PLC)&quot;</strong> means charges for the
-          preferential location attribute(s) of the Said Plot/shop payable/ as applicable to be
-          calculated on the per sq. yd./sq. ft. based on super area of the Said Plot/shop, as
-          mentioned in this Agreement.
+          <strong>&quot;प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)&quot;</strong> का अर्थ उक्त भूखंड/दुकान
+          के अधिमान्य स्थान विशेषता(ओं) के लिए देय/लागू शुल्क से है, जिसकी गणना उक्त भूखंड/दुकान के
+          सुपर एरिया के आधार पर प्रति वर्ग गज/वर्ग फुट के आधार पर की जाएगी, जैसा कि इस करार में
+          उल्लिखित है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Said Plot/shop&quot;</strong> means the plot/shop allotted to the
-          Allottee/s, details of which have been set out in clause 1 of this Agreement, the
-          tentative typical plot/shop plan and the tentative specifications of the same given in
-          annexure-A and includes any alternative plot/shop allotted in lieu of the Said Plot/shop.
+          <strong>&quot;उक्त भूखंड/दुकान&quot;</strong> का अर्थ आवंटी/यों को आवंटित भूखंड/दुकान से
+          है, जिसका विवरण इस करार के खंड 1 में दिया गया है, अनुबंध-ए में दिया गया अनुमानित
+          भूखंड/दुकान योजना और उसके अनुमानित विशिष्टताओं सहित, और इसमें उक्त भूखंड/दुकान के स्थान पर
+          आवंटित कोई वैकल्पिक भूखंड/दुकान भी शामिल है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Said Complex&quot;</strong> means the &quot;
+          <strong>&quot;उक्त परिसर&quot;</strong> का अर्थ &quot;
           {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
-          {getProjectLocationName(formData?.projectName)} comprising of residential plot/shop
-          buildings, shops, club house swimming pool, gym etc., community shopping, nursery school,
-          and any other building Amenities and Facilities as may be approved by the Governmental
-          Authority.
+          {getProjectLocationName(formData?.projectName)} से है, जिसमें आवासीय भूखंड/दुकान भवन,
+          दुकानें, क्लब हाउस स्विमिंग पूल, जिम आदि, सामुदायिक खरीदारी, नर्सरी स्कूल और सरकारी
+          प्राधिकरण द्वारा अनुमोदित अन्य भवन सुविधाएँ और सुविधाएँ शामिल हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Total Price&quot;</strong> means any and all kind of the amount amongst
-          others, payable for the Said Plot/shop which includes basic sale price, PLC (if the Said
-          Plot/shop is preferentially located), Additional PLC calculated on per sqyd./sq.ft. based
-          on the Area of the Said Plot/shop and EDC/IDC, but does not include other amounts,
-          charges, security amount etc., which are payable in accordance with the terms of the
-          Application/Agreement, including but not limited to: i) Wealth tax, government rates tax
-          on land, fees or levies of all and any kinds by whatever name called. ii) IBMS. iii)
-          Maintenance charges, property tax, municipal tax on the Said Plot/shop. iv) Stamp duty,
-          registration and incidental charges as well as expenses for execution of the Agreement and
-          conveyance deed etc. v) Taxes and Cesses. vi) The cost for electric and water meter as
-          well as charges for water and electricity connection and consumption. vii) Club membership
-          fees and club charges, as applicable. viii) Escalation charges. ix) Any other charges that
-          may be payable by the Allottee(s) as per the other terms of the Agreement and such other
-          charges as may be demanded by the Firm which amounts shall be payable by the Allottee(s)
-          in addition to the Total Price in accordance with the terms and conditions of the
-          Agreement and as per the demand raised by the Firm from time to time.
+          <strong>&quot;कुल मूल्य&quot;</strong> का अर्थ उक्त भूखंड/दुकान के लिए अन्य के साथ देय सभी
+          प्रकार की राशि से है जिसमें मूल बिक्री मूल्य, पीएलसी (यदि उक्त भूखंड/दुकान अधिमान्य रूप से
+          स्थित है), उक्त भूखंड/दुकान के क्षेत्र के आधार पर प्रति वर्ग गज/वर्ग फुट के आधार पर गणना
+          किया गया अतिरिक्त पीएलसी और ईडीसी/आईडीसी शामिल हैं, लेकिन इसमें अन्य राशियाँ, शुल्क,
+          सुरक्षा राशि आदि शामिल नहीं हैं, जो आवेदन/करार की शर्तों के अनुसार देय हैं, जिसमें शामिल
+          हैं लेकिन इन्हीं तक सीमित नहीं: i) संपत्ति कर, भूमि पर सरकारी दरें, कर, किसी भी नाम से सभी
+          प्रकार के शुल्क या लेवी। ii) आईबीएमएस। iii) रखरखाव शुल्क, संपत्ति कर, उक्त भूखंड/दुकान पर
+          नगरपालिका कर। iv) स्टाम्प शुल्क, पंजीकरण और आनुषंगिक शुल्क के साथ-साथ करार और विक्रय-पत्र
+          आदि के निष्पादन के लिए व्यय। v) कर और उपकर। vi) विद्युत और जल मीटर की लागत के साथ-साथ पानी
+          और बिजली कनेक्शन और खपत के लिए शुल्क। vii) क्लब सदस्यता शुल्क और क्लब शुल्क, जैसा लागू हो।
+          viii) वृद्धि शुल्क। ix) कोई भी अन्य शुल्क जो करार की अन्य शर्तों के अनुसार आवंटी(यों)
+          द्वारा देय हो सकते हैं।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>Interpretation</strong>
+          <strong>व्याख्या</strong>
           <br />
-          Unless the context otherwise requires in this Agreement:
+          जब तक इस करार में संदर्भ अन्यथा न हो:
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          a. the use of words importing the singular shall include plural and masculine shall
-          include feminine gender and vice versa;
+          क. एकवचन शब्दों का उपयोग बहुवचन को शामिल करेगा और पुल्लिंग में स्त्रीलिंग शामिल होगा और
+          इसके विपरीत भी;
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          b. reference to any law shall include such law as from time to time enacted, amended,
-          supplemented or re-enacted;
+          ख. किसी भी कानून का संदर्भ ऐसे कानून को शामिल करेगा जो समय-समय पर अधिनियमित, संशोधित, पूरक
+          या पुनः अधिनियमित हो;
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          c. reference to the words &quot;include&quot; or &quot;including&quot; shall be construed
-          without limitation;
+          ग. &quot;शामिल&quot; या &quot;शामिल करना&quot; शब्दों का संदर्भ बिना किसी सीमा के समझा
+          जाएगा;
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          d. reference to this Agreement, or any other agreement, deed or other instrument or
-          document shall be construed as a reference to this Agreement or such agreement, deed or
-          other instrument or document as the same may from time to time be amended, varied,
-          supplemented or novated.
+          घ. इस करार या किसी अन्य करार, विलेख या अन्य लिखत या दस्तावेज़ का संदर्भ इस करार या ऐसे
+          करार, विलेख या अन्य लिखत या दस्तावेज़ के संदर्भ के रूप में समझा जाएगा जैसा समय-समय पर
+          संशोधित, परिवर्तित, पूरक या नवीकृत किया जा सकता है।
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          The Allottee(s) agrees that wherever in this Agreement, it is explicitly mentioned that
-          the Allottee(s) has understood or acknowledged obligations of the Allottee(s) or the
-          rights of the Firm, the Allottee(s) has given consent to the actions of the Firm or the
-          Allottee(s) has acknowledged that the Allottee(s) has no right of whatsoever nature, the
-          Allottee(s) in furtherance of the same, shall do all such acts, deeds or things, as the
-          Firm may deem necessary and/or execute such documents/deeds in favour of the Firm at the
-          first request without any protest or demur.
+          आवंटी(यां) सहमत हैं कि जहाँ कहीं भी इस करार में यह स्पष्ट रूप से उल्लेख किया गया है कि
+          आवंटी(यों) ने आवंटी(यों) के दायित्वों या फर्म के अधिकारों को समझा या स्वीकार किया है,
+          आवंटी(यों) ने फर्म के कार्यों के लिए सहमति दी है या आवंटी(यों) ने स्वीकार किया है कि
+          आवंटी(यों) का किसी भी प्रकृति का कोई अधिकार नहीं है, आवंटी(यां) इसके अनुसरण में, फर्म के
+          पहले अनुरोध पर बिना किसी विरोध या आपत्ति के फर्म के पक्ष में सभी ऐसे कार्य, विलेख या बातें
+          करेंगे जो फर्म आवश्यक समझे और/या ऐसे दस्तावेजों/विलेखों को निष्पादित करेंगे।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>

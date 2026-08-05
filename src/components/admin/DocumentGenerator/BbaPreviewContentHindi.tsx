@@ -70,12 +70,12 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
         {/* Date & To */}
         <div className="mb-6">
           <p className="mb-4 font-bold">
-            Dated:{' '}
+            दिनांक:{' '}
             {formData?.bookingDate ||
               new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
           </p>
-          <p className="font-bold">To,</p>
-          <p className="font-bold">{formData?.clientName || '[Client Name]'}</p>
+          <p className="font-bold">सेवा में,</p>
+          <p className="font-bold">{formData?.clientName || '[ग्राहक का नाम]'}</p>
           {formData?.addressLine1 && <p className="font-bold">{formData?.addressLine1}</p>}
           {formData?.addressLine2 && <p className="font-bold">{formData?.addressLine2}</p>}
           {(formData?.city || formData?.state || formData?.pincode) && (
@@ -83,40 +83,40 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
               {[formData?.city, formData?.state, formData?.pincode].filter(Boolean).join(', ')}
             </p>
           )}
-          {!formData?.addressLine1 && <p className="font-bold">[Address]</p>}
+          {!formData?.addressLine1 && <p className="font-bold">[पता]</p>}
         </div>
 
         {/* Body */}
         <div className="mb-6">
           <p className="mb-2">
-            Dear {formData?.salutation || 'Mr./Mrs./Ms.'}{' '}
-            <span className="font-bold">{formData?.clientName || '[Client Name]'}</span>
+            आदरणीय {formData?.salutation || 'श्री/श्रीमती/सुश्री'}{' '}
+            <span className="font-bold">{formData?.clientName || '[ग्राहक का नाम]'}</span>
           </p>
           <p className="mb-1 text-justify">
-            Congratulations from {companyInfo?.company_name} on your new investment in{' '}
-            {formData?.projectName} {projectLocation}. It is a perfect choice and you are one of the
-            few lucky ones to get unit at such reasonable rates.
+            {formData?.projectName} {projectLocation} में आपके नए निवेश पर{' '}
+            {companyInfo?.company_name} की ओर से हार्दिक बधाई। यह एक उत्तम विकल्प है और आप उन कुछ
+            भाग्यशाली लोगों में से एक हैं जिन्हें इतनी उचित दरों पर यूनिट मिली है।
           </p>
           <p className="mb-4 text-justify">
-            We at {companyInfo?.company_name} feel privileged to be part of your great investment.
-            We thank you for giving us an opportunity to assist you in making this very investment.
-            We sincerely hope that you are satisfied with our services and will refer us in your
-            circle.
+            हम {companyInfo?.company_name} में आपके महान निवेश का हिस्सा बनकर सौभाग्यशाली अनुभव करते
+            हैं। हम आपको इस निवेश में सहायता करने का अवसर देने के लिए आपका धन्यवाद करते हैं। हम
+            हार्दिक आशा करते हैं कि आप हमारी सेवाओं से संतुष्ट हैं और हमें अपने परिचितों में
+            संदर्भित करेंगे।
           </p>
 
-          <p className="mb-2 font-bold">Your Allotment is as Follows:</p>
+          <p className="mb-2 font-bold">आपका आवंटन निम्नानुसार है:</p>
           <p>
-            Ticket Id : <span className="font-bold">{formData?.ticketId}</span>
+            टिकट आईडी : <span className="font-bold">{formData?.ticketId}</span>
           </p>
           <p>
-            Project Name : <span className="font-bold">{formData?.projectName}</span>
+            परियोजना का नाम : <span className="font-bold">{formData?.projectName}</span>
           </p>
           <p>
-            Unit Number : <span className="font-bold">{formData?.unitNumber}</span>
+            यूनिट संख्या : <span className="font-bold">{formData?.unitNumber}</span>
           </p>
 
           <p className="mt-4 mb-2">
-            Brief details about the total cost of the unit and payment plan are as follows:
+            यूनिट की कुल लागत और भुगतान योजना के बारे में संक्षिप्त विवरण निम्नानुसार है:
           </p>
         </div>
 
@@ -125,13 +125,13 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-[#00b0f0] text-black">
-                <th className="border border-gray-400 p-2 font-bold">Client Name</th>
-                <th className="border border-gray-400 p-2 font-bold">Alloted Unit</th>
-                <th className="border border-gray-400 p-2 font-bold">Area (Sq-Yds.)</th>
-                <th className="border border-gray-400 p-2 font-bold">Payment Plan</th>
-                <th className="border border-gray-400 p-2 font-bold">BSP(PSq.Yd)</th>
-                <th className="border border-gray-400 p-2 font-bold">PLC(in%)</th>
-                <th className="border border-gray-400 p-2 font-bold">Total Cost</th>
+                <th className="border border-gray-400 p-2 font-bold">ग्राहक का नाम</th>
+                <th className="border border-gray-400 p-2 font-bold">आवंटित यूनिट</th>
+                <th className="border border-gray-400 p-2 font-bold">क्षेत्रफल (वर्ग गज)</th>
+                <th className="border border-gray-400 p-2 font-bold">भुगतान योजना</th>
+                <th className="border border-gray-400 p-2 font-bold">बीएसपी (प्रति वर्ग गज)</th>
+                <th className="border border-gray-400 p-2 font-bold">पीएलसी (%)</th>
+                <th className="border border-gray-400 p-2 font-bold">कुल लागत</th>
               </tr>
             </thead>
             <tbody>
@@ -140,7 +140,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
                 <td className="border border-gray-400 p-2 font-bold">{formData?.unitNumber}</td>
                 <td className="border border-gray-400 p-2 font-bold">{formData?.area}</td>
                 <td className="border border-gray-400 p-2 font-bold">
-                  {formData?.paymentPlan} Months
+                  {formData?.paymentPlan} माह
                 </td>
                 <td className="border border-gray-400 p-2 font-bold">
                   {`\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
@@ -166,17 +166,17 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
           minHeight: '257mm',
         }}
       >
-        <h3 className="mb-2 text-lg font-bold text-gray-800">Payment Schedule</h3>
+        <h3 className="mb-2 text-lg font-bold text-gray-800">भुगतान अनुसूची</h3>
         <div className="mb-6 overflow-hidden border border-gray-400">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-[#00b0f0] text-black">
-                <th className="border border-gray-400 p-2 font-bold">SNO</th>
-                <th className="border border-gray-400 p-2 font-bold">Date</th>
-                <th className="border border-gray-400 p-2 font-bold">Particulars</th>
+                <th className="border border-gray-400 p-2 font-bold">क्र.सं.</th>
+                <th className="border border-gray-400 p-2 font-bold">तारीख</th>
+                <th className="border border-gray-400 p-2 font-bold">विवरण</th>
                 <th className="border border-gray-400 p-2 font-bold">%</th>
-                <th className="border border-gray-400 p-2 font-bold">Amount</th>
-                <th className="border border-gray-400 p-2 font-bold">Payment Ref. No.</th>
+                <th className="border border-gray-400 p-2 font-bold">राशि</th>
+                <th className="border border-gray-400 p-2 font-bold">भुगतान संदर्भ सं.</th>
               </tr>
             </thead>
             <tbody>
@@ -230,7 +230,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
                   <tr key="booking">
                     <td className="border border-gray-400 p-2 font-bold">{sno++}</td>
                     <td className="border border-gray-400 p-2 font-bold">{bookingDateStr}</td>
-                    <td className="border border-gray-400 p-2 font-bold">On Booking</td>
+                    <td className="border border-gray-400 p-2 font-bold">बुकिंग पर</td>
                     <td className="border border-gray-400 p-2">{formatPercent(bookingPercent)}</td>
                     <td className="border border-gray-400 p-2 font-bold">
                       Rs.{' '}
@@ -259,7 +259,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
                       <td className="border border-gray-400 p-2 font-bold">{sno++}</td>
                       <td className="border border-gray-400 p-2 font-bold">{secondDateStr}</td>
                       <td className="border border-gray-400 p-2 font-bold">
-                        Within {secondPaymentDays} days
+                        {secondPaymentDays} दिनों के भीतर
                       </td>
                       <td className="border border-gray-400 p-2">{formatPercent(secondPercent)}</td>
                       <td className="border border-gray-400 p-2 font-bold">
@@ -291,10 +291,10 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
                   }
 
                   const emiLabel = zeroCost
-                    ? `${i + 1} EMI (0% Interest)`
+                    ? `${i + 1} ईएमआई (0% ब्याज)`
                     : edcInEmi
-                      ? `${i + 1} EMI (incl. EDC)`
-                      : `${i + 1} EMI`;
+                      ? `${i + 1} ईएमआई (ईडीसी सहित)`
+                      : `${i + 1} ईएमआई`;
 
                   rows.push(
                     <tr key={`emi-${i}`}>
@@ -330,38 +330,37 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
             return (
               <>
                 <p className="mb-2">
-                  Please transfer the initial amount of {bookingPercent}% (Rs.{' '}
-                  {initialPayment.toFixed(2)}) within the first 3 days (by{' '}
+                  कृपया आवंटन की पुष्टि के लिए {bookingPercent}% की प्रारंभिक राशि (रु.{' '}
+                  {initialPayment.toFixed(2)}) पहले 3 दिनों के भीतर (तब तक{' '}
                   {(() => {
-                    if (!formData?.bookingDate) return '[Date]';
+                    if (!formData?.bookingDate) return '[तारीख]';
                     const d = new Date(formData.bookingDate);
                     d.setDate(d.getDate() + 3);
                     return d.toISOString().split('T')[0];
                   })()}
-                  ) to confirm allotment under {formData?.projectName || 'the project'}.
+                  ) {formData?.projectName || 'परियोजना'} के तहत स्थानांतरित करें।
                 </p>
                 {String(formData?.showSecondInstalment) === 'true' && (
                   <p className="mb-2">
-                    The second instalment of 20% (Rs.{' '}
-                    {((edcInEmi ? baseCost : totalCost) * 0.2).toFixed(2)}) must be paid within{' '}
-                    {formData?.secondPaymentDays || '15'} days (by{' '}
+                    20% की दूसरी किस्त (रु. {((edcInEmi ? baseCost : totalCost) * 0.2).toFixed(2)}){' '}
+                    {formData?.secondPaymentDays || '15'} दिनों के भीतर (तब तक{' '}
                     {(() => {
-                      if (!formData?.bookingDate) return '[Date]';
+                      if (!formData?.bookingDate) return '[तारीख]';
                       const d = new Date(formData.bookingDate);
                       d.setDate(d.getDate() + parseInt(formData?.secondPaymentDays || '15'));
                       return d.toISOString().split('T')[0];
                     })()}
-                    ).
+                    ) तक जमा करनी होगी।
                   </p>
                 )}
                 <p className="mb-2">
-                  Note: Allotment under {formData?.projectName || 'the project'} will only be
-                  confirmed upon receipt of the initial {bookingPercent}% (Rs.{' '}
-                  {initialPayment.toFixed(2)}) by the due date.
+                  नोट: {formData?.projectName || 'परियोजना'} के तहत आवंटन की पुष्टि केवल देय तिथि तक
+                  प्रारंभिक {bookingPercent}% (रु. {initialPayment.toFixed(2)}) प्राप्त होने पर ही
+                  होगी।
                 </p>
                 <p>
-                  In the event you fail to make the payments as per the payment plan chosen by you,
-                  the allotment of these plots will be automatically cancelled.
+                  यदि आप अपनी चुनी हुई भुगतान योजना के अनुसार भुगतान करने में विफल रहते हैं, तो इन
+                  भूखंडों का आवंटन स्वतः रद्द हो जाएगा।
                 </p>
               </>
             );
@@ -372,40 +371,40 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
         <div className="mt-auto flex items-end justify-between pb-8">
           <div>
             <p className="mb-2 font-bold">
-              Payment can be transferred online using the following details:
+              भुगतान निम्नलिखित विवरण का उपयोग करके ऑनलाइन स्थानांतरित किया जा सकता है:
             </p>
             <p>
-              <span className="font-bold">Account Name:</span>{' '}
+              <span className="font-bold">खाता नाम:</span>{' '}
               {companyInfo?.bank_account_name || 'Svi Infra Solutions Pvt. Ltd'}
             </p>
             <p>
-              <span className="font-bold">Account Number:</span>{' '}
+              <span className="font-bold">खाता संख्या:</span>{' '}
               {companyInfo?.bank_account_no || '0894102000013837'}
             </p>
             <p>
-              <span className="font-bold">Bank:</span> {companyInfo?.bank_name || 'IDBI BANK'}
+              <span className="font-bold">बैंक:</span> {companyInfo?.bank_name || 'IDBI BANK'}
             </p>
             <p>
-              <span className="font-bold">IFSC CODE:</span>{' '}
+              <span className="font-bold">आईएफएससी कोड:</span>{' '}
               {companyInfo?.bank_ifsc || 'IBKL0000894'}
             </p>
             <p className="mt-4">
-              Your account manager is <span className="font-bold">{formData?.advisorName}</span> and
-              will be reachable on <span className="font-bold">{formData?.advisorNumber}</span>
+              आपके अकाउंट मैनेजर <span className="font-bold">{formData?.advisorName}</span> हैं जो
+              <span className="font-bold"> {formData?.advisorNumber}</span> पर उपलब्ध रहेंगे
               {formData?.advisorEmail ? (
                 <>
                   {' '}
-                  (Email: <span className="font-bold">{formData?.advisorEmail}</span>)
+                  (ईमेल: <span className="font-bold">{formData?.advisorEmail}</span>)
                 </>
               ) : (
                 ''
               )}{' '}
-              for any queries.
+              किसी भी प्रश्न के लिए।
             </p>
           </div>
           <div className="flex flex-col items-end text-right">
-            <p className="mb-2">With Best Regards</p>
-            <p className="mb-1">For {companyInfo?.company_name}</p>
+            <p className="mb-2">सादर</p>
+            <p className="mb-1">{companyInfo?.company_name} की ओर से</p>
             <div className="my-1 h-8 w-24">
               <img
                 src="/signature.png"
@@ -414,7 +413,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
               />
             </div>
             <div className="w-48 border-t border-black pt-2 text-center">
-              <p>Director</p>
+              <p>निदेशक</p>
             </div>
           </div>
         </div>

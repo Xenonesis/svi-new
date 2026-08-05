@@ -3,19 +3,17 @@ import { BbaPageFooterHindi } from './BbaPageFooterHindi';
 
 const getProjectLocation = (projectName: string) => {
   if (projectName?.toLowerCase().includes('shivani vatika')) {
-    return 'Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan';
+    return 'ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान';
   }
-  return 'Village Basadi Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan';
+  return 'ग्राम बसादी तहसील किशन गढ़ रेनवाल, जिला जयपुर, राज्य – राजस्थान';
 };
 
-const getProjectCity = (projectName: string) => {
-  return 'JAIPUR, RAJASTHAN';
+const getProjectCity = (_projectName: string) => {
+  return 'जयपुर, राजस्थान';
 };
 
 /**
- * Second page block of the BBA legal preview: title + party identification
- * (Builder / 1st Allottee / 2nd Allottee / 3rd Allottee / Firm / Company)
- * and the Firm's representation recitals.
+ * Second page block of the BBA legal preview (Hindi): title + party identification
  */
 export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalContext) {
   return (
@@ -30,69 +28,67 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         }}
       >
         <p className="mb-2 text-left text-[13px] font-bold underline">
-          Note: Please fill the BBA form completely in capital letters.
+          नोट: कृपया बीबीए फॉर्म को पूरी तरह से बड़े अक्षरों (CAPITAL LETTERS) में भरें।
         </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          The Allottee(s) hereby agrees and confirms to have read, understood and accepted all the
-          terms and conditions of this Agreement including the Annexures appended hereto and the
-          Allottee(s) hereby agrees and confirms that the Allottee(s) has entered into this
-          Agreement with the firm with full knowledge and consent.
+          आवंटी(यां) एतद्द्वारा सहमत होते हैं और पुष्टि करते हैं कि उन्होंने इस करार के सभी नियमों
+          और शर्तों को, जिसमें इससे जुड़े अनुबंध भी शामिल हैं, पढ़, समझ और स्वीकार कर लिया है, और
+          आवंटी(यां) एतद्द्वारा सहमत होते हैं और पुष्टि करते हैं कि आवंटी(यों) ने पूर्ण ज्ञान और
+          सहमति से फर्म के साथ यह करार किया है।
         </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          The Allottee(s) acknowledges that this Agreement has been explained to the Allottee(s) in
-          the language understood by the Allottee(s) and the Allottee(s) has fully understood the
-          contents of this Agreement.
+          आवंटी(यां) स्वीकार करते हैं कि इस करार को आवंटी(यों) द्वारा समझी जाने वाली भाषा में समझाया
+          गया है और आवंटी(यों) ने इस करार की विषयवस्तु को पूरी तरह से समझ लिया है।
         </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          The Allottee(s) hereby agrees and confirms that the Allottee(s) has verified the title of
-          the firm in respect of the Said Land and the Said Complex and is satisfied with the same.
+          आवंटी(यां) एतद्द्वारा सहमत होते हैं और पुष्टि करते हैं कि आवंटी(यों) ने उक्त भूमि और उक्त
+          परिसर के संबंध में फर्म के स्वामित्व की जाँच कर ली है और वे इससे संतुष्ट हैं।
         </p>
         <p className="mb-2 text-center text-lg font-bold uppercase">
-          "{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}"
+          &quot;{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;
         </p>
         <p className="mb-2 text-center text-sm font-bold uppercase">
           {getProjectCity(formData?.projectName)}
         </p>
-        <p className="mb-2 text-center text-xl font-bold underline">BUILDER-BUYER AGREEMENT</p>
+        <p className="mb-2 text-center text-xl font-bold underline">बिल्डर-बायर करार</p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          This Builder Buyer Agreement (hereinafter referred to as the &apos;
-          <strong>Agreement</strong>
-          &apos;) is executed on this{' '}
+          यह बिल्डर-बायर करार (जिसे आगे &apos;<strong>करार</strong>&apos; के रूप में संदर्भित किया
+          जाएगा) इस{' '}
           <strong>
-            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
+            {new Date(formData.bookingDate || Date.now()).toLocaleDateString('hi-IN', {
               day: 'numeric',
               month: 'long',
               year: 'numeric',
             })}
-          </strong>
-          .
+          </strong>{' '}
+          को निष्पादित किया गया है।
         </p>
-        <p className="my-2 text-center text-lg font-bold">BY AND BETWEEN</p>
+        <p className="my-2 text-center text-lg font-bold">पक्षों के बीच</p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          <strong>M/s. SVI INFRA SOLUTIONS PVT LTD,</strong> firm presently having its Registered
-          office at <strong>{companyInfo.company_address}</strong> and Corporate Office at{' '}
-          <strong>{companyInfo.company_address}</strong> represented by its Authorized Signatory Mr.
-          Vineet Narnawat, Director, aged about 43 years, S/o Sh. Ramesh Chand Narnawat, R/o H. No.
-          162, VPO-Badhal, Th.-Chomu, Dist. Jaipur, Rajasthan (hereinafter referred to as the &apos;
-          <strong>Firm / Builder / First Party</strong>&apos; which expression shall unless
-          repugnant to the context, include its successors, executors, administrators,
-          representatives, nominees, assigns, heirs, legal representatives, etc.) of the{' '}
-          <strong>FIRST PART</strong>;
+          <strong>मे./SVI INFRA SOLUTIONS PVT LTD,</strong> फर्म, जिसका पंजीकृत कार्यालय वर्तमान में{' '}
+          <strong>{companyInfo.company_address}</strong> पर है तथा कॉर्पोरेट कार्यालय भी{' '}
+          <strong>{companyInfo.company_address}</strong> पर है, जिसका प्रतिनिधित्व इसके अधिकृत
+          हस्ताक्षरकर्ता श्री विनीत नारनावत, निदेशक, आयु लगभग 43 वर्ष, पुत्र श्री रमेश चंद नारनावत,
+          निवासी मकान नं. 162, वीपीओ-बढाल, थाना-चोमू, जिला जयपुर, राजस्थान द्वारा किया जा रहा है
+          (जिसे आगे &apos;<strong>फर्म / बिल्डर / प्रथम पक्ष</strong>&apos; के रूप में संदर्भित किया
+          जाएगा, जिस अभिव्यक्ति में जब तक संदर्भ के प्रतिकूल न हो, इसके उत्तराधिकारियों, निष्पादकों,
+          प्रशासकों, प्रतिनिधियों, नामांकितों, समनुदेशितियों, वारिसों, विधिक प्रतिनिधियों आदि को
+          शामिल माना जाएगा) <strong>प्रथम भाग</strong> का;
         </p>
-        <p className="my-3 text-center text-[13px] font-bold">AND</p>
-        <p className="mb-0 text-[13px]">(FOR INDIVIDUALS)</p>
-        <p className="mb-2 text-[13px]">1st ALLOTTEE</p>
+        <p className="my-3 text-center text-[13px] font-bold">तथा</p>
+        <p className="mb-0 text-[13px]">(व्यक्तियों के लिए)</p>
+        <p className="mb-2 text-[13px]">प्रथम आवंटी</p>
         <p className="mb-1 text-[13px]">
-          <strong>Name:</strong> {formData.salutation ? `${formData.salutation}. ` : ''}
+          <strong>नाम:</strong> {formData.salutation ? `${formData.salutation}. ` : ''}
           {formData.clientName}
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>S/o, D/o, W/o:</strong> {formData.fatherName || '______________________'}
+          <strong>पुत्र/पुत्री/पत्नी:</strong> {formData.fatherName || '______________________'}
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Age:</strong> {formData.age ? `${formData.age} years` : '_______ years'}
+          <strong>आयु:</strong> {formData.age ? `${formData.age} वर्ष` : '_______ वर्ष'}
         </p>
-        <p className="mb-1 text-[13px] font-bold">Permanent Address:</p>
+        <p className="mb-1 text-[13px] font-bold">स्थायी पता:</p>
         <p className="mb-1 text-[13px]">
           {formData.addressLine1 || formData.address}
           {formData.addressLine2 ? `, ${formData.addressLine2}` : ''}
@@ -100,72 +96,74 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-1 text-[13px] font-bold">
           {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
         </p>
-        <p className="my-3 text-center text-[13px] font-bold">AND</p>
+        <p className="my-3 text-center text-[13px] font-bold">तथा</p>
 
-        <p className="mb-1 text-[13px] font-bold">2nd ALLOTTEE</p>
+        <p className="mb-1 text-[13px] font-bold">द्वितीय आवंटी</p>
         <p className="mb-1 text-[13px]">
-          <strong>Name:</strong> ______________________
+          <strong>नाम:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>S/o, D/o, W/o:</strong> ______________________
+          <strong>पुत्र/पुत्री/पत्नी:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Age:</strong> _______ years
+          <strong>आयु:</strong> _______ वर्ष
         </p>
         <p className="mb-2 text-[13px]">
-          <strong>Address:</strong> ______________________
+          <strong>पता:</strong> ______________________
         </p>
-        <p className="my-3 text-center text-[13px] font-bold">AND</p>
-        <p className="mb-1 text-[13px] font-bold">3rd ALLOTTEE</p>
+        <p className="my-3 text-center text-[13px] font-bold">तथा</p>
+        <p className="mb-1 text-[13px] font-bold">तृतीय आवंटी</p>
         <p className="mb-1 text-[13px]">
-          <strong>Name:</strong> ______________________
-        </p>
-        <p className="mb-1 text-[13px]">
-          <strong>S/o, D/o, W/o:</strong> ______________________
+          <strong>नाम:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Age:</strong> _______ years
-        </p>
-        <p className="mb-2 text-[13px] font-bold">OR</p>
-        <p className="mb-1 text-[13px] font-bold">(FOR FIRMS)</p>
-        <p className="mb-1 text-[13px]">
-          <strong>M/s.</strong> ______________________
+          <strong>पुत्र/पुत्री/पत्नी:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Through its Proprietor / Partner:</strong> ______________________
+          <strong>आयु:</strong> _______ वर्ष
+        </p>
+        <p className="mb-2 text-[13px] font-bold">अथवा</p>
+        <p className="mb-1 text-[13px] font-bold">(फर्मों के लिए)</p>
+        <p className="mb-1 text-[13px]">
+          <strong>मे.:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Address:</strong> ______________________
-        </p>
-        <p className="mb-2 text-[13px] font-bold">OR</p>
-        <p className="mb-1 text-[13px] font-bold">(FOR COMPANIES)</p>
-        <p className="mb-1 text-[13px]">
-          <strong>M/s.</strong> ______________________
+          <strong>प्रोपराइटर/पार्टनर के माध्यम से:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Through its Director / Authorised Signatory:</strong> ______________________
+          <strong>पता:</strong> ______________________
+        </p>
+        <p className="mb-2 text-[13px] font-bold">अथवा</p>
+        <p className="mb-1 text-[13px] font-bold">(कंपनियों के लिए)</p>
+        <p className="mb-1 text-[13px]">
+          <strong>मे.:</strong> ______________________
         </p>
         <p className="mb-1 text-[13px]">
-          <strong>Address:</strong> ______________________
+          <strong>निदेशक/अधिकृत हस्ताक्षरकर्ता के माध्यम से:</strong> ______________________
         </p>
-        <p className="mb-2 text-[13px]">(hereinafter referred to as the &apos;Allottee(s)&apos;)</p>
+        <p className="mb-1 text-[13px]">
+          <strong>पता:</strong> ______________________
+        </p>
+        <p className="mb-2 text-[13px]">
+          (जिसे आगे &apos;आवंटी(यां)&apos; के रूप में संदर्भित किया जाएगा)
+        </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          The party of the FIRST PART and the party of the SECOND PART shall be individually
-          referred to as the &apos;<strong>Party</strong>&apos; and collectively referred to as the
-          &apos;<strong>Parties</strong>&apos;.
+          प्रथम भाग का पक्ष और द्वितीय भाग का पक्ष को व्यक्तिगत रूप से &apos;
+          <strong>पक्ष</strong>&apos; और सामूहिक रूप से &apos;<strong>पक्षगण</strong>&apos; कहा
+          जाएगा।
         </p>
-        <p className="mb-2 text-[13px] font-bold">Firms Representation</p>
+        <p className="mb-2 text-[13px] font-bold">फर्म का प्रतिनिधित्व</p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          <strong>WHEREAS</strong> the firm is bona fide purchaser of the land bearing &quot;
+          <strong>चूँकि</strong> फर्म &quot;
           {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
-          {getProjectLocation(formData?.projectName)}
-          (hereinafter referred to as the &apos;<strong>Said Land</strong>&apos;).
+          {getProjectLocation(formData?.projectName)} नामक भूमि की वास्तविक क्रेता है (जिसे आगे
+          &apos;<strong>उक्त भूमि</strong>&apos; के रूप में संदर्भित किया जाएगा)।
         </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          <strong>AND WHEREAS</strong> it is clarified that the firm has not intended to convey
-          right or interest in any of the land falling outside the Said Building / Said Complex /
-          Said Land and no impression of any kind has been given with regard to the constructions
-          that may take place on the land outside the Said Land.
+          <strong>और चूँकि</strong> यह स्पष्ट किया जाता है कि फर्म का उक्त भवन/उक्त परिसर/उक्त भूमि
+          के बाहर पड़ने वाली किसी भी भूमि में कोई अधिकार या हित हस्तांतरित करने का इरादा नहीं है और
+          उक्त भूमि के बाहर की भूमि पर होने वाले निर्माण के संबंध में किसी भी प्रकार का कोई प्रभाव
+          नहीं दिया गया है।
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
