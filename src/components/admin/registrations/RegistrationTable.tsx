@@ -235,8 +235,14 @@ export function RegistrationTable({
         cell: (info) => {
           const reg = info.row.original;
           return (
-            <div className="flex justify-center">
-              <StarButton isImportant={reg.is_important} onToggle={() => onStarToggle(reg)} />
+            <div className="flex justify-center" onClick={(e) => e.stopPropagation()}>
+              <StarButton
+                isImportant={reg.is_important}
+                onToggle={(e) => {
+                  e.stopPropagation();
+                  onStarToggle(reg);
+                }}
+              />
             </div>
           );
         },
@@ -292,43 +298,45 @@ export function RegistrationTable({
         cell: (info) => {
           const reg = info.row.original;
           return (
-            <DropdownMenu.Root>
-              <DropdownMenu.Trigger asChild>
-                <button className="focus:ring-brand-gold/50 rounded-full ring-offset-2 ring-offset-white outline-none focus:ring-2 dark:ring-offset-[#111118]">
-                  <StatusBadge status={reg.status} />
-                </button>
-              </DropdownMenu.Trigger>
-              <DropdownMenu.Portal>
-                <DropdownMenu.Content
-                  className="animate-in fade-in zoom-in-95 z-50 min-w-[140px] rounded-xl border border-gray-200 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-[#1a1a24]"
-                  sideOffset={8}
-                >
-                  <DropdownMenu.Label className="px-2 py-1.5 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-                    Update Status
-                  </DropdownMenu.Label>
-                  {STATUS_OPTIONS.map((status) => (
-                    <DropdownMenu.Item
-                      key={status.value}
-                      onClick={() => onStatusChange(reg.id, status.value)}
-                      className="group relative flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none hover:bg-gray-100 hover:text-gray-900 data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white dark:data-[highlighted]:bg-white/5 dark:data-[highlighted]:text-white"
-                    >
-                      <div
-                        className={`mr-2 h-2 w-2 rounded-full ${
-                          status.value === 'Approved'
-                            ? 'bg-emerald-500'
-                            : status.value === 'Pending'
-                              ? 'bg-amber-500'
-                              : status.value === 'Rejected'
-                                ? 'bg-red-500'
-                                : 'bg-gray-400'
-                        }`}
-                      />
-                      {status.label}
-                    </DropdownMenu.Item>
-                  ))}
-                </DropdownMenu.Content>
-              </DropdownMenu.Portal>
-            </DropdownMenu.Root>
+            <div onClick={(e) => e.stopPropagation()}>
+              <DropdownMenu.Root>
+                <DropdownMenu.Trigger asChild>
+                  <button className="focus:ring-brand-gold/50 rounded-full ring-offset-2 ring-offset-white outline-none focus:ring-2 dark:ring-offset-[#111118]">
+                    <StatusBadge status={reg.status} />
+                  </button>
+                </DropdownMenu.Trigger>
+                <DropdownMenu.Portal>
+                  <DropdownMenu.Content
+                    className="animate-in fade-in zoom-in-95 z-50 min-w-[140px] rounded-xl border border-gray-200 bg-white p-1.5 shadow-xl dark:border-white/10 dark:bg-[#1a1a24]"
+                    sideOffset={8}
+                  >
+                    <DropdownMenu.Label className="px-2 py-1.5 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
+                      Update Status
+                    </DropdownMenu.Label>
+                    {STATUS_OPTIONS.map((status) => (
+                      <DropdownMenu.Item
+                        key={status.value}
+                        onSelect={() => onStatusChange(reg.id, status.value)}
+                        className="group relative flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none hover:bg-gray-100 hover:text-gray-900 data-[highlighted]:bg-gray-100 data-[highlighted]:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white dark:data-[highlighted]:bg-white/5 dark:data-[highlighted]:text-white"
+                      >
+                        <div
+                          className={`mr-2 h-2 w-2 rounded-full ${
+                            status.value === 'Approved'
+                              ? 'bg-emerald-500'
+                              : status.value === 'Pending'
+                                ? 'bg-amber-500'
+                                : status.value === 'Rejected'
+                                  ? 'bg-red-500'
+                                  : 'bg-gray-400'
+                          }`}
+                        />
+                        {status.label}
+                      </DropdownMenu.Item>
+                    ))}
+                  </DropdownMenu.Content>
+                </DropdownMenu.Portal>
+              </DropdownMenu.Root>
+            </div>
           );
         },
       }),
@@ -350,7 +358,7 @@ export function RegistrationTable({
         cell: (info) => {
           const reg = info.row.original;
           return (
-            <div className="flex justify-end">
+            <div className="flex justify-end" onClick={(e) => e.stopPropagation()}>
               <DropdownMenu.Root>
                 <DropdownMenu.Trigger asChild>
                   <button className="flex h-8 w-8 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-900 focus:outline-none dark:hover:bg-white/10 dark:hover:text-white">
@@ -364,7 +372,7 @@ export function RegistrationTable({
                     align="end"
                   >
                     <DropdownMenu.Item
-                      onClick={() => onView(reg)}
+                      onSelect={() => onView(reg)}
                       className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5"
                     >
                       <Eye className="group-hover:text-brand-gold mr-2 h-4 w-4 text-gray-400" />
@@ -377,7 +385,7 @@ export function RegistrationTable({
                     </DropdownMenu.Label>
 
                     <DropdownMenu.Item
-                      onClick={() => {
+                      onSelect={() => {
                         sessionStorage.setItem('allotmentPrefillRegistration', JSON.stringify(reg));
                         window.location.href = '/admin/allotment-letter?prefillRegistration=true';
                       }}
@@ -388,7 +396,7 @@ export function RegistrationTable({
                     </DropdownMenu.Item>
 
                     <DropdownMenu.Item
-                      onClick={() => {
+                      onSelect={() => {
                         sessionStorage.setItem('receiptPrefillRegistration', JSON.stringify(reg));
                         window.location.href = '/admin/payment-receipt?prefillRegistration=true';
                       }}
@@ -399,7 +407,7 @@ export function RegistrationTable({
                     </DropdownMenu.Item>
 
                     <DropdownMenu.Item
-                      onClick={() => {
+                      onSelect={() => {
                         sessionStorage.setItem('emailPrefillRegistration', JSON.stringify(reg));
                         window.location.href = '/admin/email?tab=compose&prefillRegistration=true';
                       }}
@@ -411,7 +419,7 @@ export function RegistrationTable({
 
                     <DropdownMenu.Separator className="my-1 h-px bg-gray-100 dark:bg-white/5" />
                     <DropdownMenu.Item
-                      onClick={() => onDelete(reg)}
+                      onSelect={() => onDelete(reg)}
                       className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-red-600 outline-none select-none hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
                     >
                       <Trash2 className="mr-2 h-4 w-4" />
@@ -467,10 +475,11 @@ export function RegistrationTable({
               {table.getRowModel().rows.map((row, i) => (
                 <motion.tr
                   key={row.id}
+                  onClick={() => onView(row.original)}
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.015, duration: 0.3 }}
-                  className="group transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                  className="group cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-6 py-4 align-middle">
