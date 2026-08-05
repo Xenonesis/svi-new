@@ -44,6 +44,24 @@ export function BBAForm({
 }: BBAFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="border-brand-gold/20 bg-brand-gold/5 mb-6 rounded-xl border p-4">
+        <p className="text-brand-gold mb-3 text-[10px] font-bold tracking-widest uppercase">
+          Document Settings
+        </p>
+        <div className="w-full md:w-1/2">
+          <FormSelect
+            label="BBA Language"
+            name="language"
+            value={formData.language || 'en'}
+            onChange={handleChange}
+            options={[
+              { value: 'en', label: 'English' },
+              { value: 'hi', label: 'Hindi' },
+            ]}
+          />
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
         <FormSelect
           label="Salutation"

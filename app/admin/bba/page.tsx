@@ -7,6 +7,7 @@ import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import Link from 'next/link';
 import { Suspense } from 'react';
 import BbaPreviewContent from '@/src/components/admin/DocumentGenerator/BbaPreviewContent';
+import BbaPreviewContentHindi from '@/src/components/admin/DocumentGenerator/BbaPreviewContentHindi';
 import { useBBAData } from '@/src/hooks/admin/useBBAData';
 import { BBAForm } from '@/src/components/admin/bba/BBAForm';
 
@@ -328,7 +329,11 @@ function BbaPageContent() {
           </div>
 
           <PreviewContainer previewId="bbaPreview" hasPreview={preview}>
-            <BbaPreviewContent formData={formData} companyInfo={companyInfo} />
+            {formData.language === 'hi' ? (
+              <BbaPreviewContentHindi formData={formData} companyInfo={companyInfo} />
+            ) : (
+              <BbaPreviewContent formData={formData} companyInfo={companyInfo} />
+            )}
           </PreviewContainer>
 
           <DownloadOptions

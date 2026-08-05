@@ -70,6 +70,7 @@ export function useBBAData(token: string | null) {
     edcInEmi: 'false',
     emiCount: '12',
     emiStartDate: '',
+    language: 'en',
   });
 
   const [preview, setPreview] = useState(false);
@@ -351,6 +352,7 @@ export function useBBAData(token: string | null) {
                 allotmentData.edcInEmi !== undefined ? String(allotmentData.edcInEmi) : 'false',
               emiCount: allotmentData.emiCount || allotmentData.paymentPlan || '12',
               emiStartDate: allotmentData.emiStartDate || '',
+              language: allotmentData.language || 'en',
             }));
 
             if (allotmentData.secondPaymentDays) {

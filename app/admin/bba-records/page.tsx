@@ -21,6 +21,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { supabase } from '@/src/lib/supabase/client';
 import BbaPreviewContent from '@/src/components/admin/DocumentGenerator/BbaPreviewContent';
+import BbaPreviewContentHindi from '@/src/components/admin/DocumentGenerator/BbaPreviewContentHindi';
 
 interface SavedBba {
   id: string;
@@ -51,6 +52,7 @@ interface SavedBba {
     advisorNumber: string;
     advisorEmail?: string;
     age?: string;
+    language?: string;
   };
 }
 
@@ -611,6 +613,11 @@ export default function BbaRecordsPage() {
                         {record.form_data?.bookingDate
                           ? new Date(record.form_data.bookingDate).toLocaleDateString('en-GB')
                           : new Date(record.created_at).toLocaleDateString('en-GB')}
+                        {record.form_data?.language === 'hi' && (
+                          <span className="ml-2 rounded bg-orange-100 px-1.5 py-0.5 text-[9px] font-bold text-orange-800 dark:bg-orange-900/30 dark:text-orange-300">
+                            HI
+                          </span>
+                        )}
                       </td>
                       <td className="px-4 py-3.5 font-semibold text-gray-900 dark:text-white">
                         {record.form_data?.clientName || 'N/A'}
@@ -771,7 +778,14 @@ export default function BbaRecordsPage() {
                 id="modalBbaPreview"
                 className="mx-auto w-full max-w-3xl rounded-xl bg-white p-8 font-sans text-[13px] leading-relaxed text-black shadow-sm"
               >
-                <BbaPreviewContent formData={selectedBba.form_data} companyInfo={companyInfo} />
+                {selectedBba.form_data?.language === 'hi' ? (
+                  <BbaPreviewContentHindi
+                    formData={selectedBba.form_data}
+                    companyInfo={companyInfo}
+                  />
+                ) : (
+                  <BbaPreviewContent formData={selectedBba.form_data} companyInfo={companyInfo} />
+                )}
               </div>
             </div>
           </div>
