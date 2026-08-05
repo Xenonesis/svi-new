@@ -186,7 +186,7 @@ export default function AllotmentLetterPage() {
               onChange={(e) => loadFromRecord(e.target.value)}
               className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
             >
-              <option value="">
+              <option value="" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
                 {loadingRecords
                   ? 'Loading records...'
                   : savedAllotments.length === 0
@@ -194,7 +194,11 @@ export default function AllotmentLetterPage() {
                     : '— Select a saved allotment —'}
               </option>
               {savedAllotments.map((r: any) => (
-                <option key={r.id} value={r.id}>
+                <option
+                  key={r.id}
+                  value={r.id}
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
                   {r.form_data?.clientName || 'Unnamed'} — {r.form_data?.ticketId || 'No ticket'} (
                   {new Date(r.created_at).toLocaleDateString('en-IN')})
                 </option>

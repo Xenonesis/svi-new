@@ -459,9 +459,15 @@ export default function AllotmentRecordsPage() {
             onChange={(e) => setProjectFilter(e.target.value)}
             className="focus:border-brand-gold dark:bg-brand-dark-surface/85 w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 transition-all outline-none hover:bg-gray-50 sm:w-auto dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
           >
-            <option value="">ALL PROJECTS</option>
+            <option value="" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+              ALL PROJECTS
+            </option>
             {projects.map((proj) => (
-              <option key={proj} value={proj}>
+              <option
+                key={proj}
+                value={proj}
+                className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+              >
                 {proj.toUpperCase()}
               </option>
             ))}

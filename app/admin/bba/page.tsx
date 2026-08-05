@@ -244,9 +244,18 @@ function BbaPageContent() {
                 value={documentId || ''}
                 onChange={handleLoadBba}
               >
-                <option value="">-- Create New BBA --</option>
+                <option
+                  value=""
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  -- Create New BBA --
+                </option>
                 {savedBbas.map((b) => (
-                  <option key={b.id} value={b.id}>
+                  <option
+                    key={b.id}
+                    value={b.id}
+                    className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                  >
                     {b.form_data?.clientName || 'Unknown'} - {b.form_data?.ticketId || 'No Ticket'}{' '}
                     ({new Date(b.created_at).toLocaleDateString()})
                   </option>

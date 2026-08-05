@@ -415,9 +415,18 @@ export default function BbaRecordsPage() {
                 onChange={(e) => setProjectFilter(e.target.value)}
                 className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-gray-200 dark:[color-scheme:dark]"
               >
-                <option value="">All Projects</option>
+                <option
+                  value=""
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  All Projects
+                </option>
                 {projects.map((proj) => (
-                  <option key={proj} value={proj}>
+                  <option
+                    key={proj}
+                    value={proj}
+                    className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                  >
                     {proj}
                   </option>
                 ))}
@@ -431,12 +440,42 @@ export default function BbaRecordsPage() {
                 }}
                 className="focus:border-brand-gold dark:bg-brand-dark-surface rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-bold text-gray-700 [color-scheme:light] outline-none dark:border-white/10 dark:text-gray-200 dark:[color-scheme:dark]"
               >
-                <option value="date-desc">Newest First</option>
-                <option value="date-asc">Oldest First</option>
-                <option value="name-asc">Client (A-Z)</option>
-                <option value="name-desc">Client (Z-A)</option>
-                <option value="cost-desc">Value (High-Low)</option>
-                <option value="cost-asc">Value (Low-High)</option>
+                <option
+                  value="date-desc"
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  Newest First
+                </option>
+                <option
+                  value="date-asc"
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  Oldest First
+                </option>
+                <option
+                  value="name-asc"
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  Client (A-Z)
+                </option>
+                <option
+                  value="name-desc"
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  Client (Z-A)
+                </option>
+                <option
+                  value="cost-desc"
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  Value (High-Low)
+                </option>
+                <option
+                  value="cost-asc"
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  Value (Low-High)
+                </option>
               </select>
             </div>
           </div>
