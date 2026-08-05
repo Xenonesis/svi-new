@@ -20,6 +20,7 @@ export function useBBAData(token: string | null) {
   const [projects, setProjects] = useState<{ value: string; label: string }[]>([
     { value: 'Shyam Aangan', label: 'Shyam Aangan' },
     { value: 'Shyam Aangan Farm House', label: 'Shyam Aangan Farm House' },
+    { value: 'Shivani Vatika 11th', label: 'Shivani Vatika 11th' },
   ]);
 
   const [companyInfo, setCompanyInfo] = useState({

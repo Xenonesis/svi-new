@@ -1,6 +1,17 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
 
+const getProjectLocation = (projectName: string) => {
+  if (projectName?.toLowerCase().includes('shivani vatika')) {
+    return 'Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan';
+  }
+  return 'Village Basadi Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan';
+};
+
+const getProjectCity = (projectName: string) => {
+  return 'JAIPUR, RAJASTHAN';
+};
+
 /**
  * Second page block of the BBA legal preview: title + party identification
  * (Builder / 1st Allottee / 2nd Allottee / 3rd Allottee / Firm / Company)
@@ -36,8 +47,12 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
           The Allottee(s) hereby agrees and confirms that the Allottee(s) has verified the title of
           the firm in respect of the Said Land and the Said Complex and is satisfied with the same.
         </p>
-        <p className="mb-2 text-center text-lg font-bold uppercase">"SHYAM AANGAN"</p>
-        <p className="mb-2 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
+        <p className="mb-2 text-center text-lg font-bold uppercase">
+          "{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}"
+        </p>
+        <p className="mb-2 text-center text-sm font-bold uppercase">
+          {getProjectCity(formData?.projectName)}
+        </p>
         <p className="mb-2 text-center text-xl font-bold underline">BUILDER-BUYER AGREEMENT</p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
           This Builder Buyer Agreement (hereinafter referred to as the &apos;
@@ -141,8 +156,9 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         </p>
         <p className="mb-2 text-[13px] font-bold">Firms Representation</p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
-          <strong>WHEREAS</strong> the firm is bona fide purchaser of the land bearing &quot;SHYAM
-          AANGAN&quot;, Village Basadi Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan
+          <strong>WHEREAS</strong> the firm is bona fide purchaser of the land bearing &quot;
+          {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
+          {getProjectLocation(formData?.projectName)}
           (hereinafter referred to as the &apos;<strong>Said Land</strong>&apos;).
         </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">

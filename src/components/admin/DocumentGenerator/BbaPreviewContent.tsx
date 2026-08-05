@@ -3,15 +3,24 @@ import BbaLegalPages from '../../../../app/admin/bba/BbaLegalPages';
 import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
 
 export default function BbaPreviewContent({ formData, companyInfo }: any) {
-  const isShyamAangan = formData?.projectName?.includes('Shyam Aangan');
+  const getProjectLocation = (projectName: string) => {
+    if (projectName?.toLowerCase().includes('shivani vatika')) {
+      return '(Village Harsoli, Tehsil Renwal, District Jaipur, Rajasthan)';
+    }
+    // Default location for Shyam Aangan and others
+    return '(Kishan Garh Renwal, Jaipur, Rajasthan)';
+  };
+
+  const projectLocation = getProjectLocation(formData?.projectName);
 
   const calculateTotalCost = (data: any) => {
     const area = parseFloat(data?.area) || 0;
     const bsp = parseFloat(data?.bsp) || 0;
     const plc = parseFloat(data?.plc) || 0;
+    const edc = parseFloat(data?.edc) || 0;
     const base = area * bsp;
     const plcAmount = base * (plc / 100);
-    return base + plcAmount;
+    return base + plcAmount + edc;
   };
 
   const totalCost = calculateTotalCost(formData);
@@ -85,8 +94,8 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           </p>
           <p className="mb-1 text-justify">
             Congratulations from {companyInfo?.company_name} on your new investment in{' '}
-            {formData?.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect choice
-            and you are one of the few lucky ones to get unit at such reasonable rates.
+            {formData?.projectName} {projectLocation}. It is a perfect choice and you are one of the
+            few lucky ones to get unit at such reasonable rates.
           </p>
           <p className="mb-4 text-justify">
             We at {companyInfo?.company_name} feel privileged to be part of your great investment.
@@ -134,14 +143,10 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                   {formData?.paymentPlan} Months
                 </td>
                 <td className="border border-gray-400 p-2 font-bold">
-                  {isShyamAangan
-                    ? `\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`
-                    : formData?.bsp}
+                  {`\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
                 </td>
                 <td className="border border-gray-400 p-2 font-bold">{formData?.plc || ''}</td>
-                <td className="border border-gray-400 p-2 font-bold">
-                  {isShyamAangan ? fmtInr(totalCost) : totalCost.toFixed(2)}
-                </td>
+                <td className="border border-gray-400 p-2 font-bold">{fmtInr(totalCost)}</td>
               </tr>
             </tbody>
           </table>

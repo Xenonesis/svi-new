@@ -14,6 +14,13 @@ const formatDate = (date: Date) => {
 };
 
 export function AllotmentLetterPreview({ formData, companyInfo, id, className }: any) {
+  const getProjectLocation = (projectName: string) => {
+    if (projectName?.toLowerCase().includes('shivani vatika')) {
+      return '(Village Harsoli, Tehsil Renwal, District Jaipur, Rajasthan)';
+    }
+    return '(Kishan Garh Renwal, Jaipur, Rajasthan)';
+  };
+  const projectLocation = getProjectLocation(formData?.projectName);
   const calculateTotalCost = () => {
     const area = parseFloat(formData.area) || 0;
     const bsp = parseFloat(formData.bsp) || 0;
@@ -99,8 +106,8 @@ export function AllotmentLetterPreview({ formData, companyInfo, id, className }:
           </p>
           <p className="mb-1 text-justify">
             Congratulations from {companyInfo.company_name} on your new investment in{' '}
-            {formData.projectName} (Kishan Garh Renwal, Jaipur, Rajasthan). It is a perfect choice
-            and you are one of the few lucky ones to get unit at such reasonable rates.
+            {formData.projectName} {projectLocation}. It is a perfect choice and you are one of the
+            few lucky ones to get unit at such reasonable rates.
           </p>
           <p className="mb-4 text-justify">
             We at {companyInfo.company_name} feel privileged to be part of your great investment. We

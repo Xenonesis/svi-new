@@ -14,6 +14,13 @@ export function OperativeClausesAndSignaturesPage({
   companyInfo,
   totalCost,
 }: BBALegalContext) {
+  const getProjectLocation = (projectName: string) => {
+    if (projectName?.toLowerCase().includes('shivani vatika')) {
+      return 'Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan';
+    }
+    return 'Village Basadi, Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan';
+  };
+
   return (
     <>
       <div
@@ -27,8 +34,8 @@ export function OperativeClausesAndSignaturesPage({
       >
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           1. That the Firm hereby agrees to sell/ convey/ Transfer the /shop/Plot NO.{' '}
-          {formData.unitNumber} admeasuring {formData.area} SqYd in favour of Allottee, at Village
-          Basadi, Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan.
+          {formData.unitNumber} admeasuring {formData.area} SqYd in favour of Allottee, at{' '}
+          {getProjectLocation(formData?.projectName)}.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           2. The Allottee(s) has paid a sum of Rs.{' '}

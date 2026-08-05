@@ -6,6 +6,13 @@ import { BbaPageFooter } from './BbaPageFooter';
  * the definitions + interpretation section.
  */
 export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BBALegalContext) {
+  const getProjectLocationName = (projectName: string) => {
+    if (projectName?.toLowerCase().includes('shivani vatika')) {
+      return 'HARSOLI, TEHSIL RENWAL, DISTRICT JAIPUR, RAJASTHAN';
+    }
+    return 'BASADI, KISHAN GARH RENWAL, JAIPUR, RAJASTHAN';
+  };
+
   return (
     <>
       <div
@@ -61,7 +68,8 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>AND WHEREAS</strong> in pursuance to the aforesaid application for allotment the
           firm accepted the application of the Allottee and allotted{' '}
-          <strong>Plot No – {formData.unitNumber}</strong> in <strong>SHYAM AANGAN</strong> on dated{' '}
+          <strong>Plot No – {formData.unitNumber}</strong> in{' '}
+          <strong>{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}</strong> on dated{' '}
           <strong>
             {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
               day: 'numeric',
@@ -214,10 +222,12 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           annexure-A and includes any alternative plot/shop allotted in lieu of the Said Plot/shop.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
-          <strong>&quot;Said Complex&quot;</strong> means the &quot;SHYAM AANGAN&quot;, BASADI,
-          KISHAN GARH RENWAL, JAIPUR, RAJASTHAN comprising of residential plot/shop buildings,
-          shops, club house swimming pool, gym etc., community shopping, nursery school, and any
-          other building Amenities and Facilities as may be approved by the Governmental Authority.
+          <strong>&quot;Said Complex&quot;</strong> means the &quot;
+          {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
+          {getProjectLocationName(formData?.projectName)} comprising of residential plot/shop
+          buildings, shops, club house swimming pool, gym etc., community shopping, nursery school,
+          and any other building Amenities and Facilities as may be approved by the Governmental
+          Authority.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           <strong>&quot;Total Price&quot;</strong> means any and all kind of the amount amongst
