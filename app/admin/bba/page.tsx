@@ -158,6 +158,7 @@ function BbaPageContent() {
         edcInEmi: 'false',
         emiCount: '12',
         emiStartDate: '',
+        language: 'en',
       });
       setIsCustomSecondPaymentDays(false);
       return;

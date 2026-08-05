@@ -1,7 +1,7 @@
 import React from 'react';
 import type { BBALegalCompanyInfo } from './types';
 
-export function BbaPageFooterHindiHindi({ companyInfo }: { companyInfo?: BBALegalCompanyInfo }) {
+export function BbaPageFooterHindi({ companyInfo }: { companyInfo?: BBALegalCompanyInfo }) {
   const companyName = companyInfo?.company_name || 'SVI INFRA SOLUTIONS PVT LTD';
   return (
     <div
