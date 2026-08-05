@@ -317,7 +317,7 @@ export default function OfferLetterPreviewContent({
             className="mb-2 h-12 w-auto opacity-80 mix-blend-multiply"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
-          <p className="font-bold">Ilyas Ali</p>
+          <p className="font-bold">Iliyas Ali</p>
           <p className="text-gray-600">( Director )</p>
         </div>
         <div className="text-right">
