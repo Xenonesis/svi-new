@@ -8,7 +8,7 @@ export default function BlogHero() {
   const t = useTranslations('pages.blog');
 
   return (
-    <section className="from-brand-navy via-brand-navy to-brand-navy/80 relative overflow-hidden bg-gradient-to-br py-24 dark:from-gray-900 dark:via-gray-900 dark:to-gray-900/80">
+    <section className="from-brand-bg to-brand-bg/80 dark:from-brand-navy dark:via-brand-navy dark:to-brand-navy/80 relative overflow-hidden bg-gradient-to-br via-white py-24">
       {/* Animated gradient orbs */}
       <motion.div
         className="bg-brand-gold/10 absolute -top-32 -left-32 h-96 w-96 rounded-full blur-3xl"
@@ -23,7 +23,7 @@ export default function BlogHero() {
 
       {/* Grid pattern */}
       <div
-        className="pointer-events-none absolute inset-0 opacity-[0.04]"
+        className="pointer-events-none absolute inset-0 opacity-[0.02] dark:opacity-[0.04]"
         style={{
           backgroundImage:
             'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
@@ -47,7 +47,7 @@ export default function BlogHero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="mx-auto mb-6 max-w-3xl font-serif text-4xl leading-tight text-white md:text-6xl"
+          className="text-brand-navy mx-auto mb-6 max-w-3xl font-serif text-4xl leading-tight md:text-6xl dark:text-white"
         >
           {t('heading')}
         </motion.h1>
@@ -63,7 +63,7 @@ export default function BlogHero() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.5 }}
-          className="mx-auto max-w-2xl text-base leading-relaxed text-gray-300/90 md:text-lg"
+          className="mx-auto max-w-2xl text-base leading-relaxed text-gray-600 md:text-lg dark:text-gray-300/90"
         >
           {t('subtitle') ||
             'Stay informed with the latest market trends, investment guides, and updates from SVI Infra Solutions.'}
@@ -83,7 +83,7 @@ export default function BlogHero() {
           ].map((s) => (
             <div key={s.label} className="text-center">
               <div className="text-brand-gold font-serif text-2xl font-bold">{s.num}</div>
-              <div className="mt-0.5 text-[10px] tracking-wider text-gray-400 uppercase">
+              <div className="mt-0.5 text-[10px] tracking-wider text-gray-500 uppercase dark:text-gray-400">
                 {s.label}
               </div>
             </div>
