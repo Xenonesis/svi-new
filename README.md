@@ -58,19 +58,19 @@ This repository hosts the company's full digital platform — a **public marketi
 
 ### Why this project stands out
 
-| Area              | What makes it production-grade                                           |
-| ----------------- | ------------------------------------------------------------------------ |
-| **Rendering**     | Hybrid RSC + selective client islands via `"use client"` boundary        |
-| **Data**          | Server-side Supabase queries, optimistic updates via TanStack Query      |
-| **i18n**          | Native locale routing with `next-intl` (English/Hindi, auto-detection)   |
-| **Auth**          | Cookie-based Supabase SSR + middleware role-gating for `/admin`          |
-| **Documents**     | Client-side jsPDF generation (BBA, invoices, allotment, offer letters)   |
-| **State**         | Zustand stores with `persist` middleware for theme & auth                |
-| **UI**            | Tailwind v4, Motion animations, MapLibre GL maps, 3D Three.js scenes     |
-| **AI**            | Streaming Groq (Llama 4) chatbot + Gemini content generation             |
-| **Email**         | Resend transactional + Tiptap-powered campaign editor                    |
-| **PWA**           | Service worker with push notifications, background sync, offline support |
-| **Quality gates** | Husky pre-commit (lint+format), Commitlint, Vitest, Playwright e2e       |
+| Area              | What makes it production-grade                                                 |
+| ----------------- | ------------------------------------------------------------------------------ |
+| **Rendering**     | Hybrid RSC + selective client islands via `"use client"` boundary              |
+| **Data**          | Server-side Supabase queries, optimistic updates via TanStack Query            |
+| **i18n**          | Native locale routing with `next-intl` (English/Hindi, auto-detection)         |
+| **Auth**          | Cookie-based Supabase SSR; admin auth handled in-app, not in global middleware |
+| **Documents**     | Client-side jsPDF generation (BBA, invoices, allotment, offer letters)         |
+| **State**         | Zustand stores with `persist` middleware for theme & auth                      |
+| **UI**            | Tailwind v4, Motion animations, MapLibre GL maps, 3D Three.js scenes           |
+| **AI**            | Streaming Groq (Llama 4) chatbot + Gemini content generation                   |
+| **Email**         | Resend transactional + Tiptap-powered campaign editor                          |
+| **PWA**           | Service worker with push notifications, background sync, offline support       |
+| **Quality gates** | Husky pre-commit (lint+format), Commitlint, Vitest, Playwright e2e             |
 
 ---
 
@@ -215,49 +215,52 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-### Proxy / Middleware Guard Pattern
+### Proxy / Middleware Pattern
 
 > Next.js 16 uses `proxy.ts` convention (replaces deprecated `middleware.ts`)
 
-The app uses `proxy.ts` for two purposes:
+The app uses `proxy.ts` for:
 
 1. **i18n locale routing** — `next-intl` middleware rewrites public pages for English/Hindi
-2. **Admin auth guard** — Supabase SSR session check + role verification
+2. **CSRF cookie setup** — Sets a CSRF token cookie on registration page requests
+3. **Admin auth is handled in-app**, not in `proxy.ts` — admin route groups are protected by server-side Supabase auth checks inside page components and API handlers rather than by the global middleware matcher
 
 ```tsx
 // proxy.ts
-import createIntlMiddleware from 'next-intl/middleware';
-import { createServerClient } from '@supabase/ssr';
+import createMiddleware from 'next-intl/middleware';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { randomBytes } from 'crypto';
+import { routing } from './src/i18n/routing';
 
-export async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const intlMiddleware = createMiddleware(routing);
 
-  // Admin auth guard
-  if (pathname.startsWith('/admin') && pathname !== '/admin') {
-    const supabase = createServerClient(/* ... */);
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-    if (!user) {
-      const url = request.nextUrl.clone();
-      url.pathname = '/admin';
-      return NextResponse.redirect(url);
+export default function middleware(request: NextRequest) {
+  const url = request.nextUrl;
+  const response = intlMiddleware(request);
+
+  // CSRF cookie for registration page
+  if (url.pathname.endsWith('/registration')) {
+    const existing = request.cookies.get('csrf')?.value;
+    if (!existing) {
+      const token = randomBytes(24).toString('hex');
+      response.cookies.set('csrf', token, {
+        httpOnly: false,
+        sameSite: 'lax',
+        secure: request.nextUrl.protocol === 'https:',
+        path: '/',
+        maxAge: 60 * 60, // 1 hour
+      });
     }
-    return supabaseResponse;
   }
 
-  // i18n locale routing (public pages)
-  if (!pathname.startsWith('/api') && !pathname.startsWith('/admin')) {
-    return intlMiddleware(request);
-  }
-
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: ['/((?!_next|_vercel|monitoring|images|favicons|.*\..*).*)'],
+  matcher: [
+    '/((?!api|_next|_vercel|admin|attendance|employee|share|opengraph-image|@vite|.*\\..*).*)',
+  ],
 };
 ```
 
@@ -265,16 +268,13 @@ export const config = {
 
 ## 📦 PWA Architecture
 
-### Service Worker (`public/sw.js`)
+### Service Worker (`src/sw.ts` + `public/sw.js`)
 
-The custom service worker implements a comprehensive caching strategy:
+The app uses **@serwist/next** (Serwist) for PWA support:
 
-| Strategy                   | Route                                 | Description                                            |
-| -------------------------- | ------------------------------------- | ------------------------------------------------------ |
-| **Cache First**            | Static assets (CSS, JS, fonts, icons) | Serve from cache, update in background                 |
-| **Network First**          | HTML pages, API calls                 | Try network first, fall back to cache                  |
-| **Stale While Revalidate** | Images                                | Serve cached version immediately, update in background |
-| **Cache Only**             | App shell, offline page               | Always available offline                               |
+- `src/sw.ts` — Service worker source using Serwist precache + custom runtime behavior
+- `public/sw.js` — Built service worker output
+- `public/manifest.json` — Web app manifest with `share_target`, `display_override`, and `window-controls-overlay`
 
 ### Push Notifications
 
@@ -291,7 +291,7 @@ The service worker registers for `sync` events for form submissions (contact, re
 
 ### Share Target
 
-The PWA supports the Web Share Target API, allowing users to share URLs/images directly to the app from other apps on their device, handled by the `/share` route.
+The PWA supports the Web Share Target API via `public/manifest.json` (`share_target` action: `/share`), allowing users to share URLs/images directly to the app from other apps.
 
 ---
 
@@ -451,12 +451,14 @@ Locale is preserved across navigation and stored in the `NEXT_LOCALE` cookie.
 
 ### Authentication Layers
 
-| Layer         | Mechanism                                                         | Routes                                  |
-| ------------- | ----------------------------------------------------------------- | --------------------------------------- |
-| **Public**    | No auth required                                                  | `/[locale]/(main)/*`, `/api/*` (public) |
-| **Admin**     | Supabase SSR session + `profiles.role = 'admin'` middleware check | `/admin/*`                              |
-| **Employee**  | Supabase SSR session + role check                                 | `/employee/*`, `/(employee)/*`          |
-| **API Admin** | `withAdminAuth` wrapper validates session + role                  | `/api/admin/*`                          |
+| Layer         | Mechanism                                                                    | Routes                                  |
+| ------------- | ---------------------------------------------------------------------------- | --------------------------------------- |
+| **Public**    | No auth required                                                             | `/[locale]/(main)/*`, `/api/*` (public) |
+| **Admin**     | Supabase SSR session + `profiles.role = 'admin'` checks in page/API handlers | `/admin/*`                              |
+| **Employee**  | Supabase SSR session + role check                                            | `/employee/*`, `/(employee)/*`          |
+| **API Admin** | `withAdminAuth` wrapper validates session + role                             | `/api/admin/*`                          |
+
+> Note: Admin auth is enforced inside page components and API handlers, not in `proxy.ts`. `proxy.ts` handles i18n locale routing and CSRF cookies only.
 
 ### API Security
 
@@ -614,32 +616,72 @@ pnpm test
 
 ### Vercel Configuration
 
+The actual `vercel.json` includes:
+
+- `devCommand`: `next dev --port 3000` (Vercel preview/dev uses port 3000; local dev via `pnpm dev` uses port 3001)
+- `headers`: `/api/admin/*` gets `X-Robots-Tag: noindex, nofollow`
+- `crons`: All four cron endpoints run at `0 0 * * *` except `cleanup-registrations` at `0 6 * * *`
+
 ```json
 {
+  "cleanUrls": true,
+  "trailingSlash": false,
   "framework": "nextjs",
-  "buildCommand": "npm run build",
+  "buildCommand": "next build",
   "outputDirectory": ".next",
   "installCommand": "pnpm install",
+  "devCommand": "next dev --port 3000",
+  "headers": [
+    {
+      "source": "/api/admin/(.*)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    },
+    {
+      "source": "/api/admin",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }]
+    }
+  ],
   "crons": [
     {
       "path": "/api/cron/lottery",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/campaigns",
-      "schedule": "*/10 * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/process-scheduled-emails",
-      "schedule": "* * * * *"
+      "schedule": "0 0 * * *"
     },
     {
       "path": "/api/cron/cleanup-registrations",
-      "schedule": "0 0 * * *"
+      "schedule": "0 6 * * *"
     }
   ]
 }
 ```
+
+      "path": "/api/cron/lottery",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/campaigns",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/process-scheduled-emails",
+      "schedule": "0 0 * * *"
+    },
+    {
+      "path": "/api/cron/cleanup-registrations",
+      "schedule": "0 6 * * *"
+    }
+
+]
+}
+
+````
 
 ---
 
@@ -658,7 +700,7 @@ interface AuthState {
   setProfile: (profile: Profile | null) => void;
   clearAuth: () => void;
 }
-```
+````
 
 - Persisted to localStorage via `persist` middleware
 - Used for client-side auth state after SSR session check
@@ -893,25 +935,25 @@ pnpm analyze
 
 ### Regular Maintenance Tasks
 
-| Task                     | Frequency    | Method                               |
-| ------------------------ | ------------ | ------------------------------------ |
-| Performance index review | Monthly      | Check `performance-indexes_v3.sql`   |
-| Registration cleanup     | Daily        | `/api/cron/cleanup-registrations`    |
-| Campaign processing      | Every 10 min | `/api/cron/campaigns`                |
-| Scheduled email dispatch | Every minute | `/api/cron/process-scheduled-emails` |
-| Lottery draw execution   | Every 5 min  | `/api/cron/lottery`                  |
+| Task                     | Frequency      | Method                               |
+| ------------------------ | -------------- | ------------------------------------ |
+| Performance index review | Monthly        | `supabase/migrations/*` index files  |
+| Registration cleanup     | Daily          | `/api/cron/cleanup-registrations`    |
+| Campaign processing      | Daily midnight | `/api/cron/campaigns`                |
+| Scheduled email dispatch | Daily midnight | `/api/cron/process-scheduled-emails` |
+| Lottery draw execution   | Daily midnight | `/api/cron/lottery`                  |
 
 ### Running Migrations
 
 ```bash
 # Via Supabase CLI
+pnpm supabase:push
+# or
 supabase db push
 
 # Manual SQL execution via Supabase Dashboard
-# Open SQL Editor and run migration files in order:
-# 1. supabase/migration.sql
-# 2. supabase/forms-migration.sql
-# 3. ... (all migrations in timestamp order)
+# Open SQL Editor and run migration files in supabase/migrations/ in timestamp order
+# The 48 migrations are already ordered; run all of them
 ```
 
 ---
@@ -1013,8 +1055,8 @@ Initial release with:
 - **Email system** — Resend integration, TipTap editor, campaigns, scheduled emails, drafts, inbound webhooks
 - **Document generation** — Client-side PDF/PNG via jsPDF + html2canvas-pro
 - **i18n** — English/Hindi with next-intl locale routing
-- **Authentication** — Supabase SSR with role-based middleware
-- **Database** — 30+ migration files covering all features
+- **Authentication** — Supabase SSR; admin auth protected in-app, not by global middleware
+- **Database** — 48 timestamped migration files covering all features
 - **Testing** — Vitest unit/integration tests, Playwright e2e tests
 - **Tooling** — Husky, Commitlint, ESLint, Prettier, lint-staged
 
@@ -1052,25 +1094,23 @@ Initial release with:
 
 ---
 
-## 🏗️ Tech Stack
-
 ### Core Framework
 
-| Layer      | Technology            | Version   | Why we chose it                         |
-| ---------- | --------------------- | --------- | --------------------------------------- |
-| Framework  | **Next.js**           | `^16.2.9` | App Router, RSC, route handlers         |
-| UI library | **React**             | `^19.2.7` | Server Components, `use()` hook         |
-| Language   | **TypeScript**        | `^6.0.3`  | Strict mode, end-to-end type safety     |
-| Bundler    | **Webpack** (default) | bundled   | Stable build, full Next.js plugin chain |
+| Layer      | Technology            | Version    | Why we chose it                         |
+| ---------- | --------------------- | ---------- | --------------------------------------- |
+| Framework  | **Next.js**           | `^16.2.12` | App Router, RSC, route handlers         |
+| UI library | **React**             | `^19.2.8`  | Server Components, `use()` hook         |
+| Language   | **TypeScript**        | `^6.0.3`   | Strict mode, end-to-end type safety     |
+| Bundler    | **Webpack** (default) | bundled    | Stable build, full Next.js plugin chain |
 
 ### Styling & UI
 
 | Technology                 | Version                        | Purpose                               |
 | -------------------------- | ------------------------------ | ------------------------------------- |
-| **Tailwind CSS**           | `^4.1.14`                      | Utility-first CSS                     |
-| **Motion (Framer Motion)** | `^12.40.0`                     | Scroll-reveal & micro-interactions    |
-| **Lucide React**           | `^1.21.0`                      | Open-source icon set                  |
-| **Recharts**               | `^3.8.1`                       | Composable charts for admin dashboard |
+| **Tailwind CSS**           | `^4.3.3`                       | Utility-first CSS                     |
+| **Motion (Framer Motion)** | `^12.42.2`                     | Scroll-reveal & micro-interactions    |
+| **Lucide React**           | `^1.27.0`                      | Open-source icon set                  |
+| **Recharts**               | `^3.10.1`                      | Composable charts for admin dashboard |
 | **Sonner**                 | `^2.0.7`                       | Toast notifications                   |
 | **canvas-confetti**        | `^1.9.4`                       | Confetti for lottery wins             |
 | **clsx / tailwind-merge**  | `^2.1.1` / `^3.6.0`            | Conditional class composition         |
@@ -1092,49 +1132,88 @@ Initial release with:
 
 | Technology        | Version    | Purpose                                |
 | ----------------- | ---------- | -------------------------------------- |
-| **Supabase JS**   | `^2.108.2` | PostgreSQL + auth + storage + realtime |
-| **@supabase/ssr** | `^0.12.0`  | Cookie-based SSR sessions              |
-| **next-intl**     | `^4.13.0`  | Locale routing (en/hi) + translations  |
+| **Supabase JS**   | `^2.110.8` | PostgreSQL + auth + storage + realtime |
+| **@supabase/ssr** | `^0.12.3`  | Cookie-based SSR sessions              |
+| **next-intl**     | `^4.13.4`  | Locale routing (en/hi) + translations  |
 
 ### AI Providers
 
-| Technology        | Version    | Purpose                              |
-| ----------------- | ---------- | ------------------------------------ |
-| **ai (Vercel)**   | `^6.0.198` | Streaming chat & generative UI       |
-| **@ai-sdk/groq**  | `^3.0.42`  | Llama 4 inference                    |
-| **@ai-sdk/react** | `^3.0.210` | React hooks for AI SDK               |
-| **@google/genai** | `^2.4.0`   | Server-side content generation       |
-| **web-push**      | `^3.6.7`   | Server-side push notification sender |
+| Technology        | Version   | Purpose                              |
+| ----------------- | --------- | ------------------------------------ |
+| **ai (Vercel)**   | `^7.0.37` | Streaming chat & generative UI       |
+| **@ai-sdk/groq**  | `^4.0.13` | Llama 4 inference                    |
+| **@ai-sdk/react** | `^4.0.40` | React hooks for AI SDK               |
+| **@google/genai** | `^2.4.0`  | Server-side content generation       |
+| **web-push**      | `^3.6.7`  | Server-side push notification sender |
 
 ### Documents, Forms & Email
 
 | Technology          | Version   | Purpose                                                          |
 | ------------------- | --------- | ---------------------------------------------------------------- |
 | **jsPDF**           | `^4.2.1`  | Client-side PDF generation                                       |
-| **html2canvas-pro** | `^2.0.4`  | HTML → canvas for PDF content                                    |
+| **html2canvas-pro** | `^2.3.2`  | HTML → canvas for PDF content                                    |
 | **html2pdf.js**     | `^0.14.0` | Alternative PDF generation library                               |
 | **ExcelJS**         | `^4.4.0`  | Excel parsing & export                                           |
-| **Resend**          | `^6.14.0` | Transactional + marketing email                                  |
-| **TipTap**          | `^3.27.1` | Rich text editor (compose, link, image, color, highlight, align) |
+| **Resend**          | `^6.18.0` | Transactional + marketing email                                  |
+| **TipTap**          | `^3.29.1` | Rich text editor (compose, link, image, color, highlight, align) |
 | **heic-convert**    | `^2.1.0`  | HEIC → JPEG/PNG in browser                                       |
 | **Zod**             | `^4.4.3`  | Schema validation for API payloads                               |
 | **maplibre-gl**     | `^5.24.0` | Open-source vector map rendering (no API key)                    |
 
 ### Analytics, Testing & Tooling
 
-| Technology                  | Version                | Purpose                          |
-| --------------------------- | ---------------------- | -------------------------------- |
-| **@vercel/analytics**       | `^2.0.1`               | Page-view & visitor tracking     |
-| **@vercel/speed-insights**  | `^2.0.0`               | Real-user Core Web Vitals        |
-| **Vitest** + **jsdom**      | `^4.1.9` / `^29.1.1`   | Unit & integration tests         |
-| **Playwright**              | `^1.61.0`              | End-to-end browser tests         |
-| **ESLint** (flat config)    | `^10.5.0`              | Type-aware linting               |
-| **Prettier**                | `^3.8.4`               | Formatter + Tailwind class sort  |
-| **Husky** + **lint-staged** | `^9.1.7` / `^17.0.7`   | Git hooks                        |
-| **Commitlint**              | `^21.0.2`              | Conventional commit enforcement  |
-| **@next/bundle-analyzer**   | `^16.2.9`              | Bundle size inspection           |
-| **tsx**                     | `^4.22.4`              | TypeScript execution for scripts |
-| **Testing Library**         | React + DOM + jest-dom | Component testing utilities      |
+| Technology                  | Version                        | Purpose                                  |
+| --------------------------- | ------------------------------ | ---------------------------------------- |
+| **Next.js**                 | `^16.2.12`                     | App Router, RSC, route handlers          |
+| **React**                   | `^19.2.8`                      | Server Components, `use()` hook          |
+| **TypeScript**              | `^6.0.3`                       | Strict mode, end-to-end type safety      |
+| **Tailwind CSS**            | `^4.3.3`                       | Utility-first CSS                        |
+| **Motion**                  | `^12.42.2`                     | Scroll-reveal & micro-interactions       |
+| **Supabase JS**             | `^2.110.8`                     | PostgreSQL + auth + storage + realtime   |
+| **@supabase/ssr**           | `^0.12.3`                      | Cookie-based SSR sessions                |
+| **next-intl**               | `^4.13.4`                      | Locale routing (en/hi) + translations    |
+| **Zustand**                 | `^5.0.14`                      | Lightweight stores                       |
+| **TanStack React Query**    | `^5.101.0`                     | Server-state caching, optimistic updates |
+| **TanStack React Table**    | `^8.21.3`                      | Data tables for admin panels             |
+| **ai (Vercel)**             | `^7.0.37`                      | Streaming chat & generative UI           |
+| **@ai-sdk/groq**            | `^4.0.13`                      | Llama 4 inference                        |
+| **@ai-sdk/react**           | `^4.0.40`                      | React hooks for AI SDK                   |
+| **@google/genai**           | `^2.4.0`                       | Server-side content generation           |
+| **Resend**                  | `^6.18.0`                      | Transactional + marketing email          |
+| **TipTap**                  | `^3.29.1`                      | Rich text editor                         |
+| **jsPDF**                   | `^4.2.1`                       | Client-side PDF generation               |
+| **html2canvas-pro**         | `^2.3.2`                       | HTML → canvas for PDF content            |
+| **html2pdf.js**             | `^0.14.0`                      | Alternative PDF generation               |
+| **ExcelJS**                 | `^4.4.0`                       | Excel parsing & export                   |
+| **Zod**                     | `^4.4.3`                       | Schema validation                        |
+| **maplibre-gl**             | `^5.24.0`                      | Open-source vector maps                  |
+| **three**                   | `^0.184.0`                     | 3D engine                                |
+| **@react-three/fiber**      | `^9.6.1`                       | 3D scene rendering                       |
+| **@react-three/drei**       | `^10.7.7`                      | Useful 3D helpers                        |
+| **web-push**                | `^3.6.7`                       | Server-side push notifications           |
+| **@serwist/next**           | `^9.5.12`                      | Next.js service worker integration       |
+| **@serwist/sw**             | `^9.5.12`                      | Service worker runtime                   |
+| **@sentry/nextjs**          | `^10.68.0`                     | Error monitoring                         |
+| **@capacitor/core**         | `^8.4.2`                       | Cross-platform native runtime            |
+| **Lucide React**            | `^1.27.0`                      | Icon set                                 |
+| **Recharts**                | `^3.10.1`                      | Admin dashboard charts                   |
+| **Sonner**                  | `^2.0.7`                       | Toast notifications                      |
+| **canvas-confetti**         | `^1.9.4`                       | Lottery win confetti                     |
+| **clsx / tailwind-merge**   | `^2.1.1` / `^3.6.0`            | Conditional class composition            |
+| **Radix UI**                | dialog, dropdown-menu, tooltip | Accessible primitives                    |
+| **heic-convert**            | `^2.1.0`                       | HEIC → JPEG/PNG in browser               |
+| **date-fns**                | `^4.4.0`                       | Date formatting                          |
+| **@vercel/analytics**       | `^2.0.1`                       | Page-view tracking                       |
+| **@vercel/speed-insights**  | `^2.0.0`                       | Real-user Core Web Vitals                |
+| **Vitest** + **jsdom**      | `^4.1.10` / `^30.0.0`          | Unit & integration tests                 |
+| **Playwright**              | `^1.62.0`                      | End-to-end browser tests                 |
+| **ESLint** (flat config)    | `^10.8.0`                      | Type-aware linting                       |
+| **Prettier**                | `^3.9.6`                       | Formatter + Tailwind class sort          |
+| **Husky** + **lint-staged** | `^9.1.7` / `^17.0.7`           | Git hooks                                |
+| **Commitlint**              | `^21.2.1`                      | Conventional commit enforcement          |
+| **@next/bundle-analyzer**   | `^16.2.12`                     | Bundle size inspection                   |
+| **tsx**                     | `^4.22.4`                      | TypeScript execution for scripts         |
+| **Testing Library**         | React + DOM + jest-dom         | Component testing utilities              |
 
 ---
 
@@ -1404,16 +1483,23 @@ svi-new/
 │   └── theme-init.js              # FOUC prevention script
 ├── scripts/                       # Node/TS scripts
 │   ├── add_indian_participants.ts
-│   ├── analyze-db-tables.ts
+│   ├── apply-groups-migration.ts
+│   ├── check-db-schema.ts
+│   ├── check-image-sizes.mjs
 │   ├── cleanup-and-test-campaigns.ts
 │   ├── convert-heic.js
 │   ├── create-admin.ts
 │   ├── create-is-admin-function.sql
+│   ├── encode-hero-video.mjs
 │   ├── enable-lottery.ts
+│   ├── generate-brochure.mjs
 │   ├── generate-icons.js
+│   ├── optimize-images.mjs
+│   ├── perf-monitor.mjs
+│   ├── run-migration.ts
+│   ├── run-punch-migration.ts
 │   ├── seed-lottery-51646d2f.ts
 │   ├── seed-notifications.ts
-│   ├── test_supabase.ts
 │   ├── test-auth-sessions.ts
 │   ├── test-db-performance.ts
 │   ├── test-db.ts
@@ -1421,17 +1507,13 @@ svi-new/
 │   ├── test-resend-direct.ts
 │   ├── test-resend.ts
 │   ├── test-settings-table.ts
+│   ├── test_supabase.ts
 │   ├── verify-all.ts
-│   └── verify-email-features.ts
+│   ├── verify-email-features.ts
+│   └── verify-groups.ts
 ├── supabase/                      # Migrations & config
-│   ├── migrations/                # Timestamp-ordered SQL migrations
-│   ├── migration.sql              # Core schema
-│   ├── forms-migration.sql        # Form tables
-│   ├── attendance-migration.sql   # Attendance tables
-│   ├── notifications-setup.sql    # Notifications system
-│   ├── performance-indexes.sql    # Strategic indexes
-│   ├── campaigns-migration.sql    # Email campaigns
-│   ├── scheduled-draw-migration.sql # Lottery scheduled draws
+│   ├── migrations/                # 48 timestamp-ordered SQL migrations
+│   ├── config.toml                # Supabase CLI config
 │   └── .temp/                     # Temporary migration artifacts
 ├── __tests__/                     # Vitest unit/integration tests
 │   ├── api/                       # API tests
@@ -1482,11 +1564,9 @@ cp .env.example .env.local
 # Edit .env.local with your keys (see "Environment Variables" below)
 
 # 4. Database migrations
-# Create a Supabase project, then run in order:
-#   migration.sql, forms-migration.sql, attendance-migration.sql,
-#   notifications-setup.sql, performance-indexes.sql,
-#   campaigns-migration.sql, scheduled-draw-migration.sql,
-#   supabase/migrations/*.sql (timestamp order)
+# Run all migration files in supabase/migrations/ in timestamp order:
+pnpm supabase:push
+# or use the Supabase Dashboard SQL editor with the files from supabase/migrations/
 
 # 5. Dev server
 pnpm dev          # → http://localhost:3001
@@ -1527,26 +1607,35 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 
 ## 📜 Available Scripts
 
-| Script                | Command                                                     | Purpose                 |
-| --------------------- | ----------------------------------------------------------- | ----------------------- |
-| `dev`                 | `next dev --webpack --port 3001`                            | Dev server with HMR     |
-| `build`               | `next build`                                                | Production build        |
-| `analyze`             | `ANALYZE=true next build`                                   | Inspect bundle size     |
-| `start`               | `next start`                                                | Serve production build  |
-| `lint`                | `eslint . --ext .ts,.tsx,.js,.jsx`                          | Static analysis         |
-| `lint:fix`            | `eslint . --ext .ts,.tsx,.js,.jsx --fix`                    | Auto-fix lint issues    |
-| `format`              | `prettier --write .`                                        | Format all files        |
-| `format:check`        | `prettier --check .`                                        | Verify formatting       |
-| `editorconfig`        | `editorconfig-checker`                                      | Editorconfig compliance |
-| `test`                | `vitest run`                                                | Unit/integration tests  |
-| `test:watch`          | `vitest`                                                    | Watch mode              |
-| `test:e2e`            | `playwright test --config=e2e/playwright.config.ts`         | End-to-end tests        |
-| `test:e2e:ui`         | `playwright test --ui --config=e2e/playwright.config.ts`    | Playwright UI debugger  |
-| `test:e2e:debug`      | `playwright test --config=e2e/playwright.config.ts --debug` | Playwright debug mode   |
-| `test:db-performance` | `tsx scripts/test-db-performance.ts`                        | Database performance    |
-| `generate-icons`      | `node scripts/generate-icons.js`                            | Regenerate app icons    |
-| `clean`               | `rm -rf .next`                                              | Wipe build artifacts    |
-| `prepare`             | `husky`                                                     | Install git hooks       |
+| Script                | Command                    | Purpose                   |
+| --------------------- | -------------------------- | ------------------------- |
+| `dev`                 | `pnpm dev`                 | Dev server on port 3001   |
+| `build`               | `pnpm build`               | Production build          |
+| `start`               | `pnpm start`               | Serve production build    |
+| `analyze`             | `pnpm analyze`             | Bundle analysis (webpack) |
+| `perf:bundle`         | `pnpm perf:bundle`         | Bundle analysis (default) |
+| `perf:dev`            | `pnpm perf:dev`            | Performance monitor       |
+| `typecheck`           | `pnpm typecheck`           | TypeScript type check     |
+| `lint`                | `pnpm lint`                | ESLint                    |
+| `lint:fix`            | `pnpm lint:fix`            | ESLint auto-fix           |
+| `format`              | `pnpm format`              | Prettier write            |
+| `format:check`        | `pnpm format:check`        | Prettier check            |
+| `editorconfig`        | `pnpm editorconfig`        | Editorconfig compliance   |
+| `test`                | `pnpm test`                | Unit/integration tests    |
+| `test:watch`          | `pnpm test:watch`          | Vitest watch mode         |
+| `test:e2e`            | `pnpm test:e2e`            | Playwright E2E tests      |
+| `test:e2e:ui`         | `pnpm test:e2e:ui`         | Playwright UI debugger    |
+| `test:e2e:debug`      | `pnpm test:e2e:debug`      | Playwright debug mode     |
+| `test:db-performance` | `pnpm test:db-performance` | Database performance      |
+| `optimize:images`     | `pnpm optimize:images`     | Image optimization        |
+| `generate-icons`      | `pnpm generate-icons`      | Regenerate app icons      |
+| `clean`               | `pnpm clean`               | Wipe `.next`              |
+| `prepare`             | `pnpm prepare`             | Install Husky hooks       |
+| `cap:sync`            | `pnpm cap:sync`            | Sync Capacitor            |
+| `cap:open:android`    | `pnpm cap:open:android`    | Open Android IDE          |
+| `cap:build:android`   | `pnpm cap:build:android`   | Build Android app         |
+| `cap:run:android`     | `pnpm cap:run:android`     | Run on Android device     |
+| `cap:assets`          | `pnpm cap:assets`          | Generate app assets       |
 
 ---
 
@@ -1800,64 +1889,38 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 
 ## 🗃️ Database Migrations
 
-Run in order against a fresh Supabase project:
+All migrations live in `supabase/migrations/` as timestamp-ordered files. Run them in order against a fresh Supabase project:
 
-### Root-level migration files
+### Applying migrations
 
-| File / Migration                        | Purpose                       |
-| --------------------------------------- | ----------------------------- |
-| `supabase/migration.sql`                | Core schema (users, projects) |
-| `supabase/forms-migration.sql`          | Form submission tables        |
-| `supabase/attendance-migration.sql`     | Attendance tracking           |
-| `supabase/notifications-setup.sql`      | Notifications system          |
-| `supabase/performance-indexes.sql`      | Strategic indexes             |
-| `supabase/campaigns-migration.sql`      | Email campaigns               |
-| `supabase/scheduled-draw-migration.sql` | Lottery scheduled draws       |
+```bash
+# Via Supabase CLI
+pnpm supabase:push
+# or
+supabase db push
 
-### Timestamp-ordered migration files (`supabase/migrations/`)
+# Manual SQL execution via Supabase Dashboard
+# Open SQL Editor and run migration files in supabase/migrations/ in timestamp order
+```
 
-| File                                                      | Purpose                           |
-| --------------------------------------------------------- | --------------------------------- |
-| `20260520120000_forms_tables.sql`                         | Forms tables                      |
-| `20260520130000_attendance_tables.sql`                    | Attendance tables                 |
-| `20260520140000_activity_logs_check_constraint.sql`       | Activity log constraint           |
-| `20260520150000_fix_notifications_trigger.sql`            | Notification trigger fix          |
-| `20260522130000_create_portal_settings.sql`               | Portal settings                   |
-| `20260528150000_create_lotteries_table.sql`               | Lottery system                    |
-| `20260528180000_lottery_visibility_policy.sql`            | Lottery visibility RLS            |
-| `20260529120000_add_registration_fields.sql`              | Registration fields               |
-| `20260529130000_add_real_email_to_profiles.sql`           | Real email on profiles            |
-| `20260529130500_add_registration_status.sql`              | Registration status               |
-| `20260529140000_create_properties_table.sql`              | Properties table                  |
-| `20260529174000_add_submission_id_to_registrations.sql`   | Submission ID on registrations    |
-| `20260530150000_add_registration_important_field.sql`     | Important flag on registrations   |
-| `20260531090000_performance_indexes.sql`                  | Performance indexes               |
-| `20260531100000_scheduled_draw_migration.sql`             | Scheduled draw migration          |
-| `20260531110000_campaigns_migration.sql`                  | Campaigns migration               |
-| `20260602100000_add_lottery_id_to_campaigns.sql`          | Lottery ID on campaigns           |
-| `20260609000001_create_chat_leads.sql`                    | Chat leads table                  |
-| `20260609000002_create_chat_logs.sql`                     | Chat logs table                   |
-| `20260610110000_add_attachments_to_email_inbox.sql`       | Email inbox attachments           |
-| `20260611000000_customer_portal_tables.sql`               | Customer portal tables            |
-| `20260611090558_add_property_fields.sql`                  | Additional property fields        |
-| `20260611101402_add_employee_geofencing.sql`              | Employee geofencing               |
-| `20260611110000_create_scheduled_emails.sql`              | Scheduled emails table            |
-| `20260613100000_performance_indexes_v2.sql`               | Performance indexes v2            |
-| `20260616000000_sprint_redesign_tables.sql`               | Sprint redesign tables            |
-| `20260621054522_create_email_drafts.sql`                  | Email drafts table                |
-| `20260622160000_performance_indexes_v3.sql`               | Performance indexes v3            |
-| `20260623000001_add_site_visit_columns_to_chat_leads.sql` | Site visit columns on chat leads  |
-| `20260628000001_create_push_subscriptions.sql`            | Push subscriptions table          |
-| `20260610_fix_email_inbox_rls_and_from_name.sql`          | Fix email inbox RLS and from_name |
+### Key migration files (`supabase/migrations/`)
 
-### Additional migration files (root level)
-
-| File                                                       | Purpose                 |
-| ---------------------------------------------------------- | ----------------------- |
-| `supabase/20260602100001_create_email_stars_table.sql`     | Email star/favorite     |
-| `supabase/20260602100002_create_email_inbox_table.sql`     | Email inbox/threading   |
-| `supabase/20260602100003_create_email_deletions_table.sql` | Email deletion tracking |
-| `supabase/20260602100004_add_email_data_to_deletions.sql`  | Email data in deletions |
+| File                                           | Purpose                 |
+| ---------------------------------------------- | ----------------------- |
+| `20260520120000_forms_tables.sql`              | Form submission tables  |
+| `20260520130000_attendance_tables.sql`         | Attendance tables       |
+| `20260522130000_create_portal_settings.sql`    | Portal settings         |
+| `20260528150000_create_lotteries_table.sql`    | Lottery system          |
+| `20260529140000_create_properties_table.sql`   | Properties table        |
+| `20260609000001_create_chat_leads.sql`         | Chat leads table        |
+| `20260609000002_create_chat_logs.sql`          | Chat logs table         |
+| `20260611000000_customer_portal_tables.sql`    | Customer portal tables  |
+| `20260611110000_create_scheduled_emails.sql`   | Scheduled emails        |
+| `20260621054522_create_email_drafts.sql`       | Email drafts            |
+| `20260628000001_create_push_subscriptions.sql` | Push subscriptions      |
+| `20260706000000_create_careers_table.sql`      | Careers/jobs table      |
+| `20260711130000_create_assets_bucket.sql`      | Storage bucket setup    |
+| `20260802000003_fix_contact_groups_rls.sql`    | Latest security/RLS fix |
 
 ---
 
