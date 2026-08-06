@@ -9,7 +9,7 @@ A premium real estate development platform — modern public website, full-featu
 [![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.1-38bdf8?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38bdf8?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e?logo=supabase&logoColor=white)](https://supabase.com)
 [![License](https://img.shields.io/badge/license-Private-red)](#-license)
 
@@ -52,7 +52,7 @@ A premium real estate development platform — modern public website, full-featu
 
 **SVI Infra Solutions Pvt. Ltd.** is a 15+ year old real estate developer with **15+ delivered projects** and **5,000+ happy families** across **Noida, Jaipur, and Phulera Smart City** (DMIC/DFC corridors).
 
-This repository hosts the company's full digital platform — a **public marketing website** combined with a **role-based admin portal**, **employee workspace**, and **client portal**, built on Next.js 16 with React Server Components, Supabase authentication, and an AI chatbot.
+This repository hosts the company's full digital platform — a **public marketing website** combined with a **role-based admin portal**, **employee workspace**, and **client portal**, built on Next.js 16 with React Server Components, Supabase authentication, an AI chatbot, and Sentry error monitoring.
 
 > **Brand promise:** _Where Dreams Take Address_ — building trust through quality construction, strategic locations, and exceptional customer service.
 
@@ -81,7 +81,7 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Progressive Web App (PWA)** — Installable with offline support, push notifications, background sync for forms, share target, window-controls-overlay
 - **Landing page** — Hero with Motion entrance animations, animated stats counter, scroll-triggered reveals
 - **Project showcase** — Current and completed projects with **MapLibre GL** interactive maps, dynamic project detail pages at `/projects/[slug]`
-- **Company pages** — About, Leadership (team profiles), Careers, Blog (`/[slug]` dynamic posts)
+- **Company pages** — About, Leadership (team profiles), Careers, Blog (`/[slug]` dynamic posts), Changelog (`/changelog` release timeline), Brochures (`/brochure`), Area pages (`/areas/[slug]`)
 - **AI Chatbot** — Floating streaming chat widget powered by **Groq Llama 4** via Vercel AI SDK, with lead capture, conversation logging, contextual suggestions, and voice input support. Location-aware for properties in Jaipur, Khatu Shyam, and Phulera Smart City
 - **Lottery page** — Feature-flagged via `portal_settings.lottery_page_visible`; live draws, hall of fame, winner carousel
 - **Forms** — Contact, Registration, Grievance, Payment (all with hCaptcha + Resend delivery)
@@ -103,7 +103,7 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Attendance** — Daily check-in/out, monthly reports, teams with nested member management, geofencing support, pending approval queue
 - **Document generator** — Dynamic PDFs for:
   - 📄 **Allotment Letter**
-  - 📄 **Builder Buyer Agreement (BBA)** — with legal pages integration
+  - 📄 **Builder Buyer Agreement (BBA)** — with legal pages integration (**English + Hindi**)
   - 📄 **Offer Letter** (with sales compensation slabs)
   - 📄 **Payment Plan**
   - 📄 **Payment Receipt** / Invoice
@@ -111,8 +111,9 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Document records** — Allotment records, BBA records, offer letter records, payment receipt records
 - **Property management** — CRUD for real estate listings with image management
 - **Registration manager** — View, filter, assign advisors, analytics, filters
-- **Email suite** — Tiptap rich text composer, sent history with replies, **templates**, **domains**, **marketing campaigns**, deleted messages, **Resend usage dashboard**, AI-assisted email composition, scheduled emails, email drafts
+- **Email suite** — Tiptap rich text composer, sent history with replies, **templates**, **domains**, **marketing campaigns**, **contact picker & contact groups**, deleted messages, **Resend usage dashboard**, AI-assisted email composition, scheduled emails, email drafts
 - **Lottery management** — Schedule draws, upload participants, edit campaigns, bulk email, winner history, draw scheduling
+- **IVR management** — `/admin/ivr` call handling
 - **Notifications** — Real-time dropdown in admin header, create/read/dismiss workflow
 - **Settings** — Tabbed interface: Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs
 - **Chat logs** — Conversation history for the AI chatbot with lead information
@@ -662,27 +663,6 @@ The actual `vercel.json` includes:
 }
 ```
 
-      "path": "/api/cron/lottery",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/campaigns",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/process-scheduled-emails",
-      "schedule": "0 0 * * *"
-    },
-    {
-      "path": "/api/cron/cleanup-registrations",
-      "schedule": "0 6 * * *"
-    }
-
-]
-}
-
-````
-
 ---
 
 ## 🔄 State Management
@@ -700,7 +680,7 @@ interface AuthState {
   setProfile: (profile: Profile | null) => void;
   clearAuth: () => void;
 }
-````
+```
 
 - Persisted to localStorage via `persist` middleware
 - Used for client-side auth state after SSR session check
@@ -953,7 +933,7 @@ supabase db push
 
 # Manual SQL execution via Supabase Dashboard
 # Open SQL Editor and run migration files in supabase/migrations/ in timestamp order
-# The 48 migrations are already ordered; run all of them
+# The 51 migrations are already ordered; run all of them
 ```
 
 ---
@@ -1042,7 +1022,19 @@ The site visits page in admin allows:
 
 ## 🔄 Changelog
 
-### v0.1.0 (Current)
+The changelog is rendered at `/changelog` (public, bilingual) from `src/lib/changelog.ts` via `ChangelogTimeline` + `ReleaseMarkdown`. Backed by `GET /api/changelog`.
+
+### Recent releases
+
+- **Hindi BBA legal documents** — full Hindi legal page set (`legal-hindi/`) with Hindi preview content and `language` toggle on the BBA generator
+- **Changelog page** — public release timeline with markdown rendering
+- **Email contact picker** — `ContactPicker` / `RecipientInput` with admin contact list + contact groups
+- **MoreDropdown** — nav "More" mega-menu
+- **IVR module** — admin IVR call management
+- **Sentry** — error monitoring with tunnel route `/monitoring`
+- **Dependency hardening** — `fast-uri` / `brace-expansion` overrides, Node engines pinned to `22.x`
+
+### v0.1.0 (Initial)
 
 Initial release with:
 
@@ -1056,7 +1048,7 @@ Initial release with:
 - **Document generation** — Client-side PDF/PNG via jsPDF + html2canvas-pro
 - **i18n** — English/Hindi with next-intl locale routing
 - **Authentication** — Supabase SSR; admin auth protected in-app, not by global middleware
-- **Database** — 48 timestamped migration files covering all features
+- **Database** — 51 timestamped migration files covering all features
 - **Testing** — Vitest unit/integration tests, Playwright e2e tests
 - **Tooling** — Husky, Commitlint, ESLint, Prettier, lint-staged
 
@@ -1283,8 +1275,11 @@ svi-new/
 │   │   │   ├── admin/             #   /admin (locale-aware redirect)
 │   │   │   ├── blog/              #   /blog
 │   │   │   │   └── [slug]/        #   /blog/[slug] dynamic posts
+│   │   │   ├── areas/             #   /areas/[slug] area pages
+│   │   │   ├── brochure/          #   /brochure project brochures
 │   │   │   ├── calculators/       #   /calculators
 │   │   │   ├── careers/           #   /careers
+│   │   │   ├── changelog/         #   /changelog release notes
 │   │   │   ├── contact/           #   /contact
 │   │   │   ├── exclusive-offers/  #   /exclusive-offers
 │   │   │   ├── faq/               #   /faq
@@ -1315,10 +1310,12 @@ svi-new/
 │   │   ├── attendance/            #   Employee check-in + reports
 │   │   ├── bba/                   #   Builder Buyer Agreement
 │   │   ├── bba-records/           #   BBA records
+│   │   ├── careers/               #   Careers management
 │   │   ├── chat-logs/             #   AI chatbot conversation history
 │   │   ├── dashboard/             #   Analytics & KPIs
 │   │   ├── email/                 #   Email suite (compose, campaigns, templates...)
 │   │   ├── employees/             #   Employee directory
+│   │   ├── ivr/                   #   IVR call management
 │   │   ├── lottery/               #   Lottery draw management
 │   │   ├── notifications/         #   Notification center
 │   │   ├── offer-letter/          #   Offer letter PDF
@@ -1350,15 +1347,20 @@ svi-new/
 │   │   │   │   ├── approve/       #       Approvals
 │   │   │   │   └── teams/         #       Teams with members
 │   │   │   ├── campaigns/         #     Email campaigns
+│   │   │   ├── careers/           #     Careers endpoints
+│   │   │   ├── contacts/          #     Email contact picker source
+│   │   │   ├── contact-groups/    #     Email contact groups
 │   │   │   ├── documents/         #     Document CRUD
 │   │   │   ├── email/             #     Email sending + AI + status
 │   │   │   ├── employees/         #     Employee endpoints
+│   │   │   ├── ivr/               #     IVR endpoints
 │   │   │   ├── lottery/           #     Draw + schedule management
 │   │   │   ├── notifications/     #     Notification CRUD
 │   │   │   ├── properties/        #     Property CRUD
 │   │   │   ├── registrations/     #     Registration + analytics + filters
 │   │   │   ├── settings/          #     Portal settings
 │   │   │   └── users/             #     User CRUD
+│   │   ├── changelog/             #   Release changelog data
 │   │   ├── chat/                  #   Streaming AI chat
 │   │   │   ├── leads/             #     Lead capture
 │   │   │   └── log/               #     Conversation logging
@@ -1512,7 +1514,7 @@ svi-new/
 │   ├── verify-email-features.ts
 │   └── verify-groups.ts
 ├── supabase/                      # Migrations & config
-│   ├── migrations/                # 48 timestamp-ordered SQL migrations
+│   ├── migrations/                # 51 timestamp-ordered SQL migrations
 │   ├── config.toml                # Supabase CLI config
 │   └── .temp/                     # Temporary migration artifacts
 ├── __tests__/                     # Vitest unit/integration tests
@@ -1541,8 +1543,8 @@ svi-new/
 
 | Tool          | Version  | Notes                                        |
 | ------------- | -------- | -------------------------------------------- |
-| **Node.js**   | `v20+`   | LTS recommended                              |
-| **npm**       | bundled  | pnpm/yarn work too                           |
+| **Node.js**   | `22.x`   | Pinned via `engines` in package.json         |
+| **pnpm**      | `11.x`   | Package manager (lockfile v9)                |
 | **Supabase**  | account  | Database, auth, storage                      |
 | **Groq**      | API key  | [console.groq.com](https://console.groq.com) |
 | **Google AI** | API key  | Optional — Gemini content generation         |
@@ -1647,10 +1649,13 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 | --------------------- | ----------------------------------------- |
 | `/`                   | Landing page — hero, projects, AI chatbot |
 | `/about`              | Company history, mission, vision, values  |
+| `/areas/[slug]`       | Locality/area landing pages               |
 | `/blog`               | Market insights & company news            |
 | `/blog/[slug]`        | Dynamic blog posts                        |
+| `/brochure/[slug]`    | Project brochure pages                    |
 | `/calculators`        | Interactive financial calculators         |
 | `/careers`            | Job openings                              |
+| `/changelog`          | Release changelog timeline                |
 | `/contact`            | Inquiry form → Resend                     |
 | `/exclusive-offers`   | Special promotions & deals                |
 | `/faq`                | Data-driven FAQ accordion                 |
@@ -1684,9 +1689,11 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 | `/admin/allotment-records`    | Allotment records                                                                     |
 | `/admin/bba`                  | Builder Buyer Agreement                                                               |
 | `/admin/bba-records`          | BBA records                                                                           |
+| `/admin/careers`              | Careers management                                                                    |
 | `/admin/chat-logs`            | AI chatbot conversation history                                                       |
 | `/admin/email`                | Compose, sent, templates, domains, campaigns                                          |
 | `/admin/employees`            | Employee directory                                                                    |
+| `/admin/ivr`                  | IVR call management                                                                   |
 | `/admin/lottery`              | Draw management & scheduling                                                          |
 | `/admin/notifications`        | Notification center                                                                   |
 | `/admin/offer-letter`         | Offer letter PDF                                                                      |
@@ -1714,6 +1721,7 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 | Route                                | Method | Description               |
 | ------------------------------------ | ------ | ------------------------- |
 | `/api/chat`                          | POST   | Streaming AI chat         |
+| `/api/changelog`                     | GET    | Release changelog data    |
 | `/api/chat/leads`                    | POST   | Chat lead capture         |
 | `/api/chat/log`                      | POST   | Conversation logging      |
 | `/api/contact`                       | POST   | Contact form              |
@@ -1747,9 +1755,13 @@ NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 | `/api/admin/attendance/teams` (+ `/[id]/members/[userId]`) | Team management         |
 | `/api/admin/bba`                                           | BBA management          |
 | `/api/admin/campaigns` (+ `/[id]`, `/[id]/send`)           | Email campaigns         |
+| `/api/admin/careers`                                       | Careers CRUD            |
+| `/api/admin/contacts`                                      | Contact list for picker |
+| `/api/admin/contact-groups` (+ `/[id]`)                    | Contact groups          |
 | `/api/admin/documents` (+ `[id]`)                          | Document CRUD           |
 | `/api/admin/email` (+ `/ai`, `/status`)                    | Email sending + AI      |
 | `/api/admin/employees` (+ `[id]`)                          | Employee endpoints      |
+| `/api/admin/ivr`                                           | IVR endpoints           |
 | `/api/admin/lottery` (+ `/draw`, `/schedule`)              | Draw management         |
 | `/api/admin/notifications` (+ `[id]`)                      | Notification CRUD       |
 | `/api/admin/properties`                                    | Property CRUD           |
@@ -1780,6 +1792,7 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 | `DesktopNavActions`       | Register + call buttons for desktop nav                              |
 | `NavLink`                 | Animated nav link with gold underline hover/active                   |
 | `ProjectDropdown`         | Mega-menu dropdown for projects (current/completed)                  |
+| `MoreDropdown`            | "More" mega-menu for secondary nav links                             |
 | `MobileNav`               | Full-screen slide-in mobile navigation drawer                        |
 | `MobileNavLink`           | Mobile nav link item                                                 |
 | `MobileNavActions`        | Login + register buttons for mobile nav                              |
@@ -1840,16 +1853,23 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 - `ActivityTimeline`, `NotificationDropdown`, `QuickActions`
 - `attendance/` — Check-in/out UI, reports, team management
 - `bba/` — BBA form components with legal page integration
+- `bba/legal-hindi/` — Hindi legal pages (`*Hindi.tsx`) + `BbaPreviewContentHindi`
 - `ChartComponents/` — Recharts chart wrappers
-- `DocumentGenerator/` — PDF generation UI
+- `DocumentGenerator/` — PDF generation UI (incl. `BbaPreviewContentHindi`)
 - `email/` — compose, campaigns, templates, domains, settings, hooks, sections
+  - `compose/` includes `ContactPicker`, `RecipientInput`, `ContactGroupsDialog`
 - `lottery/` — dashboard, history, schedule-draw, wizard, modals, hooks
 - `modals/` — advisor, create-user, delete-confirm, edit-user
 - `OfferLetter/` — Offer letter form with tests
 - `registrations/` — table, filters, detail modals, status badges
 - `settings/` — Profile · Company · Appearance · Notifications · Security · Email · Logs · Properties · hooks
 - `helpers/` — badge, property interest tags, property labels
-- `Shared/Modal`
+- `Shared/` — `AdminSkeleton`, `AdminStatsCard`, `Modal`
+
+### Changelog & public features
+
+- `changelog/` — `ChangelogTimeline`, `ReleaseMarkdown` (renders `/changelog`)
+- `layout/` — `MoreDropdown` in desktop nav, `useHeaderNavigation` hook
 
 ### Portal & lottery
 
@@ -1932,7 +1952,7 @@ supabase db push
 | **Type**        | System font stack via `next/font` (no external font requests)                                                                                                                      |
 | **Color**       | Brand `primary` + semantic tokens; light/dark via `prefers-color-scheme`. Dark mode uses consistent `brand-dark-bg` (#0b0c10) across all sections with gold (`#d4af37`) separators |
 | **Motion**      | `motion` (Framer Motion 12) for entrances & scroll-reveal                                                                                                                          |
-| **Iconography** | `lucide-react` (1.21) — consistent stroke weight                                                                                                                                   |
+| **Iconography** | `lucide-react` (1.27) — consistent stroke weight                                                                                                                                   |
 | **Spacing**     | Tailwind scale (4px base)                                                                                                                                                          |
 | **Radius**      | Tailwind `rounded-{sm,md,lg,xl,2xl,3xl,full}`                                                                                                                                      |
 | **Shadow**      | Layered `shadow-{sm,md,lg,xl}` for elevation                                                                                                                                       |
