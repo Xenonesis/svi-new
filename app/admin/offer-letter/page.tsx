@@ -8,6 +8,35 @@ import { SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
 import { OfferLetterForm } from '@/src/components/admin/OfferLetter/OfferLetterForm';
 import { OfferLetterFormData, SavedOffer } from '@/src/components/admin/OfferLetter/types';
 import { useEffect, useState, useCallback } from 'react';
+import { FileText, X } from 'lucide-react';
+
+const INITIAL_FORM_DATA: OfferLetterFormData = {
+  date: '',
+  name: '',
+  address: '',
+  mobileNo: '',
+  alternativeNo: '',
+  emailId: '',
+  designation: '',
+  department: '',
+  reportingTo: '',
+  appointmentDate: '',
+  location: '',
+  salaryCtc: '',
+  target: '',
+  offerSlab: '',
+  workingHoursStart: '10:30 am',
+  workingHoursEnd: '6:30 pm',
+  workingDays: 'Wednesday to Monday',
+  probationPeriod: '3',
+  salesCompensationType: '',
+  noSaleMonths: '',
+  customSalaryPercent: '',
+  subsistenceAllowance: '',
+  meetingsPerMonth: '15',
+};
+
+const SALES_DESIGNATIONS = ['Telecaller', 'BDM', 'BDE', 'Sales Manager', 'Team Leader'];
 
 export default function OfferLetterPage() {
   const { token } = useAuthStore();
@@ -34,39 +63,36 @@ export default function OfferLetterPage() {
       .catch((err) => console.error('Error fetching company info:', err));
   }, [token]);
 
-  const [formData, setFormData] = useState<OfferLetterFormData>({
-    date: '',
-    name: '',
-    address: '',
-    mobileNo: '',
-    alternativeNo: '',
-    emailId: '',
-    designation: '',
-    department: '',
-    reportingTo: '',
-    appointmentDate: '',
-    location: '',
-    salaryCtc: '',
-    target: '',
-    offerSlab: '',
-    workingHoursStart: '10:30 am',
-    workingHoursEnd: '6:30 pm',
-    workingDays: 'Wednesday to Monday',
-    probationPeriod: '3',
-    salesCompensationType: '',
-    noSaleMonths: '',
-    customSalaryPercent: '',
-    subsistenceAllowance: '',
-    meetingsPerMonth: '15',
-  });
-
+  const [formData, setFormData] = useState<OfferLetterFormData>(INITIAL_FORM_DATA);
   const [showSalesOptions, setShowSalesOptions] = useState(false);
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
   const [savedOffers, setSavedOffers] = useState<SavedOffer[]>([]);
+  const [loadingRecords, setLoadingRecords] = useState(false);
+  const [selectedRecordId, setSelectedRecordId] = useState('');
   const [showSlabs, setShowSlabs] = useState(false);
   const [salesCustomDesignation, setSalesCustomDesignation] = useState('');
   const [showCustomDesignation, setShowCustomDesignation] = useState(false);
+
+  // Load saved offer letters from database
+  useEffect(() => {
+    if (!token) return;
+    setLoadingRecords(true);
+    fetch('/api/admin/documents?type=offer_letter&limit=500', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch offer letters');
+        return res.json();
+      })
+      .then((json) => {
+        if (json.documents) {
+          setSavedOffers(json.documents);
+        }
+      })
+      .catch((err) => console.error('Error fetching saved offer letters:', err))
+      .finally(() => setLoadingRecords(false));
+  }, [token]);
 
   // Helper to find slab by value
   const findSlabByValue = (
@@ -127,57 +153,55 @@ export default function OfferLetterPage() {
     }));
   };
 
+  const loadFromRecord = useCallback(
+    (id: string) => {
+      setSelectedRecordId(id);
+      if (!id) {
+        setDocumentId(null);
+        setFormData(INITIAL_FORM_DATA);
+        setShowSalesOptions(false);
+        setShowCustomDesignation(false);
+        setSalesCustomDesignation('');
+        return;
+      }
+      const selected = savedOffers.find((b) => b.id === id);
+      if (selected && selected.form_data) {
+        setDocumentId(selected.id);
+        const data = selected.form_data as OfferLetterFormData;
+        setFormData((prev) => ({ ...INITIAL_FORM_DATA, ...data }));
+
+        if (data.department === 'Sales') {
+          setShowSalesOptions(true);
+          if (data.designation && !SALES_DESIGNATIONS.includes(data.designation)) {
+            setShowCustomDesignation(true);
+            setSalesCustomDesignation(data.designation);
+          } else {
+            setShowCustomDesignation(false);
+            setSalesCustomDesignation('');
+          }
+        } else {
+          setShowSalesOptions(false);
+          setShowCustomDesignation(false);
+          setSalesCustomDesignation('');
+        }
+      }
+    },
+    [savedOffers]
+  );
+
   const handleLoadOffer = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const id = e.target.value;
-    if (!id) {
-      setDocumentId(null);
-      setFormData({
-        date: '',
-        name: '',
-        address: '',
-        mobileNo: '',
-        alternativeNo: '',
-        emailId: '',
-        designation: '',
-        department: '',
-        reportingTo: '',
-        appointmentDate: '',
-        location: '',
-        salaryCtc: '',
-        target: '',
-        offerSlab: '',
-        workingHoursStart: '10:30 am',
-        workingHoursEnd: '6:30 pm',
-        workingDays: 'Wednesday to Monday',
-        probationPeriod: '3',
-        salesCompensationType: '',
-        noSaleMonths: '',
-        customSalaryPercent: '',
-        subsistenceAllowance: '',
-        meetingsPerMonth: '15',
-      });
-      return;
-    }
-    const selected = savedOffers.find((b) => b.id === id);
-    if (selected && selected.form_data) {
-      setDocumentId(selected.id);
-      setFormData((prev) => ({ ...prev, ...(selected.form_data as OfferLetterFormData) }));
-    }
+    loadFromRecord(e.target.value);
   };
 
   useEffect(() => {
     if (savedOffers.length > 0 && typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
       const templateId = searchParams.get('templateId');
-      if (templateId) {
-        const selected = savedOffers.find((b) => b.id === templateId);
-        if (selected && selected.form_data) {
-          setDocumentId(selected.id);
-          setFormData((prev) => ({ ...prev, ...(selected.form_data as OfferLetterFormData) }));
-        }
+      if (templateId && !selectedRecordId) {
+        loadFromRecord(templateId);
       }
     }
-  }, [savedOffers]);
+  }, [savedOffers, selectedRecordId, loadFromRecord]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -198,6 +222,17 @@ export default function OfferLetterPage() {
         if (response.ok) {
           const data = await response.json();
           setDocumentId(data.document.id);
+          setSavedOffers((prev) => {
+            const index = prev.findIndex((item) => item.id === data.document.id);
+            if (index !== -1) {
+              const updated = [...prev];
+              updated[index] = data.document;
+              return updated;
+            } else {
+              return [data.document, ...prev];
+            }
+          });
+          setSelectedRecordId(data.document.id);
         }
       } catch (error) {
         console.error('Failed to save document:', error);
@@ -240,14 +275,59 @@ export default function OfferLetterPage() {
       : null;
 
   return (
-    <div className="mx-auto w-full max-w-7xl">
-      <div className="mb-6">
-        <h1 className="text-brand-navy mb-1 font-serif text-3xl tracking-tight dark:text-white">
-          Offer <span className="text-brand-gold italic">Letter</span>
-        </h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400">
-          Generate offer letters for new employees.
-        </p>
+    <div className="mx-auto w-full max-w-7xl font-sans">
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
+            Offer <span className="text-brand-gold italic">Letter</span>
+          </h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">
+            Generate and download offer letters for new employees.
+          </p>
+        </div>
+      </div>
+
+      <div className="dark:bg-brand-dark-surface/40 mb-6 rounded-xl border border-gray-200 bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:border-white/8">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+            <FileText className="h-3.5 w-3.5" />
+            Load from Records
+          </div>
+          <div className="relative flex-1" style={{ minWidth: 280 }}>
+            <select
+              value={selectedRecordId}
+              onChange={(e) => loadFromRecord(e.target.value)}
+              className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+            >
+              <option value="" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
+                {loadingRecords
+                  ? 'Loading records...'
+                  : savedOffers.length === 0
+                    ? '— No saved offer letter records found —'
+                    : '— Select a saved offer letter —'}
+              </option>
+              {savedOffers.map((r) => (
+                <option
+                  key={r.id}
+                  value={r.id}
+                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
+                >
+                  {r.form_data?.name || 'Unnamed'} — {r.form_data?.designation || 'No designation'}{' '}
+                  ({new Date(r.created_at).toLocaleDateString('en-IN')})
+                </option>
+              ))}
+            </select>
+          </div>
+          {selectedRecordId && (
+            <button
+              type="button"
+              onClick={() => loadFromRecord('')}
+              className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:border-gray-300 hover:text-gray-700 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/20"
+            >
+              <X className="h-3.5 w-3.5" /> Clear
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
@@ -255,6 +335,7 @@ export default function OfferLetterPage() {
           formData={formData}
           setFormData={setFormData}
           savedOffers={savedOffers}
+          selectedRecordId={selectedRecordId}
           showSalesOptions={showSalesOptions}
           setShowSalesOptions={setShowSalesOptions}
           showSlabs={showSlabs}

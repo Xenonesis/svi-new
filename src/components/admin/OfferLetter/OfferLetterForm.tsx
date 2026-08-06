@@ -12,6 +12,7 @@ interface OfferLetterFormProps {
   formData: OfferLetterFormData;
   setFormData: React.Dispatch<React.SetStateAction<OfferLetterFormData>>;
   savedOffers: SavedOffer[];
+  selectedRecordId?: string;
   showSalesOptions: boolean;
   setShowSalesOptions: (val: boolean) => void;
   showSlabs: boolean;
@@ -35,6 +36,7 @@ export function OfferLetterForm({
   formData,
   setFormData,
   savedOffers,
+  selectedRecordId,
   showSalesOptions,
   setShowSalesOptions,
   showSlabs,
@@ -65,6 +67,7 @@ export function OfferLetterForm({
               Load Saved Offer Letter
             </label>
             <select
+              value={selectedRecordId || ''}
               onChange={handleLoadOffer}
               className="focus:border-brand-gold dark:bg-brand-dark-surface w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:text-gray-200"
             >

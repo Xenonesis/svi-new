@@ -130,7 +130,7 @@ export function OfferLetterPreviewModal({
             <div className="flex-1 overflow-y-auto bg-gray-100 p-6 dark:bg-zinc-900/30">
               <div
                 id="modalOfferPreview"
-                className="mx-auto w-full max-w-3xl rounded-xl bg-white p-8 font-sans text-[13px] leading-relaxed text-black shadow-sm"
+                className="mx-auto w-full max-w-3xl overflow-hidden rounded-xl bg-white shadow-sm"
               >
                 <OfferLetterPreviewContent formData={offer.form_data} companyInfo={companyInfo} />
               </div>

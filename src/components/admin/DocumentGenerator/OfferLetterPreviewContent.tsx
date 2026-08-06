@@ -47,11 +47,11 @@ export default function OfferLetterPreviewContent({
   const isSalesDepartment = formData.department === 'Sales';
 
   return (
-    <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
+    <div className="bg-white px-8 py-6 font-sans text-[12px] leading-snug text-black">
       {/* Header */}
-      <div className="mb-8 flex items-start justify-between">
+      <div className="mb-6 flex items-start justify-between">
         <div>
-          <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
+          <h1 className="mb-1 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
             {companyInfo.company_name}
           </h1>
           <p className="text-gray-700">
@@ -60,7 +60,7 @@ export default function OfferLetterPreviewContent({
           <p className="text-gray-700">Website: {companyInfo.company_website}</p>
           <p className="text-gray-700">Office Address : {companyInfo.company_address}</p>
         </div>
-        <div className="w-48">
+        <div className="w-40">
           <img
             src="/logo.png"
             alt={companyInfo.company_name}
@@ -71,8 +71,8 @@ export default function OfferLetterPreviewContent({
       </div>
 
       {/* Date & To */}
-      <div className="mb-6">
-        <p className="mb-4">
+      <div className="mb-4">
+        <p className="mb-2">
           <span className="font-bold">Date:</span>{' '}
           {formData.date || new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
         </p>
@@ -86,12 +86,12 @@ export default function OfferLetterPreviewContent({
       </div>
 
       {/* Subject */}
-      <div className="mb-6 text-center">
+      <div className="mb-4 text-center">
         <h3 className="font-bold uppercase underline">Subject: Offer of Employment</h3>
       </div>
 
       {/* Body */}
-      <div className="mb-6 space-y-4 text-justify">
+      <div className="mb-4 space-y-2 text-justify">
         <p>
           Dear <span className="font-bold">{formData.name || '[Candidate Name]'}</span>,
         </p>
@@ -110,7 +110,7 @@ export default function OfferLetterPreviewContent({
       </div>
 
       {/* Terms & Conditions */}
-      <div className="mb-6 space-y-3 text-justify">
+      <div className="mb-4 space-y-2 text-justify">
         <p>
           <span className="font-bold">1. Position & Department</span>
           <br />
@@ -344,7 +344,7 @@ export default function OfferLetterPreviewContent({
       </div>
 
       {/* Closing */}
-      <div className="mb-10 space-y-4 text-justify">
+      <div className="mb-6 space-y-2 text-justify">
         <p>
           We look forward to welcoming you to {companyInfo.company_name} and working together
           towards mutual success.
@@ -353,7 +353,7 @@ export default function OfferLetterPreviewContent({
       </div>
 
       {/* Footer / Signatures */}
-      <div className="mt-12 flex items-end justify-between">
+      <div className="mt-8 flex items-end justify-between">
         <div>
           <p className="mb-2">
             For <span className="font-bold text-[#1e3a8a]">{companyInfo.company_name}</span>
