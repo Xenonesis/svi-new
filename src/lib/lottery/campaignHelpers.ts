@@ -11,12 +11,25 @@ interface LotteryInfo {
 
 // ── Email HTML template ────────────────────────────────────────────────────
 
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 export function buildLotteryCampaignBody(title: string, description?: string | null): string {
+  const safeTitle = escapeHtml(title);
+  const safeDescription = escapeHtml(
+    description?.trim() || 'Stay tuned for the live draw. Best of luck!'
+  );
   return `<div style="font-family:sans-serif;max-width:600px;margin:auto;padding:24px;">
-  <h2 style="color:#111827;border-bottom:2px solid #d4af37;padding-bottom:10px;">${title}</h2>
+  <h2 style="color:#111827;border-bottom:2px solid #d4af37;padding-bottom:10px;">${safeTitle}</h2>
   <p>Dear Participant,</p>
-  <p>You have been registered for our exclusive lucky draw <strong>${title}</strong>.</p>
-  <p>${description?.trim() || 'Stay tuned for the live draw. Best of luck!'}</p>
+  <p>You have been registered for our exclusive lucky draw <strong>${safeTitle}</strong>.</p>
+  <p>${safeDescription}</p>
   <p style="margin-top:30px;font-size:12px;color:#888;border-top:1px solid #eee;padding-top:10px;">SVI Infra Solutions</p>
 </div>`;
 }

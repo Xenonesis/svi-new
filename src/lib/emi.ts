@@ -33,6 +33,17 @@ export function calculateEMI(
   const r = interestRate / 12 / 100;
   const n = tenureYears * 12;
 
+  // Zero interest: plain principal division, avoids pow(1, n) - 1 → 0/0 NaN
+  if (r === 0) {
+    const emi = P / n;
+    return {
+      monthlyEmi: Math.round(emi),
+      totalPayment: P,
+      totalInterest: 0,
+      projectedValuation: Math.round(P * Math.pow(1 + appreciationRate, 5)),
+    };
+  }
+
   const emi = (P * r * Math.pow(1 + r, n)) / (Math.pow(1 + r, n) - 1);
   const total = emi * n;
   const interest = total - P;
