@@ -18,12 +18,12 @@ import {
   AlertCircle,
 } from 'lucide-react';
 import { motion } from 'motion/react';
+import { flexRender } from '@tanstack/react-table';
 import {
-  createColumnHelper,
-  flexRender,
+  legacyCreateColumnHelper as createColumnHelper,
   getCoreRowModel,
-  useReactTable,
-} from '@tanstack/react-table';
+  useLegacyTable as useReactTable,
+} from '@tanstack/react-table/legacy';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import * as Tooltip from '@radix-ui/react-tooltip';
 
@@ -438,7 +438,7 @@ export function RegistrationTable({
 
   const table = useReactTable({
     data: registrations,
-    columns,
+    columns: columns as never,
     getCoreRowModel: getCoreRowModel(),
   });
 
