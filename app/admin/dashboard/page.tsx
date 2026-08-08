@@ -18,7 +18,7 @@ import {
   Briefcase,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import ActivityTimeline from '@/src/components/admin/ActivityTimeline';
@@ -27,6 +27,7 @@ import QuickActions from '@/src/components/admin/QuickActions';
 import UserGrowthChart from '@/src/components/admin/ChartComponents/UserGrowthChart';
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { supabase } from '@/src/lib/supabase/client';
+import { useAuthStore } from '@/src/stores/authStore';
 import { useRouter } from 'next/navigation';
 import { useUsers, useAnalytics, useActivities } from '@/src/hooks/useDashboard';
 import { RoleSwitcher } from '@/src/components/admin/helpers/RoleSwitcher';
@@ -48,11 +49,12 @@ export default function AdminDashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Auth state
-  const [token, setToken] = useState('');
-  const [adminName, setAdminName] = useState('');
-  const [currentAdminId, setCurrentAdminId] = useState('');
-  const [authLoading, setAuthLoading] = useState(true);
+  // Auth state (initialized once in app/admin/layout.tsx)
+  const token = useAuthStore((s) => s.token);
+  const userId = useAuthStore((s) => s.userId);
+  const isAdmin = useAuthStore((s) => s.isAdmin);
+  const authLoading = useAuthStore((s) => s.loading);
+  const currentAdminId = userId || '';
 
   // UI state
   const [search, setSearch] = useState('');
@@ -80,46 +82,30 @@ export default function AdminDashboard() {
     setTimeout(() => setToast(null), 3500);
   };
 
-  // Auth check + parallel data fetch
+  // Redirect to login if not authenticated as admin (auth comes from the shared store)
   useEffect(() => {
-    const controller = new AbortController();
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (controller.signal.aborted) return;
-      if (!user) {
-        router.replace('/admin');
-        return;
-      }
+    if (authLoading) return;
+    if (!token || !isAdmin) {
+      router.replace('/admin');
+    }
+  }, [authLoading, token, isAdmin, router]);
 
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      if (!session) return;
-
-      // Profile check + properties fetch in parallel (no dependency between them)
-      const [profileResult, propertiesResult] = await Promise.all([
-        supabase.from('profiles').select('role, full_name').eq('id', session.user.id).single(),
-        supabase
-          .from('properties')
-          .select('name, slug')
-          .eq('active', true)
-          .order('name', { ascending: true }),
-      ]);
-
-      const { data: profile, error } = profileResult;
-
-      if (error || !profile || profile?.role !== 'admin') {
-        router.replace('/admin');
-        return;
-      }
-
-      setToken(session.access_token);
-      setCurrentAdminId(session.user.id);
-      setAdminName(profile?.full_name || session.user.email || 'Admin');
-      setAuthLoading(false);
-
-      if (propertiesResult.data) setProperties(propertiesResult.data);
-    });
-  }, [router]);
+  // Fetch active properties as soon as a session token is available
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+    supabase
+      .from('properties')
+      .select('name, slug')
+      .eq('active', true)
+      .order('name', { ascending: true })
+      .then(({ data }) => {
+        if (!cancelled && data) setProperties(data);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -597,7 +583,7 @@ export default function AdminDashboard() {
       <AnimatePresence>
         {showCreate && (
           <CreateUserModal
-            token={token}
+            token={token ?? ''}
             properties={properties}
             onClose={() => setShowCreate(false)}
             onSuccess={() => {
@@ -609,7 +595,7 @@ export default function AdminDashboard() {
         {editTarget && (
           <EditUserModal
             user={editTarget}
-            token={token}
+            token={token ?? ''}
             properties={properties}
             onClose={() => setEditTarget(null)}
             onSuccess={() => {
@@ -629,7 +615,7 @@ export default function AdminDashboard() {
 
         {showAddEmployee && (
           <AddEmployeeModal
-            token={token}
+            token={token ?? ''}
             onClose={() => setShowAddEmployee(false)}
             onSuccess={() => {
               setShowAddEmployee(false);
@@ -641,7 +627,7 @@ export default function AdminDashboard() {
         {showAdvisorSettings && (
           <AdvisorSettingsModal
             onClose={() => setShowAdvisorSettings(false)}
-            token={token}
+            token={token ?? ''}
             showToast={showToast}
           />
         )}

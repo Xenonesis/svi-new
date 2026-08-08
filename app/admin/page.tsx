@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 
 import { motion } from 'motion/react';
 import { supabase } from '@/src/lib/supabase/client';
+import { useAuthStore } from '@/src/stores/authStore';
 import { useRouter } from 'next/navigation';
 
 const GRID_STYLE = {
@@ -71,7 +72,7 @@ export default function AdminLogin() {
       // Verify admin role server-side via profile lookup
       const { data: profile } = await supabase
         .from('profiles')
-        .select('role')
+        .select('role, full_name, email')
         .eq('id', data.user.id)
         .single();
 
@@ -83,13 +84,27 @@ export default function AdminLogin() {
         return;
       }
 
-      // Show premium success overlay stage
+      // Populate the auth store immediately so the dashboard never waits on a second auth check
+      useAuthStore.setState({
+        userId: data.user.id,
+        token: data.session.access_token,
+        loading: false,
+        isAdmin: true,
+        profile: {
+          id: data.user.id,
+          full_name: profile?.full_name ?? data.user.email ?? 'Admin',
+          email: profile?.email ?? data.user.email ?? '',
+          role: profile?.role ?? 'admin',
+        },
+      });
+
+      // Show premium success overlay stage, then navigate quickly
       setSuccess(true);
 
-      // Wait a brief moment to ensure cookies are set, then navigate
+      // Navigate shortly after so the success animation is visible
       setTimeout(() => {
         router.replace('/admin/dashboard');
-      }, 1800);
+      }, 450);
     } catch (err: any) {
       setError(err?.message || 'Network error: Failed to connect to the authentication server.');
       setShake(true);

@@ -12,27 +12,10 @@ import { useUIStore } from '@/src/stores/uiStore';
 import { supabase } from '@/src/lib/supabase/client';
 import { toast, Toaster } from 'sonner';
 
-function AdminLayoutInner({ children }: { children: ReactNode }) {
-  const pathname = usePathname();
-
-  // Auth store
-  const userId = useAuthStore((s) => s.userId);
-  const loading = useAuthStore((s) => s.loading);
-  const profile = useAuthStore((s) => s.profile);
-  const initialize = useAuthStore((s) => s.initialize);
-
-  // UI store
-  const isDark = useUIStore((s) => s.isDark);
-  const mobileSidebarOpen = useUIStore((s) => s.mobileSidebarOpen);
-  const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
-  const toggleTheme = useUIStore((s) => s.toggleTheme);
-  const theme = useUIStore((s) => s.theme);
-
-  useEffect(() => {
-    initialize();
-  }, [initialize]);
-
-  // Listen for real-time registrations & chat leads
+function AdminRealtimeListeners() {
+  // Real-time subscriptions for registrations & chat leads.
+  // Mounted only after auth (the login page bypasses the admin frame),
+  // so no realtime channels are opened on the public /admin login screen.
   useEffect(() => {
     // 1. Registrations listener
     const registrationsChannel = supabase
@@ -90,6 +73,29 @@ function AdminLayoutInner({ children }: { children: ReactNode }) {
     };
   }, []);
 
+  return null;
+}
+
+function AdminLayoutInner({ children }: { children: ReactNode }) {
+  const pathname = usePathname();
+
+  // Auth store
+  const userId = useAuthStore((s) => s.userId);
+  const loading = useAuthStore((s) => s.loading);
+  const profile = useAuthStore((s) => s.profile);
+  const initialize = useAuthStore((s) => s.initialize);
+
+  // UI store
+  const isDark = useUIStore((s) => s.isDark);
+  const mobileSidebarOpen = useUIStore((s) => s.mobileSidebarOpen);
+  const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
+  const toggleTheme = useUIStore((s) => s.toggleTheme);
+  const theme = useUIStore((s) => s.theme);
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
+
   // Sync isDark with system preference when theme is 'system'
   useEffect(() => {
     if (theme !== 'system') return;
@@ -117,6 +123,7 @@ function AdminLayoutInner({ children }: { children: ReactNode }) {
       className="flex min-h-screen w-full bg-gray-50 font-sans text-gray-900 dark:bg-[#0a0a0f] dark:text-white"
       style={{ visibility: mounted ? 'visible' : 'hidden' }}
     >
+      <AdminRealtimeListeners />
       <AdminSidebar
         mobileOpen={mobileSidebarOpen}
         onMobileClose={() => setMobileSidebarOpen(false)}
