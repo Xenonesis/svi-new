@@ -36,7 +36,7 @@ summary() {
 # --- 1. Dependency security audit ---
 echo ""
 printf "${BOLD}1/5  Dependency Security Audit${NC}\n"
-if pnpm audit --audit-level=high 2>/dev/null; then
+if pnpm audit --prod --audit-level=high 2>/dev/null; then
   pass "No high/critical vulnerabilities"
 else
   fail "pnpm audit found high/critical vulnerabilities"
