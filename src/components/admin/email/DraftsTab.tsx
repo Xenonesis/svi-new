@@ -120,7 +120,7 @@ export function DraftsTab({ onOpenDraft, onImproveDraft }: DraftsTabProps) {
           >
             {filtered.map((draft) => (
               <motion.div key={draft.id} variants={itemVariants}>
-                <div className="group relative flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-gray-50/80 dark:hover:bg-gray-800/50">
+                <div className="group relative flex touch-manipulation items-start gap-3 px-4 py-3.5 transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 dark:hover:bg-gray-800/50 dark:active:bg-gray-800/70">
                   {/* Icon */}
                   <div className="bg-brand-gold/10 text-brand-gold mt-1 flex h-9 w-9 shrink-0 items-center justify-center rounded-full">
                     <Edit3 className="h-4 w-4" />

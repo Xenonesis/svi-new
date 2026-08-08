@@ -235,7 +235,7 @@ export default function AdminEmailPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.3 }}
-                className={`relative flex items-center gap-2 px-4 py-3 text-sm font-medium transition-colors ${
+                className={`relative flex touch-manipulation items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-all active:scale-[0.98] active:bg-gray-100/50 dark:active:bg-gray-800/50 ${
                   isActive
                     ? 'text-brand-gold'
                     : 'text-gray-500 hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-300'

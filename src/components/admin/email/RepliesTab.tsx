@@ -375,7 +375,9 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   return (
     <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-5 dark:border-gray-700/60">
       {/* Email List */}
-      <div className="flex flex-col border-r border-gray-100 transition-all duration-300 lg:col-span-2 dark:border-gray-800">
+      <div
+        className={`flex flex-col border-r border-gray-100 transition-all duration-300 lg:col-span-2 dark:border-gray-800 ${selectedReply ? 'hidden lg:flex' : 'flex'}`}
+      >
         <div className="flex items-center justify-between border-b border-gray-100 px-4 py-2.5 dark:border-gray-800">
           <h3 className="text-sm font-bold text-gray-900 dark:text-white">Inbox</h3>
           <div className="flex items-center gap-2">
@@ -406,7 +408,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
             >
               <button
                 onClick={() => fetchDetail(reply.id)}
-                className={`flex w-full items-start gap-3 px-4 py-3.5 text-left transition-all hover:bg-gray-50/80 dark:hover:bg-white/[0.015] ${
+                className={`flex w-full touch-manipulation items-start gap-3 px-4 py-3.5 text-left transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 dark:hover:bg-white/[0.015] dark:active:bg-white/[0.03] ${
                   starred.has(reply.id)
                     ? 'bg-amber-50/50 dark:bg-amber-500/5'
                     : selectedReply?.id === reply.id
@@ -461,7 +463,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
           }}
         />
       ) : (
-        <div className="flex flex-col items-center justify-center py-32 text-center lg:col-span-3">
+        <div className="hidden flex-col items-center justify-center py-32 text-center lg:col-span-3 lg:flex">
           <Mail className="mb-4 h-12 w-12 text-gray-200 dark:text-gray-700" />
           <p className="text-sm text-gray-400">Select an email to view</p>
         </div>

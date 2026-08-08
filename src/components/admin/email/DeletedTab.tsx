@@ -400,7 +400,7 @@ export function DeletedTab() {
 
               return (
                 <motion.div variants={itemVariants} key={email.email_id}>
-                  <div className="group relative">
+                  <div className="group relative touch-manipulation transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 dark:hover:bg-white/[0.015] dark:active:bg-white/[0.03]">
                     <div className="flex items-start gap-2.5 px-4 py-3.5">
                       {/* Checkbox */}
                       <div

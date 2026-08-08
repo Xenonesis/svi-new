@@ -91,7 +91,7 @@ export function ScheduledTab() {
                   <motion.div
                     key={email.id}
                     variants={itemVariants}
-                    className="group flex flex-col gap-2 p-4 transition-colors hover:bg-gray-50/80 sm:flex-row sm:items-center sm:gap-4 dark:hover:bg-gray-800/50"
+                    className="group flex touch-manipulation flex-col gap-2 p-4 transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 sm:flex-row sm:items-center sm:gap-4 dark:hover:bg-gray-800/50 dark:active:bg-gray-800/70"
                   >
                     <div className="flex min-w-0 flex-1 items-start gap-3">
                       <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">

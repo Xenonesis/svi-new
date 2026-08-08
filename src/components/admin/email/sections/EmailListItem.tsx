@@ -82,7 +82,7 @@ export function EmailListItem({
               handleRowClick();
             }
           }}
-          className={`flex w-full cursor-pointer items-start gap-2.5 px-5 py-4 text-left transition-all ${
+          className={`flex w-full cursor-pointer touch-manipulation items-start gap-2.5 px-5 py-4 text-left transition-all active:scale-[0.99] active:bg-gray-100 dark:active:bg-white/[0.03] ${
             isSelected
               ? 'bg-brand-gold/[0.06] dark:bg-brand-gold/[0.04]'
               : 'hover:bg-gray-50/80 dark:hover:bg-white/[0.015]'
