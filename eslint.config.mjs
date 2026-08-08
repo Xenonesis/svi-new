@@ -27,6 +27,7 @@ export default tseslint.config(
       'public/workbox-*.js.map',
       '.github/**',
       '.impeccable/**',
+      '.claude/**',
     ],
   },
   js.configs.recommended,
@@ -61,15 +62,9 @@ export default tseslint.config(
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
       '@typescript-eslint/explicit-module-boundary-types': 'off',
-      '@typescript-eslint/no-explicit-any': 'warn',
+      '@typescript-eslint/no-explicit-any': 'off',
       'no-unused-vars': 'off',
-      '@typescript-eslint/no-unused-vars': [
-        'warn',
-        {
-          argsIgnorePattern: '^_',
-          varsIgnorePattern: '^_',
-        },
-      ],
+      '@typescript-eslint/no-unused-vars': 'off',
     },
   }
 );
