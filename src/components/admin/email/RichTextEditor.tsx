@@ -54,6 +54,24 @@ const ACTIVE_BUTTON_CLASS =
 
 const DIVIDER = <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700" />;
 
+const editorExtensions = [
+  StarterKit.configure({
+    heading: { levels: [1, 2, 3] },
+  }),
+  Underline.configure({
+    HTMLAttributes: { class: 'underline' },
+  }),
+  TextAlign.configure({ types: ['heading', 'paragraph'] }),
+  Highlight.configure({ multicolor: true }),
+  Link.configure({
+    openOnClick: false,
+    HTMLAttributes: { class: 'text-blue-500 underline' },
+  }),
+  Image,
+  TextStyle,
+  Color,
+];
+
 export function RichTextEditor({
   value,
   onChange,
@@ -71,23 +89,7 @@ export function RichTextEditor({
 
   const editor = useEditor({
     immediatelyRender: true,
-    extensions: [
-      StarterKit.configure({
-        heading: { levels: [1, 2, 3] },
-      }),
-      Underline.configure({
-        HTMLAttributes: { class: 'underline' },
-      }),
-      TextAlign.configure({ types: ['heading', 'paragraph'] }),
-      Highlight.configure({ multicolor: true }),
-      Link.configure({
-        openOnClick: false,
-        HTMLAttributes: { class: 'text-blue-500 underline' },
-      }),
-      Image,
-      TextStyle,
-      Color,
-    ],
+    extensions: editorExtensions,
     content: value || '',
     editorProps: {
       attributes: {

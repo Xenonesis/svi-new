@@ -150,6 +150,6 @@ export default withSentryConfig(withNextIntl(withBundleAnalyzer(withSerwist(next
   project: 'javascript-nextjs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   widenClientFileUpload: true,
-  tunnelRoute: '/monitoring',
+  // tunnelRoute: '/monitoring',
   silent: !process.env.CI,
 });
