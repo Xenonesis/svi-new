@@ -83,27 +83,31 @@ export function ComposeFields({
   return (
     <div>
       {/* To */}
-      <div className="flex items-start border-b border-gray-100 px-6 pt-2 pb-2 dark:border-gray-800">
-        <label className="mt-2 w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
-          To
-        </label>
-        {toRecipients !== undefined && onToRecipientsChange ? (
-          <RecipientInput
-            recipients={toRecipients}
-            onChange={onToRecipientsChange}
-            placeholder="Add recipients (email, or press Enter to add)"
-            onOpenContactPicker={onOpenContactPicker}
-          />
-        ) : (
-          <input
-            type="text"
-            value={to}
-            onChange={(e) => onToChange(e.target.value)}
-            placeholder="recipient@example.com"
-            className="flex-1 bg-transparent py-3.5 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
-          />
-        )}
-        <div className="mt-2 ml-2 flex shrink-0 items-center gap-1.5">
+      <div className="flex flex-col border-b border-gray-100 px-4 pt-2 pb-2 sm:flex-row sm:items-start sm:px-6 dark:border-gray-800">
+        <div className="flex w-full min-w-0 flex-1 items-start">
+          <label className="mt-2 w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+            To
+          </label>
+          <div className="min-w-0 flex-1">
+            {toRecipients !== undefined && onToRecipientsChange ? (
+              <RecipientInput
+                recipients={toRecipients}
+                onChange={onToRecipientsChange}
+                placeholder="Add recipients (email, or press Enter to add)"
+                onOpenContactPicker={onOpenContactPicker}
+              />
+            ) : (
+              <input
+                type="text"
+                value={to}
+                onChange={(e) => onToChange(e.target.value)}
+                placeholder="recipient@example.com"
+                className="w-full bg-transparent py-3.5 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+              />
+            )}
+          </div>
+        </div>
+        <div className="mt-2 flex shrink-0 flex-wrap items-center gap-1.5 self-start pl-12 sm:mt-2 sm:ml-2 sm:self-auto sm:pl-0">
           {!showCc && (
             <button
               type="button"
@@ -153,7 +157,7 @@ export function ComposeFields({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
+            <div className="flex items-center border-b border-gray-100 px-4 sm:px-6 dark:border-gray-800">
               <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 CC
               </label>
@@ -163,7 +167,7 @@ export function ComposeFields({
                 value={cc}
                 onChange={(e) => onCcChange(e.target.value)}
                 placeholder="cc@example.com"
-                className="flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                className="min-w-0 flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
               />
               <button
                 type="button"
@@ -190,7 +194,7 @@ export function ComposeFields({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
+            <div className="flex items-center border-b border-gray-100 px-4 sm:px-6 dark:border-gray-800">
               <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 BCC
               </label>
@@ -200,7 +204,7 @@ export function ComposeFields({
                 value={bcc}
                 onChange={(e) => onBccChange(e.target.value)}
                 placeholder="bcc@example.com"
-                className="flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                className="min-w-0 flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
               />
               <button
                 type="button"
@@ -228,7 +232,7 @@ export function ComposeFields({
             className="overflow-hidden"
           >
             {/* From Name */}
-            <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
+            <div className="flex flex-wrap items-center border-b border-gray-100 px-4 py-2 sm:flex-nowrap sm:px-6 sm:py-0 dark:border-gray-800">
               <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 From
               </label>
@@ -237,9 +241,9 @@ export function ComposeFields({
                 value={fromName}
                 onChange={(e) => onFromNameChange(e.target.value)}
                 placeholder="Sender Name"
-                className="w-40 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                className="w-full bg-transparent py-1 text-sm text-gray-900 placeholder-gray-400/60 outline-none sm:w-40 sm:py-3 dark:text-white"
               />
-              <span className="flex-1 font-mono text-xs text-gray-400/70">
+              <span className="mt-1 flex-1 truncate pr-2 font-mono text-xs text-gray-400/70 sm:mt-0">
                 {'<noreply@sviiinfrasolutions.com>'}
               </span>
               <button
@@ -249,13 +253,13 @@ export function ComposeFields({
                   onFromNameChange('SVI Infra');
                   setShowSenderOptions(false);
                 }}
-                className="ml-2 text-gray-400 hover:text-red-400"
+                className="ml-2 shrink-0 text-gray-400 hover:text-red-400"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
             </div>
             {/* Reply-To */}
-            <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
+            <div className="flex items-center border-b border-gray-100 px-4 sm:px-6 dark:border-gray-800">
               <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 Reply
               </label>
@@ -264,7 +268,7 @@ export function ComposeFields({
                 value={replyTo}
                 onChange={(e) => onReplyToChange(e.target.value)}
                 placeholder={adminEmail || 'reply@example.com'}
-                className="flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                className="min-w-0 flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
               />
             </div>
           </motion.div>
@@ -281,7 +285,7 @@ export function ComposeFields({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
+            <div className="flex flex-wrap items-center border-b border-gray-100 px-4 py-2 sm:flex-nowrap sm:px-6 sm:py-0 dark:border-gray-800">
               <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 Send At
               </label>
@@ -289,9 +293,9 @@ export function ComposeFields({
                 type="datetime-local"
                 value={scheduledAt || ''}
                 onChange={(e) => onScheduledAtChange?.(e.target.value || null)}
-                className="w-auto bg-transparent py-3 text-sm text-gray-900 outline-none dark:text-white"
+                className="mt-1 w-full bg-transparent py-1 text-sm text-gray-900 outline-none sm:mt-0 sm:w-auto sm:py-3 dark:text-white"
               />
-              <span className="ml-3 flex-1 text-xs text-gray-400/70">
+              <span className="mt-1 ml-0 flex-1 text-xs text-gray-400/70 sm:mt-0 sm:ml-3">
                 (Leave empty to send immediately)
               </span>
               <button
@@ -300,7 +304,7 @@ export function ComposeFields({
                   onScheduledAtChange?.(null);
                   setShowScheduleOptions(false);
                 }}
-                className="ml-2 text-gray-400 hover:text-red-400"
+                className="ml-2 shrink-0 text-gray-400 hover:text-red-400"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -310,31 +314,35 @@ export function ComposeFields({
       </AnimatePresence>
 
       {/* Subject + Auto Compose */}
-      <div className="flex items-center border-b border-gray-100 px-6 dark:border-gray-800">
-        <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
-          Subj
-        </label>
-        <input
-          type="text"
-          value={subject}
-          onChange={(e) => onSubjectChange(e.target.value)}
-          placeholder="Email subject..."
-          className="flex-1 bg-transparent py-3.5 text-sm font-semibold text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
-        />
+      <div className="flex flex-col border-b border-gray-100 px-4 pt-2 pb-2 sm:flex-row sm:items-center sm:px-6 sm:py-0 dark:border-gray-800">
+        <div className="flex w-full min-w-0 flex-1 items-center">
+          <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+            Subj
+          </label>
+          <input
+            type="text"
+            value={subject}
+            onChange={(e) => onSubjectChange(e.target.value)}
+            placeholder="Email subject..."
+            className="min-w-0 flex-1 bg-transparent py-2 text-sm font-semibold text-gray-900 placeholder-gray-400/60 outline-none sm:py-3.5 dark:text-white"
+          />
+        </div>
         {onAutoCompose && (
-          <button
-            type="button"
-            onClick={onAutoCompose}
-            disabled={!subject.trim() || autoComposing}
-            className="bg-brand-gold text-brand-navy ml-2 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all hover:opacity-90 disabled:opacity-40"
-          >
-            {autoComposing ? (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            ) : (
-              <Sparkles className="h-3.5 w-3.5" />
-            )}
-            {autoComposing ? 'Composing...' : 'Auto Compose'}
-          </button>
+          <div className="mt-1 flex shrink-0 justify-start pb-1 pl-12 sm:mt-0 sm:pb-0 sm:pl-0">
+            <button
+              type="button"
+              onClick={onAutoCompose}
+              disabled={!subject.trim() || autoComposing}
+              className="bg-brand-gold text-brand-navy ml-0 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all hover:opacity-90 disabled:opacity-40 sm:ml-2"
+            >
+              {autoComposing ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              {autoComposing ? 'Composing...' : 'Auto Compose'}
+            </button>
+          </div>
         )}
       </div>
     </div>

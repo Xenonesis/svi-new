@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
-import { getToken, saveDraft, loadDraft, clearDraft, fileToBase64 } from './helpers';
+import { getToken, clearDraft, fileToBase64 } from './helpers';
 import {
   extractTemplateVars as parseExtractTemplateVars,
   getPreviewHtml as parseGetPreviewHtml,
@@ -452,7 +452,7 @@ export function ComposeTab({
             initial={{ opacity: 0, y: -8, height: 0 }}
             animate={{ opacity: 1, y: 0, height: 'auto' }}
             exit={{ opacity: 0, y: -8, height: 0 }}
-            className="border-brand-gold/20 bg-brand-gold/5 mb-4 flex items-center justify-between rounded-xl border px-5 py-3.5"
+            className="border-brand-gold/20 bg-brand-gold/5 mb-4 flex flex-col items-start justify-between gap-3 rounded-xl border px-4 py-3.5 sm:flex-row sm:items-center sm:gap-0 sm:px-5"
           >
             <div className="flex items-center gap-3">
               <Save className="text-brand-gold h-4 w-4" />
@@ -483,7 +483,7 @@ export function ComposeTab({
       {/* Compose Card */}
       <div className="dark:bg-brand-dark-surface overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-800">
+        <div className="flex flex-col justify-between gap-4 border-b border-gray-100 px-4 py-4 sm:flex-row sm:items-center sm:gap-0 sm:px-6 dark:border-gray-800">
           <div className="flex items-center gap-3">
             <PenLine className="text-brand-gold h-4 w-4" />
             <div>
@@ -592,7 +592,7 @@ export function ComposeTab({
               setTemplateHtml(templateHtml.replace(new RegExp(`\\{\\{${key}\\}\\}`, 'g'), ''));
             }
           }}
-          onApplySuggestions={(suggestions) => {
+          onApplySuggestions={() => {
             // suggestions already applied via onVariableChange in TemplateBanner
           }}
         />
@@ -616,7 +616,7 @@ export function ComposeTab({
         {/* Body */}
         <div className="relative">
           {previewMode ? (
-            <div className="min-h-[400px] p-6">
+            <div className="min-h-[400px] p-4 sm:p-6">
               <div
                 className="mx-auto overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-700 dark:text-gray-900"
                 style={{ maxWidth: '700px' }}
@@ -653,7 +653,7 @@ export function ComposeTab({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="mx-6 mb-4 flex items-center gap-3 rounded-xl border border-red-200/60 bg-red-50/80 px-4 py-3 dark:border-red-800/40 dark:bg-red-900/15">
+              <div className="mx-4 mb-4 flex items-center gap-3 rounded-xl border border-red-200/60 bg-red-50/80 px-4 py-3 sm:mx-6 dark:border-red-800/40 dark:bg-red-900/15">
                 <AlertTriangle className="h-4 w-4 shrink-0 text-red-500" />
                 <span className="text-sm text-red-700 dark:text-red-400">{error}</span>
                 <button
@@ -676,7 +676,7 @@ export function ComposeTab({
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden"
             >
-              <div className="mx-6 mb-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-blue-50/80 px-4 py-3 dark:border-blue-800/40 dark:bg-blue-900/15">
+              <div className="mx-4 mb-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-blue-50/80 px-4 py-3 sm:mx-6 dark:border-blue-800/40 dark:bg-blue-900/15">
                 <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
@@ -702,8 +702,8 @@ export function ComposeTab({
         </AnimatePresence>
 
         {/* Footer toolbar */}
-        <div className="flex items-center justify-between border-t border-gray-100 px-6 py-4 dark:border-gray-800">
-          <div className="flex items-center gap-1">
+        <div className="flex flex-col items-stretch justify-between gap-4 border-t border-gray-100 px-4 py-4 sm:flex-row sm:items-center sm:gap-0 sm:px-6 dark:border-gray-800">
+          <div className="flex items-center justify-center gap-1 sm:justify-start">
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -726,7 +726,7 @@ export function ComposeTab({
             </motion.button>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
             <TemplatePicker selectedTemplate={selectedTemplate} onSelect={loadTemplate} />
 
             <button
