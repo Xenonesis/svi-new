@@ -149,7 +149,9 @@
   "overrides": {
     "typescript": "$typescript",
     "serialize-javascript": "^7.0.7",
-    "uuid": "^14.0.1"
+    "uuid": "^14.0.1",
+    "js-yaml": "^4.3.1",
+    "dompurify": ">=3.4.13"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
