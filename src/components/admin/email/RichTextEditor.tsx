@@ -57,6 +57,7 @@ const DIVIDER = <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700" />;
 const editorExtensions = [
   StarterKit.configure({
     heading: { levels: [1, 2, 3] },
+    link: false,
   }),
   Underline.configure({
     HTMLAttributes: { class: 'underline' },

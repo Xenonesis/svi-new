@@ -145,7 +145,7 @@ const nextConfig = {
   },
 };
 
-export default withSentryConfig(withNextIntl(withBundleAnalyzer(withSerwist(nextConfig))), {
+const nextConfigWithPlugins = withSentryConfig(withNextIntl(withBundleAnalyzer(withSerwist(nextConfig))), {
   org: 'svi-infra-solutions',
   project: 'javascript-nextjs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
@@ -153,3 +153,8 @@ export default withSentryConfig(withNextIntl(withBundleAnalyzer(withSerwist(next
   // tunnelRoute: '/monitoring',
   silent: !process.env.CI,
 });
+
+// Disable Sentry in development to avoid blocked network requests and console noise
+const config = process.env.NODE_ENV === 'production' ? nextConfigWithPlugins : withNextIntl(withBundleAnalyzer(withSerwist(nextConfig)));
+
+export default config;
