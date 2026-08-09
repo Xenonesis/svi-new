@@ -294,19 +294,36 @@ export default function OfferLetterPreviewContent({
           You are required to maintain the confidentiality of all company and client information
           during and after your employment.
         </p>
+        {/* PIP clause (Sales only) */}
+        {isSalesDepartment && (
+          <p>
+            <span className="font-bold">
+              {(() => {
+                const conf = isSalesDepartment && formData.salesCompensationType ? 9 : 8;
+                return `${conf + 1}. Performance Improvement Plan (PIP)`;
+              })()}
+            </span>
+            <br />
+            If, during the course of your employment, you are unable to meet the sales performance
+            targets assigned to you, the Company reserves the right to place you on a Performance
+            Improvement Plan (PIP). Under such a plan, you will be provided an opportunity and a
+            defined timeframe to improve your performance to the required standards, and your
+            continued employment will be subject to your successful completion of the plan.
+          </p>
+        )}
+
+        {/* Relocation of reporting location (all employees) */}
         <p>
           <span className="font-bold">
             {(() => {
-              const base = isSalesDepartment && formData.salesCompensationType ? 10 : 9;
-              return `${base}. Performance Improvement Plan (PIP)`;
+              const conf = isSalesDepartment && formData.salesCompensationType ? 9 : 8;
+              return `${conf + 1 + (isSalesDepartment ? 1 : 0)}. Relocation of Reporting Location`;
             })()}
           </span>
           <br />
-          If, during the course of your employment, you are unable to meet the performance targets
-          assigned to you, the management reserves the right to place you on a Performance
-          Improvement Plan (PIP). Under such a plan, you will be provided an opportunity and a
-          defined timeframe to improve your performance to the required standards, and your
-          continued employment will be subject to your successful completion of the plan.
+          The Company may, in the future, relocate or change the reporting location (company
+          location) as per its business requirements. You agree to report to the company location as
+          may be designated by the Company from time to time, at the Company's sole discretion.
         </p>
       </div>
 
