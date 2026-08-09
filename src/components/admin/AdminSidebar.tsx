@@ -25,6 +25,7 @@ import {
 import { usePathname, useRouter } from 'next/navigation';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '@/src/lib/supabase/client';
 import { useState } from 'react';
@@ -116,23 +117,17 @@ function SidebarContent({
       )}
 
       {/* Logo */}
-      <div className="flex h-20 items-center gap-3 overflow-hidden border-b border-gray-100 p-6 whitespace-nowrap dark:border-white/5">
-        <div className="bg-brand-gold text-brand-navy flex h-8 w-8 shrink-0 items-center justify-center rounded font-serif text-xl leading-none font-bold">
-          S
-        </div>
-        <motion.div
-          animate={{ opacity: collapsed && !isMobile ? 0 : 1 }}
-          className="flex flex-col overflow-hidden"
-        >
-          <div className="text-brand-navy font-serif text-lg leading-tight font-bold whitespace-nowrap dark:text-white">
-            SVI Infra
-            <br />
-            Solutions
-          </div>
-          <p className="text-brand-gold text-[10px] font-bold tracking-widest whitespace-nowrap uppercase">
-            Admin Portal
-          </p>
-        </motion.div>
+      <div className="flex h-20 items-center overflow-hidden border-b border-gray-100 px-5 whitespace-nowrap dark:border-white/5">
+        <Link href="/admin/dashboard" className="flex items-center gap-2.5">
+          <Image
+            src="/logo.png"
+            alt="SVI Infra Solutions"
+            width={282}
+            height={83}
+            quality={100}
+            className="h-9 w-auto shrink-0 object-contain"
+          />
+        </Link>
       </div>
 
       {/* Nav */}
