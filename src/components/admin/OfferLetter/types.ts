@@ -21,6 +21,7 @@ export interface OfferLetterFormData {
   noSaleMonths: string;
   customSalaryPercent: string;
   subsistenceAllowance: string;
+  meetingsPerMonth: string;
 }
 
 export interface SavedOffer {

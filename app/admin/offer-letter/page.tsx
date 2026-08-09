@@ -57,6 +57,7 @@ export default function OfferLetterPage() {
     noSaleMonths: '',
     customSalaryPercent: '',
     subsistenceAllowance: '',
+    meetingsPerMonth: '15',
   });
 
   const [showSalesOptions, setShowSalesOptions] = useState(false);
@@ -153,6 +154,7 @@ export default function OfferLetterPage() {
         noSaleMonths: '',
         customSalaryPercent: '',
         subsistenceAllowance: '',
+        meetingsPerMonth: '15',
       });
       return;
     }

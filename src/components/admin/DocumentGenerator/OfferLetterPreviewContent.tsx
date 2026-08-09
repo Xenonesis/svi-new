@@ -24,6 +24,7 @@ interface OfferLetterFormData {
   noSaleMonths?: string;
   customSalaryPercent?: string;
   subsistenceAllowance?: string;
+  meetingsPerMonth?: string;
 }
 
 interface CompanyInfo {
@@ -225,6 +226,21 @@ export default function OfferLetterPreviewContent({
             total CTC. After successful completion of this period and subject to meeting the sales
             targets as determined by the Company from time to time, your full agreed salary as per
             Clause 3 above shall become payable.
+          </p>
+        )}
+
+        {/* ── Telecaller Monthly Meetings Requirement ── */}
+        {isSalesDepartment && formData.meetingsPerMonth && (
+          <p>
+            <span className="font-bold">
+              {formData.salesCompensationType ? '3B' : '3A'}. Monthly Meeting Requirement
+            </span>
+            <br />
+            You are required to complete a minimum of{' '}
+            <span className="font-bold">
+              {formData.meetingsPerMonth} meeting{formData.meetingsPerMonth === '1' ? '' : 's'}
+            </span>{' '}
+            per month as part of your sales role.
           </p>
         )}
 

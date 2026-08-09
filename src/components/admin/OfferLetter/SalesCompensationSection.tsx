@@ -4,11 +4,13 @@ import { CircleDollarSign, RefreshCw, Trash2, Plus, Calendar, TrendingUp } from 
 
 interface SalesCompensationSectionProps {
   department: string;
+  designation: string;
   salesCompensationType: string;
   probationPeriod: string;
   noSaleMonths: string;
   subsistenceAllowance: string;
   customSalaryPercent: string;
+  meetingsPerMonth: string;
   salaryCtc: string;
   onValueChange: (name: string, value: string) => void;
   onToggleType: (type: 'no_sale_no_salary' | 'custom_percent') => void;
@@ -16,11 +18,13 @@ interface SalesCompensationSectionProps {
 
 export function SalesCompensationSection({
   department,
+  designation,
   salesCompensationType,
   probationPeriod,
   noSaleMonths,
   subsistenceAllowance,
   customSalaryPercent,
+  meetingsPerMonth,
   salaryCtc,
   onValueChange,
   onToggleType,
@@ -273,6 +277,37 @@ export function SalesCompensationSection({
                   </div>
                 )}
               </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Telecaller Monthly Meetings Target ── */}
+        {designation === 'Telecaller' && (
+          <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+            <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+              Monthly Meetings Target
+            </label>
+            <p className="mb-2 text-[10px] text-gray-500 dark:text-gray-400">
+              Minimum number of meetings the telecaller must complete per month.
+            </p>
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+              <input
+                type="number"
+                name="meetingsPerMonth"
+                value={meetingsPerMonth || ''}
+                onChange={(e) => onValueChange('meetingsPerMonth', e.target.value)}
+                placeholder="15"
+                min="1"
+                className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 font-sans text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none sm:w-28 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
+              />
+              <button
+                type="button"
+                onClick={() => onValueChange('meetingsPerMonth', '15')}
+                className="hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[10px] font-medium text-gray-600 transition-all dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+              >
+                <RefreshCw className="h-3 w-3" />
+                Reset to 15
+              </button>
             </div>
           </div>
         )}

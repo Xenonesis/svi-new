@@ -269,11 +269,13 @@ export function OfferLetterForm({
             <div className="md:col-span-2">
               <SalesCompensationSection
                 department={formData.department}
+                designation={formData.designation}
                 salesCompensationType={formData.salesCompensationType}
                 probationPeriod={formData.probationPeriod}
                 noSaleMonths={formData.noSaleMonths}
                 subsistenceAllowance={formData.subsistenceAllowance}
                 customSalaryPercent={formData.customSalaryPercent}
+                meetingsPerMonth={formData.meetingsPerMonth}
                 salaryCtc={formData.salaryCtc}
                 onValueChange={(name, value) => setFormData((prev) => ({ ...prev, [name]: value }))}
                 onToggleType={(type) =>
