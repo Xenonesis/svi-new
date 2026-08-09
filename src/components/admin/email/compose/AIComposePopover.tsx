@@ -110,15 +110,15 @@ export function AIComposePopover({
         animate={{ opacity: 1, y: 0, scale: 1 }}
         exit={{ opacity: 0, y: -8, scale: 0.96 }}
         transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-        className="dark:bg-brand-dark-surface fixed inset-x-4 top-[20vh] z-[60] overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-[420px] dark:border-gray-700"
+        className="fixed inset-x-4 top-[10vh] z-[60] overflow-hidden rounded-xl border border-[#EAEAEA] bg-white shadow-sm sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-[420px] dark:border-gray-800 dark:bg-[#111111]"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
+        <div className="flex items-center justify-between border-b border-[#EAEAEA] px-4 py-3 dark:border-gray-800">
           <div className="flex items-center gap-2">
-            <div className="bg-brand-gold/15 flex h-6 w-6 items-center justify-center rounded-lg">
-              <Sparkles className="text-brand-gold h-3.5 w-3.5" />
+            <div className="flex h-6 w-6 items-center justify-center rounded bg-[#FBF3DB] text-[#956400] dark:bg-[#956400]/20">
+              <Sparkles className="h-3.5 w-3.5" />
             </div>
-            <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+            <span className="text-xs font-medium text-[#111111] dark:text-gray-200">
               AI Email Writer
             </span>
           </div>
@@ -140,7 +140,7 @@ export function AIComposePopover({
               onKeyDown={handleKeyDown}
               placeholder="Describe the email you want to write..."
               rows={3}
-              className="focus-gold w-full resize-none rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none dark:border-gray-600 dark:bg-gray-800/50 dark:text-white dark:placeholder-gray-500"
+              className="w-full resize-none rounded-md border border-[#EAEAEA] bg-white px-3 py-3 text-sm text-[#111111] placeholder-gray-400 outline-none focus:border-gray-300 dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-100"
               disabled={loading}
             />
           </div>
@@ -150,13 +150,13 @@ export function AIComposePopover({
             <div ref={dropdownRef} className="relative">
               <button
                 onClick={() => setShowToneDropdown(!showToneDropdown)}
-                className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                className="flex items-center gap-1.5 rounded-md border border-[#EAEAEA] bg-white px-3 py-1.5 text-xs font-medium text-[#111111] transition-transform hover:scale-[0.98] dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-200"
               >
                 {tone}
                 <ChevronDown className="h-3 w-3" />
               </button>
               {showToneDropdown && (
-                <div className="dark:bg-brand-dark-surface absolute bottom-full left-0 z-10 mb-1 w-36 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-600">
+                <div className="absolute bottom-full left-0 z-10 mb-1 w-36 overflow-hidden rounded-md border border-[#EAEAEA] bg-white shadow-sm dark:border-gray-700 dark:bg-[#1a1a1a]">
                   {TONES.map((t) => (
                     <button
                       key={t}
@@ -166,8 +166,8 @@ export function AIComposePopover({
                       }}
                       className={`w-full px-3 py-2 text-left text-xs transition-colors ${
                         tone === t
-                          ? 'bg-brand-gold/10 text-brand-gold'
-                          : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/5'
+                          ? 'bg-[#EAEAEA] text-[#111111] dark:bg-gray-800 dark:text-white'
+                          : 'text-[#787774] hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/5'
                       }`}
                     >
                       {t}
@@ -180,7 +180,7 @@ export function AIComposePopover({
             <button
               onClick={handleGenerate}
               disabled={!prompt.trim() || loading}
-              className="bg-brand-gold text-brand-navy flex flex-1 items-center justify-center gap-2 rounded-lg px-4 py-1.5 text-xs font-bold tracking-wide transition-opacity hover:opacity-90 disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#111111] px-4 py-1.5 text-xs font-medium text-white transition-transform hover:scale-[0.98] disabled:opacity-50 dark:bg-white dark:text-[#111111]"
             >
               {loading ? (
                 <>
@@ -199,7 +199,7 @@ export function AIComposePopover({
 
         {/* Preview */}
         {preview && (
-          <div className="border-t border-gray-100 dark:border-gray-800">
+          <div className="border-t border-[#EAEAEA] dark:border-gray-800">
             <div className="scrollbar-gold max-h-[240px] overflow-y-auto p-4">
               <div
                 className="prose prose-sm dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300"
@@ -208,11 +208,11 @@ export function AIComposePopover({
             </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-2 border-t border-gray-100 px-4 py-3 dark:border-gray-800">
+            <div className="flex items-center justify-end gap-2 border-t border-[#EAEAEA] px-4 py-3 dark:border-gray-800">
               <button
                 onClick={handleInsert}
                 disabled={loading}
-                className="flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+                className="flex items-center gap-1.5 rounded-md border border-[#EAEAEA] bg-white px-3 py-1.5 text-xs font-medium text-[#111111] transition-transform hover:scale-[0.98] disabled:opacity-50 dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-200"
               >
                 <Copy className="h-3 w-3" />
                 Insert
@@ -220,7 +220,7 @@ export function AIComposePopover({
               <button
                 onClick={handleReplace}
                 disabled={loading}
-                className="bg-brand-gold text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold transition-opacity hover:opacity-90 disabled:opacity-50"
+                className="flex items-center gap-1.5 rounded-md bg-[#111111] px-3 py-1.5 text-xs font-medium text-white transition-transform hover:scale-[0.98] disabled:opacity-50 dark:bg-white dark:text-[#111111]"
               >
                 <Replace className="h-3 w-3" />
                 Replace

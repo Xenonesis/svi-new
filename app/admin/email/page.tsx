@@ -170,18 +170,13 @@ export default function AdminEmailPage() {
         transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
         className="mb-8"
       >
-        <div className="flex items-end justify-between gap-6">
-          <div className="flex items-center gap-5">
-            {/* Gold accent line */}
-            <div className="flex flex-col items-center gap-1.5">
-              <div className="from-brand-gold to-brand-gold/30 h-10 w-[3px] rounded-full bg-gradient-to-b" />
-            </div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div className="flex flex-col gap-1 sm:flex-row sm:items-center sm:gap-5">
             <div>
-              <h1 className="font-serif text-[2rem] leading-tight tracking-tight text-gray-900 md:text-[2.5rem] dark:text-white">
-                <span>Email</span>
-                <span className="text-gradient-gold ml-2">Center</span>
+              <h1 className="font-serif text-3xl leading-tight tracking-tight text-[#111111] md:text-[2.5rem] dark:text-white">
+                Email Center
               </h1>
-              <p className="mt-1 font-mono text-[11px] tracking-wider text-gray-400 uppercase dark:text-gray-500">
+              <p className="mt-1 font-mono text-xs tracking-wider text-[#787774]">
                 {process.env.NODE_ENV === 'development' &&
                 process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false'
                   ? 'resend · compose · send · track'
@@ -197,25 +192,24 @@ export default function AdminEmailPage() {
                 href="https://resend.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group hover:border-brand-gold/30 hover:bg-brand-gold/5 dark:hover:border-brand-gold/20 flex items-center gap-2.5 rounded-lg border border-gray-200/60 bg-white/50 px-3.5 py-2 backdrop-blur-sm transition-all dark:border-gray-700/60 dark:bg-white/[0.02]"
+                className="group flex w-max items-center gap-2.5 rounded-md border border-[#EAEAEA] bg-white px-3 py-1.5 transition-transform hover:scale-[0.98] dark:border-gray-800 dark:bg-[#111111]"
               >
-                <div className="flex h-5 w-5 items-center justify-center rounded bg-gray-900 dark:bg-white">
-                  <Mail className="h-2.5 w-2.5 text-white dark:text-gray-900" />
+                <div className="flex h-4 w-4 items-center justify-center rounded bg-[#111111] dark:bg-white">
+                  <Mail className="h-2.5 w-2.5 text-white dark:text-[#111111]" />
                 </div>
-                <span className="text-xs font-medium text-gray-600 dark:text-gray-400">
+                <span className="text-xs font-medium text-[#787774] dark:text-gray-400">
                   Powered by
                 </span>
-                <span className="text-xs font-bold text-gray-900 dark:text-white">Resend</span>
+                <span className="text-xs font-medium text-[#111111] dark:text-white">Resend</span>
               </a>
             )}
         </div>
       </motion.div>
 
-      {/* ─── Tab Navigation ─── */}
-      <div className="mb-6 border-b border-gray-200 dark:border-gray-800">
+      <div className="mb-6 border-b border-[#EAEAEA] dark:border-gray-800">
         <nav
           ref={tablistRef}
-          className="flex gap-0.5 overflow-x-auto"
+          className="flex gap-2 overflow-x-auto pb-2 sm:pb-0"
           role="tablist"
           aria-label="Email center navigation"
           onKeyDown={handleTabKeyDown}
@@ -235,23 +229,16 @@ export default function AdminEmailPage() {
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: i * 0.04, duration: 0.3 }}
-                className={`relative flex touch-manipulation items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-all active:scale-[0.98] active:bg-gray-100/50 dark:active:bg-gray-800/50 ${
+                className={`relative flex shrink-0 touch-manipulation items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors ${
                   isActive
-                    ? 'text-brand-gold'
-                    : 'text-gray-500 hover:text-gray-800 dark:text-gray-500 dark:hover:text-gray-300'
+                    ? 'bg-[#111111] text-white dark:bg-white dark:text-[#111111]'
+                    : 'text-[#787774] hover:bg-[#F7F6F3] dark:text-gray-400 dark:hover:bg-gray-800'
                 }`}
               >
                 <Icon
-                  className={`h-4 w-4 transition-all ${isActive ? 'text-brand-gold' : 'text-gray-400 dark:text-gray-600'}`}
+                  className={`h-4 w-4 ${isActive ? 'text-white dark:text-[#111111]' : 'text-gray-400'}`}
                 />
-                <span className="hidden sm:inline">{tab.label}</span>
-                {isActive && (
-                  <motion.div
-                    layoutId="emailTabIndicator"
-                    className="bg-brand-gold absolute right-0 bottom-0 left-0 h-[2px] rounded-full"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
-                  />
-                )}
+                <span>{tab.label}</span>
               </motion.button>
             );
           })}

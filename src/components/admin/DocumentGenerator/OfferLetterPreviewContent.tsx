@@ -294,6 +294,20 @@ export default function OfferLetterPreviewContent({
           You are required to maintain the confidentiality of all company and client information
           during and after your employment.
         </p>
+        <p>
+          <span className="font-bold">
+            {(() => {
+              const base = isSalesDepartment && formData.salesCompensationType ? 10 : 9;
+              return `${base}. Performance Improvement Plan (PIP)`;
+            })()}
+          </span>
+          <br />
+          If, during the course of your employment, you are unable to meet the performance targets
+          assigned to you, the management reserves the right to place you on a Performance
+          Improvement Plan (PIP). Under such a plan, you will be provided an opportunity and a
+          defined timeframe to improve your performance to the required standards, and your
+          continued employment will be subject to your successful completion of the plan.
+        </p>
       </div>
 
       {/* Closing */}
