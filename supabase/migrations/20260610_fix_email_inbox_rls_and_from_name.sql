@@ -11,6 +11,7 @@ ALTER TABLE email_inbox ADD COLUMN IF NOT EXISTS from_name TEXT;
 -- Allow admins to view all inbox emails (they're not tied to a specific admin_id since webhook sets admin_id = NULL)
 DROP POLICY IF EXISTS "Users can view their emails" ON email_inbox;
 
+DROP POLICY IF EXISTS "Admins can view all inbox emails" ON email_inbox;
 CREATE POLICY "Admins can view all inbox emails"
   ON email_inbox FOR SELECT
   USING (true);

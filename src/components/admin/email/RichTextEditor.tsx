@@ -9,7 +9,7 @@ import Link from '@tiptap/extension-link';
 import Image from '@tiptap/extension-image';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
-import { useEffect, useState, useCallback, useRef } from 'react';
+import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import {
   Bold,
   Italic,
@@ -54,25 +54,6 @@ const ACTIVE_BUTTON_CLASS =
 
 const DIVIDER = <div className="mx-1 h-6 w-px bg-gray-200 dark:bg-gray-700" />;
 
-const editorExtensions = [
-  StarterKit.configure({
-    heading: { levels: [1, 2, 3] },
-    link: false,
-  }),
-  Underline.configure({
-    HTMLAttributes: { class: 'underline' },
-  }),
-  TextAlign.configure({ types: ['heading', 'paragraph'] }),
-  Highlight.configure({ multicolor: true }),
-  Link.configure({
-    openOnClick: false,
-    HTMLAttributes: { class: 'text-blue-500 underline' },
-  }),
-  Image,
-  TextStyle,
-  Color,
-];
-
 export function RichTextEditor({
   value,
   onChange,
@@ -87,6 +68,28 @@ export function RichTextEditor({
   const [showAIPopover, setShowAIPopover] = useState(false);
   const isInternalUpdate = useRef(false);
   const lastSyncedValue = useRef<string | null>(null);
+
+  const editorExtensions = useMemo(
+    () => [
+      StarterKit.configure({
+        heading: { levels: [1, 2, 3] },
+        link: false,
+      }),
+      Underline.configure({
+        HTMLAttributes: { class: 'underline' },
+      }),
+      TextAlign.configure({ types: ['heading', 'paragraph'] }),
+      Highlight.configure({ multicolor: true }),
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: { class: 'text-blue-500 underline' },
+      }),
+      Image,
+      TextStyle,
+      Color,
+    ],
+    []
+  );
 
   const editor = useEditor({
     immediatelyRender: true,

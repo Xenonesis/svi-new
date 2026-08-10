@@ -25,11 +25,13 @@ CREATE INDEX IF NOT EXISTS idx_email_inbox_admin_id ON email_inbox(admin_id);
 ALTER TABLE email_inbox ENABLE ROW LEVEL SECURITY;
 
 -- Policy: Users can view their own emails
+DROP POLICY IF EXISTS "Users can view their emails" ON email_inbox;
 CREATE POLICY "Users can view their emails"
   ON email_inbox FOR SELECT
   USING (auth.uid() = admin_id);
 
 -- Policy: System can insert emails
+DROP POLICY IF EXISTS "System can insert emails" ON email_inbox;
 CREATE POLICY "System can insert emails"
   ON email_inbox FOR INSERT
   WITH CHECK (true);
