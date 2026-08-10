@@ -33,7 +33,7 @@ interface StatusEntry {
 }
 
 // ── Custom Tooltip for LineChart ─────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function TrendTooltip({ active, payload, label }: any) {
   if (!active || !payload?.length) return null;
   return (
@@ -50,7 +50,7 @@ function TrendTooltip({ active, payload, label }: any) {
 }
 
 // ── Custom Tooltip for PieChart ──────────────────────────────────────────────
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
+
 function DonutTooltip({ active, payload }: any) {
   if (!active || !payload?.length) return null;
   const entry = payload[0];
@@ -108,12 +108,6 @@ export function RegistrationAnalytics({ token }: RegistrationAnalyticsProps) {
   const statusDistribution = data?.statusDistribution ?? [];
   const totalFromDist = statusDistribution.reduce((acc, e) => acc + e.value, 0);
 
-  // Show only every 5th label to avoid crowding on the X-axis
-  const trendWithFilteredLabels = dailyTrend.map((d, i) => ({
-    ...d,
-    displayDate: i % 5 === 0 || i === dailyTrend.length - 1 ? d.date : '',
-  }));
-
   return (
     <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-5">
       {/* ── Line Chart: 30-day trend ─────────────────────────────────────── */}
@@ -146,10 +140,7 @@ export function RegistrationAnalytics({ token }: RegistrationAnalyticsProps) {
           <ChartSkeleton height="h-44" />
         ) : (
           <ResponsiveContainer width="100%" height={176}>
-            <LineChart
-              data={trendWithFilteredLabels}
-              margin={{ top: 4, right: 8, left: -28, bottom: 0 }}
-            >
+            <LineChart data={dailyTrend} margin={{ top: 4, right: 8, left: -28, bottom: 0 }}>
               <defs>
                 <linearGradient id="goldGradient" x1="0" y1="0" x2="1" y2="0">
                   <stop offset="0%" stopColor="#b08f36" />
@@ -163,7 +154,10 @@ export function RegistrationAnalytics({ token }: RegistrationAnalyticsProps) {
                 vertical={false}
               />
               <XAxis
-                dataKey="displayDate"
+                dataKey="date"
+                tickFormatter={(val, idx) =>
+                  idx % 5 === 0 || idx === dailyTrend.length - 1 ? val : ''
+                }
                 tick={{ fontSize: 10, fill: '#6b7280' }}
                 axisLine={false}
                 tickLine={false}
