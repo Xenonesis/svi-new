@@ -1,0 +1,66 @@
+# Architecture Map
+
+## Directory Structure
+
+```
+svi-infra/
+│
+├─ app/                              # Next.js App Router
+│  ├─ [locale]/(main)/               # Public site (bilingual)
+│  │  ├─ about/
+│  │  ├─ areas/                      # Area pages ([slug])
+│  │  ├─ lottery/                    # Public lottery / giveaway
+│  │  ├─ portal/                     # Customer portal
+│  │  ├─ projects/
+│  │  └─ page.tsx                    # Homepage
+│  │
+│  ├─ admin/                         # Admin dashboard (30 pages)
+│  │  ├─ allotment-letter/
+│  │  ├─ bba/                        # Builder-Buyer Agreement
+│  │  ├─ email/                      # Full email center
+│  │  ├─ lottery/                    # Admin lottery management
+│  │  ├─ registrations/
+│  │  ├─ settings/                   # Settings panel
+│  │  └─ page.tsx                    # Admin overview
+│  │
+│  ├─ api/                           # 68 REST API routes
+│  │  ├─ admin/                      # Admin APIs (secured via verifyAdmin guard)
+│  │  ├─ chat/                       # Chatbot APIs
+│  │  ├─ cron/                       # Scheduled tasks (lottery, campaigns, emails)
+│  │  └─ webhooks/
+│  │
+│  └─ (system files)                 # layout.tsx, error.tsx, sitemap.ts, etc.
+│
+├─ src/
+│  ├─ components/                    # 157+ React components
+│  │  ├─ admin/                      # Admin panel components (largest module)
+│  │  │  ├─ email/                   # Full email client UI
+│  │  │  ├─ lottery/                 # Lottery creation wizard, modals
+│  │  │  └─ DocumentGenerator/       # PDF generators for letters
+│  │  ├─ home/                       # Public homepage blocks (Hero, Features, ChatBot)
+│  │  └─ ui/                         # Reusable primitives (Buttons, Modal, Inputs)
+│  │
+│  ├─ lib/                           # Core logic
+│  │  ├─ api/                        # API handlers, rate limiting
+│  │  ├─ supabase/                   # Supabase clients (browser, server, admin)
+│  │  ├─ repositories/               # Data access layer
+│  │  └─ utils/                      # Utilities, document exporters
+│  │
+│  ├─ stores/                        # Zustand state (authStore.ts, uiStore.ts)
+│  ├─ i18n/                          # Internationalization routing/navigation
+│  ├─ actions/                       # Next.js Server Actions
+│  └─ data/                          # Static data files
+│
+├─ supabase/migrations/              # Database schema migrations
+├─ scripts/                          # Utility scripts (seed, optimization)
+├─ e2e/                              # Playwright tests
+└─ public/                           # Static assets, manifest.json
+```
+
+## Application Flow & Patterns
+
+- **Server/Client Boundary:** React Server Components (RSC) heavily utilized in `app/`. Interactive parts (forms, tables, complex UI) pushed to client components (`'use client'`) inside `src/components/`.
+- **Data Fetching:** For public pages, mostly direct DB access or RSC fetches. In the admin panel, **React Query** (`@tanstack/react-query`) is used for fetching, caching, and optimistic UI updates.
+- **State Management:** **Zustand** is used for global client-side state (e.g., Auth, UI themes), reducing unnecessary context providers.
+- **Database Access:** The codebase follows a **Repository Pattern** (`src/lib/repositories/`) to abstract Supabase queries and keep logic clean.
+- **Authentication:** Managed by Supabase (SSR cookies). A central `useAuthStore` tracks session status to prevent duplicate roundtrips on route changes.
