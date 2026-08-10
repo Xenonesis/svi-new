@@ -42,10 +42,15 @@ function mimeFromFilename(filename: string): string {
 async function ensureAttachmentBucket() {
   try {
     const { data: buckets } = await supabaseAdmin.storage.listBuckets();
-    if (!buckets?.find((b: any) => b.name === 'email-attachments')) {
+    const emailBucket = buckets?.find((b: any) => b.name === 'email-attachments');
+    if (!emailBucket) {
       await supabaseAdmin.storage.createBucket('email-attachments', {
         public: true,
         fileSizeLimit: 10 * 1024 * 1024, // 10 MB
+      });
+    } else if (!emailBucket.public) {
+      await supabaseAdmin.storage.updateBucket('email-attachments', {
+        public: true,
       });
     }
   } catch (err) {
