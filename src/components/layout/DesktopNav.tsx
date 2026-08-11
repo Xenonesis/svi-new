@@ -53,7 +53,7 @@ const DesktopNav = memo(function DesktopNav({
   const offersLink = NAV_LINKS.find((l) => l.path === '/exclusive-offers');
 
   return (
-    <nav className="3xl:gap-6 flex items-center gap-3 xl:gap-4 2xl:gap-5">
+    <nav className="flex items-center gap-2.5 xl:gap-3.5 2xl:gap-4.5">
       {/* Home Link */}
       {homeLink && (
         <NavLink

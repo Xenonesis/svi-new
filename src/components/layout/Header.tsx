@@ -15,29 +15,46 @@ export default function Header() {
         suppressHydrationWarning
         className={`fixed z-50 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
           h.isScrolled
-            ? 'top-2.5 left-1/2 w-[calc(100%-1.5rem)] max-w-7xl -translate-x-1/2 rounded-full border border-slate-200/80 bg-white/95 px-6 py-3 shadow-[0_8px_32px_rgba(0,0,0,0.18)] backdrop-blur-2xl sm:top-3.5 sm:w-auto xl:px-10 xl:py-4 dark:border-white/15 dark:bg-slate-950/95 dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]'
+            ? 'top-0 right-0 left-0 rounded-none border-b border-white/10 bg-[#090d16]/90 px-4 py-3 backdrop-blur-xl max-xl:w-full xl:top-3 xl:left-1/2 xl:w-max xl:max-w-[96vw] xl:-translate-x-1/2 xl:rounded-full xl:border xl:border-slate-200/80 xl:bg-white/95 xl:px-8 xl:py-2.5 xl:shadow-[0_10px_35px_rgba(0,0,0,0.15)] dark:xl:border-white/15 dark:xl:bg-slate-950/95 dark:xl:shadow-[0_12px_40px_rgba(0,0,0,0.6)]'
             : h.pathname === '/'
-              ? 'top-0 right-0 left-0 rounded-none border-b border-transparent bg-gradient-to-b from-slate-950/85 via-slate-950/45 to-transparent px-4 py-3 md:py-4 xl:px-8'
+              ? 'top-0 right-0 left-0 rounded-none border-b border-transparent bg-gradient-to-b from-slate-950/90 via-slate-950/50 to-transparent px-4 py-3 md:py-4 xl:px-8'
               : 'top-0 right-0 left-0 rounded-none border-b border-slate-200/60 bg-white/95 px-4 py-2.5 backdrop-blur-md md:py-3 xl:px-8 dark:border-white/10 dark:bg-slate-950/95'
         }`}
       >
         <div
-          className={`mx-auto flex items-center transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+          className={`mx-auto flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
             h.isScrolled
-              ? 'w-full justify-center gap-3 xl:gap-5'
+              ? 'w-full gap-3 xl:justify-center xl:gap-5'
               : 'container justify-between gap-4 xl:gap-8'
           }`}
         >
-          {/* Show logo ONLY when not scrolled */}
+          {/* Mobile Logo Capsule Pill (Always visible on mobile) */}
+          <Link
+            href="/"
+            className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:hidden ${
+              h.isMobileMenuOpen ? 'pointer-events-none opacity-0' : ''
+            }`}
+            aria-label="SVI Infra Solutions Pvt. Ltd."
+          >
+            <Image
+              src="/logo.png"
+              alt="SVI Infra Solutions Pvt. Ltd."
+              width={282}
+              height={83}
+              quality={100}
+              priority
+              className="h-7 w-auto object-contain transition-all duration-300 sm:h-8"
+            />
+          </Link>
+
+          {/* Desktop Logo (ONLY when not scrolled) */}
           {!h.isScrolled && (
             <Link
               href="/"
-              className={`group relative inline-flex shrink-0 items-center gap-2 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] ${
+              className={`group relative hidden shrink-0 items-center gap-2 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
                 h.isHomeTransparent
                   ? 'rounded-2xl border border-white/20 bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-md'
-                  : h.isMobileMenuOpen
-                    ? 'max-xl:pointer-events-none max-xl:opacity-0'
-                    : ''
+                  : ''
               }`}
               aria-label="SVI Infra Solutions Pvt. Ltd."
             >
@@ -48,7 +65,7 @@ export default function Header() {
                 height={83}
                 quality={100}
                 priority
-                className="h-8 w-auto object-contain transition-all duration-300 xl:h-9"
+                className="h-9 w-auto object-contain transition-all duration-300"
               />
             </Link>
           )}
