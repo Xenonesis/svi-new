@@ -1,91 +1,97 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { usePathname, useRouter } from '@/src/i18n/navigation';
+import { useRouter } from 'next/navigation';
 import { Globe, Loader2 } from 'lucide-react';
 import { useTransition, useEffect, useRef } from 'react';
 
 export default function LanguageToggle({ isHomeTransparent }: { isHomeTransparent?: boolean }) {
   const locale = useLocale();
-  const pathname = usePathname();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const pendingScrollY = useRef<number | null>(null);
+  const savedYRef = useRef<number | null>(null);
 
   const toggleLocale = () => {
     const nextLocale = locale === 'en' ? 'hi' : 'en';
     const currentY = typeof window !== 'undefined' ? window.scrollY : 0;
-    pendingScrollY.current = currentY;
+    savedYRef.current = currentY;
 
-    // Save scroll position in sessionStorage as a fallback across route mounts
-    try {
-      sessionStorage.setItem('svi_lang_scroll_y', String(currentY));
-    } catch {
-      // sessionStorage unavailable (private mode)
-    }
+    if (typeof window !== 'undefined') {
+      // 1. Lock body minHeight to prevent page height collapse during React DOM swap
+      const currentHeight = document.documentElement.scrollHeight;
+      document.body.style.minHeight = `${currentHeight}px`;
 
-    // Disable default browser scroll restoration temporarily
-    if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
-      window.history.scrollRestoration = 'manual';
-    }
+      // 2. Disable browser auto scroll restoration
+      if ('scrollRestoration' in window.history) {
+        window.history.scrollRestoration = 'manual';
+      }
 
-    // 1. Instantly update cookie so client and server remain synchronized
-    if (typeof document !== 'undefined') {
-      document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
-    }
-
-    // 2. Preserve search query parameters and hash fragments
-    const search = typeof window !== 'undefined' ? window.location.search : '';
-    const hash = typeof window !== 'undefined' ? window.location.hash : '';
-    const targetPath = `${pathname}${search}${hash}`;
-
-    // 3. Perform seamless client transition with scroll: false
-    startTransition(() => {
-      router.replace(targetPath, { locale: nextLocale, scroll: false });
-    });
-  };
-
-  // Restore exact scroll position after transition completes or locale changes
-  useEffect(() => {
-    let savedY: number | null = pendingScrollY.current;
-    if (savedY === null) {
+      // 3. Save scroll position in sessionStorage as fallback
       try {
-        const val = sessionStorage.getItem('svi_lang_scroll_y');
-        if (val !== null) {
-          savedY = parseInt(val, 10);
-        }
+        sessionStorage.setItem('svi_lang_scroll_y', String(currentY));
       } catch {
         // sessionStorage unavailable
       }
     }
 
-    if (savedY !== null && !isNaN(savedY) && savedY > 0) {
-      const targetY = savedY;
+    // 4. Instantly update NEXT_LOCALE cookie
+    if (typeof document !== 'undefined') {
+      document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
+    }
+
+    // 5. In-place refresh
+    startTransition(() => {
+      router.refresh();
+    });
+  };
+
+  // Restore scroll position and unlock minHeight after locale updates
+  useEffect(() => {
+    let targetY = savedYRef.current;
+    if (targetY === null && typeof window !== 'undefined') {
+      try {
+        const val = sessionStorage.getItem('svi_lang_scroll_y');
+        if (val !== null) targetY = parseInt(val, 10);
+      } catch {
+        // sessionStorage unavailable
+      }
+    }
+
+    if (targetY !== null && !isNaN(targetY) && targetY > 0) {
+      const y = targetY;
       const restore = () => {
-        window.scrollTo(0, targetY);
+        window.scrollTo(0, y);
       };
 
       restore();
       const raf1 = requestAnimationFrame(restore);
       const raf2 = requestAnimationFrame(() => requestAnimationFrame(restore));
+
       const timer = setTimeout(() => {
         restore();
+        if (typeof document !== 'undefined') {
+          document.body.style.minHeight = '';
+        }
+        if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+          window.history.scrollRestoration = 'auto';
+        }
         try {
           sessionStorage.removeItem('svi_lang_scroll_y');
         } catch {
           // sessionStorage unavailable
         }
-        pendingScrollY.current = null;
-        if ('scrollRestoration' in window.history) {
-          window.history.scrollRestoration = 'auto';
-        }
-      }, 150);
+        savedYRef.current = null;
+      }, 300);
 
       return () => {
         cancelAnimationFrame(raf1);
         cancelAnimationFrame(raf2);
         clearTimeout(timer);
       };
+    } else {
+      if (typeof document !== 'undefined') {
+        document.body.style.minHeight = '';
+      }
     }
   }, [locale]);
 
