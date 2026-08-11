@@ -8,6 +8,7 @@ import AnimatedSection, {
   StaggerItem,
 } from '@/src/components/ui/AnimatedSection';
 import { GlowCard } from '@/src/components/ui/spotlight-card';
+import MagicBento from '@/src/components/ui/MagicBento';
 
 const FEATURE_ICONS = [
   <Network size={32} key="connectivity" />,
@@ -52,33 +53,25 @@ export default function FeaturesSection() {
           </p>
         </AnimatedSection>
 
-        <StaggerContainer className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {features.map((feature, idx) => (
-            <StaggerItem key={idx}>
-              <motion.div
-                whileHover={{ y: -4 }}
-                transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                className="h-full"
-              >
-                <GlowCard
-                  customSize={true}
-                  glowColor="orange"
-                  className="group relative h-full cursor-pointer p-6 shadow-sm transition-shadow hover:shadow-md sm:p-8 md:p-10 dark:shadow-none"
-                >
-                  <div className="text-brand-gold mb-6 flex h-12 w-12 shrink-0 items-center justify-center">
-                    {FEATURE_ICONS[idx]}
-                  </div>
-                  <h3 className="text-brand-navy mb-4 font-serif text-2xl dark:text-gray-200">
-                    {feature.title}
-                  </h3>
-                  <p className="text-sm leading-relaxed text-gray-600 dark:text-gray-400">
-                    {feature.desc}
-                  </p>
-                </GlowCard>
-              </motion.div>
-            </StaggerItem>
-          ))}
-        </StaggerContainer>
+        <MagicBento
+          cardData={features.map((feature, idx) => ({
+            title: feature.title,
+            desc: feature.desc,
+            icon: FEATURE_ICONS[idx],
+            label: '',
+            color: 'transparent',
+          }))}
+          textAutoHide={false}
+          enableStars={true}
+          enableSpotlight={true}
+          enableBorderGlow={true}
+          enableTilt={true}
+          enableMagnetism={true}
+          clickEffect={true}
+          spotlightRadius={300}
+          particleCount={12}
+          glowColor="212, 175, 55"
+        />
       </div>
     </section>
   );
