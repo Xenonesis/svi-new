@@ -21,15 +21,14 @@ const SAFE_RESPONSIVE_SIZES = [320, 640, 1024];
 export default function supabaseImageLoader({ src, width }: ImageLoaderParams): string {
   // Local images in /images/ directory have pre-generated WebP responsive variants
   if (src.startsWith('/images/') || src.startsWith('./images/')) {
-    const basePath = src.replace(/\.(png|jpg|jpeg)$/i, '');
+    const basePath = src.replace(/\.(png|jpg|jpeg|webp|avif)$/i, '');
 
     // Only use responsive variants for sizes we know always exist (≤1024w)
     const match = SAFE_RESPONSIVE_SIZES.find((s) => s >= width);
     if (match) return `${basePath}-${match}w.webp`;
 
     // For larger requests (1200w, 1920w), use full-size WebP to avoid 404s
-    // since many images are 1024px originals without a 1920w variant
-    return `${basePath}.webp?w=${width}`;
+    return `${basePath}.webp`;
   }
 
   // Supabase Storage URLs

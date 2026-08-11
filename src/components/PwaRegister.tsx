@@ -8,17 +8,6 @@ export default function PwaRegister() {
 
   // Register service worker and handle auto-update
   useEffect(() => {
-    if (process.env.NODE_ENV === 'development') {
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.getRegistrations().then((registrations) => {
-          for (const registration of registrations) {
-            registration.unregister().then(() => {});
-          }
-        });
-      }
-      return;
-    }
-
     if (!('serviceWorker' in navigator)) return;
 
     let refreshing = false;

@@ -48,17 +48,22 @@ export default function PwaPushPrompt() {
     setSubscribing(true);
     setError('');
 
-    const sub = await subscribeToPush();
-    if (sub) {
-      setSubscribed(true);
-    } else if (Notification.permission === 'denied') {
-      setError('Notifications blocked. Update browser settings to enable.');
-    } else if (!isPushSupported()) {
-      setError('Push notifications not supported on this device.');
-    } else {
-      setError('Could not subscribe. Service worker may not be ready.');
+    try {
+      const sub = await subscribeToPush();
+      if (sub) {
+        setSubscribed(true);
+      } else if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
+        setError('Notifications blocked. Update browser settings to enable.');
+      } else if (!isPushSupported()) {
+        setError('Push notifications not supported on this device or VAPID missing.');
+      } else {
+        setError('Service worker not ready. Please try again.');
+      }
+    } catch {
+      setError('Subscription error occurred.');
+    } finally {
+      setSubscribing(false);
     }
-    setSubscribing(false);
   };
 
   return (

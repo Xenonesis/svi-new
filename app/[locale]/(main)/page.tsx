@@ -12,28 +12,24 @@ import { StaggerTestimonials } from '@/src/components/ui/stagger-testimonials';
 
 const HERO_IMAGES = [
   {
-    src: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop',
+    src: '/images/hero1.webp',
     alt: 'SVI Infra luxury residential property in Jaipur with modern architecture',
   },
   {
-    src: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=2070&auto=format&fit=crop',
+    src: '/images/hero2.webp',
     alt: 'Premium commercial real estate development in Noida by SVI Infra',
   },
   {
-    src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop',
+    src: '/images/hero3_new.webp',
     alt: 'Elegant apartment complex in Phulera Smart City Rajasthan',
   },
   {
-    src: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop',
+    src: '/images/hero4_new.webp',
     alt: 'Modern luxury villas by SVI Infra',
   },
   {
-    src: 'https://images.unsplash.com/photo-1600566753086-00f18efc2291?q=80&w=2070&auto=format&fit=crop',
+    src: '/images/hero5_new.webp',
     alt: 'Exclusive premium residences with stunning views',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=2070&auto=format&fit=crop',
-    alt: 'Architectural excellence in commercial spaces',
   },
 ];
 

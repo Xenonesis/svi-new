@@ -25,7 +25,14 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
   if (!isPushSupported()) return null;
 
   try {
-    const reg = await navigator.serviceWorker.ready;
+    // Add a 3.5 second timeout to ready to avoid hanging indefinitely if SW is not ready
+    const timeout = new Promise<never>((_, reject) =>
+      setTimeout(() => reject(new Error('Service worker ready timeout')), 3500)
+    );
+    const reg = (await Promise.race([
+      navigator.serviceWorker.ready,
+      timeout,
+    ])) as ServiceWorkerRegistration;
 
     // Request permission if needed
     if (Notification.permission === 'denied') return null;
@@ -44,7 +51,8 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
 
     await saveSubscription(sub);
     return sub;
-  } catch {
+  } catch (err) {
+    console.warn('Push notification subscription error:', err);
     return null;
   }
 }

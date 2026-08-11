@@ -1,4 +1,5 @@
 'use client';
+
 import { motion, MotionValue, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import { HeroImage } from '../HeroSection';
@@ -18,45 +19,54 @@ export default function HeroBackground({
   heroScale,
   isMobile = false,
 }: HeroBackgroundProps) {
+  const currentImage = images[currentHeroIndex] ||
+    images[0] || {
+      src: '/images/hero1.webp',
+      alt: 'SVI Infra Solutions',
+    };
+
   const inner = (
     <>
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={currentHeroIndex}
           initial={{ opacity: 0, scale: 1 }}
-          animate={{ opacity: 1, scale: isMobile ? 1 : 1.05 }}
-          exit={{ opacity: 0, scale: isMobile ? 1 : 1.05 }}
+          animate={{ opacity: 1, scale: isMobile ? 1 : 1.04 }}
+          exit={{ opacity: 0, scale: isMobile ? 1 : 1.04 }}
           transition={{
-            opacity: { duration: 1.2, ease: 'easeInOut' },
-            scale: { duration: isMobile ? 0 : 10, ease: 'linear' },
+            opacity: { duration: 1.1, ease: 'easeInOut' },
+            scale: { duration: isMobile ? 0 : 9, ease: 'linear' },
           }}
           className="absolute inset-0"
         >
           <Image
-            src={images[currentHeroIndex].src}
-            alt={images[currentHeroIndex].alt}
+            src={currentImage.src}
+            alt={currentImage.alt}
             fill
             priority={true}
             fetchPriority="high"
-            quality={isMobile ? 75 : 90}
+            quality={isMobile ? 85 : 95}
             sizes="100vw"
-            className="object-cover"
-            placeholder={images[currentHeroIndex].blurDataURL ? 'blur' : 'empty'}
-            blurDataURL={images[currentHeroIndex].blurDataURL}
+            className="object-cover object-center brightness-[1.04] contrast-[1.02]"
+            placeholder={currentImage.blurDataURL ? 'blur' : 'empty'}
+            blurDataURL={currentImage.blurDataURL}
           />
         </motion.div>
       </AnimatePresence>
-      <div className="pointer-events-none absolute inset-0 z-10 bg-[#0b0c10]/70" />
+
+      {/* Light, vibrant architectural gradient overlays for high visibility */}
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-r from-slate-950/60 via-slate-950/30 to-transparent" />
+      <div className="pointer-events-none absolute inset-0 z-10 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-black/20" />
     </>
   );
 
   if (isMobile) {
-    return <div className="bg-brand-navy absolute inset-0 z-0">{inner}</div>;
+    return <div className="absolute inset-0 z-0 bg-slate-900">{inner}</div>;
   }
 
   return (
     <motion.div
-      className="bg-brand-navy absolute inset-0 z-0"
+      className="absolute inset-0 z-0 bg-slate-900"
       style={{ y: backgroundY, scale: heroScale, willChange: 'transform' }}
     >
       {inner}
