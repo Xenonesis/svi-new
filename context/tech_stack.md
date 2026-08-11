@@ -7,7 +7,7 @@
 - **TypeScript (6.0.3):** Strict mode, type safety
 - **Tailwind CSS (4.3.3):** Utility-first styling
 - **Turbopack / Webpack:** Bundling
-- **Node.js:** 22.x
+- **Node.js (22.x):** Backend runtime (utilizes native `node:zlib` and Web `CompressionStream` for API response compression)
 
 ## Data & State
 

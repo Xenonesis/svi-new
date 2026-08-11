@@ -59,8 +59,8 @@ svi-infra/
 
 ## Application Flow & Patterns
 
-- **Server/Client Boundary:** React Server Components (RSC) heavily utilized in `app/`. Interactive parts (forms, tables, complex UI) pushed to client components (`'use client'`) inside `src/components/`.
-- **Data Fetching:** For public pages, mostly direct DB access or RSC fetches. In the admin panel, **React Query** (`@tanstack/react-query`) is used for fetching, caching, and optimistic UI updates.
+- **Server/Client Boundary:** React Server Components (RSC) heavily utilized in `app/`. Interactive parts (forms, tables, complex UI) pushed to client components (`'use client'`) inside `src/components/`. API responses (especially Admin endpoints via `withAdminAuth`) are automatically compressed using Brotli/Gzip for payloads over 1KB via `src/lib/api/compression.ts`.
+- **Data Fetching:** For public pages, mostly direct DB access or RSC fetches. In the admin panel, **React Query** (`@tanstack/react-query`) is used for fetching, caching, and optimistic UI updates. Clients negotiate compression via `Accept-Encoding` header in `src/lib/api/fetcher.ts`.
 - **State Management:** **Zustand** is used for global client-side state (e.g., Auth, UI themes), reducing unnecessary context providers.
 - **Database Access:** The codebase follows a **Repository Pattern** (`src/lib/repositories/`) to abstract Supabase queries and keep logic clean.
 - **Authentication:** Managed by Supabase (SSR cookies). A central `useAuthStore` tracks session status to prevent duplicate roundtrips on route changes.

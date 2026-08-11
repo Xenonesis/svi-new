@@ -85,6 +85,7 @@ async function request<T>(
   const token = getToken(options);
   const headers: Record<string, string> = {
     Accept: 'application/json',
+    'Accept-Encoding': 'gzip, deflate, br, zstd',
     ...(options.headers ?? {}),
   };
 

@@ -1,5 +1,6 @@
 import { type NextRequest, NextResponse } from 'next/server';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
+import { compressResponse } from '@/src/lib/api/compression';
 
 type RouteHandler = (
   req: NextRequest,
@@ -24,6 +25,7 @@ export function withAdminAuth(handler: RouteHandler) {
       return NextResponse.json({ error: 'Unauthorized. Admin access required.' }, { status: 401 });
     }
 
-    return handler(req, { user });
+    const res = await handler(req, { user });
+    return compressResponse(res, req.headers);
   };
 }
