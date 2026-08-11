@@ -29,7 +29,7 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
       className="z-30 container mx-auto flex w-full flex-col items-start px-4 text-left drop-shadow-2xl sm:px-8 md:px-16"
       style={{ opacity: heroOpacity }}
     >
-      <div className="max-w-4xl">
+      <div className="w-full max-w-5xl">
         <span className="text-brand-gold animate-hero-1 mb-4 inline-block text-xs font-bold tracking-[0.2em] uppercase opacity-90 sm:mb-8 sm:text-base sm:tracking-[0.3em]">
           {t('badge')}
         </span>
@@ -74,17 +74,17 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
         {/* Quick Search Widget */}
         <form
           onSubmit={handleSearch}
-          className="bg-brand-navy/85 border-brand-gold/40 grid w-full grid-cols-1 gap-3 rounded-2xl border p-4 text-white shadow-2xl backdrop-blur-xl sm:grid-cols-3 md:p-5 lg:grid-cols-4"
+          className="hover:shadow-3xl grid w-full max-w-4xl grid-cols-1 gap-4 rounded-2xl border border-white/20 bg-white/10 p-5 text-white shadow-2xl backdrop-blur-md transition-all hover:bg-white/15 sm:grid-cols-3 md:p-6 lg:grid-cols-4"
         >
           {/* Location Dropdown */}
-          <div className="flex flex-col gap-1">
-            <label className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase">
-              <MapPin size={12} /> Location
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase">
+              <MapPin size={14} className="text-brand-gold" /> Location
             </label>
             <select
               value={location}
               onChange={(e) => setLocation(e.target.value)}
-              className="focus:border-brand-gold rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs text-white outline-none"
+              className="focus:border-brand-gold focus:ring-brand-gold/50 appearance-none rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white backdrop-blur-md transition-all outline-none focus:ring-2"
             >
               <option value="all" className="text-gray-900">
                 All Locations
@@ -102,14 +102,14 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           </div>
 
           {/* Type Dropdown */}
-          <div className="flex flex-col gap-1">
-            <label className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase">
-              <Building size={12} /> Property Type
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase">
+              <Building size={14} className="text-brand-gold" /> Property Type
             </label>
             <select
               value={propertyType}
               onChange={(e) => setPropertyType(e.target.value)}
-              className="focus:border-brand-gold rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs text-white outline-none"
+              className="focus:border-brand-gold focus:ring-brand-gold/50 appearance-none rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white backdrop-blur-md transition-all outline-none focus:ring-2"
             >
               <option value="all" className="text-gray-900">
                 All Categories
@@ -127,14 +127,14 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           </div>
 
           {/* Budget Dropdown */}
-          <div className="flex flex-col gap-1">
-            <label className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold tracking-wider uppercase">
-              <Banknote size={12} /> Budget Range
+          <div className="flex flex-col gap-2">
+            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase">
+              <Banknote size={14} className="text-brand-gold" /> Budget Range
             </label>
             <select
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
-              className="focus:border-brand-gold rounded-lg border border-white/10 bg-white/10 px-3 py-2.5 text-xs text-white outline-none"
+              className="focus:border-brand-gold focus:ring-brand-gold/50 appearance-none rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white backdrop-blur-md transition-all outline-none focus:ring-2"
             >
               <option value="all" className="text-gray-900">
                 Any Budget
@@ -155,7 +155,7 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           <div className="flex items-end">
             <button
               type="submit"
-              className="bg-brand-gold text-brand-navy flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-xs font-bold tracking-wider uppercase shadow-md transition-all hover:bg-white"
+              className="bg-brand-gold text-brand-navy flex h-[46px] w-full items-center justify-center gap-2 rounded-lg px-4 text-xs font-bold tracking-wider uppercase shadow-[0_0_20px_rgba(212,175,55,0.3)] transition-all hover:scale-[1.02] hover:bg-white hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] active:scale-95"
             >
               <Search size={14} />
               <span>Search</span>

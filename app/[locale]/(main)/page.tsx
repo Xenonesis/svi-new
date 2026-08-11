@@ -10,30 +10,30 @@ import HeroSection from '@/src/components/home/HeroSection';
 import HomeSections from '@/src/components/home/HomeSections';
 import { StaggerTestimonials } from '@/src/components/ui/stagger-testimonials';
 
-const HERO_BLUR_DATA: Record<string, string> = {
-  '/images/hero1.png':
-    'data:image/webp;base64,UklGRk4AAABXRUJQVlA4IEIAAADwAQCdASoKAAoABUB8JZACdACqG05r0CAA/qlVVhA9VaE0rPDQV3HxqKXOpfCgs1oOGUBdVS8cJGgwt3eEG79QAAA=',
-  '/images/hero2.png':
-    'data:image/webp;base64,UklGRkYAAABXRUJQVlA4IDoAAADQAQCdASoKAAoABUB8JQBOgBuCRWoMAADzyLr2msjgBxDUpQk6LGwZLuEX3Yu3yU6jwLPMP+iE7IAA',
-  '/images/hero3.png':
-    'data:image/webp;base64,UklGRj4AAABXRUJQVlA4IDIAAADQAQCdASoKAAoABUB8JQBOgCHego7kwADeV1AT0ZY2IYzptbSLuYNuqO/a6x4Elu6AAA==',
-};
-
 const HERO_IMAGES = [
   {
-    src: '/images/hero1.png',
+    src: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop',
     alt: 'SVI Infra luxury residential property in Jaipur with modern architecture',
-    blurDataURL: HERO_BLUR_DATA['/images/hero1.png'],
   },
   {
-    src: '/images/hero2.png',
+    src: 'https://images.unsplash.com/photo-1600607687920-4e2a09cf159d?q=80&w=2070&auto=format&fit=crop',
     alt: 'Premium commercial real estate development in Noida by SVI Infra',
-    blurDataURL: HERO_BLUR_DATA['/images/hero2.png'],
   },
   {
-    src: '/images/hero3.png',
+    src: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop',
     alt: 'Elegant apartment complex in Phulera Smart City Rajasthan',
-    blurDataURL: HERO_BLUR_DATA['/images/hero3.png'],
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Modern luxury villas by SVI Infra',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1600566753086-00f18efc2291?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Exclusive premium residences with stunning views',
+  },
+  {
+    src: 'https://images.unsplash.com/photo-1600573472591-ee6b68d14c68?q=80&w=2070&auto=format&fit=crop',
+    alt: 'Architectural excellence in commercial spaces',
   },
 ];
 

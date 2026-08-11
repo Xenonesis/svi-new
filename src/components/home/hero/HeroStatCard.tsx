@@ -9,16 +9,16 @@ export default function HeroStatCard() {
     <>
       {/* Asymmetric Floating Stat Card */}
       <motion.div
-        className="animate-hero-5 absolute right-16 bottom-32 z-30 hidden lg:block"
+        className="animate-hero-5 absolute right-8 bottom-32 z-30 hidden xl:block 2xl:right-16"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4, duration: 1 }}
       >
-        <div className="group hover:border-brand-gold/50 border-brand-navy/10 relative max-w-[320px] border bg-white p-8 shadow-2xl transition-colors dark:border-white/20 dark:bg-[#0b0c10]">
-          <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none">
+        <div className="group hover:border-brand-gold/50 relative max-w-[320px] border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-md transition-all hover:bg-white/20 dark:bg-[#0b0c10]/80">
+          <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none drop-shadow-md">
             15<span className="text-3xl">+</span>
           </h3>
-          <p className="text-brand-navy/70 text-sm leading-relaxed font-light dark:text-white/70">
+          <p className="text-sm leading-relaxed font-light text-white/90 drop-shadow">
             {t('statDescription')}
           </p>
         </div>
