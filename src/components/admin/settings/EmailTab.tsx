@@ -154,8 +154,8 @@ export function EmailTab({
                 />
               </div>
               <p className="text-[10px] leading-relaxed text-gray-400 dark:text-gray-500">
-                All auto-generated registrations, contact submissions, and client grievances will
-                forward administrative copies to this designated address.
+                All auto-generated registrations, contact submissions, and client support requests
+                will forward administrative copies to this designated address.
               </p>
             </div>
           </div>
@@ -322,14 +322,14 @@ export function EmailTab({
               </button>
             </div>
 
-            {/* Toggle 5: Grievance Alert */}
+            {/* Toggle 5: Support Ticket Alert */}
             <div className="flex items-center justify-between gap-4 py-2 md:col-span-2">
               <div className="space-y-0.5">
                 <h4 className="text-xs font-bold text-gray-900 dark:text-white">
-                  Grievance Ticket Alerts
+                  Support Ticket Alerts
                 </h4>
                 <p className="max-w-sm text-[10px] text-gray-400 dark:text-gray-500">
-                  Trigger dynamic admin email notifications on new client grievance tickets.
+                  Trigger dynamic admin email notifications on new client support tickets.
                 </p>
               </div>
               <button

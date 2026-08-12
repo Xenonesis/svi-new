@@ -250,7 +250,8 @@ export default function PortalAllotmentsPage() {
             Portal <span className="text-brand-gold italic">Allotments</span>
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
-            View, search, audit, download, and delete allotments requested via the client portal.
+            View, search, audit, download, and delete allotments requested via the customer account
+            portal.
           </p>
         </div>
         <button

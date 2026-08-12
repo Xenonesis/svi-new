@@ -362,7 +362,7 @@ export default function PaymentPlanPage() {
                   </p>
                 </div>
 
-                {/* EMI Cards */}
+                {/* Installment Cards */}
                 {schedule.map((row) => (
                   <div
                     key={row.month}
@@ -371,7 +371,7 @@ export default function PaymentPlanPage() {
                     <div className="absolute top-0 left-0 h-full w-1 bg-blue-400"></div>
                     <div className="mb-1 flex items-start justify-between">
                       <h4 className="text-sm font-bold tracking-wide text-gray-700 uppercase">
-                        EMI {row.month}
+                        Installment {row.month}
                       </h4>
                     </div>
                     <p className="mb-3 text-xs text-gray-500">{row.date}</p>

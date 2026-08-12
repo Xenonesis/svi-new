@@ -291,9 +291,9 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
                   }
 
                   const emiLabel = zeroCost
-                    ? `${i + 1} EMI (0% Interest)`
+                    ? `${i + 1} Installment (0% Interest)`
                     : edcInEmi
-                      ? `${i + 1} EMI (incl. EDC)`
+                      ? `${i + 1} Installment (incl. EDC)`
                       : `${i + 1} EMI`;
 
                   rows.push(

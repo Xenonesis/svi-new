@@ -271,9 +271,9 @@ export function AllotmentLetterPreview({ formData, companyInfo, id, className }:
                       <td className="border border-gray-400 p-2 font-bold">{emiDate}</td>
                       <td className="border border-gray-400 p-2 font-bold">
                         {zeroCost
-                          ? `${i + 1} EMI (0% Interest)`
+                          ? `${i + 1} Installment (0% Interest)`
                           : edcInEmi
-                            ? `${i + 1} EMI (incl. EDC)`
+                            ? `${i + 1} Installment (incl. EDC)`
                             : `${i + 1} EMI`}
                       </td>
                       <td className="border border-gray-400 p-2">

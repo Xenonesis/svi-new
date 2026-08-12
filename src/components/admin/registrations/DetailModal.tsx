@@ -193,7 +193,7 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
               <Field label="Plot Preference" value={reg.plot_preference} />
               <Field label="Payment Plan" value={reg.payment_plan} />
               <Field label="Payment Mode" value={reg.payment_mode} />
-              <Field label="Scheme Amount" value={reg.scheme_amount} />
+              <Field label="Investment Amount" value={reg.scheme_amount} />
             </div>
           </div>
 

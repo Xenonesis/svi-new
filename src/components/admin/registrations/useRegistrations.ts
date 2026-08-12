@@ -308,7 +308,7 @@ export function useRegistrations() {
       'Plot Preference',
       'Payment Plan',
       'Payment Mode',
-      'Scheme Amount',
+      'Investment Amount',
       'Status',
       'Date',
     ];

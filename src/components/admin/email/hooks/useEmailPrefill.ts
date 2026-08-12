@@ -426,7 +426,7 @@ export function useEmailPrefill({
   <p><strong>Payment Plan:</strong> ${fd.paymentPlan || 'N/A'} Months</p>
   <p><strong>Booking Date:</strong> ${fd.bookingDate ? new Date(fd.bookingDate).toLocaleDateString('en-GB') : 'N/A'}</p>
   <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
-  <p style="color:#666;font-size:13px;">Please find the BBA document attached for your records.</p>
+  <p style="color:#666;font-size:13px;">Please find the Sales Agreement document attached for your records.</p>
 </div>
 `.trim()
               );

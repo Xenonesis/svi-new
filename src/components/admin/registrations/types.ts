@@ -42,7 +42,7 @@ export const SORT_OPTIONS = [
   { value: 'project', label: 'Project' },
   { value: 'advisor_name', label: 'Advisor' },
   { value: 'property_type', label: 'Property Type' },
-  { value: 'scheme_amount', label: 'Scheme Amount' },
+  { value: 'scheme_amount', label: 'Investment Amount' },
   { value: 'status', label: 'Status' },
 ];
 

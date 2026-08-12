@@ -141,10 +141,11 @@ export function AllotmentLetterForm({
               />
               <div>
                 <span className="text-sm font-medium text-gray-800 dark:text-white">
-                  Include EDC in EMI payments only
+                  Include EDC in Installment payments only
                 </span>
                 <p className="text-[10px] text-gray-400">
-                  EDC excluded from booking &amp; second instalment — added to remaining EMI amount
+                  EDC excluded from booking &amp; second instalment — added to remaining Installment
+                  amount
                 </p>
               </div>
             </label>
@@ -331,10 +332,10 @@ export function AllotmentLetterForm({
         />
       </div>
 
-      {/* EMI Customization Section */}
+      {/* Installment Customization Section */}
       <div className="mt-6 border-t border-gray-200 pt-6 dark:border-white/10">
         <h3 className="mb-4 text-sm font-semibold text-gray-700 dark:text-gray-300">
-          EMI Customization
+          Installment Customization
         </h3>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
           <FormSelect
