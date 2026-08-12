@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Client Portal Login',
-  description: 'Secure client portal access for SVI Infra Solutions customers.',
+  title: 'My Account Login',
+  description: 'Secure account access for SVI Infra Solutions customers.',
   robots: {
     index: false,
     follow: false,
