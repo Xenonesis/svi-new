@@ -140,7 +140,7 @@ const nextConfig = {
     ],
     formats: ['image/avif', 'image/webp'],
     deviceSizes: [320, 420, 768, 1024, 1200, 1920],
-    qualities: [75, 80, 85, 90, 95, 100],
+    qualities: [75, 80, 85, 90, 92, 95, 100],
     minimumCacheTTL: 60 * 60 * 24 * 30,
   },
 };

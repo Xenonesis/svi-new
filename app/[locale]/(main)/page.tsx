@@ -12,24 +12,34 @@ import { StaggerTestimonials } from '@/src/components/ui/stagger-testimonials';
 
 const HERO_IMAGES = [
   {
-    src: '/images/hero1.webp',
-    alt: 'SVI Infra luxury residential property in Jaipur with modern architecture',
+    src: '/images/hero1_new.webp',
+    alt: 'SVI Infra luxury residential township in Jaipur with modern architecture',
+    blurDataURL:
+      'data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAADQAQCdASoKAAoABUB8JQBYdhucggzMgAD+qN2QfMkzXlstCgRGNj+KQfscTQgVIRopnYUuRGD46doemR/AAA==',
   },
   {
-    src: '/images/hero2.webp',
-    alt: 'Premium commercial real estate development in Noida by SVI Infra',
+    src: '/images/hero2_new.webp',
+    alt: 'Premium commercial real estate & office space development in Noida by SVI Infra',
+    blurDataURL:
+      'data:image/webp;base64,UklGRkQAAABXRUJQVlA4IDgAAADQAQCdASoKAAoABUB8JQBOgB5vmC8gAAD+g0ZiYjuxVFC3IjnrX63fNZgebRBCaIIdwkI6gsAAAA==',
   },
   {
     src: '/images/hero3_new.webp',
-    alt: 'Elegant apartment complex in Phulera Smart City Rajasthan',
+    alt: 'Elegant smart city residential development in Phulera Rajasthan',
+    blurDataURL:
+      'data:image/webp;base64,UklGRjwAAABXRUJQVlA4IDAAAADwAQCdASoKAAoABUB8JZgCw7EOfFeE/AAA/LTWtRMgQryE5e/uj619KxYKTiXcAAA==',
   },
   {
     src: '/images/hero4_new.webp',
-    alt: 'Modern luxury villas by SVI Infra',
+    alt: 'Modern luxury villas and gated communities by SVI Infra',
+    blurDataURL:
+      'data:image/webp;base64,UklGRkoAAABXRUJQVlA4ID4AAACwAQCdASoKAAoABUB8JQBOgBsxJN0AAPY0kPYY2a10hKcVC22ZBazzsKaXRA3YMQZso7jQW4hvtsymE3TgAA==',
   },
   {
     src: '/images/hero5_new.webp',
-    alt: 'Exclusive premium residences with stunning views',
+    alt: 'Exclusive premium residences with stunning scenic views',
+    blurDataURL:
+      'data:image/webp;base64,UklGRkgAAABXRUJQVlA4IDwAAADwAQCdASoKAAoABUB8JbACdAEO05ND4gAA/eMQyg2KW8WD2BQxY1wA+ntF3FDlN1AzPtitYH/J8+4AAAA=',
   },
 ];
 

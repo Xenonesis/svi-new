@@ -23,12 +23,17 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
   if (src.startsWith('/images/') || src.startsWith('./images/')) {
     const basePath = src.replace(/\.(png|jpg|jpeg|webp|avif)$/i, '');
 
+    // For hero background images, serve full-size high-resolution WebP directly
+    if (src.includes('hero')) {
+      return `${basePath}.webp?w=${width}`;
+    }
+
     // Only use responsive variants for sizes we know always exist (≤1024w)
     const match = SAFE_RESPONSIVE_SIZES.find((s) => s >= width);
     if (match) return `${basePath}-${match}w.webp`;
 
     // For larger requests (1200w, 1920w), use full-size WebP to avoid 404s
-    return `${basePath}.webp`;
+    return `${basePath}.webp?w=${width}`;
   }
 
   // Supabase Storage URLs
@@ -38,10 +43,12 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
     return url.toString();
   }
 
-  // Default: return src with width query param for static root assets (/logo.png, etc.)
-  if (src.startsWith('/') || src.startsWith('./')) {
+  // External URLs (Unsplash, external CDNs, etc.)
+  try {
+    const url = new URL(src);
+    url.searchParams.set('w', String(width));
+    return url.toString();
+  } catch {
     return `${src}?w=${width}`;
   }
-
-  return src;
 }

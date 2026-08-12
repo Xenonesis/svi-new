@@ -5,15 +5,18 @@ import Image from 'next/image';
 import { Link } from '@/src/i18n/navigation';
 import { DesktopNav } from '@/src/components/layout/DesktopNav';
 import { MobileNav } from '@/src/components/layout/MobileNav';
+import { motion, AnimatePresence } from 'motion/react';
 
 export default function Header() {
   const h = useHeaderNavigation();
 
   return (
     <>
-      <header
+      <motion.header
         suppressHydrationWarning
-        className={`fixed z-50 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        layout
+        transition={{ layout: { type: 'spring', bounce: 0, duration: 0.5 } }}
+        className={`fixed z-50 ${
           h.isScrolled
             ? 'top-0 right-0 left-0 rounded-none border-b border-white/10 bg-[#090d16]/90 px-4 py-3 backdrop-blur-xl max-xl:w-full xl:top-3 xl:left-1/2 xl:w-max xl:max-w-[96vw] xl:-translate-x-1/2 xl:rounded-full xl:border xl:border-slate-200/80 xl:bg-white/95 xl:px-8 xl:py-2.5 xl:shadow-[0_10px_35px_rgba(0,0,0,0.15)] dark:xl:border-white/15 dark:xl:bg-slate-950/95 dark:xl:shadow-[0_12px_40px_rgba(0,0,0,0.6)]'
             : h.pathname === '/'
@@ -21,8 +24,10 @@ export default function Header() {
               : 'top-0 right-0 left-0 rounded-none border-b border-slate-200/60 bg-white/95 px-4 py-2.5 backdrop-blur-md md:py-3 xl:px-8 dark:border-white/10 dark:bg-slate-950/95'
         }`}
       >
-        <div
-          className={`mx-auto flex items-center justify-between transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+        <motion.div
+          layout
+          transition={{ layout: { type: 'spring', bounce: 0, duration: 0.5 } }}
+          className={`mx-auto flex items-center justify-between ${
             h.isScrolled
               ? 'w-full gap-3 xl:justify-center xl:gap-5'
               : 'container justify-between gap-4 xl:gap-8'
@@ -48,27 +53,37 @@ export default function Header() {
           </Link>
 
           {/* Desktop Logo (ONLY when not scrolled) */}
-          {!h.isScrolled && (
-            <Link
-              href="/"
-              className={`group relative hidden shrink-0 items-center gap-2 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
-                h.isHomeTransparent
-                  ? 'rounded-2xl border border-white/20 bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-md'
-                  : ''
-              }`}
-              aria-label="SVI Infra Solutions Pvt. Ltd."
-            >
-              <Image
-                src="/logo.png"
-                alt="SVI Infra Solutions Pvt. Ltd."
-                width={282}
-                height={83}
-                quality={100}
-                priority
-                className="h-9 w-auto object-contain transition-all duration-300"
-              />
-            </Link>
-          )}
+          <AnimatePresence mode="popLayout">
+            {!h.isScrolled && (
+              <motion.div
+                layout
+                initial={{ opacity: 0, width: 0, scale: 0.8 }}
+                animate={{ opacity: 1, width: 'auto', scale: 1 }}
+                exit={{ opacity: 0, width: 0, scale: 0.8 }}
+                className="overflow-hidden"
+              >
+                <Link
+                  href="/"
+                  className={`group relative hidden shrink-0 items-center gap-2 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
+                    h.isHomeTransparent
+                      ? 'rounded-2xl border border-white/20 bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-md'
+                      : ''
+                  }`}
+                  aria-label="SVI Infra Solutions Pvt. Ltd."
+                >
+                  <Image
+                    src="/logo.png"
+                    alt="SVI Infra Solutions Pvt. Ltd."
+                    width={282}
+                    height={83}
+                    quality={100}
+                    priority
+                    className="h-9 w-auto object-contain transition-all duration-300"
+                  />
+                </Link>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="flex items-center justify-center">
             {/* Desktop Navigation */}
@@ -107,8 +122,8 @@ export default function Header() {
               />
             </div>
           </div>
-        </div>
-      </header>
+        </motion.div>
+      </motion.header>
     </>
   );
 }
