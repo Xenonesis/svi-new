@@ -212,29 +212,6 @@ export default function AdminRegistrations() {
           />
         )}
       </AnimatePresence>
-
-      {/* Toast */}
-      <AnimatePresence>
-        {h.toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-xl border px-5 py-3.5 text-sm font-semibold shadow-2xl ${
-              h.toast.type === 'success'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-950/95 dark:text-emerald-300'
-                : 'border-red-200 bg-red-50 text-red-600 dark:border-red-500/30 dark:bg-red-950/95 dark:text-red-300'
-            }`}
-          >
-            {h.toast.type === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <AlertCircle className="h-4 w-4 text-red-400" />
-            )}
-            <span>{h.toast.msg}</span>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

@@ -491,7 +491,9 @@ const MagicBento = ({
           const cardProps = {
             className: baseClassName,
             style: {
-              backgroundColor: card.color || '#120F17',
+              ...(card.color && card.color !== 'transparent'
+                ? { backgroundColor: card.color }
+                : {}),
               '--glow-color': glowColor,
             } as any,
           };
@@ -512,10 +514,10 @@ const MagicBento = ({
                   <div className="magic-bento-card__label text-brand-gold">{card.icon}</div>
                 </div>
                 <div className="magic-bento-card__content mt-4">
-                  <h2 className="magic-bento-card__title mb-2 font-serif text-2xl !font-bold text-white">
+                  <h2 className="magic-bento-card__title mb-2 font-serif text-2xl !font-bold text-gray-900 dark:text-white">
                     {card.title}
                   </h2>
-                  <p className="magic-bento-card__description text-sm leading-relaxed text-gray-300">
+                  <p className="magic-bento-card__description text-sm leading-relaxed text-gray-600 dark:text-gray-300">
                     {card.desc}
                   </p>
                 </div>
@@ -639,10 +641,10 @@ const MagicBento = ({
                 <div className="magic-bento-card__label text-brand-gold">{card.icon}</div>
               </div>
               <div className="magic-bento-card__content mt-4">
-                <h2 className="magic-bento-card__title mb-2 font-serif text-2xl !font-bold text-white">
+                <h2 className="magic-bento-card__title mb-2 font-serif text-2xl !font-bold text-gray-900 dark:text-white">
                   {card.title}
                 </h2>
-                <p className="magic-bento-card__description text-sm leading-relaxed text-gray-300">
+                <p className="magic-bento-card__description text-sm leading-relaxed text-gray-600 dark:text-gray-300">
                   {card.desc}
                 </p>
               </div>

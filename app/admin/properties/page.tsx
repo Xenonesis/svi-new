@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 
 import { Suspense, useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -18,11 +19,13 @@ function PropertiesContent() {
   const router = useRouter();
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
   const showToast = useCallback((type: 'success' | 'error', msg: string) => {
-    setToast({ type, msg });
-    setTimeout(() => setToast(null), 3500);
+    if (type === 'success') {
+      toast.success(msg);
+    } else {
+      toast.error(msg);
+    }
   }, []);
 
   // Auth verification check
@@ -101,27 +104,6 @@ function PropertiesContent() {
       </div>
 
       {/* Floating status toasts */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-xl border px-5 py-3.5 font-sans text-sm font-semibold shadow-2xl ${
-              toast.type === 'success'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-950/95 dark:text-emerald-300'
-                : 'border-red-200 bg-red-50 text-red-600 dark:border-red-500/30 dark:bg-red-950/95 dark:text-red-300'
-            }`}
-          >
-            {toast.type === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <AlertCircle className="h-4 w-4 text-red-400" />
-            )}
-            {toast.msg}
-          </motion.div>
-        )}
-      </AnimatePresence>
     </div>
   );
 }

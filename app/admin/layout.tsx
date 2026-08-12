@@ -10,7 +10,7 @@ import { ThemeProvider } from '@/src/components/ThemeProvider';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useUIStore } from '@/src/stores/uiStore';
 import { supabase } from '@/src/lib/supabase/client';
-import { toast, Toaster } from 'sonner';
+import { toast } from 'sonner';
 
 function AdminRealtimeListeners() {
   // Real-time subscriptions for registrations & chat leads.
@@ -148,7 +148,6 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <AdminLayoutInner>{children}</AdminLayoutInner>
-      <Toaster position="top-right" />
     </ThemeProvider>
   );
 }

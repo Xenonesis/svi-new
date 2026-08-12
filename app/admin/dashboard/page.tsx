@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 
 import {
   Building2,
@@ -65,7 +66,6 @@ export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [roleLoading, setRoleLoading] = useState<Record<string, boolean>>({});
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
 
   // React Query hooks — data fetching with caching
@@ -78,8 +78,11 @@ export default function AdminDashboard() {
   const isStatsLoading = authLoading || analyticsLoading || (usersLoading && !usersData);
 
   const showToast = (type: 'success' | 'error', msg: string) => {
-    setToast({ type, msg });
-    setTimeout(() => setToast(null), 3500);
+    if (type === 'success') {
+      toast.success(msg);
+    } else {
+      toast.error(msg);
+    }
   };
 
   // Redirect to login if not authenticated as admin (auth comes from the shared store)
@@ -630,29 +633,6 @@ export default function AdminDashboard() {
             token={token ?? ''}
             showToast={showToast}
           />
-        )}
-      </AnimatePresence>
-
-      {/* Toast notifications */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-xl border px-5 py-3.5 font-sans text-sm font-semibold shadow-2xl ${
-              toast.type === 'success'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-950/95 dark:text-emerald-300'
-                : 'border-red-200 bg-red-50 text-red-600 dark:border-red-500/30 dark:bg-red-950/95 dark:text-red-300'
-            }`}
-          >
-            {toast.type === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <AlertCircle className="h-4 w-4 text-red-400" />
-            )}
-            {toast.msg}
-          </motion.div>
         )}
       </AnimatePresence>
     </div>

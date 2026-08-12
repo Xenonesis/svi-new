@@ -107,7 +107,7 @@ export default function AttendanceDashboard(_props: AttendanceDashboardProps) {
       </div>
 
       {/* Stats Cards */}
-      <div className="mb-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-4">
         {STATS.map((stat, i) => {
           const Icon = stat.icon;
           const value = data.today[stat.key];

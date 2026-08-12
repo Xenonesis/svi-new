@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 
 import { useEffect, useState, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -144,11 +145,13 @@ export function useSettings() {
   });
   const [accentColor, setAccentColor] = useState('gold');
   const [uiDensity, setUiDensity] = useState('comfortable');
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
 
   const showToast = useCallback((type: 'success' | 'error', msg: string) => {
-    setToast({ type, msg });
-    setTimeout(() => setToast(null), 4000);
+    if (type === 'success') {
+      toast.success(msg);
+    } else {
+      toast.error(msg);
+    }
   }, []);
 
   const isCompact = uiDensity === 'compact';
@@ -460,8 +463,7 @@ export function useSettings() {
     accentColor,
     uiDensity,
     isCompact,
-    toast,
-    setToast,
+
     systemHealth,
     saveLoading: saveSettingMutation.isPending,
     saveProfile,

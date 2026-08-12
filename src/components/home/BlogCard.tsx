@@ -38,7 +38,7 @@ export default function BlogCard({ post, locale, isHindi, gradient }: BlogCardPr
       </Link>
 
       <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <div className="mb-3 flex items-center gap-3 text-[10px] font-medium text-gray-400 dark:text-gray-500">
+        <div className="mb-3 flex items-center gap-3 text-[10px] font-medium text-gray-500 dark:text-gray-400">
           <span className="flex items-center gap-1">
             <Calendar size={12} />
             {post.date}
@@ -59,7 +59,7 @@ export default function BlogCard({ post, locale, isHindi, gradient }: BlogCardPr
           </h3>
         </Link>
 
-        <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
+        <p className="mt-2 line-clamp-3 flex-1 text-sm leading-relaxed text-gray-600 dark:text-gray-300">
           {excerpt}
         </p>
 

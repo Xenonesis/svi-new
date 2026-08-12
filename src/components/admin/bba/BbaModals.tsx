@@ -21,11 +21,9 @@ export function BbaDeleteModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85">
       <div className="dark:bg-brand-dark-surface relative w-full max-w-md overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-2xl dark:border-white/10">
-        <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">
-          Delete Sales Agreement Record
-        </h3>
+        <h3 className="mb-2 text-lg font-bold text-gray-900 dark:text-white">Delete BBA Record</h3>
         <p className="mb-4 text-xs text-gray-600 dark:text-gray-400">
-          Are you sure you want to permanently delete the Sales Agreement record generated for{' '}
+          Are you sure you want to permanently delete the BBA record generated for{' '}
           <strong>{deleteTarget.form_data?.clientName}</strong>?
         </p>
         <div className="flex justify-end gap-3">
@@ -81,7 +79,7 @@ export function BbaPreviewModal({
         <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
           <div>
             <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-              Sales Agreement - {selectedBba.form_data?.clientName}
+              BBA - {selectedBba.form_data?.clientName}
             </h3>
             <p className="text-[10px] text-gray-500">
               Generated on {new Date(selectedBba.created_at).toLocaleDateString('en-GB')}

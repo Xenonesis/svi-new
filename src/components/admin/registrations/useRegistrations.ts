@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
@@ -28,7 +29,6 @@ export function useRegistrations() {
   const [selectedReg, setSelectedReg] = useState<Registration | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Registration | null>(null);
   const [showAdvisorSettings, setShowAdvisorSettings] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('created_at');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
@@ -38,8 +38,11 @@ export function useRegistrations() {
   const activeFilterCount = Object.values(filters).filter((v) => v !== '').length;
 
   const showToast = useCallback((type: 'success' | 'error', msg: string) => {
-    setToast({ type, msg });
-    setTimeout(() => setToast(null), 4000);
+    if (type === 'success') {
+      toast.success(msg);
+    } else {
+      toast.error(msg);
+    }
   }, []);
 
   useEffect(() => {
@@ -366,7 +369,7 @@ export function useRegistrations() {
     page,
     hasMore,
     showAdvisorSettings,
-    toast,
+
     showFilters,
     sortBy,
     sortOrder,

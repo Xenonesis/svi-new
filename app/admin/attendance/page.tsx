@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 
 import {
   AlertCircle,
@@ -22,15 +23,12 @@ import LocationManager from '@/src/components/admin/attendance/LocationManager';
 import { supabase } from '@/src/lib/supabase/client';
 import type { Team } from '@/src/lib/supabase/types';
 
-type Tab = 'live' | 'dashboard' | 'teams' | 'mark' | 'report' | 'settings';
+type Tab = 'overview' | 'report' | 'settings';
 
 const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
-  { id: 'live', label: 'Live Status', icon: LayoutDashboard },
-  { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'teams', label: 'Teams', icon: Users },
-  { id: 'mark', label: 'Mark Attendance', icon: CalendarCheck },
+  { id: 'overview', label: 'Overview', icon: LayoutDashboard },
   { id: 'report', label: 'Reports', icon: BarChart3 },
-  { id: 'settings', label: 'Settings', icon: LayoutDashboard },
+  { id: 'settings', label: 'Configuration', icon: Users },
 ];
 
 const GRID_STYLE = {
@@ -45,11 +43,9 @@ function AttendanceContent() {
   const [token, setToken] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const tab = searchParams.get('tab') as Tab | null;
-    return tab && ['live', 'dashboard', 'teams', 'mark', 'report', 'settings'].includes(tab)
-      ? tab
-      : 'live';
+    return tab && ['overview', 'report', 'settings'].includes(tab) ? tab : 'overview';
   });
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; msg: string } | null>(null);
+  const [isMarkModalOpen, setIsMarkModalOpen] = useState(false);
 
   // Shared teams state — fetched once at page level
   const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
@@ -58,8 +54,11 @@ function AttendanceContent() {
   const tokenRef = useRef('');
 
   const showToast = useCallback((type: 'success' | 'error', msg: string) => {
-    setToast({ type, msg });
-    setTimeout(() => setToast(null), 3500);
+    if (type === 'success') {
+      toast.success(msg);
+    } else {
+      toast.error(msg);
+    }
   }, []);
 
   // Auth check
@@ -156,51 +155,49 @@ function AttendanceContent() {
           </p>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="mb-8 flex gap-2">
-          {TABS.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            return (
-              <button
-                key={tab.id}
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 text-xs font-bold tracking-widest uppercase transition-all ${
-                  isActive
-                    ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/25 border shadow-lg'
-                    : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="hidden sm:inline">{tab.label}</span>
-              </button>
-            );
-          })}
+        {/* Controls */}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex gap-2">
+            {TABS.map((tab) => {
+              const Icon = tab.icon;
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => setActiveTab(tab.id)}
+                  className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 text-xs font-bold tracking-widest uppercase transition-all ${
+                    isActive
+                      ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/25 border shadow-lg'
+                      : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
+                  }`}
+                >
+                  <Icon className="h-4 w-4" />
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+          <button
+            onClick={() => setIsMarkModalOpen(true)}
+            className="flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 hover:from-emerald-400 hover:to-emerald-500"
+          >
+            <CalendarCheck className="h-4 w-4" />
+            Log Attendance
+          </button>
         </div>
 
         {/* Tab Content */}
         <div className="dark:bg-brand-dark-surface/65 relative rounded-xl border border-gray-200 bg-white/80 p-6 shadow-2xl backdrop-blur-xl sm:p-8 dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
-          {activeTab === 'live' && token && <LiveStatus token={token} />}
-          {activeTab === 'dashboard' && token && (
-            <AttendanceDashboard token={token} showToast={showToast} />
-          )}
-          {activeTab === 'teams' && token && (
-            <TeamsManager
-              token={token}
-              showToast={showToast}
-              teams={teams}
-              teamsLoading={teamsLoading}
-              onTeamsChange={refreshTeams}
-            />
-          )}
-          {activeTab === 'mark' && token && (
-            <MarkAttendance
-              token={token}
-              showToast={showToast}
-              teams={teams}
-              teamsLoading={teamsLoading}
-            />
+          {activeTab === 'overview' && token && (
+            <div className="flex flex-col gap-8 xl:flex-row">
+              <div className="flex-1 xl:max-w-[65%]">
+                <AttendanceDashboard token={token} showToast={showToast} />
+              </div>
+              <div className="w-full xl:w-[35%] xl:min-w-[400px]">
+                <LiveStatus token={token} />
+              </div>
+            </div>
           )}
           {activeTab === 'report' && token && (
             <AttendanceReport
@@ -212,6 +209,13 @@ function AttendanceContent() {
           )}
           {activeTab === 'settings' && token && (
             <div className="space-y-12">
+              <TeamsManager
+                token={token}
+                showToast={showToast}
+                teams={teams}
+                teamsLoading={teamsLoading}
+                onTeamsChange={refreshTeams}
+              />
               <AttendanceSettings token={token} showToast={showToast} />
               <LocationManager token={token} showToast={showToast} />
             </div>
@@ -219,26 +223,49 @@ function AttendanceContent() {
         </div>
       </div>
 
-      {/* Toast notifications */}
+      {/* Mark Attendance Modal */}
       <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: 20, scale: 0.95 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className={`fixed right-6 bottom-6 z-50 flex items-center gap-3 rounded-xl border px-5 py-3.5 font-sans text-sm font-semibold shadow-2xl ${
-              toast.type === 'success'
-                ? 'border-emerald-200 bg-emerald-50 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-950/95 dark:text-emerald-300'
-                : 'border-red-200 bg-red-50 text-red-600 dark:border-red-500/30 dark:bg-red-950/95 dark:text-red-300'
-            }`}
-          >
-            {toast.type === 'success' ? (
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
-            ) : (
-              <AlertCircle className="h-4 w-4 text-red-400" />
-            )}
-            {toast.msg}
-          </motion.div>
+        {isMarkModalOpen && token && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+              onClick={() => setIsMarkModalOpen(false)}
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              className="relative max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
+            >
+              <button
+                onClick={() => setIsMarkModalOpen(false)}
+                className="absolute top-4 right-4 z-10 rounded-full bg-gray-100 p-2 text-gray-500 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
+              >
+                <AlertCircle className="h-5 w-5 opacity-0" /> {/* Spacer */}
+                <span className="sr-only">Close</span>
+                <svg
+                  className="absolute top-2 left-2 h-5 w-5"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="p-6 sm:p-8">
+                <MarkAttendance
+                  token={token}
+                  showToast={showToast}
+                  teams={teams}
+                  teamsLoading={teamsLoading}
+                />
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

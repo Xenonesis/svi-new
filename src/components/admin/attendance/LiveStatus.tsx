@@ -46,7 +46,7 @@ export default function LiveStatus({ token }: LiveStatusProps) {
 
   if (loading) {
     return (
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-1">
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className="h-32 animate-pulse rounded-xl bg-gray-100 dark:bg-white/5" />
         ))}
@@ -89,7 +89,7 @@ export default function LiveStatus({ token }: LiveStatusProps) {
         </div>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-1">
         {statuses.map((emp) => (
           <motion.div
             key={emp.user_id}

@@ -5,9 +5,19 @@
   --purple-primary: rgba(212, 175, 55, 1);
   --purple-glow: rgba(212, 175, 55, 0.2);
   --purple-border: rgba(212, 175, 55, 0.8);
-  --border-color: rgba(255, 255, 255, 0.1);
+  --border-color: rgba(229, 231, 235, 0.8);
+  --card-bg: #ffffff;
+  --card-text: #111827;
+  --card-desc: #4b5563;
   --background-dark: #0b0c10;
   color-scheme: light dark;
+}
+
+.dark {
+  --border-color: rgba(255, 255, 255, 0.1);
+  --card-bg: #141824;
+  --card-text: #ffffff;
+  --card-desc: #d1d5db;
 }
 
 .card-grid {
@@ -54,7 +64,8 @@
   padding: 2em;
   border-radius: 20px;
   border: 1px solid var(--border-color);
-  background: var(--background-dark);
+  background: var(--card-bg);
+  color: var(--card-text);
   font-weight: 300;
   overflow: hidden;
   transition: all 0.3s ease;

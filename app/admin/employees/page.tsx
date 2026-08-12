@@ -1,4 +1,5 @@
 'use client';
+import { toast } from 'sonner';
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
@@ -33,7 +34,6 @@ export default function EmployeesPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // Filter state
   const filteredEmployees = employees.filter(
@@ -64,8 +64,11 @@ export default function EmployeesPage() {
   }, [token]);
 
   const showToast = (type: 'success' | 'error', message: string) => {
-    setToast({ type, message });
-    setTimeout(() => setToast(null), 3000);
+    if (type === 'success') {
+      toast.success(message);
+    } else {
+      toast.error(message);
+    }
   };
 
   const handleDelete = async (id: string) => {
@@ -89,20 +92,6 @@ export default function EmployeesPage() {
   return (
     <div className="mx-auto max-w-7xl">
       {/* Toast */}
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            className={`fixed top-4 right-4 z-50 rounded-lg px-4 py-3 shadow-lg ${
-              toast.type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'
-            }`}
-          >
-            {toast.message}
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
         <div>

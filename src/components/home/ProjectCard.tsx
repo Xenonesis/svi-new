@@ -45,8 +45,8 @@ export default function ProjectCard({
           </div>
         </div>
         <div className="bg-gray-50 p-5 transition-colors sm:p-8 dark:bg-gray-800">
-          <p className="mb-2 text-[10px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-            {location} · <span className="text-brand-gold">{type}</span>
+          <p className="mb-2 text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+            {location} · <span className="text-brand-gold font-bold">{type}</span>
           </p>
           <h3 className="text-brand-navy group-hover:text-brand-gold mb-4 font-serif text-2xl transition-colors duration-200 dark:text-gray-100">
             {title}

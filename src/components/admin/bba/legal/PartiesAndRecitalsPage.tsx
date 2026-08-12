@@ -30,7 +30,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         }}
       >
         <p className="mb-2 text-left text-[13px] font-bold underline">
-          Note: Please fill the Sales Agreement form completely in capital letters.
+          Note: Please fill the BBA form completely in capital letters.
         </p>
         <p className="mb-2 text-justify text-[13px] leading-relaxed">
           The Allottee(s) hereby agrees and confirms to have read, understood and accepted all the

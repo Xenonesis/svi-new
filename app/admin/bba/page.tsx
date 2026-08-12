@@ -250,7 +250,7 @@ function BbaPageContent() {
                   value=""
                   className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
                 >
-                  -- Create New Sales Agreement --
+                  -- Create New BBA --
                 </option>
                 {savedBbas.map((b) => (
                   <option
@@ -350,7 +350,7 @@ function BbaPageContent() {
 
 export default function BbaPage() {
   return (
-    <Suspense fallback={<div>Loading Sales Agreement Generator...</div>}>
+    <Suspense fallback={<div>Loading BBA Generator...</div>}>
       <BbaPageContent />
     </Suspense>
   );

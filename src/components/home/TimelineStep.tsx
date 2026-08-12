@@ -35,10 +35,12 @@ export default function TimelineStep({ icon, title, description, isEven }: Timel
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true, margin: '150px' }}
           transition={{ duration: 0.6, delay: 0.3 }}
-          className="border-brand-navy/10 border bg-white/50 p-6 shadow-sm backdrop-blur-sm transition-colors hover:bg-white/80 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:hover:bg-white/10"
+          className="rounded-xl border border-gray-200/80 bg-white p-6 shadow-sm transition-colors hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:shadow-none dark:hover:bg-white/10"
         >
-          <h3 className="text-brand-gold mb-3 font-serif text-2xl">{title}</h3>
-          <p className="leading-relaxed text-gray-600 dark:text-white/70">{description}</p>
+          <h3 className="text-brand-gold dark:text-brand-gold mb-3 font-serif text-2xl font-bold">
+            {title}
+          </h3>
+          <p className="leading-relaxed text-gray-600 dark:text-gray-300">{description}</p>
         </motion.div>
       </div>
     </div>

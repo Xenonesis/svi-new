@@ -15,7 +15,6 @@ import {
   Clock,
   FileEdit,
 } from 'lucide-react';
-import { Toaster } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
 
@@ -153,16 +152,6 @@ export default function AdminEmailPage() {
 
   return (
     <div className="min-h-screen">
-      <Toaster
-        position="top-right"
-        toastOptions={{
-          className: 'font-sans text-sm',
-          style: {
-            background: 'var(--toast-bg, #fff)',
-            border: '1px solid var(--toast-border, #e5e7eb)',
-          },
-        }}
-      />
       {/* ─── Page Header ─── */}
       <motion.div
         initial={{ opacity: 0, y: -12 }}
