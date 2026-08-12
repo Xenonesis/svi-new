@@ -5,7 +5,13 @@ import { AnimatePresence } from 'motion/react';
 import ProjectSelector from './ProjectSelector';
 import TabSwitcher from './TabSwitcher';
 import EMITab from './EMITab';
-import ROITab from './ROITab';
+import dynamic from 'next/dynamic';
+const ROITab = dynamic(() => import('./ROITab'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-80 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+  ),
+});
 
 // ─── EMI Formula ──────────────────────────────────────────────────────────────
 function calculateEMI(P: number, annualRate: number, tenureMonths: number): number {

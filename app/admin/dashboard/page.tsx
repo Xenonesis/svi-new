@@ -23,9 +23,26 @@ import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 
 import ActivityTimeline from '@/src/components/admin/ActivityTimeline';
-import DocumentStatsChart from '@/src/components/admin/ChartComponents/DocumentStatsChart';
+import dynamic from 'next/dynamic';
+const DocumentStatsChart = dynamic(
+  () => import('@/src/components/admin/ChartComponents/DocumentStatsChart'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    ),
+  }
+);
 import QuickActions from '@/src/components/admin/QuickActions';
-import UserGrowthChart from '@/src/components/admin/ChartComponents/UserGrowthChart';
+const UserGrowthChart = dynamic(
+  () => import('@/src/components/admin/ChartComponents/UserGrowthChart'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    ),
+  }
+);
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';

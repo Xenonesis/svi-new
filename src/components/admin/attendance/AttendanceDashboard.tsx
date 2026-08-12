@@ -4,8 +4,25 @@ import { BarChart3, CalendarCheck, RefreshCw, TrendingUp, Users, XCircle } from 
 import { motion } from 'motion/react';
 
 import { useAttendanceAnalytics, type AttendanceAnalytics } from '@/src/hooks/adminQueries';
-import AttendanceStatusChart from '@/src/components/admin/ChartComponents/AttendanceStatusChart';
-import AttendanceTrendChart from '@/src/components/admin/ChartComponents/AttendanceTrendChart';
+import dynamic from 'next/dynamic';
+const AttendanceStatusChart = dynamic(
+  () => import('@/src/components/admin/ChartComponents/AttendanceStatusChart'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    ),
+  }
+);
+const AttendanceTrendChart = dynamic(
+  () => import('@/src/components/admin/ChartComponents/AttendanceTrendChart'),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    ),
+  }
+);
 import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 
 interface AttendanceDashboardProps {

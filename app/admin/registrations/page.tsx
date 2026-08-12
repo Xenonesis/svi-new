@@ -5,7 +5,19 @@ import { motion, AnimatePresence } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { GRID_STYLE } from '@/src/components/admin/registrations/types';
 import { useRegistrations } from '@/src/components/admin/registrations/useRegistrations';
-import { RegistrationAnalytics } from '@/src/components/admin/registrations/RegistrationAnalytics';
+import dynamic from 'next/dynamic';
+const RegistrationAnalytics = dynamic(
+  () =>
+    import('@/src/components/admin/registrations/RegistrationAnalytics').then(
+      (m) => m.RegistrationAnalytics
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-80 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    ),
+  }
+);
 import { RegistrationsToolbar } from '@/src/components/admin/registrations/RegistrationsToolbar';
 import { FilterPanel } from '@/src/components/admin/registrations/FilterPanel';
 import { RegistrationTable } from '@/src/components/admin/registrations/RegistrationTable';

@@ -20,7 +20,16 @@ import {
   Mail,
 } from 'lucide-react';
 import { getToken } from './helpers';
-import { ResendUsageDashboard } from './ResendUsageDashboard';
+import dynamic from 'next/dynamic';
+const ResendUsageDashboard = dynamic(
+  () => import('./ResendUsageDashboard').then((mod) => mod.ResendUsageDashboard),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="h-64 w-full animate-pulse rounded-xl bg-gray-100 dark:bg-gray-800" />
+    ),
+  }
+);
 import { DashboardCardSkeleton } from './Skeletons';
 
 export function SettingsTab({ adminEmail }: { adminEmail: string }) {

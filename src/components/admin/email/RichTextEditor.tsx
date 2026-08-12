@@ -115,7 +115,7 @@ export function RichTextEditor({
 
   // Sync external value changes (from templates, forward, reply, etc.)
   useEffect(() => {
-    if (!editor) return;
+    if (!editor || editor.isDestroyed) return;
     // Skip if this was an internal update (user typing)
     if (isInternalUpdate.current) return;
     // Skip if we already synced this value

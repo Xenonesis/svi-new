@@ -1,23 +1,11 @@
 'use client';
 
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import {
-  AlertTriangle,
-  Check,
-  Eye,
-  EyeOff,
-  Loader2,
-  Paperclip,
-  PenLine,
-  Save,
-  Send,
-  Sparkles,
-  Trash2,
-  X,
-  Lightbulb,
-  Calendar,
-} from 'lucide-react';
+import { DraftRestoreBanner } from './compose/DraftRestoreBanner';
+import { EmailHeader } from './compose/EmailHeader';
+import { EmailBodyEditor } from './compose/EmailBodyEditor';
+import { EmailAlerts } from './compose/EmailAlerts';
+import { EmailToolbar } from './compose/EmailToolbar';
 import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
 import { getToken, clearDraft, fileToBase64 } from './helpers';
@@ -25,7 +13,6 @@ import {
   extractTemplateVars as parseExtractTemplateVars,
   getPreviewHtml as parseGetPreviewHtml,
 } from '@/src/lib/utils/templateParser';
-import { RichTextEditor } from './RichTextEditor';
 import { ComposeFields } from './compose/ComposeFields';
 import { TemplateBanner } from './compose/TemplateBanner';
 import { AttachmentList } from './compose/AttachmentList';
@@ -446,86 +433,18 @@ export function ComposeTab({
   return (
     <div className="mx-auto max-w-[920px]">
       {/* Draft restore banner */}
-      <AnimatePresence>
-        {hasDraft && (
-          <motion.div
-            initial={{ opacity: 0, y: -8, height: 0 }}
-            animate={{ opacity: 1, y: 0, height: 'auto' }}
-            exit={{ opacity: 0, y: -8, height: 0 }}
-            className="border-brand-gold/20 bg-brand-gold/5 mb-4 flex flex-col items-start justify-between gap-3 rounded-xl border px-4 py-3.5 sm:flex-row sm:items-center sm:gap-0 sm:px-5"
-          >
-            <div className="flex items-center gap-3">
-              <Save className="text-brand-gold h-4 w-4" />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
-                You have an unsaved draft
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={restoreDraft}
-                className="bg-brand-gold/15 text-brand-gold hover:bg-brand-gold/25 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors"
-              >
-                Restore
-              </button>
-              <button
-                onClick={async () => {
-                  await handleClearDraft();
-                }}
-                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <DraftRestoreBanner hasDraft={hasDraft} onRestore={restoreDraft} onClear={handleClearDraft} />
 
       {/* Compose Card */}
       <div className="dark:bg-brand-dark-surface overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
         {/* Header */}
-        <div className="flex flex-col justify-between gap-4 border-b border-gray-100 px-4 py-4 sm:flex-row sm:items-center sm:gap-0 sm:px-6 dark:border-gray-800">
-          <div className="flex items-center gap-3">
-            <PenLine className="text-brand-gold h-4 w-4" />
-            <div>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">New Email</span>
-              {forwardData && (
-                <span className="ml-2 rounded-md bg-violet-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-violet-700 uppercase dark:bg-violet-500/15 dark:text-violet-400">
-                  Forwarding
-                </span>
-              )}
-              {replyData && (
-                <span className="ml-2 rounded-md bg-blue-100 px-2 py-0.5 text-[10px] font-bold tracking-wide text-blue-700 uppercase dark:bg-blue-500/15 dark:text-blue-400">
-                  Replying
-                </span>
-              )}
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <AnimatePresence>
-              {draftSaved && (
-                <motion.span
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.8 }}
-                  className="flex items-center gap-1.5 font-mono text-[10px] text-emerald-500"
-                >
-                  <div className="h-1.5 w-1.5 rounded-full bg-emerald-500" /> saved
-                </motion.span>
-              )}
-            </AnimatePresence>
-            <button
-              onClick={() => setPreviewMode(!previewMode)}
-              className={`flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-medium transition-all ${
-                previewMode
-                  ? 'bg-brand-gold/10 text-brand-gold'
-                  : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5 dark:hover:text-gray-400'
-              }`}
-            >
-              {previewMode ? <EyeOff className="h-3.5 w-3.5" /> : <Eye className="h-3.5 w-3.5" />}
-              <span className="hidden sm:inline">{previewMode ? 'Edit' : 'Preview'}</span>
-            </button>
-          </div>
-        </div>
+        <EmailHeader
+          forwardData={forwardData}
+          replyData={replyData}
+          draftSaved={draftSaved}
+          previewMode={previewMode}
+          onTogglePreview={() => setPreviewMode(!previewMode)}
+        />
 
         {/* Fields */}
         <ComposeFields
@@ -614,192 +533,44 @@ export function ComposeTab({
         />
 
         {/* Body */}
-        <div className="relative">
-          {previewMode ? (
-            <div className="min-h-[400px] p-4 sm:p-6">
-              <div
-                className="mx-auto overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-700 dark:text-gray-900"
-                style={{ maxWidth: '700px' }}
-              >
-                <div
-                  dangerouslySetInnerHTML={{
-                    __html:
-                      getPreviewHtml() ||
-                      '<div style="padding:40px;text-align:center;color:#999;font-family:sans-serif;">No content yet...<br>Select a template or write your email below.</div>',
-                  }}
-                />
-              </div>
-            </div>
-          ) : (
-            <div className="p-4">
-              <RichTextEditor
-                key={editorKey}
-                value={html}
-                onChange={setHtml}
-                placeholder="Write your email here... Use the toolbar above to format text."
-                recipientName={toStr.split(',')[0]?.trim()}
-                subject={subject}
-              />
-            </div>
-          )}
-        </div>
+        <EmailBodyEditor
+          previewMode={previewMode}
+          html={html}
+          templateHtml={templateHtml}
+          subject={subject}
+          toStr={toStr}
+          editorKey={editorKey}
+          setHtml={setHtml}
+          getPreviewHtml={getPreviewHtml}
+        />
 
-        {/* Error */}
-        <AnimatePresence>
-          {error && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="mx-4 mb-4 flex items-center gap-3 rounded-xl border border-red-200/60 bg-red-50/80 px-4 py-3 sm:mx-6 dark:border-red-800/40 dark:bg-red-900/15">
-                <AlertTriangle className="h-4 w-4 shrink-0 text-red-500" />
-                <span className="text-sm text-red-700 dark:text-red-400">{error}</span>
-                <button
-                  onClick={() => setError(null)}
-                  className="ml-auto text-red-400 hover:text-red-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-
-        {/* Follow-up Suggestion */}
-        <AnimatePresence>
-          {followUpSuggestion && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden"
-            >
-              <div className="mx-4 mb-4 flex items-start gap-3 rounded-xl border border-blue-200/60 bg-blue-50/80 px-4 py-3 sm:mx-6 dark:border-blue-800/40 dark:bg-blue-900/15">
-                <Calendar className="mt-0.5 h-4 w-4 shrink-0 text-blue-500" />
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium text-blue-700 dark:text-blue-400">
-                    Follow up in {followUpSuggestion.suggestedDays} day
-                    {followUpSuggestion.suggestedDays !== 1 ? 's' : ''}
-                  </p>
-                  <p className="mt-0.5 text-xs text-blue-600/80 dark:text-blue-300/80">
-                    {followUpSuggestion.message}
-                  </p>
-                  <p className="mt-0.5 text-[10px] text-blue-500/60 dark:text-blue-400/60">
-                    Reason: {followUpSuggestion.reason}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setFollowUpSuggestion(null)}
-                  className="shrink-0 text-blue-400 hover:text-blue-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* Error & Follow-up Suggestion */}
+        <EmailAlerts
+          error={error}
+          onErrorDismiss={() => setError(null)}
+          followUpSuggestion={followUpSuggestion}
+          onFollowUpDismiss={() => setFollowUpSuggestion(null)}
+        />
 
         {/* Footer toolbar */}
-        <div className="flex flex-col items-stretch justify-between gap-4 border-t border-gray-100 px-4 py-4 sm:flex-row sm:items-center sm:gap-0 sm:px-6 dark:border-gray-800">
-          <div className="flex items-center justify-center gap-1 sm:justify-start">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
-              onClick={handleSend}
-              disabled={sending || sent}
-              className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold tracking-wide shadow-sm transition-all duration-300 disabled:opacity-70 ${
-                sent
-                  ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-                  : 'bg-brand-gold text-brand-navy glow-gold hover:opacity-95'
-              }`}
-            >
-              {sending ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : sent ? (
-                <Check className="h-4 w-4" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-              {sent ? 'Sent!' : sending ? 'Sending...' : 'Send'}
-            </motion.button>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
-            <TemplatePicker selectedTemplate={selectedTemplate} onSelect={loadTemplate} />
-
-            <button
-              onClick={() => setShowImprove(true)}
-              disabled={!html && !templateHtml}
-              className="text-brand-gold hover:bg-brand-gold/10 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all disabled:opacity-50"
-            >
-              <Sparkles className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Improve</span>
-            </button>
-
-            <div className="relative">
-              <button
-                onClick={handleSuggestSubject}
-                disabled={!html && !templateHtml}
-                className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-amber-600 transition-all hover:bg-amber-50 disabled:opacity-50 dark:hover:bg-amber-500/10"
-              >
-                {subjectSuggesting ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Lightbulb className="h-3.5 w-3.5" />
-                )}
-                <span className="hidden sm:inline">Subject</span>
-              </button>
-
-              {showSubjectSuggestions && subjectSuggestions && (
-                <div className="dark:bg-brand-dark-surface absolute right-0 bottom-full z-50 mb-2 w-72 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700">
-                  <div className="border-b border-gray-100 px-3 py-2 dark:border-gray-800">
-                    <span className="text-[10px] font-semibold tracking-wide text-gray-500 uppercase">
-                      Suggested Subjects
-                    </span>
-                  </div>
-                  <div className="p-2">
-                    {subjectSuggestions.map((s, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleApplySubject(s)}
-                        className="flex w-full items-start gap-2 rounded-lg px-3 py-2.5 text-left text-xs text-gray-700 transition-colors hover:bg-amber-50 dark:text-gray-300 dark:hover:bg-amber-500/10"
-                      >
-                        <Lightbulb className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-                        <span>{s}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-gray-400 transition-all hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5"
-            >
-              <Paperclip className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Attach</span>
-            </button>
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              onChange={handleFileSelect}
-              className="hidden"
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.jpg,.jpeg,.png,.gif,.zip,.rar"
-            />
-
-            <button
-              onClick={discardAll}
-              className="flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium text-gray-400 transition-all hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
-            >
-              <Trash2 className="h-3.5 w-3.5" />
-              <span className="hidden sm:inline">Discard</span>
-            </button>
-          </div>
-        </div>
+        <EmailToolbar
+          sending={sending}
+          sent={sent}
+          html={html}
+          templateHtml={templateHtml}
+          selectedTemplate={selectedTemplate}
+          subjectSuggesting={subjectSuggesting}
+          showSubjectSuggestions={showSubjectSuggestions}
+          subjectSuggestions={subjectSuggestions}
+          fileInputRef={fileInputRef}
+          onSend={handleSend}
+          onLoadTemplate={loadTemplate}
+          onShowImprove={() => setShowImprove(true)}
+          onSuggestSubject={handleSuggestSubject}
+          onApplySubject={handleApplySubject}
+          onFileSelect={handleFileSelect}
+          onDiscardAll={discardAll}
+        />
       </div>
 
       <ContactPicker
