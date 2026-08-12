@@ -40,24 +40,24 @@
   ],
   "screenshots": [
     {
-      "src": "/images/hero1.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
+      "src": "/screenshots/hero1-1280x720.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
       "form_factor": "wide",
       "label": "SVI Infra — Premium Properties"
     },
     {
-      "src": "/images/project1.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
+      "src": "/screenshots/project1-1280x720.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
       "form_factor": "wide",
       "label": "Completed Projects Gallery"
     },
     {
-      "src": "/images/house1.png",
-      "sizes": "1920x1080",
-      "type": "image/png",
-      "form_factor": "narrow",
+      "src": "/screenshots/house1-1280x720.jpg",
+      "sizes": "1280x720",
+      "type": "image/jpeg",
+      "form_factor": "wide",
       "label": "Featured Residential Properties"
     }
   ],

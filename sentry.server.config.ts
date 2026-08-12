@@ -9,7 +9,7 @@ Sentry.init({
     // userInfo: false,
     // httpBodies: [],
   },
-  tracesSampleRate: process.env.NODE_ENV === 'development' ? 1.0 : 0.1,
+  tracesSampleRate: process.env.NODE_ENV === 'development' ? 0 : 0.1,
 
   // Attach local variable values to stack frames
   includeLocalVariables: false,

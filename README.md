@@ -1495,7 +1495,7 @@ svi-new/
 │   ├── encode-hero-video.mjs
 │   ├── enable-lottery.ts
 │   ├── generate-brochure.mjs
-│   ├── generate-icons.js
+│   ├── generate-icons.mjs
 │   ├── optimize-images.mjs
 │   ├── perf-monitor.mjs
 │   ├── run-migration.ts
@@ -2151,7 +2151,7 @@ The `scripts/` directory contains utility scripts for:
 - **Seeding** — `seed-lottery-51646d2f.ts`, `seed-notifications.ts`, `add_indian_participants.ts`
 - **Testing** — `test-resend.ts`, `test-resend-direct.ts`, `test-login.ts`, `test-auth-sessions.ts`, `test-settings-table.ts`, `test_supabase.ts`
 - **Verification** — `verify-all.ts`, `verify-email-features.ts`
-- **Maintenance** — `enable-lottery.ts`, `cleanup-and-test-campaigns.ts`, `convert-heic.js`, `generate-icons.js`
+- **Maintenance** — `enable-lottery.ts`, `cleanup-and-test-campaigns.ts`, `convert-heic.js`, `generate-icons.mjs`
 
 ---
 
