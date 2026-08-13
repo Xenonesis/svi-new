@@ -9,6 +9,7 @@ const VALID_DOC_TYPES = [
   'payment_plan',
   'offer_letter',
   'bba',
+  'quotation',
 ];
 
 // GET /api/admin/documents — list documents with optional filters

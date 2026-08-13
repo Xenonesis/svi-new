@@ -7,6 +7,7 @@ import {
   FileText,
   Plus,
   Receipt,
+  ReceiptText,
   Settings,
   TrendingUp,
 } from 'lucide-react';
@@ -39,6 +40,12 @@ const actions: QuickAction[] = [
     icon: Receipt,
     href: '/admin/payment-receipt',
     color: 'bg-purple-500/20 text-purple-400 hover:bg-purple-500/30',
+  },
+  {
+    label: 'Create Quotation',
+    icon: ReceiptText,
+    href: '/admin/quotation',
+    color: 'bg-teal-500/20 text-teal-400 hover:bg-teal-500/30',
   },
   {
     label: 'Payment Plan',

@@ -17,6 +17,7 @@ import {
   Mail,
   MessageCircle,
   Receipt,
+  ReceiptText,
   Settings,
   X,
   Users,
@@ -38,6 +39,8 @@ interface AdminSidebarProps {
 const documentItems = [
   { name: 'Allotment Letter', path: '/admin/allotment-letter', icon: FileText },
   { name: 'Allotment Records', path: '/admin/allotment-records', icon: ClipboardList },
+  { name: 'Quotation', path: '/admin/quotation', icon: ReceiptText },
+  { name: 'Quotation Records', path: '/admin/quotation-records', icon: ClipboardList },
   { name: 'Payment Receipt', path: '/admin/payment-receipt', icon: Receipt },
   { name: 'Receipt Records', path: '/admin/payment-receipts', icon: ClipboardList },
   { name: 'Payment Plan', path: '/admin/payment-plan', icon: Calculator },
