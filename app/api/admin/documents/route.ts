@@ -89,34 +89,36 @@ export async function POST(request: NextRequest) {
     if (error) throw AppError.internal(error.message);
 
     // Send email notification (non-blocking)
-    try {
-      const { data: userProfile } = await supabaseAdmin
-        .from('profiles')
-        .select('full_name, real_email')
-        .eq('id', user_id)
-        .single();
+    if (user_id) {
+      try {
+        const { data: userProfile } = await supabaseAdmin
+          .from('profiles')
+          .select('full_name, real_email')
+          .eq('id', user_id)
+          .single();
 
-      if (userProfile?.real_email) {
-        const resendApiKey = process.env.RESEND_API_KEY;
-        if (resendApiKey) {
-          const { Resend } = await import('resend');
-          const resend = new Resend(resendApiKey);
-          const { data: emailData, error: sendErr } = await resend.emails.send({
-            from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
-            to: userProfile.real_email,
-            subject: `Your ${document_type.replace(/_/g, ' ')} is Ready`,
-            html: `<p>Dear ${userProfile.full_name},<br>Your ${document_type.replace(/_/g, ' ')} has been generated.</p>`,
-          });
-          if (sendErr || !emailData?.id) {
-            console.error(
-              'Document email notification failed:',
-              sendErr?.message ?? 'no message id returned'
-            );
+        if (userProfile?.real_email) {
+          const resendApiKey = process.env.RESEND_API_KEY;
+          if (resendApiKey) {
+            const { Resend } = await import('resend');
+            const resend = new Resend(resendApiKey);
+            const { data: emailData, error: sendErr } = await resend.emails.send({
+              from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
+              to: userProfile.real_email,
+              subject: `Your ${document_type.replace(/_/g, ' ')} is Ready`,
+              html: `<p>Dear ${userProfile.full_name},<br>Your ${document_type.replace(/_/g, ' ')} has been generated.</p>`,
+            });
+            if (sendErr || !emailData?.id) {
+              console.error(
+                'Document email notification failed:',
+                sendErr?.message ?? 'no message id returned'
+              );
+            }
           }
         }
+      } catch (emailErr) {
+        console.error('Document email notification failed:', emailErr);
       }
-    } catch (emailErr) {
-      console.error('Document email notification failed:', emailErr);
     }
 
     return NextResponse.json({ document: data }, { status: 201 });
