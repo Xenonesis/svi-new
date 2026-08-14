@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Navigation', () => {
   test('all main nav links work in English', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const links = [
       { label: 'Home', url: '/' },
@@ -27,7 +27,7 @@ test.describe('Navigation', () => {
 
   test('language toggle switches to Hindi', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Find and click language toggle button
     const langButton = page.locator(
@@ -46,7 +46,7 @@ test.describe('Navigation', () => {
     // Set mobile viewport
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Look for hamburger/mobile menu button
     const mobileMenuBtn = page.locator(

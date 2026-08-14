@@ -56,6 +56,9 @@ replace_bba_3.py
 
 # Temp image files
 *.jpeg
+
+# Debug/scraped page dumps
+blog.html
 *.exe
 *.pdf
 !public/Shivani Vatika/shivani-vatika-11th-brochure.pdf

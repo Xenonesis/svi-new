@@ -4,7 +4,7 @@ test.describe('Admin Login', () => {
   test.beforeEach(async ({ page }) => {
     // Admin login is at /admin (not /login — that's the client portal)
     await page.goto('/admin');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('renders login form', async ({ page }) => {

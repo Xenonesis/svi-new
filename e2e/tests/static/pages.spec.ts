@@ -15,12 +15,12 @@ test.describe('Static Pages', () => {
   for (const { path, name } of pages) {
     test(`${name} loads successfully`, async ({ page }) => {
       await page.goto(path);
-      // Projects pages have heavy assets — use 'load' to avoid networkidle timeouts
+      // Projects pages have heavy assets — use 'load' to avoid domcontentloaded timeouts
       if (path.includes('/projects/')) {
         await page.waitForLoadState('load');
         await page.waitForTimeout(2000);
       } else {
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
       }
       // Page should have a heading and not be a 404
       const h1 = page.locator('h1');
@@ -39,7 +39,7 @@ test.describe('Static Pages', () => {
         await page.waitForLoadState('load');
         await page.waitForTimeout(2000);
       } else {
-        await page.waitForLoadState('networkidle');
+        await page.waitForLoadState('domcontentloaded');
       }
       const h1 = page.locator('h1');
       const count = await h1.count();

@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Blog Listing', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/blog');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('renders blog hero and post cards', async ({ page }) => {
@@ -37,7 +37,7 @@ test.describe('Blog Listing', () => {
 test.describe('Blog Detail', () => {
   test('renders blog content with key elements', async ({ page }) => {
     await page.goto('/blog/top-5-real-estate-investment-tips');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     // Title should be visible
     await expect(page.locator('h1')).toBeVisible();
@@ -53,7 +53,7 @@ test.describe('Blog Detail', () => {
 
   test('shows key takeaways', async ({ page }) => {
     await page.goto('/blog/top-5-real-estate-investment-tips');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const takeaways = page.locator('.blog-takeaways');
     if ((await takeaways.count()) > 0) {
@@ -63,7 +63,7 @@ test.describe('Blog Detail', () => {
 
   test('renders related posts', async ({ page }) => {
     await page.goto('/blog/top-5-real-estate-investment-tips');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     const relatedSection = page.locator('h2:has-text("Related"), h2:has-text("पढ़ें")');
     if ((await relatedSection.count()) > 0) {
@@ -73,7 +73,7 @@ test.describe('Blog Detail', () => {
 
   test('blog detail in Hindi', async ({ page }) => {
     await page.goto('/hi/blog/top-5-real-estate-investment-tips');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
 
     await expect(page.locator('h1')).toBeVisible();
     const content = page.locator('.blog-content');

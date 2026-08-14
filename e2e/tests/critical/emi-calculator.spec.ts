@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('EMI Calculator', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/calculators');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('renders sliders with default EMI', async ({ page }) => {

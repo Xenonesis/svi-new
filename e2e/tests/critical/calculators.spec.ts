@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('Calculators', () => {
   test.beforeEach(async ({ page }) => {
     await page.goto('/calculators');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
   });
 
   test('renders calculator page', async ({ page }) => {

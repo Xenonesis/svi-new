@@ -184,7 +184,7 @@ for (const profile of PROFILES) {
 
     // Navigate
     const startTime = Date.now();
-    await page.goto('/contact', { waitUntil: 'networkidle' });
+    await page.goto('/contact', { waitUntil: 'domcontentloaded' });
     const navEnd = Date.now() - startTime;
 
     // Give LCP/CLS time to settle

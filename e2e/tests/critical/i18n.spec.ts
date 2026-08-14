@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 test.describe('i18n — Multi-language', () => {
   test('English homepage renders English text', async ({ page }) => {
     await page.goto('/');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     // The page title or h1 should have English content
     const heading = page.locator('h1');
     await expect(heading).toBeVisible();
@@ -11,14 +11,14 @@ test.describe('i18n — Multi-language', () => {
 
   test('Hindi homepage renders Hindi URL', async ({ page }) => {
     await page.goto('/hi');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     expect(page.url()).toContain('/hi');
     await expect(page.locator('h1')).toBeVisible();
   });
 
   test('Hindi blog page shows Hindi content', async ({ page }) => {
     await page.goto('/hi/blog');
-    await page.waitForLoadState('networkidle');
+    await page.waitForLoadState('domcontentloaded');
     // Breadcrumb should show "Blog" in Hindi or the URL has /hi
     expect(page.url()).toContain('/hi/blog');
     // h1 should exist with Hindi heading
@@ -58,7 +58,7 @@ test.describe('i18n — Multi-language', () => {
     ];
     for (const path of paths) {
       await page.goto(path);
-      // Use 'load' instead of 'networkidle' to avoid timeouts on asset-heavy pages
+      // Use 'load' instead of 'domcontentloaded' to avoid timeouts on asset-heavy pages
       await page.waitForLoadState('load');
       await page.waitForTimeout(1000);
       expect(page.url()).not.toContain('/en');
@@ -70,7 +70,7 @@ test.describe('i18n — Multi-language', () => {
     const paths = ['/about', '/blog', '/faq', '/contact'];
     for (const path of paths) {
       await page.goto(`/hi${path}`);
-      await page.waitForLoadState('networkidle');
+      await page.waitForLoadState('domcontentloaded');
       expect(page.url()).toContain('/hi');
     }
   });
