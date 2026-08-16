@@ -491,7 +491,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: 'Property Buyer Protections & Guidelines in 2026: What Every Buyer Must Know',
     titleHi: 'संपत्ति खरीदार सुरक्षा और गाइडलाइंस 2026: हर खरीदार को क्या जानना ज़रूरी है',
-    slug: 'rera-guide-homebuyers-2026',
+    slug: 'buyer-protection-guide-2026',
     excerpt:
       'Comprehensive guide to how transparent standards safeguard property buyers, ensure timely project delivery, and regulate Indian real estate.',
     excerptHi:
@@ -1251,7 +1251,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: 'Master-Planned Plots vs Unplanned Land: Complete Buyer Protection Guide',
     titleHi: 'मास्टर-प्लांड प्लॉट्स बनाम अनप्लांड ज़मीन: खरीदारों के लिए पूरी गाइड',
-    slug: 'jda-approved-plots-vs-unapproved-land-guide',
+    slug: 'master-planned-plots-vs-unplanned-land-guide',
     excerpt:
       'Crucial differences between master-planned residential plots and unplanned colony land regarding bank loan financing, clear registry titles, and municipal amenities.',
     excerptHi:
@@ -1331,7 +1331,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     title: 'Demystifying Land Conversion & Title Deeds in Rajasthan Real Estate',
     titleHi: 'राजस्थान रियल एस्टेट में ज़मीन रूपांतरण और पक्की रजिस्ट्री की पूरी जानकारी',
-    slug: '90a-land-conversion-patta-rajasthan-guide',
+    slug: 'land-conversion-title-deeds-rajasthan-guide',
     excerpt:
       'In-depth guide explaining residential land conversion, revenue surrender, township allotment letters, and title registration procedure in Rajasthan.',
     excerptHi:

@@ -3,13 +3,15 @@
 import { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform, useMotionValue } from 'motion/react';
 import { Map, Building, Ruler, ShieldCheck, CheckCircle2 } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import TimelineStep from './TimelineStep';
 
 const ICONS = [Map, Ruler, ShieldCheck, Building, CheckCircle2];
 
 export default function TimelineSection() {
   const containerRef = useRef<HTMLDivElement>(null);
+  const locale = useLocale();
+  const isHindi = locale === 'hi';
   const t = useTranslations('timeline');
   const [isMobile, setIsMobile] = useState(false);
 
@@ -29,10 +31,22 @@ export default function TimelineSection() {
   const staticHeight = useMotionValue('100%');
   const lineHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
 
+  const step3Title = t.has('steps.documentationVerification.title')
+    ? t('steps.documentationVerification.title')
+    : isHindi
+      ? 'दस्तावेज़ीकरण एवं सत्यापन'
+      : 'Documentation & Verification';
+
+  const step3Desc = t.has('steps.documentationVerification.desc')
+    ? t('steps.documentationVerification.desc')
+    : isHindi
+      ? '100% सुरक्षित मालिकाना हक और पारदर्शिता सुनिश्चित करने के लिए पूर्ण दस्तावेज़ीकरण और सत्यापन।'
+      : 'Ensuring comprehensive verification and clear documentation for 100% secure ownership.';
+
   const steps = [
     { title: t('steps.landAcquisition.title'), desc: t('steps.landAcquisition.desc') },
     { title: t('steps.planningDesign.title'), desc: t('steps.planningDesign.desc') },
-    { title: t('steps.approvalsRera.title'), desc: t('steps.approvalsRera.desc') },
+    { title: step3Title, desc: step3Desc },
     { title: t('steps.infrastructure.title'), desc: t('steps.infrastructure.desc') },
     { title: t('steps.delivery.title'), desc: t('steps.delivery.desc') },
   ];
