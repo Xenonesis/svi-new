@@ -120,15 +120,28 @@ function SidebarContent({
       )}
 
       {/* Logo */}
-      <div className="flex h-20 items-center overflow-hidden border-b border-gray-100 px-5 whitespace-nowrap dark:border-white/5">
-        <Link href="/admin/dashboard" className="flex items-center gap-2.5">
+      <div
+        className={`flex h-20 items-center border-b border-gray-100 transition-all duration-300 dark:border-white/5 ${
+          collapsed && !isMobile ? 'justify-center px-2' : 'px-4 sm:px-5'
+        }`}
+      >
+        <Link
+          href="/admin/dashboard"
+          className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] ${
+            collapsed && !isMobile ? 'px-2.5 py-1.5' : 'px-3.5 py-2'
+          }`}
+          aria-label="SVI Infra Solutions Pvt. Ltd."
+        >
           <Image
             src="/logo.png"
             alt="SVI Infra Solutions"
             width={282}
             height={83}
             quality={100}
-            className="h-9 w-auto shrink-0 object-contain"
+            priority
+            className={`w-auto shrink-0 object-contain transition-all duration-300 ${
+              collapsed && !isMobile ? 'h-6 sm:h-7' : 'h-7.5 sm:h-8'
+            }`}
           />
         </Link>
       </div>
