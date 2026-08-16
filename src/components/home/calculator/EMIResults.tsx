@@ -75,7 +75,7 @@ export default function EMIResults({
             ₹ {projectedValuation.toLocaleString('en-IN')}
           </div>
           <p className="mt-1 text-[10px] text-gray-300">
-            Based on ~14% avg historical growth in JDA corridors.
+            Based on ~14% avg historical growth in prime high-growth corridors.
           </p>
         </div>
       </div>

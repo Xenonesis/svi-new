@@ -515,8 +515,8 @@ export default function ShivaniVatika11Brochure() {
               {[
                 {
                   icon: <FileText size={24} />,
-                  title: 'JDA Approved Land',
-                  desc: '100% legally clear and approved by the Jaipur Development Authority.',
+                  title: 'Prime Gated Land',
+                  desc: '100% verified documentation with clear demarcation and immediate possession readiness.',
                 },
                 {
                   icon: <CheckCircle size={24} />,

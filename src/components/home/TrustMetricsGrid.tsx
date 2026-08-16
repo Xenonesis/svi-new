@@ -5,13 +5,13 @@ import { ShieldCheck, Award, Building2, Landmark } from 'lucide-react';
 const TRUST_METRICS = [
   {
     icon: ShieldCheck,
-    title: 'JDA Approved',
-    desc: '100% compliant projects & clear land titles',
+    title: 'Verified Land Titles',
+    desc: '100% clear ownership & secure plots',
   },
   {
     icon: Landmark,
-    title: 'Bank Loan Approval',
-    desc: 'Instant sanctions from SBI, HDFC, ICICI & more',
+    title: 'Easy Bank Financing',
+    desc: 'Instant assistance with SBI, HDFC, ICICI & more',
   },
   {
     icon: Award,

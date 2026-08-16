@@ -27,27 +27,36 @@ export default function QuotationViewModal({
   const calc = fd?.calculation;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-md dark:bg-black/90">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-2 backdrop-blur-md sm:p-4 dark:bg-black/90">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        className="dark:bg-brand-dark-surface relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10"
+        className="dark:bg-brand-dark-surface relative flex max-h-[95vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl sm:max-h-[90vh] sm:rounded-2xl dark:border-white/10"
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-              {fd?.quotationNo || 'Quotation'}
-            </h3>
-            <p className="text-[10px] text-gray-500">
-              Created {new Date(quotation.created_at).toLocaleDateString('en-GB')}
-            </p>
+        <div className="flex flex-col justify-between gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:px-6 sm:py-4 dark:border-white/8">
+          <div className="flex items-center justify-between">
+            <div>
+              <h3 className="text-base font-bold text-gray-900 sm:text-lg dark:text-white">
+                {fd?.quotationNo || 'Quotation'}
+              </h3>
+              <p className="text-[10px] text-gray-500">
+                Created {new Date(quotation.created_at).toLocaleDateString('en-GB')}
+              </p>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-gray-700 sm:hidden dark:text-gray-500 dark:hover:text-white"
+              aria-label="Close modal"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={onDownloadPDF}
               disabled={pdfLoading}
-              className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-bold uppercase shadow-md transition-all disabled:opacity-50"
+              className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase shadow-md transition-all disabled:opacity-50 sm:flex-initial sm:px-3 sm:py-2 sm:text-xs"
             >
               {pdfLoading ? (
                 <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -59,7 +68,7 @@ export default function QuotationViewModal({
             <button
               onClick={onDownloadPNG}
               disabled={imageLoading}
-              className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-2 text-xs font-bold text-white uppercase shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50"
+              className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white uppercase shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50 sm:flex-initial sm:px-3 sm:py-2 sm:text-xs"
             >
               {imageLoading ? (
                 <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -70,7 +79,7 @@ export default function QuotationViewModal({
             </button>
             <button
               onClick={onClose}
-              className="ml-1 text-gray-400 hover:text-gray-700 dark:text-gray-500 dark:hover:text-white"
+              className="ml-1 hidden text-gray-400 hover:text-gray-700 sm:block dark:text-gray-500 dark:hover:text-white"
               aria-label="Close modal"
             >
               <X className="h-6 w-6" />
@@ -79,7 +88,7 @@ export default function QuotationViewModal({
         </div>
 
         {/* Body */}
-        <div className="flex-1 overflow-y-auto p-6">
+        <div className="flex-1 overflow-y-auto p-3.5 sm:p-6">
           {/* Status badge */}
           <div className="mb-5 flex items-center gap-2">
             <span

@@ -331,18 +331,18 @@ export const BLOG_POSTS: BlogPost[] = [
       'महिला के नाम पर रजिस्ट्री कराने से 1-2% स्टैम्प ड्यूटी में सीधी बचत होती है',
       'रजिस्ट्री से पहले यह पुष्टि करने के लिए एनकंबरेंस सर्टिफिकेट (EC) ज़रूर लें कि ज़मीन पर कोई विवाद नहीं है',
     ],
-    author: 'SVI Legal Desk',
+    author: 'SVI Documentation Desk',
     date: '2026-06-27',
-    category: 'Legal & JDA',
-    categoryHi: 'लीगल एवं JDA',
+    category: 'Buyer Guides',
+    categoryHi: 'खरीदार गाइड',
     image: '/images/blog12.png',
-    tags: ['stamp duty', 'property registration', 'e-stamping', 'sub registrar', 'legal tips'],
+    tags: ['stamp duty', 'property registration', 'e-stamping', 'sub registrar', 'buyer tips'],
     tagsHi: [
       'स्टैम्प ड्यूटी',
       'प्रॉपर्टी रजिस्ट्रेशन',
       'ई-स्टैम्पिंग',
       'सब रजिस्ट्रार',
-      'कानूनी टिप्स',
+      'खरीदार टिप्स',
     ],
     readTime: '7 min read',
     readTimeHi: '7 मिनट पढ़ें',
@@ -489,84 +489,84 @@ export const BLOG_POSTS: BlogPost[] = [
     readTimeHi: '5 मिनट पढ़ें',
   },
   {
-    title: 'RERA & Property Buyer Protections in 2026: What Every Buyer Must Know',
-    titleHi: 'RERA और संपत्ति खरीदार सुरक्षा 2026: हर खरीदार को क्या जानना ज़रूरी है',
+    title: 'Property Buyer Protections & Guidelines in 2026: What Every Buyer Must Know',
+    titleHi: 'संपत्ति खरीदार सुरक्षा और गाइडलाइंस 2026: हर खरीदार को क्या जानना ज़रूरी है',
     slug: 'rera-guide-homebuyers-2026',
     excerpt:
-      'Comprehensive guide to how RERA safeguards property buyers, ensures timely project delivery, and regulates Indian real estate.',
+      'Comprehensive guide to how transparent standards safeguard property buyers, ensure timely project delivery, and regulate Indian real estate.',
     excerptHi:
-      'RERA खरीदारों के अधिकारों की रक्षा कैसे करता है, समय पर कब्ज़ा सुनिश्चित करता है और रियल एस्टेट को पारदर्शी बनाता है — पूरी गाइड।',
+      'रियल एस्टेट में खरीदारों के अधिकारों की सुरक्षा, समय पर कब्ज़ा और पारदर्शी नियमों की पूरी गाइड।',
     content: `
-      <p>The <mark>Real Estate (Regulation and Development) Act (RERA)</mark> has fundamentally transformed the Indian real estate ecosystem. Designed to protect homebuyers from project delays, false promises, and financial irregularities, RERA ensures transparency and accountability at every stage of real estate transactions.</p>
+      <p>Modern <mark>real estate standards and buyer protection policies</mark> have fundamentally transformed the property buying ecosystem. Designed to protect homebuyers from project delays, unclear promises, and discrepancies, structured developer standards ensure transparency and accountability at every stage of transactions.</p>
 
-      <h2>1. Mandatory Project Registration & Escrow Accounts</h2>
-      <p>Under RERA, developers cannot advertise or sell any residential or commercial property without registering the project with the state RERA authority. Key safeguards include:</p>
+      <h2>1. Dedicated Escrow Accounts & Transparency</h2>
+      <p>Organized developers ensure dedicated fund management for timely construction. Key customer safeguards include:</p>
       <ul>
-        <li><mark>70% Escrow Rule:</mark> Developers must deposit 70% of funds collected from buyers into a dedicated project escrow account, usable only for land acquisition and construction.</li>
-        <li><mark>Clear Project Disclosure:</mark> Floor plans, sanction layouts, completion timelines, and legal approvals must be published on the RERA portal.</li>
-        <li><mark>Standardized Sales Agreement:</mark> Eliminates one-sided clauses that previously favored developers.</li>
+        <li><mark>Construction Escrow:</mark> Developers allocate dedicated funds directly to designated construction accounts ensuring uninterrupted project progress.</li>
+        <li><mark>Clear Project Disclosures:</mark> Floor plans, sanction layouts, completion timelines, and clear documentation are shared transparently with buyers.</li>
+        <li><mark>Standardized Agreements:</mark> Transparent contracts that clearly specify buyer rights and developer commitments.</li>
       </ul>
 
-      <h2>2. Strict Penalties for Project Delays</h2>
-      <p>One of RERA's strongest buyer protection mechanisms is its penalty structure for delayed possession:</p>
+      <h2>2. Timely Delivery Commitments</h2>
+      <p>Leading developers provide clear possession schedules:</p>
       <ul>
-        <li>If a developer fails to hand over property by the specified date, they must pay <mark>monthly interest</mark> to the buyer at state-prescribed rates.</li>
-        <li>Buyers have the right to withdraw from the project and request a <mark>100% refund with interest</mark> if delivery timelines are breached.</li>
+        <li>Developers commit to clear handover dates with proactive construction updates.</li>
+        <li>Buyers receive clear protections and scheduled milestones throughout the development cycle.</li>
       </ul>
 
-      <h2>3. Carpet Area Standardization</h2>
-      <p>Before RERA, builders used ambiguous terms like "super built-up area" to charge buyers. RERA mandates pricing based strictly on <mark>Carpet Area</mark> — the net usable floor area inside the apartment walls.</p>
+      <h2>3. Usable Carpet Area Clarity</h2>
+      <p>Modern property guidelines ensure pricing is based strictly on <mark>Carpet Area</mark> — the net usable space inside the property walls, eliminating ambiguous area calculations.</p>
 
-      <h2>4. 5-Year Structural Defect Guarantee</h2>
-      <p>Developers are legally bound to fix any <mark>structural defects or workmanship flaws</mark> within 5 years of handing over possession, without charging the homeowner any extra cost.</p>
+      <h2>4. 5-Year Structural Defect Support</h2>
+      <p>Reputed developers guarantee complete rectification of any <mark>structural defects or workmanship flaws</mark> within 5 years of possession handover without extra cost.</p>
 
       <h2>Conclusion</h2>
-      <p>RERA has brought peace of mind to Indian property buyers. Always verify your builder's RERA registration number on the official state portal before making any financial commitment.</p>
+      <p>Transparent guidelines bring peace of mind to property buyers. Always verify project documentation and developer credentials before making any financial commitment.</p>
     `,
     contentHi: `
-      <p><mark>रियल एस्टेट (रेगुलेशन एंड डेवलपमेंट) एक्ट (RERA)</mark> ने भारतीय रियल एस्टेट क्षेत्र में पारदर्शिता और जवाबदेही की एक नई मिसाल कायम की है। यह कानून खरीदारों को बिल्डरों की देरी, झूठे वादों और वित्तीय अनियमितताओं से सुरक्षा प्रदान करता है।</p>
+      <p><mark>पारदर्शी रियल एस्टेट मानक और खरीदार सुरक्षा नियम</mark> प्रॉपर्टी खरीदारी को पूरी तरह सुरक्षित और सरल बनाते हैं। यह व्यवस्था खरीदारों को प्रोजेक्ट की देरी, अधूरे वादों और अस्पष्ट शर्तों से सुरक्षा प्रदान करती है।</p>
 
-      <h2>1. अनिवार्य प्रोजेक्ट रजिस्ट्रेशन और एस्क्रो अकाउंट</h2>
-      <p>RERA के तहत कोई भी बिल्डर या डेवलपर राज्य RERA अथॉरिटी में रजिस्ट्रेशन कराए बिना अपनी प्रॉपर्टी का विज्ञापन या बिक्री नहीं कर सकता। मुख्य बिंदु:</p>
+      <h2>1. सुरक्षित फंड और प्रोजेक्ट पारदर्शिता</h2>
+      <p>विश्वसनीय डेवलपर समय पर निर्माण कार्य पूरा करने के लिए स्पष्ट नियम अपनाते हैं:</p>
       <ul>
-        <li><mark>70% एस्क्रो नियम:</mark> खरीदारों से प्राप्त 70% धनराशि को एक अलग प्रोजेक्ट एस्क्रो खाते में जमा करना अनिवार्य है, जिसका उपयोग केवल ज़मीन और निर्माण कार्य के लिए होगा।</li>
-        <li><mark>प्रोजेक्ट की पूरी जानकारी:</mark> फ्लोर प्लान, नक्शा, डिलीवरी डेट और लीगल मंज़ूरियों को RERA पोर्टल पर सार्वजनिक करना अनिवार्य है।</li>
-        <li><mark>मानकीकृत बिक्री समझौता:</mark> बिल्डरों द्वारा मनमाने ढंग से बनाए गए एकतरफ़ा समझौतों को खत्म कर दिया गया है।</li>
+        <li><mark>निर्माण फंड सुरक्षा:</mark> खरीदारों से प्राप्त राशि को केवल ज़मीन और निर्माण कार्य के लिए समर्पित खाते में रखा जाता है।</li>
+        <li><mark>प्रोजेक्ट की पूरी जानकारी:</mark> फ्लोर प्लान, नक्शा, डिलीवरी डेट और विकास योजनाएं पारदर्शी रूप से साझा की जाती हैं।</li>
+        <li><mark>पारदर्शी समझौता:</mark> स्पष्ट और निष्पक्ष अनुबंध जिसमें खरीदार के अधिकारों का पूरा ध्यान रखा जाता है।</li>
       </ul>
 
-      <h2>2. प्रोजेक्ट देरी पर सख्त जुर्माना</h2>
-      <p>अगर डेवलपर तय समय सीमा के भीतर कब्ज़ा देने में विफल रहता है:</p>
+      <h2>2. समय पर डिलीवरी का वादा</h2>
+      <p>डेवलपर तय समय सीमा के भीतर कब्ज़ा देने के लिए प्रतिबद्ध रहते हैं:</p>
       <ul>
-        <li>बिल्डर को हर महीने की देरी के लिए खरीदार को निर्धारित <mark>ब्याज दरों के साथ ह हर्जाना</mark> देना होगा।</li>
-        <li>खरीदार चाहें तो प्रोजेक्ट से हटकर ब्याज सहित <mark>100% रिफंड</mark> की मांग कर सकते हैं।</li>
+        <li>तय समय-सीमा और नियमित निर्माण अपडेट्स के साथ डिलीवरी सुनिश्चित की जाती है।</li>
+        <li>खरीदारों को हर चरण में स्पष्ट जानकारी और सुविधाएँ मिलती हैं।</li>
       </ul>
 
       <h2>3. कारपेट एरिया का स्पष्ट मानक</h2>
-      <p>RERA से पहले "सुपर बिल्ट-अप एरिया" के नाम पर खरीदारों से अधिक पैसा वसूला जाता था। RERA ने केवल <mark>कारपेट एरिया (वास्तविक इस्तेमाल की जगह)</mark> के आधार पर कीमत तय करने का नियम बनाया है।</p>
+      <p>आधुनिक मानकों के अनुसार प्रॉपर्टी की कीमत केवल <mark>कारपेट एरिया (वास्तविक इस्तेमाल की जगह)</mark> के आधार पर तय की जाती है।</p>
 
-      <h2>4. 5 साल की स्ट्रक्चरल वारंटी</h2>
-      <p>कब्ज़ा मिलने के 5 साल के भीतर अगर मकान के ढांचे (Structure) में कोई खराबी आती है, तो बिल्डर को बिना कोई अतिरिक्त शुल्क लिए उसे <mark>मुफ़्त में ठीक करना</mark> होगा।</p>
+      <h2>4. 5 साल की स्ट्रक्चरल सुरक्षा</h2>
+      <p>कब्ज़ा मिलने के 5 साल के भीतर अगर निर्माण ढांचे में कोई कमी आती है, तो डेवलपर उसे <mark>मुफ़्त में ठीक</mark> करने की ज़िम्मेदारी लेते हैं।</p>
 
       <h2>निष्कर्ष</h2>
-      <p>RERA ने प्रॉपर्टी खरीदारों के मन से डर को खत्म कर दिया है। किसी भी प्रॉपर्टी में निवेश करने से पहले आधिकारिक RERA पोर्टल पर रजिस्ट्रेशन नंबर की जाँच अवश्य करें।</p>
+      <p>पारदर्शी नियमों ने प्रॉपर्टी खरीदारों के अनुभव को बेहद सुरक्षित बना दिया है। किसी भी प्रॉपर्टी में निवेश करने से पहले प्रोजेक्ट के सभी दस्तावेज़ों की जाँच अवश्य करें।</p>
     `,
     takeaways: [
-      'RERA mandates that 70% of buyer funds be kept in a dedicated escrow account for construction',
-      'Developers must pay interest for construction delays at standard state RERA rates',
-      'Always cross-check the project RERA registration number on the official state portal before paying booking amounts',
+      'Buyer protection standards mandate dedicated funds for seamless construction progress',
+      'Transparent developers provide committed delivery timelines and scheduled updates',
+      'Always verify clear titles and developer track record before paying booking amounts',
     ],
     takeawaysHi: [
-      'RERA के तहत खरीदार के 70% पैसों को एस्क्रो अकाउंट में कंस्ट्रक्शन के लिए रखना अनिवार्य है',
-      'डिलीवरी में देरी होने पर बिल्डर को खरीदारों को ब्याज देना होगा',
-      'बुकिंग राशि देने से पहले राज्य के RERA पोर्टल पर प्रोजेक्ट का रजिस्ट्रेशन नंबर ज़रूर सत्यापित करें',
+      'निर्माण कार्य बिना रुकावट पूरा करने के लिए डेडिकेटेड फंड व्यवस्था अनिवार्य है',
+      'विश्वसनीय डेवलपर समय पर पजेशन और नियमित प्रोग्रेस रिपोर्ट देते हैं',
+      'बुकिंग राशि देने से पहले प्रोजेक्ट के पक्के दस्तावेज़ और कंपनी की प्रतिष्ठा ज़रूर जाँचें',
     ],
-    author: 'SVI Legal Desk',
+    author: 'SVI Documentation Desk',
     date: '2026-06-20',
-    category: 'Legal & JDA',
-    categoryHi: 'लीगल एवं JDA',
+    category: 'Buyer Guides',
+    categoryHi: 'खरीदार गाइड',
     image: '/images/blog4.png',
-    tags: ['RERA', 'homebuyer rights', 'legal advice', 'property buying'],
-    tagsHi: ['RERA', 'खरीदार के अधिकार', 'कानूनी सलाह', 'प्रॉपर्टी खरीद'],
+    tags: ['buyer guide', 'homebuyer rights', 'property tips', 'property buying'],
+    tagsHi: ['खरीदार गाइड', 'खरीदार के अधिकार', 'प्रॉपर्टी टिप्स', 'प्रॉपर्टी खरीद'],
     readTime: '6 min read',
     readTimeHi: '6 मिनट पढ़ें',
   },
@@ -920,7 +920,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <ul>
         <li>Research their past projects and delivery timelines</li>
         <li>Read customer reviews and testimonials</li>
-        <li>Verify <mark>RERA registration</mark> and compliance</li>
+        <li>Verify <mark>complete project documentation</mark> and compliance</li>
         <li>Assess the <mark>quality of construction</mark> and materials used</li>
       </ul>
 
@@ -971,7 +971,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <ul>
         <li>उनके पिछले प्रोजेक्ट और <mark>डिलीवरी टाइमलाइन</mark> देखें</li>
         <li>ग्राहकों के रिव्यू और टेस्टीमोनियल पढ़ें</li>
-        <li><mark>RERA रजिस्ट्रेशन</mark> और कंप्लायंस चेक करें</li>
+        <li><mark>प्रोजेक्ट दस्तावेज़</mark> और कंप्लायंस चेक करें</li>
         <li>कंस्ट्रक्शन की <mark>क्वालिटी</mark> और मटेरियल को परखें</li>
       </ul>
 
@@ -981,12 +981,12 @@ export const BLOG_POSTS: BlogPost[] = [
     takeaways: [
       'Location is the #1 factor — connectivity, amenities, and future development matter most',
       'Get loan pre-approval and maintain an emergency fund before investing',
-      'Always verify RERA registration and legal documents before buying',
+      'Always verify verified documentation and ownership documents before buying',
     ],
     takeawaysHi: [
       'लोकेशन सबसे ज़रूरी है — कनेक्टिविटी, सुविधाएँ और फ़्यूचर डेवलपमेंट देखें',
       'निवेश से पहले लोन का प्री-अप्रूवल और इमरजेंसी फंड रखें',
-      'खरीदने से पहले RERA रजिस्ट्रेशन और कानूनी डॉक्यूमेंट्स ज़रूर चेक करें',
+      'खरीदने से पहले प्रोजेक्ट डॉक्यूमेंट्स और स्वामित्व के कागज़ात ज़रूर चेक करें',
     ],
     author: 'SVI Infra Solutions',
     date: '2026-05-15',
@@ -1207,7 +1207,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <p>Residential plot schemes in Phulera offer an accessible entry price with potential for <mark>15-20% annual capital value growth</mark>, making it ideal for early-stage investors.</p>
 
       <h2>Conclusion</h2>
-      <p>SVI Infra Solutions offers prime JDA-compliant township projects in the Phulera-Sambhar corridor, guaranteeing transparent titles and high investment security.</p>
+      <p>SVI Infra Solutions offers prime master-planned township projects in the Phulera-Sambhar corridor, guaranteeing transparent titles and high investment security.</p>
     `,
     contentHi: `
       <p>ऐतिहासिक सांभर झील और जयपुर की बाहरी सीमाओं के पास स्थित <mark>फुलेरा इंडस्ट्रियल हब</mark> राजस्थान का सबसे तेज़ी से उभरता रियल एस्टेट कॉरिडोर बन चुका है।</p>
@@ -1249,138 +1249,150 @@ export const BLOG_POSTS: BlogPost[] = [
     readTimeHi: '6 मिनट पढ़ें',
   },
   {
-    title: 'JDA Approved Plots vs Unapproved Colony Land: Complete Buyer Protection Guide',
-    titleHi: 'JDA अप्रूव्ड प्लॉट्स बनाम बिना मंज़ूरी की ज़मीन: खरीदारों के लिए पूरी कानूनी गाइड',
+    title: 'Master-Planned Plots vs Unplanned Land: Complete Buyer Protection Guide',
+    titleHi: 'मास्टर-प्लांड प्लॉट्स बनाम अनप्लांड ज़मीन: खरीदारों के लिए पूरी गाइड',
     slug: 'jda-approved-plots-vs-unapproved-land-guide',
     excerpt:
-      'Crucial differences between Jaipur Development Authority (JDA) approved plots and illegal colony land regarding bank loan financing, legal titles, and municipal amenities.',
+      'Crucial differences between master-planned residential plots and unplanned colony land regarding bank loan financing, clear registry titles, and municipal amenities.',
     excerptHi:
-      'जयपुर डेवलपमेंट अथॉरिटी (JDA) अप्रूव्ड प्लॉट्स और बिना अप्रूवल वाली ज़मीन के बीच बड़ा अंतर — बैंक लोन, पट्टा, सरकारी सुविधाएँ और कानूनी सुरक्षा की जानकारी।',
+      'नियोजित प्लॉट्स और अव्यवस्थित ज़मीन के बीच बड़ा अंतर — बैंक लोन, पक्की रजिस्ट्री, बुनियादी सुविधाएँ और सुरक्षा की जानकारी।',
     content: `
-      <p>Buying a residential plot in Rajasthan requires clear understanding of <mark>JDA (Jaipur Development Authority) approval status</mark>. Buying unapproved land to save upfront costs can lead to severe legal and financial consequences.</p>
+      <p>Buying a residential plot in Rajasthan requires clear understanding of <mark>master-planned development standards</mark>. Buying unplanned land to save upfront costs can lead to severe financial and developmental consequences.</p>
 
-      <h2>1. Bank Loan & Mortgage Financing Eligibility</h2>
+      <h2>1. Bank Loan & Financing Assistance</h2>
       <ul>
-        <li><mark>JDA Approved Plots:</mark> Eligible for up to 80-90% home/land loans from all leading nationalized banks (SBI, HDFC, ICICI, Bank of Baroda).</li>
-        <li><mark>Unapproved Colony Land:</mark> Nationalized banks strictly refuse loans on unapproved land due to high title litigation risk.</li>
+        <li><mark>Master-Planned Plots:</mark> Eligible for up to 80-90% home/land loans from all leading nationalized banks (SBI, HDFC, ICICI, Bank of Baroda).</li>
+        <li><mark>Unplanned Colony Land:</mark> Nationalized banks generally do not finance unplanned land due to lack of standard layout clearances.</li>
       </ul>
 
       <h2>2. Guaranteed Infrastructure & Civic Amenities</h2>
-      <p>JDA approved townships are legally mandated to provide:</p>
+      <p>Master-planned townships provide high quality living environments:</p>
       <ul>
         <li>30-foot to 60-foot wide asphalt roads with proper drainage lines.</li>
-        <li>Underground electricity wiring and municipal water pipelines.</li>
+        <li>Underground electricity wiring and uninterrupted water pipeline networks.</li>
         <li>Dedicated green parks, community centers, and streetlights.</li>
       </ul>
 
-      <h2>3. Title Security & 90-A Patta Immunity</h2>
-      <p>JDA approved plots come with official <mark>JDA Patta certificates</mark>, guaranteeing clear marketable title protected from government demolition orders or land acquisition disputes.</p>
+      <h2>3. Title Security & Complete Clearances</h2>
+      <p>Master-planned plots come with official <mark>clear registry title deeds</mark>, guaranteeing verified ownership protected from future layout disputes.</p>
     `,
     contentHi: `
-      <p>राजस्थान में रेजिडेंशियल प्लॉट खरीदते समय <mark>JDA (जयपुर विकास प्राधिकरण) अप्रूवल</mark> का ध्यान रखना सबसे महत्वपूर्ण है। सस्ते के चक्कर में बिना अप्रूवल वाली कॉलोनी में प्लॉट लेना भारी पड़ सकता है।</p>
+      <p>राजस्थान में रेजिडेंशियल प्लॉट खरीदते समय <mark>मास्टर-प्लांड और नियोजित विकास</mark> का ध्यान रखना सबसे महत्वपूर्ण है। सस्ते के चक्कर में बिना प्लानिंग वाली कॉलोनी में प्लॉट लेना भविष्य में परेशानी दे सकता है।</p>
 
       <h2>1. बैंक लोन पाने में आसानी</h2>
       <ul>
-        <li><mark>JDA अप्रूव्ड प्लॉट्स:</mark> SBI, HDFC, ICICI जैसे सभी प्रमुख राष्ट्रीयकृत बैंकों से <mark>80-90% तक आसान लोन</mark> मिलता है।</li>
-        <li><mark>बिना अप्रूवल वाली ज़मीन:</mark> कोई भी बड़ा बैंक ऐसी ज़मीन पर लोन नहीं देता क्योंकि उस पर कानूनी जोखिम रहता है।</li>
+        <li><mark>मास्टर-प्लांड प्लॉट्स:</mark> SBI, HDFC, ICICI जैसे सभी प्रमुख राष्ट्रीयकृत बैंकों से <mark>80-90% तक आसान लोन</mark> मिलता है।</li>
+        <li><mark>अनियोजित ज़मीन:</mark> लेआउट क्लीयरेंस न होने के कारण बैंक ऐसी ज़मीन पर लोन देने से बचते हैं।</li>
       </ul>
 
-      <h2>2. पक्की सरकारी सुविधाएँ</h2>
-      <p>JDA अप्रूव्ड टाउनशिप में डेवलपर को ये सुविधाएँ देना अनिवार्य होता है:</p>
+      <h2>2. पक्की आधुनिक सुविधाएँ</h2>
+      <p>मास्टर-प्लांड टाउनशिप में ये सुविधाएँ मिलती हैं:</p>
       <ul>
         <li>30 फीट से 60 फीट चौड़ी पक्की डामर सड़कें और नालियाँ।</li>
-        <li>भूमिगत बिजली तार और सरकारी पानी की पाइपलाइन।</li>
+        <li>भूमिगत बिजली तार और व्यवस्थित पानी की पाइपलाइन।</li>
         <li>पार्क, कम्युनिटी सेंटर और स्ट्रीट लाइट व्यवस्था।</li>
       </ul>
 
-      <h2>3. जेडीए पट्टा और कानूनी सुरक्षा</h2>
-      <p>JDA अप्रूव्ड प्लॉट के साथ आधिकारिक <mark>JDA पट्टा</mark> मिलता है, जिससे आपकी संपत्ति पूरी तरह सुरक्षित रहती है और भविष्य में किसी तोड़फोड़ या अधिग्रहण का डर नहीं रहता।</p>
+      <h2>3. पक्की रजिस्ट्री और पूर्ण सुरक्षा</h2>
+      <p>नियोजित प्लॉट के साथ आधिकारिक <mark>पक्की रजिस्ट्री और क्लियर टाइटल</mark> मिलता है, जिससे आपकी संपत्ति पूरी तरह सुरक्षित रहती है।</p>
     `,
     takeaways: [
-      'JDA approved plots qualify for 80-90% instant land loans from all major nationalized banks',
-      'Mandated 30-60 ft asphalt roads, underground utilities, and park development in JDA townships',
-      'Official JDA Patta guarantees immunity from municipal demolition or title disputes',
+      'Master-planned plots qualify for 80-90% instant land loans from all major nationalized banks',
+      'Mandated 30-60 ft asphalt roads, underground utilities, and park development in planned townships',
+      'Official registered deeds guarantee complete ownership security and peace of mind',
     ],
     takeawaysHi: [
-      'JDA अप्रूव्ड प्लॉट पर राष्ट्रीयकृत बैंकों से 80-90% तक तुरंत लोन की सुविधा मिलती है',
+      'मास्टर-प्लांड प्लॉट पर राष्ट्रीयकृत बैंकों से 80-90% तक तुरंत लोन की सुविधा मिलती है',
       '30-60 फीट चौड़ी सड़कें, अंडरग्राउंड बिजली और पार्कों का पक्का विकास',
-      'JDA पट्टा मिलने से ज़मीन के मालिकाना हक पर कोई विवाद या तोड़फोड़ का डर नहीं',
+      'पक्की रजिस्ट्री मिलने से ज़मीन के मालिकाना हक पर कोई विवाद नहीं रहता',
     ],
-    author: 'SVI Legal Desk',
+    author: 'SVI Documentation Desk',
     date: '2026-07-18',
-    category: 'Legal & JDA',
-    categoryHi: 'लीगल एवं JDA',
+    category: 'Buyer Guides',
+    categoryHi: 'खरीदार गाइड',
     image: '/images/project2.png',
     tags: [
-      'JDA approved plots',
-      'JDA patta',
+      'master-planned plots',
+      'clear title deeds',
       'Jaipur real estate',
       'bank loans',
       'plot buying guide',
     ],
-    tagsHi: ['JDA अप्रूव्ड प्लॉट्स', 'JDA पट्टा', 'जयपुर रियल एस्टेट', 'बैंक लोन', 'प्लॉट गाइड'],
+    tagsHi: [
+      'मास्टर-प्लांड प्लॉट्स',
+      'क्लियर टाइटल',
+      'जयपुर रियल एस्टेट',
+      'बैंक लोन',
+      'प्लॉट गाइड',
+    ],
     readTime: '7 min read',
     readTimeHi: '7 मिनट पढ़ें',
   },
   {
-    title: 'Demystifying 90-A Land Conversion & JDA Patta in Rajasthan Real Estate',
-    titleHi: 'राजस्थान रियल एस्टेट में 90-A ज़मीन रूपांतरण और JDA पट्टा की पूरी जानकारी',
+    title: 'Demystifying Land Conversion & Title Deeds in Rajasthan Real Estate',
+    titleHi: 'राजस्थान रियल एस्टेट में ज़मीन रूपांतरण और पक्की रजिस्ट्री की पूरी जानकारी',
     slug: '90a-land-conversion-patta-rajasthan-guide',
     excerpt:
-      'In-depth guide explaining Section 90-A agricultural land conversion, revenue surrender, JDA allotment letters, and title registration procedure in Rajasthan.',
+      'In-depth guide explaining residential land conversion, revenue surrender, township allotment letters, and title registration procedure in Rajasthan.',
     excerptHi:
-      'धारा 90-A के तहत कृषि भूमि रूपांतरण, रेवेन्यू सरेंडर, JDA अलॉटमेंट लेटर और राजस्थान में पट्टा रजिस्ट्री की प्रक्रिया को सरलता से समझें।',
+      'आवासीय भूमि रूपांतरण, रेवेन्यू सरेंडर, टाउनशिप अलॉटमेंट लेटर और राजस्थान में पट्टा रजिस्ट्री की प्रक्रिया को सरलता से समझें।',
     content: `
-      <p>Understanding <mark>Section 90-A of the Rajasthan Land Revenue Act</mark> is essential for anyone buying residential plots, commercial land, or townships in Jaipur and Rajasthan.</p>
+      <p>Understanding <mark>land conversion and registry procedures</mark> is essential for anyone buying residential plots, commercial land, or townships in Jaipur and Rajasthan.</p>
 
-      <h2>1. What Is 90-A Land Conversion?</h2>
-      <p>Agricultural land in India cannot be legally used for residential building construction without official conversion. Under <mark>Section 90-A</mark>, agricultural land khatedars surrender land rights to the local authority (JDA, UIT, or Municipal Corporation), which converts the land use to non-agricultural status.</p>
+      <h2>1. What Is Residential Land Conversion?</h2>
+      <p>Agricultural land in India requires official conversion for residential development. Through statutory conversion processes, land use is officially converted to residential and township status.</p>
 
-      <h2>2. The Step-by-Step 90-A Conversion Process</h2>
+      <h2>2. The Step-by-Step Conversion Process</h2>
       <ol>
-        <li><mark>Application & Revenue Report:</mark> Developer submits land Khasra details to the Tehsildar/JDA Officer.</li>
-        <li><mark>Public Notice:</mark> 15-day public objection notice issued in newspapers to ensure zero ownership disputes.</li>
+        <li><mark>Application & Survey:</mark> Developer submits land survey and Khasra details to the revenue authorities.</li>
+        <li><mark>Public Notice:</mark> Public notice issued to ensure clear, dispute-free ownership.</li>
         <li><mark>Layout Sanction:</mark> Town Planning Committee approves road widths, open park spaces, and plot layouts.</li>
-        <li><mark>Issuance of 90-A Order:</mark> Government passes official order converting agricultural land to residential township status.</li>
+        <li><mark>Issuance of Order:</mark> Government passes official order establishing residential township status.</li>
       </ol>
 
-      <h2>3. Difference Between 90-A Order & JDA Patta</h2>
-      <p>While 90-A converts the overall land use category, the <mark>JDA Patta</mark> is the individual title deed issued to each buyer after paying betterment and conversion charges.</p>
+      <h2>3. Conversion Order & Individual Title Deeds</h2>
+      <p>While the conversion order establishes overall residential land use, the <mark>Title Deed / Registry</mark> is the individual ownership document issued to each buyer.</p>
     `,
     contentHi: `
-      <p>राजस्थान में रेजिडेंशियल प्लॉट या टाउनशिप खरीदते समय <mark>राजस्थान भू-राजस्व अधिनियम की धारा 90-A</mark> की प्रक्रिया को समझना बहुत आवश्यक है।</p>
+      <p>राजस्थान में रेजिडेंशियल प्लॉट या टाउनशिप खरीदते समय <mark>ज़मीन रूपांतरण और रजिस्ट्री प्रक्रिया</mark> को समझना बहुत आवश्यक है।</p>
 
-      <h2>1. 90-A ज़मीन रूपांतरण क्या है?</h2>
-      <p>बिना सरकारी अनुमति के कृषि भूमि पर मकान या दुकान नहीं बनाई जा सकती। <mark>धारा 90-A</mark> के तहत खातेदार अपनी कृषि भूमि के अधिकार स्थानीय प्राधिकरण (JDA/UIT/नगर निगम) को सौंपता है, जो उस ज़मीन को गैर-कृषि (आवासीय/व्यावसायिक) घोषित करता है।</p>
+      <h2>1. आवासीय भूमि रूपांतरण क्या है?</h2>
+      <p>कृषि भूमि को आवासीय टाउनशिप में विकसित करने के लिए आधिकारिक रूपांतरण प्रक्रिया अपनाई जाती है, जिससे ज़मीन को आवासीय उपयोग का पक्का दर्जा मिलता है।</p>
 
-      <h2>2. 90-A रूपांतरण की चरणबद्ध प्रक्रिया</h2>
+      <h2>2. रूपांतरण की चरणबद्ध प्रक्रिया</h2>
       <ol>
-        <li><mark>आवेदन और रिपोर्ट:</mark> तहसीलदार और JDA अधिकारी के पास ज़मीन का खसरा और नक्शा जमा कराया जाता है।</li>
-        <li><mark>सार्वजनिक विज्ञप्ति:</mark> अखबारों में 15 दिनों का सार्वजनिक नोटिस जारी किया जाता है ताकि किसी विवाद की गुंजाइश न रहे।</li>
-        <li><mark>नक्शा पास होना:</mark> टाउन प्लानिंग कमेटी 30-60 फीट की सड़कों, पार्कों और प्लॉट्स के नक्शे को मंज़ूरी देती है।</li>
-        <li><mark>90-A आदेश जारी होना:</mark> सरकार ज़मीन को आधिकारिक रूप से आवासीय टाउनशिप का दर्जा देती है।</li>
+        <li><mark>आवेदन और रिपोर्ट:</mark> राजस्व अधिकारियों के पास ज़मीन का खसरा और सर्वे नक्शा जमा कराया जाता है।</li>
+        <li><mark>सार्वजनिक विज्ञप्ति:</mark> सार्वजनिक नोटिस जारी किया जाता है ताकि स्वामित्व पूरी तरह स्पष्ट रहे।</li>
+        <li><mark>नक्शा पास होना:</mark> टाउन प्लानिंग कमेटी सड़कों, पार्कों और प्लॉट्स के नक्शे को मंज़ूरी देती है।</li>
+        <li><mark>आदेश जारी होना:</mark> सरकार ज़मीन को आधिकारिक रूप से आवासीय टाउनशिप का दर्जा देती है।</li>
       </ol>
 
-      <h2>3. 90-A आदेश और JDA पट्टा में अंतर</h2>
-      <p>90-A आदेश पूरी टाउनशिप की ज़मीन का यूज़ बदलता है, जबकि <mark>JDA पट्टा</mark> प्रत्येक खरीदार के नाम पर जारी होने वाला व्यक्तिगत मालिकाना हक का दस्तावेज होता है।</p>
+      <h2>3. रूपांतरण आदेश और व्यक्तिगत रजिस्ट्री</h2>
+      <p>रूपांतरण आदेश पूरी टाउनशिप का यूज़ बदलता है, जबकि <mark>पक्की रजिस्ट्री</mark> प्रत्येक खरीदार के नाम पर जारी होने वाला व्यक्तिगत मालिकाना हक का दस्तावेज होता है।</p>
     `,
     takeaways: [
-      'Section 90-A officially converts agricultural land to residential non-agricultural status',
-      'Public notice period ensures converted land is completely litigation-free and clear titled',
-      'JDA Patta provides individual registered ownership deed backed by Rajasthan state government',
+      'Statutory conversion officially transforms land into clear residential status',
+      'Public notice period ensures converted land is completely dispute-free and clear titled',
+      'Registered Title Deeds provide individual ownership backed by official government registration',
     ],
     takeawaysHi: [
-      'धारा 90-A कृषि भूमि को कानूनी रूप से गैर-कृषि या आवासीय भूमि में बदलती है',
-      'सार्वजनिक विज्ञप्ति से यह सुनिश्चित होता है कि ज़मीन पर कोई पुराना विवाद या मालिकाना झगड़ा नहीं है',
-      'JDA पट्टा राज्य सरकार द्वारा जारी पक्का व्यक्तिगत रजिस्ट्री दस्तावेज होता है',
+      'आधिकारिक रूपांतरण ज़मीन को कानूनी रूप से आवासीय दर्जे में बदलता है',
+      'सार्वजनिक विज्ञप्ति से यह सुनिश्चित होता है कि ज़मीन पर कोई पुराना विवाद नहीं है',
+      'पक्की रजिस्ट्री प्रत्येक खरीदार को व्यक्तिगत मालिकाना हक प्रदान करती है',
     ],
     author: 'SVI Real Estate Desk',
     date: '2026-07-15',
     category: 'Market Analysis',
     categoryHi: 'बाज़ार विश्लेषण',
     image: '/images/shivani-vatika-11th.png',
-    tags: ['90-A conversion', 'JDA patta', 'land revenue act', 'Jaipur land laws', 'plot registry'],
-    tagsHi: ['90-A रूपांतरण', 'JDA पट्टा', 'भू राजस्व कानून', 'जयपुर भूमि नियम', 'प्लॉट रजिस्ट्री'],
+    tags: ['land conversion', 'title deed', 'plot registry', 'Jaipur real estate', 'plot guide'],
+    tagsHi: [
+      'ज़मीन रूपांतरण',
+      'पक्की रजिस्ट्री',
+      'प्लॉट रजिस्ट्री',
+      'जयपुर रियल एस्टेट',
+      'प्लॉट गाइड',
+    ],
     readTime: '7 min read',
     readTimeHi: '7 मिनट पढ़ें',
   },

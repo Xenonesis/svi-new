@@ -10,37 +10,37 @@ import Link from 'next/link';
 // Detailed comparison details not available in translations
 const PROJECT_EXTRA_DETAILS: Record<
   string,
-  { price: string; amenities: string[]; area: string; reraApproved: boolean }
+  { price: string; amenities: string[]; area: string; verifiedTitle: boolean }
 > = {
   'shree-shyam-residency': {
     price: '₹65 Lakhs onwards',
     area: '1500 - 2200 sq.ft.',
     amenities: ['Clubhouse', '24/7 Security', 'Gymnasium', 'Landscaped Gardens', 'Lift Access'],
-    reraApproved: true,
+    verifiedTitle: true,
   },
   'shivani-city': {
     price: 'Sold Out',
     area: '1200 - 3000 sq.ft.',
     amenities: ['Green Parks', 'Wide Walkways', 'Water Supply', 'Street Lights'],
-    reraApproved: true,
+    verifiedTitle: true,
   },
   'shivani-residency': {
     price: '₹15 Lakhs onwards',
     area: '1000 - 2500 sq.ft.',
     amenities: ['Power Backup', 'Water Harvesting', 'Scenic Views', 'Secure Boundary'],
-    reraApproved: true,
+    verifiedTitle: true,
   },
   'shivani-vatika': {
     price: '₹18 Lakhs onwards',
     area: '1200 - 2800 sq.ft.',
     amenities: ['Gated Entrance', 'Paved Roads', 'Children Play Area', 'Water Connection'],
-    reraApproved: false, // Under dev
+    verifiedTitle: false, // Under dev
   },
   'shyam-aangan': {
     price: '₹12 Lakhs onwards',
     area: '900 - 2400 sq.ft.',
-    amenities: ['JDA Approved', 'Community Hall', 'IT Corridor Proximity', 'Parks'],
-    reraApproved: true,
+    amenities: ['Clear Registry Title', 'Community Hall', 'IT Corridor Proximity', 'Parks'],
+    verifiedTitle: true,
   },
 };
 
@@ -227,16 +227,16 @@ export default function PropertyComparisonModal() {
                         ))}
                     </tr>
 
-                    {/* JDA Approved */}
+                    {/* Verified Land Title */}
                     <tr>
                       <td className="py-4 pr-4 font-semibold text-gray-900 dark:text-white">
-                        JDA Approved
+                        Verified Land Title
                       </td>
                       {compareList.map((project) => {
                         const extra = PROJECT_EXTRA_DETAILS[project.id];
                         return (
                           <td key={project.id} className="p-4">
-                            {extra?.reraApproved ? (
+                            {extra?.verifiedTitle ? (
                               <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
                                 <Check size={16} /> Yes
                               </span>

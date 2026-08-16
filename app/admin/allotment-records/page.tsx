@@ -319,29 +319,29 @@ export default function AllotmentRecordsPage() {
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between sm:mb-8">
         <div>
-          <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
+          <h1 className="text-brand-navy mb-1 font-serif text-2xl tracking-tight sm:mb-2 sm:text-3xl dark:text-white">
             Allotment <span className="text-brand-gold italic">Records</span>
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 sm:text-sm dark:text-gray-400">
             View, search, audit, download, and delete all generated client allotment letters.
           </p>
         </div>
         <button
           onClick={fetchAllotments}
           disabled={loading}
-          className="dark:bg-brand-dark-surface/50 flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 disabled:opacity-50 dark:border-white/10 dark:hover:bg-white/5"
+          className="dark:bg-brand-dark-surface/50 flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 disabled:opacity-50 sm:h-10 sm:w-10 dark:border-white/10 dark:hover:bg-white/5"
           title="Refresh List"
         >
           <RefreshCw
-            className={`h-4 w-4 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`}
+            className={`h-3.5 w-3.5 text-gray-600 sm:h-4 sm:w-4 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`}
           />
         </button>
       </div>
 
       {/* Quick Statistics Cards */}
-      <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-2.5 sm:mb-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
         {loading ? (
           <>
             <StatCardSkeleton />
@@ -355,17 +355,19 @@ export default function AllotmentRecordsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0, duration: 0.3 }}
-              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5"
+              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-xl border border-gray-200 bg-white p-3 shadow-md sm:rounded-2xl sm:p-5 dark:border-white/5"
             >
-              <div className="flex items-center gap-4">
-                <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
-                  <FileText className="text-brand-gold h-5 w-5" />
+              <div className="flex items-center gap-2.5 sm:gap-4">
+                <div className="bg-brand-gold/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl">
+                  <FileText className="text-brand-gold h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold tracking-wider text-gray-400 uppercase sm:text-[10px] sm:tracking-widest">
                     Total Letters
                   </p>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{totalCount}</h3>
+                  <h3 className="truncate text-lg font-bold text-gray-900 sm:text-2xl dark:text-white">
+                    {totalCount}
+                  </h3>
                 </div>
               </div>
             </motion.div>
@@ -373,17 +375,17 @@ export default function AllotmentRecordsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05, duration: 0.3 }}
-              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5"
+              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-xl border border-gray-200 bg-white p-3 shadow-md sm:rounded-2xl sm:p-5 dark:border-white/5"
             >
-              <div className="flex items-center gap-4">
-                <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
-                  <IndianRupee className="text-brand-gold h-5 w-5" />
+              <div className="flex items-center gap-2.5 sm:gap-4">
+                <div className="bg-brand-gold/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl">
+                  <IndianRupee className="text-brand-gold h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold tracking-wider text-gray-400 uppercase sm:text-[10px] sm:tracking-widest">
                     Total Unit Value
                   </p>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h3 className="truncate text-lg font-bold text-gray-900 sm:text-2xl dark:text-white">
                     ₹{totalValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
                   </h3>
                 </div>
@@ -393,17 +395,17 @@ export default function AllotmentRecordsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1, duration: 0.3 }}
-              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5"
+              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-xl border border-gray-200 bg-white p-3 shadow-md sm:rounded-2xl sm:p-5 dark:border-white/5"
             >
-              <div className="flex items-center gap-4">
-                <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
-                  <TrendingUp className="text-brand-gold h-5 w-5" />
+              <div className="flex items-center gap-2.5 sm:gap-4">
+                <div className="bg-brand-gold/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl">
+                  <TrendingUp className="text-brand-gold h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold tracking-wider text-gray-400 uppercase sm:text-[10px] sm:tracking-widest">
                     Avg Area (Sq.Yds)
                   </p>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h3 className="truncate text-lg font-bold text-gray-900 sm:text-2xl dark:text-white">
                     {avgArea.toFixed(1)}
                   </h3>
                 </div>
@@ -413,17 +415,17 @@ export default function AllotmentRecordsPage() {
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.15, duration: 0.3 }}
-              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5"
+              className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-xl border border-gray-200 bg-white p-3 shadow-md sm:rounded-2xl sm:p-5 dark:border-white/5"
             >
-              <div className="flex items-center gap-4">
-                <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
-                  <Building2 className="text-brand-gold h-5 w-5" />
+              <div className="flex items-center gap-2.5 sm:gap-4">
+                <div className="bg-brand-gold/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl">
+                  <Building2 className="text-brand-gold h-4 w-4 sm:h-5 sm:w-5" />
                 </div>
-                <div>
-                  <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">
+                <div className="min-w-0">
+                  <p className="text-[9px] font-bold tracking-wider text-gray-400 uppercase sm:text-[10px] sm:tracking-widest">
                     Shyam Aangan
                   </p>
-                  <h3 className="text-2xl font-bold text-gray-900 dark:text-white">
+                  <h3 className="truncate text-lg font-bold text-gray-900 sm:text-2xl dark:text-white">
                     {shyamAanganCount}
                   </h3>
                 </div>
@@ -434,22 +436,22 @@ export default function AllotmentRecordsPage() {
       </div>
 
       {/* Toolbar */}
-      <div className="mb-6 flex flex-col gap-3 font-sans sm:flex-row">
+      <div className="mb-4 flex flex-col gap-2.5 font-sans sm:mb-6 sm:flex-row sm:gap-3">
         <div className="relative flex-1">
-          <Search className="text-brand-gold absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+          <Search className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 sm:left-3.5 sm:h-4 sm:w-4" />
           <input
             type="text"
             placeholder="Search by client, ticket ID or advisor..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
+            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-2 pr-9 pl-9 text-xs text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none sm:py-3 sm:pr-10 sm:pl-10 sm:text-sm dark:border-white/10 dark:text-white dark:placeholder-gray-600"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="hover:text-brand-gold absolute top-1/2 right-3.5 -translate-y-1/2 cursor-pointer text-gray-500"
+              className="hover:text-brand-gold absolute top-1/2 right-3 -translate-y-1/2 cursor-pointer text-gray-500 sm:right-3.5"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           )}
         </div>
@@ -457,7 +459,8 @@ export default function AllotmentRecordsPage() {
           <select
             value={projectFilter}
             onChange={(e) => setProjectFilter(e.target.value)}
-            className="focus:border-brand-gold dark:bg-brand-dark-surface/85 w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 transition-all outline-none hover:bg-gray-50 sm:w-auto dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+            aria-label="Filter by project"
+            className="focus:border-brand-gold dark:bg-brand-dark-surface/85 w-full cursor-pointer rounded-lg border border-gray-200 bg-white px-3 py-2 text-[11px] font-semibold tracking-wider text-gray-700 transition-all outline-none hover:bg-gray-50 sm:w-auto sm:px-5 sm:py-3 sm:text-xs sm:font-bold sm:tracking-widest dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
           >
             <option value="" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
               ALL PROJECTS
@@ -695,27 +698,37 @@ export default function AllotmentRecordsPage() {
 
       {/* View & Re-download overlay Modal */}
       {selectedAllotment && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-md dark:bg-black/90">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/60 p-2 backdrop-blur-md sm:p-4 dark:bg-black/90">
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="dark:bg-brand-dark-surface relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10"
+            className="dark:bg-brand-dark-surface relative flex max-h-[95vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl sm:max-h-[90vh] sm:rounded-2xl dark:border-white/10"
           >
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/8">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                  Allotment Letter - {selectedAllotment.form_data?.ticketId}
-                </h3>
-                <p className="text-[10px] text-gray-500">
-                  Generated on {new Date(selectedAllotment.created_at).toLocaleDateString('en-GB')}
-                </p>
+            <div className="flex flex-col justify-between gap-3 border-b border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:px-6 sm:py-4 dark:border-white/8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-base font-bold text-gray-900 sm:text-lg dark:text-white">
+                    Allotment Letter - {selectedAllotment.form_data?.ticketId}
+                  </h3>
+                  <p className="text-[10px] text-gray-500">
+                    Generated on{' '}
+                    {new Date(selectedAllotment.created_at).toLocaleDateString('en-GB')}
+                  </p>
+                </div>
+                <button
+                  onClick={() => setSelectedAllotment(null)}
+                  aria-label="Close modal"
+                  className="text-gray-500 hover:text-gray-800 sm:hidden dark:text-gray-400 dark:hover:text-white"
+                >
+                  <X className="h-5 w-5" />
+                </button>
               </div>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 sm:gap-3">
                 <button
                   onClick={handleDownloadPDF}
                   disabled={pdfLoading}
-                  className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold uppercase shadow-md transition-all disabled:opacity-50"
+                  className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex flex-1 items-center justify-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase shadow-md transition-all disabled:opacity-50 sm:flex-initial sm:px-4 sm:py-2 sm:text-xs"
                 >
                   {pdfLoading ? (
                     <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -727,7 +740,7 @@ export default function AllotmentRecordsPage() {
                 <button
                   onClick={handleDownloadImage}
                   disabled={imageLoading}
-                  className="flex items-center gap-1.5 rounded-lg bg-emerald-600 px-4 py-2 text-xs font-bold text-white uppercase shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50"
+                  className="flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-emerald-600 px-3 py-1.5 text-[11px] font-bold text-white uppercase shadow-md transition-all hover:bg-emerald-700 disabled:opacity-50 sm:flex-initial sm:px-4 sm:py-2 sm:text-xs"
                 >
                   {imageLoading ? (
                     <RefreshCw className="h-3.5 w-3.5 animate-spin" />
@@ -738,7 +751,8 @@ export default function AllotmentRecordsPage() {
                 </button>
                 <button
                   onClick={() => setSelectedAllotment(null)}
-                  className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white"
+                  aria-label="Close modal"
+                  className="hidden text-gray-500 hover:text-gray-800 sm:block dark:text-gray-400 dark:hover:text-white"
                 >
                   <X className="h-6 w-6" />
                 </button>
@@ -746,10 +760,10 @@ export default function AllotmentRecordsPage() {
             </div>
 
             {/* Modal Body */}
-            <div className="flex-1 overflow-y-auto bg-gray-100 p-6 dark:bg-zinc-900/30">
+            <div className="flex-1 overflow-y-auto bg-gray-100 p-2 sm:p-6 dark:bg-zinc-900/30">
               <AllotmentLetterPreview
                 id="modalAllotmentPreview"
-                className="mx-auto w-full max-w-3xl rounded-xl bg-white p-8 font-sans text-[13px] leading-relaxed text-black shadow-sm"
+                className="mx-auto w-full max-w-3xl rounded-xl bg-white p-4 font-sans text-xs leading-relaxed text-black shadow-sm sm:p-8 sm:text-[13px]"
                 formData={selectedAllotment.form_data}
                 companyInfo={companyInfo}
               />

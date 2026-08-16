@@ -115,7 +115,7 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
                 All Categories
               </option>
               <option value="plots" className="text-gray-900">
-                JDA Approved Plots
+                Residential Plots
               </option>
               <option value="townships" className="text-gray-900">
                 Gated Townships

@@ -19,12 +19,12 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
       "Tonk Road (NH-12) is one of Jaipur's fastest-growing residential and commercial corridors, offering rapid appreciation and excellent connectivity.",
     metaTitle: 'Properties in Tonk Road Jaipur | SVI Infra Solutions',
     metaDescription:
-      'Explore premium residential and commercial projects on Tonk Road, Jaipur. JDA approved townships near IT parks and the upcoming ring road.',
+      'Explore premium residential and commercial projects on Tonk Road, Jaipur. Master-planned townships near IT parks and the upcoming ring road.',
     highlights: [
       'Direct connectivity to Jaipur International Airport (15 mins)',
       'Close proximity to Chokhi Dhani and upcoming Ring Road',
       'Near major education hubs and IT SEZs',
-      'JDA-approved developments with secure land titles',
+      'Master-planned developments with secure land titles',
     ],
     content:
       "Tonk Road (NH-12) has emerged as the prime growth engine of Jaipur's real estate. With massive infrastructure investments including the Jaipur Ring Road and proximity to the Sitapura Industrial Area, this region has seen property values appreciate steadily over the last decade. It offers a balanced mix of residential townships, luxury apartments, and commercial complexes, making it a hotspot for both end-users and long-term investors.",

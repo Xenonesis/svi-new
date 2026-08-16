@@ -21,7 +21,7 @@ export function OfferLetterStatsCards({
 }: OfferLetterStatsCardsProps) {
   if (loading) {
     return (
-      <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mb-4 grid grid-cols-2 gap-2.5 sm:mb-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
         <StatCardSkeleton />
         <StatCardSkeleton />
         <StatCardSkeleton />
@@ -31,11 +31,11 @@ export function OfferLetterStatsCards({
   }
 
   return (
-    <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="mb-4 grid grid-cols-2 gap-2.5 sm:mb-8 sm:grid-cols-2 sm:gap-5 lg:grid-cols-4">
       <AdminStatsCard icon={FileSignature} label="Total Letters" value={totalCount} delay={0} />
       <AdminStatsCard
         icon={IndianRupee}
-        label="Total CTC (Monthly)"
+        label="Total CTC"
         value={`₹${totalCtc.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
         delay={0.05}
       />

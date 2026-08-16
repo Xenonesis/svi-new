@@ -43,14 +43,18 @@ function StatCard({
   value: string;
 }) {
   return (
-    <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-2xl border border-gray-200 bg-white p-5 shadow-md dark:border-white/5">
-      <div className="flex items-center gap-4">
-        <div className="bg-brand-gold/10 flex h-10 w-10 items-center justify-center rounded-xl">
-          <Icon className="text-brand-gold h-5 w-5" />
+    <div className="dark:bg-brand-dark-surface/50 relative overflow-hidden rounded-xl border border-gray-200 bg-white p-3 shadow-md sm:rounded-2xl sm:p-5 dark:border-white/5">
+      <div className="flex items-center gap-2.5 sm:gap-4">
+        <div className="bg-brand-gold/10 flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-10 sm:w-10 sm:rounded-xl">
+          <Icon className="text-brand-gold h-4 w-4 sm:h-5 sm:w-5" />
         </div>
-        <div>
-          <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">{label}</p>
-          <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
+        <div className="min-w-0">
+          <p className="text-[9px] font-bold tracking-wider text-gray-400 uppercase sm:text-[10px] sm:tracking-widest">
+            {label}
+          </p>
+          <h3 className="truncate text-lg font-bold text-gray-900 sm:text-2xl dark:text-white">
+            {value}
+          </h3>
         </div>
       </div>
     </div>
@@ -212,66 +216,69 @@ export default function QuotationRecordsPage() {
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
       {/* Header */}
-      <div className="mb-8 flex items-center justify-between">
+      <div className="mb-4 flex items-center justify-between sm:mb-8">
         <div>
-          <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
+          <h1 className="text-brand-navy mb-1 font-serif text-2xl tracking-tight sm:mb-2 sm:text-3xl dark:text-white">
             Quotation <span className="text-brand-gold italic">Records</span>
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          <p className="text-xs text-gray-500 sm:text-sm dark:text-gray-400">
             View, search, and manage all generated quotation documents.
           </p>
         </div>
         <div className="flex items-center gap-2">
           <Link
             href="/admin/quotation"
-            className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase shadow-md transition-all"
+            className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase shadow-md transition-all sm:rounded-xl sm:px-4 sm:py-2 sm:text-xs"
           >
             <FileText className="h-3.5 w-3.5" />
-            New Quotation
+            <span className="hidden sm:inline">New Quotation</span>
+            <span className="sm:hidden">New</span>
           </Link>
           <button
             onClick={fetchQuotations}
             disabled={loading}
-            className="dark:bg-brand-dark-surface/50 flex h-10 w-10 items-center justify-center rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 disabled:opacity-50 dark:border-white/10 dark:hover:bg-white/5"
+            className="dark:bg-brand-dark-surface/50 flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 disabled:opacity-50 sm:h-10 sm:w-10 sm:rounded-xl dark:border-white/10 dark:hover:bg-white/5"
             title="Refresh"
           >
             <RefreshCw
-              className={`h-4 w-4 text-gray-600 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`}
+              className={`h-3.5 w-3.5 text-gray-600 sm:h-4 sm:w-4 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`}
             />
           </button>
         </div>
       </div>
 
       {/* Stats */}
-      <div className="mb-8 grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <div className="mb-4 grid grid-cols-2 gap-2.5 sm:mb-8 sm:grid-cols-3 sm:gap-5">
         <StatCard icon={FileText} label="Total Quotations" value={String(totalCount)} />
         <StatCard
           icon={IndianRupee}
-          label="Total Quoted Value"
+          label="Total Value"
           value={`₹${totalValue.toLocaleString('en-IN', { maximumFractionDigits: 0 })}`}
         />
-        <StatCard icon={TrendingUp} label="Completed" value={String(completedCount)} />
+        <div className="col-span-2 sm:col-span-1">
+          <StatCard icon={TrendingUp} label="Completed" value={String(completedCount)} />
+        </div>
       </div>
 
       {/* Search */}
-      <div className="mb-6">
+      <div className="mb-4 sm:mb-6">
         <div className="relative max-w-lg">
-          <Search className="text-brand-gold absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
+          <Search className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 sm:left-3.5 sm:h-4 sm:w-4" />
           <input
             type="text"
-            placeholder="Search by quotation no., customer, project, plot..."
+            placeholder="Search by quotation no., customer, project..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
+            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-2 pr-9 pl-9 text-xs text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none sm:py-3 sm:pr-10 sm:pl-10 sm:text-sm dark:border-white/10 dark:text-white dark:placeholder-gray-600"
             aria-label="Search quotations"
           />
           {searchQuery && (
             <button
               onClick={() => setSearchQuery('')}
-              className="hover:text-brand-gold absolute top-1/2 right-3.5 -translate-y-1/2 text-gray-500"
+              className="hover:text-brand-gold absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 sm:right-3.5"
               aria-label="Clear search"
             >
-              <X className="h-4 w-4" />
+              <X className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
             </button>
           )}
         </div>

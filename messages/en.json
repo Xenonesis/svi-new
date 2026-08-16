@@ -39,8 +39,8 @@
         "desc": "Collaborating with top architects to design sustainable, Vastu-compliant master plans."
       },
       "approvalsRera": {
-        "title": "Approvals & RERA",
-        "desc": "Securing all necessary government clearances to ensure 100% legal security and transparency."
+        "title": "Documentation & Verification",
+        "desc": "Ensuring comprehensive verification and clear documentation for 100% secure ownership."
       },
       "infrastructure": {
         "title": "Infrastructure Development",
@@ -217,11 +217,11 @@
   "whyInvest": {
     "sectionTitle": "Why Investors Choose SVI",
     "heading": "Excellence in Every Step",
-    "description": "We focus on prime locations with high appreciation potential, notably the Phulera Smart City, Jaipur, and major growth corridors. Backed by government approvals and strong partnerships.",
+    "description": "We focus on prime locations with high appreciation potential, notably the Phulera Smart City, Jaipur, and major growth corridors. Backed by quality infrastructure and strong partnerships.",
     "futureConnectivityTitle": "Future Connectivity",
     "futureConnectivityDesc": "Strategically located near upcoming transport hubs and highways.",
-    "legalSecurityTitle": "Legal Security",
-    "legalSecurityDesc": "100% compliant projects with clear titles and RERA approvals.",
+    "legalSecurityTitle": "Secure Ownership",
+    "legalSecurityDesc": "100% verified projects with clear titles and hassle-free registry.",
     "developmentReadyTitle": "Development Ready",
     "developmentReadyDesc": "Fully developed infrastructure ready for immediate construction.",
     "organicGrowthTitle": "High Growth Areas",
@@ -255,7 +255,7 @@
     "heading": "Visionary Leadership",
     "founderName": "Founder & Chairman",
     "visionStatement": "Our vision is to transform the infrastructure landscape by creating sustainable, premium, and value-driven real estate developments.",
-    "founderStory": "With over two decades of profound experience in infrastructure and real estate, our leadership has guided SVI Infra towards becoming a trusted name. We believe in transparency, legal security, and uncompromising quality."
+    "founderStory": "With over two decades of profound experience in infrastructure and real estate, our leadership has guided SVI Infra towards becoming a trusted name. We believe in transparency, verified ownership, and uncompromising quality."
   },
   "testimonials": {
     "title": "What Our Clients Say",
@@ -324,7 +324,7 @@
         "by": "Deepika, Corporate Client"
       },
       "t15": {
-        "text": "Property papers and registry process was handled so smoothly. Really appreciate their legal team's support.",
+        "text": "Property papers and registry process was handled so smoothly. Really appreciate their documentation team's support.",
         "by": "Rajesh, Portfolio Investor"
       },
       "t16": {
@@ -882,16 +882,16 @@
           "title": "Shivani Vatika 11th",
           "location": "Near Khatu Shyam Ji",
           "type": "Premier Residential Plots",
-          "description": "Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha, offering 198 residential plots. Developed on land acquired from Jaipur Development Authority.",
-          "fullDescription": "Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed on land acquired from Jaipur Development Authority – Pratap Nagar Cooperative Housing Society, ensuring complete transparency and trust for buyers. The township offers 198 residential plots ranging from 50 sq. yds. to 200 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure and essential facilities.",
+          "description": "Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha, offering 198 residential plots with prime connectivity and modern infrastructure.",
+          "fullDescription": "Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed with clear documentation and trust for buyers. The township offers 198 residential plots ranging from 50 sq. yds. to 200 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure and essential facilities.",
           "status": "Pre-Launch"
         },
         "shyamAangan": {
           "title": "Shyam Aangan",
           "location": "Basri Khurd near Jaipur",
           "type": "Integrated Township",
-          "description": "JDA-approved integrated township on NH-12 (Tonk Road), perfectly positioned near the upcoming Inner Ring Road, IT corridors, and SEZs. Offers affordable pricing and flexible plans.",
-          "fullDescription": "Shyam Aangan is a sprawling, JDA-approved integrated township situated strategically on NH-12 (Tonk Road). It provides unparalleled connectivity to the upcoming Inner Ring Road, key IT corridors, and Special Economic Zones (SEZs). Designed to cater to diverse residential needs, the project blends affordable pricing with world-class facilities, paving the way for substantial future appreciation and a thriving community atmosphere.",
+          "description": "Master-planned integrated township on NH-12 (Tonk Road), perfectly positioned near the upcoming Inner Ring Road, IT corridors, and SEZs. Offers affordable pricing and flexible plans.",
+          "fullDescription": "Shyam Aangan is a sprawling, master-planned integrated township situated strategically on NH-12 (Tonk Road). It provides unparalleled connectivity to the upcoming Inner Ring Road, key IT corridors, and Special Economic Zones (SEZs). Designed to cater to diverse residential needs, the project blends affordable pricing with world-class facilities, paving the way for substantial future appreciation and a thriving community atmosphere.",
           "status": "Under Development"
         },
         "shreeShyamResidency": {

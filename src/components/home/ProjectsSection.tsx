@@ -75,7 +75,7 @@ export default function ProjectsSection() {
                 />
                 <div className="bg-brand-navy/90 text-brand-gold border-brand-gold/30 absolute top-4 left-4 z-20 flex items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-semibold backdrop-blur-md">
                   <ShieldCheck size={12} />
-                  <span>JDA Approved</span>
+                  <span>Verified Project</span>
                 </div>
               </div>
             );
@@ -85,7 +85,7 @@ export default function ProjectsSection() {
         <div className="mt-12 flex items-center justify-between border-t border-gray-200 pt-6 dark:border-gray-700">
           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
             <Check size={14} className="text-emerald-500" />
-            <span>100% Government Approved & Clear Legal Title Deeds</span>
+            <span>100% Verified Plots & Clear Registry Documentation</span>
           </div>
           <Link
             href="/projects/completed"

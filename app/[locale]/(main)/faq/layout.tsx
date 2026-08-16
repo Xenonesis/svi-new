@@ -5,7 +5,7 @@ import { BreadcrumbSchema } from '@/src/components/common/Schema';
 export const metadata: Metadata = createMetadata({
   title: 'Frequently Asked Questions | SVI Infra Solutions',
   description:
-    'Find answers to frequently asked questions about property investment, payment plans, RERA compliance, and more at SVI Infra Solutions.',
+    'Find answers to frequently asked questions about property investment, payment plans, clear documentation, and more at SVI Infra Solutions.',
   path: '/faq',
 });
 

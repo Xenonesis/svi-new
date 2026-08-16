@@ -69,26 +69,26 @@ export default function SiteVisitsPage() {
   const hasMore = data?.hasMore || false;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8">
-      <div className="mb-8 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <div className="bg-brand-gold/10 flex h-12 w-12 items-center justify-center rounded-xl">
-            <Calendar className="text-brand-gold h-6 w-6" />
+    <div className="mx-auto max-w-7xl px-2 py-4 font-sans sm:px-4 sm:py-8">
+      <div className="mb-4 flex items-center justify-between sm:mb-8">
+        <div className="flex items-center gap-3 sm:gap-4">
+          <div className="bg-brand-gold/10 flex h-9 w-9 shrink-0 items-center justify-center rounded-lg sm:h-12 sm:w-12 sm:rounded-xl">
+            <Calendar className="text-brand-gold h-4 w-4 sm:h-6 sm:w-6" />
           </div>
           <div>
-            <h1 className="text-brand-navy font-serif text-2xl font-bold dark:text-white">
+            <h1 className="text-brand-navy font-serif text-xl font-bold sm:text-2xl dark:text-white">
               Site Visits
             </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
+            <p className="text-xs text-gray-500 sm:text-sm dark:text-gray-400">
               {total} booking{total !== 1 ? 's' : ''} received
             </p>
           </div>
         </div>
         <button
           onClick={() => refetch()}
-          className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs font-bold tracking-wider text-gray-600 uppercase transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
+          className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[11px] font-bold tracking-wider text-gray-600 uppercase transition-all hover:bg-gray-50 sm:px-4 sm:py-2 sm:text-xs dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300"
         >
-          <RefreshCw className="h-3.5 w-3.5" /> Refresh
+          <RefreshCw className="h-3.5 w-3.5" /> <span className="hidden sm:inline">Refresh</span>
         </button>
       </div>
 

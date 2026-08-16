@@ -21,7 +21,7 @@ export default function BankApprovalsGrid() {
               FINANCIAL PARTNERSHIPS
             </span>
             <h3 className="mt-1 font-serif text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">
-              Approved by India&apos;s Leading Nationalized Banks
+              Partnered with India&apos;s Leading Nationalized Banks
             </h3>
           </div>
           <div className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-emerald-600 md:mt-0 dark:text-emerald-400">

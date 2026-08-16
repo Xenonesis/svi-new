@@ -41,7 +41,7 @@ export const BUYING_PROCESS_FAQS: FAQItem[] = [
     category: 'Buying Process',
     question: 'Is there a cancellation policy if I change my mind?',
     answer:
-      'Yes, cancellations are allowed as per RERA guidelines. Cancellation charges apply based on the stage of construction and time elapsed since booking. Please refer to your booking agreement for specific terms.',
+      'Yes, cancellations are supported under standard customer terms. Charges apply based on the stage of development and time elapsed since booking. Please refer to your booking agreement for specific terms.',
   },
   {
     category: 'Buying Process',
@@ -93,9 +93,9 @@ export const INVESTMENT_FAQS: FAQItem[] = [
 export const PROJECT_FAQS: FAQItem[] = [
   {
     category: 'Project-Specific',
-    question: 'Are all your projects government approved?',
+    question: 'Are all your projects verified and compliant?',
     answer:
-      'Yes, all our projects undergo rigorous legal and technical due diligence and have the necessary approvals from local development authorities like JDA and municipal corporations.',
+      'Yes, all our projects undergo rigorous technical and quality due diligence with complete documentation, ensuring 100% verified townships and clear ownership titles.',
   },
   {
     category: 'Project-Specific',
@@ -123,39 +123,39 @@ export const PROJECT_FAQS: FAQItem[] = [
   },
   {
     category: 'Project-Specific',
-    question: 'Do you offer possession guarantees?',
+    question: 'Do you offer possession commitments?',
     answer:
-      'Yes, as per RERA regulations, we commit to possession dates in our agreements. In case of delays beyond our control, compensation is provided as per statutory guidelines.',
+      'Yes, we commit to clear handover dates in our agreements. We prioritize timely project execution and seamless transition for every buyer.',
   },
   {
     category: 'Project-Specific',
     question: "What happens if there's a delay in project delivery?",
     answer:
-      'In case of delays attributable to us, we pay interest as per RERA guidelines (SBI MCLR + 2%). Force majeure events may extend timelines without penalty.',
+      'We maintain stringent delivery schedules and transparent customer protection commitments. In the event of unforeseen construction delays, our support team provides regular updates and dedicated solutions.',
   },
 ];
 
 export const LEGAL_FAQS: FAQItem[] = [
   {
-    category: 'Legal & Compliance',
-    question: 'Are the property titles clear and litigation-free?',
+    category: 'Trust & Documentation',
+    question: 'Are the property titles clear and dispute-free?',
     answer:
-      'Yes, we conduct thorough title verification through legal experts before launching any project. All our properties have clear, marketable titles free from encumbrances and litigation.',
+      'Yes, we conduct thorough title verification before launching any project. All our properties have clear, marketable titles free from encumbrances and disputes.',
   },
   {
-    category: 'Legal & Compliance',
-    question: 'Is SVI Infra JDA approved?',
+    category: 'Trust & Documentation',
+    question: 'Does SVI Infra provide clear ownership titles and verification?',
     answer:
-      'Yes, all our eligible projects are approved by the Jaipur Development Authority (JDA). We hold clear JDA Patta titles and all necessary approvals from local development authorities, ensuring full legal compliance and transparent documentation.',
+      'Yes, all our projects come with 100% verified land titles and clear registry documentation, ensuring complete ownership security, seamless bank assistance, and transparent paperwork.',
   },
   {
-    category: 'Legal & Compliance',
+    category: 'Trust & Documentation',
     question: 'What warranties do you provide on construction?',
     answer:
       'We provide a 5-year structural warranty and 1-year warranty on fixtures and fittings. Any defects reported during this period are rectified free of cost.',
   },
   {
-    category: 'Legal & Compliance',
+    category: 'Trust & Documentation',
     question: 'How do you handle customer grievances?',
     answer:
       'We have a dedicated grievance redressal mechanism. You can raise concerns through our website, email, or customer care. Most issues are resolved within 7-15 working days.',

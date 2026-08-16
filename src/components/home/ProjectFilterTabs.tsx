@@ -4,7 +4,7 @@ import AnimatedSection from '@/src/components/ui/AnimatedSection';
 
 const TABS = [
   { id: 'all', label: 'All Projects' },
-  { id: 'plots', label: 'JDA Approved Plots' },
+  { id: 'plots', label: 'Residential Plots' },
   { id: 'townships', label: 'Gated Townships' },
   { id: 'commercial', label: 'Commercial Hubs' },
 ];
