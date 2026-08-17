@@ -66,6 +66,7 @@ export const metadata: Metadata = {
     canonical: '/',
     languages: {
       'en-IN': '/',
+      'hi-IN': '/hi',
       'x-default': '/',
     },
   },
@@ -191,11 +192,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 'DMIC Corridor Properties',
                 'Phulera Smart City',
               ],
-              aggregateRating: {
-                '@type': 'AggregateRating',
-                ratingValue: '4.8',
-                reviewCount: '5000',
-              },
             }),
           }}
         />

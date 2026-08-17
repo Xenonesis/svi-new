@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { buildAlternates } from '@/src/lib/seo';
 import ExclusiveOffersClient from './ExclusiveOffersClient';
 
 type Props = {
@@ -11,7 +12,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const t = await getTranslations({ locale, namespace: 'pages.exclusiveOffers' });
   return {
     title: t('title'),
-    description: t('description'),
+    description: `${t('description')} ${t('subtitle')}`,
+    alternates: buildAlternates('/exclusive-offers', locale),
   };
 }
 

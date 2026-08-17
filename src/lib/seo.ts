@@ -10,17 +10,30 @@ export function absoluteUrl(path = '/') {
   return `${SITE_URL}${path.startsWith('/') ? path : `/${path}`}`;
 }
 
-export function getAlternateLinks(path: string, locale = 'en') {
-  const cleanPath = path.startsWith('/') ? path : `/${path}`;
-  const currentUrl = absoluteUrl(`/${locale}${cleanPath}`);
-  const enUrl = absoluteUrl(`/en${cleanPath}`);
-  const hiUrl = absoluteUrl(`/hi${cleanPath}`);
+/**
+ * Canonical serving URL for a path + locale.
+ * English (default locale) is served at the root path (next-intl
+ * `localePrefix: 'as-needed'`), Hindi at `/hi/<path>`. `/en/<path>` is a 307
+ * redirect and must never be emitted as a canonical or hreflang target.
+ */
+export function localizedUrl(path: string, locale = 'en') {
+  const cleanPath = path === '/' ? '' : path.startsWith('/') ? path : `/${path}`;
+  return locale === 'hi' ? absoluteUrl(`/hi${cleanPath}`) : absoluteUrl(cleanPath || '/');
+}
 
+/**
+ * Self-referencing canonical + full hreflang set for a path/locale.
+ * Every indexable page must emit its own alternates; otherwise it inherits
+ * the root layout's `canonical: '/'` and tells Google to index the homepage.
+ */
+export function buildAlternates(path: string, locale = 'en') {
+  const enUrl = localizedUrl(path, 'en');
+  const hiUrl = localizedUrl(path, 'hi');
   return {
-    canonical: currentUrl,
+    canonical: locale === 'hi' ? hiUrl : enUrl,
     languages: {
-      en: enUrl,
-      hi: hiUrl,
+      'en-IN': enUrl,
+      'hi-IN': hiUrl,
       'x-default': enUrl,
     },
   };
@@ -43,23 +56,15 @@ export function createMetadata({
   noIndex = false,
   type = 'website',
 }: SeoOptions): Metadata {
-  const url = absoluteUrl(path);
+  const url = localizedUrl(path, 'en');
   const imageUrl = absoluteUrl(image);
 
   return {
-    title: {
-      default: title,
-      template: `%s | ${SITE_NAME}`,
-    },
+    // Plain string: the root layout's `%s | SVI Infra Solutions` template
+    // appends the brand once. Callers must NOT include the brand in `title`.
+    title,
     description,
-    alternates: {
-      canonical: url,
-      languages: {
-        'en-IN': absoluteUrl(`/en${path === '/' ? '' : path}`),
-        'hi-IN': absoluteUrl(`/hi${path === '/' ? '' : path}`),
-        'x-default': absoluteUrl(`/en${path === '/' ? '' : path}`),
-      },
-    },
+    alternates: buildAlternates(path, 'en'),
     robots: noIndex
       ? {
           index: false,

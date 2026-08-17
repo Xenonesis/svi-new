@@ -1,10 +1,11 @@
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { Link } from '@/src/i18n/navigation';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
-import { SITE_URL } from '@/src/lib/seo';
+import { SITE_URL, SITE_NAME, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import AnalyticsTracker from '@/src/components/ui/AnalyticsTracker';
 import { BreadcrumbSchema, RealEstateListingSchema } from '@/src/components/common/Schema';
+import { AREAS_DATA } from '@/src/data/areas';
 import GalleryCarousel from '@/src/components/projects/GalleryCarousel';
 import NewsSection from '@/src/components/projects/NewsSection';
 import ExpandableDescription from '@/src/components/ui/ExpandableDescription';
@@ -22,25 +23,34 @@ type Props = {
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const project = PROJECTS_DB[slug];
   if (!project) return { title: 'Project Not Found' };
 
+  const isHindi = locale === 'hi';
+  const title = isHindi && project.titleHi ? project.titleHi : project.title;
+  const description = (
+    isHindi && project.descriptionHi ? project.descriptionHi : project.description
+  ).slice(0, 160);
+  const path = `/projects/${slug}`;
+
   return {
-    title: `${project.title} - SVI Infra Solutions`,
-    description: project.description,
+    title,
+    description,
+    alternates: buildAlternates(path, locale),
     openGraph: {
-      title: `${project.title} | SVI Infra Solutions`,
-      description: project.description.slice(0, 160),
+      title,
+      description,
+      url: localizedUrl(path, locale),
       images: [{ url: `${SITE_URL}${project.heroImage}`, width: 1200, height: 630 }],
       type: 'website',
-      locale: 'en_IN',
-      siteName: 'SVI Infra Solutions',
+      locale: isHindi ? 'hi_IN' : 'en_IN',
+      siteName: SITE_NAME,
     },
     twitter: {
       card: 'summary_large_image',
-      title: `${project.title} - SVI Infra Solutions`,
-      description: project.description.slice(0, 160),
+      title,
+      description,
       images: [`${SITE_URL}${project.heroImage}`],
     },
   };
@@ -84,7 +94,7 @@ export default async function ProjectDetailPage({ params }: Props) {
 
       <div className="container mx-auto max-w-7xl px-4 pt-28 pb-8">
         <Link
-          href={`/${locale}/projects/current`}
+          href={`/projects/current`}
           className="text-brand-navy hover:text-brand-gold mb-8 inline-flex items-center gap-2 font-semibold transition-colors dark:text-gray-300"
         >
           <ArrowLeft size={20} />
@@ -124,6 +134,33 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Area cross-link: helps crawlers discover the orphaned /areas/* pages */}
+      {(() => {
+        const area = Object.values(AREAS_DATA).find((a) => a.projects.includes(slug));
+        if (!area) return null;
+        return (
+          <div className="container mx-auto max-w-7xl px-4 pt-10">
+            <Link
+              href={`/areas/${area.slug}`}
+              className="border-brand-gold/40 bg-brand-gold/5 hover:bg-brand-gold/10 group flex items-center justify-between rounded-lg border p-6 transition-colors"
+            >
+              <div>
+                <p className="text-brand-gold mb-1 text-[10px] font-bold tracking-[0.2em] uppercase">
+                  {isHindi ? 'लोकेशन गाइड' : 'Location Guide'}
+                </p>
+                <p className="text-brand-navy font-serif text-xl dark:text-gray-100">
+                  {area.title}
+                </p>
+              </div>
+              <ArrowRight
+                size={20}
+                className="text-brand-gold shrink-0 transition-transform group-hover:translate-x-1"
+              />
+            </Link>
+          </div>
+        );
+      })()}
 
       <ProjectLocationMap mapEmbedUrl={project.mapEmbedUrl} isHindi={isHindi} />
 

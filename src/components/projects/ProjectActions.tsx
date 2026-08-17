@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import { CalendarRange, Phone, Mail, Download } from 'lucide-react';
 
 type ProjectActionsProps = {
@@ -29,7 +29,7 @@ export default function ProjectActions({
         </a>
       )}
       <Link
-        href={`/${locale}/contact?project=${slug}`}
+        href={`/contact?project=${slug}`}
         className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex w-full items-center justify-center gap-3 rounded-xl py-5 text-xl font-bold shadow-lg transition-all hover:-translate-y-1"
       >
         <CalendarRange size={24} />

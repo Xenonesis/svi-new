@@ -14,11 +14,8 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'pages.about' });
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: t('title'),
     description:
       'Building legacies since 2009. SVI Infra Solutions is a premium real estate developer with 15+ projects and 5000+ happy clients across Jaipur, Noida, and Phulera Smart City.',
   };

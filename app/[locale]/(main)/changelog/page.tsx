@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { absoluteUrl, getAlternateLinks } from '@/src/lib/seo';
+import { absoluteUrl, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import { fetchChangelog } from '@/src/lib/changelog';
 import ChangelogTimeline from '@/src/components/changelog/ChangelogTimeline';
 
@@ -22,10 +22,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    alternates: getAlternateLinks(path, locale),
+    alternates: buildAlternates(path, locale),
     openGraph: {
       type: 'website',
-      url: absoluteUrl(`/${locale}${path}`),
+      url: localizedUrl(path, locale),
       title: `${title} | SVI Infra Solutions`,
       description,
       siteName: 'SVI Infra Solutions',
@@ -62,7 +62,7 @@ export default async function ChangelogPage({ params }: Props) {
     name: t('title'),
     description:
       'Auto-generated changelog of all releases from the SVI Infra Solutions GitHub repository.',
-    url: absoluteUrl(`/${locale}/changelog`),
+    url: localizedUrl('/changelog', locale),
     inLanguage: locale,
     publisher: {
       '@type': 'Organization',

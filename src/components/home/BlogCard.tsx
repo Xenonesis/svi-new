@@ -1,6 +1,6 @@
 'use client';
 
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import Image from 'next/image';
 import { Calendar, User, Clock } from 'lucide-react';
 import type { BlogPostCard } from '@/src/lib/blog';
@@ -20,7 +20,7 @@ export default function BlogCard({ post, locale, isHindi, gradient }: BlogCardPr
 
   return (
     <article className="blog-card-glow group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200/60 bg-white shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:border-gray-700/60 dark:bg-gray-900">
-      <Link href={`/${locale}/blog/${post.slug}`} className="relative block overflow-hidden">
+      <Link href={`/blog/${post.slug}`} className="relative block overflow-hidden">
         <div className="relative aspect-[16/10] w-full overflow-hidden">
           <Image
             src={post.image}
@@ -53,7 +53,7 @@ export default function BlogCard({ post, locale, isHindi, gradient }: BlogCardPr
           </span>
         </div>
 
-        <Link href={`/${locale}/blog/${post.slug}`}>
+        <Link href={`/blog/${post.slug}`}>
           <h3 className="dark:group-hover:text-brand-gold font-serif text-lg leading-snug font-bold text-gray-900 transition-colors duration-200 group-hover:text-amber-600 dark:text-gray-100">
             {title}
           </h3>
@@ -65,7 +65,7 @@ export default function BlogCard({ post, locale, isHindi, gradient }: BlogCardPr
 
         <div className="mt-4 border-t border-gray-100 pt-4 dark:border-gray-800">
           <Link
-            href={`/${locale}/blog/${post.slug}`}
+            href={`/blog/${post.slug}`}
             className="text-brand-navy dark:text-brand-gold inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase transition-opacity hover:opacity-70"
           >
             {isHindi ? 'पूरा पढ़ें' : 'Read Full Article'}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import Image from 'next/image';
 import { BLOG_POST_CARDS } from '@/src/lib/blog';
 import { ArrowRight, Calendar, Clock } from 'lucide-react';
@@ -43,7 +43,7 @@ export default function NewsSection() {
           </p>
         </div>
         <Link
-          href={`/${locale}/blog`}
+          href={`/blog`}
           className="text-brand-navy group hidden items-center gap-2 text-[11px] font-semibold tracking-wider uppercase md:inline-flex dark:text-gray-200"
         >
           <span className="group-hover:text-brand-gold transition-colors">
@@ -68,10 +68,7 @@ export default function NewsSection() {
               key={post.slug}
               className="blog-card-glow group flex h-full flex-col overflow-hidden rounded-xl border border-gray-200/60 bg-white shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:border-gray-700/60 dark:bg-gray-900"
             >
-              <Link
-                href={`/${locale}/blog/${post.slug}`}
-                className="relative block overflow-hidden"
-              >
+              <Link href={`/blog/${post.slug}`} className="relative block overflow-hidden">
                 <div className="relative aspect-[16/10] w-full overflow-hidden">
                   <Image
                     src={post.image}
@@ -111,12 +108,12 @@ export default function NewsSection() {
                 </div>
 
                 <h3 className="text-brand-navy group-hover:text-brand-gold mb-2 line-clamp-2 font-serif text-sm leading-snug transition-colors duration-300 dark:text-gray-100">
-                  <Link href={`/${locale}/blog/${post.slug}`}>{title}</Link>
+                  <Link href={`/blog/${post.slug}`}>{title}</Link>
                 </h3>
 
                 <div className="mt-auto pt-4">
                   <Link
-                    href={`/${locale}/blog/${post.slug}`}
+                    href={`/blog/${post.slug}`}
                     className="group/link text-brand-gold hover:text-brand-navy inline-flex items-center gap-1.5 text-[10px] font-bold tracking-wider uppercase transition-colors dark:hover:text-gray-200"
                   >
                     <span className="relative">
@@ -138,7 +135,7 @@ export default function NewsSection() {
       {/* Mobile View All Button */}
       <div className="mt-8 border-t border-gray-200 pt-6 text-center md:hidden dark:border-gray-700">
         <Link
-          href={`/${locale}/blog`}
+          href={`/blog`}
           className="text-brand-navy group inline-flex items-center gap-2 text-[11px] font-semibold tracking-wider uppercase dark:text-gray-200"
         >
           <span className="group-hover:text-brand-gold transition-colors">

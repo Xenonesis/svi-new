@@ -1,13 +1,15 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from '@/src/i18n/navigation';
 import { Globe, Loader2 } from 'lucide-react';
 import { useTransition, useEffect, useRef } from 'react';
 
 export default function LanguageToggle({ isHomeTransparent }: { isHomeTransparent?: boolean }) {
   const locale = useLocale();
   const router = useRouter();
+  // next-intl pathname: already stripped of the locale prefix.
+  const pathname = usePathname();
   const [isPending, startTransition] = useTransition();
   const savedYRef = useRef<number | null>(null);
 
@@ -34,14 +36,17 @@ export default function LanguageToggle({ isHomeTransparent }: { isHomeTransparen
       }
     }
 
-    // 4. Instantly update NEXT_LOCALE cookie
+    // 4. Keep the NEXT_LOCALE cookie in sync so locale detection on
+    //    unprefixed (English) routes matches the user's last choice.
     if (typeof document !== 'undefined') {
       document.cookie = `NEXT_LOCALE=${nextLocale}; path=/; max-age=31536000; SameSite=Lax`;
     }
 
-    // 5. In-place refresh
+    // 5. Navigate to the same page in the other locale. With
+    //    `localePrefix: 'as-needed'` this swaps between `/path` (en) and
+    //    `/hi/path` — both are real, indexable URLs.
     startTransition(() => {
-      router.refresh();
+      router.replace(pathname, { locale: nextLocale });
     });
   };
 

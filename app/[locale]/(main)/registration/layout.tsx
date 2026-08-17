@@ -1,7 +1,7 @@
 import { createMetadata } from '@/src/lib/seo';
 
 export const metadata = createMetadata({
-  title: 'Property Registration & Inquiry | SVI Infra Solutions',
+  title: 'Property Registration & Inquiry',
   description:
     'Register your interest or inquire about our premium properties. Start your journey to finding the perfect home or investment with SVI Infra Solutions.',
   path: '/registration',

@@ -3,7 +3,7 @@ import { createMetadata } from '@/src/lib/seo';
 import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Careers at SVI Infra Solutions - Join Our Team',
+  title: 'Careers - Join Our Team',
   description:
     'Join SVI Infra Solutions and build a rewarding career in real estate development. Explore current job openings and opportunities.',
   path: '/careers',

@@ -104,7 +104,11 @@
     "propertyManagement": "Property Management",
     "enterEmail": "Enter your email",
     "done": "✓ Done!",
-    "register": "Register"
+    "register": "Register",
+    "locations": "Locations",
+    "tonkRoad": "Tonk Road, Jaipur",
+    "nayla": "Nayla, Jaipur",
+    "phulera": "Phulera Smart City"
   },
   "hero": {
     "badge": "Legacy of Excellence",

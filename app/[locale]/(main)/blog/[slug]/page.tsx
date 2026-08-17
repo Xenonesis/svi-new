@@ -1,11 +1,11 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Calendar, User, Tag, Clock, Bookmark } from 'lucide-react';
 import { BLOG_POST_MAP, BLOG_POSTS as SHARED_BLOG_POSTS } from '@/src/lib/blog';
-import { absoluteUrl, getAlternateLinks } from '@/src/lib/seo';
+import { absoluteUrl, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import BlogDetailFAQ from '@/src/components/faq/ProjectsFAQ';
 import { PROJECT_FAQS } from '@/src/data/faq/general';
 import { PROJECT_FAQS_HI } from '@/src/data/faq/hi';
@@ -42,12 +42,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const excerpt = locale === 'hi' && post.excerptHi ? post.excerptHi : post.excerpt;
   const tags = locale === 'hi' && post.tagsHi ? post.tagsHi : post.tags;
 
-  const currentUrl = absoluteUrl(`/${locale}/blog/${slug}`);
+  const currentUrl = localizedUrl(`/blog/${slug}`, locale);
 
   return {
-    title: `${title} | ${blogT('heading')}`,
+    title,
     description: excerpt,
-    alternates: getAlternateLinks(`/blog/${slug}`, locale),
+    alternates: buildAlternates(`/blog/${slug}`, locale),
     openGraph: {
       type: 'article',
       url: currentUrl,
@@ -126,7 +126,7 @@ export default async function BlogPost({ params }: Props) {
     dateModified: new Date(post.date).toISOString(),
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': absoluteUrl(`/${locale}/blog/${slug}`),
+      '@id': localizedUrl(`/blog/${slug}`, locale),
     },
   };
 
@@ -138,19 +138,19 @@ export default async function BlogPost({ params }: Props) {
         '@type': 'ListItem',
         position: 1,
         name: isHindi ? 'होम' : 'Home',
-        item: absoluteUrl(`/${locale}`),
+        item: localizedUrl('/', locale),
       },
       {
         '@type': 'ListItem',
         position: 2,
         name: isHindi ? 'ब्लॉग' : 'Blog',
-        item: absoluteUrl(`/${locale}/blog`),
+        item: localizedUrl('/blog', locale),
       },
       {
         '@type': 'ListItem',
         position: 3,
         name: title,
-        item: absoluteUrl(`/${locale}/blog/${slug}`),
+        item: localizedUrl(`/blog/${slug}`, locale),
       },
     ],
   };
@@ -198,7 +198,7 @@ export default async function BlogPost({ params }: Props) {
         />
         <div className="relative z-10 container mx-auto max-w-4xl px-4">
           <Link
-            href={`/${locale}/blog`}
+            href={`/blog`}
             className="text-brand-gold mb-6 inline-flex items-center gap-2 text-[11px] font-bold tracking-wider uppercase transition-colors hover:text-white"
           >
             <ArrowLeft size={14} />

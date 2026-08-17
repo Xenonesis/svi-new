@@ -1,6 +1,6 @@
-import { redirect } from 'next/navigation';
+import { redirect } from '@/src/i18n/navigation';
 
 export default async function ProjectsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  redirect(`/${locale}/projects/current`);
+  redirect({ href: '/projects/current', locale });
 }

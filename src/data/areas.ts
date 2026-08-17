@@ -17,7 +17,7 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     title: 'Investment Hub on Tonk Road (NH-12), Jaipur',
     description:
       "Tonk Road (NH-12) is one of Jaipur's fastest-growing residential and commercial corridors, offering rapid appreciation and excellent connectivity.",
-    metaTitle: 'Properties in Tonk Road Jaipur | SVI Infra Solutions',
+    metaTitle: 'Properties in Tonk Road Jaipur - Plots & Townships',
     metaDescription:
       'Explore premium residential and commercial projects on Tonk Road, Jaipur. Master-planned townships near IT parks and the upcoming ring road.',
     highlights: [
@@ -36,7 +36,7 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     title: 'Serene Residential living in Nayla, Jaipur',
     description:
       "Nayla offers a peaceful, pollution-free living environment nestled in nature while remaining fully connected to Jaipur's main city.",
-    metaTitle: 'Plots and Residential Properties in Nayla Jaipur | SVI Infra',
+    metaTitle: 'Plots and Residential Properties in Nayla Jaipur',
     metaDescription:
       'Find your dream home or plot in Nayla, Jaipur. Peaceful community living with essential urban utilities and high ROI potential.',
     highlights: [
@@ -55,7 +55,7 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     title: 'Smart City Plots near Sambhar Lake & Phulera Junction',
     description:
       'Phulera is a mega industrial and logistics hub, situated strategically on the Delhi-Mumbai Industrial Corridor (DMIC).',
-    metaTitle: 'Plots in Phulera Smart City Jaipur | DMIC Corridor Properties',
+    metaTitle: 'Plots in Phulera Smart City Jaipur | DMIC Corridor',
     metaDescription:
       'Invest in Phulera Smart City, the logistics and industrial center of the Delhi-Mumbai Industrial Corridor. High ROI plots near Sambhar Lake.',
     highlights: [

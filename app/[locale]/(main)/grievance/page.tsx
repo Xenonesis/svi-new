@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { buildAlternates } from '@/src/lib/seo';
 
 import { MessageSquareWarning } from 'lucide-react';
 import GrievanceForm from './GrievanceForm';
@@ -17,6 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: t('title'),
     description:
       'Submit a grievance or support request to SVI Infra Solutions. We are committed to resolving your issues promptly.',
+    alternates: buildAlternates('/grievance', locale),
   };
 }
 

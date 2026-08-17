@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
+import { buildAlternates, localizedUrl, SITE_NAME } from '@/src/lib/seo';
 
 // ISR: revalidate every 5 minutes — marketing content, fresh enough at this cadence
 export const revalidate = 300;
@@ -50,10 +51,24 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const isHindi = locale === 'hi';
+  const title = isHindi
+    ? 'प्रीमियम रियल एस्टेट डेवलपर | जयपुर और नोएडा'
+    : 'Premium Real Estate Developer | Jaipur & Noida';
+  const description = isHindi
+    ? 'जयपुर, नोएडा और फुलेरा स्मार्ट सिटी में प्रीमियम रियल एस्टेट डेवलपर। 15+ वर्षों के अनुभव के साथ आवासीय प्लॉट, टाउनशिप और कमर्शियल प्रोजेक्ट्स।'
+    : 'Premium real estate developer with 15+ years in Jaipur, Noida, and DMIC corridors. Residential plots, townships, and commercial projects by SVI Infra Solutions.';
   return {
-    title: isHindi
-      ? 'SVI Infra Solutions - प्रीमियम रियल एस्टेट डेवलपर, जयपुर और नोएडा'
-      : 'SVI Infra Solutions - Premium Real Estate Developer | Jaipur & Noida',
+    title,
+    description,
+    alternates: buildAlternates('/', locale),
+    openGraph: {
+      type: 'website',
+      url: localizedUrl('/', locale),
+      title,
+      description,
+      siteName: SITE_NAME,
+      locale: isHindi ? 'hi_IN' : 'en_IN',
+    },
   };
 }
 

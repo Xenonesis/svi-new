@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import { Cormorant_Garamond, Manrope, Inter, Montserrat } from 'next/font/google';
 import BrochureGenerator from '@/src/components/brochure/BrochureGenerator';
+import { buildAlternates } from '@/src/lib/seo';
 import {
   MapPin,
   Phone,
@@ -22,9 +23,10 @@ import {
 } from 'lucide-react';
 
 export const metadata: Metadata = {
-  title: 'Shivani Vatika 11th - Premium Residential Plotted Township | SVI Infra',
+  title: 'Shivani Vatika 11th Brochure - Premium Residential Plotted Township',
   description:
     'An ultra-premium residential plotted township by SVI Infra Solutions in Jaipur. Designed for generations.',
+  alternates: buildAlternates('/brochure/shivani-vatika-11', 'en'),
 };
 
 const cormorant = Cormorant_Garamond({

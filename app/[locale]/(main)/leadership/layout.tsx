@@ -3,7 +3,7 @@ import { createMetadata } from '@/src/lib/seo';
 import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
-  title: 'Leadership Team | SVI Infra Solutions',
+  title: 'Leadership Team',
   description:
     'Meet the leadership team behind SVI Infra Solutions — experienced professionals driving innovation in real estate development.',
   path: '/leadership',

@@ -2,7 +2,7 @@
 
 import { motion } from 'motion/react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import { ArrowRight, Clock } from 'lucide-react';
 import type { BlogPost } from '@/src/lib/blog';
 
@@ -41,7 +41,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                 className="group flex gap-5 overflow-hidden rounded-xl border border-gray-200/60 bg-gray-50 p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:border-gray-700/60 dark:bg-gray-900"
               >
                 <Link
-                  href={`/${locale}/blog/${post.slug}`}
+                  href={`/blog/${post.slug}`}
                   className="relative h-24 w-24 flex-shrink-0 overflow-hidden rounded-lg"
                 >
                   <Image
@@ -58,7 +58,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                     {category}
                   </span>
                   <h3 className="text-brand-navy group-hover:text-brand-gold mb-1 truncate font-serif text-base leading-snug transition-colors dark:text-gray-100">
-                    <Link href={`/${locale}/blog/${post.slug}`}>{title}</Link>
+                    <Link href={`/blog/${post.slug}`}>{title}</Link>
                   </h3>
                   <p className="mb-2 line-clamp-1 text-xs text-gray-500 dark:text-gray-400">
                     {excerpt}
@@ -69,7 +69,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                       {readTime}
                     </span>
                     <Link
-                      href={`/${locale}/blog/${post.slug}`}
+                      href={`/blog/${post.slug}`}
                       className="text-brand-gold hover:text-brand-navy inline-flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase transition-colors"
                     >
                       {isHindi ? 'पढ़ें' : 'Read'}

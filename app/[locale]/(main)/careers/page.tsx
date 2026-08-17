@@ -16,11 +16,8 @@ type Props = {
   params: Promise<{ locale: string }>;
 };
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'pages.careers' });
+export async function generateMetadata(): Promise<Metadata> {
   return {
-    title: t('title'),
     description:
       'Join SVI Infra Solutions — freelance and onsite career opportunities in real estate sales, business development, and team leadership.',
   };

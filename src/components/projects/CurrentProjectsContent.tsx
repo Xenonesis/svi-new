@@ -3,7 +3,7 @@
 import { Suspense, lazy, useCallback, useState, useEffect, type MouseEvent } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { motion, AnimatePresence } from 'motion/react';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import {
   ArrowRight,
   MapPin,
@@ -433,7 +433,7 @@ export default function CurrentProjectsContent({
                 </div>
 
                 <Link
-                  href={`/${locale}/projects/${selectedProject.id}`}
+                  href={`/projects/${selectedProject.id}`}
                   onClick={closeModal}
                   className="bg-brand-navy hover:bg-brand-gold hover:text-brand-navy flex w-full items-center justify-center gap-2 py-4 text-xs font-bold tracking-widest text-white uppercase transition-colors"
                 >

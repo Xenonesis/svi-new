@@ -60,6 +60,22 @@ const nextConfig = {
   turbopack: {
     root: process.cwd(),
   },
+  async redirects() {
+    return [
+      {
+        // Project slug is `shivani-vatika-11th`; the brochure page lives at
+        // `shivani-vatika-11`. Keep both resolvable so shared links don't 404.
+        source: '/brochure/shivani-vatika-11th',
+        destination: '/brochure/shivani-vatika-11',
+        permanent: true,
+      },
+      {
+        source: '/hi/brochure/shivani-vatika-11th',
+        destination: '/brochure/shivani-vatika-11',
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     const headersList = [
       {

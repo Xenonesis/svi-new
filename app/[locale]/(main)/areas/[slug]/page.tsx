@@ -4,8 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
 import { getTranslations } from 'next-intl/server';
-import { SITE_URL } from '@/src/lib/seo';
+import { SITE_URL, SITE_NAME, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import { AREAS_DATA } from '@/src/data/areas';
+import { PROJECTS_DB } from '@/src/data/projects';
 import { BreadcrumbSchema } from '@/src/components/common/Schema';
 import { EmiCalculator } from '@/src/components/properties/EmiCalculator';
 import AreaInquiryForm from '@/src/components/properties/AreaInquiryForm';
@@ -40,19 +41,22 @@ const PROJECT_SUMMARIES: Record<
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params;
+  const { locale, slug } = await params;
   const area = AREAS_DATA[slug];
   if (!area) return { title: 'Area Not Found' };
 
+  const path = `/areas/${slug}`;
   return {
     title: area.metaTitle,
     description: area.metaDescription,
+    alternates: buildAlternates(path, locale),
     openGraph: {
       title: area.metaTitle,
       description: area.metaDescription,
-      url: `${SITE_URL}/areas/${slug}`,
+      url: localizedUrl(path, locale),
       type: 'website',
-      siteName: 'SVI Infra Solutions',
+      siteName: SITE_NAME,
+      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
       images: [
         {
           url: `${SITE_URL}/images/project1.png`,
@@ -170,7 +174,7 @@ export default async function AreaDetailPage({ params }: Props) {
                           {project.title}
                         </h3>
                         <Link
-                          href={`/projects/current`}
+                          href={PROJECTS_DB[projId] ? `/projects/${projId}` : '/projects/current'}
                           className="text-brand-navy hover:text-brand-gold inline-flex items-center gap-1.5 text-xs font-bold tracking-wider uppercase dark:text-gray-200"
                         >
                           Explore Details <ArrowRight size={12} />

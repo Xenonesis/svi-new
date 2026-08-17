@@ -4,7 +4,7 @@ import { useLocale } from 'next-intl';
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import { ArrowRight, Calendar, User, Clock, Bookmark } from 'lucide-react';
 import type { BlogPost } from '@/src/lib/blog';
 
@@ -95,7 +95,7 @@ export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' |
                   >
                     <div className="grid grid-cols-1 lg:grid-cols-2">
                       <Link
-                        href={`/${locale}/blog/${post.slug}`}
+                        href={`/blog/${post.slug}`}
                         className="relative aspect-[4/3] overflow-hidden lg:aspect-auto"
                       >
                         <Image
@@ -128,7 +128,7 @@ export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' |
                           </span>
                         </div>
                         <h2 className="text-brand-navy group-hover:text-brand-gold dark:group-hover:text-brand-gold mb-4 font-serif text-2xl leading-snug transition-colors duration-300 md:text-3xl dark:text-gray-100">
-                          <Link href={`/${locale}/blog/${post.slug}`}>{title}</Link>
+                          <Link href={`/blog/${post.slug}`}>{title}</Link>
                         </h2>
                         <p className="mb-6 text-base leading-relaxed text-gray-500 dark:text-gray-400">
                           {excerpt}
@@ -149,7 +149,7 @@ export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' |
                           </span>
                         </div>
                         <Link
-                          href={`/${locale}/blog/${post.slug}`}
+                          href={`/blog/${post.slug}`}
                           className="group/link text-brand-gold hover:text-brand-navy inline-flex w-fit items-center gap-2 text-xs font-bold tracking-wider uppercase transition-colors dark:hover:text-gray-200"
                         >
                           <span className="relative">
@@ -186,10 +186,7 @@ export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' |
                     transition={{ duration: 0.5, delay: idx * 0.1 }}
                     className="blog-card-glow group flex flex-col overflow-hidden rounded-xl border border-gray-200/60 bg-white shadow-md transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl dark:border-gray-700/60 dark:bg-gray-900"
                   >
-                    <Link
-                      href={`/${locale}/blog/${post.slug}`}
-                      className="relative block overflow-hidden"
-                    >
+                    <Link href={`/blog/${post.slug}`} className="relative block overflow-hidden">
                       <div className="relative aspect-[4/3] overflow-hidden">
                         <Image
                           src={post.image}
@@ -232,14 +229,14 @@ export default function BlogCards({ posts }: { posts: Omit<BlogPost, 'content' |
                         </span>
                       </div>
                       <h3 className="text-brand-navy group-hover:text-brand-gold mb-3 font-serif text-xl leading-snug transition-colors duration-300 dark:text-gray-100">
-                        <Link href={`/${locale}/blog/${post.slug}`}>{title}</Link>
+                        <Link href={`/blog/${post.slug}`}>{title}</Link>
                       </h3>
                       <p className="mb-5 line-clamp-2 text-sm leading-relaxed text-gray-500 dark:text-gray-400">
                         {excerpt}
                       </p>
                       <div className="mt-auto">
                         <Link
-                          href={`/${locale}/blog/${post.slug}`}
+                          href={`/blog/${post.slug}`}
                           className="group/link text-brand-gold hover:text-brand-navy inline-flex items-center gap-1.5 text-[11px] font-bold tracking-wider uppercase transition-colors dark:hover:text-gray-200"
                         >
                           <span className="relative">

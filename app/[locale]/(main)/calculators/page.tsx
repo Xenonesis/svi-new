@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { buildAlternates } from '@/src/lib/seo';
 import PropertyCalculator from '@/src/components/properties/PropertyCalculator';
 
 type Props = {
@@ -13,6 +14,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     title: t('title'),
     description:
       'Plan your property investment with SVI Infra Solutions — calculate home loan EMIs and track your ROI.',
+    alternates: buildAlternates('/calculators', locale),
   };
 }
 

@@ -1,7 +1,8 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { SITE_URL } from '@/src/lib/seo';
+import { SITE_URL, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import type { Metadata } from 'next';
 import CurrentProjectsContent from '@/src/components/projects/CurrentProjectsContent';
+import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 // ISR: revalidate daily — new projects are added infrequently
 export const revalidate = 86400;
@@ -14,11 +15,14 @@ export async function generateMetadata({
   const { locale } = await paramsPromise;
   const t = await getTranslations({ locale, namespace: 'pages.projects' });
   return {
-    title: `${t('currentTitle')} - SVI Infra Solutions`,
+    title: t('currentTitle'),
     description: t('currentSubtitle'),
+    alternates: buildAlternates('/projects/current', locale),
     openGraph: {
-      title: `${t('currentTitle')} | SVI Infra Solutions`,
+      title: t('currentTitle'),
       description: t('currentSubtitle'),
+      url: localizedUrl('/projects/current', locale),
+      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
       images: [{ url: `${SITE_URL}/images/project1.png`, width: 1200, height: 630 }],
     },
   };
@@ -81,7 +85,8 @@ export default async function CurrentProjectsPage(props: { params: Promise<{ loc
 
   const realEstateListingsSchema = {
     '@context': 'https://schema.org',
-    '@graph': projects.map((project) => ({
+    '@type': 'ItemList',
+    itemListElement: projects.map((project) => ({
       '@type': 'RealEstateListing',
       name: project.title,
       description: project.fullDescription || project.description,
@@ -112,6 +117,13 @@ export default async function CurrentProjectsPage(props: { params: Promise<{ loc
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(realEstateListingsSchema) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', item: '/' },
+          { name: 'Projects', item: '/projects/current' },
+          { name: t('currentTitle'), item: '/projects/current' },
+        ]}
       />
       <section className="bg-brand-bg border-b border-gray-200 py-14 text-center md:py-20 dark:border-gray-700 dark:bg-gray-900">
         <div className="container mx-auto px-4">

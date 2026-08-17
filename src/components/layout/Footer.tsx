@@ -31,7 +31,7 @@ const Footer = memo(function Footer() {
   return (
     <footer className="dark:bg-brand-dark-bg border-t border-gray-200 bg-white pt-10 pb-8 sm:pt-16 dark:border-zinc-800">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 md:mb-12 md:gap-12 lg:grid-cols-4">
+        <div className="mb-8 grid grid-cols-1 gap-8 sm:grid-cols-2 sm:gap-10 md:mb-12 md:gap-12 lg:grid-cols-5">
           <div>
             <Link
               href="/"
@@ -178,6 +178,28 @@ const Footer = memo(function Footer() {
               <li className="text-brand-gold dark:text-brand-gold text-[11px] font-semibold tracking-wider uppercase">
                 {t('footer.propertyManagement')}
               </li>
+            </ul>
+          </div>
+
+          <div>
+            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
+              {t('footer.locations')}
+            </h4>
+            <ul className="flex flex-col gap-4">
+              {[
+                { label: t('footer.tonkRoad'), href: '/areas/tonk-road-jaipur' },
+                { label: t('footer.nayla'), href: '/areas/nayla-jaipur' },
+                { label: t('footer.phulera'), href: '/areas/phulera-smart-city' },
+              ].map(({ label, href }) => (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
+                  >
+                    {label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { absoluteUrl } from '@/src/lib/seo';
+import { absoluteUrl, buildAlternates } from '@/src/lib/seo';
 import LotteryClientSection from '@/src/components/lottery/LotteryClientSection';
 import LotteryFAQ from '@/src/components/faq/ProjectsFAQ';
 
@@ -10,12 +10,14 @@ export async function generateMetadata(props: {
   const { locale } = await props.params;
   const t = await getTranslations({ locale, namespace: 'pages.lottery' });
   return {
-    title: `${t('title')} | SVI Infra Solutions`,
+    title: t('title'),
     description: t('description'),
+    alternates: buildAlternates('/lottery', locale),
     openGraph: {
       title: `${t('title')} | SVI Infra Solutions`,
       description: t('description'),
       type: 'website',
+      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
       images: [{ url: absoluteUrl('/images/hero1.png'), width: 1200, height: 630 }],
     },
   };

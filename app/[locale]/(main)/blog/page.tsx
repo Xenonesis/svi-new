@@ -4,8 +4,9 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import BlogHero from './BlogHero';
 import BlogCards from './BlogCards';
 import { BLOG_POSTS } from '@/src/lib/blog';
-import { absoluteUrl, getAlternateLinks } from '@/src/lib/seo';
+import { absoluteUrl, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import BlogFAQ from '@/src/components/faq/ProjectsFAQ';
+import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 // ISR: revalidate every hour — blog posts update periodically
 export const revalidate = 3600;
@@ -20,12 +21,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const title = t('heading');
   const description =
     'Stay informed with the latest real estate market trends, investment guides, and updates from SVI Infra Solutions.';
-  const currentUrl = absoluteUrl(`/${locale}/blog`);
+  const currentUrl = localizedUrl('/blog', locale);
 
   return {
     title,
     description,
-    alternates: getAlternateLinks('/blog', locale),
+    alternates: buildAlternates('/blog', locale),
     openGraph: {
       type: 'website',
       url: currentUrl,
@@ -64,7 +65,7 @@ export default async function Blog({ params }: Props) {
     name: 'SVI Infra Real Estate Blog',
     description:
       'Real estate insights, DMIC corridor analysis, NRI investment guides, and property market updates from SVI Infra Solutions.',
-    url: absoluteUrl(`/${locale}/blog`),
+    url: localizedUrl('/blog', locale),
     publisher: {
       '@type': 'Organization',
       name: 'SVI Infra Solutions',
@@ -77,7 +78,7 @@ export default async function Blog({ params }: Props) {
       '@type': 'BlogPosting',
       headline: isHindi && post.titleHi ? post.titleHi : post.title,
       description: isHindi && post.excerptHi ? post.excerptHi : post.excerpt,
-      url: absoluteUrl(`/${locale}/blog/${post.slug}`),
+      url: localizedUrl(`/blog/${post.slug}`, locale),
       datePublished: new Date(post.date).toISOString(),
     })),
   };
@@ -87,6 +88,12 @@ export default async function Blog({ params }: Props) {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(blogJsonLd) }}
+      />
+      <BreadcrumbSchema
+        items={[
+          { name: 'Home', item: '/' },
+          { name: isHindi ? 'ब्लॉग' : 'Blog', item: '/blog' },
+        ]}
       />
       <BlogHero />
       <BlogCards posts={listPosts} />

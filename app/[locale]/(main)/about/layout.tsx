@@ -3,7 +3,7 @@ import { createMetadata } from '@/src/lib/seo';
 import { BreadcrumbSchema } from '@/src/components/common/Schema';
 
 export const metadata: Metadata = createMetadata({
-  title: 'About SVI Infra Solutions - Our Story & Values',
+  title: 'About Us - Our Story & Values',
   description:
     'Learn about SVI Infra Solutions Pvt. Ltd., our core values, mission, and our 15+ years of legacy in building premium real estate in Jaipur and Noida.',
   path: '/about',

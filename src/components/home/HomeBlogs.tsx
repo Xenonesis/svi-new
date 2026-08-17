@@ -1,7 +1,7 @@
 'use client';
 
 import { useLocale, useTranslations } from 'next-intl';
-import Link from 'next/link';
+import { Link } from '@/src/i18n/navigation';
 import { ArrowRight } from 'lucide-react';
 import { BLOG_POST_CARDS } from '@/src/lib/blog';
 import AnimatedSection, {
@@ -55,7 +55,7 @@ export default function HomeBlogs() {
           </AnimatedSection>
           <AnimatedSection type="fadeRight" className="shrink-0">
             <Link
-              href={`/${locale}/blog`}
+              href={`/blog`}
               className="text-brand-navy group hidden items-center gap-2 text-[11px] font-semibold tracking-wider uppercase md:inline-flex dark:text-gray-200"
             >
               <span className="group-hover:text-brand-gold transition-colors">
@@ -86,7 +86,7 @@ export default function HomeBlogs() {
         {/* Mobile View All Button */}
         <div className="mt-12 border-t border-gray-200 pt-6 text-center md:hidden dark:border-gray-700">
           <Link
-            href={`/${locale}/blog`}
+            href={`/blog`}
             className="text-brand-navy group inline-flex items-center gap-2 text-[11px] font-semibold tracking-wider uppercase dark:text-gray-200"
           >
             <span className="group-hover:text-brand-gold transition-colors">
