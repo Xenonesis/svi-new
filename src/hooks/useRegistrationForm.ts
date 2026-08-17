@@ -1,10 +1,28 @@
-import { useState, useCallback, useEffect, ChangeEvent, FormEvent } from 'react';
+import { useState, useCallback, useEffect, useRef, ChangeEvent, FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import { FormData, INITIAL_FORM } from '@/src/types/registration';
 import { compressImage } from '@/src/lib/image-compression';
 import { saveFormDraft, loadFormDraft, clearFormDraft } from '@/src/lib/form-persistence';
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
-export function useRegistrationForm(t: any) {
+/** Letters in any script (Latin, Devanagari, …) plus spaces */
+const NAME_REGEX = /^[\p{L}\s]+$/u;
+
+async function refreshCsrfToken(): Promise<string | null> {
+  try {
+    const res = await fetch('/api/csrf-refresh', { method: 'POST' });
+    if (!res.ok) return null;
+    const { token } = await res.json();
+    if (!token) return null;
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `csrf=${token}; path=/; max-age=86400; SameSite=Lax${secure}`;
+    return token;
+  } catch {
+    return null;
+  }
+}
+
+export function useRegistrationForm(t: (key: string) => string) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM);
@@ -12,7 +30,7 @@ export function useRegistrationForm(t: any) {
   const [submitError, setSubmitError] = useState('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [panCardFile, setPanCardFile] = useState<File | null>(null);
-  const [captchaValid, setCaptchaValid] = useState(false);
+  const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [captchaError, setCaptchaError] = useState('');
   const [compressing, setCompressing] = useState<'photo' | 'panCard' | null>(null);
   const [advisors, setAdvisors] = useState<string[]>([]);
@@ -22,6 +40,9 @@ export function useRegistrationForm(t: any) {
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [draftRestored, setDraftRestored] = useState(false);
   const [attempted, setAttempted] = useState(false);
+  // Honeypot: hidden field, must stay empty for real users
+  const [website, setWebsite] = useState('');
+  const formOpenedAt = useRef(Date.now());
 
   useEffect(() => {
     let active = true;
@@ -61,14 +82,11 @@ export function useRegistrationForm(t: any) {
   }, []);
 
   useEffect(() => {
-    const hasData = Object.values(formData).some((v) => v !== '');
-    if (!hasData) return;
-
-    const handler = (e: BeforeUnloadEvent) => {
-      e.preventDefault();
-    };
-    window.addEventListener('beforeunload', handler);
-    return () => window.removeEventListener('beforeunload', handler);
+    const timer = setTimeout(
+      () => saveFormDraft(formData as unknown as Record<string, string>),
+      500
+    );
+    return () => clearTimeout(timer);
   }, [formData]);
 
   const validateForm = useCallback(() => {
@@ -78,22 +96,19 @@ export function useRegistrationForm(t: any) {
       newErrors.firstName = t('validation.firstNameRequired');
     } else if (formData.firstName.trim().length < 2) {
       newErrors.firstName = t('validation.firstNameMin');
-    } else if (!/^[a-zA-Z\\s]+$/.test(formData.firstName)) {
+    } else if (!NAME_REGEX.test(formData.firstName.trim())) {
       newErrors.firstName = t('validation.firstNameFormat');
     }
 
     if (!formData.mobileNo.trim()) {
       newErrors.mobileNo = t('validation.mobileRequired');
-    } else {
-      const cleanMobile = formData.mobileNo.replace(/\\s/g, '');
-      if (!/^[6-9]\\d{9}$/.test(cleanMobile)) {
-        newErrors.mobileNo = t('validation.mobileFormat');
-      }
+    } else if (!normalizeIndianPhone(formData.mobileNo)) {
+      newErrors.mobileNo = t('validation.mobileFormat');
     }
 
     if (!formData.email.trim()) {
       newErrors.email = t('validation.emailRequired');
-    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/.test(formData.email.trim())) {
+    } else if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(formData.email.trim())) {
       newErrors.email = t('validation.emailFormat');
     }
 
@@ -124,8 +139,8 @@ export function useRegistrationForm(t: any) {
     if (!formData.aadharNumber.trim()) {
       newErrors.aadharNumber = t('validation.aadharRequired');
     } else {
-      const cleanAadhar = formData.aadharNumber.replace(/\\s/g, '');
-      if (!/^[2-9]\\d{11}$/.test(cleanAadhar)) {
+      const cleanAadhar = formData.aadharNumber.replace(/\s/g, '');
+      if (!/^[2-9]\d{11}$/.test(cleanAadhar)) {
         newErrors.aadharNumber = t('validation.aadharFormat');
       }
     }
@@ -156,7 +171,7 @@ export function useRegistrationForm(t: any) {
       }
     }
 
-    if (!captchaValid) {
+    if (!captchaAnswer.trim()) {
       newErrors.captcha = t('validation.captchaRequired');
       setCaptchaError(t('validation.captchaRequired'));
     } else {
@@ -176,26 +191,25 @@ export function useRegistrationForm(t: any) {
     }
 
     return Object.keys(newErrors).length === 0;
-  }, [formData, captchaValid, t]);
+  }, [formData, captchaAnswer, t]);
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
-      let formatted = value;
-
-      if (name === 'panNumber') {
-        formatted = value.toUpperCase();
-      } else if (name === 'aadharNumber' || name === 'mobileNo') {
-        formatted = value.replace(/[^0-9]/g, '');
+      if (name === 'website') {
+        setWebsite(value);
+        return;
       }
-
-      setFormData((prev) => ({ ...prev, [name]: formatted }));
-      saveFormDraft({ ...formData, [name]: formatted });
+      setFormData((prev) => ({ ...prev, [name]: value }));
       if (errors[name]) {
-        setErrors((prev) => ({ ...prev, [name]: '' }));
+        setErrors((prev) => {
+          const next = { ...prev };
+          delete next[name];
+          return next;
+        });
       }
     },
-    [errors, formData]
+    [errors]
   );
 
   const handleFileChange = useCallback(
@@ -203,7 +217,8 @@ export function useRegistrationForm(t: any) {
       const file = e.target.files?.[0];
       if (!file) return;
 
-      const allowedTypes = [
+      const MAX_SIZE = 150 * 1024; // 150KB
+      const ALLOWED_TYPES = [
         'image/jpeg',
         'image/jpg',
         'image/png',
@@ -211,36 +226,50 @@ export function useRegistrationForm(t: any) {
         'application/pdf',
       ];
 
-      if (!allowedTypes.includes(file.type)) {
-        setErrors((prev) => ({ ...prev, [type]: t('validation.fileType') }));
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        setErrors((prev) => ({
+          ...prev,
+          [type]: t('validation.fileType'),
+        }));
         return;
       }
 
-      if (file.size > 150 * 1024 && file.type.startsWith('image/')) {
+      if (file.size > MAX_SIZE) {
         setCompressing(type);
         try {
-          const compressed = await compressImage(file, 150 * 1024);
+          if (file.type === 'application/pdf') {
+            setErrors((prev) => ({
+              ...prev,
+              [type]: t('validation.fileSize'),
+            }));
+            return;
+          }
+          const compressed = await compressImage(file, MAX_SIZE);
           if (type === 'photo') setPhotoFile(compressed);
           else setPanCardFile(compressed);
-          setErrors((prev) => ({ ...prev, [type]: '' }));
+          setErrors((prev) => {
+            const next = { ...prev };
+            delete next[type];
+            return next;
+          });
         } catch {
-          if (type === 'photo') setPhotoFile(file);
-          else setPanCardFile(file);
-          setErrors((prev) => ({ ...prev, [type]: t('validation.fileCompressFailed') }));
+          setErrors((prev) => ({
+            ...prev,
+            [type]: t('validation.fileSize'),
+          }));
         } finally {
           setCompressing(null);
         }
         return;
       }
 
-      if (file.size > 150 * 1024) {
-        setErrors((prev) => ({ ...prev, [type]: t('validation.fileSize') }));
-        return;
-      }
-
       if (type === 'photo') setPhotoFile(file);
       else setPanCardFile(file);
-      setErrors((prev) => ({ ...prev, [type]: '' }));
+      setErrors((prev) => {
+        const next = { ...prev };
+        delete next[type];
+        return next;
+      });
     },
     [t]
   );
@@ -260,23 +289,58 @@ export function useRegistrationForm(t: any) {
     [validateForm]
   );
 
+  const buildBody = useCallback(() => {
+    const body = new window.FormData();
+    Object.entries(formData).forEach(([key, value]) => {
+      body.append(key, value);
+    });
+    if (photoFile) body.append('photo', photoFile);
+    if (panCardFile) body.append('panCard', panCardFile);
+    body.append('captchaAnswer', captchaAnswer.trim());
+    body.append('website', website);
+    body.append('formOpenedAt', String(formOpenedAt.current));
+
+    const csrfMatch = document.cookie.match(/(?:^|;\s*)csrf=([^;]+)/);
+    if (csrfMatch) body.append('csrf', decodeURIComponent(csrfMatch[1]));
+    return body;
+  }, [formData, photoFile, panCardFile, captchaAnswer, website]);
+
   const handleConfirmPayment = useCallback(async () => {
     setIsSubmitting(true);
     setSubmitError('');
     try {
-      const body = new window.FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        body.append(key, value);
-      });
-      if (photoFile) body.append('photo', photoFile);
-      if (panCardFile) body.append('panCard', panCardFile);
+      let res = await fetch('/api/registration', { method: 'POST', body: buildBody() });
 
-      const csrfMatch = document.cookie.match(/(?:^|;\\s*)csrf=([^;]+)/);
-      if (csrfMatch) body.append('csrf', decodeURIComponent(csrfMatch[1]));
+      // CSRF token expired while the form was open → refresh once and retry
+      if (res.status === 403) {
+        const errData = await res.json().catch(() => ({}));
+        if (errData.code === 'CSRF_EXPIRED') {
+          const newToken = await refreshCsrfToken();
+          if (newToken) {
+            const retryBody = buildBody();
+            retryBody.set('csrf', newToken);
+            res = await fetch('/api/registration', { method: 'POST', body: retryBody });
+          }
+        }
+      }
 
-      const res = await fetch('/api/registration', { method: 'POST', body });
       if (!res.ok) {
         const errData = await res.json().catch(() => ({}));
+        if (errData.code === 'CAPTCHA_INVALID') {
+          setCaptchaError(t('validation.captchaRequired'));
+          setIsPaymentModalOpen(false);
+          setShowReview(false);
+          throw new Error(errData.error || 'Captcha verification failed');
+        }
+        if (errData.issues && typeof errData.issues === 'object') {
+          const issueMessages = Object.entries(errData.issues)
+            .map(
+              ([field, msgs]: [string, any]) =>
+                `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
+            )
+            .join(' | ');
+          throw new Error(issueMessages || errData.error || 'Submission failed');
+        }
         throw new Error(errData.error || 'Submission failed');
       }
       setIsPaymentModalOpen(false);
@@ -287,7 +351,7 @@ export function useRegistrationForm(t: any) {
     } finally {
       setIsSubmitting(false);
     }
-  }, [formData, photoFile, panCardFile, router, t]);
+  }, [buildBody, router, t]);
 
   const handleCopy = useCallback((text: string, fieldId: string) => {
     navigator.clipboard.writeText(text);
@@ -302,8 +366,8 @@ export function useRegistrationForm(t: any) {
     submitError,
     photoFile,
     panCardFile,
-    captchaValid,
-    setCaptchaValid,
+    captchaAnswer,
+    setCaptchaAnswer,
     captchaError,
     compressing,
     advisors,

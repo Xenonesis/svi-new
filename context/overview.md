@@ -8,7 +8,7 @@
 - **Page routes:** 58 (22 public, 30+ admin & employee)
 - **API routes:** 68 REST endpoints
 - **React components:** 285+
-- **DB migrations:** 51
+- **DB migrations:** 52
 - **Locales:** English & Hindi (951+ translation keys)
 
 ## Core Features

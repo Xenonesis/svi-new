@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ArrowRight, Home } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
 export default function ExitIntentPopup() {
   const [isVisible, setIsVisible] = useState(false);
@@ -64,8 +65,8 @@ export default function ExitIntentPopup() {
     setErrorMsg('');
     setIsSubmitting(true);
 
-    const cleanPhone = phone.replace(/\s/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    const cleanPhone = normalizeIndianPhone(phone);
+    if (!cleanPhone) {
       setErrorMsg(
         t('invalidPhone') || 'Please enter a valid 10-digit phone number starting with 6-9'
       );

@@ -1,6 +1,7 @@
 'use client';
 
 import { Landmark, CheckCircle2 } from 'lucide-react';
+import { useLocale } from 'next-intl';
 import AnimatedSection from '@/src/components/ui/AnimatedSection';
 
 const APPROVED_BANKS = [
@@ -12,21 +13,30 @@ const APPROVED_BANKS = [
 ];
 
 export default function BankApprovalsGrid() {
+  const locale = useLocale();
+  const isHindi = locale === 'hi';
+
   return (
     <AnimatedSection type="fadeUp" delay={0.2}>
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md md:p-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="mb-6 text-center md:flex md:items-center md:justify-between md:text-left">
           <div>
             <span className="dark:text-brand-gold text-[10px] font-bold tracking-widest text-amber-600 uppercase">
-              FINANCIAL PARTNERSHIPS
+              {isHindi ? 'वित्तीय साझेदारी' : 'FINANCIAL PARTNERSHIPS'}
             </span>
             <h3 className="mt-1 font-serif text-xl font-bold text-gray-900 md:text-2xl dark:text-gray-100">
-              Partnered with India&apos;s Leading Nationalized Banks
+              {isHindi
+                ? 'भारत के प्रमुख राष्ट्रीयकृत बैंकों के साथ साझेदारी'
+                : "Partnered with India's Leading Nationalized Banks"}
             </h3>
           </div>
           <div className="mt-4 flex items-center justify-center gap-2 text-xs font-semibold text-emerald-600 md:mt-0 dark:text-emerald-400">
             <CheckCircle2 size={16} />
-            <span>Instant 80-90% Sanction Available</span>
+            <span>
+              {isHindi
+                ? 'आसान बैंक लोन और फाइनेंस सहायता उपलब्ध'
+                : 'Easy Bank Loan Assistance Available'}
+            </span>
           </div>
         </div>
 

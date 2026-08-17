@@ -24,7 +24,7 @@ export default function RegistrationReview({
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="mt-8 border border-gray-200 bg-white p-6 shadow-xl md:p-10 dark:border-gray-700 dark:bg-gray-800"
+      className="border border-gray-200 bg-white p-8 shadow-2xl md:p-12 dark:border-gray-700 dark:bg-gray-800"
     >
       <h2 className="mb-1 font-serif text-2xl text-[#1e293b] dark:text-white">
         {t('paymentModal.title')}

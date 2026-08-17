@@ -3,6 +3,7 @@
 import React, { useState, memo } from 'react';
 import { Send, X, User, Phone, Check } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
 interface LeadCaptureProps {
   onClose: () => void;
@@ -23,7 +24,7 @@ function LeadCapture({ onClose, onSubmitted }: LeadCaptureProps) {
       setError(t('fillFields'));
       return;
     }
-    if (!/^[6-9]\d{9}$/.test(phone.replace(/\s/g, ''))) {
+    if (!normalizeIndianPhone(phone)) {
       setError(t('invalidMobile'));
       return;
     }

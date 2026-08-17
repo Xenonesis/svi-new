@@ -1,22 +1,5 @@
 import { type NextRequest, NextResponse } from 'next/server';
-
-interface RateLimitEntry {
-  count: number;
-  resetAt: number;
-}
-
-const store = new Map<string, RateLimitEntry>();
-
-// Clean up expired entries every 5 minutes
-setInterval(
-  () => {
-    const now = Date.now();
-    for (const [key, entry] of store) {
-      if (now > entry.resetAt) store.delete(key);
-    }
-  },
-  5 * 60 * 1000
-);
+import { supabaseAdmin } from '@/src/lib/supabase/admin';
 
 interface RateLimitOptions {
   /** Max requests per window */
@@ -36,43 +19,55 @@ function getClientIp(req: NextRequest): string {
 }
 
 /**
- * Simple in-memory rate limiter for API routes.
+ * Distributed rate limiter backed by the `increment_rate_limit` Postgres RPC.
+ *
+ * State lives in Supabase (table `rate_limits`), so limits hold across all
+ * Vercel serverless instances — an in-memory Map resets per isolate and is
+ * ineffective on Vercel.
+ *
+ * Fails OPEN on Supabase errors: availability over strictness.
  *
  * Usage:
  *   export async function POST(req: NextRequest) {
- *     const limited = rateLimit(req, { limit: 10, windowSeconds: 60 });
+ *     const limited = await rateLimit(req, { limit: 10, windowSeconds: 60 });
  *     if (limited) return limited; // 429 response
  *     // ... handle request
  *   }
  */
-export function rateLimit(req: NextRequest, options: RateLimitOptions): NextResponse | null {
+export async function rateLimit(
+  req: NextRequest,
+  options: RateLimitOptions
+): Promise<NextResponse | null> {
   const { limit, windowSeconds, keyFn = getClientIp } = options;
-  const key = `${keyFn(req)}:${req.nextUrl.pathname}`;
-  const now = Date.now();
+  const key = `${keyFn(req)}:${req.nextUrl.pathname}`.slice(0, 200);
 
-  let entry = store.get(key);
+  try {
+    const { data, error } = await supabaseAdmin.rpc('increment_rate_limit', {
+      p_key: key,
+      p_window_seconds: windowSeconds,
+      p_max_count: limit,
+    });
+    if (error) throw error;
 
-  if (!entry || now > entry.resetAt) {
-    entry = { count: 0, resetAt: now + windowSeconds * 1000 };
-    store.set(key, entry);
-  }
+    const result = data as { allowed: boolean; retry_after: number } | null;
+    if (!result || result.allowed) return null;
 
-  entry.count++;
-
-  if (entry.count > limit) {
+    const retryAfter = Math.max(1, result.retry_after || windowSeconds);
     return NextResponse.json(
       {
         error: 'Too many requests. Please try again later.',
-        retryAfter: Math.ceil((entry.resetAt - now) / 1000),
+        retryAfter,
       },
       {
         status: 429,
-        headers: {
-          'Retry-After': String(Math.ceil((entry.resetAt - now) / 1000)),
-        },
+        headers: { 'Retry-After': String(retryAfter) },
       }
     );
+  } catch (err) {
+    console.error(
+      '[rateLimit] Supabase check failed, allowing request:',
+      err instanceof Error ? err.message : err
+    );
+    return null;
   }
-
-  return null; // Not rate-limited
 }

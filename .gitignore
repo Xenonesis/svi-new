@@ -18,6 +18,7 @@ dist/
 
 # IDE/Tool configs
 .refact/
+.firecrawl/
 
 # Pi local state
 .pi/

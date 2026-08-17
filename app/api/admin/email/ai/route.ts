@@ -79,7 +79,7 @@ Analyze the email and return a JSON object with this exact structure:
 
 export async function POST(request: NextRequest) {
   // Rate limit: 10 AI requests per admin per minute
-  const limited = rateLimit(request, { limit: 10, windowSeconds: 60 });
+  const limited = await rateLimit(request, { limit: 10, windowSeconds: 60 });
   if (limited) return limited;
 
   try {

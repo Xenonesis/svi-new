@@ -503,7 +503,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <p>Organized developers ensure dedicated fund management for timely construction. Key customer safeguards include:</p>
       <ul>
         <li><mark>Construction Escrow:</mark> Developers allocate dedicated funds directly to designated construction accounts ensuring uninterrupted project progress.</li>
-        <li><mark>Clear Project Disclosures:</mark> Floor plans, sanction layouts, completion timelines, and clear documentation are shared transparently with buyers.</li>
+        <li><mark>Clear Project Disclosures:</mark> Floor plans, master plan layouts, completion timelines, and clear documentation are shared transparently with buyers.</li>
         <li><mark>Standardized Agreements:</mark> Transparent contracts that clearly specify buyer rights and developer commitments.</li>
       </ul>
 
@@ -1346,7 +1346,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <ol>
         <li><mark>Application & Survey:</mark> Developer submits land survey and Khasra details to the revenue authorities.</li>
         <li><mark>Public Notice:</mark> Public notice issued to ensure clear, dispute-free ownership.</li>
-        <li><mark>Layout Sanction:</mark> Town Planning Committee approves road widths, open park spaces, and plot layouts.</li>
+        <li><mark>Layout Planning:</mark> Town Planning Committee approves road widths, open park spaces, and plot layouts.</li>
         <li><mark>Issuance of Order:</mark> Government passes official order establishing residential township status.</li>
       </ol>
 

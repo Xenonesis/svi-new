@@ -11,7 +11,7 @@ export const runtime = 'edge';
 export async function POST(request: NextRequest) {
   try {
     // Rate limit: 5 submissions per IP per minute
-    const limited = rateLimit(request, { limit: 5, windowSeconds: 60 });
+    const limited = await rateLimit(request, { limit: 5, windowSeconds: 60 });
     if (limited) return limited;
 
     let body;

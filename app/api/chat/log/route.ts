@@ -9,7 +9,7 @@ export const runtime = 'edge';
 // ─── POST: Save a chat log ──────────────────────────────────────────────
 export async function POST(req: NextRequest) {
   try {
-    const limited = rateLimit(req, { limit: 10, windowSeconds: 60 });
+    const limited = await rateLimit(req, { limit: 10, windowSeconds: 60 });
     if (limited) return limited;
 
     let body;

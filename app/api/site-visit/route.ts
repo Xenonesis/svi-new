@@ -4,6 +4,7 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
 export const runtime = 'edge';
 
@@ -42,7 +43,7 @@ export async function GET(request: NextRequest) {
 // POST /api/site-visit — create site visit lead
 export async function POST(req: NextRequest) {
   try {
-    const limited = rateLimit(req, { limit: 3, windowSeconds: 60 });
+    const limited = await rateLimit(req, { limit: 3, windowSeconds: 60 });
     if (limited) return limited;
 
     let body;
@@ -58,8 +59,8 @@ export async function POST(req: NextRequest) {
       throw AppError.badRequest('Name, phone, and email are required');
     }
 
-    const cleanPhone = phone.replace(/[\s-]/g, '').replace(/^\+?91/, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    const cleanPhone = normalizeIndianPhone(phone);
+    if (!cleanPhone) {
       throw AppError.badRequest('Invalid phone number');
     }
 

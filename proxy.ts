@@ -22,7 +22,7 @@ export default function middleware(request: NextRequest) {
         sameSite: 'lax',
         secure: request.nextUrl.protocol === 'https:',
         path: '/',
-        maxAge: 60 * 60, // 1 hour
+        maxAge: 60 * 60 * 24, // 24 hours
       });
     }
   }

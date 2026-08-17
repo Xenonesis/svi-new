@@ -7,6 +7,7 @@ import { useTranslations } from 'next-intl';
 import { submitContactForm } from '@/src/actions/contact';
 import { queueSubmission } from '@/src/lib/pwa/backgroundSync';
 
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 const DIGIT_REGEX = /\d/g;
 
 const inputBase =
@@ -34,18 +35,16 @@ export default function ContactForm() {
   const validateForm = useCallback(() => {
     const newErrors: Record<string, string> = {};
     if (!formData.name.trim()) newErrors.name = t('validation.nameRequired');
-    else if (formData.name.length < 2) newErrors.name = t('validation.nameMin');
-    else if (!/^[a-zA-Z\s]+$/.test(formData.name)) newErrors.name = t('validation.nameFormat');
+    else if (formData.name.trim().length < 2) newErrors.name = t('validation.nameMin');
+    else if (!/^[\p{L}\s.'-]+$/u.test(formData.name.trim()))
+      newErrors.name = t('validation.nameFormat');
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!formData.email) newErrors.email = t('validation.emailRequired');
     else if (!emailRegex.test(formData.email)) newErrors.email = t('validation.emailFormat');
 
-    const phoneRegex = /^\+?[\d\s-]{10,15}$/;
-    const digitCount = (formData.phone.match(DIGIT_REGEX) || []).length;
     if (!formData.phone) newErrors.phone = t('validation.phoneRequired');
-    else if (!phoneRegex.test(formData.phone) || digitCount < 10 || digitCount > 15)
-      newErrors.phone = t('validation.phoneFormat');
+    else if (!normalizeIndianPhone(formData.phone)) newErrors.phone = t('validation.phoneFormat');
 
     if (!formData.subject.trim()) newErrors.subject = t('validation.subjectRequired');
     else if (formData.subject.length < 3) newErrors.subject = t('validation.subjectMin');

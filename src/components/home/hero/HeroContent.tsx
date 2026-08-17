@@ -34,9 +34,9 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           {t('badge')}
         </span>
 
-        <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.05] text-white drop-shadow-lg min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl">
+        <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.2] text-white drop-shadow-lg min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl md:leading-[1.15]">
           <span className="inline">{t('title')}</span> <br />
-          <span className="text-brand-gold inline-block pr-4 italic drop-shadow-md">
+          <span className="text-brand-gold inline-block overflow-visible pt-1 pr-6 pb-2 italic drop-shadow-md">
             <span className="inline">{t('titleAccent')}</span>
           </span>
         </h1>

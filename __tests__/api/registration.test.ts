@@ -454,4 +454,53 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
       }
     });
   });
+
+  describe('Security and Bot Protection', () => {
+    it('should reject submission if honeypot field is filled', async () => {
+      const formData = createMockRegistrationFormData({ website: 'http://spam-bot.com' });
+      const req = new NextRequest('http://localhost/api/registration', {
+        method: 'POST',
+        body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
+      });
+      const res = await POST(req);
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error?.message).toContain('Invalid submission');
+    });
+
+    it('should reject missing or mismatched CSRF token with specific code', async () => {
+      const formData = createMockRegistrationFormData();
+      const req = new NextRequest('http://localhost/api/registration', {
+        method: 'POST',
+        body: formData,
+        headers: { Cookie: 'csrf=wrong-token' },
+      });
+      const res = await POST(req);
+      expect(res.status).toBe(403);
+      const body = await res.json();
+      expect(body.code).toBe('CSRF_EXPIRED');
+    });
+
+    it('should reject if submitted too quickly (time check) when bot checks are enabled', async () => {
+      // Disable the test bypass
+      process.env.NEXT_PUBLIC_DISABLE_CAPTCHA = 'false';
+
+      const formData = createMockRegistrationFormData({
+        formOpenedAt: String(Date.now()), // Instantly submitted
+      });
+      const req = new NextRequest('http://localhost/api/registration', {
+        method: 'POST',
+        body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
+      });
+      const res = await POST(req);
+      expect(res.status).toBe(400);
+      const body = await res.json();
+      expect(body.error?.message).toContain('too quickly');
+
+      // Restore bypass
+      process.env.NEXT_PUBLIC_DISABLE_CAPTCHA = 'true';
+    });
+  });
 });

@@ -3,13 +3,14 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
 export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
   try {
     // Rate limit: 3 lead submissions per IP per minute
-    const limited = rateLimit(req, { limit: 3, windowSeconds: 60 });
+    const limited = await rateLimit(req, { limit: 3, windowSeconds: 60 });
     if (limited) return limited;
 
     let body;
@@ -25,8 +26,8 @@ export async function POST(req: NextRequest) {
       throw AppError.badRequest('Name and phone are required');
     }
 
-    const cleanPhone = phone.replace(/\s/g, '');
-    if (!/^[6-9]\d{9}$/.test(cleanPhone)) {
+    const cleanPhone = normalizeIndianPhone(phone);
+    if (!cleanPhone) {
       throw AppError.badRequest('Invalid phone number');
     }
 

@@ -4,6 +4,7 @@ import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { RegistrationSchema } from '@/src/lib/schemas/registration';
+import { verifyCaptchaToken, CAPTCHA_COOKIE } from '@/src/lib/captcha';
 
 export const runtime = 'edge';
 
@@ -68,7 +69,7 @@ async function uploadFile(
 export async function POST(request: NextRequest) {
   try {
     // Rate limit: 3 registrations per IP per minute
-    const limited = rateLimit(request, { limit: 3, windowSeconds: 60 });
+    const limited = await rateLimit(request, { limit: 3, windowSeconds: 60 });
     if (limited) return limited;
 
     let formData: FormData;
@@ -82,7 +83,37 @@ export async function POST(request: NextRequest) {
     const cookieToken = request.cookies.get('csrf')?.value;
     const formToken = formData.get('csrf') as string;
     if (!cookieToken || !formToken || cookieToken !== formToken) {
-      return NextResponse.json({ error: 'CSRF check failed' }, { status: 403 });
+      return NextResponse.json(
+        { error: 'Session expired. Please try again.', code: 'CSRF_EXPIRED' },
+        { status: 403 }
+      );
+    }
+
+    // Honeypot: hidden field real users never fill
+    if ((formData.get('website') as string)?.trim()) {
+      throw AppError.badRequest('Invalid submission');
+    }
+
+    // Bot checks need client-issued state; tests disable them via env flag
+    const botChecksDisabled = process.env.NEXT_PUBLIC_DISABLE_CAPTCHA === 'true';
+    if (!botChecksDisabled) {
+      // Minimum fill time: instant submissions are bots
+      const openedAt = Number(formData.get('formOpenedAt'));
+      if (!Number.isFinite(openedAt) || Date.now() - openedAt < 3000) {
+        throw AppError.badRequest('Form submitted too quickly. Please try again.');
+      }
+
+      // Server-verified math captcha (token issued by /api/registration/captcha)
+      const captchaOk = await verifyCaptchaToken(
+        request.cookies.get(CAPTCHA_COOKIE)?.value,
+        (formData.get('captchaAnswer') as string) || ''
+      );
+      if (!captchaOk) {
+        return NextResponse.json(
+          { error: 'Captcha verification failed. Please solve it again.', code: 'CAPTCHA_INVALID' },
+          { status: 400 }
+        );
+      }
     }
 
     // Build validation object from form data
@@ -106,7 +137,7 @@ export async function POST(request: NextRequest) {
       'paymentPlan',
       'paymentMode',
       'schemeAmount',
-      'captchaToken',
+      'captchaAnswer',
     ] as const;
     const raw: Record<string, string> = {};
     for (const key of fieldKeys) {
@@ -119,6 +150,23 @@ export async function POST(request: NextRequest) {
     if (!parsed.success) {
       return NextResponse.json(
         { error: 'Invalid form data', issues: parsed.error.flatten().fieldErrors },
+        { status: 400 }
+      );
+    }
+
+    // Advisor must be one of the currently active advisors (fail-open if list unavailable)
+    const activeAdvisors = await getActiveAdvisorNames();
+    if (
+      activeAdvisors.length > 0 &&
+      !activeAdvisors.some(
+        (name) => name.trim().toLowerCase() === parsed.data.advisorName.trim().toLowerCase()
+      )
+    ) {
+      return NextResponse.json(
+        {
+          error: 'Invalid form data',
+          issues: { advisorName: ['Selected advisor is not active. Please choose another.'] },
+        },
         { status: 400 }
       );
     }
@@ -436,37 +484,42 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/** Active advisor display names from portal_settings → profiles. Empty list if unconfigured. */
+async function getActiveAdvisorNames(): Promise<string[]> {
+  const { data: settingData, error: settingError } = await supabaseAdmin
+    .from('portal_settings')
+    .select('value')
+    .eq('key', 'active_advisors')
+    .single();
+
+  if (
+    settingError ||
+    !settingData?.value ||
+    typeof settingData.value !== 'object' ||
+    !('ids' in settingData.value) ||
+    !Array.isArray(settingData.value.ids) ||
+    settingData.value.ids.length === 0
+  ) {
+    return [];
+  }
+
+  const advisorIds: string[] = settingData.value.ids;
+  const { data: profiles, error: profilesError } = await supabaseAdmin
+    .from('profiles')
+    .select('full_name')
+    .in('id', advisorIds);
+
+  if (profilesError) throw AppError.internal('Failed to fetch advisors');
+
+  return (profiles || [])
+    .map((p) => p.full_name)
+    .sort((a: string, b: string) => a.localeCompare(b));
+}
+
 // GET /api/registration — retrieve active advisor names (used by registration form)
 export async function GET(request: NextRequest) {
   try {
-    const { data: settingData, error: settingError } = await supabaseAdmin
-      .from('portal_settings')
-      .select('value')
-      .eq('key', 'active_advisors')
-      .single();
-
-    if (
-      settingError ||
-      !settingData?.value ||
-      typeof settingData.value !== 'object' ||
-      !('ids' in settingData.value) ||
-      !Array.isArray(settingData.value.ids) ||
-      settingData.value.ids.length === 0
-    ) {
-      return NextResponse.json({ advisors: [] });
-    }
-
-    const advisorIds: string[] = settingData.value.ids;
-    const { data: profiles, error: profilesError } = await supabaseAdmin
-      .from('profiles')
-      .select('full_name')
-      .in('id', advisorIds);
-
-    if (profilesError) throw AppError.internal('Failed to fetch advisors');
-
-    const advisorNames = (profiles || [])
-      .map((p) => p.full_name)
-      .sort((a, b) => a.localeCompare(b));
+    const advisorNames = await getActiveAdvisorNames();
     return NextResponse.json({ advisors: advisorNames });
   } catch (error) {
     return handleApiError(error);

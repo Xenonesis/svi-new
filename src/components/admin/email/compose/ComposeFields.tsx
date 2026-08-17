@@ -29,6 +29,12 @@ interface ComposeFieldsProps {
   toRecipients?: Recipient[];
   onToRecipientsChange?: (recipients: Recipient[]) => void;
   onOpenContactPicker?: () => void;
+  ccRecipients?: Recipient[];
+  onCcRecipientsChange?: (recipients: Recipient[]) => void;
+  onOpenCcContactPicker?: () => void;
+  bccRecipients?: Recipient[];
+  onBccRecipientsChange?: (recipients: Recipient[]) => void;
+  onOpenBccContactPicker?: () => void;
 }
 
 export function ComposeFields({
@@ -54,6 +60,12 @@ export function ComposeFields({
   toRecipients,
   onToRecipientsChange,
   onOpenContactPicker,
+  ccRecipients,
+  onCcRecipientsChange,
+  onOpenCcContactPicker,
+  bccRecipients,
+  onBccRecipientsChange,
+  onOpenBccContactPicker,
 }: ComposeFieldsProps) {
   const [showCcField, setShowCcField] = useState(false);
   const [showBccField, setShowBccField] = useState(false);
@@ -65,9 +77,9 @@ export function ComposeFields({
   );
   const [showScheduleOptions, setShowScheduleOptions] = useState(!!scheduledAt);
 
-  // Auto-show CC/BCC when they have values (from reply/forward)
-  const showCc = showCcField || !!cc;
-  const showBcc = showBccField || !!bcc;
+  // Auto-show CC/BCC when they have values (from reply/forward/contacts)
+  const showCc = showCcField || !!cc || (ccRecipients && ccRecipients.length > 0);
+  const showBcc = showBccField || !!bcc || (bccRecipients && bccRecipients.length > 0);
 
   // Synchronize internal visibility states with external prop updates (e.g. template loading, replies, forwards)
   useEffect(() => {
@@ -157,25 +169,38 @@ export function ComposeFields({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center border-b border-gray-100 px-4 sm:px-6 dark:border-gray-800">
-              <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+            <div className="flex items-start border-b border-gray-100 px-4 py-1 sm:px-6 dark:border-gray-800">
+              <label className="mt-2.5 w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 CC
               </label>
-              <input
-                id="cc-input"
-                type="text"
-                value={cc}
-                onChange={(e) => onCcChange(e.target.value)}
-                placeholder="cc@example.com"
-                className="min-w-0 flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
-              />
+              <div className="min-w-0 flex-1">
+                {ccRecipients !== undefined && onCcRecipientsChange ? (
+                  <RecipientInput
+                    recipients={ccRecipients}
+                    onChange={onCcRecipientsChange}
+                    placeholder="Add CC recipients"
+                    onOpenContactPicker={onOpenCcContactPicker}
+                  />
+                ) : (
+                  <input
+                    id="cc-input"
+                    type="text"
+                    value={cc}
+                    onChange={(e) => onCcChange(e.target.value)}
+                    placeholder="cc@example.com"
+                    className="w-full bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                  />
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => {
                   onCcChange('');
+                  if (onCcRecipientsChange) onCcRecipientsChange([]);
                   setShowCcField(false);
                 }}
-                className="ml-2 text-gray-400 hover:text-red-400"
+                className="mt-2.5 ml-2 text-gray-400 hover:text-red-400"
+                title="Remove CC field"
               >
                 <X className="h-3.5 w-3.5" />
               </button>
@@ -194,25 +219,38 @@ export function ComposeFields({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className="overflow-hidden"
           >
-            <div className="flex items-center border-b border-gray-100 px-4 sm:px-6 dark:border-gray-800">
-              <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+            <div className="flex items-start border-b border-gray-100 px-4 py-1 sm:px-6 dark:border-gray-800">
+              <label className="mt-2.5 w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 BCC
               </label>
-              <input
-                id="bcc-input"
-                type="text"
-                value={bcc}
-                onChange={(e) => onBccChange(e.target.value)}
-                placeholder="bcc@example.com"
-                className="min-w-0 flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
-              />
+              <div className="min-w-0 flex-1">
+                {bccRecipients !== undefined && onBccRecipientsChange ? (
+                  <RecipientInput
+                    recipients={bccRecipients}
+                    onChange={onBccRecipientsChange}
+                    placeholder="Add BCC recipients"
+                    onOpenContactPicker={onOpenBccContactPicker}
+                  />
+                ) : (
+                  <input
+                    id="bcc-input"
+                    type="text"
+                    value={bcc}
+                    onChange={(e) => onBccChange(e.target.value)}
+                    placeholder="bcc@example.com"
+                    className="w-full bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                  />
+                )}
+              </div>
               <button
                 type="button"
                 onClick={() => {
                   onBccChange('');
+                  if (onBccRecipientsChange) onBccRecipientsChange([]);
                   setShowBccField(false);
                 }}
-                className="ml-2 text-gray-400 hover:text-red-400"
+                className="mt-2.5 ml-2 text-gray-400 hover:text-red-400"
+                title="Remove BCC field"
               >
                 <X className="h-3.5 w-3.5" />
               </button>

@@ -1,4 +1,15 @@
 import { z } from 'zod';
+import { normalizeIndianPhone } from '@/src/lib/utils/phone';
+
+/** Accepts "+91 98765 43210", "0091-9876543210", "919876543210" → bare 10-digit number. */
+const indianPhone = (msg: string) =>
+  z
+    .string()
+    .transform((v) => normalizeIndianPhone(v) ?? v.trim())
+    .pipe(z.string().regex(/^[6-9]\d{9}$/, msg));
+
+/** Letters in any script (Latin, Devanagari, …) plus spaces and .'- */
+const NAME_REGEX = /^[\p{L}\s.'-]+$/u;
 
 // ─── Contact Form ──────────────────────────────────────────────────────────
 export const contactSchema = z.object({
@@ -6,11 +17,11 @@ export const contactSchema = z.object({
     .string()
     .min(2, 'Name must be at least 2 characters')
     .max(100, 'Name must be under 100 characters')
-    .regex(/^[a-zA-Z\s.'-]+$/, 'Name contains invalid characters'),
+    .regex(NAME_REGEX, 'Name contains invalid characters'),
 
   email: z.string().email('Invalid email address').max(255, 'Email too long'),
 
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Please enter a valid 10-digit Indian mobile number'),
+  phone: indianPhone('Please enter a valid 10-digit Indian mobile number'),
 
   subject: z
     .string()
@@ -45,7 +56,7 @@ export const chatMessageSchema = z.object({
 export const grievanceSchema = z.object({
   name: z.string().min(2).max(100),
   email: z.string().email(),
-  phone: z.string().regex(/^[6-9]\d{9}$/),
+  phone: indianPhone('Please enter a valid 10-digit Indian mobile number'),
   category: z.string().min(1, 'Category is required'),
   subject: z.string().min(3).max(200),
   description: z.string().min(20).max(5000),
@@ -69,7 +80,7 @@ export type LotteryDrawInput = z.infer<typeof lotteryDrawSchema>;
 export const propertyRegistrationSchema = z.object({
   full_name: z.string().min(2, 'Name must be at least 2 characters').max(100),
   email: z.string().email('Invalid email').max(255).optional().or(z.literal('')),
-  phone: z.string().regex(/^[6-9]\d{9}$/, 'Valid 10-digit Indian mobile number required'),
+  phone: indianPhone('Valid 10-digit Indian mobile number required'),
   project: z.string().min(1, 'Project is required'),
   property_type: z.string().optional(),
   property_size: z.string().optional(),

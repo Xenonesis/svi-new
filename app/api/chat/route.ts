@@ -3,7 +3,8 @@ import { groq } from '@ai-sdk/groq';
 import { z } from 'zod';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { getChatContext, buildProjectsContext, buildFAQsContext } from '@/src/lib/chat-context';
-import { type NextRequest } from 'next/server';
+import { chatMessageSchema } from '@/src/lib/api/schemas';
+import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/src/lib/supabase/server';
 
 export const runtime = 'edge';
@@ -11,10 +12,24 @@ export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {
   // Rate limit: 20 chat messages per IP per minute
-  const limited = rateLimit(req, { limit: 20, windowSeconds: 60 });
+  const limited = await rateLimit(req, { limit: 20, windowSeconds: 60 });
   if (limited) return limited;
 
-  const { messages }: { messages: UIMessage[] } = await req.json();
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch {
+    return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
+  }
+
+  const parsed = chatMessageSchema.safeParse(body);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid chat payload', details: parsed.error.flatten().fieldErrors },
+      { status: 400 }
+    );
+  }
+  const messages = parsed.data.messages as UIMessage[];
 
   // Fetch real project data & FAQs from the database
   const ctx = await getChatContext();

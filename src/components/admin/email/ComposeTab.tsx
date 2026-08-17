@@ -52,7 +52,15 @@ export function ComposeTab({
 }: ComposeTabProps) {
   const [toRecipients, setToRecipients] = useState<Recipient[]>([]);
   const toStr = toRecipients.map((r) => r.email).join(', ');
+
+  const [ccRecipients, setCcRecipients] = useState<Recipient[]>([]);
+  const ccStr = ccRecipients.map((r) => r.email).join(', ');
+
+  const [bccRecipients, setBccRecipients] = useState<Recipient[]>([]);
+  const bccStr = bccRecipients.map((r) => r.email).join(', ');
+
   const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerTarget, setPickerTarget] = useState<'to' | 'cc' | 'bcc'>('to');
   const contactsCache = useRef<Contact[] | null>(null);
 
   // Fetch contacts from API with caching
@@ -72,37 +80,60 @@ export function ComposeTab({
     }
   }, []);
 
-  // Set of already-selected email addresses (lowercased for dedup)
+  // Set of already-selected email addresses for active picker target (lowercased for dedup)
+  const currentTargetRecipients = useMemo(() => {
+    if (pickerTarget === 'cc') return ccRecipients;
+    if (pickerTarget === 'bcc') return bccRecipients;
+    return toRecipients;
+  }, [pickerTarget, toRecipients, ccRecipients, bccRecipients]);
+
   const selectedEmailSet = useMemo(
-    () => new Set(toRecipients.map((r) => r.email.toLowerCase())),
-    [toRecipients]
+    () => new Set(currentTargetRecipients.map((r) => r.email.toLowerCase())),
+    [currentTargetRecipients]
   );
 
-  // Toggle a contact in the recipient list
+  // Toggle a contact in the active recipient list
   const handleToggleContact = useCallback(
     (contact: Contact) => {
       const emailLower = contact.email.toLowerCase();
-      if (selectedEmailSet.has(emailLower)) {
-        setToRecipients((prev) => prev.filter((r) => r.email.toLowerCase() !== emailLower));
-      } else {
-        setToRecipients((prev) => [
-          ...prev,
-          {
-            email: contact.email,
-            name: contact.full_name,
-            type: contact.role as Recipient['type'],
-            valid: true,
-          },
-        ]);
-      }
+      const setRecipients =
+        pickerTarget === 'cc'
+          ? setCcRecipients
+          : pickerTarget === 'bcc'
+            ? setBccRecipients
+            : setToRecipients;
+
+      setRecipients((prev) => {
+        const exists = prev.some((r) => r.email.toLowerCase() === emailLower);
+        if (exists) {
+          return prev.filter((r) => r.email.toLowerCase() !== emailLower);
+        } else {
+          return [
+            ...prev,
+            {
+              email: contact.email,
+              name: contact.full_name,
+              type: contact.role as Recipient['type'],
+              valid: true,
+            },
+          ];
+        }
+      });
     },
-    [selectedEmailSet]
+    [pickerTarget]
   );
 
-  // Select all contacts from the picker
+  // Select all contacts from the picker into the active target
   const handleSelectAllContacts = useCallback(async () => {
     const allContacts = await fetchContacts();
-    setToRecipients((prev) => {
+    const setRecipients =
+      pickerTarget === 'cc'
+        ? setCcRecipients
+        : pickerTarget === 'bcc'
+          ? setBccRecipients
+          : setToRecipients;
+
+    setRecipients((prev) => {
       const existingEmails = new Set(prev.map((r) => r.email.toLowerCase()));
       const newOnes = allContacts
         .filter((c) => !existingEmails.has(c.email.toLowerCase()))
@@ -117,10 +148,13 @@ export function ComposeTab({
         );
       return [...prev, ...newOnes];
     });
-  }, [fetchContacts]);
+  }, [fetchContacts, pickerTarget]);
 
-  const [cc, setCc] = useState('');
-  const [bcc, setBcc] = useState('');
+  const handleOpenContactPicker = useCallback((target: 'to' | 'cc' | 'bcc' = 'to') => {
+    setPickerTarget(target);
+    setPickerOpen(true);
+  }, []);
+
   const [subjectTemplate, setSubjectTemplate] = useState('');
   const [subject, setSubject] = useState('');
   const [html, setHtml] = useState('');
@@ -138,27 +172,55 @@ export function ComposeTab({
   const [draftSaved, setDraftSaved] = useState(false);
   const [hasDraft, setHasDraft] = useState(false);
   const [inReplyToMessageId, setInReplyToMessageId] = useState<string | null>(null);
+  const [autoComposeName, setAutoComposeName] = useState<string | null>(null);
   const [scheduledAt, setScheduledAt] = useState<string | null>(null);
   const [showImprove, setShowImprove] = useState(false);
-  const [autoComposeName, setAutoComposeName] = useState<string | null>(null);
-  const { autoCompose, loading: aiLoading, suggestSubject, suggestFollowup } = useAIEmail();
-  const [subjectSuggestions, setSubjectSuggestions] = useState<string[] | null>(null);
-  const [showSubjectSuggestions, setShowSubjectSuggestions] = useState(false);
   const [subjectSuggesting, setSubjectSuggesting] = useState(false);
+  const [showSubjectSuggestions, setShowSubjectSuggestions] = useState(false);
+  const [subjectSuggestions, setSubjectSuggestions] = useState<string[] | null>(null);
   const [followUpSuggestion, setFollowUpSuggestion] = useState<{
     suggestedDays: number;
     reason: string;
     message: string;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { autoCompose, loading: aiLoading, suggestSubject, suggestFollowup } = useAIEmail();
 
-  // Callback to convert a comma-separated string (from draft/prefill) to Recipient[]
+  // Callbacks to convert comma-separated strings (from draft/prefill) to Recipient[]
   const handleToChange = useCallback((val: string) => {
     const parsed = val
       .split(',')
       .map((e) => e.trim())
       .filter(Boolean);
     setToRecipients(
+      parsed.map((email) => ({
+        email,
+        type: 'manual' as const,
+        valid: isValidEmail(email),
+      }))
+    );
+  }, []);
+
+  const handleCcChange = useCallback((val: string) => {
+    const parsed = val
+      .split(',')
+      .map((e) => e.trim())
+      .filter(Boolean);
+    setCcRecipients(
+      parsed.map((email) => ({
+        email,
+        type: 'manual' as const,
+        valid: isValidEmail(email),
+      }))
+    );
+  }, []);
+
+  const handleBccChange = useCallback((val: string) => {
+    const parsed = val
+      .split(',')
+      .map((e) => e.trim())
+      .filter(Boolean);
+    setBccRecipients(
       parsed.map((email) => ({
         email,
         type: 'manual' as const,
@@ -178,8 +240,8 @@ export function ComposeTab({
     onClearPrefill,
     setters: {
       setTo: handleToChange,
-      setCc,
-      setBcc,
+      setCc: handleCcChange,
+      setBcc: handleBccChange,
       setSubjectTemplate,
       setHtml,
       setTemplateHtml,
@@ -197,8 +259,8 @@ export function ComposeTab({
 
   const { restoreDraft, handleClearDraft } = useEmailDraft({
     to: toStr,
-    cc,
-    bcc,
+    cc: ccStr,
+    bcc: bccStr,
     subject,
     html,
     replyTo,
@@ -206,8 +268,8 @@ export function ComposeTab({
     setDraftSaved,
     setHasDraft,
     setTo: handleToChange,
-    setCc,
-    setBcc,
+    setCc: handleCcChange,
+    setBcc: handleBccChange,
     setSubjectTemplate,
     setHtml,
     setReplyTo,
@@ -268,7 +330,11 @@ export function ComposeTab({
       setError('Please fill in To, Subject, and Body fields.');
       return;
     }
-    if (toRecipients.some((r) => !r.valid)) {
+    if (
+      toRecipients.some((r) => !r.valid) ||
+      ccRecipients.some((r) => !r.valid) ||
+      bccRecipients.some((r) => !r.valid)
+    ) {
       setError('Some recipient email addresses are invalid.');
       return;
     }
@@ -282,18 +348,8 @@ export function ComposeTab({
         body: JSON.stringify({
           action: 'send',
           to: toRecipients.map((r) => r.email),
-          cc: cc
-            ? cc
-                .split(',')
-                .map((e) => e.trim())
-                .filter(Boolean)
-            : undefined,
-          bcc: bcc
-            ? bcc
-                .split(',')
-                .map((e) => e.trim())
-                .filter(Boolean)
-            : undefined,
+          cc: ccRecipients.length > 0 ? ccRecipients.map((r) => r.email) : undefined,
+          bcc: bccRecipients.length > 0 ? bccRecipients.map((r) => r.email) : undefined,
           subject,
           html: getPreviewHtml() || html,
           replyTo: replyTo || undefined,
@@ -325,8 +381,8 @@ export function ComposeTab({
         setTimeout(() => {
           setSent(false);
           setToRecipients([]);
-          setCc('');
-          setBcc('');
+          setCcRecipients([]);
+          setBccRecipients([]);
           setSubjectTemplate('');
           setHtml('');
           setReplyTo(
@@ -354,7 +410,7 @@ export function ComposeTab({
     const result = await autoCompose({
       subject: subject.trim(),
       to: toStr,
-      cc,
+      cc: ccStr,
       onChunk: (html) => setHtml(html),
     });
 
@@ -415,8 +471,8 @@ export function ComposeTab({
 
   const discardAll = async () => {
     setToRecipients([]);
-    setCc('');
-    setBcc('');
+    setCcRecipients([]);
+    setBccRecipients([]);
     setSubjectTemplate('');
     setHtml('');
     setTemplateHtml(null);
@@ -449,8 +505,8 @@ export function ComposeTab({
         {/* Fields */}
         <ComposeFields
           to={toStr}
-          cc={cc}
-          bcc={bcc}
+          cc={ccStr}
+          bcc={bccStr}
           subject={subject}
           fromName={fromName}
           replyTo={replyTo}
@@ -461,15 +517,21 @@ export function ComposeTab({
           autoComposing={aiLoading}
           onAutoCompose={handleAutoCompose}
           onToChange={handleToChange}
-          onCcChange={setCc}
-          onBccChange={setBcc}
+          onCcChange={handleCcChange}
+          onBccChange={handleBccChange}
           onSubjectChange={handleSubjectChange}
           onFromNameChange={setFromName}
           onReplyToChange={setReplyTo}
           onScheduledAtChange={setScheduledAt}
           toRecipients={toRecipients}
           onToRecipientsChange={setToRecipients}
-          onOpenContactPicker={() => setPickerOpen(true)}
+          onOpenContactPicker={() => handleOpenContactPicker('to')}
+          ccRecipients={ccRecipients}
+          onCcRecipientsChange={setCcRecipients}
+          onOpenCcContactPicker={() => handleOpenContactPicker('cc')}
+          bccRecipients={bccRecipients}
+          onBccRecipientsChange={setBccRecipients}
+          onOpenBccContactPicker={() => handleOpenContactPicker('bcc')}
         />
 
         {/* Attachments */}
@@ -579,6 +641,13 @@ export function ComposeTab({
         selectedEmails={selectedEmailSet}
         onToggle={handleToggleContact}
         onSelectAll={handleSelectAllContacts}
+        title={
+          pickerTarget === 'cc'
+            ? 'Select Contacts (CC)'
+            : pickerTarget === 'bcc'
+              ? 'Select Contacts (BCC)'
+              : 'Select Contacts (To)'
+        }
       />
     </div>
   );

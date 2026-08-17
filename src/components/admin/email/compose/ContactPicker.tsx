@@ -12,6 +12,7 @@ interface ContactPickerProps {
   selectedEmails: Set<string>;
   onToggle: (contact: Contact) => void;
   onSelectAll: () => void;
+  title?: string;
 }
 
 function getInitials(name: string): string {
@@ -57,6 +58,7 @@ export function ContactPicker({
   selectedEmails,
   onToggle,
   onSelectAll,
+  title = 'Select Contacts',
 }: ContactPickerProps) {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [loading, setLoading] = useState(false);
@@ -162,7 +164,7 @@ export function ContactPicker({
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-gray-800">
             <Dialog.Title className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
               <Users className="text-brand-gold h-4 w-4" />
-              Select Contacts
+              {title}
             </Dialog.Title>
             <Dialog.Close className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5">
               <X className="h-4 w-4" />
