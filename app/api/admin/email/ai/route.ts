@@ -77,6 +77,8 @@ Analyze the email and return a JSON object with this exact structure:
 
 // ─── Handler ─────────────────────────────────────────────────
 
+const AI_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+
 export async function POST(request: NextRequest) {
   // Rate limit: 10 AI requests per admin per minute
   const limited = await rateLimit(request, { limit: 10, windowSeconds: 60 });
@@ -93,9 +95,9 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing action field' }, { status: 400 });
     }
 
-    // ─── Auto Compose: subject → template match or AI-generated (streaming) ───
+    // ─── Auto Compose: subject → template match or AI-generated ───
     if (action === 'auto_compose') {
-      const { subject, to, cc } = body;
+      const { subject, to } = body;
       if (!subject) {
         return NextResponse.json({ error: 'Missing subject' }, { status: 400 });
       }
@@ -109,109 +111,125 @@ export async function POST(request: NextRequest) {
       // Build existing templates list for AI to match against
       const templatesList = getTemplatesSummary();
 
-      const prompt = `You are an email HTML template generator for SVI Infra Solutions, a premium real estate developer.
+      const prompt = `You are an email HTML template generator for SVI Infra Solutions, a premium real estate developer in India.
 
 EXISTING TEMPLATES:
 ${templatesList}
 
-─── EXACT HTML STRUCTURE ───
-
-Always use this EXACT table-based skeleton (email-client compatible). No div-based layouts.
-
-<!DOCTYPE html>
-<html>
-<head><meta charset="utf-8"><title>Title</title></head>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:Arial,sans-serif;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f5f5f5;padding:40px 0;">
-    <tr><td align="center">
-      <table width="600" cellpadding="0" cellspacing="0" style="background:#ffffff;border-radius:12px;overflow:hidden;box-shadow:0 4px 24px rgba(0,0,0,0.08);">
-        ROWS HERE
-      </table>
-    </td></tr>
-  </table>
-</body>
-</html>
-
-─── COLOR SYSTEM ───
+─── COLOR & DESIGN SYSTEM ───
 - Header gradient: linear-gradient(135deg,#1a2744,#2d4080)
 - Gold accent: #D4AF37
 - Navy text: #1a2744
-- Body text: #555
-- Footer bg: #f9f9f9, text: #999
+- Body text: #555555
+- Footer bg: #f9f9f9, text: #999999
 - Button: bg #D4AF37, text #1a2744, radius 8px
-- Alert success: bg #e8f5e9, border #4caf50, text #2e7d32
-- Alert warning: bg #fff8e1, border #ffc107, text #f57c00
-- Alert error: bg #fdf2f2, border #f5c6cb, text #c62828
-
-─── ROWS PATTERNS (copy these EXACT styles) ───
-
-HEADER ROW:
-<tr><td style="background:linear-gradient(135deg,#1a2744,#2d4080);padding:40px;text-align:center;">
-  <h1 style="color:#D4AF37;font-size:28px;margin:0;font-family:Georgia,serif;">SVI Infra Solutions</h1>
-  <p style="color:rgba(255,255,255,0.7);margin:8px 0 0;font-size:13px;letter-spacing:2px;">CATEGORY LABEL</p>
-</td></tr>
-
-BODY ROW:
-<tr><td style="padding:40px;">
-  <h2 style="color:#1a2744;font-size:22px;margin:0 0 16px;">Dear {{name}},</h2>
-  <p style="color:#555;line-height:1.7;margin:0 0 24px;">Content</p>
-</td></tr>
-
-DETAIL TABLE (for structured data):
-<table width="100%" style="border-collapse:collapse;margin:24px 0;">
-  <tr style="background:#f9f9f9;"><td style="padding:12px 16px;font-weight:bold;color:#1a2744;width:40%;">Label</td><td style="padding:12px 16px;color:#555;">Value</td></tr>
-  <tr><td style="padding:12px 16px;font-weight:bold;color:#1a2744;">Label2</td><td style="padding:12px 16px;color:#555;">Value2</td></tr>
-</table>
-
-ALERT BOX:
-<div style="background:#e8f5e9;border-left:4px solid #4caf50;padding:16px;border-radius:4px;margin-bottom:24px;">
-  <p style="margin:0;color:#2e7d32;font-weight:bold;">✓ Success Message</p>
-</div>
-
-BUTTON:
-<div style="text-align:center;margin-top:32px;">
-  <a href="{{portal_url}}" style="background:#D4AF37;color:#1a2744;padding:14px 36px;border-radius:8px;text-decoration:none;font-weight:bold;font-size:15px;display:inline-block;">Action</a>
-</div>
-
-FOOTER ROW (required at end):
-<tr><td style="background:#f9f9f9;padding:24px;text-align:center;border-top:1px solid #eee;">
-  <p style="color:#999;font-size:12px;margin:0;">© ${new Date().getFullYear()} SVI Infra Solutions · All rights reserved</p>
-</td></tr>
-
-─── RULES ───
-- Use {{variable_name}} for ALL dynamic values (not {variable} or [variable])
-- EVERY email MUST have: HEADER + BODY (with greeting) + FOOTER
-- Use exact inline styles from patterns above
-- ₹ for currency. Arial body, Georgia for headings
-- Professional Indian English tone
-- Wrap data in DETAIL TABLE, never plain text lists
-- Footer always has copyright line
+- Use ₹ for Indian Rupee currency.
+- Use {{variable_name}} for dynamic values (e.g. {{name}}, {{property_name}}, {{amount}}, {{due_date}}, {{portal_url}}).
 
 TASK:
-Analyze the subject below and do ONE of:
+Analyze the email subject and recipient details.
+1) If the subject matches one of the EXISTING TEMPLATES above, output a JSON object:
+{
+  "action": "template_match",
+  "templateId": "<matching template id from list>",
+  "templateName": "<matching template name>",
+  "variables": {
+    "name": "<recipient name or Valued Customer>",
+    "<other template variables>": "<value or placeholder>"
+  },
+  "html": "<complete email HTML with variables or placeholders>"
+}
 
-1) MATCHES existing template → respond with:
-   {"action":"template_match","templateId":"id","templateName":"Name","variables":{"var":"val"}}
-   Next line: template HTML with variables filled from recipient data.
-
-2) NO MATCH → CREATE new template on the fly:
-   {"action":"ai_template","templateId":"_ai_generated","templateName":"Short Name","variables":{"var":"val"}}
-   Next line: complete email HTML using above exact patterns with {{variable}} placeholders.
+2) If NO MATCH with existing templates, create a custom, high-end, responsive HTML email template using table layout:
+{
+  "action": "ai_template",
+  "templateId": "_ai_generated",
+  "templateName": "<short 2-4 word descriptive title>",
+  "variables": {
+    "name": "<recipient name or Valued Customer>",
+    "<other custom variables>": "<value or placeholder>"
+  },
+  "html": "<!DOCTYPE html><html>...complete valid HTML email...</html>"
+}
 
 RECIPIENT DATA:
 ${JSON.stringify(recipientData, null, 2)}
 
-EMAIL SUBJECT: ${subject}
+EMAIL SUBJECT:
+${subject}
 
-IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanations.`;
+IMPORTANT: Respond with ONLY a valid JSON object matching the schema above. No markdown code blocks, no explanation text.`;
 
-      const result = streamText({
-        model: groq('llama-3.3-70b-versatile'),
+      const { text } = await generateText({
+        model: groq(AI_MODEL),
         system: EMAIL_SYSTEM_PROMPT,
         prompt,
       });
 
-      return result.toTextStreamResponse();
+      try {
+        let cleaned = text.trim();
+        if (cleaned.startsWith('```')) {
+          cleaned = cleaned
+            .replace(/^```(?:json)?\s*/i, '')
+            .replace(/```\s*$/, '')
+            .trim();
+        }
+
+        let parsed: any;
+        try {
+          parsed = JSON.parse(cleaned);
+        } catch {
+          const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            parsed = JSON.parse(jsonMatch[0]);
+          } else {
+            throw new Error('Failed to parse AI response JSON');
+          }
+        }
+
+        if (parsed.action === 'template_match' && parsed.templateId) {
+          const tpl = (emailTemplates as Array<any>).find(
+            (t) =>
+              t.id === parsed.templateId ||
+              t.name.toLowerCase() === (parsed.templateName || '').toLowerCase()
+          );
+          if (tpl) {
+            parsed.templateId = tpl.id;
+            parsed.templateName = tpl.name;
+            if (!parsed.html) parsed.html = tpl.html;
+          } else {
+            parsed.action = 'ai_template';
+            parsed.templateId = '_ai_generated';
+          }
+        }
+
+        return NextResponse.json({
+          success: true,
+          action: parsed.action || 'ai_template',
+          templateId: parsed.templateId || '_ai_generated',
+          templateName: parsed.templateName || 'AI Generated',
+          variables: parsed.variables || {},
+          html: parsed.html || '',
+        });
+      } catch (parseErr: any) {
+        console.error('[AI] Auto compose parsing failed:', parseErr, text);
+        const htmlMatch =
+          text.match(/<!DOCTYPE[\s\S]*<\/html>/i) || text.match(/<table[\s\S]*<\/table>/i);
+        if (htmlMatch) {
+          return NextResponse.json({
+            success: true,
+            action: 'ai_template',
+            templateId: '_ai_generated',
+            templateName: 'AI Generated',
+            variables: {},
+            html: htmlMatch[0],
+          });
+        }
+        return NextResponse.json(
+          { error: 'Failed to generate auto compose template' },
+          { status: 500 }
+        );
+      }
     }
 
     // ─── Feature 1: Generate email content (streaming) ─────
@@ -227,7 +245,7 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
       const subjectInfo = context?.subject ? `Email subject: ${context.subject}.` : '';
 
       const result = streamText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: EMAIL_SYSTEM_PROMPT,
         prompt: `${toneInstruction} ${contextInfo} ${subjectInfo}\n\nWrite an email body for: ${prompt}\n\nReturn ONLY the email body HTML (no subject line, no explanation).`,
       });
@@ -247,7 +265,7 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
         : 'General improvement for grammar, tone, and clarity.';
 
       const result = streamText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: IMPROVE_PROMPT,
         prompt: `${instructionText}\n\nOriginal email HTML:\n${html}`,
       });
@@ -270,7 +288,7 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
         .join('\n\n');
 
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: SUMMARIZE_PROMPT,
         prompt: `Summarize this email thread:\n\n${threadText}`,
       });
@@ -304,7 +322,7 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
       }
 
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: POPULATE_TEMPLATE_PROMPT,
         prompt: `Template ID: ${templateId || 'unknown'}\n\nVariables to populate:\n${variables.join(', ')}\n\nRecipient data:\n${JSON.stringify(recipientData, null, 2)}`,
       });
@@ -332,7 +350,7 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
       const content = stripHtml(emailHtml || '') || emailText || '';
 
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: SENTIMENT_PROMPT,
         prompt: `Analyze this email:\n\n${content}`,
       });
@@ -356,7 +374,7 @@ IMPORTANT: First line = JSON only. Second line onwards = HTML only. No explanati
       if (!html) return NextResponse.json({ error: 'Missing html' }, { status: 400 });
 
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system:
           'You are an email subject line expert for SVI Infra Solutions, a real estate company.',
         prompt: `Analyze this email body and suggest exactly 3 professional subject lines.
@@ -396,7 +414,7 @@ ${stripHtml(html)}`,
       const content = stripHtml(emailHtml || '') || emailText || '';
 
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: 'You classify real estate emails for SVI Infra Solutions admin team.',
         prompt: `Classify this email and return JSON:
 {
@@ -430,7 +448,7 @@ ${content.slice(0, 3000)}`,
       if (!html) return NextResponse.json({ error: 'Missing html' }, { status: 400 });
 
       const { text } = await generateText({
-        model: groq('llama-3.3-70b-versatile'),
+        model: groq(AI_MODEL),
         system: 'You suggest follow-up timing for SVI Infra Solutions real estate emails.',
         prompt: `Analyze this sent email and suggest when to follow up.
 Return JSON:

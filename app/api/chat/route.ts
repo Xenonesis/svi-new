@@ -87,8 +87,10 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
 - **Tone:** For Hindi/Hinglish responses, use respectful terms like "जी", "कृपया", "धन्यवाद" naturally
 - **Never switch languages mid-response** — stay consistent with the user's detected language`;
 
+  const AI_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+
   const result = streamText({
-    model: groq('llama-3.3-70b-versatile'),
+    model: groq(AI_MODEL),
     system: systemPrompt,
     messages: await convertToModelMessages(messages),
     tools: {

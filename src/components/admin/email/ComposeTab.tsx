@@ -425,29 +425,35 @@ export function ComposeTab({
         setSelectedTemplate(result.templateId);
         // Fill variables from suggestion
         const vars: Record<string, string> = {};
-        Object.keys(result.variables).forEach((k) => {
-          vars[k] = result.variables[k] || '';
+        const templateVarKeys = extractTemplateVars(tpl.html);
+        templateVarKeys.forEach((k) => {
+          vars[k] = result.variables?.[k] || templateVars[k] || '';
         });
         setTemplateVars(vars);
+        setHtml('');
         setPreviewMode(true);
         setEditorKey((prev) => prev + 1);
+        toast.success(`Matched template: ${tpl.name}`);
+        return;
       }
-    } else {
-      // AI-generated template
-      setTemplateHtml(result.html);
-      setSelectedTemplate('_ai_generated');
-      setAutoComposeName(result.templateName);
-      // Extract variables from the AI-generated HTML
-      const vars = extractTemplateVars(result.html);
-      const initialVars: Record<string, string> = {};
-      vars.forEach((v) => {
-        initialVars[v] = result.variables[v] || '';
-      });
-      setTemplateVars(initialVars);
-      setPreviewMode(true);
-      setEditorKey((prev) => prev + 1);
-      setHtml(result.html);
     }
+
+    // AI-generated template
+    const rawHtml = result.html || '';
+    setTemplateHtml(rawHtml);
+    setSelectedTemplate('_ai_generated');
+    setAutoComposeName(result.templateName || 'AI Generated');
+    // Extract variables from the AI-generated HTML
+    const vars = extractTemplateVars(rawHtml);
+    const initialVars: Record<string, string> = {};
+    vars.forEach((v) => {
+      initialVars[v] = result.variables?.[v] || templateVars[v] || '';
+    });
+    setTemplateVars(initialVars);
+    setHtml(rawHtml);
+    setPreviewMode(true);
+    setEditorKey((prev) => prev + 1);
+    toast.success('Generated email draft with AI');
   };
 
   // Suggest subject lines based on email body

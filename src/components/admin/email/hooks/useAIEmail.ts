@@ -172,60 +172,24 @@ export function useAIEmail() {
 
       try {
         const res = await apiCall({ action: 'auto_compose', subject, to, cc }, controller.signal);
-        const reader = res.body?.getReader();
-        if (!reader) throw new Error('No response stream');
-
-        const decoder = new TextDecoder();
-        let buffer = '';
-        let metaRead = false;
-        let metadata: AutoComposeResult | null = null;
-        let fullHtml = '';
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-
-          if (!metaRead) {
-            // First line is JSON metadata
-            const newlineIdx = buffer.indexOf('\n');
-            if (newlineIdx !== -1) {
-              const metaLine = buffer.slice(0, newlineIdx);
-              buffer = buffer.slice(newlineIdx + 1);
-              try {
-                metadata = JSON.parse(metaLine);
-              } catch {
-                // If metadata parse fails, treat entire response as HTML
-                metadata = {
-                  action: 'ai_template',
-                  templateId: '_ai_generated',
-                  templateName: 'AI Generated',
-                  variables: {},
-                  html: '',
-                };
-              }
-              metaRead = true;
-            }
-          }
-
-          if (metaRead) {
-            fullHtml += buffer;
-            buffer = '';
-            onChunk?.(fullHtml);
-          }
+        const data = await res.json();
+        if (!data.success && !data.html) {
+          throw new Error(data.error || 'Failed to auto-compose');
         }
 
-        if (!metadata) {
-          metadata = {
-            action: 'ai_template',
-            templateId: '_ai_generated',
-            templateName: 'AI Generated',
-            variables: {},
-            html: fullHtml,
-          };
+        const result: AutoComposeResult = {
+          action: data.action || 'ai_template',
+          templateId: data.templateId || '_ai_generated',
+          templateName: data.templateName || 'AI Generated',
+          variables: data.variables || {},
+          html: data.html || '',
+        };
+
+        if (result.html) {
+          onChunk?.(result.html);
         }
 
-        return { ...metadata, html: fullHtml };
+        return result;
       } catch (err: any) {
         if (err.name === 'AbortError') return null;
         const msg = err.message || 'Failed to auto-compose';
