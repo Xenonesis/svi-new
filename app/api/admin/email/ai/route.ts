@@ -11,15 +11,13 @@ export const maxDuration = 30;
 
 // ─── System prompts per action ───────────────────────────────
 
-const EMAIL_SYSTEM_PROMPT = `You are an AI email writing assistant for SVI Infra Solutions Pvt. Ltd., a premium real estate developer in India.
-Write professional business emails in Indian English. Be clear, courteous, and property-focused.
+const EMAIL_SYSTEM_PROMPT = `You are an elite corporate email HTML template designer and writer for SVI Infra Solutions Pvt. Ltd., a premier real estate developer in India.
+Write high-end, responsive, executive-level business emails in polished Indian English.
 - Use respectful salutations (Dear/Respected)
-- Keep paragraphs concise
-- End with a professional sign-off
-- Use ₹ for currency
-- Reference SVI Infra's projects when relevant
-- Maintain a warm yet professional tone throughout
-- Important Context: The current year is ${new Date().getFullYear()} and our official website is https://www.sviinfrasolutions.com`;
+- Replace dense text with structured 2-column detail cards, alert boxes, and action roadmaps
+- End with dedicated HR/Advisor desk contact and full corporate footer
+- Use ₹ for currency (e.g. ₹50,00,000)
+- Important Context: The current year is ${new Date().getFullYear()}, corporate office is A-61 Sector 65 Noida, and official website is https://www.sviinfrasolutions.com`;
 
 const IMPROVE_PROMPT = `You are an email editor. Improve the given email HTML for grammar, tone, clarity, and professionalism.
 - Preserve the original meaning and all factual details
@@ -111,20 +109,59 @@ export async function POST(request: NextRequest) {
       // Build existing templates list for AI to match against
       const templatesList = getTemplatesSummary();
 
-      const prompt = `You are an email HTML template generator for SVI Infra Solutions, a premium real estate developer in India.
+      const prompt = `You are an elite email HTML template designer for SVI Infra Solutions, a luxury real estate developer in India.
 
 EXISTING TEMPLATES:
 ${templatesList}
 
-─── COLOR & DESIGN SYSTEM ───
-- Header gradient: linear-gradient(135deg,#1a2744,#2d4080)
-- Gold accent: #D4AF37
-- Navy text: #1a2744
-- Body text: #555555
-- Footer bg: #f9f9f9, text: #999999
-- Button: bg #D4AF37, text #1a2744, radius 8px
-- Use ₹ for Indian Rupee currency.
-- Use {{variable_name}} for dynamic values (e.g. {{name}}, {{property_name}}, {{amount}}, {{due_date}}, {{portal_url}}).
+─── LUXURY CORPORATE DESIGN SYSTEM ───
+Always construct email with this EXACT table structure (cross-client compatible, inline CSS):
+- Outer wrapper: width="100%" bgcolor="#f1f5f9" style="padding:40px 0;font-family:Arial,sans-serif;"
+- Main container: width="600" align="center" bgcolor="#ffffff" style="border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);"
+- Header:
+  <tr style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a2744 100%);border-bottom:3px solid #D4AF37;">
+    <td style="padding:36px 30px;text-align:center;">
+      <span style="display:inline-block;padding:4px 14px;background:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">CATEGORY LABEL</span>
+      <h1 style="color:#ffffff;font-size:24px;margin:0;font-family:Georgia,serif;letter-spacing:0.5px;">SVI Infra Solutions</h1>
+      <p style="color:rgba(255,255,255,0.85);font-size:13px;margin:6px 0 0;">Sub-heading / Subject Summary</p>
+    </td>
+  </tr>
+- Body Content:
+  - Salutation: <h2 style="color:#0f172a;font-size:19px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
+  - Highlight/Success Alert Box:
+    <div style="background:#f0fdf4;border-left:4px solid #16a34a;border:1px solid #86efac;border-radius:8px;padding:14px 18px;margin-bottom:20px;">
+      <p style="margin:0;color:#15803d;font-weight:700;font-size:13px;">✓ Highlight Message / Status</p>
+    </div>
+  - Key-Value Metrics Card (DO NOT USE PLAIN PARAGRAPHS FOR STRUCTURED DATA):
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:20px 0;overflow:hidden;font-size:13px;">
+      <tr style="background:#f1f5f9;"><td style="padding:10px 14px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;" colspan="2">Key Information Details</td></tr>
+      <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;width:40%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 1</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_1}}</td></tr>
+      <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 2</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_2}}</td></tr>
+      <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;">Label 3</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;">{{variable_3}}</td></tr>
+    </table>
+  - Action Roadmap / Next Steps:
+    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
+      <h4 style="margin:0 0 10px;color:#0f172a;font-size:13px;font-weight:700;">📌 Next Steps:</h4>
+      <ol style="margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.8;">
+        <li>Review your details carefully.</li>
+        <li>Complete the verification / payment step.</li>
+        <li>Our relationship executive will contact you for handover.</li>
+      </ol>
+    </div>
+  - CTA Button:
+    <div style="text-align:center;margin:28px 0 16px;">
+      <a href="{{portal_url}}" style="background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:14px 34px;border-radius:30px;text-decoration:none;font-weight:800;font-size:13px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;">View Details on Portal</a>
+    </div>
+- Advisor / Helpdesk Bar:
+  <div style="background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;padding:16px 20px;margin-top:20px;font-size:12px;color:#64748b;">
+    <strong>Need assistance?</strong> SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91-73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;">info@sviinfrasolutions.com</a>
+  </div>
+- Corporate Legal Footer:
+  <div style="padding:24px 20px;text-align:center;background:#f1f5f9;border-top:1px solid #e2e8f0;">
+    <p style="color:#475569;font-size:12px;font-weight:700;margin:0 0 4px;">SVI Infra Solutions Pvt. Ltd.</p>
+    <p style="color:#94a3b8;font-size:11px;margin:0 0 8px;line-height:1.5;">Corporate Office: A-61 Sector 65, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#64748b;">www.sviinfrasolutions.com</a></p>
+    <p style="color:#cbd5e1;font-size:10px;margin:0;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
+  </div>
 
 TASK:
 Analyze the email subject and recipient details.
@@ -140,7 +177,7 @@ Analyze the email subject and recipient details.
   "html": "<complete email HTML with variables or placeholders>"
 }
 
-2) If NO MATCH with existing templates, create a custom, high-end, responsive HTML email template using table layout:
+2) If NO MATCH with existing templates, create a custom, high-end, responsive HTML email template using the EXACT luxury structure above:
 {
   "action": "ai_template",
   "templateId": "_ai_generated",
