@@ -144,12 +144,12 @@ export default function OfferLetterPreviewContent({
   );
 
   return (
-    <div className="bg-white font-sans text-[10.5px] leading-[1.44] text-gray-900">
+    <div className="bg-white text-left font-sans text-[10.5px] leading-[1.44] text-gray-900">
       {/* ========================================================================= */}
       {/* ────────────────────────────── PAGE 1 ─────────────────────────────────── */}
       {/* ========================================================================= */}
       <div
-        className="relative flex flex-col justify-between bg-white p-7 sm:p-8"
+        className="relative flex flex-col justify-between bg-white px-7 py-6 sm:px-8 sm:py-7"
         style={{
           minHeight: '260mm',
           boxSizing: 'border-box',
@@ -259,7 +259,7 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Preamble / Recitals */}
-          <div className="mb-3 space-y-1 text-justify text-[10.5px] font-medium text-gray-800">
+          <div className="mb-3 space-y-1 text-left text-[10.5px] font-medium text-gray-800">
             <p>
               Dear{' '}
               <span className="font-bold text-[#1e3a8a]">
@@ -280,7 +280,7 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Clauses 1 to 6 */}
-          <div className="space-y-2.5 text-justify text-[10px]">
+          <div className="space-y-2 text-left text-[10px]">
             {/* Clause 1: Position & Department */}
             <div>
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
@@ -347,99 +347,114 @@ export default function OfferLetterPreviewContent({
                 mandated.
               </p>
 
-              {/* Sales Target / Slab Information */}
-              {(formData.target || matchedSlab || formData.offerSlab) && (
-                <div className="mt-1.5 rounded border border-gray-300 bg-gray-50 p-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-                  <p className="font-bold text-[#1e3a8a]">
-                    Sales Performance Quota &amp; Commission Matrix:
-                  </p>
-                  <p className="mt-0.5 text-gray-800">
-                    Your assigned monthly sales quota is{' '}
-                    <span className="font-bold text-gray-900">
-                      {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')} Sq.
-                      Yd.
-                    </span>{' '}
-                    per calendar month. You shall be eligible to receive a performance-linked sales
-                    commission of{' '}
-                    <span className="font-bold text-[#1e3a8a]">
-                      {formData.offerSlab
-                        ? `${formData.offerSlab.replace(/%$/, '')}%`
-                        : matchedSlab
-                          ? matchedSlab.offerSlab
-                          : '3%'}
-                    </span>{' '}
-                    on confirmed realized revenue, computed in strict compliance with the
-                    Company&rsquo;s Sales Compensation Policy.
-                  </p>
-                </div>
-              )}
+              {/* Master Sales Compensation & Terms Box */}
+              {(formData.target ||
+                matchedSlab ||
+                formData.offerSlab ||
+                (isSalesDepartment &&
+                  (formData.salesCompensationType || formData.meetingsPerMonth))) && (
+                <div className="mt-1.5 space-y-2 rounded border border-gray-300 bg-gray-50 p-2 shadow-sm">
+                  {/* Quota */}
+                  {(formData.target || matchedSlab || formData.offerSlab) && (
+                    <div>
+                      <p className="font-bold text-[#1e3a8a]">
+                        Sales Performance Quota &amp; Commission Matrix:
+                      </p>
+                      <p className="mt-0.5 text-gray-800">
+                        Your assigned monthly sales quota is{' '}
+                        <span className="font-bold text-gray-900">
+                          {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                          Sq. Yd.
+                        </span>{' '}
+                        per calendar month. You shall be eligible to receive a performance-linked
+                        sales commission of{' '}
+                        <span className="font-bold text-[#1e3a8a]">
+                          {formData.offerSlab
+                            ? `${formData.offerSlab.replace(/%$/, '')}%`
+                            : matchedSlab
+                              ? matchedSlab.offerSlab
+                              : '3%'}
+                        </span>{' '}
+                        on confirmed realized revenue, computed in strict compliance with the
+                        Company&rsquo;s Sales Compensation Policy.
+                      </p>
+                    </div>
+                  )}
 
-              {/* Sales Compensation Clauses (No Sale No Salary or Custom Percent) */}
-              {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
-                <div className="mt-1.5 rounded border border-gray-300 bg-gray-50 p-1.5 text-gray-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-                  <p className="font-bold text-[#1e3a8a]">
-                    Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No Sale No
-                    Salary&rdquo;):
-                  </p>
-                  <p className="mt-0.5 text-gray-800">
-                    As an express condition of this sales appointment, full monthly salary
-                    disbursement is strictly contingent upon sales quota achievement. In the event
-                    zero (0) confirmed sales transactions are closed within a monthly evaluation
-                    cycle, you shall be entitled solely to a subsistence allowance of{' '}
-                    <span className="font-bold text-gray-900">
-                      {formData.subsistenceAllowance &&
-                      parseFloat(formData.subsistenceAllowance) > 0
-                        ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
-                        : 'such sum as determined by the Company'}
-                    </span>
-                    . No additional salary, allowances, or arrears shall accrue until sales closures
-                    are registered.
-                  </p>
-                </div>
-              )}
+                  {/* No Sale No Salary */}
+                  {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
+                    <div className="border-t border-gray-300 pt-2 text-gray-900">
+                      <p className="font-bold text-[#1e3a8a]">
+                        Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No Sale
+                        No Salary&rdquo;):
+                      </p>
+                      <p className="mt-0.5 text-gray-800">
+                        As an express condition of this sales appointment, full monthly salary
+                        disbursement is strictly contingent upon sales quota achievement. In the
+                        event zero (0) confirmed sales transactions are closed within a monthly
+                        evaluation cycle, you shall be entitled solely to a subsistence allowance of{' '}
+                        <span className="font-bold text-gray-900">
+                          {formData.subsistenceAllowance &&
+                          parseFloat(formData.subsistenceAllowance) > 0
+                            ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
+                            : 'such sum as determined by the Company'}
+                        </span>
+                        . No additional salary, allowances, or arrears shall accrue until sales
+                        closures are registered.
+                      </p>
+                    </div>
+                  )}
 
-              {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
-                <div className="mt-1.5 rounded border border-gray-300 bg-gray-50 p-1.5 text-gray-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
-                  <p className="font-bold text-[#1e3a8a]">
-                    Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota Incubation:
-                  </p>
-                  <p className="mt-0.5 text-gray-800">
-                    During your initial incubation period of{' '}
-                    <span className="font-bold text-gray-900">
-                      {formData.probationPeriod || '3'} months
-                    </span>
-                    , your remuneration shall be structured at{' '}
-                    <span className="font-bold text-gray-900">
-                      {formData.customSalaryPercent || '[X]'}%
-                    </span>{' '}
-                    of your agreed CTC, amounting to{' '}
-                    <span className="font-bold text-gray-900">
-                      ₹{' '}
-                      {(() => {
-                        const pct = parseFloat(formData.customSalaryPercent || '0');
-                        const ctc = parseFloat(formData.salaryCtc || '0');
-                        return pct && ctc ? formatINR(Math.round((pct / 100) * ctc)) : '[Amount]';
-                      })()}{' '}
-                      per month
-                    </span>
-                    . Upon successful achievement of sales benchmarks, full CTC disbursement as
-                    specified in Clause 3 shall be restored.
-                  </p>
-                </div>
-              )}
+                  {/* Custom Percent */}
+                  {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
+                    <div className="border-t border-gray-300 pt-2 text-gray-900">
+                      <p className="font-bold text-[#1e3a8a]">
+                        Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota
+                        Incubation:
+                      </p>
+                      <p className="mt-0.5 text-gray-800">
+                        During your initial incubation period of{' '}
+                        <span className="font-bold text-gray-900">
+                          {formData.probationPeriod || '3'} months
+                        </span>
+                        , your remuneration shall be structured at{' '}
+                        <span className="font-bold text-gray-900">
+                          {formData.customSalaryPercent || '[X]'}%
+                        </span>{' '}
+                        of your agreed CTC, amounting to{' '}
+                        <span className="font-bold text-gray-900">
+                          ₹{' '}
+                          {(() => {
+                            const pct = parseFloat(formData.customSalaryPercent || '0');
+                            const ctc = parseFloat(formData.salaryCtc || '0');
+                            return pct && ctc
+                              ? formatINR(Math.round((pct / 100) * ctc))
+                              : '[Amount]';
+                          })()}{' '}
+                          per month
+                        </span>
+                        . Upon successful achievement of sales benchmarks, full CTC disbursement as
+                        specified in Clause 3 shall be restored.
+                      </p>
+                    </div>
+                  )}
 
-              {isSalesDepartment && formData.meetingsPerMonth && (
-                <p className="mt-1 text-[9.5px] text-gray-800">
-                  <span className="font-bold text-gray-900">
-                    Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
-                  </span>{' '}
-                  You are contractually required to conduct a minimum of{' '}
-                  <span className="font-bold text-gray-900">
-                    {formData.meetingsPerMonth} validated in-person / prospective client meetings
-                  </span>{' '}
-                  per calendar month. Failure to meet baseline meeting logs shall directly impact
-                  performance evaluations.
-                </p>
+                  {/* Meetings */}
+                  {isSalesDepartment && formData.meetingsPerMonth && (
+                    <div className="border-t border-gray-300 pt-1.5 text-[9.5px] text-gray-800">
+                      <span className="font-bold text-gray-900">
+                        Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
+                      </span>{' '}
+                      You are contractually required to conduct a minimum of{' '}
+                      <span className="font-bold text-gray-900">
+                        {formData.meetingsPerMonth} validated in-person / prospective client
+                        meetings
+                      </span>{' '}
+                      per calendar month. Failure to meet baseline meeting logs shall directly
+                      impact performance evaluations.
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -462,36 +477,49 @@ export default function OfferLetterPreviewContent({
                 are required to upload high-resolution certified copies of the following:
               </p>
 
+              {/* Added h-full to all inner boxes to align grid row heights perfectly */}
               <div className="grid grid-cols-1 gap-1.5 text-[9.5px] md:grid-cols-2">
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
-                  Certified copies of all academic marksheets and degree certificates (10th, 12th,
-                  Bachelor&rsquo;s Degree, Post-Graduate / Diplomas).
+                <div className="flex h-full flex-col justify-center rounded border border-gray-300 bg-white p-1.5">
+                  <div>
+                    <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
+                    Certified copies of all academic marksheets and degree certificates (10th, 12th,
+                    Bachelor&rsquo;s Degree, Post-Graduate / Diplomas).
+                  </div>
                 </div>
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two (2)
-                  recent colored passport-sized photographs against a plain white background (formal
-                  attire).
+                <div className="flex h-full flex-col justify-center rounded border border-gray-300 bg-white p-1.5">
+                  <div>
+                    <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two
+                    (2) recent colored passport-sized photographs against a plain white background
+                    (formal attire).
+                  </div>
                 </div>
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">
-                    3. Identity Verification (Aadhaar):
-                  </span>{' '}
-                  High-resolution legible copy of valid Government-issued Aadhaar Card (front and
-                  reverse sides).
+                <div className="flex h-full flex-col justify-center rounded border border-gray-300 bg-white p-1.5">
+                  <div>
+                    <span className="font-bold text-[#1e3a8a]">
+                      3. Identity Verification (Aadhaar):
+                    </span>{' '}
+                    High-resolution legible copy of valid Government-issued Aadhaar Card (front and
+                    reverse sides).
+                  </div>
                 </div>
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">4. Tax Registration (PAN Card):</span>{' '}
-                  Legible copy of valid Permanent Account Number (PAN) Card issued by Income Tax
-                  Department.
+                <div className="flex h-full flex-col justify-center rounded border border-gray-300 bg-white p-1.5">
+                  <div>
+                    <span className="font-bold text-[#1e3a8a]">
+                      4. Tax Registration (PAN Card):
+                    </span>{' '}
+                    Legible copy of valid Permanent Account Number (PAN) Card issued by Income Tax
+                    Department.
+                  </div>
                 </div>
-                <div className="col-span-1 rounded border border-gray-300 bg-white p-1.5 md:col-span-2">
-                  <span className="font-bold text-[#1e3a8a]">
-                    5. Prior Employment Experience &amp; Relieving Credentials:
-                  </span>{' '}
-                  Formally issued Experience Certificate and Relieving Letter from immediate
-                  previous employer, resignation acceptance, and pay slips for the preceding three
-                  (3) consecutive months.
+                <div className="col-span-1 flex h-full flex-col justify-center rounded border border-gray-300 bg-white p-1.5 md:col-span-2">
+                  <div>
+                    <span className="font-bold text-[#1e3a8a]">
+                      5. Prior Employment Experience &amp; Relieving Credentials:
+                    </span>{' '}
+                    Formally issued Experience Certificate and Relieving Letter from immediate
+                    previous employer, resignation acceptance, and pay slips for the preceding three
+                    (3) consecutive months.
+                  </div>
                 </div>
               </div>
 
@@ -580,7 +608,7 @@ export default function OfferLetterPreviewContent({
       {/* ────────────────────────────── PAGE 2 ─────────────────────────────────── */}
       {/* ========================================================================= */}
       <div
-        className="relative flex flex-col justify-between bg-white p-7 sm:p-8"
+        className="relative flex flex-col justify-between bg-white px-7 py-6 sm:px-8 sm:py-7"
         style={{
           pageBreakBefore: 'always',
           minHeight: '260mm',
@@ -607,7 +635,7 @@ export default function OfferLetterPreviewContent({
             </h3>
           </div>
 
-          <div className="space-y-2.5 text-justify text-[10px]">
+          <div className="space-y-2.5 text-left text-[10px]">
             {/* Clause 7: Confidentiality, NDA & Trade Secrets */}
             <div>
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
