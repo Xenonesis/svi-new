@@ -113,24 +113,23 @@ export default function OfferLetterPreviewContent({
         <img
           src="/logo.png"
           alt="Company Logo"
-          className="h-5 w-auto object-contain"
+          className="h-6 w-auto object-contain"
           onError={(e) => (e.currentTarget.style.display = 'none')}
         />
-        <span className="font-bold text-[#1e3a8a] uppercase">{companyInfo.company_name}</span>
         <span className="text-gray-400">|</span>
-        <span className="font-medium">Employment Contract &amp; Offer of Appointment</span>
+        <span className="font-semibold tracking-wide text-gray-700 uppercase">
+          Employment Contract &amp; Offer of Appointment
+        </span>
       </div>
-      <div className="text-right">
-        <span className="font-mono font-semibold text-gray-700">{docReferenceNumber}</span>
-      </div>
+      <div className="text-right font-mono font-semibold text-gray-700">{docReferenceNumber}</div>
     </div>
   );
 
   // Running Footer Component for both pages
   const RunningFooter = ({ pageNum }: { pageNum: number }) => (
-    <div className="mt-4 flex items-center justify-between border-t border-gray-300 pt-2.5 text-[9.5px] text-gray-600">
+    <div className="mt-auto flex items-center justify-between border-t border-gray-300 pt-2.5 text-[9px] text-gray-500">
       <div>
-        <span className="font-semibold text-gray-800">CONFIDENTIAL &amp; PROPRIETARY</span> &mdash;{' '}
+        <span className="font-semibold text-gray-700">CONFIDENTIAL &amp; PROPRIETARY</span> &mdash;{' '}
         {companyInfo.company_name}
       </div>
       <div className="font-mono text-gray-600">Ref: {docReferenceNumber}</div>
@@ -145,7 +144,7 @@ export default function OfferLetterPreviewContent({
   );
 
   return (
-    <div className="bg-white font-sans text-[10.5px] leading-[1.42] text-[#111827]">
+    <div className="bg-white font-sans text-[10.5px] leading-[1.44] text-[#111827]">
       {/* ========================================================================= */}
       {/* ────────────────────────────── PAGE 1 ─────────────────────────────────── */}
       {/* ========================================================================= */}
@@ -157,11 +156,11 @@ export default function OfferLetterPreviewContent({
         }}
       >
         {/* Background Watermark */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.035]">
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.03]">
           <img
             src="/logo.png"
             alt="Watermark"
-            className="w-[75%] max-w-xl object-contain grayscale"
+            className="w-[70%] max-w-lg object-contain grayscale"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
         </div>
@@ -176,13 +175,15 @@ export default function OfferLetterPreviewContent({
               <p className="mt-0.5 text-[10px] font-medium text-gray-700">
                 Corporate Real Estate, Infrastructure Advisory &amp; Strategic Project Development
               </p>
-              <p className="mt-0.5 text-[10px] text-gray-700">
-                Contact: <span className="font-semibold">{companyInfo.company_phone}</span>{' '}
+              <p className="mt-0.5 text-[10px] text-gray-600">
+                Contact:{' '}
+                <span className="font-semibold text-gray-800">{companyInfo.company_phone}</span>{' '}
                 &nbsp;|&nbsp; Email:{' '}
-                <span className="font-semibold">{companyInfo.company_email}</span>
+                <span className="font-semibold text-gray-800">{companyInfo.company_email}</span>
               </p>
-              <p className="text-[10px] text-gray-700">
-                Website: <span className="font-semibold">{companyInfo.company_website}</span>{' '}
+              <p className="text-[10px] text-gray-600">
+                Website:{' '}
+                <span className="font-semibold text-gray-800">{companyInfo.company_website}</span>{' '}
                 &nbsp;|&nbsp; Office: {companyInfo.company_address}
               </p>
             </div>
@@ -193,14 +194,11 @@ export default function OfferLetterPreviewContent({
                 className="ml-auto h-11 w-auto object-contain"
                 onError={(e) => (e.currentTarget.style.display = 'none')}
               />
-              <div className="mt-1 inline-block rounded bg-[#1e3a8a]/10 px-2 py-0.5 text-[8.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
-                Corporate Contract
-              </div>
             </div>
           </div>
 
           {/* Classification & Metadata Bar */}
-          <div className="mb-2.5 flex items-center justify-between rounded border border-gray-200 bg-gray-50 px-3 py-1 text-[10px]">
+          <div className="mb-2 flex items-center justify-between rounded border border-gray-200 bg-gray-50 px-3 py-1 text-[10px]">
             <div>
               <span className="font-bold text-gray-600">Document Ref:</span>{' '}
               <span className="font-mono font-bold text-[#1e3a8a]">{docReferenceNumber}</span>
@@ -209,26 +207,26 @@ export default function OfferLetterPreviewContent({
               <span className="font-bold text-gray-600">Issuance Date:</span>{' '}
               <span className="font-bold text-gray-900">{currentDateFormatted}</span>
             </div>
-            <div className="text-[9px] font-bold tracking-wider text-rose-700 uppercase">
+            <div className="text-[9px] font-bold tracking-wider text-gray-700 uppercase">
               Strictly Private &amp; Confidential
             </div>
           </div>
 
-          {/* Addressee Particulars */}
-          <div className="mb-2.5 rounded border border-gray-200 bg-gray-50/60 p-2.5 shadow-2xs">
-            <p className="mb-1 border-b border-gray-200 pb-0.5 text-[9.5px] font-bold tracking-wider text-gray-500 uppercase">
-              Candidate Recipient Information:
+          {/* Balanced Candidate Particulars Card */}
+          <div className="mb-2.5 rounded border border-gray-200 bg-gray-50/50 p-2.5">
+            <p className="mb-1 border-b border-gray-200 pb-0.5 text-[9.5px] font-bold tracking-wider text-gray-600 uppercase">
+              Candidate Recipient Particulars:
             </p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10.5px]">
+            <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[10.5px]">
               <div>
-                <span className="font-semibold text-gray-700">Candidate Name:</span>{' '}
+                <span className="font-semibold text-gray-600">Candidate Name:</span>{' '}
                 <span className="font-bold text-[#1e3a8a]">
                   {formData.name || '[Candidate Full Name]'}
                 </span>
               </div>
               <div>
-                <span className="font-semibold text-gray-700">Primary Contact:</span>{' '}
-                <span className="font-bold">
+                <span className="font-semibold text-gray-600">Primary Contact:</span>{' '}
+                <span className="font-bold text-gray-900">
                   {formData.mobileNo ? `+91 ${formData.mobileNo}` : '[Mobile Number]'}
                 </span>
                 {formData.alternativeNo && (
@@ -238,14 +236,14 @@ export default function OfferLetterPreviewContent({
                   </span>
                 )}
               </div>
-              <div className="col-span-2">
-                <span className="font-semibold text-gray-700">Residential Address:</span>{' '}
-                <span className="font-normal">
-                  {formData.address || '[Candidate Permanent / Present Address]'}
+              <div>
+                <span className="font-semibold text-gray-600">Residential Address:</span>{' '}
+                <span className="font-normal text-gray-800">
+                  {formData.address || '[Candidate Address]'}
                 </span>
               </div>
-              <div className="col-span-2">
-                <span className="font-semibold text-gray-700">Email Address:</span>{' '}
+              <div>
+                <span className="font-semibold text-gray-600">Email Address:</span>{' '}
                 <span className="font-mono text-gray-800">
                   {formData.emailId || '[Candidate Email ID]'}
                 </span>
@@ -254,14 +252,14 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Subject Line */}
-          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/80 py-1 text-center">
+          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/70 py-1 text-center">
             <h3 className="text-[11.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
               Subject: Formal Offer of Employment &amp; Preliminary Contract of Appointment
             </h3>
           </div>
 
           {/* Preamble / Recitals */}
-          <div className="mb-2.5 space-y-1 text-justify text-[10.5px]">
+          <div className="mb-2 space-y-1 text-justify text-[10.5px]">
             <p>
               Dear{' '}
               <span className="font-bold text-[#1e3a8a]">
@@ -280,7 +278,7 @@ export default function OfferLetterPreviewContent({
             </p>
           </div>
 
-          {/* Clauses 1 to 6 (Full Page 1 Layout) */}
+          {/* Clauses 1 to 6 */}
           <div className="space-y-2 text-justify text-[10px]">
             {/* Clause 1: Position & Department */}
             <div>
@@ -350,7 +348,7 @@ export default function OfferLetterPreviewContent({
 
               {/* Sales Target / Slab Information */}
               {(formData.target || matchedSlab || formData.offerSlab) && (
-                <div className="mt-1 rounded border border-blue-200 bg-blue-50/70 p-1.5">
+                <div className="mt-1 rounded border border-slate-200 bg-slate-50 p-1.5">
                   <p className="font-semibold text-[#1e3a8a]">
                     Sales Performance Quota &amp; Commission Matrix:
                   </p>
@@ -377,47 +375,52 @@ export default function OfferLetterPreviewContent({
 
               {/* Sales Compensation Clauses (No Sale No Salary or Custom Percent) */}
               {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
-                <p className="mt-1 rounded border border-amber-200 bg-amber-50/90 p-1.5 text-[9.5px] text-amber-950">
-                  <span className="font-bold uppercase">
+                <div className="mt-1 rounded border border-slate-200 bg-slate-50 p-1.5 text-gray-900">
+                  <p className="font-semibold text-[#1e3a8a]">
                     Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No Sale No
                     Salary&rdquo;):
-                  </span>{' '}
-                  As an express condition of this sales appointment, full monthly salary
-                  disbursement is strictly contingent upon sales quota achievement. In the event
-                  zero (0) confirmed sales transactions are closed within a monthly evaluation
-                  cycle, you shall be entitled solely to a subsistence allowance of{' '}
-                  <span className="font-bold">
-                    {formData.subsistenceAllowance && parseFloat(formData.subsistenceAllowance) > 0
-                      ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
-                      : 'such sum as determined by the Company'}
-                  </span>
-                  . No additional salary, allowances, or arrears shall accrue until sales closures
-                  are registered.
-                </p>
+                  </p>
+                  <p className="mt-0.5">
+                    As an express condition of this sales appointment, full monthly salary
+                    disbursement is strictly contingent upon sales quota achievement. In the event
+                    zero (0) confirmed sales transactions are closed within a monthly evaluation
+                    cycle, you shall be entitled solely to a subsistence allowance of{' '}
+                    <span className="font-bold">
+                      {formData.subsistenceAllowance &&
+                      parseFloat(formData.subsistenceAllowance) > 0
+                        ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
+                        : 'such sum as determined by the Company'}
+                    </span>
+                    . No additional salary, allowances, or arrears shall accrue until sales closures
+                    are registered.
+                  </p>
+                </div>
               )}
 
               {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
-                <p className="mt-1 rounded border border-amber-200 bg-amber-50/90 p-1.5 text-[9.5px] text-amber-950">
-                  <span className="font-bold uppercase">
+                <div className="mt-1 rounded border border-slate-200 bg-slate-50 p-1.5 text-gray-900">
+                  <p className="font-semibold text-[#1e3a8a]">
                     Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota Incubation:
-                  </span>{' '}
-                  During your initial incubation period of{' '}
-                  <span className="font-bold">{formData.probationPeriod || '3'} months</span>, your
-                  remuneration shall be structured at{' '}
-                  <span className="font-bold">{formData.customSalaryPercent || '[X]'}%</span> of
-                  your agreed CTC, amounting to{' '}
-                  <span className="font-bold">
-                    ₹{' '}
-                    {(() => {
-                      const pct = parseFloat(formData.customSalaryPercent || '0');
-                      const ctc = parseFloat(formData.salaryCtc || '0');
-                      return pct && ctc ? formatINR(Math.round((pct / 100) * ctc)) : '[Amount]';
-                    })()}{' '}
-                    per month
-                  </span>
-                  . Upon successful achievement of sales benchmarks, full CTC disbursement as
-                  specified in Clause 3 shall be restored.
-                </p>
+                  </p>
+                  <p className="mt-0.5">
+                    During your initial incubation period of{' '}
+                    <span className="font-bold">{formData.probationPeriod || '3'} months</span>,
+                    your remuneration shall be structured at{' '}
+                    <span className="font-bold">{formData.customSalaryPercent || '[X]'}%</span> of
+                    your agreed CTC, amounting to{' '}
+                    <span className="font-bold">
+                      ₹{' '}
+                      {(() => {
+                        const pct = parseFloat(formData.customSalaryPercent || '0');
+                        const ctc = parseFloat(formData.salaryCtc || '0');
+                        return pct && ctc ? formatINR(Math.round((pct / 100) * ctc)) : '[Amount]';
+                      })()}{' '}
+                      per month
+                    </span>
+                    . Upon successful achievement of sales benchmarks, full CTC disbursement as
+                    specified in Clause 3 shall be restored.
+                  </p>
+                </div>
               )}
 
               {isSalesDepartment && formData.meetingsPerMonth && (
@@ -436,13 +439,13 @@ export default function OfferLetterPreviewContent({
             </div>
 
             {/* Clause 4: MANDATORY PRE-EMPLOYMENT ONBOARDING DOCUMENTATION */}
-            <div className="rounded border-2 border-[#1e3a8a] bg-[#1e3a8a]/5 p-2.5 shadow-2xs">
-              <div className="mb-1.5 flex items-center justify-between border-b border-[#1e3a8a]/30 pb-1">
+            <div className="rounded border border-[#1e3a8a]/40 bg-slate-50/70 p-2.5">
+              <div className="mb-1.5 flex items-center justify-between border-b border-[#1e3a8a]/20 pb-1">
                 <p className="text-[10.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
                   4. Mandatory Pre-Employment Onboarding Documentation &amp; Verification Protocols
                 </p>
-                <span className="rounded bg-[#1e3a8a] px-2 py-0.5 text-[8px] font-bold tracking-wider text-white uppercase">
-                  Mandatory Compliance
+                <span className="text-[8.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+                  Mandatory Submission Schedule
                 </span>
               </div>
               <p className="mb-1.5 text-[9.5px] text-gray-800">
@@ -455,36 +458,35 @@ export default function OfferLetterPreviewContent({
               </p>
 
               <div className="grid grid-cols-1 gap-1.5 text-[9px] md:grid-cols-2">
-                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                <div className="rounded border border-gray-200 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
-                  Certified / attested copies of all academic marksheets and degree certificates
-                  (10th Secondary, 12th Senior Secondary, Bachelor&rsquo;s Degree, Post-Graduate
-                  Degree / Professional Diplomas).
+                  Certified copies of all academic marksheets and degree certificates (10th, 12th,
+                  Bachelor&rsquo;s Degree, Post-Graduate / Diplomas).
                 </div>
-                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                <div className="rounded border border-gray-200 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two (2)
                   recent colored passport-sized photographs against a plain white background (formal
-                  business attire).
+                  attire).
                 </div>
-                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                <div className="rounded border border-gray-200 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">
                     3. Identity Verification (Aadhaar):
                   </span>{' '}
                   High-resolution legible copy of valid Government-issued Aadhaar Card (front and
-                  reverse sides with clear QR code).
+                  reverse sides).
                 </div>
-                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                <div className="rounded border border-gray-200 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">4. Tax Registration (PAN Card):</span>{' '}
-                  Legible copy of valid Permanent Account Number (PAN) Card issued by the Income Tax
-                  Department, Government of India.
+                  Legible copy of valid Permanent Account Number (PAN) Card issued by Income Tax
+                  Department.
                 </div>
-                <div className="col-span-1 rounded border border-gray-200 bg-white p-1.5 shadow-2xs md:col-span-2">
+                <div className="col-span-1 rounded border border-gray-200 bg-white p-1.5 md:col-span-2">
                   <span className="font-bold text-[#1e3a8a]">
                     5. Prior Employment Experience &amp; Relieving Credentials:
                   </span>{' '}
-                  Formally issued Experience Certificate and Relieving Letter from your immediate
-                  previous employer, along with official resignation acceptance correspondence and
-                  salary slips for the preceding three (3) consecutive months.
+                  Formally issued Experience Certificate and Relieving Letter from immediate
+                  previous employer, resignation acceptance, and pay slips for the preceding three
+                  (3) consecutive months.
                 </div>
               </div>
 
@@ -496,19 +498,16 @@ export default function OfferLetterPreviewContent({
                     PDF, JPEG, or PNG formats (maximum file size 5MB per document)
                   </span>{' '}
                   within <span className="font-bold text-gray-900">three (3) business days</span> of
-                  offer acceptance, or no later than forty-eight (48) hours prior to the Effective
-                  Date of joining.
+                  offer acceptance, or no later than forty-eight (48) hours prior to joining.
                 </p>
                 <p>
                   <span className="font-bold">
                     Background Verification (BGV) &amp; Legal Consequences:
                   </span>{' '}
                   The Company reserves the unconditional right to conduct independent background
-                  verification. Any falsification, forged documentation, suppression of material
-                  facts, or discrepancy shall render this offer{' '}
-                  <span className="font-bold text-rose-700">void ab initio</span> and result in
-                  immediate summary termination without notice, accompanied by appropriate civil or
-                  criminal proceedings.
+                  verification. Any falsification or forged documentation shall render this offer{' '}
+                  <span className="font-bold text-gray-900 underline">void ab initio</span> and
+                  result in immediate summary termination without notice.
                 </p>
               </div>
             </div>
@@ -582,11 +581,11 @@ export default function OfferLetterPreviewContent({
         }}
       >
         {/* Background Watermark */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.035]">
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.03]">
           <img
             src="/logo.png"
             alt="Watermark"
-            className="w-[75%] max-w-xl object-contain grayscale"
+            className="w-[70%] max-w-lg object-contain grayscale"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
         </div>
@@ -595,7 +594,7 @@ export default function OfferLetterPreviewContent({
           <RunningHeader />
 
           {/* Document Section Banner */}
-          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/80 py-1 text-center">
+          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/70 py-1 text-center">
             <h3 className="text-[11px] font-bold tracking-wider text-[#1e3a8a] uppercase">
               Section II: Terms &amp; Conditions, Restrictive Covenants, Governance &amp; Acceptance
             </h3>
@@ -722,29 +721,30 @@ export default function OfferLetterPreviewContent({
               </p>
             </div>
 
-            {/* Clause 13 & 14: Indemnification & Governing Law */}
-            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
-              <div className="rounded border border-gray-200 bg-gray-50/60 p-2">
-                <p className="text-[9.5px] font-bold text-[#1e3a8a] uppercase">
-                  13. Indemnification
-                </p>
-                <p className="mt-0.5 text-[8.5px]">
-                  You agree to indemnify and hold harmless the Company, Directors, and officers
-                  against all liabilities, claims, losses, and legal costs arising from your willful
-                  misconduct, gross negligence, fraud, or breach of statutory duties.
-                </p>
-              </div>
+            {/* Clause 13: Indemnification */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                13. Indemnification
+              </p>
+              <p className="mt-0.5">
+                You agree to indemnify, defend, and hold harmless the Company, its Directors, and
+                officers against all liabilities, claims, damages, losses, and legal costs arising
+                from your willful misconduct, gross negligence, fraudulent representations, or
+                breach of statutory duties.
+              </p>
+            </div>
 
-              <div className="rounded border border-gray-200 bg-gray-50/60 p-2">
-                <p className="text-[9.5px] font-bold text-[#1e3a8a] uppercase">
-                  14. Governing Law &amp; Dispute Resolution
-                </p>
-                <p className="mt-0.5 text-[8.5px]">
-                  Governed by the laws of India. Disputes shall be resolved via binding arbitration
-                  under the Arbitration and Conciliation Act, 1996 in Gautam Buddha Nagar (Noida),
-                  with exclusive jurisdiction vested in courts of Gautam Buddha Nagar, UP.
-                </p>
-              </div>
+            {/* Clause 14: Governing Law & Dispute Resolution */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                14. Governing Law &amp; Dispute Resolution
+              </p>
+              <p className="mt-0.5">
+                This contract is governed by the laws of India. Any disputes arising hereunder shall
+                be referred to sole binding arbitration pursuant to the Arbitration and Conciliation
+                Act, 1996 in Gautam Buddha Nagar (Noida), with exclusive jurisdiction vested in the
+                competent courts of Gautam Buddha Nagar, Uttar Pradesh.
+              </p>
             </div>
 
             {/* Clause 15: Entire Agreement & Validity */}
@@ -762,12 +762,12 @@ export default function OfferLetterPreviewContent({
             </div>
           </div>
 
-          {/* Formal Signatures & Execution Section */}
-          <div className="mt-2.5 rounded-lg border-2 border-[#1e3a8a]/40 bg-gray-50/80 p-3 shadow-2xs">
+          {/* Balanced Dual Signatures & Execution Section */}
+          <div className="mt-2.5 rounded border border-gray-300 bg-gray-50/60 p-3">
             <div className="grid grid-cols-2 items-end gap-4">
               {/* Employer Execution Block */}
               <div className="border-r border-gray-300 pr-3">
-                <p className="mb-0.5 text-[9.5px] font-bold tracking-wider text-gray-500 uppercase">
+                <p className="mb-0.5 text-[9.5px] font-bold tracking-wider text-gray-600 uppercase">
                   Issued For and on behalf of Organization:
                 </p>
                 <p className="text-[11px] font-bold text-[#1e3a8a] uppercase">
@@ -777,7 +777,7 @@ export default function OfferLetterPreviewContent({
                   <img
                     src="/signature.png"
                     alt="Authorized Signatory"
-                    className="h-9 w-auto opacity-90 mix-blend-multiply"
+                    className="h-10 w-auto opacity-90 mix-blend-multiply"
                     onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
                 </div>
