@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
-import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { handleApiError } from '@/src/lib/api/errors';
 
 export const dynamic = 'force-dynamic';
 
@@ -12,22 +12,33 @@ export async function GET() {
     const shyamDir = path.join(publicDir, 'Shayam angan');
 
     const imageRegex = /\.(png|jpe?g|gif|webp|svg|heic|heif)$/i;
+    // Exclude responsive suffix variants like -640w.webp or .avif from direct gallery listing
+    const isBaseImage = (file: string) =>
+      !/-\d+w\.(webp|avif)$/i.test(file) && !/\.avif$/i.test(file);
 
-    let shivaniImages: string[] = [];
-    if (fs.existsSync(shivaniDir)) {
-      shivaniImages = fs
-        .readdirSync(shivaniDir)
-        .filter((file) => imageRegex.test(file))
-        .map((file) => `/Shivani Vatika/${encodeURIComponent(file)}`);
-    }
+    const getCleanImageList = (dir: string, urlPrefix: string): string[] => {
+      if (!fs.existsSync(dir)) return [];
+      const allFiles = fs
+        .readdirSync(dir)
+        .filter((file) => imageRegex.test(file) && isBaseImage(file));
 
-    let shyamImages: string[] = [];
-    if (fs.existsSync(shyamDir)) {
-      shyamImages = fs
-        .readdirSync(shyamDir)
-        .filter((file) => imageRegex.test(file))
-        .map((file) => `/Shayam angan/${encodeURIComponent(file)}`);
-    }
+      // If a .webp version of a file exists, prefer it over .jpg/.png
+      const fileMap = new Map<string, string>();
+      for (const file of allFiles) {
+        const ext = path.extname(file);
+        const baseName = path.basename(file, ext);
+        if (!fileMap.has(baseName) || ext.toLowerCase() === '.webp') {
+          fileMap.set(baseName, file);
+        }
+      }
+
+      return Array.from(fileMap.values()).map(
+        (file) => `/${urlPrefix}/${encodeURIComponent(file)}`
+      );
+    };
+
+    const shivaniImages = getCleanImageList(shivaniDir, 'Shivani Vatika');
+    const shyamImages = getCleanImageList(shyamDir, 'Shayam angan');
 
     return NextResponse.json({
       'shivani-vatika': shivaniImages,

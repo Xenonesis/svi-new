@@ -160,6 +160,16 @@ export default function CurrentProjectsContent({
     setCurrentUrl(window.location.href);
   }, []);
 
+  // Preload gallery images in background when modal opens
+  useEffect(() => {
+    if (selectedProject?.gallery && typeof window !== 'undefined') {
+      selectedProject.gallery.forEach((url) => {
+        const img = new window.Image();
+        img.src = url;
+      });
+    }
+  }, [selectedProject]);
+
   return (
     <>
       {projects.length > 0 ? (
@@ -348,7 +358,7 @@ export default function CurrentProjectsContent({
                 <X size={20} className="text-brand-navy dark:text-gray-100" />
               </button>
 
-              <div className="group relative flex min-h-[300px] items-center justify-center overflow-hidden bg-gray-100 md:h-full md:min-h-0 md:w-1/2">
+              <div className="group relative flex min-h-[300px] items-center justify-center overflow-hidden bg-slate-900 md:h-full md:min-h-0 md:w-1/2">
                 {selectedProject.gallery && selectedProject.gallery.length > 0 ? (
                   <>
                     <AnimatePresence initial={false} custom={direction} mode="popLayout">
@@ -356,9 +366,9 @@ export default function CurrentProjectsContent({
                         key={currentGalleryIndex}
                         className="absolute inset-0 h-full w-full cursor-grab active:cursor-grabbing"
                         custom={direction}
-                        initial={{ opacity: 0, x: direction > 0 ? 200 : -200, scale: 0.9 }}
+                        initial={{ opacity: 0, x: direction > 0 ? 200 : -200, scale: 0.95 }}
                         animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: direction > 0 ? -200 : 200, scale: 0.9 }}
+                        exit={{ opacity: 0, x: direction > 0 ? -200 : 200, scale: 0.95 }}
                         transition={{ type: 'spring', damping: 30, stiffness: 300, mass: 1 }}
                         drag="x"
                         dragConstraints={{ left: 0, right: 0 }}
@@ -371,6 +381,7 @@ export default function CurrentProjectsContent({
                         <HoverZoomImage
                           src={selectedProject.gallery[currentGalleryIndex]}
                           alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
+                          priority={true}
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -406,7 +417,11 @@ export default function CurrentProjectsContent({
                     )}
                   </>
                 ) : (
-                  <HoverZoomImage src={selectedProject.img} alt={selectedProject.title} />
+                  <HoverZoomImage
+                    src={selectedProject.img}
+                    alt={selectedProject.title}
+                    priority={true}
+                  />
                 )}
                 <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">
                   {selectedProject.status}

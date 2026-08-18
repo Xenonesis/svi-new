@@ -2,16 +2,7 @@
 
 import { useState, useEffect, useTransition } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import {
-  Plus,
-  RefreshCw,
-  Globe,
-  AlertCircle,
-  CheckCircle2,
-  ChevronRight,
-  ChevronLeft,
-  Send,
-} from 'lucide-react';
+import { Plus, RefreshCw, AlertCircle, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import { createLotteryCampaign } from '@/src/lib/lottery/campaignHelpers';
 import { useAuthStore } from '@/src/stores/authStore';
@@ -22,13 +13,10 @@ import { EditCampaignModal } from '@/src/components/admin/lottery/modals/EditCam
 import { ViewParticipantsModal } from '@/src/components/admin/lottery/modals/ViewParticipantsModal';
 import { BulkEmailModal } from '@/src/components/admin/lottery/modals/BulkEmailModal';
 import { DeleteConfirmModal } from '@/src/components/admin/lottery/modals/DeleteConfirmModal';
-import { WizardProgress } from '@/src/components/admin/lottery/wizard/WizardProgress';
-import { LotteryDetailsForm } from '@/src/components/admin/lottery/wizard/LotteryDetailsForm';
-import { ParticipantUpload } from '@/src/components/admin/lottery/wizard/ParticipantUpload';
-import { LotteryReview } from '@/src/components/admin/lottery/wizard/LotteryReview';
-import { ScheduleDrawPanel } from '@/src/components/admin/lottery/ScheduleDrawPanel';
 import { DashboardPanel } from '@/src/components/admin/lottery/DashboardPanel';
 import { HistoryTable } from '@/src/components/admin/lottery/HistoryTable';
+import { PublicBroadcastCard } from '@/src/components/admin/lottery/PublicBroadcastCard';
+import { CreateLotteryWizard } from '@/src/components/admin/lottery/CreateLotteryWizard';
 
 export default function AdminLotteryPage() {
   const { token } = useAuthStore();
@@ -79,30 +67,12 @@ export default function AdminLotteryPage() {
     handleFileUpload,
     handleManualAdd,
     removeParticipant,
-    filteredParticipants,
     paginatedParticipants,
     totalPages,
     fileInputRef,
   } = useParticipantManagement();
 
-  const {
-    existingSchedule,
-    scheduleLoading,
-    scheduleInputIST,
-    preNotifyMinutes,
-    showCountdown,
-    includeCountdownInEmail,
-    scheduleSaving,
-    setScheduleInputIST,
-    setPreNotifyMinutes,
-    setShowCountdown,
-    setIncludeCountdownInEmail,
-    fetchSchedule,
-    handleSaveSchedule,
-    handleCancelSchedule,
-    getISTString,
-    resetScheduleState,
-  } = useScheduleDraw();
+  const { fetchSchedule, resetScheduleState } = useScheduleDraw();
 
   // ── Wizard State ────────────────────────────────────────────────────────
   const [wizardStep, setWizardStep] = useState(1);
@@ -129,7 +99,7 @@ export default function AdminLotteryPage() {
     } else {
       resetScheduleState();
     }
-  }, [activeLottery, token]);
+  }, [activeLottery, token, fetchSchedule, resetScheduleState]);
 
   const fetchDbParticipants = async (searchQuery: string = '') => {
     if (!activeLottery) return;
@@ -287,7 +257,7 @@ export default function AdminLotteryPage() {
   return (
     <>
       <div className="space-y-8 pb-12 text-slate-900 transition-colors duration-300 dark:text-slate-100">
-        {/* ══ HEADER ═════════════════════════════════════════════════════ */}
+        {/* Header */}
         <div className="flex flex-col justify-between gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-end dark:border-white/5">
           <div>
             <h1 className="font-serif text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
@@ -340,7 +310,7 @@ export default function AdminLotteryPage() {
           </div>
         </div>
 
-        {/* ══ MESSAGES ═══════════════════════════════════════════════════ */}
+        {/* Status Messages */}
         <AnimatePresence>
           {errorMessage && (
             <motion.div
@@ -354,6 +324,7 @@ export default function AdminLotteryPage() {
               <span>{errorMessage}</span>
               <button
                 onClick={() => setErrorMessage(null)}
+                aria-label="Dismiss error"
                 className="ml-auto text-red-400 hover:text-red-600 dark:hover:text-white"
               >
                 ✕
@@ -384,6 +355,7 @@ export default function AdminLotteryPage() {
               )}
               <button
                 onClick={() => setSuccessMessage(null)}
+                aria-label="Dismiss success message"
                 className="ml-4 text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-white"
               >
                 ✕
@@ -392,55 +364,15 @@ export default function AdminLotteryPage() {
           )}
         </AnimatePresence>
 
-        {/* ══ VISIBILITY CONTROL ════════════════════════════════════════ */}
-        <div
-          className={`relative overflow-hidden rounded-3xl border p-6 transition-all duration-500 ${lotteryVisible ? 'border-brand-gold/40 to-brand-gold/5 shadow-[0_0_30px_rgba(212, 175, 55,0.1)] dark:from-brand-dark-surface bg-gradient-to-br from-white' : 'dark:bg-brand-dark-surface/50 border-slate-200 bg-white dark:border-white/10'}`}
-        >
-          <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-5">
-              <div
-                className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl transition-colors ${lotteryVisible ? 'bg-brand-gold/20 text-brand-gold' : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-gray-500'}`}
-              >
-                <Globe className="h-7 w-7" />
-              </div>
-              <div>
-                <h3 className="font-serif text-xl font-bold text-slate-900 dark:text-white">
-                  Public Live Broadcast
-                </h3>
-                <p className="mt-1 text-sm text-slate-500 dark:text-gray-400">
-                  {lotteryVisible
-                    ? 'The Lottery Arena is LIVE and broadcasting to all public visitors.'
-                    : 'The Arena is offline. Public visitors cannot see the drawing.'}
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-4 sm:shrink-0">
-              <span
-                className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-bold tracking-widest uppercase ${lotteryVisible ? 'border border-green-200 bg-green-50 text-green-600 dark:border-green-500/30 dark:bg-green-500/15 dark:text-green-400' : 'border border-slate-200 bg-slate-50 text-slate-500 dark:border-white/5 dark:bg-white/5 dark:text-gray-500'}`}
-              >
-                <span
-                  className={`h-2 w-2 rounded-full ${lotteryVisible ? 'animate-pulse bg-green-500 shadow-[0_0_10px_#4ade80] dark:bg-green-400' : 'bg-slate-400 dark:bg-gray-500'}`}
-                />
-                {visibilityLoading
-                  ? 'Checking...'
-                  : lotteryVisible
-                    ? 'Broadcasting Live'
-                    : 'Offline'}
-              </span>
-              <button
-                onClick={() => toggleLotteryVisibility(!lotteryVisible)}
-                disabled={visibilityLoading || visibilityPending}
-                className={`focus-visible:ring-brand-gold relative inline-flex h-9 w-16 shrink-0 cursor-pointer items-center rounded-full border-2 transition-all duration-300 focus:outline-none focus-visible:ring-2 disabled:opacity-50 ${lotteryVisible ? 'border-brand-gold bg-brand-gold shadow-[0_0_15px_rgba(212, 175, 55,0.5)]' : 'border-slate-300 bg-slate-200 dark:border-white/10 dark:bg-white/5'}`}
-              >
-                <span
-                  className={`inline-block h-6 w-6 rounded-full shadow-md transition-all duration-300 ${lotteryVisible ? 'translate-x-8 bg-white dark:bg-[#0a0a0f]' : 'translate-x-1 bg-white dark:bg-gray-500'}`}
-                />
-              </button>
-            </div>
-          </div>
-        </div>
+        {/* Public Live Broadcast Control */}
+        <PublicBroadcastCard
+          lotteryVisible={lotteryVisible}
+          visibilityLoading={visibilityLoading}
+          visibilityPending={visibilityPending}
+          onToggleVisibility={toggleLotteryVisibility}
+        />
 
-        {/* ══ DASHBOARD TAB ═════════════════════════════════════════════ */}
+        {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
           <div className="space-y-8">
             <DashboardPanel
@@ -489,109 +421,49 @@ export default function AdminLotteryPage() {
           </div>
         )}
 
-        {/* ══ CREATE TAB ════════════════════════════════════════════════ */}
+        {/* Create Tab */}
         {activeTab === 'create' && (
-          <div className="dark:bg-brand-dark-surface/80 mx-auto max-w-5xl rounded-3xl border border-slate-200 bg-white p-8 shadow-xl backdrop-blur-xl md:p-12 dark:border-white/10 dark:shadow-2xl">
-            <WizardProgress currentStep={wizardStep} />
-
-            <div className="min-h-[400px]">
-              <AnimatePresence mode="wait">
-                {wizardStep === 1 && (
-                  <LotteryDetailsForm
-                    title={title}
-                    description={description}
-                    onTitleChange={setTitle}
-                    onDescriptionChange={setDescription}
-                  />
-                )}
-                {wizardStep === 2 && (
-                  <ParticipantUpload
-                    participants={participants}
-                    searchTerm={searchTerm}
-                    currentPage={currentPage}
-                    itemsPerPage={itemsPerPage}
-                    entryMethod={entryMethod}
-                    dragOver={dragOver}
-                    manualName={manualName}
-                    manualPhone={manualPhone}
-                    manualEmail={manualEmail}
-                    manualTicket={manualTicket}
-                    totalPages={totalPages}
-                    fileInputRef={fileInputRef}
-                    onSearchTermChange={setSearchTerm}
-                    onCurrentPageChange={setCurrentPage}
-                    onEntryMethodChange={setEntryMethod}
-                    onManualNameChange={setManualName}
-                    onManualPhoneChange={setManualPhone}
-                    onManualEmailChange={setManualEmail}
-                    onManualTicketChange={setManualTicket}
-                    onDragOverChange={setDragOver}
-                    onFileUpload={(file) =>
-                      handleFileUpload(file, setErrorMessage, setSuccessMessage)
-                    }
-                    onManualAdd={() => handleManualAdd(setErrorMessage, setSuccessMessage)}
-                    onRemoveParticipant={removeParticipant}
-                    onSetErrorMessage={setErrorMessage}
-                    onSetSuccessMessage={setSuccessMessage}
-                    paginatedParticipants={paginatedParticipants}
-                  />
-                )}
-                {wizardStep === 3 && (
-                  <LotteryReview
-                    title={title}
-                    description={description}
-                    participantCount={participants.length}
-                  />
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Wizard Navigation Buttons */}
-            <div className="mt-10 flex items-center justify-between">
-              <button
-                onClick={handlePrevWizardStep}
-                disabled={wizardStep === 1}
-                className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 px-6 py-3 text-sm font-bold text-slate-600 transition-all hover:bg-slate-100 disabled:opacity-30 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-              >
-                <ChevronLeft className="h-4 w-4" /> Back
-              </button>
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1 text-xs text-slate-400 dark:text-gray-500">
-                  {[1, 2, 3].map((s) => (
-                    <span
-                      key={s}
-                      className={`h-1.5 w-1.5 rounded-full ${wizardStep >= s ? 'bg-brand-gold' : 'bg-slate-300 dark:bg-gray-600'}`}
-                    />
-                  ))}
-                </div>
-                {wizardStep < 3 ? (
-                  <button
-                    onClick={handleNextWizardStep}
-                    className="bg-brand-gold text-brand-navy inline-flex cursor-pointer items-center gap-2 rounded-xl px-8 py-3 text-sm font-bold transition-all hover:opacity-90"
-                  >
-                    Continue <ChevronRight className="h-4 w-4" />
-                  </button>
-                ) : (
-                  <button
-                    onClick={saveLotteryToDB}
-                    disabled={isPending}
-                    className="bg-brand-gold text-brand-navy inline-flex cursor-pointer items-center gap-2 rounded-xl px-8 py-3 text-sm font-bold tracking-wider uppercase transition-all hover:opacity-90 disabled:opacity-50"
-                  >
-                    {isPending ? (
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                    Deploy Campaign
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
+          <CreateLotteryWizard
+            wizardStep={wizardStep}
+            title={title}
+            description={description}
+            participants={participants}
+            searchTerm={searchTerm}
+            currentPage={currentPage}
+            itemsPerPage={itemsPerPage}
+            entryMethod={entryMethod}
+            dragOver={dragOver}
+            manualName={manualName}
+            manualPhone={manualPhone}
+            manualEmail={manualEmail}
+            manualTicket={manualTicket}
+            totalPages={totalPages}
+            fileInputRef={fileInputRef}
+            isPending={isPending}
+            paginatedParticipants={paginatedParticipants}
+            onTitleChange={setTitle}
+            onDescriptionChange={setDescription}
+            onSearchTermChange={setSearchTerm}
+            onCurrentPageChange={setCurrentPage}
+            onEntryMethodChange={setEntryMethod}
+            onManualNameChange={setManualName}
+            onManualPhoneChange={setManualPhone}
+            onManualEmailChange={setManualEmail}
+            onManualTicketChange={setManualTicket}
+            onDragOverChange={setDragOver}
+            onFileUpload={(file) => handleFileUpload(file, setErrorMessage, setSuccessMessage)}
+            onManualAdd={() => handleManualAdd(setErrorMessage, setSuccessMessage)}
+            onRemoveParticipant={removeParticipant}
+            onSetErrorMessage={setErrorMessage}
+            onSetSuccessMessage={setSuccessMessage}
+            onPrevStep={handlePrevWizardStep}
+            onNextStep={handleNextWizardStep}
+            onSubmit={saveLotteryToDB}
+          />
         )}
       </div>
 
-      {/* ══ MODALS ═════════════════════════════════════════════════════ */}
+      {/* Modals */}
       <EditCampaignModal
         open={!!editingLottery}
         lottery={editingLottery}
@@ -620,9 +492,7 @@ export default function AdminLotteryPage() {
       <DeleteConfirmModal
         open={!!deletingLotteryId}
         lotteryId={deletingLotteryId}
-        onClose={() => {
-          setDeletingLotteryId(null);
-        }}
+        onClose={() => setDeletingLotteryId(null)}
         token={token!}
         onSuccess={setSuccessMessage}
         onError={setErrorMessage}

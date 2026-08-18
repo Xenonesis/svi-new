@@ -37,13 +37,14 @@ describe('Captcha Library', () => {
 
   it('should reject a tampered token', async () => {
     const { token, challenge } = await issueCaptchaToken();
-    // Tamper with the timestamp or values
+    // Tamper with the values so it is guaranteed different from original challenge.a
+    const newA = (challenge.a % 9) + 1;
     const parts = token.split('.');
-    parts[2] = '9'; // change 'a' to 9
+    parts[2] = String(newA);
     const tamperedToken = parts.join('.');
 
     // Even if answer matches the new 'a', signature is invalid
-    const answer = String(9 + challenge.b);
+    const answer = String(newA + challenge.b);
     const result = await verifyCaptchaToken(tamperedToken, answer);
     expect(result).toBe(false);
   });
