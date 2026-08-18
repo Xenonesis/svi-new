@@ -23,6 +23,7 @@ const INITIAL_FORM_DATA: OfferLetterFormData = {
   appointmentDate: '',
   location: '',
   salaryCtc: '',
+  salaryType: 'CTC',
   target: '',
   offerSlab: '',
   workingHoursStart: '10:30 am',

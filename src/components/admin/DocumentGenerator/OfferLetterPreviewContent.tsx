@@ -14,6 +14,7 @@ export interface OfferLetterFormData {
   appointmentDate?: string;
   location?: string;
   salaryCtc?: string;
+  salaryType?: string;
   target?: string;
   offerSlab?: string;
   workingHoursStart?: string;
@@ -331,20 +332,40 @@ export default function OfferLetterPreviewContent({
                 3. Remuneration Structure, Performance Slabs &amp; Statutory Deductions
               </p>
               <p className="mt-0.5 text-gray-800">
-                The Company shall compensate you with a Gross Total Cost to Company (CTC) of{' '}
-                <span className="font-bold text-[#1e3a8a]">
-                  ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
-                </span>{' '}
-                {formData.salaryCtc && (
-                  <span className="font-bold text-gray-800">
-                    (equivalent to an annualized CTC of ₹ {formatINR(annualCTC)})
-                  </span>
+                {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand' ? (
+                  <>
+                    The Company shall compensate you with a fixed Net In-Hand Salary of{' '}
+                    <span className="font-bold text-[#1e3a8a]">
+                      ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
+                    </span>{' '}
+                    {formData.salaryCtc && (
+                      <span className="font-bold text-gray-800">
+                        (equivalent to an annualized Net In-Hand Remuneration of ₹{' '}
+                        {formatINR(annualCTC)})
+                      </span>
+                    )}
+                    , payable monthly in arrears directly into your designated bank account, subject
+                    to applicable statutory compliances and regulatory withholdings under prevailing
+                    tax and labor statutes.
+                  </>
+                ) : (
+                  <>
+                    The Company shall compensate you with a Gross Total Cost to Company (CTC) of{' '}
+                    <span className="font-bold text-[#1e3a8a]">
+                      ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
+                    </span>{' '}
+                    {formData.salaryCtc && (
+                      <span className="font-bold text-gray-800">
+                        (equivalent to an annualized CTC of ₹ {formatINR(annualCTC)})
+                      </span>
+                    )}
+                    , payable monthly in arrears subject to applicable statutory deductions,
+                    including Tax Deducted at Source (TDS) under the Income Tax Act, 1961,
+                    Employees&rsquo; Provident Fund (EPF) contributions under the Employees&rsquo;
+                    Provident Funds and Miscellaneous Provisions Act, 1952, Professional Tax, and
+                    ESIC where statutorily mandated.
+                  </>
                 )}
-                , payable monthly in arrears subject to applicable statutory deductions, including
-                Tax Deducted at Source (TDS) under the Income Tax Act, 1961, Employees&rsquo;
-                Provident Fund (EPF) contributions under the Employees&rsquo; Provident Funds and
-                Miscellaneous Provisions Act, 1952, Professional Tax, and ESIC where statutorily
-                mandated.
               </p>
 
               {/* Master Sales Compensation & Terms Box */}
@@ -421,7 +442,11 @@ export default function OfferLetterPreviewContent({
                         <span className="font-bold text-gray-900">
                           {formData.customSalaryPercent || '[X]'}%
                         </span>{' '}
-                        of your agreed CTC, amounting to{' '}
+                        of your agreed{' '}
+                        {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                          ? 'Net In-Hand salary'
+                          : 'CTC'}
+                        , amounting to{' '}
                         <span className="font-bold text-gray-900">
                           ₹{' '}
                           {(() => {
@@ -433,8 +458,11 @@ export default function OfferLetterPreviewContent({
                           })()}{' '}
                           per month
                         </span>
-                        . Upon successful achievement of sales benchmarks, full CTC disbursement as
-                        specified in Clause 3 shall be restored.
+                        . Upon successful achievement of sales benchmarks, full{' '}
+                        {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                          ? 'Net In-Hand salary disbursement'
+                          : 'CTC disbursement'}{' '}
+                        as specified in Clause 3 shall be restored.
                       </p>
                     </div>
                   )}

@@ -170,4 +170,20 @@ describe('OfferLetterPreviewContent', () => {
       screen.getByText(/20 validated in-person \/ prospective client meetings/i)
     ).toBeInTheDocument();
   });
+
+  it('renders Net In-Hand salary phrasing when salaryType is in_hand', () => {
+    const inHandData = {
+      ...baseFormData,
+      salaryType: 'in_hand',
+      salaryCtc: '25000',
+    };
+
+    render(<OfferLetterPreviewContent formData={inHandData} companyInfo={mockCompanyInfo} />);
+
+    expect(screen.getByText(/fixed Net In-Hand Salary of/i)).toBeInTheDocument();
+    expect(screen.getByText(/₹ 25,000\.00 per month/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/annualized Net In-Hand Remuneration of ₹ 3,00,000\.00/i)
+    ).toBeInTheDocument();
+  });
 });

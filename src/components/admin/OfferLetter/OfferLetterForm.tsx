@@ -199,9 +199,11 @@ export function OfferLetterForm({
           <div className="md:col-span-2">
             <SlabSelector
               salaryCtc={formData.salaryCtc}
+              salaryType={formData.salaryType || 'CTC'}
               target={formData.target}
               offerSlab={formData.offerSlab}
               onSalaryChange={handleSalaryChange}
+              onSalaryTypeChange={(val) => setFormData((prev) => ({ ...prev, salaryType: val }))}
               onTargetChange={handleTargetChange}
               onOfferSlabChange={(value) => setFormData((prev) => ({ ...prev, offerSlab: value }))}
               onSalarySelect={handleSalarySelect}

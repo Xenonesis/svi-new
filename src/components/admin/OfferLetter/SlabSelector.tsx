@@ -26,9 +26,11 @@ export const SALARY_SLABS: SalarySlabType[] = [
 
 interface SlabSelectorProps {
   salaryCtc: string;
+  salaryType?: string;
   target: string;
   offerSlab: string;
   onSalaryChange: (value: string) => void;
+  onSalaryTypeChange?: (value: string) => void;
   onTargetChange: (value: string) => void;
   onOfferSlabChange: (value: string) => void;
   onSalarySelect: (s: SalarySlabType) => void;
@@ -37,9 +39,11 @@ interface SlabSelectorProps {
 
 export function SlabSelector({
   salaryCtc,
+  salaryType = 'CTC',
   target,
   offerSlab,
   onSalaryChange,
+  onSalaryTypeChange,
   onTargetChange,
   onOfferSlabChange,
   onSalarySelect,
@@ -84,9 +88,37 @@ export function SlabSelector({
     <>
       {/* Salary Input */}
       <div ref={salaryRef} className="relative">
-        <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-          Salary (CTC) / month
-        </label>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+            Salary ({salaryType === 'in_hand' ? 'In-Hand' : 'CTC'}) / month
+          </label>
+          {onSalaryTypeChange && (
+            <div className="flex items-center rounded-md bg-gray-100 p-0.5 dark:bg-white/10">
+              <button
+                type="button"
+                onClick={() => onSalaryTypeChange('CTC')}
+                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                  salaryType !== 'in_hand'
+                    ? 'dark:bg-brand-gold dark:text-brand-navy bg-white text-[#1e3a8a] shadow-xs'
+                    : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'
+                }`}
+              >
+                CTC
+              </button>
+              <button
+                type="button"
+                onClick={() => onSalaryTypeChange('in_hand')}
+                className={`rounded px-2 py-0.5 text-[10px] font-semibold transition-all ${
+                  salaryType === 'in_hand'
+                    ? 'dark:bg-brand-gold dark:text-brand-navy bg-white text-[#1e3a8a] shadow-xs'
+                    : 'text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white'
+                }`}
+              >
+                In-Hand
+              </button>
+            </div>
+          )}
+        </div>
         <input
           type="number"
           name="salaryCtc"

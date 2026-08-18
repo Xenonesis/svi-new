@@ -18,6 +18,7 @@ interface OfferLetterData {
     appointmentDate?: string;
     location?: string;
     salaryCtc?: string;
+    salaryType?: string;
     target?: string;
     offerSlab?: string;
     workingHoursStart?: string;

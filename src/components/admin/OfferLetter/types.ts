@@ -11,6 +11,7 @@ export interface OfferLetterFormData {
   appointmentDate: string;
   location: string;
   salaryCtc: string;
+  salaryType?: 'CTC' | 'in_hand' | string;
   target: string;
   offerSlab: string;
   workingHoursStart: string;

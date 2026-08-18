@@ -65,4 +65,16 @@ describe('SlabSelector', () => {
 
     expect(screen.getByText('₹17,000')).toBeInTheDocument();
   });
+
+  it('renders In-Hand label and allows toggling salary type', () => {
+    const onSalaryTypeChange = vi.fn();
+    render(
+      <SlabSelector {...mockProps} salaryType="in_hand" onSalaryTypeChange={onSalaryTypeChange} />
+    );
+
+    expect(screen.getByText('Salary (In-Hand) / month')).toBeInTheDocument();
+    const ctcBtn = screen.getByRole('button', { name: 'CTC' });
+    fireEvent.click(ctcBtn);
+    expect(onSalaryTypeChange).toHaveBeenCalledWith('CTC');
+  });
 });
