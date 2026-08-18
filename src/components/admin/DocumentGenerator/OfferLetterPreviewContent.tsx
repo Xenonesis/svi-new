@@ -108,7 +108,7 @@ export default function OfferLetterPreviewContent({
 
   // Running Header Component for Page 2
   const RunningHeader = () => (
-    <div className="mb-3 flex items-center justify-between border-b border-gray-300 pb-2 text-[10px] text-gray-600">
+    <div className="mb-3 flex items-center justify-between border-b border-gray-400 pb-2 text-[10px] text-gray-700">
       <div className="flex items-center gap-2">
         <img
           src="/logo.png"
@@ -117,34 +117,34 @@ export default function OfferLetterPreviewContent({
           onError={(e) => (e.currentTarget.style.display = 'none')}
         />
         <span className="text-gray-400">|</span>
-        <span className="font-semibold tracking-wide text-gray-700 uppercase">
+        <span className="font-semibold tracking-wide text-gray-800 uppercase">
           Employment Contract &amp; Offer of Appointment
         </span>
       </div>
-      <div className="text-right font-mono font-semibold text-gray-700">{docReferenceNumber}</div>
+      <div className="text-right font-mono font-bold text-gray-800">{docReferenceNumber}</div>
     </div>
   );
 
   // Running Footer Component for both pages
   const RunningFooter = ({ pageNum }: { pageNum: number }) => (
-    <div className="mt-auto flex items-center justify-between border-t border-gray-300 pt-2.5 text-[9px] text-gray-500">
+    <div className="mt-auto flex items-center justify-between border-t border-gray-400 pt-2.5 text-[9px] text-gray-600">
       <div>
-        <span className="font-semibold text-gray-700">CONFIDENTIAL &amp; PROPRIETARY</span> &mdash;{' '}
+        <span className="font-bold text-gray-800">CONFIDENTIAL &amp; PROPRIETARY</span> &mdash;{' '}
         {companyInfo.company_name}
       </div>
-      <div className="font-mono text-gray-600">Ref: {docReferenceNumber}</div>
+      <div className="font-mono font-medium text-gray-700">Ref: {docReferenceNumber}</div>
       <div className="flex items-center gap-3">
         <span>
           Candidate Initials:{' '}
-          <span className="inline-block border-b border-gray-400 px-3 font-mono">______</span>
+          <span className="inline-block border-b border-gray-500 px-3 font-mono">______</span>
         </span>
-        <span className="font-bold text-gray-800">Page {pageNum} of 2</span>
+        <span className="font-bold text-gray-900">Page {pageNum} of 2</span>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-white font-sans text-[10.5px] leading-[1.44] text-[#111827]">
+    <div className="bg-white font-sans text-[10.5px] leading-[1.44] text-gray-900">
       {/* ========================================================================= */}
       {/* ────────────────────────────── PAGE 1 ─────────────────────────────────── */}
       {/* ========================================================================= */}
@@ -167,23 +167,23 @@ export default function OfferLetterPreviewContent({
 
         <div className="relative z-10 flex flex-col">
           {/* Corporate Header / Letterhead */}
-          <div className="mb-2.5 flex items-start justify-between border-b-2 border-[#1e3a8a] pb-2.5">
+          <div className="mb-3 flex items-start justify-between border-b-2 border-[#1e3a8a] pb-2.5">
             <div>
               <h1 className="text-xl leading-tight font-bold tracking-wide text-[#1e3a8a] uppercase">
                 {companyInfo.company_name}
               </h1>
-              <p className="mt-0.5 text-[10px] font-medium text-gray-700">
+              <p className="mt-0.5 text-[10px] font-semibold text-gray-800">
                 Corporate Real Estate, Infrastructure Advisory &amp; Strategic Project Development
               </p>
-              <p className="mt-0.5 text-[10px] text-gray-600">
+              <p className="mt-0.5 text-[10px] text-gray-700">
                 Contact:{' '}
-                <span className="font-semibold text-gray-800">{companyInfo.company_phone}</span>{' '}
+                <span className="font-bold text-gray-900">{companyInfo.company_phone}</span>{' '}
                 &nbsp;|&nbsp; Email:{' '}
-                <span className="font-semibold text-gray-800">{companyInfo.company_email}</span>
+                <span className="font-bold text-gray-900">{companyInfo.company_email}</span>
               </p>
-              <p className="text-[10px] text-gray-600">
+              <p className="text-[10px] text-gray-700">
                 Website:{' '}
-                <span className="font-semibold text-gray-800">{companyInfo.company_website}</span>{' '}
+                <span className="font-bold text-gray-900">{companyInfo.company_website}</span>{' '}
                 &nbsp;|&nbsp; Office: {companyInfo.company_address}
               </p>
             </div>
@@ -198,53 +198,53 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Classification & Metadata Bar */}
-          <div className="mb-2 flex items-center justify-between rounded border border-gray-200 bg-gray-50 px-3 py-1 text-[10px]">
+          <div className="mb-2.5 flex items-center justify-between rounded border border-gray-300 bg-gray-50 px-3 py-1 text-[10px]">
             <div>
-              <span className="font-bold text-gray-600">Document Ref:</span>{' '}
+              <span className="font-bold text-gray-700">Document Ref:</span>{' '}
               <span className="font-mono font-bold text-[#1e3a8a]">{docReferenceNumber}</span>
             </div>
             <div>
-              <span className="font-bold text-gray-600">Issuance Date:</span>{' '}
+              <span className="font-bold text-gray-700">Issuance Date:</span>{' '}
               <span className="font-bold text-gray-900">{currentDateFormatted}</span>
             </div>
-            <div className="text-[9px] font-bold tracking-wider text-gray-700 uppercase">
+            <div className="text-[9px] font-bold tracking-wider text-gray-800 uppercase">
               Strictly Private &amp; Confidential
             </div>
           </div>
 
           {/* Balanced Candidate Particulars Card */}
-          <div className="mb-2.5 rounded border border-gray-200 bg-gray-50/50 p-2.5">
-            <p className="mb-1 border-b border-gray-200 pb-0.5 text-[9.5px] font-bold tracking-wider text-gray-600 uppercase">
+          <div className="mb-3 rounded border border-gray-300 bg-gray-50/50 p-2.5">
+            <p className="mb-1 border-b border-gray-300 pb-0.5 text-[9.5px] font-bold tracking-wider text-gray-700 uppercase">
               Candidate Recipient Particulars:
             </p>
             <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-[10.5px]">
               <div>
-                <span className="font-semibold text-gray-600">Candidate Name:</span>{' '}
+                <span className="font-bold text-gray-700">Candidate Name:</span>{' '}
                 <span className="font-bold text-[#1e3a8a]">
                   {formData.name || '[Candidate Full Name]'}
                 </span>
               </div>
               <div>
-                <span className="font-semibold text-gray-600">Primary Contact:</span>{' '}
+                <span className="font-bold text-gray-700">Primary Contact:</span>{' '}
                 <span className="font-bold text-gray-900">
                   {formData.mobileNo ? `+91 ${formData.mobileNo}` : '[Mobile Number]'}
                 </span>
                 {formData.alternativeNo && (
-                  <span className="font-normal text-gray-600">
+                  <span className="font-medium text-gray-700">
                     {' '}
                     (Alt: +91 {formData.alternativeNo})
                   </span>
                 )}
               </div>
               <div>
-                <span className="font-semibold text-gray-600">Residential Address:</span>{' '}
-                <span className="font-normal text-gray-800">
+                <span className="font-bold text-gray-700">Residential Address:</span>{' '}
+                <span className="font-medium text-gray-900">
                   {formData.address || '[Candidate Address]'}
                 </span>
               </div>
               <div>
-                <span className="font-semibold text-gray-600">Email Address:</span>{' '}
-                <span className="font-mono text-gray-800">
+                <span className="font-bold text-gray-700">Email Address:</span>{' '}
+                <span className="font-mono font-medium text-gray-900">
                   {formData.emailId || '[Candidate Email ID]'}
                 </span>
               </div>
@@ -252,14 +252,14 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Subject Line */}
-          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/70 py-1 text-center">
+          <div className="mb-3 border-y border-gray-400 bg-gray-100/70 py-1.5 text-center">
             <h3 className="text-[11.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
               Subject: Formal Offer of Employment &amp; Preliminary Contract of Appointment
             </h3>
           </div>
 
           {/* Preamble / Recitals */}
-          <div className="mb-2 space-y-1 text-justify text-[10.5px]">
+          <div className="mb-3 space-y-1 text-justify text-[10.5px] font-medium text-gray-800">
             <p>
               Dear{' '}
               <span className="font-bold text-[#1e3a8a]">
@@ -268,7 +268,8 @@ export default function OfferLetterPreviewContent({
               ,
             </p>
             <p>
-              On behalf of <span className="font-semibold">{companyInfo.company_name}</span>{' '}
+              On behalf of{' '}
+              <span className="font-bold text-gray-900">{companyInfo.company_name}</span>{' '}
               (&ldquo;Company&rdquo; or &ldquo;Organization&rdquo;), we are pleased to extend this
               formal offer of employment to you. Following our comprehensive evaluation of your
               credentials, professional background, and domain proficiencies, we believe your
@@ -279,13 +280,13 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Clauses 1 to 6 */}
-          <div className="space-y-2 text-justify text-[10px]">
+          <div className="space-y-2.5 text-justify text-[10px]">
             {/* Clause 1: Position & Department */}
             <div>
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 1. Designation, Department &amp; Reporting Matrix
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 You are appointed to the corporate position of{' '}
                 <span className="font-bold text-gray-900">
                   {formData.designation || '[Designation]'}
@@ -309,7 +310,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 2. Date of Commencement, Work Location &amp; Mobility
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 Your appointment shall take effect on your formal joining date of{' '}
                 <span className="font-bold text-gray-900">{appointmentDateFormatted}</span>{' '}
                 (&ldquo;Effective Date&rdquo;). Your principal place of employment shall be situated
@@ -329,13 +330,13 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 3. Remuneration Structure, Performance Slabs &amp; Statutory Deductions
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 The Company shall compensate you with a Gross Total Cost to Company (CTC) of{' '}
                 <span className="font-bold text-[#1e3a8a]">
                   ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
                 </span>{' '}
                 {formData.salaryCtc && (
-                  <span className="font-semibold text-gray-700">
+                  <span className="font-bold text-gray-800">
                     (equivalent to an annualized CTC of ₹ {formatINR(annualCTC)})
                   </span>
                 )}
@@ -348,11 +349,11 @@ export default function OfferLetterPreviewContent({
 
               {/* Sales Target / Slab Information */}
               {(formData.target || matchedSlab || formData.offerSlab) && (
-                <div className="mt-1 rounded border border-slate-200 bg-slate-50 p-1.5">
-                  <p className="font-semibold text-[#1e3a8a]">
+                <div className="mt-1.5 rounded border border-gray-300 bg-gray-50 p-1.5 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                  <p className="font-bold text-[#1e3a8a]">
                     Sales Performance Quota &amp; Commission Matrix:
                   </p>
-                  <p className="mt-0.5">
+                  <p className="mt-0.5 text-gray-800">
                     Your assigned monthly sales quota is{' '}
                     <span className="font-bold text-gray-900">
                       {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')} Sq.
@@ -375,17 +376,17 @@ export default function OfferLetterPreviewContent({
 
               {/* Sales Compensation Clauses (No Sale No Salary or Custom Percent) */}
               {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
-                <div className="mt-1 rounded border border-slate-200 bg-slate-50 p-1.5 text-gray-900">
-                  <p className="font-semibold text-[#1e3a8a]">
+                <div className="mt-1.5 rounded border border-gray-300 bg-gray-50 p-1.5 text-gray-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                  <p className="font-bold text-[#1e3a8a]">
                     Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No Sale No
                     Salary&rdquo;):
                   </p>
-                  <p className="mt-0.5">
+                  <p className="mt-0.5 text-gray-800">
                     As an express condition of this sales appointment, full monthly salary
                     disbursement is strictly contingent upon sales quota achievement. In the event
                     zero (0) confirmed sales transactions are closed within a monthly evaluation
                     cycle, you shall be entitled solely to a subsistence allowance of{' '}
-                    <span className="font-bold">
+                    <span className="font-bold text-gray-900">
                       {formData.subsistenceAllowance &&
                       parseFloat(formData.subsistenceAllowance) > 0
                         ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
@@ -398,17 +399,21 @@ export default function OfferLetterPreviewContent({
               )}
 
               {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
-                <div className="mt-1 rounded border border-slate-200 bg-slate-50 p-1.5 text-gray-900">
-                  <p className="font-semibold text-[#1e3a8a]">
+                <div className="mt-1.5 rounded border border-gray-300 bg-gray-50 p-1.5 text-gray-900 shadow-[0_1px_2px_rgba(0,0,0,0.05)]">
+                  <p className="font-bold text-[#1e3a8a]">
                     Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota Incubation:
                   </p>
-                  <p className="mt-0.5">
+                  <p className="mt-0.5 text-gray-800">
                     During your initial incubation period of{' '}
-                    <span className="font-bold">{formData.probationPeriod || '3'} months</span>,
-                    your remuneration shall be structured at{' '}
-                    <span className="font-bold">{formData.customSalaryPercent || '[X]'}%</span> of
-                    your agreed CTC, amounting to{' '}
-                    <span className="font-bold">
+                    <span className="font-bold text-gray-900">
+                      {formData.probationPeriod || '3'} months
+                    </span>
+                    , your remuneration shall be structured at{' '}
+                    <span className="font-bold text-gray-900">
+                      {formData.customSalaryPercent || '[X]'}%
+                    </span>{' '}
+                    of your agreed CTC, amounting to{' '}
+                    <span className="font-bold text-gray-900">
                       ₹{' '}
                       {(() => {
                         const pct = parseFloat(formData.customSalaryPercent || '0');
@@ -424,8 +429,8 @@ export default function OfferLetterPreviewContent({
               )}
 
               {isSalesDepartment && formData.meetingsPerMonth && (
-                <p className="mt-1 text-[9.5px] text-gray-700">
-                  <span className="font-bold">
+                <p className="mt-1 text-[9.5px] text-gray-800">
+                  <span className="font-bold text-gray-900">
                     Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
                   </span>{' '}
                   You are contractually required to conduct a minimum of{' '}
@@ -439,8 +444,8 @@ export default function OfferLetterPreviewContent({
             </div>
 
             {/* Clause 4: MANDATORY PRE-EMPLOYMENT ONBOARDING DOCUMENTATION */}
-            <div className="rounded border border-[#1e3a8a]/40 bg-slate-50/70 p-2.5">
-              <div className="mb-1.5 flex items-center justify-between border-b border-[#1e3a8a]/20 pb-1">
+            <div className="rounded border border-[#1e3a8a] bg-gray-50/80 p-2.5 shadow-sm">
+              <div className="mb-1.5 flex items-center justify-between border-b border-[#1e3a8a]/40 pb-1">
                 <p className="text-[10.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
                   4. Mandatory Pre-Employment Onboarding Documentation &amp; Verification Protocols
                 </p>
@@ -448,7 +453,7 @@ export default function OfferLetterPreviewContent({
                   Mandatory Submission Schedule
                 </span>
               </div>
-              <p className="mb-1.5 text-[9.5px] text-gray-800">
+              <p className="mb-1.5 text-[9.5px] font-medium text-gray-900">
                 In compliance with corporate governance standards and regulatory audit mandates,
                 your formal appointment is strictly conditional upon the timely submission and
                 authentication of all mandatory pre-employment records via the designated corporate
@@ -457,30 +462,30 @@ export default function OfferLetterPreviewContent({
                 are required to upload high-resolution certified copies of the following:
               </p>
 
-              <div className="grid grid-cols-1 gap-1.5 text-[9px] md:grid-cols-2">
-                <div className="rounded border border-gray-200 bg-white p-1.5">
+              <div className="grid grid-cols-1 gap-1.5 text-[9.5px] md:grid-cols-2">
+                <div className="rounded border border-gray-300 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
                   Certified copies of all academic marksheets and degree certificates (10th, 12th,
                   Bachelor&rsquo;s Degree, Post-Graduate / Diplomas).
                 </div>
-                <div className="rounded border border-gray-200 bg-white p-1.5">
+                <div className="rounded border border-gray-300 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two (2)
                   recent colored passport-sized photographs against a plain white background (formal
                   attire).
                 </div>
-                <div className="rounded border border-gray-200 bg-white p-1.5">
+                <div className="rounded border border-gray-300 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">
                     3. Identity Verification (Aadhaar):
                   </span>{' '}
                   High-resolution legible copy of valid Government-issued Aadhaar Card (front and
                   reverse sides).
                 </div>
-                <div className="rounded border border-gray-200 bg-white p-1.5">
+                <div className="rounded border border-gray-300 bg-white p-1.5">
                   <span className="font-bold text-[#1e3a8a]">4. Tax Registration (PAN Card):</span>{' '}
                   Legible copy of valid Permanent Account Number (PAN) Card issued by Income Tax
                   Department.
                 </div>
-                <div className="col-span-1 rounded border border-gray-200 bg-white p-1.5 md:col-span-2">
+                <div className="col-span-1 rounded border border-gray-300 bg-white p-1.5 md:col-span-2">
                   <span className="font-bold text-[#1e3a8a]">
                     5. Prior Employment Experience &amp; Relieving Credentials:
                   </span>{' '}
@@ -490,18 +495,20 @@ export default function OfferLetterPreviewContent({
                 </div>
               </div>
 
-              <div className="mt-1.5 space-y-0.5 border-t border-gray-200 pt-1 text-[8.5px] text-gray-700">
+              <div className="mt-1.5 space-y-0.5 border-t border-gray-300 pt-1.5 text-[9px] font-medium text-gray-900">
                 <p>
-                  <span className="font-bold">Submission Guidelines &amp; Deadlines:</span> All
-                  documents must be uploaded in clear, non-password-protected{' '}
-                  <span className="font-semibold">
+                  <span className="font-bold text-gray-900">
+                    Submission Guidelines &amp; Deadlines:
+                  </span>{' '}
+                  All documents must be uploaded in clear, non-password-protected{' '}
+                  <span className="font-bold">
                     PDF, JPEG, or PNG formats (maximum file size 5MB per document)
                   </span>{' '}
                   within <span className="font-bold text-gray-900">three (3) business days</span> of
                   offer acceptance, or no later than forty-eight (48) hours prior to joining.
                 </p>
                 <p>
-                  <span className="font-bold">
+                  <span className="font-bold text-gray-900">
                     Background Verification (BGV) &amp; Legal Consequences:
                   </span>{' '}
                   The Company reserves the unconditional right to conduct independent background
@@ -517,7 +524,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 5. Probationary Period, Performance Assessment &amp; Confirmation Protocols
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 You shall be placed on formal statutory probation for an initial period of{' '}
                 <span className="font-bold text-gray-900">
                   {formData.probationPeriod || '3'} (
@@ -543,7 +550,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 6. Standard Working Hours, Attendance Logging &amp; Shift Regimes
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 Your standard working hours shall be from{' '}
                 <span className="font-bold text-gray-900">
                   {formData.workingHoursStart || '10:30 AM'}
@@ -594,19 +601,19 @@ export default function OfferLetterPreviewContent({
           <RunningHeader />
 
           {/* Document Section Banner */}
-          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/70 py-1 text-center">
+          <div className="mb-3 border-y border-gray-400 bg-gray-100/70 py-1.5 text-center">
             <h3 className="text-[11px] font-bold tracking-wider text-[#1e3a8a] uppercase">
               Section II: Terms &amp; Conditions, Restrictive Covenants, Governance &amp; Acceptance
             </h3>
           </div>
 
-          <div className="space-y-2 text-justify text-[10px]">
+          <div className="space-y-2.5 text-justify text-[10px]">
             {/* Clause 7: Confidentiality, NDA & Trade Secrets */}
             <div>
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 7. Comprehensive Non-Disclosure, Trade Secrets &amp; Data Protection (DPDPA 2023)
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 In the course of your employment, you will have access to proprietary trade secrets,
                 investor rosters, client databases, pricing methodologies, architectural layouts,
                 financial ledgers, land bank acquisitions, marketing strategies, software
@@ -625,17 +632,17 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 8. Intellectual Property (IP) Ownership, Inventions &amp; Work-for-Hire Assignment
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 All intellectual property, including without limitation copyrights, design
                 blueprints, branding assets, software code, marketing materials, analytical
                 frameworks, operational processes, patents, and inventions developed, conceived, or
                 authored by you (solely or jointly) in connection with your employment shall
                 constitute &ldquo;work made for hire&rdquo; and shall be the exclusive, perpetual,
                 and worldwide property of{' '}
-                <span className="font-semibold">{companyInfo.company_name}</span>. You hereby
-                unconditionally assign, transfer, and convey all rights, titles, and moral rights in
-                such assets to the Company and agree to execute all necessary formal documentation
-                required to vest absolute legal title in the Company.
+                <span className="font-bold text-gray-900">{companyInfo.company_name}</span>. You
+                hereby unconditionally assign, transfer, and convey all rights, titles, and moral
+                rights in such assets to the Company and agree to execute all necessary formal
+                documentation required to vest absolute legal title in the Company.
               </p>
             </div>
 
@@ -644,19 +651,19 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 9. Restrictive Covenants: Non-Solicitation, Exclusivity &amp; Conflict of Interest
               </p>
-              <p className="mt-0.5">
-                <span className="font-semibold text-gray-800">9.1 Exclusivity of Employment:</span>{' '}
-                You shall devote your whole time, attention, and energies exclusively to the
-                business of the Company. You are strictly prohibited from engaging in dual
-                employment (&ldquo;moonlighting&rdquo;), commercial advisory, directorships,
-                freelance consultancy, or any competing business enterprise, whether remunerated or
-                honorary, without express prior written consent from the Board of Directors.
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">9.1 Exclusivity of Employment:</span> You
+                shall devote your whole time, attention, and energies exclusively to the business of
+                the Company. You are strictly prohibited from engaging in dual employment
+                (&ldquo;moonlighting&rdquo;), commercial advisory, directorships, freelance
+                consultancy, or any competing business enterprise, whether remunerated or honorary,
+                without express prior written consent from the Board of Directors.
               </p>
-              <p className="mt-0.5">
-                <span className="font-semibold text-gray-800">9.2 Non-Solicitation Covenant:</span>{' '}
-                For a period of twelve (12) months following the termination of your employment (for
-                any reason whatsoever), you shall not directly or indirectly: (a) solicit, induce,
-                or entice any client, customer, investor, vendor, or contractor of the Company to
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">9.2 Non-Solicitation Covenant:</span> For
+                a period of twelve (12) months following the termination of your employment (for any
+                reason whatsoever), you shall not directly or indirectly: (a) solicit, induce, or
+                entice any client, customer, investor, vendor, or contractor of the Company to
                 terminate or diminish their commercial relationship with the Company; or (b)
                 solicit, recruit, or hire any employee, executive, or consultant of the Company.
               </p>
@@ -667,7 +674,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 10. Performance Management Governance &amp; Performance Improvement Plan (PIP)
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 The Company maintains rigorous performance assessment standards. If your
                 performance, sales conversion rate, attendance, or operational deliverable fails to
                 achieve established Key Performance Indicators (KPIs), the Company reserves the
@@ -684,7 +691,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 11. Relocation of Reporting Location &amp; Operational Discretion
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 The Company may, at its sole operational discretion, relocate, expand, or adjust its
                 principal headquarters, branch network, or project site offices. You explicitly
                 agree to report to any updated corporate or project site location designated by the
@@ -698,25 +705,23 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 12. Termination of Employment, Separation Protocols &amp; Summary Dismissal
               </p>
-              <p className="mt-0.5">
-                <span className="font-semibold text-gray-800">12.1 Notice Periods:</span> During
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">12.1 Notice Periods:</span> During
                 probation, either party may terminate employment by serving fifteen (15) calendar
                 days&rsquo; written notice or basic salary in lieu. Post-confirmation, notice period
                 shall be thirty (30) calendar days or salary in lieu, subject to handover clearance.
               </p>
-              <p className="mt-0.5">
-                <span className="font-semibold text-gray-800">
-                  12.2 Summary Dismissal for Cause:
-                </span>{' '}
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">12.2 Summary Dismissal for Cause:</span>{' '}
                 The Company reserves the right to immediately terminate employment without notice or
                 terminal benefits for: (a) breach of confidentiality/IP; (b) fraud, embezzlement, or
                 criminal conduct; (c) submission of forged/false onboarding credentials; (d) gross
                 insubordination; or (e) continuous unauthorized absence exceeding three (3) business
                 days.
               </p>
-              <p className="mt-0.5">
-                <span className="font-semibold text-gray-800">12.3 Asset Handover &amp; NOC:</span>{' '}
-                Upon separation, all Company laptops, keycards, records, client lists, and digital
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">12.3 Asset Handover &amp; NOC:</span> Upon
+                separation, all Company laptops, keycards, records, client lists, and digital
                 credentials must be surrendered immediately prior to final dues settlement.
               </p>
             </div>
@@ -726,7 +731,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 13. Indemnification
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 You agree to indemnify, defend, and hold harmless the Company, its Directors, and
                 officers against all liabilities, claims, damages, losses, and legal costs arising
                 from your willful misconduct, gross negligence, fraudulent representations, or
@@ -739,7 +744,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 14. Governing Law &amp; Dispute Resolution
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 This contract is governed by the laws of India. Any disputes arising hereunder shall
                 be referred to sole binding arbitration pursuant to the Arbitration and Conciliation
                 Act, 1996 in Gautam Buddha Nagar (Noida), with exclusive jurisdiction vested in the
@@ -752,7 +757,7 @@ export default function OfferLetterPreviewContent({
               <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
                 15. Entire Agreement, Severability &amp; Offer Expiration
               </p>
-              <p className="mt-0.5">
+              <p className="mt-0.5 text-gray-800">
                 This document constitutes the entire agreement between the parties and supersedes
                 all prior communications. This offer shall automatically lapse within{' '}
                 <span className="font-bold text-gray-900">five (5) business days</span> from
@@ -763,17 +768,17 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Balanced Dual Signatures & Execution Section */}
-          <div className="mt-2.5 rounded border border-gray-300 bg-gray-50/60 p-3">
-            <div className="grid grid-cols-2 items-end gap-4">
+          <div className="mt-4 rounded border border-gray-400 bg-gray-50/60 p-3.5 shadow-sm">
+            <div className="grid grid-cols-2 items-end gap-5">
               {/* Employer Execution Block */}
-              <div className="border-r border-gray-300 pr-3">
-                <p className="mb-0.5 text-[9.5px] font-bold tracking-wider text-gray-600 uppercase">
+              <div className="border-r border-gray-300 pr-5">
+                <p className="mb-1 text-[9.5px] font-bold tracking-wider text-gray-700 uppercase">
                   Issued For and on behalf of Organization:
                 </p>
                 <p className="text-[11px] font-bold text-[#1e3a8a] uppercase">
                   {companyInfo.company_name}
                 </p>
-                <div className="my-1">
+                <div className="my-2">
                   <img
                     src="/signature.png"
                     alt="Authorized Signatory"
@@ -782,44 +787,44 @@ export default function OfferLetterPreviewContent({
                   />
                 </div>
                 <p className="text-[10.5px] font-bold text-gray-900">Iliyas Ali</p>
-                <p className="text-[9.5px] font-medium text-gray-600">
+                <p className="text-[9.5px] font-semibold text-gray-700">
                   Director &amp; Authorized Signatory
                 </p>
-                <p className="mt-0.5 text-[8.5px] text-gray-500">
+                <p className="mt-1 text-[8.5px] text-gray-600">
                   Date of Issuance: {currentDateFormatted}
                 </p>
               </div>
 
               {/* Candidate Acceptance & Attestation Block */}
               <div className="pl-1 text-[9.5px]">
-                <p className="mb-0.5 text-[10px] font-bold tracking-wider text-gray-800 uppercase">
+                <p className="mb-1 text-[10px] font-bold tracking-wider text-gray-900 uppercase">
                   Candidate Formal Acceptance &amp; Attestation:
                 </p>
-                <p className="mb-2 text-[8.5px] leading-tight text-gray-700 italic">
+                <p className="mb-2.5 text-[8.5px] leading-tight font-medium text-gray-800 italic">
                   &ldquo;I hereby unconditionally accept this offer of employment and agree to abide
                   by all terms, covenants, onboarding documentation requirements via{' '}
-                  <span className="font-mono font-semibold">/admin/offer-letter</span>, and policies
+                  <span className="font-mono font-bold">/admin/offer-letter</span>, and policies
                   outlined herein. I affirm all credentials provided are authentic and
                   truthful.&rdquo;
                 </p>
-                <div className="space-y-1 text-[9.5px] text-gray-800">
+                <div className="space-y-1.5 text-[9.5px] text-gray-900">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Candidate Signature:</span>
-                    <span className="inline-block w-32 border-b border-gray-500"></span>
+                    <span className="inline-block w-36 border-b border-gray-500"></span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Full Legal Name:</span>
-                    <span className="inline-block w-32 truncate border-b border-gray-300 text-right font-bold text-gray-900">
+                    <span className="inline-block w-36 truncate border-b border-gray-400 text-right font-bold text-gray-900">
                       {formData.name || '____________________'}
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Date of Execution:</span>
-                    <span className="inline-block w-32 border-b border-gray-500"></span>
+                    <span className="inline-block w-36 border-b border-gray-500"></span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Place / City:</span>
-                    <span className="inline-block w-32 border-b border-gray-500"></span>
+                    <span className="inline-block w-36 border-b border-gray-500"></span>
                   </div>
                 </div>
               </div>
