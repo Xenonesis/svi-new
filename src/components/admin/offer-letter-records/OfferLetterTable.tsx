@@ -18,32 +18,7 @@ import { useMemo } from 'react';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
 import { StatCardSkeleton, TableSkeleton } from '@/src/components/admin/Shared/AdminSkeleton';
 
-interface SavedOfferLetter {
-  id: string;
-  document_type: string;
-  status: string;
-  created_at: string;
-  form_data: {
-    date: string;
-    name: string;
-    address: string;
-    mobileNo: string;
-    alternativeNo: string;
-    emailId: string;
-    designation: string;
-    department: string;
-    reportingTo: string;
-    appointmentDate: string;
-    location: string;
-    salaryCtc: string;
-    target: string;
-    offerSlab: string;
-    workingHoursStart: string;
-    workingHoursEnd: string;
-    workingDays: string;
-    probationPeriod: string;
-  };
-}
+import { SavedOfferLetter } from '@/src/components/admin/OfferLetter/types';
 
 interface OfferLetterTableProps {
   offers: SavedOfferLetter[];

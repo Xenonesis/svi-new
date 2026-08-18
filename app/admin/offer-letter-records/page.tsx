@@ -9,32 +9,7 @@ import { OfferLetterStatsCards } from '@/src/components/admin/offer-letter-recor
 import { OfferLetterTable } from '@/src/components/admin/offer-letter-records/OfferLetterTable';
 import { OfferLetterPreviewModal } from '@/src/components/admin/offer-letter-records/OfferLetterPreviewModal';
 
-interface SavedOfferLetter {
-  id: string;
-  document_type: string;
-  status: string;
-  created_at: string;
-  form_data: {
-    date: string;
-    name: string;
-    address: string;
-    mobileNo: string;
-    alternativeNo: string;
-    emailId: string;
-    designation: string;
-    department: string;
-    reportingTo: string;
-    appointmentDate: string;
-    location: string;
-    salaryCtc: string;
-    target: string;
-    offerSlab: string;
-    workingHoursStart: string;
-    workingHoursEnd: string;
-    workingDays: string;
-    probationPeriod: string;
-  };
-}
+import { SavedOfferLetter } from '@/src/components/admin/OfferLetter/types';
 
 export default function OfferLetterRecordsPage() {
   const { token } = useAuthStore();
@@ -107,7 +82,10 @@ export default function OfferLetterRecordsPage() {
 
   // Statistics
   const totalCount = offers.length;
-  const totalCtc = offers.reduce((sum, r) => sum + (parseFloat(r.form_data?.salaryCtc) || 0), 0);
+  const totalCtc = offers.reduce(
+    (sum, r) => sum + (parseFloat(r.form_data?.salaryCtc || '0') || 0),
+    0
+  );
   const uniqueDesignations = new Set(offers.map((r) => r.form_data?.designation).filter(Boolean))
     .size;
   const completedCount = offers.filter((r) => r.status === 'completed').length;

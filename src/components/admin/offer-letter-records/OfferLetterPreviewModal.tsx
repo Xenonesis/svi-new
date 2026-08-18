@@ -4,31 +4,14 @@ import { AnimatePresence, motion } from 'motion/react';
 import { RefreshCw, Download, X, Image as ImageIcon } from 'lucide-react';
 import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
 
+import { OfferLetterFormData } from '@/src/components/admin/OfferLetter/types';
+
 interface SavedOfferLetter {
   id: string;
   document_type: string;
   status: string;
   created_at: string;
-  form_data: {
-    date: string;
-    name: string;
-    address: string;
-    mobileNo: string;
-    alternativeNo: string;
-    emailId: string;
-    designation: string;
-    department: string;
-    reportingTo: string;
-    appointmentDate: string;
-    location: string;
-    salaryCtc: string;
-    target: string;
-    offerSlab: string;
-    workingHoursStart: string;
-    workingHoursEnd: string;
-    workingDays: string;
-    probationPeriod: string;
-  };
+  form_data: Partial<OfferLetterFormData>;
 }
 
 interface CompanyInfo {

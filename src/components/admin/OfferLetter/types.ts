@@ -29,3 +29,11 @@ export interface SavedOffer {
   form_data: Partial<OfferLetterFormData>;
   created_at: string;
 }
+
+export interface SavedOfferLetter {
+  id: string;
+  document_type: string;
+  status: string;
+  created_at: string;
+  form_data: Partial<OfferLetterFormData>;
+}

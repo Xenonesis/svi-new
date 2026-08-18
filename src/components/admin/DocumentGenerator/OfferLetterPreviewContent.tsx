@@ -1,7 +1,7 @@
 import React from 'react';
-import { SalarySlabType } from '@/src/components/admin/OfferLetter/SlabSelector';
+import { SALARY_SLABS, SalarySlabType } from '@/src/components/admin/OfferLetter/SlabSelector';
 
-interface OfferLetterFormData {
+export interface OfferLetterFormData {
   date?: string;
   name?: string;
   address?: string;
@@ -27,7 +27,7 @@ interface OfferLetterFormData {
   meetingsPerMonth?: string;
 }
 
-interface CompanyInfo {
+export interface CompanyInfo {
   company_name: string;
   company_address: string;
   company_email: string;
@@ -35,355 +35,799 @@ interface CompanyInfo {
   company_website: string;
 }
 
-export default function OfferLetterPreviewContent({
-  formData,
-  companyInfo,
-  matchedSlab,
-}: {
+interface OfferLetterPreviewContentProps {
   formData: OfferLetterFormData;
   companyInfo: CompanyInfo;
   matchedSlab?: SalarySlabType | null;
-}) {
+}
+
+export default function OfferLetterPreviewContent({
+  formData,
+  companyInfo,
+  matchedSlab: initialMatchedSlab,
+}: OfferLetterPreviewContentProps) {
   const isSalesDepartment = formData.department === 'Sales';
 
+  // Resolve matched slab if not explicitly passed
+  const matchedSlab =
+    initialMatchedSlab !== undefined
+      ? initialMatchedSlab
+      : formData.salaryCtc
+        ? SALARY_SLABS.find((s) => parseFloat(formData.salaryCtc || '0') === s.salary) || null
+        : formData.target
+          ? SALARY_SLABS.find((s) => parseFloat(formData.target || '0') === s.target) || null
+          : null;
+
+  // Format dates consistently (DD-MM-YYYY)
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) {
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      return `${dd}-${mm}-${yyyy}`;
+    }
+    if (dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts[0].length === 4) {
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+      }
+      return dateStr;
+    }
+    return dateStr;
+  };
+
+  const currentDateFormatted = formatDate(formData.date);
+  const appointmentDateFormatted = formatDate(formData.appointmentDate);
+
+  const docRefYear = formData.date
+    ? formData.date.split('-')[0].length === 4
+      ? formData.date.split('-')[0]
+      : new Date().getFullYear()
+    : new Date().getFullYear();
+
+  const candidateInitials =
+    formData.name
+      ?.split(' ')
+      .filter(Boolean)
+      .map((w) => w[0].toUpperCase())
+      .slice(0, 3)
+      .join('') || 'CND';
+
+  const docReferenceNumber = `SVI/HR-OFFER/${docRefYear}/${candidateInitials}-${formData.mobileNo ? formData.mobileNo.slice(-4) : '2026'}`;
+
+  const formatINR = (val?: string | number) => {
+    if (!val) return '0.00';
+    const num = typeof val === 'string' ? parseFloat(val) : val;
+    if (isNaN(num)) return '0.00';
+    return num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  };
+
+  const monthlyCTC = parseFloat(formData.salaryCtc || '0');
+  const annualCTC = monthlyCTC * 12;
+
+  // Running Header Component for Page 2
+  const RunningHeader = () => (
+    <div className="mb-3 flex items-center justify-between border-b border-gray-300 pb-2 text-[10px] text-gray-600">
+      <div className="flex items-center gap-2">
+        <img
+          src="/logo.png"
+          alt="Company Logo"
+          className="h-5 w-auto object-contain"
+          onError={(e) => (e.currentTarget.style.display = 'none')}
+        />
+        <span className="font-bold text-[#1e3a8a] uppercase">{companyInfo.company_name}</span>
+        <span className="text-gray-400">|</span>
+        <span className="font-medium">Employment Contract &amp; Offer of Appointment</span>
+      </div>
+      <div className="text-right">
+        <span className="font-mono font-semibold text-gray-700">{docReferenceNumber}</span>
+      </div>
+    </div>
+  );
+
+  // Running Footer Component for both pages
+  const RunningFooter = ({ pageNum }: { pageNum: number }) => (
+    <div className="mt-4 flex items-center justify-between border-t border-gray-300 pt-2.5 text-[9.5px] text-gray-600">
+      <div>
+        <span className="font-semibold text-gray-800">CONFIDENTIAL &amp; PROPRIETARY</span> &mdash;{' '}
+        {companyInfo.company_name}
+      </div>
+      <div className="font-mono text-gray-600">Ref: {docReferenceNumber}</div>
+      <div className="flex items-center gap-3">
+        <span>
+          Candidate Initials:{' '}
+          <span className="inline-block border-b border-gray-400 px-3 font-mono">______</span>
+        </span>
+        <span className="font-bold text-gray-800">Page {pageNum} of 2</span>
+      </div>
+    </div>
+  );
+
   return (
-    <div className="bg-white px-8 py-6 font-sans text-[12px] leading-snug text-black">
-      {/* Header */}
-      <div className="mb-6 flex items-start justify-between">
-        <div>
-          <h1 className="mb-1 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-            {companyInfo.company_name}
-          </h1>
-          <p className="text-gray-700">
-            Cell: {companyInfo.company_phone} | Email: {companyInfo.company_email}
-          </p>
-          <p className="text-gray-700">Website: {companyInfo.company_website}</p>
-          <p className="text-gray-700">Office Address : {companyInfo.company_address}</p>
-        </div>
-        <div className="w-40">
+    <div className="bg-white font-sans text-[10.5px] leading-[1.42] text-[#111827]">
+      {/* ========================================================================= */}
+      {/* ────────────────────────────── PAGE 1 ─────────────────────────────────── */}
+      {/* ========================================================================= */}
+      <div
+        className="relative flex flex-col justify-between bg-white p-7 sm:p-8"
+        style={{
+          minHeight: '260mm',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Background Watermark */}
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.035]">
           <img
             src="/logo.png"
-            alt={companyInfo.company_name}
-            className="h-auto w-full object-contain"
+            alt="Watermark"
+            className="w-[75%] max-w-xl object-contain grayscale"
             onError={(e) => (e.currentTarget.style.display = 'none')}
           />
         </div>
-      </div>
 
-      {/* Date & To */}
-      <div className="mb-4">
-        <p className="mb-2">
-          <span className="font-bold">Date:</span>{' '}
-          {formData.date || new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
-        </p>
-        <p className="font-bold">To,</p>
-        <p className="font-bold">{formData.name || '[Candidate Name]'}</p>
-        <p className="font-bold whitespace-pre-wrap">{formData.address || '[Address]'}</p>
-        {formData.mobileNo && <p className="font-bold">Mobile NO : +91 {formData.mobileNo}</p>}
-        {formData.alternativeNo && (
-          <p className="font-bold">Alternate No: +91 {formData.alternativeNo}</p>
-        )}
-      </div>
+        <div className="relative z-10 flex flex-col">
+          {/* Corporate Header / Letterhead */}
+          <div className="mb-2.5 flex items-start justify-between border-b-2 border-[#1e3a8a] pb-2.5">
+            <div>
+              <h1 className="text-xl leading-tight font-bold tracking-wide text-[#1e3a8a] uppercase">
+                {companyInfo.company_name}
+              </h1>
+              <p className="mt-0.5 text-[10px] font-medium text-gray-700">
+                Corporate Real Estate, Infrastructure Advisory &amp; Strategic Project Development
+              </p>
+              <p className="mt-0.5 text-[10px] text-gray-700">
+                Contact: <span className="font-semibold">{companyInfo.company_phone}</span>{' '}
+                &nbsp;|&nbsp; Email:{' '}
+                <span className="font-semibold">{companyInfo.company_email}</span>
+              </p>
+              <p className="text-[10px] text-gray-700">
+                Website: <span className="font-semibold">{companyInfo.company_website}</span>{' '}
+                &nbsp;|&nbsp; Office: {companyInfo.company_address}
+              </p>
+            </div>
+            <div className="w-36 flex-shrink-0 text-right">
+              <img
+                src="/logo.png"
+                alt={companyInfo.company_name}
+                className="ml-auto h-11 w-auto object-contain"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
+              <div className="mt-1 inline-block rounded bg-[#1e3a8a]/10 px-2 py-0.5 text-[8.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+                Corporate Contract
+              </div>
+            </div>
+          </div>
 
-      {/* Subject */}
-      <div className="mb-4 text-center">
-        <h3 className="font-bold uppercase underline">Subject: Offer of Employment</h3>
-      </div>
+          {/* Classification & Metadata Bar */}
+          <div className="mb-2.5 flex items-center justify-between rounded border border-gray-200 bg-gray-50 px-3 py-1 text-[10px]">
+            <div>
+              <span className="font-bold text-gray-600">Document Ref:</span>{' '}
+              <span className="font-mono font-bold text-[#1e3a8a]">{docReferenceNumber}</span>
+            </div>
+            <div>
+              <span className="font-bold text-gray-600">Issuance Date:</span>{' '}
+              <span className="font-bold text-gray-900">{currentDateFormatted}</span>
+            </div>
+            <div className="text-[9px] font-bold tracking-wider text-rose-700 uppercase">
+              Strictly Private &amp; Confidential
+            </div>
+          </div>
 
-      {/* Body */}
-      <div className="mb-4 space-y-2 text-justify">
-        <p>
-          Dear <span className="font-bold">{formData.name || '[Candidate Name]'}</span>,
-        </p>
-        <p>
-          We are pleased to offer you the position of{' '}
-          <span className="font-bold">{formData.designation || '[Designation]'}</span> with{' '}
-          {companyInfo.company_name}, a leading real estate organization known for excellence in
-          property development and customer service. Your skills and experience make you a valuable
-          addition to our team.
-        </p>
-        <p>
-          Your appointment will be effective from{' '}
-          <span className="font-bold">{formData.appointmentDate || '[Date]'}</span> under the
-          following terms and conditions:
-        </p>
-      </div>
+          {/* Addressee Particulars */}
+          <div className="mb-2.5 rounded border border-gray-200 bg-gray-50/60 p-2.5 shadow-2xs">
+            <p className="mb-1 border-b border-gray-200 pb-0.5 text-[9.5px] font-bold tracking-wider text-gray-500 uppercase">
+              Candidate Recipient Information:
+            </p>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-0.5 text-[10.5px]">
+              <div>
+                <span className="font-semibold text-gray-700">Candidate Name:</span>{' '}
+                <span className="font-bold text-[#1e3a8a]">
+                  {formData.name || '[Candidate Full Name]'}
+                </span>
+              </div>
+              <div>
+                <span className="font-semibold text-gray-700">Primary Contact:</span>{' '}
+                <span className="font-bold">
+                  {formData.mobileNo ? `+91 ${formData.mobileNo}` : '[Mobile Number]'}
+                </span>
+                {formData.alternativeNo && (
+                  <span className="font-normal text-gray-600">
+                    {' '}
+                    (Alt: +91 {formData.alternativeNo})
+                  </span>
+                )}
+              </div>
+              <div className="col-span-2">
+                <span className="font-semibold text-gray-700">Residential Address:</span>{' '}
+                <span className="font-normal">
+                  {formData.address || '[Candidate Permanent / Present Address]'}
+                </span>
+              </div>
+              <div className="col-span-2">
+                <span className="font-semibold text-gray-700">Email Address:</span>{' '}
+                <span className="font-mono text-gray-800">
+                  {formData.emailId || '[Candidate Email ID]'}
+                </span>
+              </div>
+            </div>
+          </div>
 
-      {/* Terms & Conditions */}
-      <div className="mb-4 space-y-2 text-justify">
-        <p>
-          <span className="font-bold">1. Position & Department</span>
-          <br />
-          You will be designated as{' '}
-          <span className="font-bold">{formData.designation || '[Designation]'}</span> in the{' '}
-          <span className="font-bold">{formData.department || '[Department]'}</span> Department and
-          will report to{' '}
-          <span className="font-bold">{formData.reportingTo || '[Reporting To]'}</span>.
-        </p>
-        <p>
-          <span className="font-bold">2. Location of Posting</span>
-          <br />
-          Your primary work location will be{' '}
-          <span className="font-bold">{formData.location || '[Location]'}</span>. However, you may
-          be required to travel or relocate as per company requirements.
-        </p>
-        <p>
-          <span className="font-bold">3. Salary & Benefits</span>
-          <br />
-          Your total compensation will be ₹{' '}
-          <span className="font-bold">
-            {formData.salaryCtc
-              ? parseFloat(formData.salaryCtc).toLocaleString('en-IN', {
-                  minimumFractionDigits: 2,
-                  maximumFractionDigits: 2,
-                })
-              : '[Amount]'}
-          </span>
-          {(formData.target || matchedSlab) && (
-            <>
-              {' '}
-              (Your target is{' '}
-              <span className="font-bold">
-                {formData.target || formData.salaryCtc
-                  ? `${formData.target || matchedSlab?.target} Sq.Yd.`
-                  : '[Target]'}
-              </span>
-              {' per month'})
-            </>
-          )}
-          {formData.offerSlab && (
-            <span className="font-bold">
-              {' '}
-              You will receive {formData.offerSlab.replace(/%$/, '')}% commission on your sales
-              achievements.{' '}
-            </span>
-          )}
-          {!formData.offerSlab && formData.target && (
-            <span className="font-bold">
-              {' '}
-              You will receive 3% commission on your sales achievements.{' '}
-            </span>
-          )}
-          which includes all statutory benefits as applicable. Additional performance-based
-          incentives will be provided as per company policy.
-        </p>
+          {/* Subject Line */}
+          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/80 py-1 text-center">
+            <h3 className="text-[11.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
+              Subject: Formal Offer of Employment &amp; Preliminary Contract of Appointment
+            </h3>
+          </div>
 
-        {/* ── Sales Compensation Condition (Term 3.5) ── */}
-        {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
-          <p>
-            <span className="font-bold">3A. No Sale No Salary Policy</span>
-            <br />
-            As a condition of this offer, your compensation is linked to sales performance. In the
-            event of <span className="font-bold">no confirmed sale</span> within your Quota Period
-            you shall receive only a{' '}
-            {formData.subsistenceAllowance && parseFloat(formData.subsistenceAllowance) > 0 ? (
-              <span className="font-bold">
-                subsistence allowance of ₹
-                {(() => {
-                  const v = parseFloat(formData.subsistenceAllowance);
-                  return v ? v.toLocaleString('en-IN') : '0';
-                })()}{' '}
-                per month
-              </span>
-            ) : (
-              <span className="font-bold">
-                subsistence allowance as may be decided by the Company
-              </span>
-            )}
-            . No further salary or allowances shall be liable beyond such subsistence allowance
-            unless and until a sale is closed. Otherwise, your agreed salary as per Clause 3 above
-            shall continue.
-          </p>
-        )}
-
-        {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
-          <p>
-            <span className="font-bold">3A. Guaranteed Salary During Quota Period</span>
-            <br />
-            As a condition of this offer, your compensation will be structured as a percentage of
-            your total CTC during the initial Quota Period. For the first{' '}
-            <span className="font-bold">
-              {formData.probationPeriod || '3'}{' '}
-              {(() => {
-                const p = parseInt(formData.probationPeriod || '3', 10);
-                return p === 1 ? 'month' : 'months';
-              })()}
-            </span>{' '}
-            (or such other period as may be extended by the Company in writing), the Company shall
-            pay you a guaranteed sum of{' '}
-            <span className="font-bold">
-              ₹
-              {(() => {
-                const pct = parseFloat(formData.customSalaryPercent || '0');
-                const ctc = parseFloat(formData.salaryCtc || '0');
-                return pct && ctc
-                  ? Math.round((pct / 100) * ctc).toLocaleString('en-IN')
-                  : '[Amount]';
-              })()}
-            </span>{' '}
-            per month, being{' '}
-            <span className="font-bold">{formData.customSalaryPercent || '[X]'}%</span> of your
-            total CTC. After successful completion of this period and subject to meeting the sales
-            targets as determined by the Company from time to time, your full agreed salary as per
-            Clause 3 above shall become payable.
-          </p>
-        )}
-
-        {/* ── Telecaller Monthly Meetings Requirement ── */}
-        {isSalesDepartment && formData.meetingsPerMonth && (
-          <p>
-            <span className="font-bold">
-              {formData.salesCompensationType ? '3B' : '3A'}. Monthly Meeting Requirement
-            </span>
-            <br />
-            You are required to complete a minimum of{' '}
-            <span className="font-bold">
-              {formData.meetingsPerMonth} meeting{formData.meetingsPerMonth === '1' ? '' : 's'}
-            </span>{' '}
-            per month as part of your sales role.
-          </p>
-        )}
-
-        <p>
-          <span className="font-bold">
-            {(() => {
-              const base = isSalesDepartment && formData.salesCompensationType ? 5 : 4;
-              return `${base}. Working Hours`;
-            })()}
-          </span>
-          <br />
-          Your working hours will be from{' '}
-          <span className="font-bold">{formData.workingHoursStart || '10:30 am'}</span> to{' '}
-          <span className="font-bold">{formData.workingHoursEnd || '6:30 pm'}</span>.
-          {formData.workingDays && (
-            <>
-              {' '}
-              Days of the Week,{' '}
-              <span className="font-bold">{formData.workingDays || 'Wednesday to Monday'}</span>.
-            </>
-          )}
-        </p>
-        <p>
-          <span className="font-bold">
-            {(() => {
-              const base = isSalesDepartment && formData.salesCompensationType ? 6 : 5;
-              return `${base}. Probation Period`;
-            })()}
-          </span>
-          <br />
-          You will be on probation for a period of{' '}
-          <span className="font-bold">
-            {formData.probationPeriod || '3'} month{formData.probationPeriod !== '1' ? 's' : ''}
-          </span>
-          . Upon successful completion, your employment may be confirmed in writing.
-        </p>
-        <p>
-          <span className="font-bold">
-            {(() => {
-              const n = isSalesDepartment && formData.salesCompensationType ? 7 : 6;
-              return `${n}. Duties & Responsibilities`;
-            })()}
-          </span>
-          <br />
-          You are expected to perform the duties assigned to you diligently, promote company
-          interests, and maintain professionalism with clients and colleagues.
-        </p>
-        <p>
-          <span className="font-bold">
-            {(() => {
-              const n = isSalesDepartment && formData.salesCompensationType ? 8 : 7;
-              return `${n}. Termination`;
-            })()}
-          </span>
-          <br />
-          Either party may terminate the employment within probation period written notice or salary
-          in lieu thereof.
-        </p>
-        <p>
-          <span className="font-bold">
-            {(() => {
-              const base = isSalesDepartment && formData.salesCompensationType ? 9 : 8;
-              return `${base}. Confidentiality`;
-            })()}
-          </span>
-          <br />
-          You are required to maintain the confidentiality of all company and client information
-          during and after your employment.
-        </p>
-        {/* PIP clause (Sales only) */}
-        {isSalesDepartment && (
-          <p>
-            <span className="font-bold">
-              {(() => {
-                const conf = isSalesDepartment && formData.salesCompensationType ? 9 : 8;
-                return `${conf + 1}. Performance Improvement Plan (PIP)`;
-              })()}
-            </span>
-            <br />
-            If, during the course of your employment, you are unable to meet the sales performance
-            targets assigned to you, the Company reserves the right to place you on a Performance
-            Improvement Plan (PIP). Under such a plan, you will be provided an opportunity and a
-            defined timeframe to improve your performance to the required standards, and your
-            continued employment will be subject to your successful completion of the plan.
-          </p>
-        )}
-
-        {/* Relocation of reporting location (all employees) */}
-        <p>
-          <span className="font-bold">
-            {(() => {
-              const conf = isSalesDepartment && formData.salesCompensationType ? 9 : 8;
-              return `${conf + 1 + (isSalesDepartment ? 1 : 0)}. Relocation of Reporting Location`;
-            })()}
-          </span>
-          <br />
-          The Company may, in the future, relocate or change the reporting location (company
-          location) as per its business requirements. You agree to report to the company location as
-          may be designated by the Company from time to time, at the Company's sole discretion.
-        </p>
-      </div>
-
-      {/* Closing */}
-      <div className="mb-6 space-y-2 text-justify">
-        <p>
-          We look forward to welcoming you to {companyInfo.company_name} and working together
-          towards mutual success.
-        </p>
-        <p>Please sign and return a copy of this letter as your acceptance of the offer.</p>
-      </div>
-
-      {/* Footer / Signatures */}
-      <div className="mt-8 flex items-end justify-between">
-        <div>
-          <p className="mb-2">
-            For <span className="font-bold text-[#1e3a8a]">{companyInfo.company_name}</span>
-          </p>
-          <img
-            src="/signature.png"
-            alt="Signature"
-            className="mb-2 h-12 w-auto opacity-80 mix-blend-multiply"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
-          />
-          <p className="font-bold">Iliyas Ali</p>
-          <p className="text-gray-600">( Director )</p>
-        </div>
-        <div className="text-right">
-          <p className="mb-1 font-bold">Accepted and Signed by:</p>
-          <div className="space-y-1">
+          {/* Preamble / Recitals */}
+          <div className="mb-2.5 space-y-1 text-justify text-[10.5px]">
             <p>
-              Name:{' '}
-              <span className="border-b border-black px-8">
-                {formData.name || '__________________'}
+              Dear{' '}
+              <span className="font-bold text-[#1e3a8a]">
+                {formData.name || '[Candidate Name]'}
               </span>
+              ,
             </p>
             <p>
-              Signature: <span className="border-b border-black px-8">__________________</span>
-            </p>
-            <p>
-              Date: <span className="border-b border-black px-8">__________________</span>
+              On behalf of <span className="font-semibold">{companyInfo.company_name}</span>{' '}
+              (&ldquo;Company&rdquo; or &ldquo;Organization&rdquo;), we are pleased to extend this
+              formal offer of employment to you. Following our comprehensive evaluation of your
+              credentials, professional background, and domain proficiencies, we believe your
+              capabilities align with our corporate growth objectives. This document sets forth the
+              comprehensive terms, conditions, mutual covenants, and governance frameworks governing
+              your appointment.
             </p>
           </div>
+
+          {/* Clauses 1 to 6 (Full Page 1 Layout) */}
+          <div className="space-y-2 text-justify text-[10px]">
+            {/* Clause 1: Position & Department */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                1. Designation, Department &amp; Reporting Matrix
+              </p>
+              <p className="mt-0.5">
+                You are appointed to the corporate position of{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.designation || '[Designation]'}
+                </span>{' '}
+                within the{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.department || '[Department]'}
+                </span>{' '}
+                Department. In this capacity, you shall report directly to{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.reportingTo || '[Reporting Authority / Functional Head]'}
+                </span>
+                , or such other corporate officer as the Company may designate from time to time.
+                You shall faithfully and diligently perform all duties incidental to your office and
+                comply with all lawful corporate directives.
+              </p>
+            </div>
+
+            {/* Clause 2: Location & Mobility */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                2. Date of Commencement, Work Location &amp; Mobility
+              </p>
+              <p className="mt-0.5">
+                Your appointment shall take effect on your formal joining date of{' '}
+                <span className="font-bold text-gray-900">{appointmentDateFormatted}</span>{' '}
+                (&ldquo;Effective Date&rdquo;). Your principal place of employment shall be situated
+                at{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.location || '[Primary Office Location]'}
+                </span>
+                . However, the Company operates across multi-regional jurisdictions; you may be
+                transferred, second-assigned, or deputed to any branch office, project site,
+                subsidiary, or affiliate of the Company within India or abroad at the sole
+                discretion of the Management based on operational imperatives.
+              </p>
+            </div>
+
+            {/* Clause 3: Compensation & Benefits */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                3. Remuneration Structure, Performance Slabs &amp; Statutory Deductions
+              </p>
+              <p className="mt-0.5">
+                The Company shall compensate you with a Gross Total Cost to Company (CTC) of{' '}
+                <span className="font-bold text-[#1e3a8a]">
+                  ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
+                </span>{' '}
+                {formData.salaryCtc && (
+                  <span className="font-semibold text-gray-700">
+                    (equivalent to an annualized CTC of ₹ {formatINR(annualCTC)})
+                  </span>
+                )}
+                , payable monthly in arrears subject to applicable statutory deductions, including
+                Tax Deducted at Source (TDS) under the Income Tax Act, 1961, Employees&rsquo;
+                Provident Fund (EPF) contributions under the Employees&rsquo; Provident Funds and
+                Miscellaneous Provisions Act, 1952, Professional Tax, and ESIC where statutorily
+                mandated.
+              </p>
+
+              {/* Sales Target / Slab Information */}
+              {(formData.target || matchedSlab || formData.offerSlab) && (
+                <div className="mt-1 rounded border border-blue-200 bg-blue-50/70 p-1.5">
+                  <p className="font-semibold text-[#1e3a8a]">
+                    Sales Performance Quota &amp; Commission Matrix:
+                  </p>
+                  <p className="mt-0.5">
+                    Your assigned monthly sales quota is{' '}
+                    <span className="font-bold text-gray-900">
+                      {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')} Sq.
+                      Yd.
+                    </span>{' '}
+                    per calendar month. You shall be eligible to receive a performance-linked sales
+                    commission of{' '}
+                    <span className="font-bold text-[#1e3a8a]">
+                      {formData.offerSlab
+                        ? `${formData.offerSlab.replace(/%$/, '')}%`
+                        : matchedSlab
+                          ? matchedSlab.offerSlab
+                          : '3%'}
+                    </span>{' '}
+                    on confirmed realized revenue, computed in strict compliance with the
+                    Company&rsquo;s Sales Compensation Policy.
+                  </p>
+                </div>
+              )}
+
+              {/* Sales Compensation Clauses (No Sale No Salary or Custom Percent) */}
+              {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
+                <p className="mt-1 rounded border border-amber-200 bg-amber-50/90 p-1.5 text-[9.5px] text-amber-950">
+                  <span className="font-bold uppercase">
+                    Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No Sale No
+                    Salary&rdquo;):
+                  </span>{' '}
+                  As an express condition of this sales appointment, full monthly salary
+                  disbursement is strictly contingent upon sales quota achievement. In the event
+                  zero (0) confirmed sales transactions are closed within a monthly evaluation
+                  cycle, you shall be entitled solely to a subsistence allowance of{' '}
+                  <span className="font-bold">
+                    {formData.subsistenceAllowance && parseFloat(formData.subsistenceAllowance) > 0
+                      ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
+                      : 'such sum as determined by the Company'}
+                  </span>
+                  . No additional salary, allowances, or arrears shall accrue until sales closures
+                  are registered.
+                </p>
+              )}
+
+              {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
+                <p className="mt-1 rounded border border-amber-200 bg-amber-50/90 p-1.5 text-[9.5px] text-amber-950">
+                  <span className="font-bold uppercase">
+                    Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota Incubation:
+                  </span>{' '}
+                  During your initial incubation period of{' '}
+                  <span className="font-bold">{formData.probationPeriod || '3'} months</span>, your
+                  remuneration shall be structured at{' '}
+                  <span className="font-bold">{formData.customSalaryPercent || '[X]'}%</span> of
+                  your agreed CTC, amounting to{' '}
+                  <span className="font-bold">
+                    ₹{' '}
+                    {(() => {
+                      const pct = parseFloat(formData.customSalaryPercent || '0');
+                      const ctc = parseFloat(formData.salaryCtc || '0');
+                      return pct && ctc ? formatINR(Math.round((pct / 100) * ctc)) : '[Amount]';
+                    })()}{' '}
+                    per month
+                  </span>
+                  . Upon successful achievement of sales benchmarks, full CTC disbursement as
+                  specified in Clause 3 shall be restored.
+                </p>
+              )}
+
+              {isSalesDepartment && formData.meetingsPerMonth && (
+                <p className="mt-1 text-[9.5px] text-gray-700">
+                  <span className="font-bold">
+                    Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
+                  </span>{' '}
+                  You are contractually required to conduct a minimum of{' '}
+                  <span className="font-bold text-gray-900">
+                    {formData.meetingsPerMonth} validated in-person / prospective client meetings
+                  </span>{' '}
+                  per calendar month. Failure to meet baseline meeting logs shall directly impact
+                  performance evaluations.
+                </p>
+              )}
+            </div>
+
+            {/* Clause 4: MANDATORY PRE-EMPLOYMENT ONBOARDING DOCUMENTATION */}
+            <div className="rounded border-2 border-[#1e3a8a] bg-[#1e3a8a]/5 p-2.5 shadow-2xs">
+              <div className="mb-1.5 flex items-center justify-between border-b border-[#1e3a8a]/30 pb-1">
+                <p className="text-[10.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
+                  4. Mandatory Pre-Employment Onboarding Documentation &amp; Verification Protocols
+                </p>
+                <span className="rounded bg-[#1e3a8a] px-2 py-0.5 text-[8px] font-bold tracking-wider text-white uppercase">
+                  Mandatory Compliance
+                </span>
+              </div>
+              <p className="mb-1.5 text-[9.5px] text-gray-800">
+                In compliance with corporate governance standards and regulatory audit mandates,
+                your formal appointment is strictly conditional upon the timely submission and
+                authentication of all mandatory pre-employment records via the designated corporate
+                portal at{' '}
+                <span className="font-mono font-bold text-[#1e3a8a]">/admin/offer-letter</span>. You
+                are required to upload high-resolution certified copies of the following:
+              </p>
+
+              <div className="grid grid-cols-1 gap-1.5 text-[9px] md:grid-cols-2">
+                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                  <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
+                  Certified / attested copies of all academic marksheets and degree certificates
+                  (10th Secondary, 12th Senior Secondary, Bachelor&rsquo;s Degree, Post-Graduate
+                  Degree / Professional Diplomas).
+                </div>
+                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                  <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two (2)
+                  recent colored passport-sized photographs against a plain white background (formal
+                  business attire).
+                </div>
+                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                  <span className="font-bold text-[#1e3a8a]">
+                    3. Identity Verification (Aadhaar):
+                  </span>{' '}
+                  High-resolution legible copy of valid Government-issued Aadhaar Card (front and
+                  reverse sides with clear QR code).
+                </div>
+                <div className="rounded border border-gray-200 bg-white p-1.5 shadow-2xs">
+                  <span className="font-bold text-[#1e3a8a]">4. Tax Registration (PAN Card):</span>{' '}
+                  Legible copy of valid Permanent Account Number (PAN) Card issued by the Income Tax
+                  Department, Government of India.
+                </div>
+                <div className="col-span-1 rounded border border-gray-200 bg-white p-1.5 shadow-2xs md:col-span-2">
+                  <span className="font-bold text-[#1e3a8a]">
+                    5. Prior Employment Experience &amp; Relieving Credentials:
+                  </span>{' '}
+                  Formally issued Experience Certificate and Relieving Letter from your immediate
+                  previous employer, along with official resignation acceptance correspondence and
+                  salary slips for the preceding three (3) consecutive months.
+                </div>
+              </div>
+
+              <div className="mt-1.5 space-y-0.5 border-t border-gray-200 pt-1 text-[8.5px] text-gray-700">
+                <p>
+                  <span className="font-bold">Submission Guidelines &amp; Deadlines:</span> All
+                  documents must be uploaded in clear, non-password-protected{' '}
+                  <span className="font-semibold">
+                    PDF, JPEG, or PNG formats (maximum file size 5MB per document)
+                  </span>{' '}
+                  within <span className="font-bold text-gray-900">three (3) business days</span> of
+                  offer acceptance, or no later than forty-eight (48) hours prior to the Effective
+                  Date of joining.
+                </p>
+                <p>
+                  <span className="font-bold">
+                    Background Verification (BGV) &amp; Legal Consequences:
+                  </span>{' '}
+                  The Company reserves the unconditional right to conduct independent background
+                  verification. Any falsification, forged documentation, suppression of material
+                  facts, or discrepancy shall render this offer{' '}
+                  <span className="font-bold text-rose-700">void ab initio</span> and result in
+                  immediate summary termination without notice, accompanied by appropriate civil or
+                  criminal proceedings.
+                </p>
+              </div>
+            </div>
+
+            {/* Clause 5: Probation Period */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                5. Probationary Period, Performance Assessment &amp; Confirmation Protocols
+              </p>
+              <p className="mt-0.5">
+                You shall be placed on formal statutory probation for an initial period of{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.probationPeriod || '3'} (
+                  {formData.probationPeriod === '1'
+                    ? 'One'
+                    : formData.probationPeriod === '6'
+                      ? 'Six'
+                      : 'Three'}
+                  ) Months
+                </span>{' '}
+                from the Effective Date. During this period, your professional conduct, attendance,
+                output quality, and quota fulfillment shall undergo continuous evaluation. The
+                Company reserves the unilateral right to extend the probationary period by an
+                additional duration if your performance is deemed unsatisfactory. Confirmation of
+                employment is not automatic; confirmation shall only occur upon the issuance of an
+                explicit, written Confirmation Letter executed by the Director or Head of Human
+                Resources.
+              </p>
+            </div>
+
+            {/* Clause 6: Working Hours & Attendance */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                6. Standard Working Hours, Attendance Logging &amp; Shift Regimes
+              </p>
+              <p className="mt-0.5">
+                Your standard working hours shall be from{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.workingHoursStart || '10:30 AM'}
+                </span>{' '}
+                to{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.workingHoursEnd || '6:30 PM'}
+                </span>
+                , operating across the designated work week of{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.workingDays || 'Wednesday to Monday'}
+                </span>{' '}
+                (with weekly off schedules designated as per departmental duty rosters). You are
+                obligated to record your daily attendance via the Company&rsquo;s biometric or
+                digital logging infrastructure. Punctuality is paramount; repeated unauthorized
+                absenteeism or chronic tardiness shall be deemed gross misconduct subject to
+                disciplinary action.
+              </p>
+            </div>
+          </div>
         </div>
+
+        <RunningFooter pageNum={1} />
+      </div>
+
+      {/* ========================================================================= */}
+      {/* ────────────────────────────── PAGE 2 ─────────────────────────────────── */}
+      {/* ========================================================================= */}
+      <div
+        className="relative flex flex-col justify-between bg-white p-7 sm:p-8"
+        style={{
+          pageBreakBefore: 'always',
+          minHeight: '260mm',
+          boxSizing: 'border-box',
+        }}
+      >
+        {/* Background Watermark */}
+        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.035]">
+          <img
+            src="/logo.png"
+            alt="Watermark"
+            className="w-[75%] max-w-xl object-contain grayscale"
+            onError={(e) => (e.currentTarget.style.display = 'none')}
+          />
+        </div>
+
+        <div className="relative z-10 flex flex-col">
+          <RunningHeader />
+
+          {/* Document Section Banner */}
+          <div className="mb-2.5 border-y border-gray-300 bg-gray-100/80 py-1 text-center">
+            <h3 className="text-[11px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+              Section II: Terms &amp; Conditions, Restrictive Covenants, Governance &amp; Acceptance
+            </h3>
+          </div>
+
+          <div className="space-y-2 text-justify text-[10px]">
+            {/* Clause 7: Confidentiality, NDA & Trade Secrets */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                7. Comprehensive Non-Disclosure, Trade Secrets &amp; Data Protection (DPDPA 2023)
+              </p>
+              <p className="mt-0.5">
+                In the course of your employment, you will have access to proprietary trade secrets,
+                investor rosters, client databases, pricing methodologies, architectural layouts,
+                financial ledgers, land bank acquisitions, marketing strategies, software
+                algorithms, and confidential business intelligence (&ldquo;Confidential
+                Information&rdquo;). You covenant and agree to maintain absolute confidentiality of
+                all such information during your tenure and perpetually following separation. You
+                shall strictly comply with the Digital Personal Data Protection Act, 2023 (DPDPA)
+                and the Information Technology Act, 2000. You shall not divulge, copy, disclose,
+                publish, or transmit any Confidential Information to third parties without prior
+                written authorization.
+              </p>
+            </div>
+
+            {/* Clause 8: Intellectual Property Assignment */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                8. Intellectual Property (IP) Ownership, Inventions &amp; Work-for-Hire Assignment
+              </p>
+              <p className="mt-0.5">
+                All intellectual property, including without limitation copyrights, design
+                blueprints, branding assets, software code, marketing materials, analytical
+                frameworks, operational processes, patents, and inventions developed, conceived, or
+                authored by you (solely or jointly) in connection with your employment shall
+                constitute &ldquo;work made for hire&rdquo; and shall be the exclusive, perpetual,
+                and worldwide property of{' '}
+                <span className="font-semibold">{companyInfo.company_name}</span>. You hereby
+                unconditionally assign, transfer, and convey all rights, titles, and moral rights in
+                such assets to the Company and agree to execute all necessary formal documentation
+                required to vest absolute legal title in the Company.
+              </p>
+            </div>
+
+            {/* Clause 9: Restrictive Covenants & Non-Solicitation */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                9. Restrictive Covenants: Non-Solicitation, Exclusivity &amp; Conflict of Interest
+              </p>
+              <p className="mt-0.5">
+                <span className="font-semibold text-gray-800">9.1 Exclusivity of Employment:</span>{' '}
+                You shall devote your whole time, attention, and energies exclusively to the
+                business of the Company. You are strictly prohibited from engaging in dual
+                employment (&ldquo;moonlighting&rdquo;), commercial advisory, directorships,
+                freelance consultancy, or any competing business enterprise, whether remunerated or
+                honorary, without express prior written consent from the Board of Directors.
+              </p>
+              <p className="mt-0.5">
+                <span className="font-semibold text-gray-800">9.2 Non-Solicitation Covenant:</span>{' '}
+                For a period of twelve (12) months following the termination of your employment (for
+                any reason whatsoever), you shall not directly or indirectly: (a) solicit, induce,
+                or entice any client, customer, investor, vendor, or contractor of the Company to
+                terminate or diminish their commercial relationship with the Company; or (b)
+                solicit, recruit, or hire any employee, executive, or consultant of the Company.
+              </p>
+            </div>
+
+            {/* Clause 10: Performance Management & PIP */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                10. Performance Management Governance &amp; Performance Improvement Plan (PIP)
+              </p>
+              <p className="mt-0.5">
+                The Company maintains rigorous performance assessment standards. If your
+                performance, sales conversion rate, attendance, or operational deliverable fails to
+                achieve established Key Performance Indicators (KPIs), the Company reserves the
+                prerogative to place you on a formal Performance Improvement Plan (PIP) for a
+                structured period (typically 30 to 60 days). Under the PIP, you will receive
+                designated objectives and milestone reviews. Failure to meet the requisite
+                performance thresholds by the expiration of the PIP period shall constitute
+                legitimate cause for immediate separation without severance.
+              </p>
+            </div>
+
+            {/* Clause 11: Relocation of Reporting Location */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                11. Relocation of Reporting Location &amp; Operational Discretion
+              </p>
+              <p className="mt-0.5">
+                The Company may, at its sole operational discretion, relocate, expand, or adjust its
+                principal headquarters, branch network, or project site offices. You explicitly
+                agree to report to any updated corporate or project site location designated by the
+                Company from time to time without claiming adjustment allowances unless formally
+                sanctioned.
+              </p>
+            </div>
+
+            {/* Clause 12: Termination of Employment */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                12. Termination of Employment, Separation Protocols &amp; Summary Dismissal
+              </p>
+              <p className="mt-0.5">
+                <span className="font-semibold text-gray-800">12.1 Notice Periods:</span> During
+                probation, either party may terminate employment by serving fifteen (15) calendar
+                days&rsquo; written notice or basic salary in lieu. Post-confirmation, notice period
+                shall be thirty (30) calendar days or salary in lieu, subject to handover clearance.
+              </p>
+              <p className="mt-0.5">
+                <span className="font-semibold text-gray-800">
+                  12.2 Summary Dismissal for Cause:
+                </span>{' '}
+                The Company reserves the right to immediately terminate employment without notice or
+                terminal benefits for: (a) breach of confidentiality/IP; (b) fraud, embezzlement, or
+                criminal conduct; (c) submission of forged/false onboarding credentials; (d) gross
+                insubordination; or (e) continuous unauthorized absence exceeding three (3) business
+                days.
+              </p>
+              <p className="mt-0.5">
+                <span className="font-semibold text-gray-800">12.3 Asset Handover &amp; NOC:</span>{' '}
+                Upon separation, all Company laptops, keycards, records, client lists, and digital
+                credentials must be surrendered immediately prior to final dues settlement.
+              </p>
+            </div>
+
+            {/* Clause 13 & 14: Indemnification & Governing Law */}
+            <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+              <div className="rounded border border-gray-200 bg-gray-50/60 p-2">
+                <p className="text-[9.5px] font-bold text-[#1e3a8a] uppercase">
+                  13. Indemnification
+                </p>
+                <p className="mt-0.5 text-[8.5px]">
+                  You agree to indemnify and hold harmless the Company, Directors, and officers
+                  against all liabilities, claims, losses, and legal costs arising from your willful
+                  misconduct, gross negligence, fraud, or breach of statutory duties.
+                </p>
+              </div>
+
+              <div className="rounded border border-gray-200 bg-gray-50/60 p-2">
+                <p className="text-[9.5px] font-bold text-[#1e3a8a] uppercase">
+                  14. Governing Law &amp; Dispute Resolution
+                </p>
+                <p className="mt-0.5 text-[8.5px]">
+                  Governed by the laws of India. Disputes shall be resolved via binding arbitration
+                  under the Arbitration and Conciliation Act, 1996 in Gautam Buddha Nagar (Noida),
+                  with exclusive jurisdiction vested in courts of Gautam Buddha Nagar, UP.
+                </p>
+              </div>
+            </div>
+
+            {/* Clause 15: Entire Agreement & Validity */}
+            <div>
+              <p className="text-[10.5px] font-bold text-[#1e3a8a] uppercase">
+                15. Entire Agreement, Severability &amp; Offer Expiration
+              </p>
+              <p className="mt-0.5">
+                This document constitutes the entire agreement between the parties and supersedes
+                all prior communications. This offer shall automatically lapse within{' '}
+                <span className="font-bold text-gray-900">five (5) business days</span> from
+                issuance unless countersigned and returned alongside the mandatory onboarding
+                records.
+              </p>
+            </div>
+          </div>
+
+          {/* Formal Signatures & Execution Section */}
+          <div className="mt-2.5 rounded-lg border-2 border-[#1e3a8a]/40 bg-gray-50/80 p-3 shadow-2xs">
+            <div className="grid grid-cols-2 items-end gap-4">
+              {/* Employer Execution Block */}
+              <div className="border-r border-gray-300 pr-3">
+                <p className="mb-0.5 text-[9.5px] font-bold tracking-wider text-gray-500 uppercase">
+                  Issued For and on behalf of Organization:
+                </p>
+                <p className="text-[11px] font-bold text-[#1e3a8a] uppercase">
+                  {companyInfo.company_name}
+                </p>
+                <div className="my-1">
+                  <img
+                    src="/signature.png"
+                    alt="Authorized Signatory"
+                    className="h-9 w-auto opacity-90 mix-blend-multiply"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+                <p className="text-[10.5px] font-bold text-gray-900">Iliyas Ali</p>
+                <p className="text-[9.5px] font-medium text-gray-600">
+                  Director &amp; Authorized Signatory
+                </p>
+                <p className="mt-0.5 text-[8.5px] text-gray-500">
+                  Date of Issuance: {currentDateFormatted}
+                </p>
+              </div>
+
+              {/* Candidate Acceptance & Attestation Block */}
+              <div className="pl-1 text-[9.5px]">
+                <p className="mb-0.5 text-[10px] font-bold tracking-wider text-gray-800 uppercase">
+                  Candidate Formal Acceptance &amp; Attestation:
+                </p>
+                <p className="mb-2 text-[8.5px] leading-tight text-gray-700 italic">
+                  &ldquo;I hereby unconditionally accept this offer of employment and agree to abide
+                  by all terms, covenants, onboarding documentation requirements via{' '}
+                  <span className="font-mono font-semibold">/admin/offer-letter</span>, and policies
+                  outlined herein. I affirm all credentials provided are authentic and
+                  truthful.&rdquo;
+                </p>
+                <div className="space-y-1 text-[9.5px] text-gray-800">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Candidate Signature:</span>
+                    <span className="inline-block w-32 border-b border-gray-500"></span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Full Legal Name:</span>
+                    <span className="inline-block w-32 truncate border-b border-gray-300 text-right font-bold text-gray-900">
+                      {formData.name || '____________________'}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Date of Execution:</span>
+                    <span className="inline-block w-32 border-b border-gray-500"></span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold">Place / City:</span>
+                    <span className="inline-block w-32 border-b border-gray-500"></span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <RunningFooter pageNum={2} />
       </div>
     </div>
   );
