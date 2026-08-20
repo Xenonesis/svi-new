@@ -14,13 +14,14 @@ svi-infra/
 │  │  ├─ projects/
 │  │  └─ page.tsx                    # Homepage
 │  │
-│  ├─ admin/                         # Admin dashboard (30 pages)
+│  ├─ admin/                         # Admin dashboard (31 pages)
 │  │  ├─ allotment-letter/
 │  │  ├─ bba/                        # Builder-Buyer Agreement
 │  │  ├─ email/                      # Full email center
 │  │  ├─ lottery/                    # Admin lottery management
 │  │  ├─ registrations/
 │  │  ├─ settings/                   # Settings panel
+│  │  ├─ updates/                    # System updates & non-technical changelog
 │  │  └─ page.tsx                    # Admin overview
 │  │
 │  ├─ api/                           # 68 REST API routes
@@ -32,11 +33,12 @@ svi-infra/
 │  └─ (system files)                 # layout.tsx, error.tsx, sitemap.ts, etc.
 │
 ├─ src/
-│  ├─ components/                    # 170+ React components
+│  ├─ components/                    # 175+ React components
 │  │  ├─ admin/                      # Admin panel components (largest module)
 │  │  │  ├─ email/                   # Full email client UI
 │  │  │  ├─ lottery/                 # Lottery creation wizard, modals
 │  │  │  ├─ quotation-records/       # Stats grid, filter bar, table, delete modal
+│  │  │  ├─ updates/                 # System updates timeline, stats, filters
 │  │  │  ├─ whatsapp/                # Conversation list, chat panel, lead drawer
 │  │  │  └─ DocumentGenerator/       # PDF generators for letters
 │  │  ├─ brochure/                   # Luxury township brochure modular sections
