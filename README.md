@@ -120,6 +120,7 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Chat logs** — Conversation history for the AI chatbot with lead information
 - **Site visits** — Manage and track property site visit requests
 - **Employees** — Employee directory management
+- **System updates** — `/admin/updates` release timeline, categorized update stats, and upcoming operational roadmap
 
 ### 👥 Employee Portal
 
@@ -1329,6 +1330,7 @@ svi-new/
 │   │   ├── registrations/         #   User registration management
 │   │   ├── settings/              #   Tabbed system configuration
 │   │   ├── site-visits/           #   Site visit management
+│   │   ├── updates/               #   System updates and roadmap
 │   │   ├── layout.tsx             #   Admin layout (sidebar + header)
 │   │   └── page.tsx               #   Admin login
 │   ├── employee/                  # Employee portal
@@ -1741,6 +1743,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/admin/site-visits`          | Site visit management                                                                 |
 | `/admin/whatsapp`             | WhatsApp inbox, AI/human/paused mode, follow-ups, templates, lead drawer              |
 | `/admin/quotation-records`    | Saved quotation records, filters, stats, PDF/image export, delete workflow            |
+| `/admin/updates`              | System release timeline, categorized update stats, upcoming operational roadmap       |
 | `/admin/whatsapp`             | WhatsApp inbox, follow-ups, templates, lead drawer, conversation management           |
 | `/admin/quotation-records`    | Quotation record management                                                           |
 
@@ -1904,6 +1907,7 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 - `Shared/` — `AdminSkeleton`, `AdminStatsCard`, `Modal`
 - `whatsapp/` — WhatsApp inbox, conversation list, chat panel, lead drawer, mode controls
 - `quotation-records/` — Quotation stats, filters, records table, delete dialog
+- `updates/` — System updates timeline, categorized stats, upcoming roadmap
 
 ### Changelog & public features
 
