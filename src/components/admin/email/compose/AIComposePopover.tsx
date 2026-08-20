@@ -13,6 +13,8 @@ import {
   Check,
   Smartphone,
   Monitor,
+  Clock,
+  Zap,
 } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
 import { getPreviewHtml, extractTemplateVars } from '@/src/lib/utils/templateParser';
@@ -53,6 +55,9 @@ export function AIComposePopover({
     variables?: Record<string, string>;
   } | null>(null);
   const [copied, setCopied] = useState(false);
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [lastGenTime, setLastGenTime] = useState<number | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const { autoCompose, loading, cancel } = useAIEmail();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -60,6 +65,27 @@ export function AIComposePopover({
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Live timer effect during generation
+  useEffect(() => {
+    if (loading) {
+      setElapsedTime(0);
+      const start = performance.now();
+      timerRef.current = setInterval(() => {
+        setElapsedTime(+((performance.now() - start) / 1000).toFixed(1));
+      }, 100);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
+  }, [loading]);
 
   // Auto-focus input on open
   useEffect(() => {
@@ -96,6 +122,8 @@ export function AIComposePopover({
     if (!prompt.trim() || loading) return;
     setPreview('');
     setTemplateMeta(null);
+    setLastGenTime(null);
+    const startTime = performance.now();
 
     try {
       const result = await autoCompose({
@@ -107,6 +135,9 @@ export function AIComposePopover({
           setPreview(html);
         },
       });
+
+      const totalDuration = +((performance.now() - startTime) / 1000).toFixed(1);
+      setLastGenTime(totalDuration);
 
       if (result && result.html) {
         setPreview(result.html);
@@ -200,6 +231,8 @@ export function AIComposePopover({
     setPrompt('');
     setPreview('');
     setTemplateMeta(null);
+    setLastGenTime(null);
+    setElapsedTime(0);
     onClose();
   };
 
@@ -233,9 +266,15 @@ export function AIComposePopover({
                   <Sparkles className="h-4 w-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                    AI Email & Template Writer
-                  </h3>
+                  <div className="flex items-center gap-2">
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                      AI Email & Template Writer
+                    </h3>
+                    <span className="bg-brand-gold/10 text-brand-gold inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold">
+                      <Zap className="h-2.5 w-2.5" />
+                      ~2-3s ultra-fast
+                    </span>
+                  </div>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">
                     Generates official SVI Infra luxury corporate email templates
                   </p>
@@ -269,60 +308,87 @@ export function AIComposePopover({
               </div>
 
               {/* Tone & Generate Action */}
-              <div className="flex items-center gap-2.5">
-                <div ref={dropdownRef} className="relative">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2.5">
+                  <div ref={dropdownRef} className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setShowToneDropdown(!showToneDropdown)}
+                      className="dark:hover:bg-gray-750 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    >
+                      <span>
+                        Tone: <strong className="text-gray-900 dark:text-white">{tone}</strong>
+                      </span>
+                      <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                    </button>
+                    {showToneDropdown && (
+                      <div className="absolute bottom-full left-0 z-30 mb-1.5 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-xl dark:border-gray-700 dark:bg-gray-800">
+                        {TONES.map((t) => (
+                          <button
+                            key={t}
+                            type="button"
+                            onClick={() => {
+                              setTone(t);
+                              setShowToneDropdown(false);
+                            }}
+                            className={`flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                              tone === t
+                                ? 'bg-brand-gold/15 text-brand-gold'
+                                : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
+                            }`}
+                          >
+                            {t}
+                            {tone === t && <Check className="text-brand-gold h-3.5 w-3.5" />}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+
                   <button
                     type="button"
-                    onClick={() => setShowToneDropdown(!showToneDropdown)}
-                    className="dark:hover:bg-gray-750 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    onClick={handleGenerate}
+                    disabled={!prompt.trim() || loading}
+                    className="bg-brand-gold text-brand-dark-surface flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-50"
                   >
-                    <span>
-                      Tone: <strong className="text-gray-900 dark:text-white">{tone}</strong>
-                    </span>
-                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                    {loading ? (
+                      <>
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <span>
+                          Generating SVI Template... (<strong>{elapsedTime.toFixed(1)}s</strong>)
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="h-3.5 w-3.5" />
+                        <span>Generate Corporate Template</span>
+                        <span className="py-0.2 text-brand-dark-surface/80 rounded bg-black/10 px-1.5 text-[10px] font-semibold dark:bg-black/20">
+                          ~2.5s
+                        </span>
+                      </>
+                    )}
                   </button>
-                  {showToneDropdown && (
-                    <div className="absolute bottom-full left-0 z-30 mb-1.5 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-xl dark:border-gray-700 dark:bg-gray-800">
-                      {TONES.map((t) => (
-                        <button
-                          key={t}
-                          type="button"
-                          onClick={() => {
-                            setTone(t);
-                            setShowToneDropdown(false);
-                          }}
-                          className={`flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
-                            tone === t
-                              ? 'bg-brand-gold/15 text-brand-gold'
-                              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
-                          }`}
-                        >
-                          {t}
-                          {tone === t && <Check className="text-brand-gold h-3.5 w-3.5" />}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleGenerate}
-                  disabled={!prompt.trim() || loading}
-                  className="bg-brand-gold text-brand-dark-surface flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-50"
-                >
-                  {loading ? (
-                    <>
-                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Generating SVI Template...</span>
-                    </>
-                  ) : (
-                    <>
-                      <Sparkles className="h-3.5 w-3.5" />
-                      <span>Generate Corporate Template</span>
-                    </>
-                  )}
-                </button>
+                {/* Live timer & progress bar while generating */}
+                {loading && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -4 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="flex items-center justify-between rounded-lg bg-amber-500/10 px-3 py-1.5 text-[11px] text-amber-700 dark:text-amber-300"
+                  >
+                    <div className="flex items-center gap-1.5">
+                      <Clock className="h-3.5 w-3.5 animate-pulse text-amber-500" />
+                      <span>
+                        Elapsed time: <strong>{elapsedTime.toFixed(1)}s</strong> (Est. complete:
+                        ~2-4s)
+                      </span>
+                    </div>
+                    <span className="font-mono text-[10px] text-amber-600/80 dark:text-amber-400/80">
+                      Generating structure...
+                    </span>
+                  </motion.div>
+                )}
               </div>
 
               {/* Output Preview (Sandboxed Iframe) */}
@@ -334,6 +400,11 @@ export function AIComposePopover({
                       <span className="text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300">
                         {templateMeta?.templateName || 'SVI Corporate Email Preview'}
                       </span>
+                      {lastGenTime !== null && (
+                        <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
+                          ⚡ Took {lastGenTime}s
+                        </span>
+                      )}
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -416,7 +487,7 @@ export function AIComposePopover({
                     type="button"
                     onClick={handleInsert}
                     disabled={loading}
-                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                     title="Insert content into rich text editor"
                   >
                     <Copy className="h-3.5 w-3.5" />
