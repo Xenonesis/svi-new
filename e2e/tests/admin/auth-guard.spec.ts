@@ -10,6 +10,7 @@ test.describe('Admin Auth Guard', () => {
     '/admin/email',
     '/admin/lottery',
     '/admin/chat-logs',
+    '/admin/whatsapp',
     '/admin/settings',
     '/admin/allotment-letter',
     '/admin/allotment-records',

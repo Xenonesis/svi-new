@@ -23,3 +23,4 @@
 3. **PWA Support:** Installable, offline-capable (via Service Worker), and supports push notifications.
 4. **Document Generation:** Produces PDF documents (allotment letters, offer letters, BBA) in both English and Hindi.
 5. **AI Integration:** Chatbot lead capture (Groq/Vercel AI) and smart email composing.
+6. **WhatsApp Sales MVP:** Official Meta Cloud API integration code for inbound assistance, project-level matching, consent and opt-out enforcement, requested site visits, human takeover, durable retries, and a protected admin inbox. Production sending remains disabled until account-owner setup is complete.

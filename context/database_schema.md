@@ -40,6 +40,23 @@ The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RL
 | `notifications`      | In-app notifications for admins and users    |
 | `chat_leads`         | Captured leads from the AI Chatbot           |
 
+## WhatsApp sales agent MVP
+
+The WhatsApp channel uses server-only, RLS-protected tables. Browser roles have no direct grants.
+
+| Table                          | Purpose                                                            |
+| ------------------------------ | ------------------------------------------------------------------ |
+| `whatsapp_contacts`            | Normalized E.164 contacts, consent, and opt-out state              |
+| `whatsapp_conversations`       | Durable AI, Human, or Paused conversation state and service window |
+| `whatsapp_messages`            | Individual inbound/outbound messages and provider delivery status  |
+| `whatsapp_processing_jobs`     | Recoverable, bounded background work                               |
+| `whatsapp_templates`           | Admin-controlled Meta approval metadata                            |
+| `whatsapp_follow_ups`          | At most two deduplicated template follow-ups per conversation      |
+| `whatsapp_site_visit_requests` | Requests awaiting salesperson confirmation                         |
+| `whatsapp_company_settings`    | Allowlisted company facts that require admin verification          |
+
+`chat_leads` remains the compatible lead table and now also holds normalized phone, lifecycle, qualification, assignment, consent, temperature, and summary fields.
+
 ## Lottery & Campaigns
 
 | Table Name          | Purpose                                                |

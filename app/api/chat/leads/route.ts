@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-import { normalizeIndianPhone } from '@/src/lib/utils/phone';
+import { normalizeE164 } from '@/src/lib/whatsapp/phone';
 
 export const runtime = 'edge';
 
@@ -22,25 +22,26 @@ export async function POST(req: NextRequest) {
 
     const { name, phone, email, source = 'chatbot' } = body;
 
-    if (!name?.trim() || !phone?.trim()) {
-      throw AppError.badRequest('Name and phone are required');
+    if (!name?.trim() || (!phone?.trim() && !email?.trim())) {
+      throw AppError.badRequest('Name and either phone or email are required');
     }
 
-    const cleanPhone = normalizeIndianPhone(phone);
-    if (!cleanPhone) {
+    const cleanPhone = phone?.trim() ? normalizeE164(phone) : null;
+    if (phone?.trim() && !cleanPhone) {
       throw AppError.badRequest('Invalid phone number');
     }
 
-    const { data, error } = await supabaseAdmin
-      .from('chat_leads')
-      .insert({
-        name: name.trim(),
-        phone: cleanPhone,
-        email: email?.trim() || null,
-        source: source.trim(),
-      })
-      .select()
-      .single();
+    const lead = {
+      name: name.trim(),
+      phone: cleanPhone,
+      normalized_phone: cleanPhone,
+      email: email?.trim() || null,
+      source: source.trim(),
+    };
+    const query = cleanPhone
+      ? supabaseAdmin.from('chat_leads').upsert(lead, { onConflict: 'normalized_phone' })
+      : supabaseAdmin.from('chat_leads').insert(lead);
+    const { data, error } = await query.select().single();
 
     if (error) {
       console.error('Chat lead save error:', error.message);
@@ -48,7 +49,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Notify all admins about the new lead
-    NotificationHelper.chatLeadCreated(name.trim(), cleanPhone).catch((err) =>
+    NotificationHelper.chatLeadCreated(name.trim(), cleanPhone ?? email.trim()).catch((err) =>
       console.error('Failed to send chat lead notification:', err)
     );
 

@@ -60,6 +60,7 @@ const managementItems = [
   { name: 'Careers', path: '/admin/careers', icon: Briefcase },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
   { name: 'Email Center', path: '/admin/email', icon: Mail },
+  { name: 'WhatsApp Inbox', path: '/admin/whatsapp', icon: MessageCircle },
   { name: 'Lottery Manager', path: '/admin/lottery', icon: Gift },
   { name: 'Chat Logs', path: '/admin/chat-logs', icon: MessageCircle },
   { name: 'IVR Call Logs', path: '/admin/ivr', icon: Phone },

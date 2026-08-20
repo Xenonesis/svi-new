@@ -32,6 +32,7 @@
 - **@ai-sdk/groq (4.0.13):** LLM provider for fast inference
 - **@google/genai (2.4.0):** Server-side content generation
 - **Resend (6.18.0):** Transactional and marketing email API
+- **Meta WhatsApp Cloud API:** Direct server-side provider integration with signed webhooks, mock-send mode, test allowlist, approved templates, and durable cron processing
 - **TipTap (3.29.1):** Rich text email editor
 
 ## Maps, Charts & Media

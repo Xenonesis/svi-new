@@ -1580,8 +1580,13 @@ pnpm dev          # → http://localhost:3001
 
 ```bash
 # ── Application ───────────────────────────────────
-APP_URL="http://localhost:3001"
+APP_URL="https://yourdomain.com"
+NEXT_PUBLIC_APP_URL="https://yourdomain.com"
 NEXT_PUBLIC_ANALYTICS_ID=""
+
+# ── Sentry ────────────────────────────────────────
+SENTRY_DSN=""
+NEXT_PUBLIC_SENTRY_DSN=""
 
 # ── Supabase ──────────────────────────────────────
 NEXT_PUBLIC_SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
@@ -1589,21 +1594,48 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY="YOUR_SUPABASE_ANON_KEY"
 SUPABASE_SERVICE_ROLE_KEY="YOUR_SUPABASE_SERVICE_ROLE_KEY"
 
 # ── AI Providers ─────────────────────────────────
-GROQ_API_KEY="gsk_your_groq_api_key_here"     # Chatbot (Llama 4)
-GEMINI_API_KEY="your_gemini_api_key_here"      # Server-side content
+GEMINI_API_KEY="MY_GEMINI_API_KEY"
+GROQ_API_KEY="gsk_your_groq_api_key_here"
+GROQ_MODEL="openai/gpt-oss-120b"
 
 # ── Resend (Email) ────────────────────────────────
 RESEND_API_KEY="re_your_resend_api_key"
 ADMIN_EMAIL="admin@yourdomain.com"
+RESEND_INBOUND_DOMAIN="inbound.yourdomain.com"
+RESEND_WEBHOOK_SECRET="whsec_..."
+NEXT_PUBLIC_SHOW_RESEND="false"
 
-# ── Push Notifications (VAPID) ────────────────
-NEXT_PUBLIC_VAPID_PUBLIC_KEY="your_vapid_public_key"
-VAPID_PRIVATE_KEY="your_vapid_private_key"
-VAPID_EMAIL="mailto:info@yourdomain.com"
+# ── Push Notifications (VAPID) ───────────────────
+NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
+VAPID_PRIVATE_KEY=""
+VAPID_EMAIL="mailto:info@sviinfrasolutions.com"
 
-# ── hCaptcha (use test key locally) ──────────────
+# ── hCaptcha ─────────────────────────────────────
+NEXT_PUBLIC_DISABLE_CAPTCHA="false"
 NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
+
+# ── Cron / Scheduled Jobs ─────────────────────────
+CRON_SECRET="your-random-cron-secret-here"
+
+# ── WhatsApp Cloud API ────────────────────────────
+WHATSAPP_MOCK_SEND="true"
+AUTONOMOUS_OUTBOUND_ENABLED="false"
+WHATSAPP_TEST_NUMBER_ALLOWLIST="+919876543210"
+WHATSAPP_WEBHOOK_VERIFY_TOKEN="replace-with-a-random-verification-token"
+WHATSAPP_APP_SECRET="replace-with-meta-app-secret"
+WHATSAPP_ACCESS_TOKEN="replace-with-meta-system-user-token"
+WHATSAPP_PHONE_NUMBER_ID="replace-with-meta-phone-number-id"
+WHATSAPP_GRAPH_API_VERSION="vXX.X"
+
+# ── IVR / Outgoing Calls ──────────────────────────
+IVR_API_KEY=""
+
+# ── GitHub Changelog ──────────────────────────────
+GITHUB_REPO="sviinfrasolutions/svi-website"
+GITHUB_TOKEN=""
 ```
+
+Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets stay in `.env.local`; only `NEXT_PUBLIC_*` values may be exposed to the browser.
 
 ---
 
