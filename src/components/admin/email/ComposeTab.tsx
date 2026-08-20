@@ -470,6 +470,26 @@ export function ComposeTab({
     toast.success('Generated email draft with AI');
   };
 
+  const handleApplyTemplate = (
+    rawHtml: string,
+    templateName?: string,
+    variables?: Record<string, string>
+  ) => {
+    setTemplateHtml(rawHtml);
+    setSelectedTemplate('_ai_generated');
+    setAutoComposeName(templateName || 'AI Corporate Template');
+    const vars = extractTemplateVars(rawHtml);
+    const initialVars: Record<string, string> = {};
+    vars.forEach((v) => {
+      initialVars[v] = variables?.[v] || templateVars[v] || '';
+    });
+    setTemplateVars(initialVars);
+    setHtml(rawHtml);
+    setPreviewMode(true);
+    setEditorKey((prev) => prev + 1);
+    toast.success(`Applied ${templateName || 'SVI Corporate Template'}`);
+  };
+
   // Suggest subject lines based on email body
   const handleSuggestSubject = async () => {
     const bodyHtml = getPreviewHtml() || html;
@@ -628,6 +648,7 @@ export function ComposeTab({
           editorKey={editorKey}
           quotedHtml={quotedHtml}
           onRemoveQuoted={() => setQuotedHtml(null)}
+          onApplyTemplate={handleApplyTemplate}
           setHtml={setHtml}
           getPreviewHtml={getPreviewHtml}
         />

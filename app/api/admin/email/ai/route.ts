@@ -93,11 +93,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing action field' }, { status: 400 });
     }
 
-    // ─── Auto Compose: subject → template match or AI-generated ───
+    // ─── Auto Compose: subject / prompt → template match or AI corporate template ───
     if (action === 'auto_compose') {
-      const { subject, to } = body;
-      if (!subject) {
-        return NextResponse.json({ error: 'Missing subject' }, { status: 400 });
+      const { subject, prompt: userPrompt, tone, to } = body;
+      if (!subject && !userPrompt) {
+        return NextResponse.json({ error: 'Missing subject or prompt' }, { status: 400 });
       }
 
       // Fetch recipient context if email provided
@@ -144,7 +144,7 @@ Always construct email with this EXACT table structure (cross-client compatible,
       <h4 style="margin:0 0 10px;color:#0f172a;font-size:13px;font-weight:700;">📌 Next Steps:</h4>
       <ol style="margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.8;">
         <li>Review your details carefully.</li>
-        <li>Complete the verification / payment step.</li>
+        <li>Complete the verification / documentation step.</li>
         <li>Our relationship executive will contact you for handover.</li>
       </ol>
     </div>
@@ -164,8 +164,8 @@ Always construct email with this EXACT table structure (cross-client compatible,
   </div>
 
 TASK:
-Analyze the email subject and recipient details.
-1) If the subject matches one of the EXISTING TEMPLATES above, output a JSON object:
+Analyze the email subject, user instructions/prompt, requested tone (${tone || 'Professional'}), and recipient details.
+1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:
 {
   "action": "template_match",
   "templateId": "<matching template id from list>",
@@ -174,7 +174,7 @@ Analyze the email subject and recipient details.
     "name": "<recipient name or Valued Customer>",
     "<other template variables>": "<value or placeholder>"
   },
-  "html": "<complete email HTML with variables or placeholders>"
+  "html": "<complete email HTML with variables filled or placeholders>"
 }
 
 2) If NO MATCH with existing templates, create a custom, high-end, responsive HTML email template using the EXACT luxury structure above:
@@ -193,7 +193,10 @@ RECIPIENT DATA:
 ${JSON.stringify(recipientData, null, 2)}
 
 EMAIL SUBJECT:
-${subject}
+${subject || 'General Correspondence'}
+
+USER INSTRUCTIONS / PROMPT:
+${userPrompt || 'Draft an appropriate professional email response based on the subject and recipient context.'}
 
 IMPORTANT: Respond with ONLY a valid JSON object matching the schema above. No markdown code blocks, no explanation text.`;
 

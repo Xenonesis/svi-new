@@ -166,7 +166,9 @@ export function useAIEmail() {
   );
 
   interface AutoComposeOptions {
-    subject: string;
+    subject?: string;
+    prompt?: string;
+    tone?: string;
     to?: string;
     cc?: string;
     onChunk?: (html: string) => void;
@@ -180,25 +182,35 @@ export function useAIEmail() {
     html: string;
   }
 
-  // Auto Compose: subject → template match or AI-generated template
+  // Auto Compose: subject / prompt → template match or AI-generated corporate template
   const autoCompose = useCallback(
-    async ({ subject, to, cc, onChunk }: AutoComposeOptions): Promise<AutoComposeResult | null> => {
+    async ({
+      subject,
+      prompt,
+      tone,
+      to,
+      cc,
+      onChunk,
+    }: AutoComposeOptions): Promise<AutoComposeResult | null> => {
       const controller = new AbortController();
       abortRef.current = controller;
       setLoading(true);
       setError(null);
 
       try {
-        const res = await apiCall({ action: 'auto_compose', subject, to, cc }, controller.signal);
+        const res = await apiCall(
+          { action: 'auto_compose', subject, prompt, tone, to, cc },
+          controller.signal
+        );
         const data = await res.json();
         if (!data.success && !data.html) {
-          throw new Error(data.error || 'Failed to auto-compose');
+          throw new Error(data.error || 'Failed to generate email template');
         }
 
         const result: AutoComposeResult = {
           action: data.action || 'ai_template',
           templateId: data.templateId || '_ai_generated',
-          templateName: data.templateName || 'AI Generated',
+          templateName: data.templateName || 'AI Corporate Template',
           variables: data.variables || {},
           html: data.html || '',
         };
@@ -210,7 +222,7 @@ export function useAIEmail() {
         return result;
       } catch (err: any) {
         if (err.name === 'AbortError') return null;
-        const msg = err.message || 'Failed to auto-compose';
+        const msg = err.message || 'Failed to generate email template';
         setError(msg);
         toast.error(msg);
         return null;

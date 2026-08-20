@@ -45,6 +45,11 @@ interface RichTextEditorProps {
   recipientName?: string;
   /** Email subject for AI context */
   subject?: string;
+  onApplyTemplate?: (
+    html: string,
+    templateName?: string,
+    variables?: Record<string, string>
+  ) => void;
 }
 
 const TOOLBAR_BUTTON_CLASS =
@@ -61,6 +66,7 @@ export function RichTextEditor({
   contentKey,
   recipientName,
   subject,
+  onApplyTemplate,
 }: RichTextEditorProps) {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -415,6 +421,7 @@ export function RichTextEditor({
             onClose={() => setShowAIPopover(false)}
             onInsert={(html) => editor.chain().focus().insertContent(html).run()}
             onReplace={(html) => editor.chain().focus().clearContent().insertContent(html).run()}
+            onApplyTemplate={onApplyTemplate}
             recipientName={recipientName}
             subject={subject}
           />

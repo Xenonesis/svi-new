@@ -3,7 +3,16 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, X, Loader2, Copy, Replace, ChevronDown, Check } from 'lucide-react';
+import {
+  Sparkles,
+  X,
+  Loader2,
+  Copy,
+  LayoutTemplate,
+  Replace,
+  ChevronDown,
+  Check,
+} from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
 
 interface AIComposePopoverProps {
@@ -11,6 +20,11 @@ interface AIComposePopoverProps {
   onClose: () => void;
   onInsert: (html: string) => void;
   onReplace: (html: string) => void;
+  onApplyTemplate?: (
+    html: string,
+    templateName?: string,
+    variables?: Record<string, string>
+  ) => void;
   recipientName?: string;
   subject?: string;
 }
@@ -22,6 +36,7 @@ export function AIComposePopover({
   onClose,
   onInsert,
   onReplace,
+  onApplyTemplate,
   recipientName,
   subject,
 }: AIComposePopoverProps) {
@@ -30,8 +45,12 @@ export function AIComposePopover({
   const [tone, setTone] = useState<string>('Professional');
   const [showToneDropdown, setShowToneDropdown] = useState(false);
   const [preview, setPreview] = useState('');
+  const [templateMeta, setTemplateMeta] = useState<{
+    templateName?: string;
+    variables?: Record<string, string>;
+  } | null>(null);
   const [copied, setCopied] = useState(false);
-  const { generateContent, loading, cancel } = useAIEmail();
+  const { autoCompose, loading, cancel } = useAIEmail();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -73,23 +92,30 @@ export function AIComposePopover({
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim() || loading) return;
     setPreview('');
+    setTemplateMeta(null);
 
     try {
-      const result = await generateContent({
+      const result = await autoCompose({
         prompt: prompt.trim(),
+        subject: subject || undefined,
+        to: recipientName || undefined,
         tone,
-        context: { recipientName, subject },
-        onChunk: (text) => {
-          setPreview(text);
+        onChunk: (html) => {
+          setPreview(html);
         },
       });
-      if (result) {
-        setPreview(result);
+
+      if (result && result.html) {
+        setPreview(result.html);
+        setTemplateMeta({
+          templateName: result.templateName,
+          variables: result.variables,
+        });
       }
     } catch (err) {
       console.error('[AICompose] Error generating:', err);
     }
-  }, [prompt, tone, recipientName, subject, generateContent, loading]);
+  }, [prompt, tone, recipientName, subject, autoCompose, loading]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -107,15 +133,19 @@ export function AIComposePopover({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const handleInsert = () => {
+  const handleApply = () => {
     if (!preview) return;
-    onInsert(preview);
+    if (onApplyTemplate) {
+      onApplyTemplate(preview, templateMeta?.templateName, templateMeta?.variables);
+    } else {
+      onReplace(preview);
+    }
     handleClose();
   };
 
-  const handleReplace = () => {
+  const handleInsert = () => {
     if (!preview) return;
-    onReplace(preview);
+    onInsert(preview);
     handleClose();
   };
 
@@ -123,6 +153,7 @@ export function AIComposePopover({
     cancel();
     setPrompt('');
     setPreview('');
+    setTemplateMeta(null);
     onClose();
   };
 
@@ -137,7 +168,7 @@ export function AIComposePopover({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/65 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -147,7 +178,7 @@ export function AIComposePopover({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-            className="relative z-10 flex max-h-[85vh] w-full max-w-[540px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
+            className="relative z-10 flex max-h-[88vh] w-full max-w-[620px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
@@ -157,10 +188,10 @@ export function AIComposePopover({
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                    AI Email Writer
+                    AI Email & Template Writer
                   </h3>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">
-                    Prompt and generate executive replies in seconds
+                    Generates official SVI Infra luxury corporate email templates
                   </p>
                 </div>
               </div>
@@ -177,14 +208,14 @@ export function AIComposePopover({
               {/* Prompt Input */}
               <div>
                 <label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
-                  Describe what you want to write:
+                  What would you like to write?
                 </label>
                 <textarea
                   ref={inputRef}
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="e.g. Okay you can join us as freelancer, please share your documents..."
+                  placeholder="e.g. okay you can join us as freelancer, ask for documents and schedule kickoff call..."
                   rows={3}
                   className="focus-gold w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-sm text-gray-900 placeholder-gray-400 transition-all outline-none dark:border-gray-700 dark:bg-gray-900/70 dark:text-white dark:placeholder-gray-500"
                   disabled={loading}
@@ -237,12 +268,12 @@ export function AIComposePopover({
                   {loading ? (
                     <>
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      <span>Generating response...</span>
+                      <span>Generating SVI Template...</span>
                     </>
                   ) : (
                     <>
                       <Sparkles className="h-3.5 w-3.5" />
-                      <span>Generate Email</span>
+                      <span>Generate Corporate Template</span>
                     </>
                   )}
                 </button>
@@ -252,9 +283,12 @@ export function AIComposePopover({
               {preview && (
                 <div className="rounded-xl border border-gray-200/80 bg-gray-50/70 p-3.5 dark:border-gray-800 dark:bg-gray-900/60">
                   <div className="mb-2.5 flex items-center justify-between">
-                    <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                      Generated Output Preview
-                    </span>
+                    <div className="flex items-center gap-2">
+                      <LayoutTemplate className="text-brand-gold h-3.5 w-3.5" />
+                      <span className="text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                        {templateMeta?.templateName || 'SVI Corporate Email Preview'}
+                      </span>
+                    </div>
                     <button
                       type="button"
                       onClick={handleCopy}
@@ -275,9 +309,10 @@ export function AIComposePopover({
                     </button>
                   </div>
 
-                  <div className="scrollbar-gold max-h-[260px] overflow-y-auto rounded-lg border border-gray-200/60 bg-white p-3.5 text-sm text-gray-800 shadow-inner dark:border-gray-800 dark:bg-[#0b0e14] dark:text-gray-200">
+                  {/* High Fidelity Render Box */}
+                  <div className="scrollbar-gold max-h-[320px] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-inner dark:border-gray-800">
                     <div
-                      className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed"
+                      className="origin-top text-xs"
                       dangerouslySetInnerHTML={{ __html: preview }}
                     />
                   </div>
@@ -300,19 +335,20 @@ export function AIComposePopover({
                     type="button"
                     onClick={handleInsert}
                     disabled={loading}
-                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    title="Insert content into rich text editor"
                   >
                     <Copy className="h-3.5 w-3.5" />
-                    <span>Insert at cursor</span>
+                    <span>Insert Text</span>
                   </button>
                   <button
                     type="button"
-                    onClick={handleReplace}
+                    onClick={handleApply}
                     disabled={loading}
-                    className="bg-brand-gold text-brand-dark-surface flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all hover:brightness-105"
+                    className="bg-brand-gold text-brand-dark-surface flex items-center gap-1.5 rounded-xl px-4 py-1.5 text-xs font-semibold shadow-sm transition-all hover:brightness-105 active:scale-[0.98]"
                   >
-                    <Replace className="h-3.5 w-3.5" />
-                    <span>Replace Editor</span>
+                    <LayoutTemplate className="h-3.5 w-3.5" />
+                    <span>Apply Corporate Template</span>
                   </button>
                 </div>
               </div>
