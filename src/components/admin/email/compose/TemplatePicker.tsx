@@ -2,15 +2,16 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Search, ChevronDown, LayoutTemplate, Check } from 'lucide-react';
+import { Search, ChevronDown, LayoutTemplate, Check, X, FileX } from 'lucide-react';
 import { EMAIL_TEMPLATES } from '../constants';
 
 interface TemplatePickerProps {
   selectedTemplate: string | null;
   onSelect: (templateId: string) => void;
+  onClear?: () => void;
 }
 
-export function TemplatePicker({ selectedTemplate, onSelect }: TemplatePickerProps) {
+export function TemplatePicker({ selectedTemplate, onSelect, onClear }: TemplatePickerProps) {
   const [showPicker, setShowPicker] = useState(false);
   const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
@@ -34,7 +35,9 @@ export function TemplatePicker({ selectedTemplate, onSelect }: TemplatePickerPro
   const categories = [...new Set(EMAIL_TEMPLATES.map((t) => t.category))];
 
   const selectedName = selectedTemplate
-    ? EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name || 'Template'
+    ? selectedTemplate === '_ai_generated'
+      ? 'AI Template'
+      : EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name || 'Template'
     : null;
 
   return (
@@ -43,7 +46,7 @@ export function TemplatePicker({ selectedTemplate, onSelect }: TemplatePickerPro
         onClick={() => setShowPicker(!showPicker)}
         className={`flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all ${
           selectedTemplate
-            ? 'text-brand-gold bg-brand-gold/5'
+            ? 'text-brand-gold bg-brand-gold/10 font-semibold'
             : 'text-gray-400 hover:bg-gray-50 hover:text-gray-600 dark:hover:bg-white/5'
         }`}
       >
@@ -61,6 +64,7 @@ export function TemplatePicker({ selectedTemplate, onSelect }: TemplatePickerPro
             transition={{ duration: 0.15 }}
             className="dark:bg-brand-dark-surface absolute right-0 bottom-full z-50 mb-2 w-80 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-gray-700"
           >
+            {/* Search Input */}
             <div className="border-b border-gray-100 p-3 dark:border-gray-800">
               <div className="relative">
                 <Search className="pointer-events-none absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
@@ -74,6 +78,57 @@ export function TemplatePicker({ selectedTemplate, onSelect }: TemplatePickerPro
                 />
               </div>
             </div>
+
+            {/* Deselect / Clear Template Button if a template is active */}
+            {selectedTemplate && (
+              <div className="border-b border-gray-100 bg-red-50/50 p-2 dark:border-gray-800 dark:bg-red-950/20">
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClear?.();
+                    setShowPicker(false);
+                  }}
+                  className="flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs font-semibold text-red-600 transition-colors hover:bg-red-100/70 dark:text-red-400 dark:hover:bg-red-900/40"
+                >
+                  <div className="flex items-center gap-2">
+                    <X className="h-3.5 w-3.5" />
+                    <span>Deselect Template (Clear)</span>
+                  </div>
+                  <span className="text-[10px] font-normal text-red-500 underline">Blank Mode</span>
+                </button>
+              </div>
+            )}
+
+            {/* Option to choose Blank Email (None) */}
+            <button
+              type="button"
+              onClick={() => {
+                onClear?.();
+                setShowPicker(false);
+              }}
+              className={`flex w-full items-center gap-3 border-b border-gray-100 px-4 py-2.5 text-left transition-colors dark:border-gray-800 ${
+                !selectedTemplate
+                  ? 'bg-brand-gold/5 text-brand-gold font-medium'
+                  : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/[0.02]'
+              }`}
+            >
+              <FileX
+                className={`h-3.5 w-3.5 shrink-0 ${!selectedTemplate ? 'text-brand-gold' : 'text-gray-400'}`}
+              />
+              <div className="min-w-0 flex-1">
+                <p
+                  className={`truncate text-xs font-medium ${!selectedTemplate ? 'text-brand-gold' : ''}`}
+                >
+                  None (Blank Editor)
+                </p>
+                <p className="truncate text-[10px] text-gray-400">
+                  Write custom email without template
+                </p>
+              </div>
+              {!selectedTemplate && <Check className="text-brand-gold h-3.5 w-3.5" />}
+            </button>
+
+            {/* Template List Categories */}
             <div className="scrollbar-gold max-h-72 overflow-y-auto">
               {categories.map((cat) => {
                 const catTemplates = filteredTemplates.filter((t) => t.category === cat);
@@ -92,7 +147,11 @@ export function TemplatePicker({ selectedTemplate, onSelect }: TemplatePickerPro
                         <button
                           key={tpl.id}
                           onClick={() => {
-                            onSelect(tpl.id);
+                            if (isActive) {
+                              onClear?.();
+                            } else {
+                              onSelect(tpl.id);
+                            }
                             setShowPicker(false);
                           }}
                           className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${

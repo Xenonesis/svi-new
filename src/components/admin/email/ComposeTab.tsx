@@ -503,6 +503,17 @@ export function ComposeTab({
     toast.success(`Applied ${templateName || 'SVI Corporate Template'}`);
   };
 
+  const handleClearTemplate = () => {
+    setTemplateHtml(null);
+    setSelectedTemplate(null);
+    setTemplateVars({});
+    setSubjectTemplate('');
+    setHtml('');
+    setPreviewMode(false);
+    setEditorKey((prev) => prev + 1);
+    toast.info('Template deselected');
+  };
+
   // Suggest subject lines based on email body
   const handleSuggestSubject = async () => {
     const bodyHtml = getPreviewHtml() || html;
@@ -690,6 +701,7 @@ export function ComposeTab({
           onAutoCompose={handleAutoCompose}
           onSend={handleSend}
           onLoadTemplate={loadTemplate}
+          onClearTemplate={handleClearTemplate}
           onShowImprove={() => setShowImprove(true)}
           onSuggestSubject={handleSuggestSubject}
           onApplySubject={handleApplySubject}

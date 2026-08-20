@@ -17,6 +17,7 @@ interface EmailToolbarProps {
   onAutoCompose?: () => void;
   onSend: () => void;
   onLoadTemplate: (templateId: string) => void;
+  onClearTemplate?: () => void;
   onShowImprove: () => void;
   onSuggestSubject: () => void;
   onApplySubject: (suggestion: string) => void;
@@ -39,6 +40,7 @@ export function EmailToolbar({
   onAutoCompose,
   onSend,
   onLoadTemplate,
+  onClearTemplate,
   onShowImprove,
   onSuggestSubject,
   onApplySubject,
@@ -94,7 +96,11 @@ export function EmailToolbar({
           </button>
         )}
 
-        <TemplatePicker selectedTemplate={selectedTemplate} onSelect={onLoadTemplate} />
+        <TemplatePicker
+          selectedTemplate={selectedTemplate}
+          onSelect={onLoadTemplate}
+          onClear={onClearTemplate}
+        />
 
         <button
           onClick={onShowImprove}
