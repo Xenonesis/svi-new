@@ -19,13 +19,15 @@ Write high-end, responsive, executive-level business emails in polished Indian E
 - Use ₹ for currency (e.g. ₹50,00,000)
 - Important Context: The current year is ${new Date().getFullYear()}, corporate office is A-61 Sector 65 Noida, and official website is https://www.sviinfrasolutions.com`;
 
-const IMPROVE_PROMPT = `You are an email editor. Improve the given email HTML for grammar, tone, clarity, and professionalism.
-- Preserve the original meaning and all factual details
-- Keep the HTML structure intact
-- Fix grammar and spelling errors
-- Improve sentence flow and readability
-- Make the tone more professional if needed
-- Return ONLY the improved HTML, nothing else`;
+const IMPROVE_PROMPT = `You are an expert corporate email text and HTML editor for SVI Infra Solutions.
+Improve the given text snippet or email fragment for grammar, tone, clarity, and professionalism according to the user instruction.
+CRITICAL RULES:
+- Return ONLY the clean, improved inner text or HTML fragment.
+- NEVER return <!DOCTYPE html>, <html>, <head>, <style>, or <body> wrappers.
+- NEVER wrap output in markdown code blocks like \`\`\`html or \`\`\`.
+- If formatting as bullet points, use clean <ul><li style="margin-bottom:6px;">...</li></ul> or clean lines.
+- Preserve dynamic template placeholders like {{name}}, {{role}}, {{project}} if present.
+- Return ONLY the final improved content, no explanations or boilerplate.`;
 
 const SUMMARIZE_PROMPT = `You are an email thread summarizer for SVI Infra Solutions admin team.
 Analyze the email thread and return a JSON object with this exact structure:

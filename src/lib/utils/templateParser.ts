@@ -37,14 +37,49 @@ export const getPreviewHtml = (
     return '';
   });
 
-  // 2. Process standard variables
+  // 2. Process standard variables - only replace if value is non-empty
   Object.entries(templateVars).forEach(([key, value]) => {
     const pattern = new RegExp('\\{\\{' + key + '\\}\\}', 'g');
     result = result.replace(
       pattern,
-      value !== undefined && value !== null ? value : '{{' + key + '}}'
+      value !== undefined && value !== null && value.trim() !== '' ? value : '{{' + key + '}}'
     );
   });
 
   return result;
+};
+
+/**
+ * Safe targeted text replacement inside HTML content.
+ * Replaces only the text matching `original`, preserving all parent table/card structures.
+ */
+export const safeReplaceHtmlContent = (
+  sourceHtml: string,
+  original: string,
+  replacement: string
+): string => {
+  if (!sourceHtml || !original.trim()) return sourceHtml;
+
+  // 1. Direct exact match
+  if (sourceHtml.includes(original)) {
+    return sourceHtml.replace(original, replacement);
+  }
+
+  // 2. Exact trimmed match
+  if (sourceHtml.includes(original.trim())) {
+    return sourceHtml.replace(original.trim(), replacement);
+  }
+
+  // 3. Multi-word flexible regex match (handles newlines, whitespace differences, and embedded inline tags)
+  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const words = original.trim().split(/\s+/).filter(Boolean).map(escapeRegex);
+
+  if (words.length > 0) {
+    const flexibleRegex = new RegExp(words.join('(?:\\s+|&nbsp;|<[^>]+>)*'), 'i');
+    if (flexibleRegex.test(sourceHtml)) {
+      return sourceHtml.replace(flexibleRegex, replacement);
+    }
+  }
+
+  return sourceHtml;
 };

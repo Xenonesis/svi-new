@@ -34,7 +34,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AIComposePopover } from './compose/AIComposePopover';
-import { FloatingSelectionToolbar } from './compose/FloatingSelectionToolbar';
+import { FloatingSelectionToolbar, cleanSnippetHtml } from './compose/FloatingSelectionToolbar';
 
 interface RichTextEditorProps {
   value: string;
@@ -154,7 +154,8 @@ export function RichTextEditor({
   const handleReplaceSelected = useCallback(
     (original: string, replacement: string) => {
       if (!editor) return;
-      editor.chain().focus().insertContent(replacement).run();
+      const clean = cleanSnippetHtml(replacement);
+      editor.chain().focus().insertContent(clean).run();
     },
     [editor]
   );

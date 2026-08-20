@@ -14,8 +14,8 @@ import {
   CheckCircle2,
   SlidersHorizontal,
 } from 'lucide-react';
-import { extractTemplateVars } from '@/src/lib/utils/templateParser';
-import { FloatingSelectionToolbar } from './FloatingSelectionToolbar';
+import { extractTemplateVars, safeReplaceHtmlContent } from '@/src/lib/utils/templateParser';
+import { FloatingSelectionToolbar, cleanSnippetHtml } from './FloatingSelectionToolbar';
 
 const RichTextEditor = dynamic(() => import('../RichTextEditor').then((m) => m.RichTextEditor), {
   ssr: false,
@@ -85,70 +85,21 @@ export function EmailBodyEditor({
   ).length;
   const allFilled = totalVarsCount > 0 && unfilledCount === 0;
 
-  // Robust selected text replacement (DOM Range + String Fallback)
-  const handleReplaceSelectedText = (
-    original: string,
-    replacement: string,
-    range?: Range | null
-  ) => {
-    // 1. If DOM Range is present inside rendered email preview container
-    if (
-      range &&
-      renderedEmailRef.current &&
-      renderedEmailRef.current.contains(range.commonAncestorContainer)
-    ) {
-      try {
-        range.deleteContents();
-        if (replacement.includes('\n')) {
-          const lines = replacement.split('\n');
-          const fragment = document.createDocumentFragment();
-          lines.forEach((line, idx) => {
-            if (idx > 0) fragment.appendChild(document.createElement('br'));
-            fragment.appendChild(document.createTextNode(line));
-          });
-          range.insertNode(fragment);
-        } else {
-          range.insertNode(document.createTextNode(replacement));
-        }
-
-        const updatedHtml = renderedEmailRef.current.innerHTML;
-        if (templateHtml && onUpdateTemplateHtml) {
-          onUpdateTemplateHtml(updatedHtml);
-        }
-        setHtml(updatedHtml);
-        return;
-      } catch (err) {
-        console.warn('[EmailBodyEditor] DOM range replacement fallback to string replace:', err);
-      }
-    }
-
-    // 2. Direct string replacement
+  // Non-destructive targeted text replacement (preserves outer table & card layout)
+  const handleReplaceSelectedText = (original: string, replacement: string) => {
+    const cleanReplacement = cleanSnippetHtml(replacement);
     const target = templateHtml || html;
     if (!target) return;
 
-    if (target.includes(original)) {
-      const next = target.replace(original, replacement);
-      if (templateHtml && onUpdateTemplateHtml) onUpdateTemplateHtml(next);
-      setHtml(next);
-      return;
+    const updated = safeReplaceHtmlContent(target, original, cleanReplacement);
+    if (templateHtml && onUpdateTemplateHtml) {
+      onUpdateTemplateHtml(updated);
     }
-
-    // 3. Flexible Regex match (accounting for whitespace / HTML entities / nested tags)
-    const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    const words = original.trim().split(/\s+/).filter(Boolean).map(escapeRegex);
-    if (words.length > 0) {
-      const flexibleRegex = new RegExp(words.join('(?:\\s+|&nbsp;|<[^>]+>)*'), 'i');
-      if (flexibleRegex.test(target)) {
-        const next = target.replace(flexibleRegex, replacement);
-        if (templateHtml && onUpdateTemplateHtml) onUpdateTemplateHtml(next);
-        setHtml(next);
-        return;
-      }
-    }
+    setHtml(updated);
   };
 
-  const handleDeleteSelectedText = (original: string, range?: Range | null) => {
-    handleReplaceSelectedText(original, '', range);
+  const handleDeleteSelectedText = (original: string) => {
+    handleReplaceSelectedText(original, '');
   };
 
   return (
@@ -284,11 +235,12 @@ export function EmailBodyEditor({
 
           {/* Email Preview Card */}
           <div
-            className="mx-auto overflow-hidden rounded-xl border border-gray-200 bg-white text-gray-900 shadow-sm dark:border-gray-700 dark:text-gray-900"
+            className="mx-auto overflow-hidden rounded-2xl border border-gray-200/90 bg-white text-gray-900 shadow-xl dark:border-gray-700/80 dark:text-gray-900"
             style={{ maxWidth: '700px' }}
           >
             <div
               ref={renderedEmailRef}
+              className="w-full overflow-x-auto bg-white"
               dangerouslySetInnerHTML={{
                 __html:
                   previewContent ||

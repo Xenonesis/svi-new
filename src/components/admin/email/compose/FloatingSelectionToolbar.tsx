@@ -7,6 +7,35 @@ import { Sparkles, PenLine, Trash2, X, Loader2, Wand2, ArrowRight } from 'lucide
 import { useAIEmail } from '../hooks/useAIEmail';
 import { toast } from 'sonner';
 
+export function cleanSnippetHtml(raw: string): string {
+  if (!raw) return '';
+  let clean = raw.trim();
+
+  // 1. Strip markdown fences ```html ... ```
+  clean = clean
+    .replace(/^```(?:html)?\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+
+  // 2. If it contains <body>...</body>, extract body content
+  if (clean.includes('<body') && clean.includes('</body>')) {
+    const bodyMatch = clean.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+    if (bodyMatch && bodyMatch[1]) {
+      clean = bodyMatch[1].trim();
+    }
+  }
+
+  // 3. Strip stray doctype, html, head, style, body wrappers
+  clean = clean
+    .replace(/<!DOCTYPE[^>]*>/gi, '')
+    .replace(/<\/?html[^>]*>/gi, '')
+    .replace(/<head[\s\S]*?<\/head>/gi, '')
+    .replace(/<\/?body[^>]*>/gi, '')
+    .trim();
+
+  return clean;
+}
+
 interface FloatingSelectionToolbarProps {
   containerRef?: React.RefObject<HTMLElement | null>;
   onReplaceText: (original: string, replacement: string, range?: Range | null) => void;
@@ -16,20 +45,26 @@ interface FloatingSelectionToolbarProps {
 const AI_PRESETS = [
   {
     label: 'Make Professional',
-    instruction: 'Make this text concise, executive and professional.',
+    instruction:
+      'Make this text concise, executive and professional. Return only the updated snippet.',
   },
   {
     label: 'Make Bullet Points',
-    instruction: 'Convert this text into clean, clear bullet points.',
+    instruction:
+      'Convert this text into clean, clear bullet points formatted with <ul><li> tags or clean list items. Return only the list fragment.',
   },
-  { label: 'Make Shorter', instruction: 'Shorten this text while preserving all key information.' },
+  {
+    label: 'Make Shorter',
+    instruction: 'Shorten this text while preserving all key information. Return only the snippet.',
+  },
   {
     label: 'Fix Grammar & Flow',
-    instruction: 'Fix grammar, punctuation and improve sentence flow.',
+    instruction: 'Fix grammar, punctuation and improve sentence flow. Return only the snippet.',
   },
   {
     label: 'Translate to Hindi',
-    instruction: 'Translate this text accurately into polite Hindi (भारतीय हिंदी).',
+    instruction:
+      'Translate this text accurately into polite Hindi (भारतीय हिंदी). Return only the translated text.',
   },
 ];
 
@@ -149,7 +184,8 @@ export function FloatingSelectionToolbar({
   // 2. Direct Edit / Save
   const handleSaveEdit = () => {
     if (!selectedText || !editValue.trim()) return;
-    onReplaceText(selectedText, editValue, savedRangeRef.current);
+    const cleaned = cleanSnippetHtml(editValue);
+    onReplaceText(selectedText, cleaned, savedRangeRef.current);
     toast.success('Updated text snippet');
     handleClose();
   };
@@ -160,11 +196,12 @@ export function FloatingSelectionToolbar({
     try {
       const result = await improveContent({
         html: selectedText,
-        instruction,
+        instruction: `${instruction} IMPORTANT: Return ONLY the snippet / list items. Do NOT return <html> or <!DOCTYPE> tags.`,
       });
 
       if (result && result.trim()) {
-        onReplaceText(selectedText, result.trim(), savedRangeRef.current);
+        const cleaned = cleanSnippetHtml(result);
+        onReplaceText(selectedText, cleaned, savedRangeRef.current);
         toast.success('Rewrote selection with AI');
         handleClose();
       }
