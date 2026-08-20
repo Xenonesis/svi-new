@@ -32,11 +32,15 @@ svi-infra/
 │  └─ (system files)                 # layout.tsx, error.tsx, sitemap.ts, etc.
 │
 ├─ src/
-│  ├─ components/                    # 157+ React components
+│  ├─ components/                    # 170+ React components
 │  │  ├─ admin/                      # Admin panel components (largest module)
 │  │  │  ├─ email/                   # Full email client UI
 │  │  │  ├─ lottery/                 # Lottery creation wizard, modals
+│  │  │  ├─ quotation-records/       # Stats grid, filter bar, table, delete modal
+│  │  │  ├─ whatsapp/                # Conversation list, chat panel, lead drawer
 │  │  │  └─ DocumentGenerator/       # PDF generators for letters
+│  │  ├─ brochure/                   # Luxury township brochure modular sections
+│  │  ├─ exclusive-offers/           # Exclusive broker offers, calculator, benefits
 │  │  ├─ home/                       # Public homepage blocks (Hero, Features, ChatBot)
 │  │  └─ ui/                         # Reusable primitives (Buttons, Modal, Inputs)
 │  │
