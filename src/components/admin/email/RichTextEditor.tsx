@@ -34,6 +34,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AIComposePopover } from './compose/AIComposePopover';
+import { FloatingSelectionToolbar } from './compose/FloatingSelectionToolbar';
 
 interface RichTextEditorProps {
   value: string;
@@ -72,6 +73,7 @@ export function RichTextEditor({
   const [linkUrl, setLinkUrl] = useState('');
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showAIPopover, setShowAIPopover] = useState(false);
+  const editorContainerRef = useRef<HTMLDivElement>(null);
   const isInternalUpdate = useRef(false);
   const lastSyncedValue = useRef<string | null>(null);
 
@@ -149,6 +151,19 @@ export function RichTextEditor({
     }
   }, [editor]);
 
+  const handleReplaceSelected = useCallback(
+    (original: string, replacement: string) => {
+      if (!editor) return;
+      editor.chain().focus().insertContent(replacement).run();
+    },
+    [editor]
+  );
+
+  const handleDeleteSelected = useCallback(() => {
+    if (!editor) return;
+    editor.chain().focus().deleteSelection().run();
+  }, [editor]);
+
   const colors = [
     '#000000',
     '#434343',
@@ -185,7 +200,17 @@ export function RichTextEditor({
   if (!editor) return null;
 
   return (
-    <div className="dark:bg-brand-dark-surface overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700">
+    <div
+      ref={editorContainerRef}
+      className="dark:bg-brand-dark-surface relative overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-700"
+    >
+      {/* Floating Selection Toolbar for Edit / Delete / AI */}
+      <FloatingSelectionToolbar
+        containerRef={editorContainerRef}
+        onReplaceText={handleReplaceSelected}
+        onDeleteText={handleDeleteSelected}
+      />
+
       {/* Toolbar */}
       <div className="sticky top-0 z-10 flex flex-wrap items-center gap-0.5 border-b border-gray-100 bg-gray-50/50 px-2 py-1.5 dark:border-gray-800 dark:bg-gray-900/30">
         {/* Undo/Redo */}

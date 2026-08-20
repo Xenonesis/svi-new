@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -11,8 +11,11 @@ import {
   CornerUpLeft,
   AlertTriangle,
   Wand2,
-  Check,
+  CheckCircle2,
+  SlidersHorizontal,
 } from 'lucide-react';
+import { extractTemplateVars } from '@/src/lib/utils/templateParser';
+import { FloatingSelectionToolbar } from './FloatingSelectionToolbar';
 
 const RichTextEditor = dynamic(() => import('../RichTextEditor').then((m) => m.RichTextEditor), {
   ssr: false,
@@ -38,6 +41,7 @@ interface EmailBodyEditorProps {
   ) => void;
   onVariableChange?: (key: string, value: string) => void;
   onAutoFillAll?: () => void;
+  onUpdateTemplateHtml?: (html: string) => void;
   setHtml: (html: string) => void;
   getPreviewHtml: () => string;
 }
@@ -55,75 +59,220 @@ export function EmailBodyEditor({
   onApplyTemplate,
   onVariableChange,
   onAutoFillAll,
+  onUpdateTemplateHtml,
   setHtml,
   getPreviewHtml,
 }: EmailBodyEditorProps) {
   const [showQuoted, setShowQuoted] = useState(false);
+  const [isEditorExpanded, setIsEditorExpanded] = useState(true);
+  const previewContainerRef = useRef<HTMLDivElement>(null);
+  const renderedEmailRef = useRef<HTMLDivElement>(null);
 
   const previewContent = getPreviewHtml() || '';
-  const unfilledVariables = useMemo(() => {
-    if (!previewContent) return [];
-    const matches = previewContent.match(/\{\{([a-zA-Z0-9_-]+)\}\}/g) || [];
-    return Array.from(new Set(matches.map((m) => m.replace(/[{}]/g, ''))));
-  }, [previewContent]);
+
+  // Extract all template variables (filled and unfilled)
+  const allTemplateVars = useMemo(() => {
+    const raw = templateHtml || html;
+    if (!raw) return Object.keys(templateVars);
+    const extracted = extractTemplateVars(raw);
+    const set = new Set([...extracted, ...Object.keys(templateVars)]);
+    return Array.from(set);
+  }, [templateHtml, html, templateVars]);
+
+  const totalVarsCount = allTemplateVars.length;
+  const unfilledCount = allTemplateVars.filter(
+    (v) => !templateVars[v] || !templateVars[v].trim()
+  ).length;
+  const allFilled = totalVarsCount > 0 && unfilledCount === 0;
+
+  // Robust selected text replacement (DOM Range + String Fallback)
+  const handleReplaceSelectedText = (
+    original: string,
+    replacement: string,
+    range?: Range | null
+  ) => {
+    // 1. If DOM Range is present inside rendered email preview container
+    if (
+      range &&
+      renderedEmailRef.current &&
+      renderedEmailRef.current.contains(range.commonAncestorContainer)
+    ) {
+      try {
+        range.deleteContents();
+        if (replacement.includes('\n')) {
+          const lines = replacement.split('\n');
+          const fragment = document.createDocumentFragment();
+          lines.forEach((line, idx) => {
+            if (idx > 0) fragment.appendChild(document.createElement('br'));
+            fragment.appendChild(document.createTextNode(line));
+          });
+          range.insertNode(fragment);
+        } else {
+          range.insertNode(document.createTextNode(replacement));
+        }
+
+        const updatedHtml = renderedEmailRef.current.innerHTML;
+        if (templateHtml && onUpdateTemplateHtml) {
+          onUpdateTemplateHtml(updatedHtml);
+        }
+        setHtml(updatedHtml);
+        return;
+      } catch (err) {
+        console.warn('[EmailBodyEditor] DOM range replacement fallback to string replace:', err);
+      }
+    }
+
+    // 2. Direct string replacement
+    const target = templateHtml || html;
+    if (!target) return;
+
+    if (target.includes(original)) {
+      const next = target.replace(original, replacement);
+      if (templateHtml && onUpdateTemplateHtml) onUpdateTemplateHtml(next);
+      setHtml(next);
+      return;
+    }
+
+    // 3. Flexible Regex match (accounting for whitespace / HTML entities / nested tags)
+    const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const words = original.trim().split(/\s+/).filter(Boolean).map(escapeRegex);
+    if (words.length > 0) {
+      const flexibleRegex = new RegExp(words.join('(?:\\s+|&nbsp;|<[^>]+>)*'), 'i');
+      if (flexibleRegex.test(target)) {
+        const next = target.replace(flexibleRegex, replacement);
+        if (templateHtml && onUpdateTemplateHtml) onUpdateTemplateHtml(next);
+        setHtml(next);
+        return;
+      }
+    }
+  };
+
+  const handleDeleteSelectedText = (original: string, range?: Range | null) => {
+    handleReplaceSelectedText(original, '', range);
+  };
 
   return (
     <div className="relative">
+      {/* Floating Selection Toolbar for Edit / Delete / AI */}
+      <FloatingSelectionToolbar
+        containerRef={previewContainerRef}
+        onReplaceText={handleReplaceSelectedText}
+        onDeleteText={handleDeleteSelectedText}
+      />
+
       {previewMode ? (
-        <div className="min-h-[400px] p-4 sm:p-6">
-          {/* Interactive Unfilled Variables Banner */}
-          {unfilledVariables.length > 0 && (
+        <div ref={previewContainerRef} className="min-h-[400px] p-4 sm:p-6">
+          {/* Interactive Template Variables Editor (Always Stays Visible) */}
+          {totalVarsCount > 0 && (
             <motion.div
               initial={{ opacity: 0, y: -6 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mx-auto mb-4 max-w-[700px] rounded-2xl border border-amber-300/80 bg-amber-50/95 p-4 text-xs text-amber-900 shadow-sm dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-200"
+              className={`mx-auto mb-4 max-w-[700px] rounded-2xl border p-4 text-xs shadow-sm transition-all ${
+                allFilled
+                  ? 'border-brand-gold/35 bg-brand-gold/5 dark:border-brand-gold/25 dark:bg-brand-gold/[0.03] text-gray-900 dark:text-gray-100'
+                  : 'border-amber-300/90 bg-amber-50/95 text-amber-900 dark:border-amber-500/30 dark:bg-amber-950/30 dark:text-amber-200'
+              }`}
             >
               <div className="flex flex-wrap items-center justify-between gap-2.5">
-                <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-amber-500/20 text-amber-600 dark:text-amber-400">
-                    <AlertTriangle className="h-3.5 w-3.5" />
+                <div className="flex items-center gap-2.5">
+                  <div
+                    className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-xl ${
+                      allFilled
+                        ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                        : 'bg-amber-500/20 text-amber-600 dark:text-amber-400'
+                    }`}
+                  >
+                    {allFilled ? (
+                      <CheckCircle2 className="h-4 w-4" />
+                    ) : (
+                      <AlertTriangle className="h-4 w-4" />
+                    )}
                   </div>
                   <div>
-                    <h4 className="font-bold text-gray-900 dark:text-white">
-                      {unfilledVariables.length} Unfilled Template Fields
-                    </h4>
-                    <p className="text-[11px] text-amber-800/80 dark:text-amber-300/80">
-                      Fill them below or click auto-fill to instantly personalize this email.
+                    <div className="flex items-center gap-2">
+                      <h4 className="font-bold text-gray-900 dark:text-white">
+                        {allFilled
+                          ? `Template Fields Customized (${totalVarsCount})`
+                          : `${unfilledCount} Unfilled Template Fields`}
+                      </h4>
+                      <span
+                        className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                          allFilled
+                            ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                            : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                        }`}
+                      >
+                        {allFilled
+                          ? '✓ Complete'
+                          : `${totalVarsCount - unfilledCount}/${totalVarsCount} Filled`}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-600 dark:text-gray-400">
+                      {allFilled
+                        ? 'Edit any field below anytime to update the live preview.'
+                        : 'Fill required fields below or click auto-fill to personalize.'}
                     </p>
                   </div>
                 </div>
 
-                {onAutoFillAll && (
+                <div className="flex items-center gap-2">
+                  {onAutoFillAll && (
+                    <button
+                      type="button"
+                      onClick={onAutoFillAll}
+                      className={`flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold transition-all ${
+                        allFilled
+                          ? 'bg-brand-gold/15 text-brand-gold hover:bg-brand-gold/25'
+                          : 'bg-amber-500/20 text-amber-900 hover:bg-amber-500/30 dark:bg-amber-500/25 dark:text-amber-100'
+                      }`}
+                      title="Auto-fill or reset smart values"
+                    >
+                      <Wand2 className="h-3.5 w-3.5" />
+                      <span>⚡ Auto-Fill</span>
+                    </button>
+                  )}
+
                   <button
                     type="button"
-                    onClick={onAutoFillAll}
-                    className="flex items-center gap-1.5 rounded-xl bg-amber-500/20 px-3 py-1.5 text-xs font-bold text-amber-900 transition-colors hover:bg-amber-500/30 dark:bg-amber-500/25 dark:text-amber-100"
+                    onClick={() => setIsEditorExpanded(!isEditorExpanded)}
+                    className="flex items-center gap-1 rounded-xl border border-gray-200/80 bg-white px-2.5 py-1.5 text-xs font-semibold text-gray-700 shadow-sm transition-colors hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                   >
-                    <Wand2 className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                    <span>⚡ Auto-Fill All Details</span>
+                    <SlidersHorizontal className="h-3 w-3" />
+                    <span>{isEditorExpanded ? 'Collapse' : 'Expand'}</span>
                   </button>
-                )}
+                </div>
               </div>
 
-              {/* Quick Inline Fill Inputs */}
-              {onVariableChange && (
+              {/* Editable Fields Grid (Keeps open & accessible) */}
+              {isEditorExpanded && onVariableChange && (
                 <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {unfilledVariables.map((v) => {
+                  {allTemplateVars.map((v) => {
                     const currentVal = templateVars[v] || '';
+                    const isFilled = Boolean(currentVal.trim());
                     return (
                       <div key={v} className="flex flex-col">
-                        <label className="mb-1 flex items-center justify-between text-[10px] font-bold tracking-wider text-amber-900 uppercase dark:text-amber-300">
+                        <label className="mb-1 flex items-center justify-between text-[10px] font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
                           <span>{v.replace(/_/g, ' ')}</span>
-                          <span className="text-[9px] font-medium text-amber-600 dark:text-amber-400">
-                            Required
-                          </span>
+                          {isFilled ? (
+                            <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                              ✓ Ready
+                            </span>
+                          ) : (
+                            <span className="text-[9px] font-semibold text-amber-500">
+                              Required
+                            </span>
+                          )}
                         </label>
                         <input
                           type="text"
                           value={currentVal}
                           onChange={(e) => onVariableChange(v, e.target.value)}
                           placeholder={`Enter ${v.replace(/_/g, ' ')}...`}
-                          className="focus-gold w-full rounded-lg border border-amber-300/90 bg-white px-2.5 py-1.5 text-xs text-gray-900 placeholder-gray-400 transition-all outline-none dark:border-amber-500/40 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                          className={`focus-gold w-full rounded-lg border bg-white px-2.5 py-1.5 text-xs text-gray-900 placeholder-gray-400 transition-all outline-none dark:bg-gray-800 dark:text-white dark:placeholder-gray-500 ${
+                            isFilled
+                              ? 'border-gray-200 dark:border-gray-700'
+                              : 'border-amber-300 bg-amber-50/40 dark:border-amber-500/40 dark:bg-amber-950/20'
+                          }`}
                         />
                       </div>
                     );
@@ -139,6 +288,7 @@ export function EmailBodyEditor({
             style={{ maxWidth: '700px' }}
           >
             <div
+              ref={renderedEmailRef}
               dangerouslySetInnerHTML={{
                 __html:
                   previewContent ||
