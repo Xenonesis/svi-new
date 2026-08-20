@@ -308,7 +308,7 @@ Email Module
 ├── Compose (/admin/email)
 │   ├── TipTap Rich Editor (color, highlight, image, link, text-align, underline)
 │   ├── Template Picker (select from saved templates)
-│   ├── AI Assistant (compose with AI via /api/admin/email/ai)
+│   ├── AI Assistant — AIComposePopover with prompt input, tone selector, and instant polished reply generation via /api/admin/email/ai
 │   └── Send via Resend API
 ├── Campaigns (/admin/email/campaigns)
 │   ├── Campaign creation & management
