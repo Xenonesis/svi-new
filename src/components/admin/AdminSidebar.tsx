@@ -88,7 +88,7 @@ function SidebarContent({
 
   const getLinkClass = (active: boolean) =>
     `group relative flex items-center rounded-xl py-2.5 transition-all ${
-      collapsed && !isMobile ? 'justify-center px-0 gap-0 mx-2' : 'gap-3 px-3 mx-0'
+      collapsed && !isMobile ? 'justify-center px-0 gap-0' : 'gap-3 px-3'
     } ${
       active
         ? 'bg-brand-gold/10 text-brand-gold'
@@ -110,7 +110,8 @@ function SidebarContent({
       {!isMobile && (
         <button
           onClick={() => setCollapsed(!collapsed)}
-          className="bg-brand-gold text-brand-navy absolute top-6 -right-3 z-50 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110"
+          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          className="bg-brand-gold text-brand-navy absolute top-6 -right-3 z-50 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus:outline-none"
         >
           {collapsed ? (
             <ChevronRight className="h-3.5 w-3.5" />
@@ -126,25 +127,40 @@ function SidebarContent({
           collapsed && !isMobile ? 'justify-center px-2' : 'px-4 sm:px-5'
         }`}
       >
-        <Link
-          href="/admin/dashboard"
-          className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] ${
-            collapsed && !isMobile ? 'px-2.5 py-1.5' : 'px-3.5 py-2'
-          }`}
-          aria-label="SVI Infra Solutions Pvt. Ltd."
-        >
-          <Image
-            src="/logo.png"
-            alt="SVI Infra Solutions"
-            width={282}
-            height={83}
-            quality={100}
-            priority
-            className={`w-auto shrink-0 object-contain transition-all duration-300 ${
-              collapsed && !isMobile ? 'h-6 sm:h-7' : 'h-7.5 sm:h-8'
-            }`}
-          />
-        </Link>
+        {collapsed && !isMobile ? (
+          <Link
+            href="/admin/dashboard"
+            className="group relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-105 hover:shadow-md active:scale-95 dark:ring-white/10"
+            aria-label="SVI Infra Solutions Pvt. Ltd."
+          >
+            <Image
+              src="/logo-icon.png"
+              alt="SVI Infra Solutions"
+              width={96}
+              height={96}
+              quality={100}
+              priority
+              className="h-7 w-7 object-contain transition-transform duration-300 group-hover:scale-110"
+            />
+            {renderTooltip('SVI Infra Solutions')}
+          </Link>
+        ) : (
+          <Link
+            href="/admin/dashboard"
+            className="group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-3.5 py-2 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-[1.02] hover:shadow-md active:scale-[0.98] dark:ring-white/10"
+            aria-label="SVI Infra Solutions Pvt. Ltd."
+          >
+            <Image
+              src="/logo.png"
+              alt="SVI Infra Solutions"
+              width={282}
+              height={83}
+              quality={100}
+              priority
+              className="h-7.5 w-auto shrink-0 object-contain transition-all duration-300 sm:h-8"
+            />
+          </Link>
+        )}
       </div>
 
       {/* Nav */}
@@ -161,7 +177,7 @@ function SidebarContent({
             {pathname === '/admin/dashboard' && (
               <motion.div
                 layoutId="active-nav"
-                className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-[14px]' : '-left-3'}`}
+                className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-2' : '-left-3'}`}
               />
             )}
             <LayoutDashboard
@@ -196,7 +212,7 @@ function SidebarContent({
                 {active && (
                   <motion.div
                     layoutId="active-nav"
-                    className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-[14px]' : '-left-3'}`}
+                    className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-2' : '-left-3'}`}
                   />
                 )}
                 <item.icon
@@ -233,7 +249,7 @@ function SidebarContent({
                 {active && (
                   <motion.div
                     layoutId="active-nav"
-                    className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-[14px]' : '-left-3'}`}
+                    className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-2' : '-left-3'}`}
                   />
                 )}
                 <item.icon
@@ -248,7 +264,9 @@ function SidebarContent({
       </div>
 
       {/* Footer */}
-      <div className="dark:border-brand-gold/15 overflow-visible border-t border-gray-200 p-3">
+      <div
+        className={`dark:border-brand-gold/15 overflow-visible border-t border-gray-200 ${collapsed && !isMobile ? 'p-2' : 'p-3'}`}
+      >
         <Link
           href="/admin/settings"
           onClick={onLinkClick}
@@ -258,7 +276,7 @@ function SidebarContent({
             {pathname.startsWith('/admin/settings') && (
               <motion.div
                 layoutId="active-nav"
-                className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-[14px]' : '-left-3'}`}
+                className={`bg-brand-gold absolute h-8 w-1 rounded-r-full ${collapsed && !isMobile ? '-left-2' : '-left-3'}`}
               />
             )}
             <Settings
@@ -272,7 +290,7 @@ function SidebarContent({
         <button
           onClick={handleLogout}
           className={`group relative mt-1 flex w-full cursor-pointer items-center rounded-xl py-2.5 text-red-500 transition-colors hover:bg-red-50 dark:hover:bg-red-500/10 ${
-            collapsed && !isMobile ? 'mx-2 justify-center px-0' : 'mx-0 gap-3 px-3'
+            collapsed && !isMobile ? 'justify-center gap-0 px-0' : 'gap-3 px-3'
           }`}
         >
           <div className="flex shrink-0 items-center justify-center">

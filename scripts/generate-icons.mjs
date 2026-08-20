@@ -58,6 +58,29 @@ await sharp({ create: { width: 1024, height: 1024, channels: 4, background: BACK
   .toFile(path.join(resourcesDir, 'icon.png'));
 console.log('✓ resources/icon.png (1024×1024)');
 
+// Compact mark icon extracted from logo.png for collapsed sidebars & compact UI
+const croppedMark = await sharp(logoPath)
+  .extract({ left: 6, top: 4, width: 60, height: 50 })
+  .toBuffer();
+
+await sharp({
+  create: {
+    width: 256,
+    height: 256,
+    channels: 4,
+    background: { r: 0, g: 0, b: 0, alpha: 0 },
+  },
+})
+  .composite([
+    {
+      input: await sharp(croppedMark).resize({ width: 200, height: 167, fit: 'inside' }).toBuffer(),
+      gravity: 'center',
+    },
+  ])
+  .png({ compressionLevel: 9 })
+  .toFile(path.join(root, 'public', 'logo-icon.png'));
+console.log('✓ public/logo-icon.png (256×256 compact emblem)');
+
 console.log('Converting JPEG-content favicons to true PNGs...');
 for (const f of JPEG_FAVICONS) {
   const target = path.join(faviconsDir, f);
