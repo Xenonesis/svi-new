@@ -33,9 +33,19 @@ summary() {
   fi
 }
 
+# --- 0. README.md update check ---
+echo ""
+printf "${BOLD}0/6  README.md Update Check${NC}\n"
+if pnpm tsx scripts/update-readme.ts 2>/dev/null; then
+  pass "README.md is up to date"
+else
+  fail "README.md update check failed"
+  pnpm tsx scripts/update-readme.ts 2>&1 | sed 's/^/    /' || true
+fi
+
 # --- 1. Dependency security audit ---
 echo ""
-printf "${BOLD}1/5  Dependency Security Audit${NC}\n"
+printf "${BOLD}2/6  Dependency Security Audit${NC}\n"
 if pnpm audit --prod --audit-level=high 2>/dev/null; then
   pass "No high/critical vulnerabilities"
 else
@@ -44,7 +54,7 @@ fi
 
 # --- 2. console.log leak check ---
 echo ""
-printf "${BOLD}2/5  console.log Leak Check${NC}\n"
+printf "${BOLD}3/6  console.log Leak Check${NC}\n"
 HAS_CONSOLE_LOG=0
 grep -r "console\.log" \
   --include="*.ts" --include="*.tsx" src/app src/components \
@@ -67,7 +77,7 @@ fi
 
 # --- 3. debugger statement check ---
 echo ""
-printf "${BOLD}3/5  debugger Statement Check${NC}\n"
+printf "${BOLD}4/6  debugger Statement Check${NC}\n"
 HAS_DEBUGGER=0
 grep -rn "debugger" \
   --include="*.ts" --include="*.tsx" src/app src/components \
@@ -88,7 +98,7 @@ fi
 
 # --- 4. Hardcoded secret detection ---
 echo ""
-printf "${BOLD}4/5  Hardcoded Secret Detection${NC}\n"
+printf "${BOLD}5/6  Hardcoded Secret Detection${NC}\n"
 # Match actual hardcoded secrets (non-empty, non-placeholder)
 # - api_key = "sk-..." or pk-...
 # - password = "something" (but not empty '', 'N/A', or JSX rendering)
@@ -118,7 +128,7 @@ fi
 
 # --- 5. TypeScript type check ---
 echo ""
-printf "${BOLD}5/5  TypeScript Type Check${NC}\n"
+printf "${BOLD}6/6  TypeScript Type Check${NC}\n"
 if pnpm typecheck 2>/dev/null; then
   pass "TypeScript type check passed"
 else
