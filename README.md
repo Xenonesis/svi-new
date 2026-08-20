@@ -108,10 +108,11 @@ This repository hosts the company's full digital platform — a **public marketi
   - 📄 **Payment Plan**
   - 📄 **Payment Receipt** / Invoice
   - All with **PDF and PNG image** download options
-- **Document records** — Allotment records, BBA records, offer letter records, payment receipt records
+- **Document records** — Allotment records, BBA records, offer letter records, payment receipt records, quotation records
 - **Property management** — CRUD for real estate listings with image management
 - **Registration manager** — View, filter, assign advisors, analytics, filters
 - **Email suite** — Tiptap rich text composer, sent history with replies, **templates**, **domains**, **marketing campaigns**, **contact picker & contact groups**, deleted messages, **Resend usage dashboard**, AI-assisted email composition, scheduled emails, email drafts
+- **WhatsApp management** — `/admin/whatsapp` conversation inbox, AI/human/paused mode, lead drawer, follow-up tracking, templates, and Meta Cloud API webhook handling
 - **Lottery management** — Schedule draws, upload participants, edit campaigns, bulk email, winner history, draw scheduling
 - **IVR management** — `/admin/ivr` call handling
 - **Notifications** — Real-time dropdown in admin header, create/read/dismiss workflow
@@ -1738,6 +1739,10 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/admin/registrations`        | Registration management                                                               |
 | `/admin/settings`             | Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs |
 | `/admin/site-visits`          | Site visit management                                                                 |
+| `/admin/whatsapp`             | WhatsApp inbox, AI/human/paused mode, follow-ups, templates, lead drawer              |
+| `/admin/quotation-records`    | Saved quotation records, filters, stats, PDF/image export, delete workflow            |
+| `/admin/whatsapp`             | WhatsApp inbox, follow-ups, templates, lead drawer, conversation management           |
+| `/admin/quotation-records`    | Quotation record management                                                           |
 
 ### Employee
 
@@ -1897,6 +1902,8 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 - `settings/` — Profile · Company · Appearance · Notifications · Security · Email · Logs · Properties · hooks
 - `helpers/` — badge, property interest tags, property labels
 - `Shared/` — `AdminSkeleton`, `AdminStatsCard`, `Modal`
+- `whatsapp/` — WhatsApp inbox, conversation list, chat panel, lead drawer, mode controls
+- `quotation-records/` — Quotation stats, filters, records table, delete dialog
 
 ### Changelog & public features
 
@@ -1917,6 +1924,8 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 - `projects/` — Project showcase components
 - `properties/` — Property listing widgets
 - `registration/` — Registration form components
+- `brochure/shivani-vatika-11/` — Shivani Vatika 11 brochure sections: cover, promise, growth, masterplan, lifestyle, investment, trust, closing
+- `exclusive-offers/` — Exclusive offers sections: hero, video showcase, benefits/commission, why partner, CTA card
 
 ### Data, hooks, lib
 
