@@ -463,7 +463,16 @@ export function ComposeTab({
     const vars = extractTemplateVars(rawHtml);
     const initialVars: Record<string, string> = {};
     vars.forEach((v) => {
-      initialVars[v] = result.variables?.[v] || templateVars[v] || '';
+      if (result.variables?.[v]) {
+        initialVars[v] = result.variables[v];
+      } else if (templateVars[v]) {
+        initialVars[v] = templateVars[v];
+      } else if (v === 'name') {
+        const recipient = toRecipients[0]?.name || toStr.split(',')[0]?.split('@')[0]?.trim();
+        initialVars[v] = recipient || '';
+      } else {
+        initialVars[v] = '';
+      }
     });
     setTemplateVars(initialVars);
     setHtml(rawHtml);
@@ -549,6 +558,44 @@ export function ComposeTab({
     setScheduledAt(null);
     setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail || 'hr.sviinfrasolutions@gmail.com'}`);
     await handleClearDraft();
+  };
+
+  const handleQuickAutoFill = () => {
+    const raw = templateHtml || html;
+    if (!raw) return;
+    const vars = extractTemplateVars(raw);
+    const updated: Record<string, string> = { ...templateVars };
+
+    vars.forEach((v) => {
+      if (!updated[v] || !updated[v].trim()) {
+        if (v === 'name') {
+          const recipient =
+            toRecipients[0]?.name || toStr.split(',')[0]?.split('@')[0]?.trim() || 'Sanu Mishra';
+          updated[v] = recipient.replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        } else if (v.includes('date') || v === 'start_date') {
+          const d = new Date();
+          d.setDate(d.getDate() + 7);
+          updated[v] = d.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          });
+        } else if (v === 'role' || v.includes('designation')) {
+          updated[v] = 'Freelance Consultant';
+        } else if (v === 'project') {
+          updated[v] = 'Shivani Vatika 11th';
+        } else if (v === 'compensation') {
+          updated[v] = '₹45,000 / month';
+        } else if (v.includes('url') || v.includes('portal') || v.includes('link')) {
+          updated[v] = 'https://www.sviinfrasolutions.com';
+        } else {
+          updated[v] = v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+      }
+    });
+
+    setTemplateVars(updated);
+    toast.success('Auto-filled template details');
   };
 
   return (
@@ -667,12 +714,15 @@ export function ComposeTab({
           previewMode={previewMode}
           html={html}
           templateHtml={templateHtml}
+          templateVars={templateVars}
           subject={subject}
           toStr={toStr}
           editorKey={editorKey}
           quotedHtml={quotedHtml}
           onRemoveQuoted={() => setQuotedHtml(null)}
           onApplyTemplate={handleApplyTemplate}
+          onVariableChange={(key, value) => setTemplateVars((prev) => ({ ...prev, [key]: value }))}
+          onAutoFillAll={handleQuickAutoFill}
           setHtml={setHtml}
           getPreviewHtml={getPreviewHtml}
         />

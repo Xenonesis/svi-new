@@ -15,6 +15,8 @@ import {
   Monitor,
   Clock,
   Zap,
+  SlidersHorizontal,
+  Wand2,
 } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
 import { getPreviewHtml, extractTemplateVars } from '@/src/lib/utils/templateParser';
@@ -50,6 +52,8 @@ export function AIComposePopover({
   const [showToneDropdown, setShowToneDropdown] = useState(false);
   const [preview, setPreview] = useState('');
   const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
+  const [customVars, setCustomVars] = useState<Record<string, string>>({});
+  const [showVarEditor, setShowVarEditor] = useState(true);
   const [templateMeta, setTemplateMeta] = useState<{
     templateName?: string;
     variables?: Record<string, string>;
@@ -66,7 +70,7 @@ export function AIComposePopover({
     setMounted(true);
   }, []);
 
-  // Live timer effect during generation
+  // Live stopwatch timer during generation
   useEffect(() => {
     if (loading) {
       setElapsedTime(0);
@@ -118,10 +122,70 @@ export function AIComposePopover({
     return () => document.removeEventListener('mousedown', handleClick);
   }, []);
 
+  // Extracted variables from the generated template HTML
+  const extractedVariables = useMemo(() => {
+    if (!preview) return [];
+    return extractTemplateVars(preview);
+  }, [preview]);
+
+  // Smart Auto-Fill helper
+  const handleSmartAutoFill = useCallback(() => {
+    const vars = extractTemplateVars(preview);
+    const updated: Record<string, string> = { ...customVars };
+    const p = prompt.toLowerCase();
+
+    vars.forEach((v) => {
+      if (v === 'name') {
+        updated[v] = recipientName || 'Sanu Mishra';
+      } else if (v.includes('date') || v === 'start_date') {
+        const today = new Date();
+        today.setDate(today.getDate() + 7);
+        updated[v] = today.toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        });
+      } else if (v === 'role' || v.includes('designation') || v.includes('position')) {
+        if (p.includes('developer') || p.includes('react') || p.includes('fullstack')) {
+          updated[v] = 'Full Stack Developer';
+        } else if (p.includes('designer') || p.includes('ui') || p.includes('ux')) {
+          updated[v] = 'UI/UX Design Specialist';
+        } else if (p.includes('sales') || p.includes('executive')) {
+          updated[v] = 'Senior Sales Executive';
+        } else {
+          updated[v] = 'Freelance Consultant';
+        }
+      } else if (v === 'project' || v.includes('township') || v.includes('location')) {
+        if (p.includes('shivani') || p.includes('vatika')) {
+          updated[v] = 'Shivani Vatika 11th';
+        } else if (p.includes('shyam') || p.includes('aangan')) {
+          updated[v] = 'Shyam Aangan';
+        } else {
+          updated[v] = 'SVI Luxury Townships';
+        }
+      } else if (
+        v === 'compensation' ||
+        v.includes('salary') ||
+        v.includes('stipend') ||
+        v.includes('fee')
+      ) {
+        const numMatch = prompt.match(/\b(\d+k|\d+,\d+|\d+000)\b/i);
+        updated[v] = numMatch ? `₹${numMatch[1]} / month` : '₹45,000 / month';
+      } else if (v.includes('url') || v.includes('portal') || v.includes('link')) {
+        updated[v] = 'https://www.sviinfrasolutions.com';
+      } else if (!updated[v]) {
+        updated[v] = v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+    });
+
+    setCustomVars(updated);
+  }, [preview, prompt, recipientName, customVars]);
+
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim() || loading) return;
     setPreview('');
     setTemplateMeta(null);
+    setCustomVars({});
     setLastGenTime(null);
     const startTime = performance.now();
 
@@ -145,6 +209,38 @@ export function AIComposePopover({
           templateName: result.templateName,
           variables: result.variables,
         });
+
+        // Initialize smart initial vars
+        const vars = extractTemplateVars(result.html);
+        const init: Record<string, string> = {};
+        const p = prompt.trim().toLowerCase();
+
+        vars.forEach((v) => {
+          if (result.variables?.[v]) {
+            init[v] = result.variables[v];
+          } else if (v === 'name') {
+            init[v] = recipientName || 'Sanu Mishra';
+          } else if (v.includes('date') || v === 'start_date') {
+            init[v] = new Date().toLocaleDateString('en-IN', {
+              day: 'numeric',
+              month: 'short',
+              year: 'numeric',
+            });
+          } else if (v === 'role') {
+            if (p.includes('developer')) init[v] = 'Full Stack Developer';
+            else if (p.includes('designer')) init[v] = 'UI/UX Designer';
+            else init[v] = 'Freelance Consultant';
+          } else if (v === 'project') {
+            if (p.includes('shivani')) init[v] = 'Shivani Vatika 11th';
+            else init[v] = 'SVI Luxury Townships';
+          } else if (v === 'compensation') {
+            const match = prompt.match(/\b(\d+k|\d+,\d+|\d+000)\b/i);
+            init[v] = match ? `₹${match[1]} / month` : '₹45,000 / month';
+          } else if (v.includes('url') || v.includes('portal') || v.includes('link')) {
+            init[v] = 'https://www.sviinfrasolutions.com';
+          }
+        });
+        setCustomVars(init);
       }
     } catch (err) {
       console.error('[AICompose] Error generating:', err);
@@ -163,8 +259,11 @@ export function AIComposePopover({
     if (!preview) return '';
     const vars = extractTemplateVars(preview);
     const resolvedVars: Record<string, string> = {};
+
     vars.forEach((v) => {
-      if (templateMeta?.variables?.[v]) {
+      if (customVars[v]) {
+        resolvedVars[v] = customVars[v];
+      } else if (templateMeta?.variables?.[v]) {
         resolvedVars[v] = templateMeta.variables[v];
       } else if (v === 'name') {
         resolvedVars[v] = recipientName || 'Sanu Mishra';
@@ -177,7 +276,7 @@ export function AIComposePopover({
       } else if (v.includes('portal') || v.includes('url') || v.includes('link')) {
         resolvedVars[v] = 'https://www.sviinfrasolutions.com';
       } else {
-        resolvedVars[v] = v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+        resolvedVars[v] = `{{${v}}}`;
       }
     });
 
@@ -201,11 +300,12 @@ export function AIComposePopover({
 </html>`;
     }
     return parsed;
-  }, [preview, templateMeta, recipientName]);
+  }, [preview, customVars, templateMeta, recipientName]);
 
   const handleCopy = () => {
     if (!preview) return;
-    navigator.clipboard.writeText(preview);
+    const resolved = getPreviewHtml(preview, customVars);
+    navigator.clipboard.writeText(resolved);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -213,16 +313,18 @@ export function AIComposePopover({
   const handleApply = () => {
     if (!preview) return;
     if (onApplyTemplate) {
-      onApplyTemplate(preview, templateMeta?.templateName, templateMeta?.variables);
+      onApplyTemplate(preview, templateMeta?.templateName, customVars);
     } else {
-      onReplace(preview);
+      const resolved = getPreviewHtml(preview, customVars);
+      onReplace(resolved);
     }
     handleClose();
   };
 
   const handleInsert = () => {
     if (!preview) return;
-    onInsert(preview);
+    const resolved = getPreviewHtml(preview, customVars);
+    onInsert(resolved);
     handleClose();
   };
 
@@ -231,6 +333,7 @@ export function AIComposePopover({
     setPrompt('');
     setPreview('');
     setTemplateMeta(null);
+    setCustomVars({});
     setLastGenTime(null);
     setElapsedTime(0);
     onClose();
@@ -257,7 +360,7 @@ export function AIComposePopover({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-            className="relative z-10 flex max-h-[90vh] w-full max-w-[660px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
+            className="relative z-10 flex max-h-[92vh] w-full max-w-[700px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
@@ -300,7 +403,7 @@ export function AIComposePopover({
                   value={prompt}
                   onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={handleKeyDown}
-                  placeholder="e.g. okay you can join us as freelancer, ask for documents and schedule kickoff call..."
+                  placeholder="e.g. welcome as freelance consultant for Shivani Vatika project at ₹50,000/month starting 1st September..."
                   rows={3}
                   className="focus-gold w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-sm text-gray-900 placeholder-gray-400 transition-all outline-none dark:border-gray-700 dark:bg-gray-900/70 dark:text-white dark:placeholder-gray-500"
                   disabled={loading}
@@ -370,7 +473,7 @@ export function AIComposePopover({
                   </button>
                 </div>
 
-                {/* Live timer & progress bar while generating */}
+                {/* Live stopwatch while generating */}
                 {loading && (
                   <motion.div
                     initial={{ opacity: 0, y: -4 }}
@@ -390,6 +493,75 @@ export function AIComposePopover({
                   </motion.div>
                 )}
               </div>
+
+              {/* Interactive Variable Fill Form (When template is generated) */}
+              {preview && extractedVariables.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="border-brand-gold/30 bg-brand-gold/5 dark:border-brand-gold/20 dark:bg-brand-gold/[0.03] rounded-xl border p-4"
+                >
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <SlidersHorizontal className="text-brand-gold h-4 w-4" />
+                      <span className="text-xs font-bold tracking-wide text-gray-900 uppercase dark:text-white">
+                        Fill Template Details ({extractedVariables.length} fields)
+                      </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={handleSmartAutoFill}
+                        className="bg-brand-gold/15 text-brand-gold hover:bg-brand-gold/25 flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-colors"
+                        title="Auto-fill details from your prompt"
+                      >
+                        <Wand2 className="h-3 w-3" />
+                        <span>⚡ Smart Auto-Fill</span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setShowVarEditor(!showVarEditor)}
+                        className="text-[11px] font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      >
+                        {showVarEditor ? 'Hide Fields' : 'Show Fields'}
+                      </button>
+                    </div>
+                  </div>
+
+                  {showVarEditor && (
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                      {extractedVariables.map((v) => {
+                        const val = customVars[v] || '';
+                        const isFilled = Boolean(val.trim());
+                        return (
+                          <div key={v} className="flex flex-col">
+                            <label className="mb-1 flex items-center justify-between text-[11px] font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                              <span>{v.replace(/_/g, ' ')}</span>
+                              {isFilled ? (
+                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
+                                  ✓ Filled
+                                </span>
+                              ) : (
+                                <span className="text-[10px] text-amber-500">Required</span>
+                              )}
+                            </label>
+                            <input
+                              type="text"
+                              value={val}
+                              onChange={(e) =>
+                                setCustomVars((prev) => ({ ...prev, [v]: e.target.value }))
+                              }
+                              placeholder={`Enter ${v.replace(/_/g, ' ')}...`}
+                              className="focus-gold w-full rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-900 placeholder-gray-400 transition-all outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                            />
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </motion.div>
+              )}
 
               {/* Output Preview (Sandboxed Iframe) */}
               {preview && (
