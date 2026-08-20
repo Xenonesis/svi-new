@@ -5,7 +5,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-20',
     date: '2026-08-20',
     formattedDate: '20 August 2026',
-    version: 'v2.8.0',
+    version: 'v1.6.0',
     title: 'Luxury Corporate Email Branding & AI Speed Engine',
     summary:
       'Launched official SVI Infra luxury corporate email templates, high-speed AI letter generator with live timing, and flexible blank-mode editing.',
@@ -53,7 +53,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-16',
     date: '2026-08-16',
     formattedDate: '16 August 2026',
-    version: 'v2.7.0',
+    version: 'v1.5.0',
     title: 'WhatsApp Sales Operations Center & Automated Takeover',
     summary:
       'Introduced a unified WhatsApp management portal connecting inbound client inquiries directly to AI assistance and sales staff.',
@@ -93,7 +93,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-12',
     date: '2026-08-12',
     formattedDate: '12 August 2026',
-    version: 'v2.6.5',
+    version: 'v1.4.5',
     title: 'Visual Assets Refresh & Mobile Navigation Polish',
     summary:
       'High-resolution branding assets update, mobile header navigation improvements, and real-time error monitoring.',
@@ -126,7 +126,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-10',
     date: '2026-08-10',
     formattedDate: '10 August 2026',
-    version: 'v2.6.0',
+    version: 'v1.4.0',
     title: 'Bilingual Legal Document Engine (English & Hindi)',
     summary:
       'Complete bilingual generation for Allotment Letters, Builder-Buyer Agreements (BBA), Offer Letters, and Quotations.',
@@ -166,7 +166,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-08',
     date: '2026-08-08',
     formattedDate: '08 August 2026',
-    version: 'v2.5.5',
+    version: 'v1.3.0',
     title: 'Telecaller Performance Targets & Offer Letter Terms',
     summary:
       'Added customizable monthly meeting targets for telecallers, refined sales performance clauses, and accelerated admin sign-in.',
@@ -199,7 +199,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-04',
     date: '2026-08-04',
     formattedDate: '04 August 2026',
-    version: 'v2.5.0',
+    version: 'v1.2.5',
     title: 'Interactive Broker Commission & Exclusive Offers Suite',
     summary:
       'Launched modern broker engagement tools with real-time payout calculators and clear tier-based reward schedules.',
@@ -232,7 +232,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-08-01',
     date: '2026-08-01',
     formattedDate: '01 August 2026',
-    version: 'v2.4.5',
+    version: 'v1.2.0',
     title: 'System Security Hardening & Calculator Enhancements',
     summary:
       'Comprehensive database permission lockdown, encryption upgrade, and accurate EMI calculation algorithms.',
@@ -265,7 +265,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-07-28',
     date: '2026-07-28',
     formattedDate: '28 July 2026',
-    version: 'v2.4.0',
+    version: 'v1.1.0',
     title: 'Transparent Lottery & Lucky Draw Engine',
     summary:
       'Automated plot lottery system for fair, randomized customer giveaways and special promotional events.',
@@ -295,10 +295,36 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     ],
   },
   {
+    id: 'rel-2026-07-12',
+    date: '2026-07-12',
+    formattedDate: '12 July 2026',
+    version: 'v1.0.0',
+    title: 'Official Production Release: SVI Platform v1.0.0',
+    summary:
+      'Official milestone release locking in production routing stability, internationalization architecture, and core customer dashboards.',
+    category: 'Security & Platform',
+    items: [
+      {
+        title: 'Production Infrastructure & Unified Routing',
+        description:
+          'Hardened all website routing and multi-language handling to deliver flawless, instant page transitions without redirect overhead.',
+        benefit: 'Rock-solid stability for all visitor traffic and online inquiries.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Admin Command & Control Architecture',
+        description:
+          'Unified the 30+ admin operational views under a single authenticated dashboard with real-time sync.',
+        benefit: 'Central point of management for all company operations.',
+        tag: 'New Feature',
+      },
+    ],
+  },
+  {
     id: 'rel-2026-05-28',
     date: '2026-05-28',
     formattedDate: '28 May 2026',
-    version: 'v2.2.0',
+    version: 'v0.9.8',
     title: 'Email Center Hub & Smart Payment Scanner',
     summary:
       'Introduced central administrative email management and 3D acrylic UPI payment scanner modal.',
@@ -324,7 +350,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-05-19',
     date: '2026-05-19',
     formattedDate: '19 May 2026',
-    version: 'v2.1.0',
+    version: 'v0.9.5',
     title: 'Document Generator & Staff Attendance Management',
     summary:
       'Automated generation of official payment receipts with amount-to-words conversion and staff attendance logging.',
@@ -357,7 +383,7 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     id: 'rel-2026-05-15',
     date: '2026-05-15',
     formattedDate: '15 May 2026',
-    version: 'v2.0.0',
+    version: 'v0.9.0',
     title: 'Foundation Launch: SVI Infra Solutions Corporate Platform',
     summary:
       'Inaugural launch of the next-generation bilingual real estate portal, customer inquiry system, and admin control suite.',
