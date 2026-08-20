@@ -115,51 +115,64 @@ EXISTING TEMPLATES:
 ${templatesList}
 
 ─── LUXURY CORPORATE DESIGN SYSTEM ───
-Always construct email with this EXACT table structure (cross-client compatible, inline CSS):
-- Outer wrapper: width="100%" bgcolor="#f1f5f9" style="padding:40px 0;font-family:Arial,sans-serif;"
-- Main container: width="600" align="center" bgcolor="#ffffff" style="border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);"
+Always construct email with this EXACT table structure (cross-client compatible, inline CSS, high-contrast colors):
+- Outer wrapper: width="100%" bgcolor="#f1f5f9" style="padding:40px 0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;"
+- Main container: width="600" align="center" bgcolor="#ffffff" style="max-width:600px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0;"
 - Header:
-  <tr style="background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a2744 100%);border-bottom:3px solid #D4AF37;">
+  <tr style="background-color:#0f172a;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a2744 100%);border-bottom:3px solid #D4AF37;">
     <td style="padding:36px 30px;text-align:center;">
-      <span style="display:inline-block;padding:4px 14px;background:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px;">CATEGORY LABEL</span>
-      <h1 style="color:#ffffff;font-size:24px;margin:0;font-family:Georgia,serif;letter-spacing:0.5px;">SVI Infra Solutions</h1>
-      <p style="color:rgba(255,255,255,0.85);font-size:13px;margin:6px 0 0;">Sub-heading / Subject Summary</p>
+      <span style="display:inline-block;padding:5px 14px;background-color:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">CATEGORY LABEL</span>
+      <h1 style="color:#ffffff;font-size:24px;margin:0;font-family:Georgia,serif;font-weight:700;letter-spacing:0.5px;">SVI Infra Solutions</h1>
+      <p style="color:#cbd5e1;font-size:13px;margin:8px 0 0;font-weight:400;">Sub-heading / Subject Summary</p>
     </td>
   </tr>
-- Body Content:
-  - Salutation: <h2 style="color:#0f172a;font-size:19px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
+- Body Content (inside <td style="padding:36px 32px;background-color:#ffffff;color:#0f172a;">):
   - Highlight/Success Alert Box:
-    <div style="background:#f0fdf4;border-left:4px solid #16a34a;border:1px solid #86efac;border-radius:8px;padding:14px 18px;margin-bottom:20px;">
-      <p style="margin:0;color:#15803d;font-weight:700;font-size:13px;">✓ Highlight Message / Status</p>
+    <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
+      <p style="margin:0;color:#15803d;font-weight:700;font-size:13.5px;">✓ Highlight Message / Status</p>
+      <p style="margin:4px 0 0;color:#166534;font-size:12.5px;line-height:1.5;">Sub-message description</p>
     </div>
-  - Key-Value Metrics Card (DO NOT USE PLAIN PARAGRAPHS FOR STRUCTURED DATA):
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:20px 0;overflow:hidden;font-size:13px;">
-      <tr style="background:#f1f5f9;"><td style="padding:10px 14px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;" colspan="2">Key Information Details</td></tr>
-      <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;width:40%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 1</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_1}}</td></tr>
-      <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 2</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_2}}</td></tr>
-      <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;">Label 3</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;">{{variable_3}}</td></tr>
+  - Salutation: <h2 style="color:#0f172a;font-size:19px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
+  - Main text paragraphs: <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;">Paragraph content...</p>
+  - Key-Value Details Card (for structured info, roles, units, payments, dates):
+    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:24px 0;overflow:hidden;font-size:13px;">
+      <tr style="background-color:#f1f5f9;">
+        <td style="padding:12px 16px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;" colspan="2">Key Information Details</td>
+      </tr>
+      <tr style="background-color:#ffffff;">
+        <td style="padding:11px 16px;color:#64748b;font-weight:600;width:40%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 1</td>
+        <td style="padding:11px 16px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_1}}</td>
+      </tr>
+      <tr style="background-color:#f8fafc;">
+        <td style="padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 2</td>
+        <td style="padding:11px 16px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_2}}</td>
+      </tr>
+      <tr style="background-color:#ffffff;">
+        <td style="padding:11px 16px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;">Label 3</td>
+        <td style="padding:11px 16px;color:#0f172a;font-weight:700;">{{variable_3}}</td>
+      </tr>
     </table>
   - Action Roadmap / Next Steps:
-    <div style="background:#ffffff;border:1px solid #e2e8f0;border-radius:10px;padding:16px 20px;margin-bottom:24px;">
-      <h4 style="margin:0 0 10px;color:#0f172a;font-size:13px;font-weight:700;">📌 Next Steps:</h4>
-      <ol style="margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.8;">
+    <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:24px 0;">
+      <h3 style="margin:0 0 12px;color:#0f172a;font-size:14px;font-weight:700;">📌 Next Steps:</h3>
+      <ol style="margin:0;padding-left:20px;color:#475569;font-size:13px;line-height:1.9;">
         <li>Review your details carefully.</li>
         <li>Complete the verification / documentation step.</li>
-        <li>Our relationship executive will contact you for handover.</li>
+        <li>Our team will contact you for kickoff & onboarding.</li>
       </ol>
     </div>
   - CTA Button:
-    <div style="text-align:center;margin:28px 0 16px;">
-      <a href="{{portal_url}}" style="background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:14px 34px;border-radius:30px;text-decoration:none;font-weight:800;font-size:13px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;">View Details on Portal</a>
+    <div style="text-align:center;margin:32px 0 20px;">
+      <a href="{{portal_url}}" style="background-color:#D4AF37;background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:14px 36px;border-radius:30px;text-decoration:none;font-weight:800;font-size:13px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;">View Details on Portal</a>
     </div>
 - Advisor / Helpdesk Bar:
-  <div style="background:#f8fafc;border-top:1px solid #e2e8f0;border-radius:0 0 16px 16px;padding:16px 20px;margin-top:20px;font-size:12px;color:#64748b;">
-    <strong>Need assistance?</strong> SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91-73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;">info@sviinfrasolutions.com</a>
+  <div style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 28px;font-size:12px;color:#64748b;">
+    <strong style="color:#0f172a;">Need assistance?</strong> SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91-73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;">info@sviinfrasolutions.com</a>
   </div>
 - Corporate Legal Footer:
-  <div style="padding:24px 20px;text-align:center;background:#f1f5f9;border-top:1px solid #e2e8f0;">
+  <div style="padding:24px 20px;text-align:center;background-color:#f1f5f9;border-top:1px solid #e2e8f0;">
     <p style="color:#475569;font-size:12px;font-weight:700;margin:0 0 4px;">SVI Infra Solutions Pvt. Ltd.</p>
-    <p style="color:#94a3b8;font-size:11px;margin:0 0 8px;line-height:1.5;">Corporate Office: A-61 Sector 65, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#64748b;">www.sviinfrasolutions.com</a></p>
+    <p style="color:#94a3b8;font-size:11px;margin:0 0 8px;line-height:1.5;">Corporate Office: A-61 Sector 65, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#64748b;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
     <p style="color:#cbd5e1;font-size:10px;margin:0;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
   </div>
 

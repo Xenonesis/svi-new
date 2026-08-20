@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -9,11 +9,13 @@ import {
   Loader2,
   Copy,
   LayoutTemplate,
-  Replace,
   ChevronDown,
   Check,
+  Smartphone,
+  Monitor,
 } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
+import { getPreviewHtml, extractTemplateVars } from '@/src/lib/utils/templateParser';
 
 interface AIComposePopoverProps {
   open: boolean;
@@ -45,6 +47,7 @@ export function AIComposePopover({
   const [tone, setTone] = useState<string>('Professional');
   const [showToneDropdown, setShowToneDropdown] = useState(false);
   const [preview, setPreview] = useState('');
+  const [previewDevice, setPreviewDevice] = useState<'desktop' | 'mobile'>('desktop');
   const [templateMeta, setTemplateMeta] = useState<{
     templateName?: string;
     variables?: Record<string, string>;
@@ -124,11 +127,54 @@ export function AIComposePopover({
     }
   };
 
+  // Build resolved preview HTML for iframe
+  const resolvedPreviewHtml = useMemo(() => {
+    if (!preview) return '';
+    const vars = extractTemplateVars(preview);
+    const resolvedVars: Record<string, string> = {};
+    vars.forEach((v) => {
+      if (templateMeta?.variables?.[v]) {
+        resolvedVars[v] = templateMeta.variables[v];
+      } else if (v === 'name') {
+        resolvedVars[v] = recipientName || 'Sanu Mishra';
+      } else if (v.includes('date')) {
+        resolvedVars[v] = new Date().toLocaleDateString('en-IN', {
+          day: 'numeric',
+          month: 'short',
+          year: 'numeric',
+        });
+      } else if (v.includes('portal') || v.includes('url') || v.includes('link')) {
+        resolvedVars[v] = 'https://www.sviinfrasolutions.com';
+      } else {
+        resolvedVars[v] = v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+      }
+    });
+
+    const parsed = getPreviewHtml(preview, resolvedVars);
+
+    // Ensure full HTML document wrapper for iframe
+    if (!parsed.includes('<html')) {
+      return `<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
+    * { box-sizing: border-box; }
+  </style>
+</head>
+<body style="margin:0;padding:20px 10px;background-color:#f1f5f9;">
+  ${parsed}
+</body>
+</html>`;
+    }
+    return parsed;
+  }, [preview, templateMeta, recipientName]);
+
   const handleCopy = () => {
     if (!preview) return;
-    const tmp = document.createElement('div');
-    tmp.innerHTML = preview;
-    navigator.clipboard.writeText(tmp.textContent || tmp.innerText || preview);
+    navigator.clipboard.writeText(preview);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -168,7 +214,7 @@ export function AIComposePopover({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 bg-black/65 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm"
             onClick={handleClose}
           />
 
@@ -178,7 +224,7 @@ export function AIComposePopover({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 12 }}
             transition={{ type: 'spring', stiffness: 350, damping: 28 }}
-            className="relative z-10 flex max-h-[88vh] w-full max-w-[620px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
+            className="relative z-10 flex max-h-[90vh] w-full max-w-[660px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
           >
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
@@ -279,7 +325,7 @@ export function AIComposePopover({
                 </button>
               </div>
 
-              {/* Output Preview */}
+              {/* Output Preview (Sandboxed Iframe) */}
               {preview && (
                 <div className="rounded-xl border border-gray-200/80 bg-gray-50/70 p-3.5 dark:border-gray-800 dark:bg-gray-900/60">
                   <div className="mb-2.5 flex items-center justify-between">
@@ -289,31 +335,66 @@ export function AIComposePopover({
                         {templateMeta?.templateName || 'SVI Corporate Email Preview'}
                       </span>
                     </div>
-                    <button
-                      type="button"
-                      onClick={handleCopy}
-                      className="hover:text-brand-gold flex items-center gap-1 text-[11px] font-medium text-gray-500 transition-colors dark:text-gray-400"
-                      title="Copy text"
-                    >
-                      {copied ? (
-                        <>
-                          <Check className="h-3 w-3 text-emerald-500" />
-                          <span className="text-emerald-500">Copied!</span>
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3 w-3" />
-                          <span>Copy</span>
-                        </>
-                      )}
-                    </button>
+
+                    <div className="flex items-center gap-3">
+                      {/* Viewport device switcher */}
+                      <div className="flex items-center rounded-lg border border-gray-200 bg-white p-0.5 dark:border-gray-700 dark:bg-gray-800">
+                        <button
+                          type="button"
+                          onClick={() => setPreviewDevice('desktop')}
+                          className={`rounded-md p-1 transition-colors ${
+                            previewDevice === 'desktop'
+                              ? 'bg-brand-gold/15 text-brand-gold'
+                              : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+                          }`}
+                          title="Desktop view"
+                        >
+                          <Monitor className="h-3 w-3" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setPreviewDevice('mobile')}
+                          className={`rounded-md p-1 transition-colors ${
+                            previewDevice === 'mobile'
+                              ? 'bg-brand-gold/15 text-brand-gold'
+                              : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-200'
+                          }`}
+                          title="Mobile view (375px)"
+                        >
+                          <Smartphone className="h-3 w-3" />
+                        </button>
+                      </div>
+
+                      <button
+                        type="button"
+                        onClick={handleCopy}
+                        className="hover:text-brand-gold flex items-center gap-1 text-[11px] font-medium text-gray-500 transition-colors dark:text-gray-400"
+                        title="Copy HTML"
+                      >
+                        {copied ? (
+                          <>
+                            <Check className="h-3 w-3 text-emerald-500" />
+                            <span className="text-emerald-500">Copied!</span>
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="h-3 w-3" />
+                            <span>Copy HTML</span>
+                          </>
+                        )}
+                      </button>
+                    </div>
                   </div>
 
-                  {/* High Fidelity Render Box */}
-                  <div className="scrollbar-gold max-h-[320px] overflow-y-auto rounded-xl border border-gray-200 bg-white shadow-inner dark:border-gray-800">
-                    <div
-                      className="origin-top text-xs"
-                      dangerouslySetInnerHTML={{ __html: preview }}
+                  {/* Sandboxed Iframe Container */}
+                  <div className="flex justify-center overflow-hidden rounded-xl border border-gray-200 bg-[#f1f5f9] p-2 dark:border-gray-800">
+                    <iframe
+                      title="Corporate Email Preview"
+                      srcDoc={resolvedPreviewHtml}
+                      className={`h-[380px] rounded-lg border-0 bg-white shadow-md transition-all duration-200 ${
+                        previewDevice === 'mobile' ? 'w-[375px]' : 'w-full'
+                      }`}
+                      sandbox="allow-same-origin"
                     />
                   </div>
                 </div>
@@ -335,7 +416,7 @@ export function AIComposePopover({
                     type="button"
                     onClick={handleInsert}
                     disabled={loading}
-                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
                     title="Insert content into rich text editor"
                   >
                     <Copy className="h-3.5 w-3.5" />

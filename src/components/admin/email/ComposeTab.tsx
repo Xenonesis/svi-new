@@ -481,7 +481,16 @@ export function ComposeTab({
     const vars = extractTemplateVars(rawHtml);
     const initialVars: Record<string, string> = {};
     vars.forEach((v) => {
-      initialVars[v] = variables?.[v] || templateVars[v] || '';
+      if (variables?.[v]) {
+        initialVars[v] = variables[v];
+      } else if (templateVars[v]) {
+        initialVars[v] = templateVars[v];
+      } else if (v === 'name') {
+        const recipient = toRecipients[0]?.name || toStr.split(',')[0]?.split('@')[0]?.trim();
+        initialVars[v] = recipient || '';
+      } else {
+        initialVars[v] = '';
+      }
     });
     setTemplateVars(initialVars);
     setHtml(rawHtml);
