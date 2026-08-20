@@ -33,6 +33,7 @@ interface EmailBodyEditorProps {
 export function EmailBodyEditor({
   previewMode,
   html,
+  templateHtml,
   subject,
   toStr,
   editorKey,
@@ -60,6 +61,22 @@ export function EmailBodyEditor({
               }}
             />
           </div>
+
+          {quotedHtml && !templateHtml && onRemoveQuoted && (
+            <div className="mx-auto mt-3 flex max-w-[700px] items-center justify-between px-2">
+              <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                Quoted reply history attached at bottom
+              </span>
+              <button
+                type="button"
+                onClick={onRemoveQuoted}
+                className="flex items-center gap-1 text-[11px] font-medium text-red-500 transition-colors hover:underline"
+              >
+                <Trash2 className="h-3 w-3" />
+                <span>Remove quoted thread</span>
+              </button>
+            </div>
+          )}
         </div>
       ) : (
         <div className="p-4">

@@ -296,7 +296,7 @@ export function ComposeTab({
 
   const getPreviewHtml = (): string => {
     const base = parseGetPreviewHtml(templateHtml || html, templateVars);
-    if (quotedHtml && quotedHtml.trim()) {
+    if (!templateHtml && quotedHtml && quotedHtml.trim()) {
       return `${base}\n${quotedHtml}`;
     }
     return base;
@@ -314,6 +314,7 @@ export function ComposeTab({
     });
     setTemplateVars(initialVars);
     setHtml('');
+    setQuotedHtml(null);
     setSelectedTemplate(templateId);
     setPreviewMode(true);
     setEditorKey((prev) => prev + 1);
@@ -351,7 +352,7 @@ export function ComposeTab({
     try {
       const token = await getToken();
       let bodyToSend = getPreviewHtml() || html;
-      if (quotedHtml && quotedHtml.trim() && !bodyToSend.includes(quotedHtml)) {
+      if (!templateHtml && quotedHtml && quotedHtml.trim() && !bodyToSend.includes(quotedHtml)) {
         bodyToSend = `${bodyToSend}\n${quotedHtml}`;
       }
 
@@ -445,6 +446,7 @@ export function ComposeTab({
         });
         setTemplateVars(vars);
         setHtml('');
+        setQuotedHtml(null);
         setPreviewMode(true);
         setEditorKey((prev) => prev + 1);
         toast.success(`Matched template: ${tpl.name}`);
@@ -465,6 +467,7 @@ export function ComposeTab({
     });
     setTemplateVars(initialVars);
     setHtml(rawHtml);
+    setQuotedHtml(null);
     setPreviewMode(true);
     setEditorKey((prev) => prev + 1);
     toast.success('Generated email draft with AI');
@@ -494,6 +497,7 @@ export function ComposeTab({
     });
     setTemplateVars(initialVars);
     setHtml(rawHtml);
+    setQuotedHtml(null);
     setPreviewMode(true);
     setEditorKey((prev) => prev + 1);
     toast.success(`Applied ${templateName || 'SVI Corporate Template'}`);
