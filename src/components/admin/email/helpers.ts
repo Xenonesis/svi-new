@@ -85,13 +85,32 @@ export function getDomainStatusColor(status: string) {
 // ─── Draft Save/Load (Supabase) ────────────────────────────
 
 function rowToDraftData(row: Record<string, unknown>): DraftData {
+  let html = String(row.html_body || '');
+  let quotedHtml: string | undefined = undefined;
+
+  const match = html.match(/<!-- QUOTED_HTML_START -->([\s\S]*?)<!-- QUOTED_HTML_END -->/);
+  if (match) {
+    quotedHtml = match[1];
+    html = html.replace(/<!-- QUOTED_HTML_START -->[\s\S]*?<!-- QUOTED_HTML_END -->/, '').trim();
+  } else {
+    // Fallback for legacy drafts containing raw reply/forward block
+    const legacySplit = html.indexOf(
+      '<div style="margin-top:24px;padding-top:24px;border-top:1px solid #e5e7eb;">'
+    );
+    if (legacySplit !== -1) {
+      quotedHtml = html.substring(legacySplit);
+      html = html.substring(0, legacySplit).trim();
+    }
+  }
+
   return {
     id: String(row.id || ''),
     to: String(row.to_emails || ''),
     cc: String(row.cc_emails || ''),
     bcc: String(row.bcc_emails || ''),
     subject: String(row.subject || ''),
-    html: String(row.html_body || ''),
+    html,
+    quotedHtml,
     replyTo: String(row.reply_to || ''),
     fromName: String(row.from_name || 'SVI Infra'),
     savedAt: new Date((row.updated_at || row.created_at) as string).getTime(),
@@ -104,17 +123,23 @@ function draftDataToRow(draft: {
   bcc: string;
   subject: string;
   html: string;
+  quotedHtml?: string | null;
   replyTo: string;
   fromName: string;
   isCurrent?: boolean;
   userId?: string;
 }) {
+  let fullBody = draft.html;
+  if (draft.quotedHtml && draft.quotedHtml.trim()) {
+    fullBody = `${draft.html}\n<!-- QUOTED_HTML_START -->${draft.quotedHtml}<!-- QUOTED_HTML_END -->`;
+  }
+
   const row: Record<string, unknown> = {
     to_emails: draft.to,
     cc_emails: draft.cc,
     bcc_emails: draft.bcc,
     subject: draft.subject,
-    html_body: draft.html,
+    html_body: fullBody,
     reply_to: draft.replyTo,
     from_name: draft.fromName,
     is_current: draft.isCurrent ?? false,
@@ -187,6 +212,7 @@ export async function saveDraft(draft: {
   bcc: string;
   subject: string;
   html: string;
+  quotedHtml?: string | null;
   replyTo: string;
   fromName: string;
 }): Promise<boolean> {
@@ -280,6 +306,7 @@ export async function saveNewDraft(draft: {
   bcc: string;
   subject: string;
   html: string;
+  quotedHtml?: string | null;
   replyTo: string;
   fromName: string;
 }): Promise<DraftData | null> {
@@ -303,6 +330,16 @@ export async function saveNewDraft(draft: {
 }
 
 // ─── Forward / Reply HTML Builders ──────────────────────────
+
+/**
+ * Normalizes email subject by removing existing Re: / Fwd: prefixes
+ * and adding a clean prefix (defaults to 'Re:')
+ */
+export function cleanEmailSubject(subject: string, prefix: 'Re:' | 'Fwd:' = 'Re:'): string {
+  if (!subject) return prefix;
+  const cleaned = subject.replace(/^(?:(?:Re|Fwd|Fw):\s*)+/i, '').trim();
+  return `${prefix} ${cleaned}`;
+}
 
 export function buildForwardHtml(email: {
   from: string;

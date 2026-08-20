@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, ChevronDown, Inbox, Loader2 } from 'lucide-react';
 import type { ForwardData, ReplyData, SentEmail } from './types';
-import { buildForwardHtml, buildReplyHtml, getToken } from './helpers';
+import { buildForwardHtml, buildReplyHtml, cleanEmailSubject, getToken } from './helpers';
 import { toast } from 'sonner';
 import { EmailListSkeleton, EmailDetailSkeleton } from './Skeletons';
 import { useSentEmails } from './hooks/useSentEmails';
@@ -24,10 +24,11 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [emailToDelete, setEmailToDelete] = useState<SentEmail | null>(null);
 
+  /* ─── Forward / Reply from List ─── */
   const handleForwardEmail = (email: SentEmail) => {
     if (!onForward) return;
     onForward({
-      subject: `Fwd: ${email.subject}`,
+      subject: cleanEmailSubject(email.subject, 'Fwd:'),
       html: buildForwardHtml(email),
       originalFrom: email.from,
       originalTo: email.to || [],
@@ -39,10 +40,12 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
 
   const handleReplyEmail = (email: SentEmail) => {
     if (!onReply) return;
+    const recipient = email.to && email.to.length > 0 ? email.to.join(', ') : email.from;
     onReply({
-      to: email.from,
-      subject: `Re: ${email.subject}`,
-      html: buildReplyHtml(email),
+      to: recipient,
+      subject: cleanEmailSubject(email.subject, 'Re:'),
+      html: '',
+      quotedHtml: buildReplyHtml(email),
       originalFrom: email.from,
       originalDate: email.created_at,
       originalSubject: email.subject,
@@ -52,11 +55,11 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
     });
   };
 
-  /* ─── Forward / Reply ─── */
+  /* ─── Forward / Reply from Detail Panel ─── */
   const handleForward = () => {
     if (!h.selected || !onForward) return;
     onForward({
-      subject: `Fwd: ${h.selected.subject}`,
+      subject: cleanEmailSubject(h.selected.subject, 'Fwd:'),
       html: buildForwardHtml(h.selected),
       originalFrom: h.selected.from,
       originalTo: h.selected.to || [],
@@ -68,10 +71,13 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
 
   const handleReply = (suggestionHtml?: string) => {
     if (!h.selected || !onReply) return;
+    const recipient =
+      h.selected.to && h.selected.to.length > 0 ? h.selected.to.join(', ') : h.selected.from;
     onReply({
-      to: h.selected.from,
-      subject: `Re: ${h.selected.subject}`,
-      html: suggestionHtml || buildReplyHtml(h.selected),
+      to: recipient,
+      subject: cleanEmailSubject(h.selected.subject, 'Re:'),
+      html: suggestionHtml || '',
+      quotedHtml: buildReplyHtml(h.selected),
       originalFrom: h.selected.from,
       originalDate: h.selected.created_at,
       originalSubject: h.selected.subject,

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { X, Sparkles, Loader2 } from 'lucide-react';
+import { X } from 'lucide-react';
 import { RecipientInput } from './RecipientInput';
 import type { Recipient } from '../types';
 
@@ -17,8 +17,6 @@ interface ComposeFieldsProps {
   scheduledAt?: string | null;
   forwardData?: any;
   replyData?: any;
-  autoComposing?: boolean;
-  onAutoCompose?: () => void;
   onToChange: (value: string) => void;
   onCcChange: (value: string) => void;
   onBccChange: (value: string) => void;
@@ -55,8 +53,6 @@ export function ComposeFields({
   onFromNameChange,
   onReplyToChange,
   onScheduledAtChange,
-  autoComposing,
-  onAutoCompose,
   toRecipients,
   onToRecipientsChange,
   onOpenContactPicker,
@@ -351,37 +347,18 @@ export function ComposeFields({
         )}
       </AnimatePresence>
 
-      {/* Subject + Auto Compose */}
-      <div className="flex flex-col border-b border-gray-100 px-4 pt-2 pb-2 sm:flex-row sm:items-center sm:px-6 sm:py-0 dark:border-gray-800">
-        <div className="flex w-full min-w-0 flex-1 items-center">
-          <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
-            Subj
-          </label>
-          <input
-            type="text"
-            value={subject}
-            onChange={(e) => onSubjectChange(e.target.value)}
-            placeholder="Email subject..."
-            className="min-w-0 flex-1 bg-transparent py-2 text-sm font-semibold text-gray-900 placeholder-gray-400/60 outline-none sm:py-3.5 dark:text-white"
-          />
-        </div>
-        {onAutoCompose && (
-          <div className="mt-1 flex shrink-0 justify-start pb-1 pl-12 sm:mt-0 sm:pb-0 sm:pl-0">
-            <button
-              type="button"
-              onClick={onAutoCompose}
-              disabled={!subject.trim() || autoComposing}
-              className="bg-brand-gold text-brand-navy ml-0 flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all hover:opacity-90 disabled:opacity-40 sm:ml-2"
-            >
-              {autoComposing ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
-              ) : (
-                <Sparkles className="h-3.5 w-3.5" />
-              )}
-              {autoComposing ? 'Composing...' : 'Auto Compose'}
-            </button>
-          </div>
-        )}
+      {/* Subject */}
+      <div className="flex items-center border-b border-gray-100 px-4 py-0 sm:px-6 dark:border-gray-800">
+        <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+          Subj
+        </label>
+        <input
+          type="text"
+          value={subject}
+          onChange={(e) => onSubjectChange(e.target.value)}
+          placeholder="Email subject..."
+          className="min-w-0 flex-1 bg-transparent py-2.5 text-sm font-semibold text-gray-900 placeholder-gray-400/60 outline-none sm:py-3.5 dark:text-white"
+        />
       </div>
     </div>
   );

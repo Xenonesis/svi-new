@@ -158,6 +158,7 @@ export function ComposeTab({
   const [subjectTemplate, setSubjectTemplate] = useState('');
   const [subject, setSubject] = useState('');
   const [html, setHtml] = useState('');
+  const [quotedHtml, setQuotedHtml] = useState<string | null>(null);
   const [replyTo, setReplyTo] = useState('');
   const [fromName, setFromName] = useState('SVI Infra');
   const [sending, setSending] = useState(false);
@@ -244,6 +245,7 @@ export function ComposeTab({
       setBcc: handleBccChange,
       setSubjectTemplate,
       setHtml,
+      setQuotedHtml,
       setTemplateHtml,
       setSelectedTemplate,
       setInReplyToMessageId,
@@ -263,6 +265,7 @@ export function ComposeTab({
     bcc: bccStr,
     subject,
     html,
+    quotedHtml,
     replyTo,
     fromName,
     setDraftSaved,
@@ -272,6 +275,7 @@ export function ComposeTab({
     setBcc: handleBccChange,
     setSubjectTemplate,
     setHtml,
+    setQuotedHtml,
     setReplyTo,
     setFromName,
   });
@@ -291,7 +295,11 @@ export function ComposeTab({
   };
 
   const getPreviewHtml = (): string => {
-    return parseGetPreviewHtml(templateHtml || html, templateVars);
+    const base = parseGetPreviewHtml(templateHtml || html, templateVars);
+    if (quotedHtml && quotedHtml.trim()) {
+      return `${base}\n${quotedHtml}`;
+    }
+    return base;
   };
 
   const loadTemplate = (templateId: string) => {
@@ -342,6 +350,11 @@ export function ComposeTab({
     setError(null);
     try {
       const token = await getToken();
+      let bodyToSend = getPreviewHtml() || html;
+      if (quotedHtml && quotedHtml.trim() && !bodyToSend.includes(quotedHtml)) {
+        bodyToSend = `${bodyToSend}\n${quotedHtml}`;
+      }
+
       const res = await fetch('/api/admin/email', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
@@ -351,7 +364,7 @@ export function ComposeTab({
           cc: ccRecipients.length > 0 ? ccRecipients.map((r) => r.email) : undefined,
           bcc: bccRecipients.length > 0 ? bccRecipients.map((r) => r.email) : undefined,
           subject,
-          html: getPreviewHtml() || html,
+          html: bodyToSend,
           replyTo: replyTo || undefined,
           inReplyTo: inReplyToMessageId || undefined,
           from: `${fromName} <noreply@sviiinfrasolutions.com>`,
@@ -385,6 +398,7 @@ export function ComposeTab({
           setBccRecipients([]);
           setSubjectTemplate('');
           setHtml('');
+          setQuotedHtml(null);
           setReplyTo(
             `info@sviiinfrasolutions.com, ${adminEmail || 'hr.sviinfrasolutions@gmail.com'}`
           );
@@ -481,6 +495,7 @@ export function ComposeTab({
     setBccRecipients([]);
     setSubjectTemplate('');
     setHtml('');
+    setQuotedHtml(null);
     setTemplateHtml(null);
     setSelectedTemplate(null);
     setPreviewMode(false);
@@ -503,9 +518,14 @@ export function ComposeTab({
         <EmailHeader
           forwardData={forwardData}
           replyData={replyData}
+          hasQuoted={!!quotedHtml}
           draftSaved={draftSaved}
           previewMode={previewMode}
           onTogglePreview={() => setPreviewMode(!previewMode)}
+          onClearContext={() => {
+            setQuotedHtml(null);
+            onClearPrefill?.();
+          }}
         />
 
         {/* Fields */}
@@ -520,8 +540,6 @@ export function ComposeTab({
           forwardData={forwardData}
           replyData={replyData}
           scheduledAt={scheduledAt}
-          autoComposing={aiLoading}
-          onAutoCompose={handleAutoCompose}
           onToChange={handleToChange}
           onCcChange={handleCcChange}
           onBccChange={handleBccChange}
@@ -608,6 +626,8 @@ export function ComposeTab({
           subject={subject}
           toStr={toStr}
           editorKey={editorKey}
+          quotedHtml={quotedHtml}
+          onRemoveQuoted={() => setQuotedHtml(null)}
           setHtml={setHtml}
           getPreviewHtml={getPreviewHtml}
         />
@@ -631,6 +651,9 @@ export function ComposeTab({
           showSubjectSuggestions={showSubjectSuggestions}
           subjectSuggestions={subjectSuggestions}
           fileInputRef={fileInputRef}
+          subject={subject}
+          autoComposing={aiLoading}
+          onAutoCompose={handleAutoCompose}
           onSend={handleSend}
           onLoadTemplate={loadTemplate}
           onShowImprove={() => setShowImprove(true)}

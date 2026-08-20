@@ -8,6 +8,7 @@ export interface EmailPrefillSetters {
   setBcc: (val: string) => void;
   setSubjectTemplate: (val: string) => void;
   setHtml: (val: string) => void;
+  setQuotedHtml: (val: string | null) => void;
   setTemplateHtml: (val: string | null) => void;
   setSelectedTemplate: (val: string | null) => void;
   setInReplyToMessageId: (val: string | null) => void;
@@ -47,6 +48,7 @@ export function useEmailPrefill({
     setBcc,
     setSubjectTemplate,
     setHtml,
+    setQuotedHtml,
     setTemplateHtml,
     setSelectedTemplate,
     setInReplyToMessageId,
@@ -74,6 +76,7 @@ export function useEmailPrefill({
       setBcc('');
       setSubjectTemplate(forwardData.subject);
       setHtml(forwardData.html);
+      setQuotedHtml(null);
       setTemplateHtml(null);
       setSelectedTemplate(null);
       setInReplyToMessageId(null);
@@ -89,6 +92,7 @@ export function useEmailPrefill({
     setBcc,
     setSubjectTemplate,
     setHtml,
+    setQuotedHtml,
     setTemplateHtml,
     setSelectedTemplate,
     setInReplyToMessageId,
@@ -103,7 +107,8 @@ export function useEmailPrefill({
       setCc(replyData.cc?.join(', ') || '');
       setBcc('');
       setSubjectTemplate(replyData.subject);
-      setHtml(replyData.html);
+      setHtml(replyData.html || '');
+      setQuotedHtml(replyData.quotedHtml || null);
       setTemplateHtml(null);
       setSelectedTemplate(null);
       setInReplyToMessageId(replyData.originalMessageId || null);
@@ -119,6 +124,7 @@ export function useEmailPrefill({
     setBcc,
     setSubjectTemplate,
     setHtml,
+    setQuotedHtml,
     setTemplateHtml,
     setSelectedTemplate,
     setInReplyToMessageId,
@@ -131,6 +137,7 @@ export function useEmailPrefill({
     if (templatePrefill) {
       setSubjectTemplate(templatePrefill.subject);
       setHtml(templatePrefill.html);
+      setQuotedHtml(null);
       setTemplateHtml(null);
       setSelectedTemplate(null);
       setInReplyToMessageId(null);
@@ -142,6 +149,7 @@ export function useEmailPrefill({
     onClearPrefill,
     setSubjectTemplate,
     setHtml,
+    setQuotedHtml,
     setTemplateHtml,
     setSelectedTemplate,
     setInReplyToMessageId,
@@ -156,6 +164,7 @@ export function useEmailPrefill({
       setBcc(draftData.bcc || '');
       setSubjectTemplate(draftData.subject || '');
       setHtml(draftData.html || '');
+      setQuotedHtml(draftData.quotedHtml || null);
       setReplyTo(draftData.replyTo || '');
       setFromName(draftData.fromName || 'SVI Infra');
       setTemplateHtml(null);
@@ -174,6 +183,7 @@ export function useEmailPrefill({
     setBcc,
     setSubjectTemplate,
     setHtml,
+    setQuotedHtml,
     setReplyTo,
     setFromName,
     setTemplateHtml,

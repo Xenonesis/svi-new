@@ -1,8 +1,9 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, X, Loader2, Copy, Replace, ChevronDown } from 'lucide-react';
+import { Sparkles, X, Loader2, Copy, Replace, ChevronDown, Check } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
 
 interface AIComposePopoverProps {
@@ -24,30 +25,38 @@ export function AIComposePopover({
   recipientName,
   subject,
 }: AIComposePopoverProps) {
+  const [mounted, setMounted] = useState(false);
   const [prompt, setPrompt] = useState('');
   const [tone, setTone] = useState<string>('Professional');
   const [showToneDropdown, setShowToneDropdown] = useState(false);
   const [preview, setPreview] = useState('');
+  const [copied, setCopied] = useState(false);
   const { generateContent, loading, cancel } = useAIEmail();
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const mountedRef = useRef(true);
 
-  // Cleanup on unmount: cancel any in-flight request
   useEffect(() => {
-    return () => {
-      mountedRef.current = false;
-      cancel();
-    };
-  }, [cancel]);
+    setMounted(true);
+  }, []);
 
   // Auto-focus input on open
   useEffect(() => {
     if (open) {
-      setTimeout(() => inputRef.current?.focus(), 100);
-      // Reset when opening fresh
-      if (!preview) setPrompt('');
+      const timer = setTimeout(() => inputRef.current?.focus(), 150);
+      return () => clearTimeout(timer);
     }
+  }, [open]);
+
+  // Handle escape key
+  useEffect(() => {
+    if (!open) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        handleClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [open]);
 
   // Close dropdown on outside click
@@ -65,14 +74,21 @@ export function AIComposePopover({
     if (!prompt.trim() || loading) return;
     setPreview('');
 
-    await generateContent({
-      prompt: prompt.trim(),
-      tone,
-      context: { recipientName, subject },
-      onChunk: (text) => {
-        if (mountedRef.current) setPreview(text);
-      },
-    });
+    try {
+      const result = await generateContent({
+        prompt: prompt.trim(),
+        tone,
+        context: { recipientName, subject },
+        onChunk: (text) => {
+          setPreview(text);
+        },
+      });
+      if (result) {
+        setPreview(result);
+      }
+    } catch (err) {
+      console.error('[AICompose] Error generating:', err);
+    }
   }, [prompt, tone, recipientName, subject, generateContent, loading]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -80,6 +96,15 @@ export function AIComposePopover({
       e.preventDefault();
       handleGenerate();
     }
+  };
+
+  const handleCopy = () => {
+    if (!preview) return;
+    const tmp = document.createElement('div');
+    tmp.innerHTML = preview;
+    navigator.clipboard.writeText(tmp.textContent || tmp.innerText || preview);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const handleInsert = () => {
@@ -101,134 +126,201 @@ export function AIComposePopover({
     onClose();
   };
 
-  if (!open) return null;
+  if (!mounted) return null;
 
-  return (
+  return createPortal(
     <AnimatePresence>
-      <motion.div
-        initial={{ opacity: 0, y: -8, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -8, scale: 0.96 }}
-        transition={{ type: 'spring', stiffness: 300, damping: 28 }}
-        className="fixed inset-x-4 top-[10vh] z-[60] overflow-hidden rounded-xl border border-[#EAEAEA] bg-white shadow-sm sm:absolute sm:inset-x-auto sm:top-full sm:right-0 sm:mt-2 sm:w-[420px] dark:border-gray-800 dark:bg-[#111111]"
-      >
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-[#EAEAEA] px-4 py-3 dark:border-gray-800">
-          <div className="flex items-center gap-2">
-            <div className="flex h-6 w-6 items-center justify-center rounded bg-[#FBF3DB] text-[#956400] dark:bg-[#956400]/20">
-              <Sparkles className="h-3.5 w-3.5" />
-            </div>
-            <span className="text-xs font-medium text-[#111111] dark:text-gray-200">
-              AI Email Writer
-            </span>
-          </div>
-          <button
+      {open && (
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 sm:p-6">
+          {/* Backdrop */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
+          />
+
+          {/* Modal Container */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95, y: 12 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.95, y: 12 }}
+            transition={{ type: 'spring', stiffness: 350, damping: 28 }}
+            className="relative z-10 flex max-h-[85vh] w-full max-w-[540px] flex-col overflow-hidden rounded-2xl border border-gray-200/90 bg-white shadow-2xl dark:border-gray-700/70 dark:bg-[#121620]"
           >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-
-        {/* Prompt Input */}
-        <div className="p-4">
-          <div className="relative">
-            <textarea
-              ref={inputRef}
-              value={prompt}
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={handleKeyDown}
-              placeholder="Describe the email you want to write..."
-              rows={3}
-              className="w-full resize-none rounded-md border border-[#EAEAEA] bg-white px-3 py-3 text-sm text-[#111111] placeholder-gray-400 outline-none focus:border-gray-300 dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-100"
-              disabled={loading}
-            />
-          </div>
-
-          {/* Tone + Generate */}
-          <div className="mt-3 flex items-center gap-2">
-            <div ref={dropdownRef} className="relative">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-gray-100 px-5 py-3.5 dark:border-gray-800">
+              <div className="flex items-center gap-2.5">
+                <div className="bg-brand-gold/15 text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg">
+                  <Sparkles className="h-4 w-4" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
+                    AI Email Writer
+                  </h3>
+                  <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                    Prompt and generate executive replies in seconds
+                  </p>
+                </div>
+              </div>
               <button
-                onClick={() => setShowToneDropdown(!showToneDropdown)}
-                className="flex items-center gap-1.5 rounded-md border border-[#EAEAEA] bg-white px-3 py-1.5 text-xs font-medium text-[#111111] transition-transform hover:scale-[0.98] dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-200"
+                onClick={handleClose}
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-200"
               >
-                {tone}
-                <ChevronDown className="h-3 w-3" />
+                <X className="h-4 w-4" />
               </button>
-              {showToneDropdown && (
-                <div className="absolute bottom-full left-0 z-10 mb-1 w-36 overflow-hidden rounded-md border border-[#EAEAEA] bg-white shadow-sm dark:border-gray-700 dark:bg-[#1a1a1a]">
-                  {TONES.map((t) => (
+            </div>
+
+            {/* Content Body */}
+            <div className="scrollbar-gold flex-1 space-y-4 overflow-y-auto p-5">
+              {/* Prompt Input */}
+              <div>
+                <label className="mb-1.5 block text-xs font-medium text-gray-700 dark:text-gray-300">
+                  Describe what you want to write:
+                </label>
+                <textarea
+                  ref={inputRef}
+                  value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
+                  onKeyDown={handleKeyDown}
+                  placeholder="e.g. Okay you can join us as freelancer, please share your documents..."
+                  rows={3}
+                  className="focus-gold w-full resize-none rounded-xl border border-gray-200 bg-gray-50/80 p-3 text-sm text-gray-900 placeholder-gray-400 transition-all outline-none dark:border-gray-700 dark:bg-gray-900/70 dark:text-white dark:placeholder-gray-500"
+                  disabled={loading}
+                />
+              </div>
+
+              {/* Tone & Generate Action */}
+              <div className="flex items-center gap-2.5">
+                <div ref={dropdownRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setShowToneDropdown(!showToneDropdown)}
+                    className="dark:hover:bg-gray-750 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                  >
+                    <span>
+                      Tone: <strong className="text-gray-900 dark:text-white">{tone}</strong>
+                    </span>
+                    <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                  </button>
+                  {showToneDropdown && (
+                    <div className="absolute bottom-full left-0 z-30 mb-1.5 w-40 overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-xl dark:border-gray-700 dark:bg-gray-800">
+                      {TONES.map((t) => (
+                        <button
+                          key={t}
+                          type="button"
+                          onClick={() => {
+                            setTone(t);
+                            setShowToneDropdown(false);
+                          }}
+                          className={`flex w-full items-center justify-between rounded-lg px-3 py-1.5 text-xs font-medium transition-colors ${
+                            tone === t
+                              ? 'bg-brand-gold/15 text-brand-gold'
+                              : 'text-gray-700 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          {t}
+                          {tone === t && <Check className="text-brand-gold h-3.5 w-3.5" />}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleGenerate}
+                  disabled={!prompt.trim() || loading}
+                  className="bg-brand-gold text-brand-dark-surface flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-2 text-xs font-semibold shadow-sm transition-all hover:brightness-105 active:scale-[0.98] disabled:opacity-50"
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      <span>Generating response...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-3.5 w-3.5" />
+                      <span>Generate Email</span>
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Output Preview */}
+              {preview && (
+                <div className="rounded-xl border border-gray-200/80 bg-gray-50/70 p-3.5 dark:border-gray-800 dark:bg-gray-900/60">
+                  <div className="mb-2.5 flex items-center justify-between">
+                    <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                      Generated Output Preview
+                    </span>
                     <button
-                      key={t}
-                      onClick={() => {
-                        setTone(t);
-                        setShowToneDropdown(false);
-                      }}
-                      className={`w-full px-3 py-2 text-left text-xs transition-colors ${
-                        tone === t
-                          ? 'bg-[#EAEAEA] text-[#111111] dark:bg-gray-800 dark:text-white'
-                          : 'text-[#787774] hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/5'
-                      }`}
+                      type="button"
+                      onClick={handleCopy}
+                      className="hover:text-brand-gold flex items-center gap-1 text-[11px] font-medium text-gray-500 transition-colors dark:text-gray-400"
+                      title="Copy text"
                     >
-                      {t}
+                      {copied ? (
+                        <>
+                          <Check className="h-3 w-3 text-emerald-500" />
+                          <span className="text-emerald-500">Copied!</span>
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="h-3 w-3" />
+                          <span>Copy</span>
+                        </>
+                      )}
                     </button>
-                  ))}
+                  </div>
+
+                  <div className="scrollbar-gold max-h-[260px] overflow-y-auto rounded-lg border border-gray-200/60 bg-white p-3.5 text-sm text-gray-800 shadow-inner dark:border-gray-800 dark:bg-[#0b0e14] dark:text-gray-200">
+                    <div
+                      className="prose prose-sm dark:prose-invert max-w-none text-sm leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: preview }}
+                    />
+                  </div>
                 </div>
               )}
             </div>
 
-            <button
-              onClick={handleGenerate}
-              disabled={!prompt.trim() || loading}
-              className="flex flex-1 items-center justify-center gap-2 rounded-md bg-[#111111] px-4 py-1.5 text-xs font-medium text-white transition-transform hover:scale-[0.98] disabled:opacity-50 dark:bg-white dark:text-[#111111]"
-            >
-              {loading ? (
-                <>
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="h-3.5 w-3.5" />
-                  Generate
-                </>
-              )}
-            </button>
-          </div>
+            {/* Sticky Action Footer */}
+            {preview && (
+              <div className="flex items-center justify-between border-t border-gray-100 bg-gray-50/50 px-5 py-3 dark:border-gray-800 dark:bg-gray-900/40">
+                <button
+                  type="button"
+                  onClick={handleClose}
+                  className="rounded-lg px-3 py-1.5 text-xs font-medium text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200"
+                >
+                  Discard
+                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleInsert}
+                    disabled={loading}
+                    className="dark:hover:bg-gray-750 flex items-center gap-1.5 rounded-xl border border-gray-200/80 bg-white px-3.5 py-1.5 text-xs font-medium text-gray-700 transition-all hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                  >
+                    <Copy className="h-3.5 w-3.5" />
+                    <span>Insert at cursor</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleReplace}
+                    disabled={loading}
+                    className="bg-brand-gold text-brand-dark-surface flex items-center gap-1.5 rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all hover:brightness-105"
+                  >
+                    <Replace className="h-3.5 w-3.5" />
+                    <span>Replace Editor</span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </motion.div>
         </div>
-
-        {/* Preview */}
-        {preview && (
-          <div className="border-t border-[#EAEAEA] dark:border-gray-800">
-            <div className="scrollbar-gold max-h-[240px] overflow-y-auto p-4">
-              <div
-                className="prose prose-sm dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300"
-                dangerouslySetInnerHTML={{ __html: preview }}
-              />
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center justify-end gap-2 border-t border-[#EAEAEA] px-4 py-3 dark:border-gray-800">
-              <button
-                onClick={handleInsert}
-                disabled={loading}
-                className="flex items-center gap-1.5 rounded-md border border-[#EAEAEA] bg-white px-3 py-1.5 text-xs font-medium text-[#111111] transition-transform hover:scale-[0.98] disabled:opacity-50 dark:border-gray-700 dark:bg-[#1a1a1a] dark:text-gray-200"
-              >
-                <Copy className="h-3 w-3" />
-                Insert
-              </button>
-              <button
-                onClick={handleReplace}
-                disabled={loading}
-                className="flex items-center gap-1.5 rounded-md bg-[#111111] px-3 py-1.5 text-xs font-medium text-white transition-transform hover:scale-[0.98] disabled:opacity-50 dark:bg-white dark:text-[#111111]"
-              >
-                <Replace className="h-3 w-3" />
-                Replace
-              </button>
-            </div>
-          </div>
-        )}
-      </motion.div>
-    </AnimatePresence>
+      )}
+    </AnimatePresence>,
+    document.body
   );
 }

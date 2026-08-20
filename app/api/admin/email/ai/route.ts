@@ -276,15 +276,20 @@ IMPORTANT: Respond with ONLY a valid JSON object matching the schema above. No m
         return NextResponse.json({ error: 'Missing prompt' }, { status: 400 });
       }
 
-      const toneInstruction = tone ? `Write in a ${tone} tone.` : 'Write in a professional tone.';
-
+      const toneInstruction = tone ? `Tone: ${tone}.` : 'Tone: Professional.';
       const contextInfo = context?.recipientName ? `Recipient: ${context.recipientName}.` : '';
       const subjectInfo = context?.subject ? `Email subject: ${context.subject}.` : '';
 
       const result = streamText({
         model: groq(AI_MODEL),
-        system: EMAIL_SYSTEM_PROMPT,
-        prompt: `${toneInstruction} ${contextInfo} ${subjectInfo}\n\nWrite an email body for: ${prompt}\n\nReturn ONLY the email body HTML (no subject line, no explanation).`,
+        system: `You are an elite business email writer for SVI Infra Solutions.
+Write a clear, professional, and directly usable HTML email body based on the prompt.
+Rules:
+- Output clean semantic HTML tags (<p>, <ul>, <li>, <strong>, <br>).
+- Do NOT output markdown code blocks or fences like \`\`\`html.
+- Do NOT include Subject headers or metadata.
+- Make the email engaging, concise, and appropriate for corporate real estate communication.`,
+        prompt: `${toneInstruction} ${contextInfo} ${subjectInfo}\n\nWrite an email message addressing this prompt:\n"${prompt}"\n\nReturn the HTML body directly:`,
       });
 
       return result.toTextStreamResponse();

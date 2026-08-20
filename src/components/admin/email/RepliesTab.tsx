@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Inbox, Mail, Star, RefreshCw, Paperclip } from 'lucide-react';
+import { Inbox, Mail, Star, RefreshCw, Paperclip, MoreVertical } from 'lucide-react';
 import { toast } from 'sonner';
 import { getToken } from './helpers';
 import { EmailDetailSkeleton } from './Skeletons';
 import type { EmailDetail, ForwardData, ReplyData } from './types';
 import { EmailDetailPanel } from './sections/EmailDetailPanel';
-import { buildForwardHtml, buildReplyHtml } from './helpers';
+import { buildForwardHtml, buildReplyHtml, cleanEmailSubject } from './helpers';
 
 interface ReplyItem {
   id: string;
@@ -24,7 +24,7 @@ interface ReplyItem {
 }
 
 interface RepliesTabProps {
-  adminEmail?: string;
+  adminEmail: string;
   onForward?: (data: ForwardData) => void;
   onReply?: (data: ReplyData) => void;
 }
@@ -43,6 +43,9 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
+  const [activeMenuId, setActiveMenuId] = useState<string | null>(null);
+  const rowMenuRef = useRef<HTMLDivElement>(null);
+
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [copiedType, setCopiedType] = useState<string | null>(null);
   const [copyMenuOpen, setCopyMenuOpen] = useState(false);
@@ -52,6 +55,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
     const handler = (e: MouseEvent) => {
       const target = e.target as Node;
       if (copyMenuRef.current && !copyMenuRef.current.contains(target)) setCopyMenuOpen(false);
+      if (rowMenuRef.current && !rowMenuRef.current.contains(target)) setActiveMenuId(null);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
@@ -75,7 +79,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   const handleForward = () => {
     if (!selectedReply || !onForward) return;
     onForward({
-      subject: `Fwd: ${selectedReply.subject}`,
+      subject: cleanEmailSubject(selectedReply.subject, 'Fwd:'),
       html: buildForwardHtml(selectedReply as any),
       originalFrom: selectedReply.from || (selectedReply as any).from_email || '',
       originalTo: selectedReply.to || (selectedReply as any).to_emails || [],
@@ -89,8 +93,9 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
     if (!selectedReply || !onReply) return;
     onReply({
       to: selectedReply.from || (selectedReply as any).from_email || '',
-      subject: `Re: ${selectedReply.subject}`,
-      html: suggestionHtml || buildReplyHtml(selectedReply as any),
+      subject: cleanEmailSubject(selectedReply.subject, 'Re:'),
+      html: suggestionHtml || '',
+      quotedHtml: buildReplyHtml(selectedReply as any),
       originalFrom: selectedReply.from || (selectedReply as any).from_email || '',
       originalDate: selectedReply.created_at,
       originalSubject: selectedReply.subject,
@@ -98,6 +103,119 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
       originalMessageId: selectedReply.id,
       attachments: selectedReply.attachments || [],
     });
+  };
+
+  const handleReplyInboxItem = async (reply: ReplyItem) => {
+    if (!onReply) return;
+    let html = `<p>${reply.snippet || ''}</p>`;
+    let attachments: any[] = [];
+    try {
+      const token = await getToken();
+      const res = await fetch(`/api/admin/email?action=inbox_detail&id=${reply.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.email) {
+          html = data.email.html || `<p>${data.email.text || ''}</p>`;
+          attachments = data.email.attachments || [];
+        }
+      }
+    } catch {
+      // ignore fetch errors
+    }
+
+    onReply({
+      to: reply.from,
+      subject: cleanEmailSubject(reply.subject, 'Re:'),
+      html: '',
+      quotedHtml: buildReplyHtml({
+        from: reply.from,
+        subject: reply.subject,
+        created_at: reply.created_at,
+        html,
+      }),
+      originalFrom: reply.from,
+      originalDate: reply.created_at,
+      originalSubject: reply.subject,
+      originalMessageId: reply.id,
+      attachments,
+    });
+  };
+
+  const handleForwardInboxItem = async (reply: ReplyItem) => {
+    if (!onForward) return;
+    let html = `<p>${reply.snippet || ''}</p>`;
+    let attachments: any[] = [];
+    try {
+      const token = await getToken();
+      const res = await fetch(`/api/admin/email?action=inbox_detail&id=${reply.id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.email) {
+          html = data.email.html || `<p>${data.email.text || ''}</p>`;
+          attachments = data.email.attachments || [];
+        }
+      }
+    } catch {
+      // ignore fetch errors
+    }
+
+    onForward({
+      subject: cleanEmailSubject(reply.subject, 'Fwd:'),
+      html: buildForwardHtml({
+        from: reply.from,
+        to: reply.to,
+        subject: reply.subject,
+        created_at: reply.created_at,
+        html,
+      }),
+      originalFrom: reply.from,
+      originalTo: reply.to || [],
+      originalDate: reply.created_at,
+      originalSubject: reply.subject,
+      attachments,
+    });
+  };
+
+  const handleDeleteInboxItem = async (reply: ReplyItem) => {
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/admin/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: 'delete_emails',
+          emailIds: [reply.id],
+          emails: [
+            {
+              id: reply.id,
+              subject: reply.subject,
+              from: reply.from,
+              to: reply.to,
+              created_at: reply.created_at,
+              last_event: 'received',
+            },
+          ],
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || 'Failed to delete email');
+      }
+      setReplies((prev) => prev.filter((r) => r.id !== reply.id));
+      if (selectedReply?.id === reply.id) {
+        setSelectedReply(null);
+      }
+      toast.success('Email deleted');
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
   };
 
   const fetchReplies = useCallback(
@@ -285,84 +403,151 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
                 transition={{ delay: i * 0.03 }}
                 className="border-b border-gray-100 last:border-b-0 dark:border-gray-800"
               >
-                <div
-                  role="button"
-                  tabIndex={0}
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                      e.preventDefault();
-                      fetchDetail(reply.id);
-                    }
-                  }}
-                  onClick={() => fetchDetail(reply.id)}
-                  className={`group flex w-full items-start gap-3.5 px-5 py-4 text-left transition-all hover:bg-gray-50/80 dark:hover:bg-white/[0.015] ${
-                    starred.has(reply.id) ? 'bg-amber-50/50 dark:bg-amber-500/5' : ''
-                  }`}
-                >
-                  {/* Avatar with initials */}
-                  <div className="from-brand-gold/30 to-brand-gold/10 text-brand-gold dark:from-brand-gold/20 dark:to-brand-gold/5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold">
-                    {(reply.from_name || reply.from || '?')[0].toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <div className="flex min-w-0 items-center gap-2">
-                        <span
-                          className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
-                            isUrgent(reply.subject)
-                              ? 'bg-red-500'
-                              : isImportant(reply.subject)
-                                ? 'bg-amber-500'
-                                : 'bg-gray-300'
-                          }`}
-                          title={
-                            isUrgent(reply.subject)
-                              ? 'High priority'
-                              : isImportant(reply.subject)
-                                ? 'Medium priority'
-                                : 'Normal'
-                          }
-                        />
-                        <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                          {reply.subject}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 items-center gap-1.5">
-                        {starred.has(reply.id) && (
-                          <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
-                        )}
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            toggleStar(reply.id);
-                          }}
-                          className="opacity-0 transition-opacity group-hover:opacity-100"
-                        >
-                          <Star
-                            className={`h-3.5 w-3.5 ${starred.has(reply.id) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+                <div className="group relative">
+                  <div
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        fetchDetail(reply.id);
+                      }
+                    }}
+                    onClick={() => fetchDetail(reply.id)}
+                    className={`flex w-full cursor-pointer touch-manipulation items-start gap-3.5 px-5 py-4 text-left transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 dark:hover:bg-white/[0.015] dark:active:bg-white/[0.03] ${
+                      starred.has(reply.id) ? 'bg-amber-50/50 dark:bg-amber-500/5' : ''
+                    }`}
+                  >
+                    {/* Avatar with initials */}
+                    <div className="from-brand-gold/30 to-brand-gold/10 text-brand-gold dark:from-brand-gold/20 dark:to-brand-gold/5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-sm font-bold">
+                      {(reply.from_name || reply.from || '?')[0].toUpperCase()}
+                    </div>
+                    <div className="min-w-0 flex-1 pr-8">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span
+                            className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${
+                              isUrgent(reply.subject)
+                                ? 'bg-red-500'
+                                : isImportant(reply.subject)
+                                  ? 'bg-amber-500'
+                                  : 'bg-gray-300'
+                            }`}
+                            title={
+                              isUrgent(reply.subject)
+                                ? 'High priority'
+                                : isImportant(reply.subject)
+                                  ? 'Medium priority'
+                                  : 'Normal'
+                            }
                           />
-                        </button>
+                          <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                            {reply.subject}
+                          </p>
+                        </div>
+                        <div className="flex shrink-0 items-center gap-1.5">
+                          {starred.has(reply.id) && (
+                            <Star className="h-3.5 w-3.5 fill-amber-400 text-amber-400" />
+                          )}
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              toggleStar(reply.id);
+                            }}
+                            className="opacity-0 transition-opacity group-hover:opacity-100"
+                          >
+                            <Star
+                              className={`h-3.5 w-3.5 ${starred.has(reply.id) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+                            />
+                          </button>
+                        </div>
+                      </div>
+                      <p className="truncate text-xs text-gray-500 dark:text-gray-400">
+                        {formatSender(reply)}
+                        {reply.from_name && (
+                          <span className="ml-1 text-gray-400 dark:text-gray-600">
+                            &lt;{reply.from}&gt;
+                          </span>
+                        )}
+                      </p>
+                      <p className="mt-0.5 truncate text-xs text-gray-400">{reply.snippet}</p>
+                      <div className="mt-1.5 flex items-center gap-3">
+                        <span className="font-mono text-[10px] text-gray-400">
+                          {new Date(reply.created_at).toLocaleString('en-IN')}
+                        </span>
+                        {reply.has_attachments && (
+                          <div className="flex items-center text-gray-400">
+                            <Paperclip className="h-3.5 w-3.5" />
+                          </div>
+                        )}
                       </div>
                     </div>
-                    <p className="truncate text-xs text-gray-500 dark:text-gray-400">
-                      {formatSender(reply)}
-                      {reply.from_name && (
-                        <span className="ml-1 text-gray-400 dark:text-gray-600">
-                          &lt;{reply.from}&gt;
-                        </span>
-                      )}
-                    </p>
-                    <p className="mt-0.5 truncate text-xs text-gray-400">{reply.snippet}</p>
-                    <div className="mt-1.5 flex items-center gap-3">
-                      <span className="font-mono text-[10px] text-gray-400">
-                        {new Date(reply.created_at).toLocaleString('en-IN')}
-                      </span>
-                      {reply.has_attachments && (
-                        <div className="flex items-center text-gray-400">
-                          <Paperclip className="h-3.5 w-3.5" />
-                        </div>
-                      )}
-                    </div>
                   </div>
+
+                  {/* Actions 3-dot menu button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveMenuId(activeMenuId === reply.id ? null : reply.id);
+                    }}
+                    className={`absolute top-1/2 right-3 z-10 -translate-y-1/2 rounded-lg p-1 text-gray-400 transition-opacity hover:text-gray-600 dark:hover:text-gray-300 ${
+                      activeMenuId === reply.id
+                        ? 'opacity-100'
+                        : 'opacity-0 group-hover:opacity-100'
+                    }`}
+                    title="More actions"
+                  >
+                    <MoreVertical className="h-3.5 w-3.5" />
+                  </button>
+
+                  {/* Dropdown Menu */}
+                  {activeMenuId === reply.id && (
+                    <div
+                      ref={rowMenuRef}
+                      className="absolute top-8 right-8 z-30 min-w-[120px] rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg dark:border-gray-800 dark:bg-gray-900"
+                    >
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMenuId(null);
+                          handleReplyInboxItem(reply);
+                        }}
+                        className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                      >
+                        Reply
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMenuId(null);
+                          handleForwardInboxItem(reply);
+                        }}
+                        className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                      >
+                        Forward
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMenuId(null);
+                          toggleStar(reply.id);
+                        }}
+                        className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                      >
+                        {starred.has(reply.id) ? 'Unstar' : 'Star'}
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setActiveMenuId(null);
+                          handleDeleteInboxItem(reply);
+                        }}
+                        className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
                 </div>
               </motion.div>
             ))}
@@ -406,34 +591,99 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
               transition={{ delay: i * 0.03 }}
               className="border-b border-gray-100 last:border-b-0 dark:border-gray-800"
             >
-              <button
-                onClick={() => fetchDetail(reply.id)}
-                className={`flex w-full touch-manipulation items-start gap-3 px-4 py-3.5 text-left transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 dark:hover:bg-white/[0.015] dark:active:bg-white/[0.03] ${
-                  starred.has(reply.id)
-                    ? 'bg-amber-50/50 dark:bg-amber-500/5'
-                    : selectedReply?.id === reply.id
-                      ? 'bg-brand-gold/5'
-                      : ''
-                }`}
-              >
-                <div className="from-brand-gold/20 to-brand-gold/5 text-brand-gold flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold">
-                  {(reply.from_name || reply.from || '?')[0].toUpperCase()}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
-                    {reply.subject}
-                  </p>
-                  <p className="truncate text-[11px] text-gray-500 dark:text-gray-400">
-                    {formatSender(reply)}
-                  </p>
-                  <p className="mt-0.5 truncate text-[11px] text-gray-400">{reply.snippet}</p>
-                  {reply.has_attachments && (
-                    <div className="mt-1.5 flex items-center text-gray-400">
-                      <Paperclip className="h-3.5 w-3.5" />
-                    </div>
-                  )}
-                </div>
-              </button>
+              <div className="group relative">
+                <button
+                  onClick={() => fetchDetail(reply.id)}
+                  className={`flex w-full touch-manipulation items-start gap-3 px-4 py-3.5 text-left transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 dark:hover:bg-white/[0.015] dark:active:bg-white/[0.03] ${
+                    starred.has(reply.id)
+                      ? 'bg-amber-50/50 dark:bg-amber-500/5'
+                      : selectedReply?.id === reply.id
+                        ? 'bg-brand-gold/5'
+                        : ''
+                  }`}
+                >
+                  <div className="from-brand-gold/20 to-brand-gold/5 text-brand-gold flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-br text-xs font-bold">
+                    {(reply.from_name || reply.from || '?')[0].toUpperCase()}
+                  </div>
+                  <div className="min-w-0 flex-1 pr-6">
+                    <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
+                      {reply.subject}
+                    </p>
+                    <p className="truncate text-[11px] text-gray-500 dark:text-gray-400">
+                      {formatSender(reply)}
+                    </p>
+                    <p className="mt-0.5 truncate text-[11px] text-gray-400">{reply.snippet}</p>
+                    {reply.has_attachments && (
+                      <div className="mt-1.5 flex items-center text-gray-400">
+                        <Paperclip className="h-3.5 w-3.5" />
+                      </div>
+                    )}
+                  </div>
+                </button>
+
+                {/* Actions 3-dot menu button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setActiveMenuId(activeMenuId === reply.id ? null : reply.id);
+                  }}
+                  className={`absolute top-1/2 right-2.5 z-10 -translate-y-1/2 rounded-lg p-1 text-gray-400 transition-opacity hover:text-gray-600 dark:hover:text-gray-300 ${
+                    activeMenuId === reply.id ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}
+                  title="More actions"
+                >
+                  <MoreVertical className="h-3.5 w-3.5" />
+                </button>
+
+                {/* Dropdown Menu */}
+                {activeMenuId === reply.id && (
+                  <div
+                    ref={rowMenuRef}
+                    className="absolute top-8 right-6 z-30 min-w-[120px] rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg dark:border-gray-800 dark:bg-gray-900"
+                  >
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(null);
+                        handleReplyInboxItem(reply);
+                      }}
+                      className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                      Reply
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(null);
+                        handleForwardInboxItem(reply);
+                      }}
+                      className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                      Forward
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(null);
+                        toggleStar(reply.id);
+                      }}
+                      className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5"
+                    >
+                      {starred.has(reply.id) ? 'Unstar' : 'Star'}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setActiveMenuId(null);
+                        handleDeleteInboxItem(reply);
+                      }}
+                      className="flex w-full items-center px-4 py-2 text-left text-xs font-semibold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                )}
+              </div>
             </motion.div>
           ))}
         </div>

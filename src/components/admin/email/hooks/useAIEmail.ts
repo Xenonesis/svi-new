@@ -90,10 +90,19 @@ export function useAIEmail() {
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           fullText += chunk;
-          onChunk?.(fullText);
+          const clean = fullText
+            .replace(/^```(?:html)?\s*/i, '')
+            .replace(/```\s*$/i, '')
+            .trim();
+          onChunk?.(clean);
         }
 
-        return fullText;
+        const finalOutput = fullText
+          .replace(/^```(?:html)?\s*/i, '')
+          .replace(/```\s*$/i, '')
+          .trim();
+
+        return finalOutput;
       } catch (err: any) {
         if (err.name === 'AbortError') return '';
         const msg = err.message || 'Failed to generate content';
@@ -129,10 +138,19 @@ export function useAIEmail() {
           if (done) break;
           const chunk = decoder.decode(value, { stream: true });
           fullText += chunk;
-          onChunk?.(fullText);
+          const clean = fullText
+            .replace(/^```(?:html)?\s*/i, '')
+            .replace(/```\s*$/i, '')
+            .trim();
+          onChunk?.(clean);
         }
 
-        return fullText;
+        const finalOutput = fullText
+          .replace(/^```(?:html)?\s*/i, '')
+          .replace(/```\s*$/i, '')
+          .trim();
+
+        return finalOutput;
       } catch (err: any) {
         if (err.name === 'AbortError') return '';
         const msg = err.message || 'Failed to improve content';

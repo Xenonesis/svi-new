@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Loader2, Check, Send, Sparkles, Lightbulb, Paperclip, Trash2 } from 'lucide-react';
+import { Loader2, Check, Send, Sparkles, Wand2, Lightbulb, Paperclip, Trash2 } from 'lucide-react';
 import { TemplatePicker } from './TemplatePicker';
 
 interface EmailToolbarProps {
@@ -12,6 +12,9 @@ interface EmailToolbarProps {
   showSubjectSuggestions: boolean;
   subjectSuggestions: string[] | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
+  subject?: string;
+  autoComposing?: boolean;
+  onAutoCompose?: () => void;
   onSend: () => void;
   onLoadTemplate: (templateId: string) => void;
   onShowImprove: () => void;
@@ -31,6 +34,9 @@ export function EmailToolbar({
   showSubjectSuggestions,
   subjectSuggestions,
   fileInputRef,
+  subject,
+  autoComposing,
+  onAutoCompose,
   onSend,
   onLoadTemplate,
   onShowImprove,
@@ -65,6 +71,29 @@ export function EmailToolbar({
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
+        {onAutoCompose && (
+          <button
+            type="button"
+            onClick={onAutoCompose}
+            disabled={!subject?.trim() || autoComposing}
+            className="text-brand-gold hover:bg-brand-gold/10 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-semibold transition-all disabled:opacity-40"
+            title={
+              !subject?.trim()
+                ? 'Enter a subject first to auto compose'
+                : 'Generate email content from subject with AI'
+            }
+          >
+            {autoComposing ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Sparkles className="h-3.5 w-3.5" />
+            )}
+            <span className="hidden sm:inline">
+              {autoComposing ? 'Composing...' : 'Auto Compose'}
+            </span>
+          </button>
+        )}
+
         <TemplatePicker selectedTemplate={selectedTemplate} onSelect={onLoadTemplate} />
 
         <button
@@ -72,7 +101,7 @@ export function EmailToolbar({
           disabled={!html && !templateHtml}
           className="text-brand-gold hover:bg-brand-gold/10 flex items-center gap-1.5 rounded-lg px-3 py-2 text-xs font-medium transition-all disabled:opacity-50"
         >
-          <Sparkles className="h-3.5 w-3.5" />
+          <Wand2 className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Improve</span>
         </button>
 

@@ -122,7 +122,8 @@ export interface ForwardData {
 export interface ReplyData {
   to: string;
   subject: string;
-  html: string;
+  html?: string;
+  quotedHtml?: string;
   originalFrom: string;
   originalDate: string;
   originalSubject: string;
@@ -144,6 +145,7 @@ export interface DraftData {
   bcc: string;
   subject: string;
   html: string;
+  quotedHtml?: string;
   replyTo: string;
   fromName: string;
   savedAt: number;
