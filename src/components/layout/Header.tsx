@@ -65,7 +65,7 @@ export default function Header() {
                 <Link
                   href="/"
                   className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
-                    h.isHomeTransparent ? 'bg-white/50' : ''
+                    h.isHomeTransparent ? 'bg-white/90' : ''
                   }`}
                   aria-label="SVI Infra Solutions Pvt. Ltd."
                 >
