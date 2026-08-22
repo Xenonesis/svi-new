@@ -15,8 +15,10 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 export default function PortalAllotmentsAdmin() {
+  const t = useTranslations('pages.adminPortalAllotments');
   const [allotments, setAllotments] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
@@ -61,8 +63,8 @@ export default function PortalAllotmentsAdmin() {
       setAllotments(allotmentsData || []);
       setProfiles(profilesData || []);
       setProperties(propertiesData || []);
-    } catch (error: any) {
-      toast.error('Failed to load data');
+    } catch (error: unknown) {
+      toast.error(t('failedToLoad'));
       console.error(error);
     } finally {
       setLoading(false);
@@ -79,28 +81,28 @@ export default function PortalAllotmentsAdmin() {
       if (editingId) {
         const { error } = await supabase.from('allotments').update(formData).eq('id', editingId);
         if (error) throw error;
-        toast.success('Allotment updated');
+        toast.success(t('allotmentUpdated'));
       } else {
         const { error } = await supabase.from('allotments').insert(formData);
         if (error) throw error;
-        toast.success('Allotment created');
+        toast.success(t('allotmentCreated'));
       }
       setShowModal(false);
       fetchData();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : t('failedToSave'));
     }
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this allotment?')) return;
+    if (!confirm(t('deleteConfirmation'))) return;
     try {
       const { error } = await supabase.from('allotments').delete().eq('id', id);
       if (error) throw error;
-      toast.success('Allotment deleted');
+      toast.success(t('allotmentDeleted'));
       fetchData();
-    } catch (error: any) {
-      toast.error(error.message);
+    } catch (error: unknown) {
+      toast.error(error instanceof Error ? error.message : t('failedToDelete'));
     }
   };
 
@@ -116,10 +118,10 @@ export default function PortalAllotmentsAdmin() {
         .eq('id', paymentId);
 
       if (error) throw error;
-      toast.success(`Payment marked as ${newStatus}`);
+      toast.success(t('paymentMarkedAs', { status: newStatus }));
       fetchData();
-    } catch (error: any) {
-      toast.error('Failed to update status');
+    } catch (error: unknown) {
+      toast.error(t('failedToUpdateStatus'));
     }
   };
 
@@ -135,11 +137,9 @@ export default function PortalAllotmentsAdmin() {
       <div className="mb-8 flex items-center justify-between">
         <div>
           <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
-            Portal <span className="text-brand-gold italic">Allotments</span>
+            {t('title')}
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
-            Manage customer portal allotments and their payment schedules.
-          </p>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
         </div>
         <button
           onClick={() => {
@@ -157,7 +157,7 @@ export default function PortalAllotmentsAdmin() {
           className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-md transition-all"
         >
           <Plus className="h-4 w-4" />
-          Add Allotment
+          {t('addAllotment')}
         </button>
       </div>
 
@@ -165,7 +165,7 @@ export default function PortalAllotmentsAdmin() {
         <Search className="absolute top-1/2 left-3 h-5 w-5 -translate-y-1/2 text-gray-400" />
         <input
           type="text"
-          placeholder="Search by client, property, or unit..."
+          placeholder={t('searchPlaceholder')}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="focus:ring-brand-gold w-full rounded-xl border border-gray-200 bg-white py-3 pr-4 pl-10 text-gray-900 outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -174,9 +174,9 @@ export default function PortalAllotmentsAdmin() {
 
       <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-700 dark:bg-gray-800">
         {loading ? (
-          <div className="p-8 text-center text-gray-500">Loading...</div>
+          <div className="p-8 text-center text-gray-500">{t('loading')}</div>
         ) : filteredAllotments.length === 0 ? (
-          <div className="p-8 text-center text-gray-500">No allotments found.</div>
+          <div className="p-8 text-center text-gray-500">{t('noAllotmentsFound')}</div>
         ) : (
           <div className="divide-y divide-gray-100 dark:divide-gray-700">
             {filteredAllotments.map((allotment) => (
@@ -195,15 +195,21 @@ export default function PortalAllotmentsAdmin() {
                       </h3>
                       <div className="mt-1 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
                         <p>
-                          <strong className="text-gray-900 dark:text-gray-300">Property:</strong>{' '}
+                          <strong className="text-gray-900 dark:text-gray-300">
+                            {t('propertyLabel')}:
+                          </strong>{' '}
                           {allotment.properties?.name}
                         </p>
                         <p>
-                          <strong className="text-gray-900 dark:text-gray-300">Unit:</strong>{' '}
+                          <strong className="text-gray-900 dark:text-gray-300">
+                            {t('unitLabel')}:
+                          </strong>{' '}
                           {allotment.unit_number}
                         </p>
                         <p>
-                          <strong className="text-gray-900 dark:text-gray-300">Total Cost:</strong>{' '}
+                          <strong className="text-gray-900 dark:text-gray-300">
+                            {t('totalCostLabel')}:
+                          </strong>{' '}
                           ₹{allotment.total_cost?.toLocaleString('en-IN')}
                         </p>
                       </div>
@@ -219,7 +225,7 @@ export default function PortalAllotmentsAdmin() {
                       }
                       className="text-brand-navy dark:text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
                     >
-                      {expandedAllotment === allotment.id ? 'Hide Payments' : 'View Payments'}
+                      {expandedAllotment === allotment.id ? t('hidePayments') : t('viewPayments')}
                       {expandedAllotment === allotment.id ? (
                         <ChevronUp className="h-4 w-4" />
                       ) : (
@@ -263,12 +269,13 @@ export default function PortalAllotmentsAdmin() {
                       <div className="mt-6 rounded-xl border border-gray-100 bg-gray-50 p-4 dark:border-gray-700 dark:bg-gray-900/50">
                         <div className="mb-4 flex items-center justify-between">
                           <h4 className="font-bold text-gray-900 dark:text-white">
-                            Payment Schedule
+                            {t('paymentSchedule')}
                           </h4>
                           <span className="text-xs text-gray-500">
                             {allotment.payment_schedules?.filter((p: any) => p.status === 'paid')
                               .length || 0}{' '}
-                            of {allotment.payment_schedules?.length || 0} paid
+                            {t('ofLabel')} {allotment.payment_schedules?.length || 0}{' '}
+                            {t('paidLabel')}
                           </span>
                         </div>
 
@@ -290,7 +297,8 @@ export default function PortalAllotmentsAdmin() {
                                     </p>
                                     <p className="mt-1 flex gap-4 text-xs text-gray-500">
                                       <span>
-                                        Due: {new Date(payment.due_date).toLocaleDateString()}
+                                        {t('dueLabel')}:{' '}
+                                        {new Date(payment.due_date).toLocaleDateString()}
                                       </span>
                                       <span>₹{payment.amount?.toLocaleString('en-IN')}</span>
                                     </p>
@@ -305,11 +313,11 @@ export default function PortalAllotmentsAdmin() {
                                   >
                                     {payment.status === 'paid' ? (
                                       <>
-                                        <CheckCircle className="h-3.5 w-3.5" /> Paid
+                                        <CheckCircle className="h-3.5 w-3.5" /> {t('paid')}
                                       </>
                                     ) : (
                                       <>
-                                        <Clock className="h-3.5 w-3.5" /> Pending
+                                        <Clock className="h-3.5 w-3.5" /> {t('pending')}
                                       </>
                                     )}
                                   </button>
@@ -318,7 +326,7 @@ export default function PortalAllotmentsAdmin() {
                           </div>
                         ) : (
                           <p className="py-4 text-center text-sm text-gray-500">
-                            No payment schedules generated for this allotment.
+                            {t('noPaymentSchedules')}
                           </p>
                         )}
                       </div>
@@ -336,14 +344,14 @@ export default function PortalAllotmentsAdmin() {
           <div className="w-full max-w-lg overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-800">
             <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-gray-700">
               <h2 className="text-xl font-bold dark:text-white">
-                {editingId ? 'Edit Allotment' : 'New Allotment'}
+                {editingId ? t('editAllotment') : t('newAllotment')}
               </h2>
             </div>
 
             <form onSubmit={handleSave} className="space-y-4 p-6">
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Client Profile
+                  {t('clientProfile')}
                 </label>
                 <select
                   required
@@ -351,7 +359,7 @@ export default function PortalAllotmentsAdmin() {
                   onChange={(e) => setFormData({ ...formData, profile_id: e.target.value })}
                   className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-gray-900 outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                 >
-                  <option value="">Select a client...</option>
+                  <option value="">{t('selectClient')}</option>
                   {profiles.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.full_name} ({p.email})
@@ -362,7 +370,7 @@ export default function PortalAllotmentsAdmin() {
 
               <div className="space-y-1">
                 <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                  Property
+                  {t('property')}
                 </label>
                 <select
                   required
@@ -370,7 +378,7 @@ export default function PortalAllotmentsAdmin() {
                   onChange={(e) => setFormData({ ...formData, property_id: e.target.value })}
                   className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-gray-900 outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                 >
-                  <option value="">Select property...</option>
+                  <option value="">{t('selectProperty')}</option>
                   {properties.map((p) => (
                     <option key={p.id} value={p.id}>
                       {p.name}
@@ -382,7 +390,7 @@ export default function PortalAllotmentsAdmin() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Unit Number
+                    {t('unitNumber')}
                   </label>
                   <input
                     type="text"
@@ -394,7 +402,7 @@ export default function PortalAllotmentsAdmin() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Area (sq yds)
+                    {t('area')}
                   </label>
                   <input
                     type="number"
@@ -409,7 +417,7 @@ export default function PortalAllotmentsAdmin() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Total Cost (₹)
+                    {t('totalCost')}
                   </label>
                   <input
                     type="number"
@@ -421,7 +429,7 @@ export default function PortalAllotmentsAdmin() {
                 </div>
                 <div className="space-y-1">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Booking Date
+                    {t('bookingDate')}
                   </label>
                   <input
                     type="date"
@@ -439,13 +447,13 @@ export default function PortalAllotmentsAdmin() {
                   onClick={() => setShowModal(false)}
                   className="rounded-lg bg-gray-100 px-4 py-2 text-sm font-bold text-gray-600 transition-colors hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600"
                 >
-                  Cancel
+                  {t('cancel')}
                 </button>
                 <button
                   type="submit"
                   className="rounded-lg bg-[#0256B4] px-4 py-2 text-sm font-bold text-white transition-colors hover:bg-[#02428A] dark:bg-[#E8D17A] dark:text-gray-900 dark:hover:bg-[#d4be66]"
                 >
-                  Save Allotment
+                  {t('saveAllotment')}
                 </button>
               </div>
             </form>

@@ -3,6 +3,7 @@ import { Link } from '@/src/i18n/navigation';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import { SITE_URL, SITE_NAME, buildAlternates, localizedUrl } from '@/src/lib/seo';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import AnalyticsTracker from '@/src/components/ui/AnalyticsTracker';
 import { BreadcrumbSchema, RealEstateListingSchema } from '@/src/components/common/Schema';
 import { AREAS_DATA } from '@/src/data/areas';
@@ -24,8 +25,10 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('pages.projectDetail');
   const project = PROJECTS_DB[slug];
-  if (!project) return { title: 'Project Not Found' };
+  if (!project) return { title: t('backToProjects') };
 
   const isHindi = locale === 'hi';
   const title = isHindi && project.titleHi ? project.titleHi : project.title;
@@ -58,6 +61,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function ProjectDetailPage({ params }: Props) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('pages.projectDetail');
   const project = PROJECTS_DB[slug];
 
   if (!project) {
@@ -98,7 +103,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           className="text-brand-navy hover:text-brand-gold mb-8 inline-flex items-center gap-2 font-semibold transition-colors dark:text-gray-300"
         >
           <ArrowLeft size={20} />
-          {isHindi ? 'प्रोजेक्ट्स पर वापस जाएँ' : 'Back to Projects'}
+          {t('backToProjects')}
         </Link>
 
         <div className="grid grid-cols-1 gap-12 lg:grid-cols-2 lg:gap-16">
@@ -147,7 +152,7 @@ export default async function ProjectDetailPage({ params }: Props) {
             >
               <div>
                 <p className="text-brand-gold mb-1 text-[10px] font-bold tracking-[0.2em] uppercase">
-                  {isHindi ? 'लोकेशन गाइड' : 'Location Guide'}
+                  {t('locationGuide')}
                 </p>
                 <p className="text-brand-navy font-serif text-xl dark:text-gray-100">
                   {area.title}

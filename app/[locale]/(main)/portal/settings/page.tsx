@@ -6,8 +6,10 @@ import { useAuthStore } from '@/src/stores/authStore';
 import { supabase } from '@/src/lib/supabase/client';
 import { Loader2, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 import { toast } from 'sonner';
+import { useTranslations } from 'next-intl';
 
 export default function PortalSettings() {
+  const t = useTranslations('pages.portalSettings');
   const { profile, userId, setProfile } = useAuthStore();
   const [loading, setLoading] = useState(false);
 
@@ -35,7 +37,7 @@ export default function PortalSettings() {
       }
       if (formData.newPassword) {
         if (formData.newPassword !== formData.confirmPassword) {
-          toast.error('Passwords do not match');
+          toast.error(t('passwordsDoNotMatch'));
           setLoading(false);
           return;
         }
@@ -47,9 +49,7 @@ export default function PortalSettings() {
         if (authError) throw authError;
 
         if (updates.email) {
-          toast.success(
-            'Confirmation email sent to new address. Please verify to change your email.'
-          );
+          toast.success(t('emailConfirmationSent'));
         }
       }
 
@@ -68,11 +68,11 @@ export default function PortalSettings() {
         }
       }
 
-      toast.success('Profile updated successfully');
+      toast.success(t('updateSuccess'));
       setFormData((prev) => ({ ...prev, newPassword: '', confirmPassword: '' }));
     } catch (error: any) {
       console.error('Error updating profile:', error);
-      toast.error(error.message || 'Failed to update profile');
+      toast.error(error.message || t('updateError'));
     } finally {
       setLoading(false);
     }
@@ -82,11 +82,9 @@ export default function PortalSettings() {
     <div className="mx-auto max-w-4xl space-y-6 lg:space-y-8">
       <div>
         <h1 className="flex items-center gap-3 font-serif text-2xl font-bold text-gray-900 lg:text-3xl dark:text-white">
-          Profile Settings
+          {t('title')}
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
-          Manage your account details and security preferences.
-        </p>
+        <p className="mt-2 text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
       </div>
 
       <motion.div
@@ -98,13 +96,13 @@ export default function PortalSettings() {
           <form onSubmit={handleUpdateProfile} className="space-y-6">
             <div className="space-y-4">
               <h2 className="border-b border-gray-100 pb-2 text-xl font-bold text-gray-900 dark:border-gray-700/50 dark:text-white">
-                Personal Information
+                {t('sections.personal.title')}
               </h2>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Full Name
+                    {t('sections.personal.fullName')}
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -116,14 +114,14 @@ export default function PortalSettings() {
                       value={formData.fullName}
                       onChange={handleChange}
                       className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-gray-900 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-[#0256B4] dark:border-gray-700 dark:bg-gray-900/50 dark:text-white dark:focus:ring-[#E8D17A]"
-                      placeholder="Your full name"
+                      placeholder={t('sections.personal.fullNamePlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Email Address
+                    {t('sections.personal.email')}
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -135,7 +133,7 @@ export default function PortalSettings() {
                       value={formData.email}
                       onChange={handleChange}
                       className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-gray-900 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-[#0256B4] dark:border-gray-700 dark:bg-gray-900/50 dark:text-white dark:focus:ring-[#E8D17A]"
-                      placeholder="your.email@example.com"
+                      placeholder={t('sections.personal.emailPlaceholder')}
                     />
                   </div>
                 </div>
@@ -144,13 +142,13 @@ export default function PortalSettings() {
 
             <div className="space-y-4 pt-6">
               <h2 className="border-b border-gray-100 pb-2 text-xl font-bold text-gray-900 dark:border-gray-700/50 dark:text-white">
-                Security
+                {t('sections.security.title')}
               </h2>
 
               <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    New Password
+                    {t('sections.security.newPassword')}
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -162,14 +160,14 @@ export default function PortalSettings() {
                       value={formData.newPassword}
                       onChange={handleChange}
                       className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-gray-900 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-[#0256B4] dark:border-gray-700 dark:bg-gray-900/50 dark:text-white dark:focus:ring-[#E8D17A]"
-                      placeholder="Leave blank to keep current"
+                      placeholder={t('sections.security.newPasswordPlaceholder')}
                     />
                   </div>
                 </div>
 
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                    Confirm New Password
+                    {t('sections.security.confirmPassword')}
                   </label>
                   <div className="relative">
                     <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -181,7 +179,7 @@ export default function PortalSettings() {
                       value={formData.confirmPassword}
                       onChange={handleChange}
                       className="block w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-2.5 pl-10 text-gray-900 transition-all outline-none focus:border-transparent focus:ring-2 focus:ring-[#0256B4] dark:border-gray-700 dark:bg-gray-900/50 dark:text-white dark:focus:ring-[#E8D17A]"
-                      placeholder="Confirm new password"
+                      placeholder={t('sections.security.confirmPasswordPlaceholder')}
                     />
                   </div>
                 </div>
@@ -195,7 +193,7 @@ export default function PortalSettings() {
                 className="inline-flex items-center justify-center rounded-xl bg-[#0256B4] px-6 py-3 font-medium text-white transition-colors hover:bg-[#02428A] disabled:cursor-not-allowed disabled:opacity-50 dark:bg-[#E8D17A] dark:text-gray-900 dark:hover:bg-[#d4be66]"
               >
                 {loading && <Loader2 className="mr-2 h-5 w-5 animate-spin" />}
-                Save Changes
+                {t('saveChanges')}
               </button>
             </div>
           </form>

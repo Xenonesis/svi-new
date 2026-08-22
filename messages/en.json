@@ -188,7 +188,6 @@
       "jaipur2": "Are there ready-to-move flats in Jaipur?",
       "khatuShyam1": "Which commercial projects are in Khatu Shyam?",
       "khatuShyam2": "What is the rental yield in Khatu Shyam?",
-
       "phulera1": "What is Phulera Smart City?",
       "phulera2": "What are the payment plans in Phulera?",
       "price1": "What is the starting price?",
@@ -379,6 +378,10 @@
     }
   },
   "pages": {
+    "home": {
+      "title": "Premium Real Estate Developer | Jaipur & Noida",
+      "description": "Premium real estate developer with 15+ years in Jaipur, Noida, and DMIC corridors. Residential plots, townships, and commercial projects by SVI Infra Solutions."
+    },
     "exclusiveOffers": {
       "title": "Exclusive Offers",
       "subtitle": "Special Deals & Benefits",
@@ -844,7 +847,94 @@
     },
     "thankYou": {
       "title": "Thank You",
-      "heading": "Registration Received"
+      "description": "Your registration has been submitted successfully. Our team will reach out to you shortly.",
+      "heading": "Registration Received",
+      "completeBadge": "Submission Complete",
+      "queuedBadge": "Submission Queued",
+      "completedDescription": "Your registration has been successfully submitted. One of our property experts will reach out to you shortly.",
+      "queuedDescription": "You were offline, so we saved your submission. It will be sent automatically once you're back online. No need to do anything else.",
+      "backToHome": "Back to Home"
+    },
+    "projectDetail": {
+      "backToProjects": "Back to Projects",
+      "locationGuide": "Location Guide"
+    },
+    "brochure": {
+      "title": "Shivani Vatika 11th Brochure",
+      "subtitle": "Premium Residential Plotted Township",
+      "description": "An ultra-premium residential plotted township by SVI Infra Solutions in Jaipur. Designed for generations.",
+      "downloadBrochure": "Download Brochure"
+    },
+    "portalDocuments": {
+      "title": "Documents",
+      "subtitle": "Access your property documents, letters, and receipts.",
+      "loading": "Loading documents...",
+      "loadError": "Failed to load documents. Please try again.",
+      "empty": "No documents available.",
+      "downloadTitle": "Download",
+      "columns": {
+        "documentName": "Document Name",
+        "type": "Type",
+        "date": "Date",
+        "status": "Status",
+        "action": "Action"
+      }
+    },
+    "portalPayments": {
+      "title": "Payment Schedule",
+      "subtitle": "Track your payment history and upcoming installments.",
+      "totalPaid": "Total Paid",
+      "totalPending": "Total Pending",
+      "loading": "Loading payments...",
+      "loadError": "Failed to load payment schedules. Please try again.",
+      "empty": "No payment records found.",
+      "payNow": "Pay Now",
+      "unitPrefix": "Unit",
+      "statusPaid": "Paid",
+      "statusPending": "Pending",
+      "statusOverdue": "Overdue",
+      "columns": {
+        "description": "Description",
+        "amount": "Amount",
+        "dueDate": "Due Date",
+        "status": "Status",
+        "action": "Action"
+      }
+    },
+    "portalProperties": {
+      "title": "My Properties",
+      "subtitle": "View and manage the properties you have invested in.",
+      "empty": "No properties found.",
+      "unknownProject": "Unknown Project",
+      "locationPending": "Location pending",
+      "unit": "Unit",
+      "allottedOn": "Allotted on",
+      "viewDetails": "View Details"
+    },
+    "portalSettings": {
+      "title": "Profile Settings",
+      "subtitle": "Manage your account details and security preferences.",
+      "saveChanges": "Save Changes",
+      "passwordsDoNotMatch": "Passwords do not match",
+      "emailConfirmationSent": "Confirmation email sent to new address. Please verify to change your email.",
+      "updateSuccess": "Profile updated successfully",
+      "updateError": "Failed to update profile",
+      "sections": {
+        "personal": {
+          "title": "Personal Information",
+          "fullName": "Full Name",
+          "fullNamePlaceholder": "Your full name",
+          "email": "Email Address",
+          "emailPlaceholder": "your.email@example.com"
+        },
+        "security": {
+          "title": "Security",
+          "newPassword": "New Password",
+          "newPasswordPlaceholder": "Leave blank to keep current",
+          "confirmPassword": "Confirm New Password",
+          "confirmPasswordPlaceholder": "Confirm new password"
+        }
+      }
     },
     "projects": {
       "currentTitle": "Current Projects",
@@ -1053,6 +1143,47 @@
       "downloadCount": "{count} downloads",
       "openAsset": "Open",
       "backToTop": "Back to top"
+    },
+    "adminPortalAllotments": {
+      "title": "Portal Allotments",
+      "subtitle": "Manage customer portal allotments and their payment schedules.",
+      "addAllotment": "Add Allotment",
+      "searchPlaceholder": "Search by client, property, or unit...",
+      "loading": "Loading...",
+      "noAllotmentsFound": "No allotments found.",
+      "viewPayments": "View Payments",
+      "hidePayments": "Hide Payments",
+      "propertyLabel": "Property",
+      "unitLabel": "Unit",
+      "totalCostLabel": "Total Cost",
+      "paymentSchedule": "Payment Schedule",
+      "ofLabel": "of",
+      "paidLabel": "paid",
+      "dueLabel": "Due",
+      "noPaymentSchedules": "No payment schedules generated for this allotment.",
+      "editAllotment": "Edit Allotment",
+      "newAllotment": "New Allotment",
+      "clientProfile": "Client Profile",
+      "selectClient": "Select a client...",
+      "property": "Property",
+      "selectProperty": "Select property...",
+      "unitNumber": "Unit Number",
+      "area": "Area (sq yds)",
+      "totalCost": "Total Cost (₹)",
+      "bookingDate": "Booking Date",
+      "cancel": "Cancel",
+      "saveAllotment": "Save Allotment",
+      "paid": "Paid",
+      "pending": "Pending",
+      "failedToLoad": "Failed to load data",
+      "allotmentUpdated": "Allotment updated",
+      "allotmentCreated": "Allotment created",
+      "deleteConfirmation": "Are you sure you want to delete this allotment?",
+      "allotmentDeleted": "Allotment deleted",
+      "failedToSave": "Failed to save allotment",
+      "failedToDelete": "Failed to delete allotment",
+      "paymentMarkedAs": "Payment marked as {status}",
+      "failedToUpdateStatus": "Failed to update status"
     }
   }
 }

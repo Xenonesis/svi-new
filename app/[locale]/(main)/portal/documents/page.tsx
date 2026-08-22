@@ -3,8 +3,10 @@
 import { motion } from 'motion/react';
 import { FileText, Download, Calendar, Loader2 } from 'lucide-react';
 import { useDocuments } from '@/src/lib/hooks/useCustomerPortal';
+import { useTranslations } from 'next-intl';
 
 export default function PortalDocuments() {
+  const t = useTranslations('pages.portalDocuments');
   const { data: documents, isLoading, error } = useDocuments();
 
   const formatDocName = (type: string) => {
@@ -18,11 +20,9 @@ export default function PortalDocuments() {
     <div className="space-y-6 lg:space-y-8">
       <div>
         <h1 className="font-serif text-2xl font-bold text-gray-900 lg:text-3xl dark:text-white">
-          Documents
+          {t('title')}
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
-          Access your property documents, letters, and receipts.
-        </p>
+        <p className="mt-2 text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
       </div>
 
       <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-700/50 dark:bg-gray-800">
@@ -31,19 +31,19 @@ export default function PortalDocuments() {
             <thead>
               <tr className="bg-gray-50 text-sm text-gray-500 dark:bg-gray-900/50 dark:text-gray-400">
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Document Name
+                  {t('columns.documentName')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Type
+                  {t('columns.type')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Date
+                  {t('columns.date')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Status
+                  {t('columns.status')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 text-right font-medium dark:border-gray-700/50">
-                  Action
+                  {t('columns.action')}
                 </th>
               </tr>
             </thead>
@@ -56,14 +56,14 @@ export default function PortalDocuments() {
                   >
                     <div className="flex items-center justify-center">
                       <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-                      <span className="ml-2">Loading documents...</span>
+                      <span className="ml-2">{t('loading')}</span>
                     </div>
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-rose-500">
-                    Failed to load documents. Please try again.
+                    {t('loadError')}
                   </td>
                 </tr>
               ) : documents?.length === 0 ? (
@@ -72,7 +72,7 @@ export default function PortalDocuments() {
                     colSpan={5}
                     className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                   >
-                    No documents available.
+                    {t('empty')}
                   </td>
                 </tr>
               ) : (
@@ -124,7 +124,7 @@ export default function PortalDocuments() {
                           target="_blank"
                           rel="noreferrer"
                           className="inline-block rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#0256B4] dark:hover:bg-gray-700 dark:hover:text-[#E8D17A]"
-                          title="Download"
+                          title={t('downloadTitle')}
                         >
                           <Download className="h-5 w-5" />
                         </a>

@@ -1,12 +1,7 @@
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { redirect } from 'next/navigation';
 import ThankYouCard from './ThankYouCard';
-
-export const metadata: Metadata = {
-  title: 'Thank You',
-  description:
-    'Your registration has been submitted successfully. Our team will reach out to you shortly.',
-};
 
 const GRADIENT_STYLE = {
   backgroundImage:
@@ -16,12 +11,19 @@ const GRADIENT_STYLE = {
 
 export default async function ThankYou({
   searchParams,
+  params,
 }: {
   searchParams: Promise<{ registered?: string; queued?: string }>;
+  params: Promise<{ locale: string }>;
 }) {
+  const [{ locale }, t] = await Promise.all([params, getTranslations('pages.thankYou')]);
+
+  setRequestLocale(locale);
+
+  const { registered, queued } = await searchParams;
+
   // Only show thank-you if user actually submitted the registration form
-  const params = await searchParams;
-  if (!params.registered) {
+  if (!registered) {
     redirect('/registration?needRegistration=1');
   }
 
@@ -32,8 +34,23 @@ export default async function ThankYou({
         style={GRADIENT_STYLE}
       ></div>
       <div className="relative z-10 container mx-auto px-4 text-center">
-        <ThankYouCard registered={!!params.registered} queued={!!params.queued} />
+        <ThankYouCard registered={!!registered} queued={!!queued} />
       </div>
     </div>
   );
+}
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const t = await getTranslations('pages.thankYou');
+
+  return {
+    title: t('title'),
+    description: t('description'),
+  };
 }

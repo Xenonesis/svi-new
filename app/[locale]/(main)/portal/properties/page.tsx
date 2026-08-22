@@ -3,8 +3,10 @@
 import { motion } from 'motion/react';
 import { Building2, MapPin, Calendar, ExternalLink, Loader2 } from 'lucide-react';
 import { useAllotments } from '@/src/lib/hooks/useCustomerPortal';
+import { useTranslations } from 'next-intl';
 
 export default function PortalProperties() {
+  const t = useTranslations('pages.portalProperties');
   const { data: properties, isLoading } = useAllotments();
 
   return (
@@ -12,18 +14,16 @@ export default function PortalProperties() {
       <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
         <div>
           <h1 className="flex items-center gap-3 font-serif text-2xl font-bold text-gray-900 lg:text-3xl dark:text-white">
-            My Properties
+            {t('title')}
             {isLoading && <Loader2 className="h-5 w-5 animate-spin text-gray-400" />}
           </h1>
-          <p className="mt-2 text-gray-600 dark:text-gray-300">
-            View and manage the properties you have invested in.
-          </p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
         </div>
       </div>
 
       {!isLoading && properties?.length === 0 ? (
         <div className="col-span-full rounded-2xl border border-gray-100 bg-white py-12 text-center text-gray-500 dark:border-gray-700/50 dark:bg-gray-800 dark:text-gray-400">
-          No properties found.
+          {t('empty')}
         </div>
       ) : (
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
@@ -31,8 +31,8 @@ export default function PortalProperties() {
             const projectData = Array.isArray(property.properties)
               ? property.properties[0]
               : property.properties || {};
-            const projectName = (projectData as any)?.name || 'Unknown Project';
-            const location = (projectData as any)?.location || 'Location pending';
+            const projectName = (projectData as any)?.name || t('unknownProject');
+            const location = (projectData as any)?.location || t('locationPending');
             const imageUrl =
               (projectData as any)?.image_url ||
               'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?auto=format&fit=crop&q=80&w=400';
@@ -67,7 +67,7 @@ export default function PortalProperties() {
                     <div className="flex items-center text-gray-600 dark:text-gray-400">
                       <Building2 className="mr-3 h-4 w-4 text-gray-400" />
                       <span className="font-medium text-gray-700 dark:text-gray-300">
-                        Unit {property.unit_no}
+                        {t('unit')} {property.unit_no}
                       </span>
                     </div>
                     <div className="flex items-center text-gray-600 dark:text-gray-400">
@@ -77,14 +77,14 @@ export default function PortalProperties() {
                     <div className="flex items-center text-gray-600 dark:text-gray-400">
                       <Calendar className="mr-3 h-4 w-4 text-gray-400" />
                       <span>
-                        Allotted on {new Date(property.allotted_date).toLocaleDateString()}
+                        {t('allottedOn')} {new Date(property.allotted_date).toLocaleDateString()}
                       </span>
                     </div>
                   </div>
 
                   <div className="mt-6 border-t border-gray-100 pt-6 dark:border-gray-700/50">
                     <button className="flex w-full items-center justify-center space-x-2 rounded-xl bg-gray-50 py-2.5 font-medium text-gray-900 transition-colors hover:bg-gray-100 dark:bg-gray-700/50 dark:text-white dark:hover:bg-gray-700">
-                      <span>View Details</span>
+                      <span>{t('viewDetails')}</span>
                       <ExternalLink className="h-4 w-4" />
                     </button>
                   </div>

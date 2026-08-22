@@ -378,6 +378,10 @@
     }
   },
   "pages": {
+    "home": {
+      "title": "प्रीमियम रियल एस्टेट डेवलपर | जयपुर और नोएडा",
+      "description": "जयपुर, नोएडा और फुलेरा स्मार्ट सिटी में प्रीमियम रियल एस्टेट डेवलपर। 15+ वर्षों के अनुभव के साथ आवासीय प्लॉट, टाउनशिप और कमर्शियल प्रोजेक्ट्स।"
+    },
     "exclusiveOffers": {
       "title": "विशेष ऑफर्स",
       "subtitle": "विशेष सौदे और लाभ",
@@ -843,7 +847,94 @@
     },
     "thankYou": {
       "title": "धन्यवाद",
-      "heading": "आपका रजिस्ट्रेशन प्राप्त हो गया है"
+      "description": "आपका पंजीकरण सफलतापूर्वक जमा हो गया है। हमारी टीम आपसे शीघ्र संपर्क करेगी।",
+      "heading": "पंजीकरण प्राप्त हो गया",
+      "completeBadge": "जमा हो गया",
+      "queuedBadge": "प्रतीक्षारत जमा",
+      "completedDescription": "आपका पंजीकरण सफलतापूर्वक जमा हो गया है। हमारी प्रॉपर्टी एक्सपर्ट टीम आपसे शीघ्र संपर्क करेगी।",
+      "queuedDescription": "आप ऑफ़लाइन थे, इसलिए हमने आपका आवेदन सुरक्षित रख लिया है। आप ऑनलाइन आते ही यह स्वचालित रूप से भेज दिया जाएगा। आपको किसी अतिरिक्त कार्रवाई की आवश्यकता नहीं है।",
+      "backToHome": "होम पर वापस जाएं"
+    },
+    "projectDetail": {
+      "backToProjects": "प्रोजेक्ट्स पर वापस जाएँ",
+      "locationGuide": "लोकेशन गाइड"
+    },
+    "brochure": {
+      "title": "शिवानी वटिका 11वां ब्रोशर",
+      "subtitle": "प्रीमियम रेजिडेंशियल प्लॉटेड टाउनशिप",
+      "description": "जयपुर में एसवीआई इन्फ्रा सॉल्यूशंस का एक अल्ट्रा-प्रीमियम रेजिडेंशियल प्लॉटेड टाउनशिप। पीढ़ियों के लिए डिज़ाइन किया गया है।",
+      "downloadBrochure": "ब्रोशर डाउनलोड करें"
+    },
+    "portalDocuments": {
+      "title": "दस्तावेज",
+      "subtitle": "अपने प्रॉपर्टी दस्तावेज, पत्र और रसीदें देखें।",
+      "loading": "दस्तावेज लोड हो रहे हैं...",
+      "loadError": "दस्तावेज लोड करने में विफल। कृपया पुनः प्रयास करें।",
+      "empty": "कोई दस्तावेज उपलब्ध नहीं है।",
+      "downloadTitle": "डाउनलोड",
+      "columns": {
+        "documentName": "दस्तावेज का नाम",
+        "type": "प्रकार",
+        "date": "तारीख",
+        "status": "स्थिति",
+        "action": "क्रिया"
+      }
+    },
+    "portalPayments": {
+      "title": "भुगतान कार्यक्रम",
+      "subtitle": "अपने भुगतान इतिहास और आगामी किश्तों को ट्रैक करें।",
+      "totalPaid": "कुल भुगतान",
+      "totalPending": "कुल लंबित",
+      "loading": "भुगतान लोड हो रहे हैं...",
+      "loadError": "भुगतान शेड्यूल लोड करने में विफल। कृपया पुनः प्रयास करें।",
+      "empty": "कोई भुगतान रिकॉर्ड नहीं मिला।",
+      "payNow": "अभी भुगतान करें",
+      "unitPrefix": "यूनिट",
+      "statusPaid": "भुगतान हो गया",
+      "statusPending": "लंबित",
+      "statusOverdue": "देर से हो गया",
+      "columns": {
+        "description": "विवरण",
+        "amount": "राशि",
+        "dueDate": "नियत तारीख",
+        "status": "स्थिति",
+        "action": "क्रिया"
+      }
+    },
+    "portalProperties": {
+      "title": "मेरी प्रॉपर्टी",
+      "subtitle": "अपने निवेश की गई प्रॉपर्टी देखें और प्रबंधित करें।",
+      "empty": "कोई प्रॉपर्टी नहीं मिली।",
+      "unknownProject": "अज्ञात प्रोजेक्ट",
+      "locationPending": "स्थिति लोड हो रही है",
+      "unit": "यूनिट",
+      "allottedOn": "आवंटित तारीख",
+      "viewDetails": "विवरण देखें"
+    },
+    "portalSettings": {
+      "title": "प्रोफाइल सेटिंग्स",
+      "subtitle": "अपने अकाउंट विवरण और सुरक्षा प्राथमिकताएं प्रबंधित करें।",
+      "saveChanges": "बदलाव सेव करें",
+      "passwordsDoNotMatch": "पासवर्ड मेल नहीं खा रहे",
+      "emailConfirmationSent": "नए पते पर पुष्टिकरण ईमेल भेजा गया है। ईमेल बदलने के लिए कृपया सत्यापित करें।",
+      "updateSuccess": "प्रोफाइल सफलतापूर्वक अपडेट हो गई",
+      "updateError": "प्रोफाइल अपडेट करने में विफल",
+      "sections": {
+        "personal": {
+          "title": "व्यक्तिगत जानकारी",
+          "fullName": "पूरा नाम",
+          "fullNamePlaceholder": "अपना पूरा नाम",
+          "email": "ईमेल पता",
+          "emailPlaceholder": "your.email@example.com"
+        },
+        "security": {
+          "title": "सुरक्षा",
+          "newPassword": "नया पासवर्ड",
+          "newPasswordPlaceholder": "वर्तमान पासवर्ड बनाए रखने के लिए खाली छोड़ें",
+          "confirmPassword": "नया पासवर्ड पुष्टि करें",
+          "confirmPasswordPlaceholder": "नया पासवर्ड पुष्टि करें"
+        }
+      }
     },
     "projects": {
       "currentTitle": "चालू प्रोजेक्ट",
@@ -1052,6 +1143,47 @@
       "downloadCount": "{count} डाउनलोड",
       "openAsset": "खोलें",
       "backToTop": "ऊपर जाएँ"
+    },
+    "adminPortalAllotments": {
+      "title": "पोर्टल आवंटन",
+      "subtitle": "ग्राहक पोर्टल आवंटन और उनकी भुगतान अनुसूचियों का प्रबंधन करें।",
+      "addAllotment": "आवंटन जोड़ें",
+      "searchPlaceholder": "क्लाइंट, प्रॉपर्टी या यूनिट से खोजें...",
+      "loading": "लोड हो रहा है...",
+      "noAllotmentsFound": "कोई आवंटन नहीं मिला।",
+      "viewPayments": "भुगतान देखें",
+      "hidePayments": "भुगतान छुपाएं",
+      "propertyLabel": "प्रॉपर्टी",
+      "unitLabel": "यूनिट",
+      "totalCostLabel": "कुल लागत",
+      "paymentSchedule": "भुगतान अनुसूची",
+      "ofLabel": "में से",
+      "paidLabel": "भुगतान",
+      "dueLabel": "देय",
+      "noPaymentSchedules": "इस आवंटन के लिए कोई भुगतान अनुसूची नहीं बनाई गई है।",
+      "editAllotment": "आवंटन संपादित करें",
+      "newAllotment": "नया आवंटन",
+      "clientProfile": "क्लाइंट प्रोफाइल",
+      "selectClient": "क्लाइंट चुनें...",
+      "property": "प्रॉपर्टी",
+      "selectProperty": "प्रॉपर्टी चुनें...",
+      "unitNumber": "यूनिट नंबर",
+      "area": "क्षेत्रफल (वर्ग गज)",
+      "totalCost": "कुल लागत (₹)",
+      "bookingDate": "बुकिंग तिथि",
+      "cancel": "रद्द करें",
+      "saveAllotment": "आवंटन सहेजें",
+      "paid": "भुगतान",
+      "pending": "लंबित",
+      "failedToLoad": "डेटा लोड करने में विफल",
+      "allotmentUpdated": "आवंटन अपडेट किया गया",
+      "allotmentCreated": "आवंटन बनाया गया",
+      "deleteConfirmation": "क्या आप वाकई इस आवंटन को हटाना चाहते हैं?",
+      "allotmentDeleted": "आवंटन हटा दिया गया",
+      "failedToSave": "आवंटन सहेजने में विफल",
+      "failedToDelete": "आवंटन हटाने में विफल",
+      "paymentMarkedAs": "भुगतान को {status} के रूप में चिह्नित किया गया",
+      "failedToUpdateStatus": "स्थिति अपडेट करने में विफल"
     }
   }
 }

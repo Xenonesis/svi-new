@@ -3,8 +3,10 @@
 import { motion } from 'motion/react';
 import { CreditCard, CheckCircle2, AlertCircle, Clock, Loader2 } from 'lucide-react';
 import { usePaymentSchedules } from '@/src/lib/hooks/useCustomerPortal';
+import { useTranslations } from 'next-intl';
 
 export default function PortalPayments() {
+  const t = useTranslations('pages.portalPayments');
   const { data: payments, isLoading, error } = usePaymentSchedules();
 
   const getStatusIcon = (status: string) => {
@@ -44,22 +46,22 @@ export default function PortalPayments() {
     <div className="space-y-6 lg:space-y-8">
       <div>
         <h1 className="font-serif text-2xl font-bold text-gray-900 lg:text-3xl dark:text-white">
-          Payment Schedule
+          {t('title')}
         </h1>
-        <p className="mt-2 text-gray-600 dark:text-gray-300">
-          Track your payment history and upcoming installments.
-        </p>
+        <p className="mt-2 text-gray-600 dark:text-gray-300">{t('subtitle')}</p>
       </div>
 
       <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
         <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700/50 dark:bg-gray-800">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Paid</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{t('totalPaid')}</p>
           <p className="mt-2 text-3xl font-bold text-gray-900 dark:text-white">
             ₹{totalPaid.toLocaleString('en-IN')}
           </p>
         </div>
         <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm dark:border-gray-700/50 dark:bg-gray-800">
-          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Total Pending</p>
+          <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+            {t('totalPending')}
+          </p>
           <p className="mt-2 text-3xl font-bold text-amber-600 dark:text-amber-400">
             ₹{totalPending.toLocaleString('en-IN')}
           </p>
@@ -72,19 +74,19 @@ export default function PortalPayments() {
             <thead>
               <tr className="bg-gray-50 text-sm text-gray-500 dark:bg-gray-900/50 dark:text-gray-400">
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Description
+                  {t('columns.description')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Amount
+                  {t('columns.amount')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Due Date
+                  {t('columns.dueDate')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 font-medium dark:border-gray-700/50">
-                  Status
+                  {t('columns.status')}
                 </th>
                 <th className="border-b border-gray-100 px-6 py-4 text-right font-medium dark:border-gray-700/50">
-                  Action
+                  {t('columns.action')}
                 </th>
               </tr>
             </thead>
@@ -97,14 +99,14 @@ export default function PortalPayments() {
                   >
                     <div className="flex items-center justify-center">
                       <Loader2 className="h-6 w-6 animate-spin text-gray-400" />
-                      <span className="ml-2">Loading payments...</span>
+                      <span className="ml-2">{t('loading')}</span>
                     </div>
                   </td>
                 </tr>
               ) : error ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-12 text-center text-rose-500">
-                    Failed to load payment schedules. Please try again.
+                    {t('loadError')}
                   </td>
                 </tr>
               ) : payments?.length === 0 ? (
@@ -113,7 +115,7 @@ export default function PortalPayments() {
                     colSpan={5}
                     className="px-6 py-12 text-center text-gray-500 dark:text-gray-400"
                   >
-                    No payment records found.
+                    {t('empty')}
                   </td>
                 </tr>
               ) : (
@@ -128,13 +130,17 @@ export default function PortalPayments() {
                     <td className="px-6 py-4">
                       <span className="font-medium text-gray-900 dark:text-white">
                         {payment.title}
-                        {Array.isArray(payment.allotments)
-                          ? payment.allotments[0]?.unit_no
-                            ? ` - Unit ${payment.allotments[0].unit_no}`
-                            : ''
-                          : (payment.allotments as any)?.unit_no
-                            ? ` - Unit ${(payment.allotments as any).unit_no}`
-                            : ''}
+                        {(() => {
+                          const unitNo = Array.isArray(payment.allotments)
+                            ? payment.allotments[0]?.unit_no
+                            : typeof payment.allotments === 'object' && payment.allotments !== null
+                              ? (payment.allotments as Record<string, unknown>).unit_no
+                              : undefined;
+
+                          return typeof unitNo === 'string' && unitNo
+                            ? ` - ${t('unitPrefix')} ${unitNo}`
+                            : '';
+                        })()}
                       </span>
                     </td>
                     <td className="px-6 py-4 font-medium text-gray-900 dark:text-white">
@@ -145,16 +151,24 @@ export default function PortalPayments() {
                     </td>
                     <td className="px-6 py-4">
                       <div
-                        className={`inline-flex items-center space-x-1.5 rounded-full border px-3 py-1 text-sm font-medium capitalize ${getStatusClass(payment.status)}`}
+                        className={`inline-flex items-center space-x-1.5 rounded-full border px-3 py-1 text-sm font-medium ${getStatusClass(payment.status)}`}
                       >
                         {getStatusIcon(payment.status)}
-                        <span>{payment.status}</span>
+                        <span>
+                          {payment.status.toLowerCase() === 'paid'
+                            ? t('statusPaid')
+                            : payment.status.toLowerCase() === 'pending'
+                              ? t('statusPending')
+                              : payment.status.toLowerCase() === 'overdue'
+                                ? t('statusOverdue')
+                                : payment.status}
+                        </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
                       {payment.status === 'pending' || payment.status === 'overdue' ? (
                         <button className="rounded-lg bg-[#0256B4] px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-[#024494]">
-                          Pay Now
+                          {t('payNow')}
                         </button>
                       ) : (
                         <span className="text-sm text-gray-400 dark:text-gray-500">-</span>
