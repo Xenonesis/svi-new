@@ -1,7 +1,16 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { AlertTriangle, Clock, Search, XCircle, Loader2 } from 'lucide-react';
+import {
+  AlertTriangle,
+  Clock,
+  Search,
+  XCircle,
+  Loader2,
+  RotateCw,
+  Send,
+  CheckCircle2,
+} from 'lucide-react';
 import { useScheduledEmails } from './hooks/useScheduledEmails';
 import { containerVariants, itemVariants } from './sections/constants';
 
@@ -12,24 +21,73 @@ export function ScheduledTab() {
     <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm dark:border-gray-700/60">
       <div className="flex flex-col transition-all duration-300">
         {/* Toolbar */}
-        <div className="dark:bg-brand-dark-surface/50 flex min-h-[56px] items-center justify-between border-b border-gray-100 bg-white/50 px-4 py-2 backdrop-blur-md dark:border-gray-800">
-          <div className="flex w-full items-center gap-3">
-            <div className="group relative w-full max-w-md">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                <Search className="group-focus-within:text-brand-gold h-4 w-4 text-gray-400 transition-colors" />
-              </div>
-              <input
-                type="text"
-                value={h.search}
-                onChange={(e) => h.setSearch(e.target.value)}
-                placeholder="Search scheduled emails..."
-                className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-full border border-gray-200 bg-gray-50/50 py-2 pr-4 pl-10 text-sm text-gray-900 transition-all placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:outline-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-gray-100 dark:placeholder:text-gray-600 dark:focus:bg-gray-900"
-              />
+        <div className="dark:bg-brand-dark-surface/50 flex flex-col gap-3 border-b border-gray-100 bg-white/50 px-4 py-3 backdrop-blur-md sm:flex-row sm:items-center sm:justify-between dark:border-gray-800">
+          <div className="group relative w-full max-w-md">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+              <Search className="group-focus-within:text-brand-gold h-4 w-4 text-gray-400 transition-colors" />
             </div>
-            {h.loading && <Loader2 className="h-4 w-4 animate-spin text-gray-400" />}
+            <input
+              type="text"
+              value={h.search}
+              onChange={(e) => h.setSearch(e.target.value)}
+              placeholder="Search scheduled emails by subject, recipient, sender..."
+              className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50/50 py-1.5 pr-4 pl-9 text-xs text-gray-900 transition-all placeholder:text-gray-400 focus:bg-white focus:ring-1 focus:outline-none dark:border-gray-800 dark:bg-gray-900/50 dark:text-gray-100 dark:placeholder:text-gray-600 dark:focus:bg-gray-900"
+            />
+          </div>
+
+          {/* Status filter tabs */}
+          <div className="flex scrollbar-none items-center gap-1.5 overflow-x-auto">
+            {[
+              { id: 'all' as const, label: 'All', count: undefined as number | undefined },
+              { id: 'pending' as const, label: 'Pending', count: undefined as number | undefined },
+              {
+                id: 'failed' as const,
+                label: 'Failed',
+                count: h.failedCount as number | undefined,
+              },
+              { id: 'sent' as const, label: 'Sent', count: undefined as number | undefined },
+            ].map((tab) => {
+              const isActive = h.statusFilter === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => h.setStatusFilter(tab.id)}
+                  className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
+                    isActive
+                      ? tab.id === 'failed'
+                        ? 'bg-red-600 font-bold text-white'
+                        : 'bg-brand-navy dark:bg-brand-gold dark:text-brand-navy font-bold text-white'
+                      : tab.id === 'failed' && (tab.count || 0) > 0
+                        ? 'border border-red-200 bg-red-50 text-red-700 hover:bg-red-100 dark:border-red-500/30 dark:bg-red-500/10 dark:text-red-300'
+                        : 'text-gray-500 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5'
+                  }`}
+                >
+                  <span>{tab.label}</span>
+                  {tab.count !== undefined && tab.count > 0 && (
+                    <span
+                      className={`py-0.2 rounded-full px-1.5 text-[10px] font-bold ${
+                        isActive
+                          ? 'bg-white/20 text-white'
+                          : 'bg-red-200 text-red-800 dark:bg-red-900/50 dark:text-red-200'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              );
+            })}
+
+            <button
+              onClick={() => h.fetchEmails()}
+              disabled={h.loading}
+              title="Refresh"
+              className="ml-1 rounded-lg border border-gray-200 p-1.5 text-gray-500 hover:bg-gray-100 dark:border-gray-700 dark:text-gray-400"
+            >
+              <RotateCw className={`h-3.5 w-3.5 ${h.loading ? 'animate-spin' : ''}`} />
+            </button>
           </div>
         </div>
-
         {/* Results count */}
         {!h.loading && !h.error && (
           <div className="flex items-center justify-between border-b border-gray-50 px-4 py-1.5 dark:border-gray-800/50">
@@ -86,23 +144,56 @@ export function ScheduledTab() {
                   day: 'numeric',
                 });
                 const isCancelling = h.cancelling === email.id;
+                const isRetrying = h.retrying === email.id;
+                const isFailed = email.status === 'failed';
+                const isSent = email.status === 'sent';
 
                 return (
                   <motion.div
                     key={email.id}
                     variants={itemVariants}
-                    className="group flex touch-manipulation flex-col gap-2 p-4 transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 sm:flex-row sm:items-center sm:gap-4 dark:hover:bg-gray-800/50 dark:active:bg-gray-800/70"
+                    className={`group flex touch-manipulation flex-col gap-2 p-4 transition-all hover:bg-gray-50/80 active:scale-[0.99] active:bg-gray-100 sm:flex-row sm:items-center sm:gap-4 dark:hover:bg-gray-800/50 dark:active:bg-gray-800/70 ${
+                      isFailed ? 'bg-red-50/40 dark:bg-red-500/[0.04]' : ''
+                    }`}
                   >
                     <div className="flex min-w-0 flex-1 items-start gap-3">
-                      <div className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400">
-                        <Clock className="h-4 w-4" />
+                      <div
+                        className={`mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
+                          isFailed
+                            ? 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400'
+                            : isSent
+                              ? 'bg-emerald-100 text-emerald-600 dark:bg-emerald-900/30 dark:text-emerald-400'
+                              : 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400'
+                        }`}
+                      >
+                        {isFailed ? (
+                          <AlertTriangle className="h-4 w-4" />
+                        ) : isSent ? (
+                          <CheckCircle2 className="h-4 w-4" />
+                        ) : (
+                          <Clock className="h-4 w-4" />
+                        )}
                       </div>
 
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center justify-between gap-2">
-                          <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
-                            {email.to_emails.join(', ')}
-                          </p>
+                          <div className="flex min-w-0 items-center gap-2">
+                            <p className="truncate text-sm font-medium text-gray-900 dark:text-gray-100">
+                              {email.to_emails.join(', ')}
+                            </p>
+                            <span
+                              className={`py-0.2 rounded-full px-2 text-[10px] font-bold uppercase ${
+                                isFailed
+                                  ? 'bg-red-100 text-red-700 dark:bg-red-900/40 dark:text-red-300'
+                                  : isSent
+                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
+                                    : 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300'
+                              }`}
+                            >
+                              {email.status}
+                            </span>
+                          </div>
+
                           <div className="flex shrink-0 items-center gap-2">
                             <span className="font-mono text-xs text-gray-500 dark:text-gray-400">
                               {dateString} • {timeString}
@@ -117,24 +208,54 @@ export function ScheduledTab() {
                     </div>
 
                     <div className="flex items-center justify-end gap-2 sm:w-auto">
-                      <button
-                        onClick={() => {
-                          if (
-                            window.confirm('Are you sure you want to cancel this scheduled email?')
-                          ) {
-                            h.cancelScheduledEmail(email.id);
-                          }
-                        }}
-                        disabled={isCancelling}
-                        className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
-                      >
-                        {isCancelling ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : (
-                          <XCircle className="h-3.5 w-3.5" />
-                        )}
-                        Cancel Send
-                      </button>
+                      {/* 1-Click Retry button for Failed emails */}
+                      {isFailed && (
+                        <button
+                          onClick={() => h.retryScheduledEmail(email.id)}
+                          disabled={isRetrying}
+                          className="flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 disabled:opacity-50"
+                        >
+                          <RotateCw className={`h-3.5 w-3.5 ${isRetrying ? 'animate-spin' : ''}`} />
+                          <span>{isRetrying ? 'Retrying…' : '1-Click Retry'}</span>
+                        </button>
+                      )}
+
+                      {/* Immediate Send Now for Pending emails */}
+                      {email.status === 'pending' && (
+                        <button
+                          onClick={() => h.retryScheduledEmail(email.id)}
+                          disabled={isRetrying}
+                          className="bg-brand-gold text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold shadow-sm transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
+                          title="Send immediately without waiting for schedule"
+                        >
+                          <Send className={`h-3 w-3 ${isRetrying ? 'animate-spin' : ''}`} />
+                          <span>{isRetrying ? 'Sending…' : 'Send Now'}</span>
+                        </button>
+                      )}
+
+                      {/* Cancel Send for Pending emails */}
+                      {email.status === 'pending' && (
+                        <button
+                          onClick={() => {
+                            if (
+                              window.confirm(
+                                'Are you sure you want to cancel this scheduled email?'
+                              )
+                            ) {
+                              h.cancelScheduledEmail(email.id);
+                            }
+                          }}
+                          disabled={isCancelling}
+                          className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs font-medium text-red-600 transition-colors hover:bg-red-50 hover:text-red-700 disabled:opacity-50 dark:text-red-400 dark:hover:bg-red-900/20 dark:hover:text-red-300"
+                        >
+                          {isCancelling ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                          ) : (
+                            <XCircle className="h-3.5 w-3.5" />
+                          )}
+                          Cancel
+                        </button>
+                      )}
                     </div>
                   </motion.div>
                 );

@@ -12,6 +12,8 @@ interface UseScheduledEmailsReturn {
   error: string | null;
   search: string;
   setSearch: (v: string) => void;
+  statusFilter: 'all' | 'pending' | 'failed' | 'sent';
+  setStatusFilter: (v: 'all' | 'pending' | 'failed' | 'sent') => void;
   sortField: SortField;
   setSortField: (f: SortField) => void;
   sortDir: SortDir;
@@ -20,17 +22,21 @@ interface UseScheduledEmailsReturn {
   sortLabel: string;
   fetchEmails: () => Promise<void>;
   cancelScheduledEmail: (id: string) => Promise<boolean>;
+  retryScheduledEmail: (id: string) => Promise<boolean>;
   cancelling: string | null;
+  retrying: string | null;
+  failedCount: number;
 }
-
 export function useScheduledEmails(): UseScheduledEmailsReturn {
   const [emails, setEmails] = useState<ScheduledEmail[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [search, setSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'failed' | 'sent'>('all');
   const [sortField, setSortField] = useState<SortField>('date');
   const [sortDir, setSortDir] = useState<SortDir>('desc');
   const [cancelling, setCancelling] = useState<string | null>(null);
+  const [retrying, setRetrying] = useState<string | null>(null);
 
   const fetchEmails = useCallback(async () => {
     setLoading(true);
@@ -43,9 +49,7 @@ export function useScheduledEmails(): UseScheduledEmailsReturn {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to fetch scheduled emails');
 
-      // Keep only pending emails
-      const pending = (data.emails || []).filter((e: ScheduledEmail) => e.status === 'pending');
-      setEmails(pending);
+      setEmails(data.emails || []);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -85,9 +89,41 @@ export function useScheduledEmails(): UseScheduledEmailsReturn {
       setCancelling(null);
     }
   };
+  const retryScheduledEmail = async (id: string) => {
+    setRetrying(id);
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/admin/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: 'retry_scheduled',
+          id,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to retry scheduled email');
+
+      setEmails((prev) => prev.map((e) => (e.id === id ? { ...e, status: 'sent' } : e)));
+      toast.success('Scheduled email resent successfully');
+      return true;
+    } catch (e) {
+      toast.error((e as Error).message);
+      return false;
+    } finally {
+      setRetrying(null);
+    }
+  };
 
   const processed = useMemo(() => {
     let list = [...emails];
+
+    if (statusFilter !== 'all') {
+      list = list.filter((e) => e.status === statusFilter);
+    }
 
     if (search.trim()) {
       const q = search.toLowerCase();
@@ -119,8 +155,9 @@ export function useScheduledEmails(): UseScheduledEmailsReturn {
     });
 
     return list;
-  }, [emails, search, sortField, sortDir]);
+  }, [emails, statusFilter, search, sortField, sortDir]);
 
+  const failedCount = useMemo(() => emails.filter((e) => e.status === 'failed').length, [emails]);
   const sortLabel = useMemo(() => {
     const opt = SORT_OPTIONS.find((o) => o.field === sortField);
     return `${opt?.label || 'Date'} ${sortDir === 'asc' ? '↑' : '↓'}`;
@@ -132,6 +169,8 @@ export function useScheduledEmails(): UseScheduledEmailsReturn {
     error,
     search,
     setSearch,
+    statusFilter,
+    setStatusFilter,
     sortField,
     setSortField,
     sortDir,
@@ -140,6 +179,9 @@ export function useScheduledEmails(): UseScheduledEmailsReturn {
     sortLabel,
     fetchEmails,
     cancelScheduledEmail,
+    retryScheduledEmail,
     cancelling,
+    retrying,
+    failedCount,
   };
 }

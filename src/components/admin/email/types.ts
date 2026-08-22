@@ -22,6 +22,31 @@ export interface SentEmail {
   subject: string;
   created_at: string;
   last_event: string;
+  is_starred?: boolean;
+  is_read?: boolean;
+  is_archived?: boolean;
+  tags?: string[];
+}
+
+export interface InboxEmailItem {
+  id: string;
+  email_id: string;
+  thread_id?: string;
+  subject: string;
+  from: string;
+  from_email?: string;
+  from_name?: string;
+  to: string[];
+  created_at: string;
+  snippet: string;
+  is_starred: boolean;
+  is_read: boolean;
+  is_archived: boolean;
+  tags: string[];
+  has_attachments?: boolean;
+  html?: string;
+  text?: string;
+  last_event?: string;
 }
 
 export interface EmailDetail {
@@ -37,7 +62,7 @@ export interface EmailDetail {
   cc?: string[];
   bcc?: string[];
   reply_to?: string[];
-  /** Inbox-specific fields */
+  /** Inbox-specific & state fields */
   email_id?: string;
   thread_id?: string;
   from_email?: string;
@@ -47,6 +72,10 @@ export interface EmailDetail {
   opened?: boolean;
   clicked?: boolean;
   attachments?: any[];
+  is_read?: boolean;
+  is_archived?: boolean;
+  is_starred?: boolean;
+  tags?: string[];
 }
 
 export interface Domain {

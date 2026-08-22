@@ -412,24 +412,109 @@ export async function GET(request: NextRequest) {
       // Sync latest emails from Resend receiving API
       await syncInboundEmails(resend);
 
-      const { data, error } = await supabaseAdmin
+      const filter = url.searchParams.get('filter') || 'inbox'; // inbox, unread, starred, archived, all
+      const tag = url.searchParams.get('tag');
+      const search = url.searchParams.get('search')?.toLowerCase().trim();
+
+      // Fetch deleted email IDs for this admin
+      const { data: deletedData } = await supabaseAdmin
+        .from('email_deletions')
+        .select('email_id')
+        .eq('admin_id', admin.id);
+      const deletedIds = new Set((deletedData || []).map((d: { email_id: string }) => d.email_id));
+
+      // Fetch starred email IDs for this admin
+      const { data: starredData } = await supabaseAdmin
+        .from('email_stars')
+        .select('email_id')
+        .eq('admin_id', admin.id);
+      const starredIds = new Set((starredData || []).map((s: { email_id: string }) => s.email_id));
+
+      let query = supabaseAdmin
         .from('email_inbox')
         .select(
-          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked, attachments'
+          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked, attachments, is_read, is_archived, is_starred, tags'
         )
-        .order('received_at', { ascending: false })
-        .limit(50);
+        .order('received_at', { ascending: false });
+
+      if (filter === 'inbox') {
+        query = query.eq('is_archived', false);
+      } else if (filter === 'archived') {
+        query = query.eq('is_archived', true);
+      } else if (filter === 'unread') {
+        query = query.eq('is_archived', false).eq('is_read', false);
+      }
+
+      if (tag) {
+        query = query.contains('tags', [tag]);
+      }
+
+      const { data, error } = await query.limit(limit);
 
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
 
-      const filteredEmails = (data || []).filter(
-        (email: any) => !email.email_id?.startsWith('test-')
+      interface InboxRow {
+        id: string;
+        email_id: string;
+        thread_id?: string;
+        subject: string;
+        from_email: string;
+        from_name?: string | null;
+        to_emails?: string[];
+        received_at: string;
+        html_content?: string;
+        text_content?: string;
+        opened?: boolean;
+        clicked?: boolean;
+        attachments?: unknown[];
+        is_read?: boolean;
+        is_archived?: boolean;
+        is_starred?: boolean;
+        tags?: string[];
+      }
+
+      let emailList = ((data as unknown as InboxRow[]) || []).filter(
+        (email) =>
+          !email.email_id?.startsWith('test-') &&
+          !deletedIds.has(email.id) &&
+          !deletedIds.has(email.email_id)
       );
 
-      return NextResponse.json({
-        emails: filteredEmails.map((email: any) => ({
+      // Filter by starred if requested
+      if (filter === 'starred') {
+        emailList = emailList.filter(
+          (email) =>
+            email.is_starred ||
+            starredIds.has(email.id) ||
+            (email.email_id && starredIds.has(email.email_id))
+        );
+      }
+
+      // Filter by search query if provided
+      if (search) {
+        emailList = emailList.filter((e) => {
+          return (
+            e.subject?.toLowerCase().includes(search) ||
+            e.from_email?.toLowerCase().includes(search) ||
+            e.from_name?.toLowerCase().includes(search) ||
+            e.text_content?.toLowerCase().includes(search)
+          );
+        });
+      }
+
+      const mappedEmails = emailList.map((email) => {
+        const isStarred = Boolean(
+          email.is_starred ||
+          starredIds.has(email.id) ||
+          (email.email_id && starredIds.has(email.email_id))
+        );
+        const isRead = Boolean(email.is_read);
+        const isArchived = Boolean(email.is_archived);
+        const tags = Array.isArray(email.tags) ? email.tags : [];
+
+        return {
           id: email.id,
           email_id: email.email_id,
           thread_id: email.thread_id || email.email_id,
@@ -445,23 +530,42 @@ export async function GET(request: NextRequest) {
             '',
           html: email.html_content,
           text: email.text_content,
-          is_starred: false,
+          is_starred: isStarred,
+          is_read: isRead,
+          is_archived: isArchived,
+          tags,
           last_event: email.opened ? 'opened' : email.clicked ? 'clicked' : 'received',
-          has_attachments: !!(email.attachments && email.attachments.length > 0),
-        })),
+          has_attachments: Boolean(email.attachments && email.attachments.length > 0),
+        };
+      });
+
+      const unreadCount = mappedEmails.filter((e) => !e.is_read && !e.is_archived).length;
+
+      return NextResponse.json({
+        emails: mappedEmails,
+        unreadCount,
+        totalCount: mappedEmails.length,
       });
     }
 
     // ─── Inbox detail — single email from email_inbox table ───
     if (action === 'inbox_detail' && emailId) {
+      const autoMarkRead = url.searchParams.get('mark_read') !== 'false';
+
       const { data, error } = await supabaseAdmin
         .from('email_inbox')
         .select('*')
-        .eq('id', emailId)
+        .or(`id.eq.${emailId},email_id.eq.${emailId}`)
         .single();
 
       if (error || !data) {
         return NextResponse.json({ error: 'Email not found' }, { status: 404 });
+      }
+
+      // Auto mark as read if requested and currently unread
+      if (autoMarkRead && !data.is_read) {
+        await supabaseAdmin.from('email_inbox').update({ is_read: true }).eq('id', data.id);
+        data.is_read = true;
       }
 
       // Fetch attachments from the new table
@@ -469,6 +573,16 @@ export async function GET(request: NextRequest) {
         .from('email_attachments')
         .select('*')
         .eq('email_id', data.email_id);
+
+      // Check starred status for this admin
+      const { data: starRecord } = await supabaseAdmin
+        .from('email_stars')
+        .select('id')
+        .eq('admin_id', admin.id)
+        .or(`email_id.eq.${data.id},email_id.eq.${data.email_id}`)
+        .maybeSingle();
+
+      const isStarred = Boolean(data.is_starred || starRecord);
 
       return NextResponse.json({
         email: {
@@ -485,6 +599,10 @@ export async function GET(request: NextRequest) {
           text: data.text_content,
           opened: data.opened,
           clicked: data.clicked,
+          is_read: Boolean(data.is_read),
+          is_archived: Boolean(data.is_archived),
+          is_starred: isStarred,
+          tags: Array.isArray(data.tags) ? data.tags : [],
           attachments:
             attachmentsData && attachmentsData.length > 0
               ? attachmentsData
@@ -825,6 +943,410 @@ export async function POST(request: NextRequest) {
       }
       return NextResponse.json({ success: true });
     }
+    // ─── 1-Click Retry / Resend Sent or Failed Email ───
+    if (action === 'retry_send') {
+      const { emailId, customRecipient, subject: customSubject, html: customHtml } = body;
+      if (!emailId) {
+        return NextResponse.json({ error: 'Missing emailId' }, { status: 400 });
+      }
+
+      let toRecipients: string[] = [];
+      let sendSubject = customSubject || '';
+      let sendHtml = customHtml || '';
+      let sendText: string | undefined = undefined;
+      let fromAddress =
+        process.env.RESEND_FROM_EMAIL || 'SVI Infra Solutions <info@sviinfrasolutions.com>';
+      const resendAttachments: Array<{ filename: string; content?: Buffer; path?: string }> = [];
+
+      try {
+        const original = await resend.emails.get(emailId);
+        const emailData = original.data as {
+          from?: string;
+          to?: string[];
+          subject?: string;
+          html?: string;
+          text?: string;
+        } | null;
+
+        if (emailData) {
+          toRecipients = customRecipient ? [customRecipient] : emailData.to || [];
+          sendSubject = customSubject || emailData.subject || 'Retry: (no subject)';
+          sendHtml =
+            customHtml || emailData.html || (emailData.text ? `<p>${emailData.text}</p>` : '');
+          sendText = emailData.text;
+          if (emailData.from) fromAddress = emailData.from;
+        }
+      } catch (fetchErr) {
+        console.error('[RETRY] Could not fetch from Resend, checking scheduled_emails:', fetchErr);
+      }
+
+      // If not found in Resend, check scheduled_emails
+      if (toRecipients.length === 0) {
+        const { data: schedData } = await supabaseAdmin
+          .from('scheduled_emails')
+          .select('*')
+          .eq('id', emailId)
+          .maybeSingle();
+
+        if (schedData) {
+          toRecipients = customRecipient ? [customRecipient] : schedData.to_emails || [];
+          sendSubject = customSubject || schedData.subject || '';
+          sendHtml = customHtml || schedData.html_body || '';
+          if (schedData.metadata?.from) fromAddress = schedData.metadata.from;
+        }
+      }
+
+      if (toRecipients.length === 0) {
+        return NextResponse.json(
+          { error: 'Could not determine recipients for retry' },
+          { status: 400 }
+        );
+      }
+
+      // Fetch attachments from email_attachments table if available
+      const { data: attachmentsData } = await supabaseAdmin
+        .from('email_attachments')
+        .select('*')
+        .eq('email_id', emailId);
+
+      interface DbAttachment {
+        filename: string;
+        url?: string | null;
+      }
+
+      if (attachmentsData && attachmentsData.length > 0) {
+        for (const att of attachmentsData as unknown as DbAttachment[]) {
+          if (att.url) {
+            resendAttachments.push({
+              filename: att.filename,
+              path: att.url,
+            });
+          }
+        }
+      }
+
+      // Send email via Resend
+      const { data: sendResult, error: sendError } = await resend.emails.send({
+        from: fromAddress,
+        to: toRecipients,
+        subject: sendSubject,
+        html: sendHtml || undefined,
+        text: sendText || undefined,
+        attachments: resendAttachments.length > 0 ? resendAttachments : undefined,
+      });
+
+      if (sendError) {
+        return NextResponse.json({ error: `Retry failed: ${sendError.message}` }, { status: 422 });
+      }
+
+      // If retrying from scheduled_emails, update its status to 'sent'
+      await supabaseAdmin
+        .from('scheduled_emails')
+        .update({ status: 'sent', updated_at: new Date().toISOString() })
+        .eq('id', emailId);
+
+      return NextResponse.json({
+        success: true,
+        newEmailId: sendResult?.id,
+        message: 'Email resent successfully',
+      });
+    }
+
+    // ─── 1-Click Retry Failed Scheduled Email ───
+    if (action === 'retry_scheduled') {
+      const { id } = body;
+      if (!id) return NextResponse.json({ error: 'Missing scheduled email id' }, { status: 400 });
+
+      const { data: email, error: fetchErr } = await supabaseAdmin
+        .from('scheduled_emails')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (fetchErr || !email) {
+        return NextResponse.json({ error: 'Scheduled email not found' }, { status: 404 });
+      }
+
+      // Fetch attachments
+      const { data: attachmentsData } = await supabaseAdmin
+        .from('email_attachments')
+        .select('*')
+        .eq('email_id', email.id);
+
+      interface DbAttachment {
+        filename: string;
+        url?: string | null;
+      }
+
+      const resendAttachments: Array<{ filename: string; path?: string; content?: Buffer }> = [];
+      if (attachmentsData && attachmentsData.length > 0) {
+        for (const att of attachmentsData as unknown as DbAttachment[]) {
+          if (att.url) {
+            resendAttachments.push({ filename: att.filename, path: att.url });
+          }
+        }
+      }
+
+      const fromAddress =
+        email.metadata?.from ||
+        process.env.RESEND_FROM_EMAIL ||
+        'SVI Infra Solutions <info@sviinfrasolutions.com>';
+
+      const { data: result, error: sendError } = await resend.emails.send({
+        from: fromAddress,
+        to: email.to_emails,
+        cc: email.cc_emails?.length ? email.cc_emails : undefined,
+        bcc: email.bcc_emails?.length ? email.bcc_emails : undefined,
+        subject: email.subject,
+        html: email.html_body,
+        replyTo: email.reply_to || undefined,
+        attachments: resendAttachments.length > 0 ? resendAttachments : undefined,
+      });
+
+      if (sendError) {
+        await supabaseAdmin.from('scheduled_emails').update({ status: 'failed' }).eq('id', id);
+        return NextResponse.json(
+          { error: `Retry send failed: ${sendError.message}` },
+          { status: 422 }
+        );
+      }
+
+      await supabaseAdmin
+        .from('scheduled_emails')
+        .update({ status: 'sent', updated_at: new Date().toISOString() })
+        .eq('id', id);
+
+      return NextResponse.json({
+        success: true,
+        newEmailId: result?.id,
+        message: 'Scheduled email sent successfully',
+      });
+    }
+
+    // ─── Bulk Retry Failed Emails ───
+    if (action === 'bulk_retry_failed') {
+      const { emailIds } = body;
+      if (!emailIds || !Array.isArray(emailIds) || emailIds.length === 0) {
+        return NextResponse.json({ error: 'Missing emailIds array' }, { status: 400 });
+      }
+
+      const results = [];
+      for (const id of emailIds) {
+        try {
+          // Try scheduled first
+          const { data: schedData } = await supabaseAdmin
+            .from('scheduled_emails')
+            .select('*')
+            .eq('id', id)
+            .maybeSingle();
+
+          if (schedData) {
+            const fromAddress =
+              schedData.metadata?.from ||
+              process.env.RESEND_FROM_EMAIL ||
+              'SVI Infra Solutions <info@sviinfrasolutions.com>';
+            const { data: resendRes, error: sendErr } = await resend.emails.send({
+              from: fromAddress,
+              to: schedData.to_emails,
+              subject: schedData.subject,
+              html: schedData.html_body,
+            });
+            if (sendErr) {
+              results.push({ id, success: false, error: sendErr.message });
+            } else {
+              await supabaseAdmin.from('scheduled_emails').update({ status: 'sent' }).eq('id', id);
+              results.push({ id, success: true, newEmailId: resendRes?.id });
+            }
+          } else {
+            // Resend get & retry
+            const original = await resend.emails.get(id);
+            const emailData = original.data as {
+              from?: string;
+              to?: string[];
+              subject?: string;
+              html?: string;
+              text?: string;
+            } | null;
+            if (emailData && emailData.to?.length) {
+              const { data: resendRes, error: sendErr } = await resend.emails.send({
+                from: emailData.from || 'SVI Infra Solutions <info@sviinfrasolutions.com>',
+                to: emailData.to,
+                subject: emailData.subject || '(no subject)',
+                html: emailData.html || (emailData.text ? `<p>${emailData.text}</p>` : ''),
+              });
+              if (sendErr) {
+                results.push({ id, success: false, error: sendErr.message });
+              } else {
+                results.push({ id, success: true, newEmailId: resendRes?.id });
+              }
+            } else {
+              results.push({ id, success: false, error: 'Email details not found' });
+            }
+          }
+        } catch (err: unknown) {
+          results.push({ id, success: false, error: (err as Error).message });
+        }
+      }
+
+      const successCount = results.filter((r) => r.success).length;
+      return NextResponse.json({
+        success: true,
+        retried: results.length,
+        successful: successCount,
+        results,
+      });
+    }
+
+    // ─── Mark Read / Unread ───
+    if (action === 'mark_read' || action === 'mark_unread') {
+      const isRead =
+        action === 'mark_read' ? (body.isRead !== undefined ? Boolean(body.isRead) : true) : false;
+      const { emailIds } = body;
+
+      if (!emailIds || !Array.isArray(emailIds) || emailIds.length === 0) {
+        return NextResponse.json({ error: 'Missing emailIds array' }, { status: 400 });
+      }
+
+      const idFilter = emailIds.join(',');
+      const { error } = await supabaseAdmin
+        .from('email_inbox')
+        .update({ is_read: isRead })
+        .or(`id.in.(${idFilter}),email_id.in.(${idFilter})`);
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ success: true, is_read: isRead, count: emailIds.length });
+    }
+
+    // ─── Mark All as Read ───
+    if (action === 'mark_all_read') {
+      const { error } = await supabaseAdmin
+        .from('email_inbox')
+        .update({ is_read: true })
+        .eq('is_archived', false);
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ success: true, message: 'All inbox emails marked as read' });
+    }
+
+    // ─── Archive / Unarchive ───
+    if (action === 'archive' || action === 'unarchive') {
+      const isArchived =
+        action === 'archive'
+          ? body.isArchived !== undefined
+            ? Boolean(body.isArchived)
+            : true
+          : false;
+      const { emailIds } = body;
+
+      if (!emailIds || !Array.isArray(emailIds) || emailIds.length === 0) {
+        return NextResponse.json({ error: 'Missing emailIds array' }, { status: 400 });
+      }
+
+      const idFilter = emailIds.join(',');
+      const { error } = await supabaseAdmin
+        .from('email_inbox')
+        .update({ is_archived: isArchived })
+        .or(`id.in.(${idFilter}),email_id.in.(${idFilter})`);
+
+      if (error) {
+        return NextResponse.json({ error: error.message }, { status: 400 });
+      }
+      return NextResponse.json({ success: true, is_archived: isArchived, count: emailIds.length });
+    }
+
+    // ─── Apply Tags ───
+    if (action === 'apply_tags') {
+      const { emailIds, tags, mode = 'set' } = body; // mode: 'add' | 'remove' | 'set'
+      if (!emailIds || !Array.isArray(emailIds) || emailIds.length === 0) {
+        return NextResponse.json({ error: 'Missing emailIds array' }, { status: 400 });
+      }
+
+      const idFilter = emailIds.join(',');
+      const cleanTags = Array.isArray(tags)
+        ? tags.map((t: unknown) => String(t).trim()).filter(Boolean)
+        : [];
+
+      if (mode === 'set') {
+        const { error } = await supabaseAdmin
+          .from('email_inbox')
+          .update({ tags: cleanTags })
+          .or(`id.in.(${idFilter}),email_id.in.(${idFilter})`);
+
+        if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      } else {
+        const { data: items, error: fetchErr } = await supabaseAdmin
+          .from('email_inbox')
+          .select('id, email_id, tags')
+          .or(`id.in.(${idFilter}),email_id.in.(${idFilter})`);
+
+        if (fetchErr) return NextResponse.json({ error: fetchErr.message }, { status: 400 });
+
+        interface InboxTagItem {
+          id: string;
+          email_id: string;
+          tags?: string[];
+        }
+
+        for (const item of (items as unknown as InboxTagItem[]) || []) {
+          const currentTags: string[] = Array.isArray(item.tags) ? item.tags : [];
+          let updatedTags: string[];
+          if (mode === 'add') {
+            const set = new Set([...currentTags, ...cleanTags]);
+            updatedTags = Array.from(set);
+          } else {
+            const removeSet = new Set(cleanTags);
+            updatedTags = currentTags.filter((t) => !removeSet.has(t));
+          }
+
+          await supabaseAdmin.from('email_inbox').update({ tags: updatedTags }).eq('id', item.id);
+        }
+      }
+
+      return NextResponse.json({ success: true, count: emailIds.length });
+    }
+
+    // ─── Bulk Star / Unstar ───
+    if (action === 'bulk_star' || action === 'bulk_unstar') {
+      const isStarred =
+        action === 'bulk_star'
+          ? body.isStarred !== undefined
+            ? Boolean(body.isStarred)
+            : true
+          : false;
+      const { emailIds } = body;
+
+      if (!emailIds || !Array.isArray(emailIds) || emailIds.length === 0) {
+        return NextResponse.json({ error: 'Missing emailIds array' }, { status: 400 });
+      }
+
+      const idFilter = emailIds.join(',');
+      await supabaseAdmin
+        .from('email_inbox')
+        .update({ is_starred: isStarred })
+        .or(`id.in.(${idFilter}),email_id.in.(${idFilter})`);
+
+      if (isStarred) {
+        await supabaseAdmin.from('email_stars').upsert(
+          emailIds.map((emailId: string) => ({
+            email_id: emailId,
+            admin_id: admin.id,
+          })),
+          { onConflict: 'email_id,admin_id' }
+        );
+      } else {
+        await supabaseAdmin
+          .from('email_stars')
+          .delete()
+          .eq('admin_id', admin.id)
+          .in('email_id', emailIds);
+      }
+
+      return NextResponse.json({ success: true, is_starred: isStarred, count: emailIds.length });
+    }
 
     if (action === 'star') {
       const { emailId } = body;
@@ -834,9 +1356,16 @@ export async function POST(request: NextRequest) {
         .from('email_stars')
         .insert({ email_id: emailId, admin_id: admin.id });
 
-      if (error) {
+      if (error && !error.message?.includes('duplicate key')) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+
+      // Update email_inbox table flag as well
+      await supabaseAdmin
+        .from('email_inbox')
+        .update({ is_starred: true })
+        .or(`id.eq.${emailId},email_id.eq.${emailId}`);
+
       return NextResponse.json({ success: true, starred: true });
     }
 
@@ -853,6 +1382,13 @@ export async function POST(request: NextRequest) {
       if (error) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
+
+      // Update email_inbox table flag as well
+      await supabaseAdmin
+        .from('email_inbox')
+        .update({ is_starred: false })
+        .or(`id.eq.${emailId},email_id.eq.${emailId}`);
+
       return NextResponse.json({ success: true, starred: false });
     }
 

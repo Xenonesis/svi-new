@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Star, MoreVertical, Check } from 'lucide-react';
+import { Star, MoreVertical, Check, RotateCw } from 'lucide-react';
 import { formatTime } from '../helpers';
 import { getInitials, getAvatarColor, StatusDot, getStatusLabel, itemVariants } from './constants';
 import type { SentEmail } from '../types';
@@ -17,6 +17,7 @@ interface EmailListItemProps {
   onForward?: (email: SentEmail) => void;
   onReply?: (email: SentEmail) => void;
   onDelete?: (email: SentEmail) => void;
+  onRetry?: (email: SentEmail) => void;
 }
 
 export function EmailListItem({
@@ -31,6 +32,7 @@ export function EmailListItem({
   onForward,
   onReply,
   onDelete,
+  onRetry,
 }: EmailListItemProps) {
   const [menuOpen, setMenuOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -131,13 +133,28 @@ export function EmailListItem({
             </p>
 
             {/* Meta info */}
-            <div className="mt-1.5 flex items-center gap-3">
+            <div className="mt-1.5 flex flex-wrap items-center gap-3">
               <span className="font-mono text-[10px] text-gray-400">
                 {formatTime(email.created_at)}
               </span>
               <span className="text-[10px] font-medium text-gray-400 capitalize">
                 {getStatusLabel(email.last_event)}
               </span>
+
+              {(email.last_event === 'bounced' || email.last_event === 'failed') && onRetry && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRetry(email);
+                  }}
+                  className="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
+                  title="1-Click Retry"
+                >
+                  <RotateCw className="h-2.5 w-2.5" />
+                  Retry Send
+                </button>
+              )}
             </div>
           </div>
 
@@ -152,7 +169,6 @@ export function EmailListItem({
             />
           )}
         </div>
-
         {/* Actions menu button (visible on hover) */}
         <button
           onClick={(e) => {
@@ -170,6 +186,19 @@ export function EmailListItem({
         {/* Dropdown Menu */}
         {menuOpen && (
           <div className="absolute top-8 right-8 z-30 min-w-[120px] rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg dark:border-gray-800 dark:bg-gray-900">
+            {onRetry && (email.last_event === 'bounced' || email.last_event === 'failed') && (
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onRetry(email);
+                  setMenuOpen(false);
+                }}
+                className="flex w-full items-center gap-1.5 px-4 py-2 text-left text-xs font-bold text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-500/10"
+              >
+                <RotateCw className="h-3 w-3" />
+                Retry Send
+              </button>
+            )}
             {onReply && (
               <button
                 onClick={(e) => {

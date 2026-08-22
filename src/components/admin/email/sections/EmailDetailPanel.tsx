@@ -9,6 +9,7 @@ import {
   Forward,
   Loader2,
   Mail,
+  MailOpen,
   Reply,
   Star,
   X,
@@ -18,12 +19,20 @@ import {
   ExternalLink,
   Calendar,
   Sparkles,
+  Tag,
+  Archive,
+  Trash2,
+  Plus,
+  RotateCw,
+  AlertTriangle,
+  Send,
 } from 'lucide-react';
 import type { EmailDetail } from '../types';
 import { buildCopyText } from '../helpers';
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { AISummaryPanel } from './AISummaryPanel';
 import { SentimentBadge } from './SentimentBadge';
+import { COMMON_TAGS, getTagStyle } from '../constants';
 
 interface EmailDetailPanelProps {
   selected: EmailDetail | null;
@@ -40,6 +49,12 @@ interface EmailDetailPanelProps {
   onCopyText: (text: string, type: string) => void;
   onCopyId: (id: string) => void;
   onToggleStar: (id: string, e: React.MouseEvent | React.KeyboardEvent) => void;
+  onMarkUnread?: (id: string) => void;
+  onArchive?: (id: string, isArchived: boolean) => void;
+  onDelete?: (id: string) => void;
+  onAddTag?: (id: string, tag: string) => void;
+  onRemoveTag?: (id: string, tag: string) => void;
+  onRetry?: (email: EmailDetail, customRecipient?: string) => Promise<void>;
 }
 
 export function EmailDetailPanel({
@@ -57,9 +72,31 @@ export function EmailDetailPanel({
   onCopyText,
   onCopyId,
   onToggleStar,
+  onMarkUnread,
+  onArchive,
+  onDelete,
+  onAddTag,
+  onRemoveTag,
+  onRetry,
 }: EmailDetailPanelProps) {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [showSummary, setShowSummary] = useState(false);
+  const [tagMenuOpen, setTagMenuOpen] = useState(false);
+  const [customTag, setCustomTag] = useState('');
+  const [retrying, setRetrying] = useState(false);
+  const [showAltRecipient, setShowAltRecipient] = useState(false);
+  const [altRecipient, setAltRecipient] = useState('');
+  const tagMenuRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (tagMenuRef.current && !tagMenuRef.current.contains(e.target as Node)) {
+        setTagMenuOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
   if (!selected) return null;
 
   // Build thread emails array for summarization
@@ -72,7 +109,6 @@ export function EmailDetailPanel({
       created_at: selected.created_at,
     },
   ];
-
   return (
     <AnimatePresence>
       <motion.div
@@ -95,14 +131,94 @@ export function EmailDetailPanel({
             <span className="font-mono text-[10px] text-gray-400 capitalize">
               {selected.last_event || 'sent'}
             </span>
+            {selected.is_read === false && (
+              <span className="rounded-full bg-blue-100 px-2 py-0.5 text-[10px] font-semibold text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">
+                Unread
+              </span>
+            )}
+            {selected.is_archived && (
+              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-400">
+                Archived
+              </span>
+            )}
           </div>
 
-          <button
-            onClick={onClose}
-            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
-          >
-            <X className="h-4 w-4" />
-          </button>
+          <div className="flex items-center gap-1">
+            {onRetry &&
+              (selected.last_event === 'bounced' ||
+                selected.last_event === 'failed' ||
+                selected.last_event === 'rejected' ||
+                selected.last_event === 'delivery_delayed') && (
+                <button
+                  onClick={async () => {
+                    setRetrying(true);
+                    try {
+                      await onRetry(selected);
+                    } finally {
+                      setRetrying(false);
+                    }
+                  }}
+                  disabled={retrying}
+                  className="mr-1 flex items-center gap-1 rounded-lg bg-red-50 px-2 py-1 text-xs font-bold text-red-600 transition-colors hover:bg-red-100 disabled:opacity-50 dark:bg-red-500/10 dark:text-red-400 dark:hover:bg-red-500/20"
+                  title="Retry Delivery"
+                >
+                  <RotateCw className={`h-3.5 w-3.5 ${retrying ? 'animate-spin' : ''}`} />
+                  <span>Retry</span>
+                </button>
+              )}
+
+            <button
+              onClick={(e) => onToggleStar(selected.id, e)}
+              className={`rounded-lg p-1.5 transition-colors ${
+                starred.has(selected.id) || selected.is_starred
+                  ? 'text-amber-400 hover:bg-amber-50 dark:hover:bg-amber-500/10'
+                  : 'text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5'
+              }`}
+              title={starred.has(selected.id) || selected.is_starred ? 'Unstar' : 'Star'}
+            >
+              <Star
+                className={`h-4 w-4 ${
+                  starred.has(selected.id) || selected.is_starred ? 'fill-amber-400' : ''
+                }`}
+              />
+            </button>
+            {onMarkUnread && (
+              <button
+                onClick={() => onMarkUnread(selected.id)}
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-blue-600 dark:hover:bg-white/5 dark:hover:text-blue-400"
+                title="Mark as Unread"
+              >
+                <Mail className="h-4 w-4" />
+              </button>
+            )}
+
+            {onArchive && (
+              <button
+                onClick={() => onArchive(selected.id, !selected.is_archived)}
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-amber-600 dark:hover:bg-white/5 dark:hover:text-amber-400"
+                title={selected.is_archived ? 'Move to Inbox' : 'Archive'}
+              >
+                <Archive className="h-4 w-4" />
+              </button>
+            )}
+
+            {onDelete && (
+              <button
+                onClick={() => onDelete(selected.id)}
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                title="Delete Email"
+              >
+                <Trash2 className="h-4 w-4" />
+              </button>
+            )}
+
+            <button
+              onClick={onClose}
+              className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/5"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
         </div>
 
         {loadingDetail ? (
@@ -119,6 +235,103 @@ export function EmailDetailPanel({
 
               {/* Recipient info - compact grid */}
               <div className="mb-5 space-y-2">
+                {/* ─── Failed / Bounced Delivery Banner & 1-Click Retry ─── */}
+                {(selected.last_event === 'bounced' ||
+                  selected.last_event === 'failed' ||
+                  selected.last_event === 'rejected' ||
+                  selected.last_event === 'delivery_delayed') && (
+                  <div className="mb-5 rounded-xl border border-red-200 bg-red-50/80 p-4 dark:border-red-500/20 dark:bg-red-500/10">
+                    <div className="flex items-start gap-3">
+                      <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
+                        <AlertTriangle className="h-4 w-4" />
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-xs font-bold text-red-900 uppercase dark:text-red-300">
+                            Delivery Failed / Bounced
+                          </h4>
+                          <span className="py-0.2 rounded-full bg-red-200/80 px-2 text-[10px] font-bold text-red-800 dark:bg-red-900/40 dark:text-red-300">
+                            {selected.last_event}
+                          </span>
+                        </div>
+                        <p className="mt-1 text-xs text-red-700 dark:text-red-400">
+                          The mail server could not deliver this message to the destination inbox.
+                          Verify the email address or retry now.
+                        </p>
+
+                        {/* Retry Buttons */}
+                        <div className="mt-3 flex flex-wrap items-center gap-2">
+                          {onRetry && (
+                            <button
+                              onClick={async () => {
+                                setRetrying(true);
+                                try {
+                                  await onRetry(selected);
+                                } finally {
+                                  setRetrying(false);
+                                }
+                              }}
+                              disabled={retrying}
+                              className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-red-700 active:scale-95 disabled:opacity-50"
+                            >
+                              <RotateCw
+                                className={`h-3.5 w-3.5 ${retrying ? 'animate-spin' : ''}`}
+                              />
+                              {retrying ? 'Retrying Send…' : '1-Click Retry Now'}
+                            </button>
+                          )}
+
+                          <button
+                            onClick={() => setShowAltRecipient(!showAltRecipient)}
+                            className="inline-flex items-center gap-1 rounded-lg border border-red-300 bg-white px-2.5 py-1.5 text-xs font-medium text-red-700 transition-colors hover:bg-red-50 dark:border-red-500/30 dark:bg-gray-800 dark:text-red-300"
+                          >
+                            <Send className="h-3 w-3" />
+                            <span>Resend to different address</span>
+                          </button>
+                        </div>
+
+                        {/* Resend to Alternative Email input */}
+                        <AnimatePresence>
+                          {showAltRecipient && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="mt-3 overflow-hidden border-t border-red-200 pt-3 dark:border-red-500/20"
+                            >
+                              <div className="flex gap-2">
+                                <input
+                                  type="email"
+                                  placeholder="Enter alternative recipient email..."
+                                  value={altRecipient}
+                                  onChange={(e) => setAltRecipient(e.target.value)}
+                                  className="w-full rounded-lg border border-red-300 bg-white px-3 py-1.5 text-xs text-gray-900 outline-none placeholder:text-gray-400 focus:border-red-500 dark:border-red-500/40 dark:bg-gray-900 dark:text-white"
+                                />
+                                <button
+                                  onClick={async () => {
+                                    if (!altRecipient.trim() || !onRetry) return;
+                                    setRetrying(true);
+                                    try {
+                                      await onRetry(selected, altRecipient.trim());
+                                      setShowAltRecipient(false);
+                                      setAltRecipient('');
+                                    } finally {
+                                      setRetrying(false);
+                                    }
+                                  }}
+                                  disabled={retrying || !altRecipient.trim()}
+                                  className="shrink-0 rounded-lg bg-red-600 px-3 py-1.5 text-xs font-bold text-white transition-all hover:bg-red-700 disabled:opacity-50"
+                                >
+                                  {retrying ? 'Sending…' : 'Send'}
+                                </button>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 {[
                   { label: 'From', value: selected.from, isEmail: true },
                   { label: 'To', value: selected.to?.join(', '), isEmail: true },
@@ -151,12 +364,124 @@ export function EmailDetailPanel({
                   ))}
               </div>
 
-              {/* Date */}
-              <div className="mb-4 flex items-center gap-2 text-[10px] text-gray-400">
-                <Calendar className="h-3 w-3" />
-                <span>{new Date(selected.created_at).toLocaleString('en-IN')}</span>
-              </div>
+              {/* Date & Tags Row */}
+              <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-[10px] text-gray-400">
+                  <Calendar className="h-3 w-3" />
+                  <span>{new Date(selected.created_at).toLocaleString('en-IN')}</span>
+                </div>
 
+                {/* Tags List */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  {(selected.tags || []).map((tag) => {
+                    const style = getTagStyle(tag);
+                    return (
+                      <span
+                        key={tag}
+                        className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold ${style.bg} ${style.color} ${style.border}`}
+                      >
+                        <Tag className="h-2.5 w-2.5" />
+                        {tag}
+                        {onRemoveTag && (
+                          <button
+                            type="button"
+                            onClick={() => onRemoveTag(selected.id, tag)}
+                            className="ml-0.5 text-gray-400 hover:text-red-500"
+                            title={`Remove ${tag}`}
+                          >
+                            <X className="h-2.5 w-2.5" />
+                          </button>
+                        )}
+                      </span>
+                    );
+                  })}
+
+                  {/* Add Tag Button */}
+                  {onAddTag && (
+                    <div ref={tagMenuRef} className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setTagMenuOpen(!tagMenuOpen)}
+                        className="inline-flex items-center gap-1 rounded-md border border-dashed border-gray-300 px-2 py-0.5 text-[11px] font-medium text-gray-500 hover:border-gray-400 hover:text-gray-700 dark:border-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                      >
+                        <Plus className="h-2.5 w-2.5" />
+                        Tag
+                      </button>
+
+                      <AnimatePresence>
+                        {tagMenuOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, y: -4, scale: 0.96 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: -4, scale: 0.96 }}
+                            className="dark:bg-brand-dark-surface absolute top-full right-0 z-50 mt-1.5 w-52 rounded-xl border border-gray-200 bg-white p-2.5 shadow-xl dark:border-gray-700"
+                          >
+                            <p className="mb-2 text-[11px] font-bold text-gray-500 uppercase dark:text-gray-400">
+                              Apply Tag
+                            </p>
+                            <div className="mb-2.5 flex flex-wrap gap-1.5">
+                              {COMMON_TAGS.map((t) => {
+                                const isApplied = (selected.tags || []).includes(t.name);
+                                return (
+                                  <button
+                                    key={t.name}
+                                    type="button"
+                                    onClick={() => {
+                                      if (isApplied && onRemoveTag) {
+                                        onRemoveTag(selected.id, t.name);
+                                      } else {
+                                        onAddTag(selected.id, t.name);
+                                      }
+                                      setTagMenuOpen(false);
+                                    }}
+                                    className={`rounded-md border px-2 py-1 text-[11px] font-semibold transition-all ${
+                                      isApplied
+                                        ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
+                                        : `${t.bg} ${t.color} ${t.border} opacity-80 hover:opacity-100`
+                                    }`}
+                                  >
+                                    {t.name} {isApplied ? '✓' : ''}
+                                  </button>
+                                );
+                              })}
+                            </div>
+                            <div className="flex gap-1.5 border-t border-gray-100 pt-1 dark:border-gray-800">
+                              <input
+                                type="text"
+                                placeholder="Custom tag..."
+                                value={customTag}
+                                onChange={(e) => setCustomTag(e.target.value)}
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter' && customTag.trim()) {
+                                    e.preventDefault();
+                                    onAddTag(selected.id, customTag.trim());
+                                    setCustomTag('');
+                                    setTagMenuOpen(false);
+                                  }
+                                }}
+                                className="w-full rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-900 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  if (customTag.trim()) {
+                                    onAddTag(selected.id, customTag.trim());
+                                    setCustomTag('');
+                                    setTagMenuOpen(false);
+                                  }
+                                }}
+                                className="bg-brand-gold text-brand-navy rounded-md px-2.5 py-1 text-xs font-bold"
+                              >
+                                Add
+                              </button>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
+                  )}
+                </div>
+              </div>
               {/* Sentiment + AI Actions */}
               <div className="mb-6 flex items-center gap-1.5">
                 {selected.html && (

@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertTriangle, ChevronDown, Inbox, Loader2 } from 'lucide-react';
-import type { ForwardData, ReplyData, SentEmail } from './types';
+import type { ForwardData, ReplyData, SentEmail, EmailDetail } from './types';
 import { buildForwardHtml, buildReplyHtml, cleanEmailSubject, getToken } from './helpers';
 import { toast } from 'sonner';
 import { EmailListSkeleton, EmailDetailSkeleton } from './Skeletons';
@@ -85,6 +85,30 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
       originalMessageId: h.selected.id,
       attachments: h.selected.attachments || [],
     });
+  };
+  /* ─── 1-Click Retry / Resend Handler ─── */
+  const handleRetryEmail = async (email: SentEmail | EmailDetail, customRecipient?: string) => {
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/admin/email', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          action: 'retry_send',
+          emailId: email.id,
+          customRecipient,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Failed to retry send');
+      toast.success('Email resent successfully!');
+      h.fetchEmails();
+    } catch (e) {
+      toast.error((e as Error).message);
+    }
   };
 
   /* ─── Delete handlers ─── */
@@ -298,6 +322,7 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
                   onForward={handleForwardEmail}
                   onReply={handleReplyEmail}
                   onDelete={handleDeleteEmailClick}
+                  onRetry={handleRetryEmail}
                 />
               ))}
             </motion.div>
@@ -349,6 +374,7 @@ export function SentTab({ onForward, onReply }: SentTabProps) {
           onCopyText={h.copyText}
           onCopyId={h.copyId}
           onToggleStar={h.toggleStar}
+          onRetry={handleRetryEmail}
         />
       )}
 

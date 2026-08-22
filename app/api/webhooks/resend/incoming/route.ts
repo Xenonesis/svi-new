@@ -4,36 +4,243 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { Resend } from 'resend';
 
 /**
- * Resend Inbound Email Webhook
+ * Resend Webhook — Inbound + Full Lifecycle Ingestion
  *
  * Configure in Resend Dashboard:
- * 1. Go to https://resend.com/emails/receiving → Add inbound address
- * 2. Set webhook URL: https://www.sviinfrasolutions.com/api/webhooks/resend/incoming
+ * 1. https://resend.com/emails/receiving → Add inbound address
+ * 2. Webhook: https://www.sviinfrasolutions.com/api/webhooks/resend/incoming
+ *    → Register events: email.sent, email.delivered, email.opened,
+ *      email.clicked, email.bounced, email.complained
  *
- * IMPORTANT: Resend's inbound webhook does NOT include email body/HTML.
- * It only sends metadata. We must call resend.emails.receiving.get() to fetch the body.
+ * Signature: Resend signs with svix (HMAC-SHA256). We verify against the RAW
+ * body before parsing — fail closed when verification is unavailable.
  *
- * Resend sends POST with JSON body:
- * {
- *   "type": "email.received",
- *   "created_at": "...",
- *   "data": {
- *     "email_id": "56761188-7520-42d8-8898-ff6fc54ce618",
- *     "created_at": "...",
- *     "from": "Sender Name <sender@example.com>",
- *     "to": ["inbound@sviiinfrasolutions.com"],
- *     "cc": [],
- *     "bcc": [],
- *     "subject": "...",
- *     "attachments": []
- *   }
- * }
+ * Event payloads handled:
+ *   email.received   → stored in email_inbox (body fetched from Resend API)
+ *   email.sent       → outbound tracking row (email_messages)
+ *   email.delivered  → delivered_at + status
+ *   email.opened     → open_count++, first_opened_at, logs IP / user-agent
+ *   email.clicked    → click_count++, first_clicked_at, logs exact URL
+ *   email.bounced    → bounced_at, hard-bounce recipient suppressed
+ *   email.complained → complained_at, recipient suppressed from future mail
+ *
+ * All lifecycle events are persisted to email_events (idempotency-key
+ * deduped) and aggregated onto email_messages so the admin UI never relies on
+ * Resend rate limits for tracking history.
  */
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) throw new Error('Missing RESEND_API_KEY environment variable');
   return new Resend(apiKey);
+}
+
+/** Event precedence — higher value wins as the message's canonical status. */
+const EVENT_PRECEDENCE: Record<string, number> = {
+  sent: 0,
+  delivered: 1,
+  opened: 2,
+  clicked: 3,
+  bounced: 4,
+  complained: 5,
+};
+
+const LIFECYCLE_EVENT_TYPES = new Set([
+  'email.sent',
+  'email.delivered',
+  'email.opened',
+  'email.clicked',
+  'email.bounced',
+  'email.complained',
+]);
+
+/** Normalize a string/array of "Name <email>" recipients into bare emails. */
+function extractRecipientEmails(value: unknown): string[] {
+  const raw = Array.isArray(value) ? value : value ? [value] : [];
+  const emails: string[] = [];
+  for (const entry of raw) {
+    if (typeof entry !== 'string') continue;
+    const m = entry.match(/<([^>]+)>/);
+    const email = (m ? m[1] : entry).trim().toLowerCase();
+    if (email) emails.push(email);
+  }
+  return emails;
+}
+
+/**
+ * Handle a lifecycle event (sent / delivered / opened / clicked / bounced /
+ * complained). Idempotent: duplicate webhook deliveries are ignored via the
+ * unique idempotency_key on email_events.
+ */
+async function handleLifecycleEvent(payload: any) {
+  const data = payload.data;
+  if (!data) throw AppError.badRequest('Missing data in payload');
+
+  const emailId = data.email_id || data.id;
+  if (!emailId) {
+    console.error('[WEBHOOK] Missing email_id. Payload:', JSON.stringify(payload).slice(0, 500));
+    throw AppError.badRequest('Missing email_id in payload');
+  }
+
+  const eventType = String(payload.type || '').replace(/^email\./, '');
+  const occurredAt = payload.created_at || data.created_at || new Date().toISOString();
+  const recipients = extractRecipientEmails(data.to ?? data.recipient);
+  const toArray = data.to ?? data.recipient ?? [];
+
+  // Per-event enrichment
+  const ip = typeof data.ip === 'string' ? data.ip : null;
+  const client = data.client || data.device;
+  const userAgent =
+    (typeof data.user_agent === 'string' && data.user_agent) ||
+    (client ? [client.name, client.os, client.device].filter(Boolean).join(' / ') || null : null);
+  const clickedUrl = typeof data.link === 'string' ? data.link : data.url || null;
+
+  let bounceType: string | null = null;
+  let bounceReason: string | null = null;
+  if (eventType === 'bounced') {
+    const bounce = data.bounce;
+    if (bounce && typeof bounce === 'object') {
+      bounceType = typeof bounce.type === 'string' ? bounce.type : null;
+      bounceReason = bounce.message || bounce.reason || bounce.description || null;
+    }
+    bounceType = bounceType || data.bounce_type || null;
+    bounceReason = bounceReason || data.reason || data.error || null;
+  }
+
+  // ── 1. Immutable audit log (idempotent) ─────────────────────────────────
+  const idempotencyKey = clickedUrl
+    ? `${emailId}:${eventType}:${occurredAt}:${clickedUrl}`
+    : `${emailId}:${eventType}:${occurredAt}`;
+
+  // Duplicate delivery of the same event → acknowledge, skip re-processing
+  const { data: dedupeRow } = await supabaseAdmin
+    .from('email_events')
+    .select('id')
+    .eq('idempotency_key', idempotencyKey)
+    .maybeSingle();
+
+  if (dedupeRow) {
+    return NextResponse.json({ received: true, event: eventType, duplicate: true });
+  }
+
+  const { error: eventError } = await supabaseAdmin.from('email_events').upsert(
+    {
+      idempotency_key: idempotencyKey,
+      email_id: emailId,
+      event_type: eventType,
+      occurred_at: occurredAt,
+      ip,
+      user_agent: userAgent,
+      url: clickedUrl,
+      bounce_type: bounceType,
+      bounce_reason: bounceReason,
+      raw: payload,
+    },
+    { onConflict: 'idempotency_key' }
+  );
+
+  if (eventError) {
+    console.error('[WEBHOOK] Failed to log event to email_events:', eventError);
+  }
+
+  // ── 2. Aggregate onto email_messages ────────────────────────────────────
+  const { data: existing } = await supabaseAdmin
+    .from('email_messages')
+    .select('*')
+    .eq('resend_id', emailId)
+    .maybeSingle();
+
+  const row: Record<string, any> = existing
+    ? { ...existing }
+    : {
+        resend_id: emailId,
+        subject: data.subject || null,
+        from_email: data.from || null,
+        to_emails: recipients,
+        status: eventType,
+        last_event: eventType,
+        sent_at: occurredAt,
+      };
+
+  row.updated_at = new Date().toISOString();
+
+  switch (eventType) {
+    case 'sent':
+      row.sent_at = row.sent_at || occurredAt;
+      break;
+    case 'delivered':
+      row.delivered_at = occurredAt;
+      break;
+    case 'opened':
+      row.open_count = (row.open_count || 0) + 1;
+      if (!row.first_opened_at) row.first_opened_at = occurredAt;
+      break;
+    case 'clicked':
+      row.click_count = (row.click_count || 0) + 1;
+      if (!row.first_clicked_at) row.first_clicked_at = occurredAt;
+      break;
+    case 'bounced':
+      row.bounced_at = occurredAt;
+      break;
+    case 'complained':
+      row.complained_at = occurredAt;
+      break;
+  }
+
+  // Keep metadata + recipients when the row predates this event
+  if (!existing) {
+    if (!row.from_email && data.from) row.from_email = data.from;
+    if (!row.subject && data.subject) row.subject = data.subject;
+    if (toArray && (!row.to_emails || row.to_emails.length === 0)) {
+      row.to_emails = recipients;
+    }
+  }
+
+  // Status precedence: complained > bounced > clicked > opened > delivered > sent
+  const candidateRank = EVENT_PRECEDENCE[eventType] ?? 0;
+  const currentRank = EVENT_PRECEDENCE[row.status] ?? 0;
+  if (candidateRank >= currentRank) {
+    row.status = eventType;
+    row.last_event = eventType;
+  }
+
+  const { error: msgError } = await supabaseAdmin
+    .from('email_messages')
+    .upsert(row, { onConflict: 'resend_id' });
+
+  if (msgError) {
+    console.error('[WEBHOOK] Failed to upsert email_messages:', msgError);
+  }
+
+  // ── 3. Suppression side-effects ─────────────────────────────────────────
+  if (recipients.length > 0) {
+    // Complaint → always suppress from future marketing mail
+    if (eventType === 'complained') {
+      for (const email of recipients) {
+        await supabaseAdmin
+          .from('email_suppressions')
+          .upsert(
+            { email, reason: 'complained', source: 'resend-webhook' },
+            { onConflict: 'email' }
+          );
+      }
+      console.warn(`[WEBHOOK] Suppressed ${recipients.join(', ')} (complaint)`);
+    }
+    // Hard bounce → flag as undeliverable; soft bounces kept for retry
+    else if (eventType === 'bounced' && bounceType === 'hard') {
+      for (const email of recipients) {
+        await supabaseAdmin
+          .from('email_suppressions')
+          .upsert(
+            { email, reason: 'hard_bounce', source: 'resend-webhook' },
+            { onConflict: 'email' }
+          );
+      }
+      console.warn(`[WEBHOOK] Suppressed hard-bounced: ${recipients.join(', ')}`);
+    }
+  }
+
+  return NextResponse.json({ received: true, event: eventType });
 }
 
 export async function POST(request: NextRequest) {
@@ -47,10 +254,7 @@ export async function POST(request: NextRequest) {
     const webhookSecret = process.env.RESEND_WEBHOOK_SECRET;
     if (!webhookSecret) {
       console.error('[WEBHOOK] RESEND_WEBHOOK_SECRET is not configured');
-      return NextResponse.json(
-        { error: 'Webhook verification not configured' },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: 'Webhook verification not configured' }, { status: 503 });
     }
 
     let resend: Resend;
@@ -58,10 +262,7 @@ export async function POST(request: NextRequest) {
       resend = getResend();
     } catch (keyErr) {
       console.error('[WEBHOOK] Resend client unavailable:', keyErr);
-      return NextResponse.json(
-        { error: 'Webhook verification not configured' },
-        { status: 503 }
-      );
+      return NextResponse.json({ error: 'Webhook verification not configured' }, { status: 503 });
     }
 
     try {
@@ -86,7 +287,12 @@ export async function POST(request: NextRequest) {
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    // Only handle email.received events
+    // ── Lifecycle events (delivered / opened / clicked / bounced / complained) ──
+    if (LIFECYCLE_EVENT_TYPES.has(payload.type)) {
+      return handleLifecycleEvent(payload);
+    }
+
+    // Only email.received handled below; anything else is acknowledged + ignored
     if (payload.type !== 'email.received') {
       return NextResponse.json({ received: true, ignored: true });
     }
