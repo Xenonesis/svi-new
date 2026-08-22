@@ -1,6 +1,6 @@
 import Image from './[locale]/(main)/og';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const alt = 'SVI Infra Solutions - Premium Real Estate Developer';
 export const size = {
   width: 1200,

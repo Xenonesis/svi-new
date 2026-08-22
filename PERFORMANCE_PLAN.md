@@ -474,7 +474,7 @@ Move suitable API routes to Edge:
 
 ```ts
 // app/api/contact/route.ts
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(req: Request) { ... }
 ```

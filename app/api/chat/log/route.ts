@@ -4,7 +4,7 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // ─── POST: Save a chat log ──────────────────────────────────────────────
 export async function POST(req: NextRequest) {

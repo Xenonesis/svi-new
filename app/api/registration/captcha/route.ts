@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { issueCaptchaToken, CAPTCHA_COOKIE, CAPTCHA_COOKIE_MAX_AGE } from '@/src/lib/captcha';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // GET /api/registration/captcha — issue a server-signed math challenge.
 // The answer never touches the client; only { a, b } is returned for display.

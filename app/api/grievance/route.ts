@@ -6,7 +6,7 @@ import { validateBody } from '@/src/lib/api/validate';
 import { grievanceSchema } from '@/src/lib/api/schemas';
 import { created } from '@/src/lib/api/response';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 function generateTicketId(): string {
   const digits = Math.floor(100000 + Math.random() * 900000);
@@ -153,18 +153,18 @@ async function sendGrievanceResponse(
           `,
         });
         if (sendErr || !emailData?.id) {
-            console.error(
-              'Grievance email notification failed:',
-              sendErr?.message ?? 'no message id returned'
-            );
-          } else {
-            // Trigger dynamic admin notification center alert
-            try {
-              await NotificationHelper.emailDispatched(adminEmail, mailSubject, ticketId);
-            } catch (notifErr) {
-              console.error('Failed to log email dispatched system alert:', notifErr);
-            }
+          console.error(
+            'Grievance email notification failed:',
+            sendErr?.message ?? 'no message id returned'
+          );
+        } else {
+          // Trigger dynamic admin notification center alert
+          try {
+            await NotificationHelper.emailDispatched(adminEmail, mailSubject, ticketId);
+          } catch (notifErr) {
+            console.error('Failed to log email dispatched system alert:', notifErr);
           }
+        }
       } else {
         // Grievance alerts disabled in settings — skip email dispatch
       }

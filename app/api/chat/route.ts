@@ -7,7 +7,7 @@ import { chatMessageSchema } from '@/src/lib/api/schemas';
 import { NextResponse, type NextRequest } from 'next/server';
 import { createClient } from '@/src/lib/supabase/server';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 export const maxDuration = 30;
 
 export async function POST(req: NextRequest) {

@@ -6,7 +6,7 @@ import { contactSchema } from '@/src/lib/api/schemas';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { escapeHtml } from '@/src/lib/utils/escape';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function POST(request: NextRequest) {
   try {

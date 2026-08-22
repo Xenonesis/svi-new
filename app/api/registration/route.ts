@@ -6,7 +6,7 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { RegistrationSchema } from '@/src/lib/schemas/registration';
 import { verifyCaptchaToken, CAPTCHA_COOKIE } from '@/src/lib/captcha';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 const STORAGE_BUCKET = 'registration-docs';
 

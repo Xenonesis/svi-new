@@ -5,7 +5,7 @@ export const size = {
   height: 180,
 };
 export const contentType = 'image/png';
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export default function Icon() {
   return new ImageResponse(

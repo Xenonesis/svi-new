@@ -6,7 +6,7 @@ import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // GET /api/site-visit — list site visit leads
 export async function GET(request: NextRequest) {

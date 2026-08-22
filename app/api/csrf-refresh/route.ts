@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes } from 'crypto';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 // POST /api/csrf-refresh — issue a fresh CSRF token.
 // Used by the registration form when its cookie expired mid-session,

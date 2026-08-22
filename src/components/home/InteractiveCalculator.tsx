@@ -37,7 +37,7 @@ export default function InteractiveCalculator() {
   // Derived values
   const baseAmount = hasFixedPrice ? plotSize * selectedPlan.rate : 0;
   const plcAmount = hasFixedPrice ? baseAmount * 0.05 : 0; // PLC: 5%
-  const edcAmount = hasFixedPrice ? plotSize * 150 : 0; // EDC: ₹150 / sq.yd
+  const edcAmount = hasFixedPrice ? plotSize * 150 : 0; // EDC: ₹150/sq.yd
   const derivedAmount = baseAmount + plcAmount + edcAmount;
   const derivedLoanLakhs = hasFixedPrice ? derivedAmount / 100000 : customLoanLakhs;
   const effectiveInterestRate = hasFixedPrice && selectedPlan.noCost ? 0 : interestRate;

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { propertyRepository } from '@/src/lib/repositories';
 
-export const runtime = 'edge';
+export const runtime = 'nodejs';
 
 export async function GET(request: NextRequest) {
   try {
