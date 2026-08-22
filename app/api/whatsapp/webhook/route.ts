@@ -1,10 +1,12 @@
+import { after } from 'next/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { getWhatsAppProvider } from '@/src/lib/whatsapp/provider';
 import { persistWebhookEvents } from '@/src/lib/whatsapp/persistence';
 import { verifyMetaWebhookSignature } from '@/src/lib/whatsapp/signature';
+import { drainPendingWhatsAppWork } from '@/src/lib/whatsapp/processor';
 
 export const runtime = 'nodejs';
-export const maxDuration = 15;
+export const maxDuration = 60;
 
 export async function GET(request: NextRequest) {
   const mode = request.nextUrl.searchParams.get('hub.mode');
@@ -43,6 +45,21 @@ export async function POST(request: NextRequest) {
   try {
     const events = getWhatsAppProvider().parseWebhook(payload);
     await persistWebhookEvents(events);
+    // Drain queued inbound jobs in the background after acknowledging the webhook
+    try {
+      after(async () => {
+        try {
+          await drainPendingWhatsAppWork(10, 'whatsapp-webhook-after');
+        } catch (drainError) {
+          console.error('WhatsApp post-webhook drain error:', {
+            error: drainError instanceof Error ? drainError.message : 'Unknown error',
+          });
+        }
+      });
+    } catch {
+      // Standalone test environments lacking Next.js request scope context
+    }
+
     return NextResponse.json({ received: true });
   } catch (error) {
     // Never log message bodies, tokens, phone numbers, or raw webhook payloads.

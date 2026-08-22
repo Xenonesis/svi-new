@@ -1,6 +1,6 @@
 # Database Schema (Supabase / PostgreSQL)
 
-The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 52 migrations.
+The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 63 migrations.
 
 ## Core Tables
 

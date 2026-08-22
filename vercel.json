@@ -35,7 +35,7 @@
     },
     {
       "path": "/api/cron/whatsapp",
-      "schedule": "*/5 * * * *"
+      "schedule": "0 2 * * *"
     }
   ]
 }

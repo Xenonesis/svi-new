@@ -1,5 +1,6 @@
 import 'server-only';
 
+import { randomUUID } from 'node:crypto';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { processInboundMessage } from './agent';
 import { evaluateMessagingEligibility, nextOutboundWindow } from './policy';
@@ -202,4 +203,60 @@ export async function processClaimedFollowUp(followUp: FollowUpRow): Promise<voi
       })
       .eq('id', followUp.id);
   }
+}
+
+export async function drainPendingWhatsAppWork(
+  limit = 10,
+  workerPrefix = 'whatsapp-drain'
+): Promise<{
+  processedJobs: number;
+  processedFollowUps: number;
+  failedJobs: number;
+  failedFollowUps: number;
+}> {
+  const worker = `${workerPrefix}:${randomUUID()}`;
+  const [{ data: jobs, error: jobsError }, { data: followUps, error: followUpsError }] =
+    await Promise.all([
+      supabaseAdmin.rpc('claim_whatsapp_jobs', {
+        p_limit: limit,
+        p_worker: worker,
+        p_lock_seconds: 120,
+      }),
+      supabaseAdmin.rpc('claim_whatsapp_followups', {
+        p_limit: limit,
+        p_worker: worker,
+        p_lock_seconds: 120,
+      }),
+    ]);
+
+  if (jobsError || followUpsError) {
+    console.error('WhatsApp drain claim failed', {
+      jobs: jobsError?.message,
+      followUps: followUpsError?.message,
+    });
+    return {
+      processedJobs: 0,
+      processedFollowUps: 0,
+      failedJobs: 0,
+      failedFollowUps: 0,
+    };
+  }
+
+  const [jobResults, followUpResults] = await Promise.all([
+    Promise.allSettled(
+      (jobs ?? []).map((job: Parameters<typeof processClaimedJob>[0]) => processClaimedJob(job))
+    ),
+    Promise.allSettled(
+      (followUps ?? []).map((followUp: Parameters<typeof processClaimedFollowUp>[0]) =>
+        processClaimedFollowUp(followUp)
+      )
+    ),
+  ]);
+
+  return {
+    processedJobs: jobResults.length,
+    processedFollowUps: followUpResults.length,
+    failedJobs: jobResults.filter((result) => result.status === 'rejected').length,
+    failedFollowUps: followUpResults.filter((result) => result.status === 'rejected').length,
+  };
 }

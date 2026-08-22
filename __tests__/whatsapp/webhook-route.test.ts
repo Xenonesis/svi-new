@@ -5,6 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 const mocks = vi.hoisted(() => ({
   parseWebhook: vi.fn(),
   persistWebhookEvents: vi.fn(),
+  drainPendingWhatsAppWork: vi.fn(),
 }));
 
 vi.mock('@/src/lib/whatsapp/provider', () => ({
@@ -13,7 +14,9 @@ vi.mock('@/src/lib/whatsapp/provider', () => ({
 vi.mock('@/src/lib/whatsapp/persistence', () => ({
   persistWebhookEvents: mocks.persistWebhookEvents,
 }));
-
+vi.mock('@/src/lib/whatsapp/processor', () => ({
+  drainPendingWhatsAppWork: mocks.drainPendingWhatsAppWork,
+}));
 import { GET, POST } from '@/app/api/whatsapp/webhook/route';
 
 const ORIGINAL_ENV = { ...process.env };
