@@ -18,6 +18,7 @@ export default function ProjectLocationMap({ mapEmbedUrl, isHindi }: ProjectLoca
       </div>
       <div className="relative h-[500px] w-full shadow-inner md:h-[600px]">
         <iframe
+          title={isHindi ? 'प्रोजेक्ट लोकेशन मैप' : 'Project Location Map'}
           src={mapEmbedUrl}
           width="100%"
           height="100%"

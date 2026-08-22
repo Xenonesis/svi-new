@@ -46,25 +46,36 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!area) return { title: 'Area Not Found' };
 
   const path = `/areas/${slug}`;
+  const isHindi = locale === 'hi';
+  const title = isHindi && area.metaTitleHi ? area.metaTitleHi : area.metaTitle;
+  const description =
+    isHindi && area.metaDescriptionHi ? area.metaDescriptionHi : area.metaDescription;
+
   return {
-    title: area.metaTitle,
-    description: area.metaDescription,
+    title,
+    description,
     alternates: buildAlternates(path, locale),
     openGraph: {
-      title: area.metaTitle,
-      description: area.metaDescription,
+      title,
+      description,
       url: localizedUrl(path, locale),
       type: 'website',
       siteName: SITE_NAME,
-      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
+      locale: isHindi ? 'hi_IN' : 'en_IN',
       images: [
         {
           url: `${SITE_URL}/images/project1.png`,
           width: 1200,
           height: 630,
-          alt: area.title,
+          alt: title,
         },
       ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title,
+      description,
+      images: [`${SITE_URL}/images/project1.png`],
     },
   };
 }

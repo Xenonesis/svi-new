@@ -2,7 +2,7 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { buildAlternates, localizedUrl, SITE_NAME } from '@/src/lib/seo';
+import { createMetadata } from '@/src/lib/seo';
 
 // ISR: revalidate every 5 minutes — marketing content, fresh enough at this cadence
 export const revalidate = 300;
@@ -50,22 +50,15 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations('pages.home');
+  const t = await getTranslations({ locale, namespace: 'pages.home' });
   const title = t('title');
   const description = t('description');
-  return {
+  return createMetadata({
     title,
     description,
-    alternates: buildAlternates('/', locale),
-    openGraph: {
-      type: 'website',
-      url: localizedUrl('/', locale),
-      title,
-      description,
-      siteName: SITE_NAME,
-      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
-    },
-  };
+    path: '/',
+    locale,
+  });
 }
 
 export default async function Home({ params }: Props) {

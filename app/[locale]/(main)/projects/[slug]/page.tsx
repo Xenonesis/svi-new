@@ -31,7 +31,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!project) return { title: t('backToProjects') };
 
   const isHindi = locale === 'hi';
-  const title = isHindi && project.titleHi ? project.titleHi : project.title;
+  const title =
+    isHindi && project.titleHi
+      ? `${project.titleHi} - ${project.typeHi || 'आवासीय प्लॉट्स'} | ${project.locationHi || 'जयपुर'}`
+      : `${project.title} - ${project.type} in ${project.location}`;
   const description = (
     isHindi && project.descriptionHi ? project.descriptionHi : project.description
   ).slice(0, 160);

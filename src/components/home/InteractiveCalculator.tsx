@@ -79,11 +79,16 @@ export default function InteractiveCalculator() {
           >
             {/* Project Selector */}
             <div className="mb-6 border-b border-gray-100 pb-6 dark:border-gray-800">
-              <label className="mb-1.5 flex items-center gap-1.5 text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+              <label
+                htmlFor="calc-project-select"
+                className="mb-1.5 flex items-center gap-1.5 text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400"
+              >
                 <MapPin size={12} />
                 Select Project
               </label>
               <select
+                id="calc-project-select"
+                aria-label="Select Project"
                 value={projectId}
                 onChange={(e) => setProjectId(e.target.value)}
                 className="focus:border-brand-gold focus:ring-brand-gold/20 w-full rounded-lg border border-gray-200 bg-gray-50 p-3 text-sm font-semibold text-gray-900 transition-all outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
@@ -138,7 +143,10 @@ export default function InteractiveCalculator() {
                 {/* Plot Size */}
                 <div>
                   <div className="mb-2 flex items-center justify-between">
-                    <label className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200">
+                    <label
+                      htmlFor="calc-plot-size"
+                      className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200"
+                    >
                       Plot Size
                     </label>
                     <span className="dark:text-brand-gold text-lg font-bold text-amber-600">
@@ -146,6 +154,8 @@ export default function InteractiveCalculator() {
                     </span>
                   </div>
                   <input
+                    id="calc-plot-size"
+                    aria-label="Plot Size in Square Yards"
                     type="range"
                     min={50}
                     max={300}
@@ -206,7 +216,10 @@ export default function InteractiveCalculator() {
                 {plan === 'onetime' && (
                   <div>
                     <div className="mb-2 flex items-center justify-between">
-                      <label className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200">
+                      <label
+                        htmlFor="calc-tenure-months"
+                        className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200"
+                      >
                         Loan Tenure (Months)
                       </label>
                       <span className="dark:text-brand-gold text-lg font-bold text-amber-600">
@@ -214,6 +227,8 @@ export default function InteractiveCalculator() {
                       </span>
                     </div>
                     <input
+                      id="calc-tenure-months"
+                      aria-label="Loan Tenure in Months"
                       type="range"
                       min={1}
                       max={24}

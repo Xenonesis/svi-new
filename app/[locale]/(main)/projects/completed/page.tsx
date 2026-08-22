@@ -11,15 +11,20 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await paramsPromise;
   const t = await getTranslations({ locale, namespace: 'pages.projects' });
+  const isHindi = locale === 'hi';
+  const title = isHindi
+    ? 'पूरे हुए प्रोजेक्ट्स - हमारे सफलतापूर्वक डिलीवर किए गए टाउनशिप'
+    : 'Completed Projects - Successfully Delivered Townships';
+  const description = t('completedSubtitle');
   return {
-    title: t('completedTitle'),
-    description: t('completedSubtitle'),
+    title,
+    description,
     alternates: buildAlternates('/projects/completed', locale),
     openGraph: {
-      title: t('completedTitle'),
-      description: t('completedSubtitle'),
+      title,
+      description,
       url: localizedUrl('/projects/completed', locale),
-      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
+      locale: isHindi ? 'hi_IN' : 'en_IN',
       images: [{ url: `${SITE_URL}/images/project2.png`, width: 1200, height: 630 }],
     },
   };

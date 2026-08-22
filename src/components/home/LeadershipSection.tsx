@@ -22,7 +22,7 @@ export default function LeadershipSection() {
               {/* Replace with actual founder image later. For now, use a premium placeholder or project image */}
               <Image
                 src="/images/hero2.png"
-                alt="Leadership"
+                alt="SVI Infra Solutions Founder and Executive Leadership"
                 fill
                 sizes="(max-width: 1024px) 100vw, 40vw"
                 className="object-cover"

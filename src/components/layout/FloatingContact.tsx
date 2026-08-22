@@ -42,7 +42,7 @@ export function FloatingContact() {
         <a
           href={WHATSAPP_URL}
           target="_blank"
-          rel="noreferrer"
+          rel="noopener noreferrer"
           onClick={handleWhatsAppClick}
           className="flex flex-1 flex-col items-center justify-center gap-1 text-[#25D366] transition-colors hover:text-green-500"
         >
@@ -79,7 +79,7 @@ export function FloatingContact() {
           <a
             href={WHATSAPP_URL}
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
             onClick={handleWhatsAppClick}
             className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-[#25D366] text-white shadow-xl transition-transform hover:scale-110"
             aria-label={t('whatsappTitle')}

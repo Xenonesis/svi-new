@@ -22,7 +22,10 @@ export default function EMISliders({
       {/* Slider 1: Loan/Investment Amount */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200">
+          <label
+            htmlFor="emi-property-amount"
+            className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200"
+          >
             Property / Investment Amount
           </label>
           <span className="dark:text-brand-gold text-lg font-bold text-amber-600">
@@ -30,6 +33,8 @@ export default function EMISliders({
           </span>
         </div>
         <input
+          id="emi-property-amount"
+          aria-label="Property / Investment Amount in Lakhs"
           type="range"
           min={5}
           max={100}
@@ -48,7 +53,10 @@ export default function EMISliders({
       {/* Slider 2: Loan Tenure (Months) */}
       <div>
         <div className="mb-2 flex items-center justify-between">
-          <label className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200">
+          <label
+            htmlFor="emi-loan-tenure"
+            className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200"
+          >
             Loan Tenure (Months)
           </label>
           <span className="dark:text-brand-gold text-lg font-bold text-amber-600">
@@ -56,6 +64,8 @@ export default function EMISliders({
           </span>
         </div>
         <input
+          id="emi-loan-tenure"
+          aria-label="Loan Tenure in Months"
           type="range"
           min={1}
           max={24}

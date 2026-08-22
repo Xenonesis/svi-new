@@ -122,7 +122,7 @@ export default function PortalDocuments() {
                         <a
                           href={doc.pdf_url || doc.image_url}
                           target="_blank"
-                          rel="noreferrer"
+                          rel="noopener noreferrer"
                           className="inline-block rounded-lg p-2 text-gray-400 transition-colors hover:bg-gray-100 hover:text-[#0256B4] dark:hover:bg-gray-700 dark:hover:text-[#E8D17A]"
                           title={t('downloadTitle')}
                         >

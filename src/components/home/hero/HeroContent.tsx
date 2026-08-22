@@ -78,10 +78,15 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
         >
           {/* Location Dropdown */}
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase">
+            <label
+              htmlFor="hero-location-select"
+              className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase"
+            >
               <MapPin size={14} className="text-brand-gold" /> Location
             </label>
             <select
+              id="hero-location-select"
+              aria-label="Location"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               className="focus:border-brand-gold focus:ring-brand-gold/50 appearance-none rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white backdrop-blur-md transition-all outline-none focus:ring-2"
@@ -103,10 +108,15 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
 
           {/* Type Dropdown */}
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase">
+            <label
+              htmlFor="hero-property-type-select"
+              className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase"
+            >
               <Building size={14} className="text-brand-gold" /> Property Type
             </label>
             <select
+              id="hero-property-type-select"
+              aria-label="Property Type"
               value={propertyType}
               onChange={(e) => setPropertyType(e.target.value)}
               className="focus:border-brand-gold focus:ring-brand-gold/50 appearance-none rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white backdrop-blur-md transition-all outline-none focus:ring-2"
@@ -128,10 +138,15 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
 
           {/* Budget Dropdown */}
           <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase">
+            <label
+              htmlFor="hero-budget-select"
+              className="flex items-center gap-1.5 text-[11px] font-semibold tracking-widest text-white/80 uppercase"
+            >
               <Banknote size={14} className="text-brand-gold" /> Budget Range
             </label>
             <select
+              id="hero-budget-select"
+              aria-label="Budget Range"
               value={budget}
               onChange={(e) => setBudget(e.target.value)}
               className="focus:border-brand-gold focus:ring-brand-gold/50 appearance-none rounded-xl border border-white/20 bg-white/5 px-4 py-3 text-sm text-white backdrop-blur-md transition-all outline-none focus:ring-2"

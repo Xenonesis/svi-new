@@ -53,7 +53,7 @@ export default function RegistrationForm() {
               noValidate
             >
               {/* Honeypot: hidden from humans, bots fill it and get rejected */}
-              <div className="absolute -left-[9999px]" aria-hidden="true">
+              <div className="absolute -left-[9999px] opacity-0">
                 <label htmlFor="website">Leave this field empty</label>
                 <input
                   type="text"

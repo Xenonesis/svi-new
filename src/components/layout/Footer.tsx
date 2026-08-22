@@ -213,7 +213,7 @@ const Footer = memo(function Footer() {
                 <a
                   href="https://maps.google.com/?q=A-61+Sector+65+Noida+Uttar+Pradesh+201309"
                   target="_blank"
-                  rel="noreferrer"
+                  rel="noopener noreferrer"
                   className="flex items-start transition-colors hover:opacity-80"
                   suppressHydrationWarning
                 >

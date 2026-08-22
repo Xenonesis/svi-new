@@ -2,7 +2,8 @@ import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { MapPin, PhoneIcon, Mail, Clock, ArrowUpRight } from 'lucide-react';
 import { setRequestLocale, getTranslations } from 'next-intl/server';
-import { SITE_URL } from '@/src/lib/seo';
+import type { Metadata } from 'next';
+import { SITE_URL, createMetadata } from '@/src/lib/seo';
 import ContactMapWrapper from '@/src/components/contact/ContactMapWrapper';
 
 const ContactFAQ = dynamic(() => import('@/src/components/faq/ContactFAQ'), {
@@ -78,6 +79,24 @@ function isOfficeOpen(): boolean {
   if (day === 6) return h >= 9 && h < 17;
   if (day === 0) return h >= 10 && h < 16;
   return false;
+}
+export async function generateMetadata(props: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await props.params;
+  const isHindi = locale === 'hi';
+  const title = isHindi
+    ? 'संपर्क करें - ऑफिस का पता, फोन नंबर और पूछताछ'
+    : 'Contact Us - Office Address, Phone & Inquiries';
+  const description = isHindi
+    ? 'SVI Infra Solutions से संपर्क करें। जयपुर, नोएडा और फुलेरा में प्लॉट्स और टाउनशिप की जानकारी और साइट विजिट बुक करने के लिए हमसे बात करें।'
+    : 'Contact SVI Infra Solutions for inquiries about our premium residential and commercial properties in Jaipur, Noida, and Phulera. Schedule a site visit today.';
+  return createMetadata({
+    title,
+    description,
+    path: '/contact',
+    locale,
+  });
 }
 
 export default async function Contact(props: { params: Promise<{ locale: string }> }) {

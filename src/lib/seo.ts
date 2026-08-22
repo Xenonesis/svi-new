@@ -46,6 +46,7 @@ type SeoOptions = {
   image?: string;
   noIndex?: boolean;
   type?: 'website' | 'article';
+  locale?: string;
 };
 
 export function createMetadata({
@@ -55,16 +56,16 @@ export function createMetadata({
   image = DEFAULT_OG_IMAGE,
   noIndex = false,
   type = 'website',
+  locale = 'en',
 }: SeoOptions): Metadata {
-  const url = localizedUrl(path, 'en');
+  const url = localizedUrl(path, locale);
   const imageUrl = absoluteUrl(image);
-
   return {
     // Plain string: the root layout's `%s | SVI Infra Solutions` template
     // appends the brand once. Callers must NOT include the brand in `title`.
     title,
     description,
-    alternates: buildAlternates(path, 'en'),
+    alternates: buildAlternates(path, locale),
     robots: noIndex
       ? {
           index: false,
@@ -87,7 +88,7 @@ export function createMetadata({
       title,
       description,
       siteName: SITE_NAME,
-      locale: 'en_IN',
+      locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
       images: [
         {
           url: imageUrl,

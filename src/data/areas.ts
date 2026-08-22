@@ -5,6 +5,8 @@ export interface AreaInfo {
   description: string;
   metaTitle: string;
   metaDescription: string;
+  metaTitleHi?: string;
+  metaDescriptionHi?: string;
   content: string;
   highlights: string[];
   projects: string[]; // matching project IDs
@@ -20,6 +22,9 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     metaTitle: 'Properties in Tonk Road Jaipur - Plots & Townships',
     metaDescription:
       'Explore premium residential and commercial projects on Tonk Road, Jaipur. Master-planned townships near IT parks and the upcoming ring road.',
+    metaTitleHi: 'टोंक रोड जयपुर में प्लॉट्स और रेजिडेंशियल टाउनशिप | SVI Infra',
+    metaDescriptionHi:
+      'टोंक रोड, जयपुर में प्रीमियम आवासीय और कमर्शियल प्लॉट्स। रिंग रोड और प्रमुख आईटी हब के पास आधुनिक टाउनशिप।',
     highlights: [
       'Direct connectivity to Jaipur International Airport (15 mins)',
       'Close proximity to Chokhi Dhani and upcoming Ring Road',
@@ -39,6 +44,9 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     metaTitle: 'Plots and Residential Properties in Nayla Jaipur',
     metaDescription:
       'Find your dream home or plot in Nayla, Jaipur. Peaceful community living with essential urban utilities and high ROI potential.',
+    metaTitleHi: 'नायला जयपुर में प्लॉट्स और आवासीय प्रॉपर्टीज | SVI Infra',
+    metaDescriptionHi:
+      'नायला, जयपुर में शांतिपूर्ण और प्राकृतिक वातावरण में गेटेड टाउनशिप प्लॉट्स। बेहतर कनेक्टिविटी और उच्च रिटर्न की गारंटी।',
     highlights: [
       'Pollution-free, scenic natural surroundings',
       'Well-developed roads and reliable water supply',
@@ -58,6 +66,9 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     metaTitle: 'Plots in Phulera Smart City Jaipur | DMIC Corridor',
     metaDescription:
       'Invest in Phulera Smart City, the logistics and industrial center of the Delhi-Mumbai Industrial Corridor. High ROI plots near Sambhar Lake.',
+    metaTitleHi: 'फुलेरा स्मार्ट सिटी जयपुर में प्लॉट्स | DMIC कॉरिडोर | SVI Infra',
+    metaDescriptionHi:
+      'फुलेरा स्मार्ट सिटी (DMIC कॉरिडोर) में आवासीय और कमर्शियल प्लॉट्स में निवेश करें। सांभर लेक के नजदीक उच्च विकास दर।',
     highlights: [
       'Strategic location on the DMIC / Dedicated Freight Corridor (DFC)',
       "Near Phulera Junction, one of Rajasthan's busiest rail hubs",

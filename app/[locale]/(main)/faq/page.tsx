@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 
 import { setRequestLocale, getTranslations } from 'next-intl/server';
+import { createMetadata } from '@/src/lib/seo';
 import { ALL_FAQS } from '@/src/data/faq/general';
 import { ALL_FAQS_HI } from '@/src/data/faq/hi';
 
@@ -16,11 +17,19 @@ type Props = {
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
-  const t = await getTranslations({ locale, namespace: 'pages.faq' });
-  return {
-    title: t('title'),
-    description: 'Frequently asked questions about SVI Infra Solutions properties and services.',
-  };
+  const isHindi = locale === 'hi';
+  const title = isHindi
+    ? 'अक्सर पूछे जाने वाले सवाल (FAQ) - प्लॉट्स और निवेश'
+    : 'Frequently Asked Questions - Plots & Investment FAQ';
+  const description = isHindi
+    ? 'प्रॉपर्टी निवेश, पेमेंट प्लान्स, रजिस्ट्री दस्तावेज़ और लोन प्रक्रियाओं से जुड़े सभी आम सवालों के जवाब जानें।'
+    : 'Find answers to frequently asked questions about property investment, payment plans, clear documentation, and more at SVI Infra Solutions.';
+  return createMetadata({
+    title,
+    description,
+    path: '/faq',
+    locale,
+  });
 }
 
 export default async function FAQPage({ params }: Props) {

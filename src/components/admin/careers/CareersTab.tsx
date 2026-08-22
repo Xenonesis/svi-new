@@ -626,6 +626,7 @@ export function CareersTab({ token, isCompact = false, showToast }: CareersTabPr
             <a
               href="/careers"
               target="_blank"
+              rel="noopener noreferrer"
               className="font-semibold underline underline-offset-2"
             >
               /careers page
