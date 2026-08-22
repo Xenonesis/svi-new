@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion, MotionValue } from 'motion/react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Search, MapPin, Building, Banknote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
@@ -30,19 +29,6 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
       className="z-30 container mx-auto flex w-full flex-col items-start px-4 text-left drop-shadow-2xl sm:px-8 md:px-16"
       style={{ opacity: heroOpacity }}
     >
-      {/* Logo */}
-      <div className="mb-6">
-        <Image
-          src="/logo.png"
-          alt="SVI Infra Solutions Pvt. Ltd."
-          width={282}
-          height={83}
-          quality={100}
-          priority
-          className="h-9 w-auto object-contain transition-all duration-300"
-        />
-      </div>
-
       <div className="w-full max-w-5xl">
         <span className="text-brand-gold animate-hero-1 mb-4 inline-block text-xs font-bold tracking-[0.2em] uppercase opacity-90 sm:mb-8 sm:text-base sm:tracking-[0.3em]">
           {t('badge')}

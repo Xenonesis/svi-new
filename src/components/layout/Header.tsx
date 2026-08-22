@@ -60,7 +60,7 @@ export default function Header() {
                 initial={{ opacity: 0, width: 0, scale: 0.8 }}
                 animate={{ opacity: 1, width: 'auto', scale: 1 }}
                 exit={{ opacity: 0, width: 0, scale: 0.8 }}
-                className="overflow-hidden"
+                className="hidden overflow-hidden xl:block"
               >
                 <Link
                   href="/"
