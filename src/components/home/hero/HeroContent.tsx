@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { motion, MotionValue } from 'motion/react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Search, MapPin, Building, Banknote } from 'lucide-react';
 import { useTranslations } from 'next-intl';
