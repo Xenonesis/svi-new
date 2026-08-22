@@ -52,7 +52,7 @@ export default function Header() {
             />
           </Link>
 
-          {/* Desktop Logo (ONLY when not scrolled) */}
+          {/* Desktop Logo (styled like mobile logo capsule) */}
           <AnimatePresence mode="popLayout">
             {!h.isScrolled && (
               <motion.div
@@ -64,10 +64,8 @@ export default function Header() {
               >
                 <Link
                   href="/"
-                  className={`group relative hidden shrink-0 items-center gap-2 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
-                    h.isHomeTransparent
-                      ? 'rounded-2xl border border-white/20 bg-white/95 px-3 py-1.5 shadow-md backdrop-blur-md'
-                      : ''
+                  className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
+                    h.isHomeTransparent ? 'pointer-events-none opacity-0' : ''
                   }`}
                   aria-label="SVI Infra Solutions Pvt. Ltd."
                 >
@@ -78,7 +76,7 @@ export default function Header() {
                     height={83}
                     quality={100}
                     priority
-                    className="h-9 w-auto object-contain transition-all duration-300"
+                    className="h-7 w-auto object-contain transition-all duration-300 sm:h-8"
                   />
                 </Link>
               </motion.div>
