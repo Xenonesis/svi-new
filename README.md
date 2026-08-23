@@ -84,7 +84,7 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Company pages** — About, Leadership (team profiles), Careers, Blog (`/[slug]` dynamic posts), Changelog (`/changelog` release timeline), Brochures (`/brochure`), Area pages (`/areas/[slug]`)
 - **AI Chatbot** — Floating streaming chat widget powered by **Groq Llama 4** via Vercel AI SDK, with lead capture, conversation logging, contextual suggestions, and voice input support. Location-aware for properties in Jaipur, Khatu Shyam, and Phulera Smart City
 - **Lottery page** — Feature-flagged via `portal_settings.lottery_page_visible`; live draws, hall of fame, winner carousel
-- **Forms** — Contact, Registration, Grievance, Payment (all with hCaptcha + Resend delivery)
+- **Forms** — Contact, Registration, Grievance, Payment (with server-verified Captcha + Resend delivery)
 - **Calculators** — Interactive financial calculators for property buyers
 - **Exclusive Offers** — Special promotions and limited-time deal pages
 - **Client Portal** — Authenticated area for clients to view documents, payments, and properties
@@ -563,7 +563,7 @@ describe('Registration API', () => {
 ### Registration Flow
 
 ```
-User → /registration → hCaptcha verification → POST /api/registration
+User → /registration → Captcha verification → POST /api/registration
   → Rate limit check → Zod validation → Supabase insert (registrations table)
   → POST /api/registration/notify → Resend email to admin
   → Redirect to /thank-you
@@ -1544,15 +1544,14 @@ svi-new/
 
 ### Prerequisites
 
-| Tool          | Version  | Notes                                        |
-| ------------- | -------- | -------------------------------------------- |
-| **Node.js**   | `22.x`   | Pinned via `engines` in package.json         |
-| **pnpm**      | `11.x`   | Package manager (lockfile v9)                |
-| **Supabase**  | account  | Database, auth, storage                      |
-| **Groq**      | API key  | [console.groq.com](https://console.groq.com) |
-| **Google AI** | API key  | Optional — Gemini content generation         |
-| **Resend**    | API key  | Transactional & campaign email               |
-| **hCaptcha**  | site key | Form spam protection                         |
+| Tool          | Version | Notes                                        |
+| ------------- | ------- | -------------------------------------------- |
+| **Node.js**   | `22.x`  | Pinned via `engines` in package.json         |
+| **pnpm**      | `11.x`  | Package manager (lockfile v9)                |
+| **Supabase**  | account | Database, auth, storage                      |
+| **Groq**      | API key | [console.groq.com](https://console.groq.com) |
+| **Google AI** | API key | Optional — Gemini content generation         |
+| **Resend**    | API key | Transactional & campaign email               |
 
 ### Installation
 
@@ -1613,9 +1612,8 @@ NEXT_PUBLIC_VAPID_PUBLIC_KEY=""
 VAPID_PRIVATE_KEY=""
 VAPID_EMAIL="mailto:info@sviinfrasolutions.com"
 
-# ── hCaptcha ─────────────────────────────────────
+# ── Captcha (Testing Bypass) ─────────────────────
 NEXT_PUBLIC_DISABLE_CAPTCHA="false"
-NEXT_PUBLIC_HCAPTCHA_SITE_KEY="10000000-ffff-ffff-ffff-000000000001"
 
 # ── Cron / Scheduled Jobs ─────────────────────────
 CRON_SECRET="your-random-cron-secret-here"
@@ -2126,7 +2124,6 @@ git push origin main    # auto-deploys via GitHub integration
 | **Groq (Llama 4)**        | Streaming chatbot via Vercel AI SDK                           |
 | **Google Gemini**         | Server-side content generation                                |
 | **MapLibre GL**           | Open-source project location maps (no API key)                |
-| **hCaptcha**              | Form spam protection on contact & registration                |
 | **Resend**                | Transactional email + marketing campaigns + domain mgmt       |
 | **TipTap**                | Rich text editor for email composer                           |
 | **Vercel Analytics**      | Privacy-friendly traffic tracking                             |

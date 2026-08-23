@@ -410,12 +410,11 @@ export default function supabaseLoader({
 
 ### 3.6 Third-Party Script Optimization
 
-| Script             | Strategy                                              |
-| ------------------ | ----------------------------------------------------- |
-| Google Tag Manager | `next/script strategy="lazyOnload"`                   |
-| hCaptcha           | Dynamic import — only on Register/Contact/Login pages |
-| Sentry             | Already tunneled via `/monitoring` ✅                 |
-| Vercel Analytics   | Non-blocking, fine as-is ✅                           |
+| Script             | Strategy                              |
+| ------------------ | ------------------------------------- |
+| Google Tag Manager | `next/script strategy="lazyOnload"`   |
+| Sentry             | Already tunneled via `/monitoring` ✅ |
+| Vercel Analytics   | Non-blocking, fine as-is ✅           |
 
 ### 3.7 Bundle Size Reduction
 
@@ -803,7 +802,7 @@ Add to `.github/workflows/ci.yml`:
 | Blog (`/blog`)                  | < 120 KB  | < 25 KB    | Blog card images                                |
 | Blog article (`/blog/[slug]`)   | < 100 KB  | < 25 KB    | Article body                                    |
 | Projects (`/projects`)          | < 120 KB  | < 25 KB    | Project gallery images                          |
-| Registration / Contact          | < 150 KB  | < 30 KB    | hCaptcha, form validation                       |
+| Registration / Contact          | < 150 KB  | < 30 KB    | Form validation, stateless captcha              |
 | Portal (authenticated)          | < 200 KB  | < 35 KB    | User data, payment UI                           |
 | Admin dashboard                 | < 300 KB  | < 50 KB    | Charts, tables, email compose, rich text editor |
 | Admin email                     | < 250 KB  | < 40 KB    | Rich text editor, template picker               |

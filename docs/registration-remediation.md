@@ -1,7 +1,7 @@
 # Registration Endpoint — Remediation Plan
 
 **Target:** `https://www.sviinfrasolutions.com/registration` and the backing `POST /api/registration` endpoint
-**Stack:** Next.js 15 (App Router, RSC) on Vercel · Supabase (Postgres + GoTrue + RLS) · Resend (transactional email) · hCaptcha (CSP-permitted, not yet wired in)
+**Stack:** Next.js 15 (App Router, RSC) on Vercel · Supabase (Postgres + GoTrue + RLS) · Resend (transactional email) · Stateless HMAC Captcha
 **Date:** 2026-07-28
 **Owner:** TBD (backend + infra)
 **Severity ceiling:** **Critical** (PII leak in progress)
@@ -39,7 +39,7 @@ Phase 1 — Stop the bleeding (same-day)          [P0]
 Phase 2 — Validate the write path (this week)   [P1]
   2.1 Server-side schema validation on /api/registration
   2.2 Server-side email format + Resend guard
-  2.3 Wire hCaptcha server-side verify
+  2.3 Wire server-verified captcha
   2.4 CSRF token (double-submit cookie) on /api/registration
   2.5 Enable Supabase GoTrue rate limit
 
@@ -184,8 +184,7 @@ export const RegistrationSchema = z.object({
   photo: z.instanceof(Blob).optional(),
   panCard: z.instanceof(Blob).optional(),
   // captcha
-  captchaAnswer: z.coerce.number().int(),
-  captchaToken: z.string(), // hCaptcha token
+  captchaAnswer: z.string(),
 });
 
 export type RegistrationInput = z.infer<typeof RegistrationSchema>;
@@ -196,7 +195,7 @@ Apply at the top of the route:
 ```ts
 // app/api/registration/route.ts
 import { RegistrationSchema } from '@/lib/schemas/registration';
-import { verifyHCaptcha } from '@/lib/hcaptcha';
+import { verifyCaptchaToken } from '@/src/lib/captcha';
 
 export async function POST(req: Request) {
   const form = await req.formData();
@@ -226,26 +225,23 @@ Three layers, all needed:
    ```
 3. **Resend API hardening** — use a dedicated `from:` like `registrations@sviinfrasolutions.com` and restrict `to:` to either the applicant's address **or** an internal alias, never a free-form value chosen by the client.
 
-### 4.3 hCaptcha server-side verify (Finding #9)
+### 4.3 Stateless HMAC Captcha server-side verify (Finding #9)
 
 ```ts
-// lib/hcaptcha.ts
-export async function verifyHCaptcha(token: string, ip: string) {
-  const r = await fetch('https://hcaptcha.com/siteverify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams({
-      secret: process.env.HCAPTCHA_SECRET!,
-      response: token,
-      remoteip: ip,
-    }),
-  });
-  const j = await r.json();
-  return j.success === true;
+// src/lib/captcha.ts
+import { verifyCaptchaToken } from '@/src/lib/captcha';
+
+const captchaOk = await verifyCaptchaToken(
+  request.cookies.get('captcha_token')?.value,
+  captchaAnswer
+);
+if (!captchaOk) {
+  return NextResponse.json(
+    { error: 'Captcha verification failed', code: 'CAPTCHA_INVALID' },
+    { status: 400 }
+  );
 }
 ```
-
-Reject on failure with `400 { error: "Captcha failed" }`. Add a **5 s timeout** and **single retry** to avoid hanging the request.
 
 ### 4.4 CSRF token (Finding #5)
 
@@ -379,7 +375,7 @@ Run after each phase. **Do not** declare the phase done until every row passes.
 - [ ] **Phase 2**
   - [ ] Add `lib/schemas/registration.ts` (zod, shared)
   - [ ] Rewrite `app/api/registration/route.ts` with validate → captcha → insert
-  - [ ] Add `lib/hcaptcha.ts`; load `HCAPTCHA_SECRET` into Vercel env
+  - [ ] Add `src/lib/captcha.ts` for stateless HMAC-SHA256 challenge & verification
   - [ ] Wire `csrf` cookie in `middleware.ts`; add hidden input to form
   - [ ] Update Supabase `config.toml` rate limits; `supabase db push`
   - [ ] Deploy behind a feature flag (`REGISTRATION_STRICT=true`)
@@ -406,5 +402,4 @@ Run after each phase. **Do not** declare the phase done until every row passes.
 - Live probe transcript captured in this session under `xd://browser` (Supabase anon key, response bodies, status codes).
 - Supabase RLS docs: https://supabase.com/docs/guides/auth/row-level-security
 - Vercel clean URLs: https://vercel.com/docs/projects/project-configuration#cleanurls
-- hCaptcha server verify: https://docs.hcaptcha.com/#verify-the-user-response-server-side
 - DPDP Act 2023 (India) — defines Aadhar/PAN as Sensitive Personal Data.
