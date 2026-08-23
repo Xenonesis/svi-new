@@ -20,7 +20,8 @@
     ],
     "paths": {
       "@/*": ["./*"]
-    }
+    },
+    "types": ["node", "react", "react-dom", "jest", "canvas-confetti", "web-push"]
   },
   "include": [
     "next-env.d.ts",
