@@ -37,6 +37,10 @@ const nextConfig = {
       '@tiptap/react',
       '@tiptap/starter-kit',
     ],
+    // TS7 side-by-side setup: `typescript` is aliased to @typescript/typescript6
+    // (no bin/tsc), so Next must use the compiler API instead of the tsc CLI.
+    // Remove once typescript-eslint supports TS 7.1+ and aliases are dropped.
+    useTypeScriptCli: false,
   },
   // Keep compiled pages in memory longer during dev (no production impact)
   onDemandEntries: {
