@@ -21,7 +21,7 @@ const contactSchema = {
   email: 'info@sviinfrasolutions.com',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Block E-220, Sector 63',
+    streetAddress: 'Block E-220, 2nd Floor, Sector 63',
     addressLocality: 'Noida',
     addressRegion: 'Uttar Pradesh',
     postalCode: '201309',

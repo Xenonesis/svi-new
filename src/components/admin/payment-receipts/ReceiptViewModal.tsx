@@ -109,7 +109,8 @@ export function ReceiptViewModal({
                       Website: www.sviinfrasolutions.in | www.sviinfrasolutions.com
                     </p>
                     <p className="text-[13px] text-gray-700">
-                      Office Address : A-61 Sector 65 Noida Uttar Pradesh 201309
+                      Office Address : Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh
+                      201309
                     </p>
                   </div>
                   <div className="w-48">

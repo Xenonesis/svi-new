@@ -38,7 +38,7 @@ const localBusinessJsonLd = {
   email: 'info@sviinfrasolutions.com',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'Block E-220, Sector 63',
+    streetAddress: 'Block E-220, 2nd Floor, Sector 63',
     addressLocality: 'Noida',
     addressRegion: 'Uttar Pradesh',
     postalCode: '201309',
@@ -111,11 +111,26 @@ export default async function Contact(props: { params: Promise<{ locale: string 
       icon: MapPin,
       label: t('ourOffice'),
       content: (
-        <p className="text-[13px] leading-relaxed text-white/70">
-          Block E-220, Sector 63,
-          <br />
-          Noida, Uttar Pradesh 201309
-        </p>
+        <a
+          href="https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="group block rounded-xl bg-white/[0.04] px-3 py-2.5 ring-1 ring-white/5 transition-all duration-300 hover:bg-white/[0.07] hover:ring-[#d4af37]/20"
+        >
+          <p className="flex items-start gap-2 text-[13px] leading-relaxed text-white/75 transition-colors group-hover:text-white">
+            <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-[#d4af37] opacity-80 transition-all group-hover:opacity-100 group-hover:shadow-[0_0_8px_rgba(212,175,55,0.6)]" />
+            <span>
+              Block E-220, 2nd Floor, Sector 63,
+              <br />
+              <span className="text-white/65 group-hover:text-white/80">
+                Noida, Uttar Pradesh 201309
+              </span>
+            </span>
+          </p>
+          <span className="mt-2 inline-flex items-center gap-1 text-[10px] font-bold tracking-widest text-[#d4af37]/80 uppercase transition-all group-hover:gap-1.5 group-hover:text-[#d4af37]">
+            Open in Google Maps <ArrowUpRight size={10} strokeWidth={2.5} />
+          </span>
+        </a>
       ),
     },
     {

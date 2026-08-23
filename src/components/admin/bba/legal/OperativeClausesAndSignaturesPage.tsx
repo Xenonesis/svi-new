@@ -431,9 +431,9 @@ export function OperativeClausesAndSignaturesPage({
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           26. The execution of this Agreement will be complete only upon its execution by the Firm
-          through its authorized signatory at the Firms head office at, A-61 Sector-65 Noida Uttar
-          Pradesh 201309, after the copies are duly executed by the Allottee(s) and are received by
-          the Firm .
+          through its authorized signatory at the Firms head office at, Block E-220, 2nd Floor,
+          Sector 63 Noida Uttar Pradesh 201309, after the copies are duly executed by the
+          Allottee(s) and are received by the Firm .
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           27. All notices are to be served on the Allottee(s) as contemplated in this Agreement

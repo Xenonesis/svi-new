@@ -55,7 +55,7 @@ export function BrochureClosing() {
               <p>
                 SVI Infra Solutions Pvt. Ltd.
                 <br />
-                A-61, Sector-65
+                Block E-220, 2nd Floor, Sector 63
                 <br />
                 Noida, Uttar Pradesh 201309
               </p>

@@ -12,7 +12,7 @@ const ORG_SCHEMA = {
     'Trusted real estate developer with 15+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'A-61 Sector 65',
+    streetAddress: 'Block E-220, 2nd Floor, Sector 63',
     addressLocality: 'Noida',
     addressRegion: 'Uttar Pradesh',
     postalCode: '201309',

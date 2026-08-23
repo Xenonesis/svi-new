@@ -692,7 +692,7 @@ gantt
    - Every marketing email must automatically include:
      - `List-Unsubscribe: <https://www.sviinfrasolutions.com/api/unsubscribe?token=...>`
      - `List-Unsubscribe-Post: List-Unsubscribe=One-Click`
-     - Physical company office address (`A-61 Sector 65 Noida, UP 201301`) in the footer.
+     - Physical company office address (`Block E-220, 2nd Floor, Sector 63 Noida, UP 201301`) in the footer.
 2. **Indian Digital Personal Data Protection (DPDP) Act Compliance:**
    - Honor user consent and provide clear opt-out mechanisms.
    - Suppression list must immediately prevent any marketing communication to opted-out contacts.

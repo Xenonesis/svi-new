@@ -96,7 +96,7 @@ export default async function PrivacyPolicy({ params }: Props) {
                   <p className="text-brand-navy font-semibold dark:text-gray-200">
                     SVI Infra Solutions Pvt. Ltd.
                   </p>
-                  <p>A-61 Sector 65, Noida, Uttar Pradesh 201309</p>
+                  <p>Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309</p>
                   <p>{tc('emailLabel')}: info@sviinfrasolutions.com</p>
                   <p>{tc('phoneLabel')}: +91 73000 07643</p>
                 </div>

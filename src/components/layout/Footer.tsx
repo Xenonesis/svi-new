@@ -1,7 +1,7 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { Mail, MapPin, Phone, Send } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin, Phone, Send } from 'lucide-react';
 import { FacebookIcon, InstagramIcon } from '@/src/components/common/social-icons';
 import { memo, useCallback, useState } from 'react';
 
@@ -208,21 +208,32 @@ const Footer = memo(function Footer() {
               {t('footer.contactInfo')}
             </h4>
             <ul className="flex flex-col gap-5">
-              <li className="flex items-start gap-3">
-                <MapPin className="text-brand-gold mt-1 shrink-0" size={18} />
-                <a
-                  href="https://maps.google.com/?q=A-61+Sector+65+Noida+Uttar+Pradesh+201309"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-start transition-colors hover:opacity-80"
-                  suppressHydrationWarning
-                >
-                  <span className="text-sm font-medium text-gray-600 dark:text-gray-400">
-                    A-61 Sector 65, Noida,
-                    <br />
-                    Uttar Pradesh 201309
-                  </span>
-                </a>
+              <li className="group relative flex items-start gap-3.5">
+                <span className="bg-brand-gold/10 ring-brand-gold/15 group-hover:bg-brand-gold/15 group-hover:ring-brand-gold/25 mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl ring-1 transition-all duration-300">
+                  <MapPin className="text-brand-gold" size={16} strokeWidth={2} />
+                </span>
+                <div className="min-w-0 flex-1 pt-0.5">
+                  <p className="text-brand-gold mb-1 text-[9px] font-bold tracking-[0.18em] uppercase">
+                    Visit Us
+                  </p>
+                  <a
+                    href="https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="group/link inline-flex flex-col gap-1 text-sm leading-snug font-medium text-gray-600 transition-colors hover:text-gray-900 dark:text-gray-300 dark:hover:text-white"
+                    suppressHydrationWarning
+                  >
+                    <span className="group-hover/link:text-brand-navy dark:group-hover/link:text-white">
+                      Block E-220, 2nd Floor, Sector 63,
+                    </span>
+                    <span className="text-gray-500 dark:text-gray-400">
+                      Noida, Uttar Pradesh 201309
+                    </span>
+                    <span className="text-brand-gold mt-1 inline-flex items-center gap-1 text-[10px] font-bold tracking-widest uppercase opacity-0 transition-all duration-300 group-hover/link:gap-1.5 group-hover/link:opacity-100">
+                      Open in Maps <ArrowUpRight size={10} strokeWidth={2.5} />
+                    </span>
+                  </a>
+                </div>
               </li>
               <li className="flex items-center gap-3">
                 <Phone className="text-brand-gold shrink-0" size={18} />

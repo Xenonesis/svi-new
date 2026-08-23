@@ -23,7 +23,7 @@ import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
 const DEFAULT_COMPANY_INFO: CompanyInfo = {
   company_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
-  company_address: 'Block E-220, Sector 63, Noida, Uttar Pradesh 201309',
+  company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
   company_email: 'info@sviinfrasolutions.com',
   company_phone: '+91 9216014579',
   company_website: 'www.sviinfrasolutions.in',

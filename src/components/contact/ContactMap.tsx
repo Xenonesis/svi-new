@@ -280,11 +280,22 @@ export default function ContactMap() {
                 Our Office
               </p>
               <p className="text-sm leading-snug font-semibold text-white">SVI Infra Solutions</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-white/60">
-                Block E-220, Sector 63, Noida
-                <br />
-                UP — 201309
-              </p>
+              <a
+                href="https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group mt-1 flex items-start gap-1.5 text-[11px] leading-relaxed text-white/60 transition-colors hover:text-white/85"
+              >
+                <span className="mt-1 h-1 w-1 shrink-0 rounded-full bg-[#d4af37]/70 transition-all group-hover:bg-[#d4af37] group-hover:shadow-[0_0_6px_rgba(212,175,55,0.7)]" />
+                <span>
+                  Block E-220, 2nd Floor, Sector 63, Noida
+                  <br />
+                  UP — 201309
+                  <span className="ml-1.5 inline-flex items-center gap-0.5 text-[9px] font-bold tracking-widest text-[#d4af37]/0 uppercase transition-all duration-300 group-hover:text-[#d4af37]">
+                    Maps <span className="text-[10px]">↗</span>
+                  </span>
+                </span>
+              </a>
 
               <div className="mt-3 border-t border-white/10 pt-2.5">
                 <div className="flex items-center justify-between">
