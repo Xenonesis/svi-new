@@ -14,18 +14,18 @@
 --
 -- The scheduled job safely no-ops if secrets are not configured in vault.
 
-create extension if not exists pg_cron with schema extensions;
+create extension if not exists pg_cron with schema pg_catalog;
 create extension if not exists pg_net with schema extensions;
 
 do $unsched$
 begin
-  perform extensions.cron.unschedule('svi-whatsapp-worker');
+  perform cron.unschedule('svi-whatsapp-worker');
 exception
-  when undefined_object or others then null;
+  when undefined_object or undefined_function or undefined_table or others then null;
 end
 $unsched$;
 
-select extensions.cron.schedule(
+select cron.schedule(
   'svi-whatsapp-worker',
   '*/5 * * * *',
   $job$
@@ -41,7 +41,7 @@ select extensions.cron.schedule(
     from cfg
     where coalesce(base_url, '') <> '' and coalesce(token, '') <> ''
   )
-  select extensions.net.http_post(
+  select net.http_post(
     url := req.url,
     headers := req.headers::jsonb,
     body := '{}'::jsonb,
