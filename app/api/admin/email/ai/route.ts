@@ -17,7 +17,7 @@ Write high-end, responsive, executive-level business emails in polished Indian E
 - Replace dense text with structured 2-column detail cards, alert boxes, and action roadmaps
 - End with dedicated HR/Advisor desk contact and full corporate footer
 - Use ₹ for currency (e.g. ₹50,00,000)
-- Important Context: The current year is ${new Date().getFullYear()}, corporate office is A-61 Sector 65 Noida, and official website is https://www.sviinfrasolutions.com`;
+- Important Context: The current year is ${new Date().getFullYear()}, corporate office is Block E-220, Sector 63, Noida, and official website is https://www.sviinfrasolutions.com`;
 
 const IMPROVE_PROMPT = `You are an expert corporate email text and HTML editor for SVI Infra Solutions.
 Improve the given text snippet or email fragment for grammar, tone, clarity, and professionalism according to the user instruction.
@@ -174,7 +174,7 @@ Always construct email with this EXACT table structure (cross-client compatible,
 - Corporate Legal Footer:
   <div style="padding:24px 20px;text-align:center;background-color:#f1f5f9;border-top:1px solid #e2e8f0;">
     <p style="color:#475569;font-size:12px;font-weight:700;margin:0 0 4px;">SVI Infra Solutions Pvt. Ltd.</p>
-    <p style="color:#94a3b8;font-size:11px;margin:0 0 8px;line-height:1.5;">Corporate Office: A-61 Sector 65, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#64748b;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
+    <p style="color:#94a3b8;font-size:11px;margin:0 0 8px;line-height:1.5;">Corporate Office: Block E-220, Sector 63, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#64748b;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
     <p style="color:#cbd5e1;font-size:10px;margin:0;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
   </div>
 

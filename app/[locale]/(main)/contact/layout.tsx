@@ -21,7 +21,7 @@ const contactSchema = {
   email: 'info@sviinfrasolutions.com',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'A-61 Sector 65',
+    streetAddress: 'Block E-220, Sector 63',
     addressLocality: 'Noida',
     addressRegion: 'Uttar Pradesh',
     postalCode: '201309',
@@ -29,9 +29,10 @@ const contactSchema = {
   },
   geo: {
     '@type': 'GeoCoordinates',
-    latitude: 28.6112,
-    longitude: 77.382,
+    latitude: 28.624047,
+    longitude: 77.387221,
   },
+  hasMap: 'https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7',
   openingHoursSpecification: {
     '@type': 'OpeningHoursSpecification',
     dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],

@@ -38,13 +38,14 @@ const localBusinessJsonLd = {
   email: 'info@sviinfrasolutions.com',
   address: {
     '@type': 'PostalAddress',
-    streetAddress: 'A-61 Sector 65',
+    streetAddress: 'Block E-220, Sector 63',
     addressLocality: 'Noida',
     addressRegion: 'Uttar Pradesh',
     postalCode: '201309',
     addressCountry: 'IN',
   },
-  geo: { '@type': 'GeoCoordinates', latitude: 28.6112, longitude: 77.382 },
+  geo: { '@type': 'GeoCoordinates', latitude: 28.624047, longitude: 77.387221 },
+  hasMap: 'https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7',
   openingHoursSpecification: [
     {
       '@type': 'OpeningHoursSpecification',
@@ -111,7 +112,7 @@ export default async function Contact(props: { params: Promise<{ locale: string 
       label: t('ourOffice'),
       content: (
         <p className="text-[13px] leading-relaxed text-white/70">
-          A-61 Sector 65,
+          Block E-220, Sector 63,
           <br />
           Noida, Uttar Pradesh 201309
         </p>
@@ -275,7 +276,7 @@ export default async function Contact(props: { params: Promise<{ locale: string 
 
                   {/* Directions CTA */}
                   <a
-                    href="https://www.google.com/maps/dir/?api=1&destination=28.6112,77.382"
+                    href="https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="group flex w-full items-center justify-between rounded-xl bg-[#d4af37]/10 px-4 py-3 ring-1 ring-[#d4af37]/20 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0,1)] hover:bg-[#d4af37]/20 hover:ring-[#d4af37]/40 active:scale-[0.98]"

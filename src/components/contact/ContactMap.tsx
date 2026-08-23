@@ -9,7 +9,9 @@ import {
   type NearbyPlace,
 } from '@/src/lib/nearby-places';
 
-const OFFICE_LOCATION = { lat: 28.6112, lng: 77.382 };
+const OFFICE_LOCATION = { lat: 28.624047, lng: 77.387221 };
+// Google Maps: https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7
+// Embed: https://www.google.com/maps/embed?pb=!1m17!1m12!1m3!1d3502.190670781822!2d77.387221!3d28.624046999999997!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjjCsDM3JzI2LjYiTiA3N8KwMjMnMTQuMCJF!5e0!3m2!1sen!2sin!4v1787477205552!5m2!1sen!2sin
 
 export default function ContactMap() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -184,10 +186,7 @@ export default function ContactMap() {
   }, [mapLoaded, showNearby]);
 
   const handleDirections = () => {
-    window.open(
-      `https://www.google.com/maps/dir/?api=1&destination=${OFFICE_LOCATION.lat},${OFFICE_LOCATION.lng}`,
-      '_blank'
-    );
+    window.open('https://maps.app.goo.gl/9GKzv3BuNVRKxUsb7', '_blank');
   };
 
   return (
@@ -282,7 +281,7 @@ export default function ContactMap() {
               </p>
               <p className="text-sm leading-snug font-semibold text-white">SVI Infra Solutions</p>
               <p className="mt-1 text-[11px] leading-relaxed text-white/60">
-                A-61 Sector 65, Noida
+                Block E-220, Sector 63, Noida
                 <br />
                 UP — 201309
               </p>

@@ -54,7 +54,7 @@ importers:
         version: 9.5.12(@typescript/typescript6@6.0.2)(next@16.3.2(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(@playwright/test@1.62.1)(@types/node@26.2.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)(webpack@5.108.4(@swc/core@1.15.47(@swc/helpers@0.5.23))(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.26))
       '@serwist/sw':
         specifier: ^9.5.12
-        version: 9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.6)
+        version: 9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.8)
       '@serwist/turbopack':
         specifier: ^9.5.12
         version: 9.5.12(@swc/helpers@0.5.23)(@typescript/typescript6@6.0.2)(esbuild@0.28.2)(next@16.3.2(@babel/core@7.29.7(supports-color@8.1.1))(@opentelemetry/api@1.9.1)(@playwright/test@1.62.1)(@types/node@26.2.0)(react-dom@19.2.8(react@19.2.8))(react@19.2.8))(react@19.2.8)
@@ -177,7 +177,7 @@ importers:
         version: 6.22.0
       serwist:
         specifier: ^9.5.12
-        version: 9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.6)
+        version: 9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.8)
       sharp:
         specifier: ^0.35.3
         version: 0.35.3(@types/node@26.2.0)
@@ -8070,9 +8070,9 @@ snapshots:
     transitivePeerDependencies:
       - webpack
 
-  '@serwist/sw@9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.6)':
+  '@serwist/sw@9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.8)':
     dependencies:
-      serwist: 9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.6)
+      serwist: 9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.8)
     optionalDependencies:
       typescript: '@typescript/typescript6@6.0.2'
     transitivePeerDependencies:
@@ -8100,6 +8100,10 @@ snapshots:
   '@serwist/utils@9.5.12(browserslist@4.28.6)':
     optionalDependencies:
       browserslist: 4.28.6
+
+  '@serwist/utils@9.5.12(browserslist@4.28.8)':
+    optionalDependencies:
+      browserslist: 4.28.8
 
   '@serwist/webpack-plugin@9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.6)(webpack@5.108.4(@swc/core@1.15.47(@swc/helpers@0.5.23))(esbuild@0.28.2)(lightningcss@1.33.0)(postcss@8.5.26))':
     dependencies:
@@ -11530,6 +11534,15 @@ snapshots:
   serwist@9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.6):
     dependencies:
       '@serwist/utils': 9.5.12(browserslist@4.28.6)
+      idb: 8.0.3
+    optionalDependencies:
+      typescript: '@typescript/typescript6@6.0.2'
+    transitivePeerDependencies:
+      - browserslist
+
+  serwist@9.5.12(@typescript/typescript6@6.0.2)(browserslist@4.28.8):
+    dependencies:
+      '@serwist/utils': 9.5.12(browserslist@4.28.8)
       idb: 8.0.3
     optionalDependencies:
       typescript: '@typescript/typescript6@6.0.2'
