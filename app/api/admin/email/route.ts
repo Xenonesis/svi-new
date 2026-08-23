@@ -237,8 +237,50 @@ export async function GET(request: NextRequest) {
     const after = url.searchParams.get('after') || undefined;
 
     if (action === 'domains') {
-      const domains = await resend.domains.list();
-      return NextResponse.json({ domains: domains.data });
+      try {
+        const domainsResp = await resend.domains.list();
+        let rawList: unknown[] = [];
+        if (domainsResp && typeof domainsResp === 'object' && 'data' in domainsResp) {
+          const inner = domainsResp.data;
+          if (Array.isArray(inner)) {
+            rawList = inner;
+          } else if (
+            inner &&
+            typeof inner === 'object' &&
+            'data' in inner &&
+            Array.isArray(inner.data)
+          ) {
+            rawList = inner.data;
+          }
+        }
+
+        // Fetch full details (DNS records, etc.) for each domain
+        const fullDomains = await Promise.all(
+          rawList.map(async (domainItem) => {
+            if (
+              domainItem &&
+              typeof domainItem === 'object' &&
+              'id' in domainItem &&
+              typeof domainItem.id === 'string'
+            ) {
+              try {
+                const detail = await resend.domains.get(domainItem.id);
+                if (detail && typeof detail === 'object' && 'data' in detail && detail.data) {
+                  return detail.data;
+                }
+              } catch {
+                // Fallback to basic domain info if get() fails
+              }
+            }
+            return domainItem;
+          })
+        );
+
+        return NextResponse.json({ success: true, domains: fullDomains });
+      } catch (err: unknown) {
+        const errorMessage = err instanceof Error ? err.message : 'Failed to fetch domains';
+        return NextResponse.json({ error: errorMessage }, { status: 500 });
+      }
     }
 
     if (action === 'inbound_status') {

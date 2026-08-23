@@ -38,9 +38,24 @@ export function DomainsTab() {
       const res = await fetch('/api/admin/email?action=domains', {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to fetch domains');
-      setDomains(Array.isArray(data.domains) ? data.domains : []);
+      const data: unknown = await res.json();
+      if (!res.ok) {
+        const errText =
+          data && typeof data === 'object' && 'error' in data && typeof data.error === 'string'
+            ? data.error
+            : 'Failed to fetch domains';
+        throw new Error(errText);
+      }
+      let domainList: Domain[] = [];
+      if (data && typeof data === 'object' && 'domains' in data) {
+        const raw = data.domains;
+        if (Array.isArray(raw)) {
+          domainList = raw as Domain[];
+        } else if (raw && typeof raw === 'object' && 'data' in raw && Array.isArray(raw.data)) {
+          domainList = raw.data as Domain[];
+        }
+      }
+      setDomains(domainList);
     } catch (e) {
       setError((e as Error).message);
     } finally {
