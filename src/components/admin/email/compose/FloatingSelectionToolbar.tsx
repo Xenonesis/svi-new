@@ -150,6 +150,7 @@ export function FloatingSelectionToolbar({
     };
 
     const handleKeyUp = (e: KeyboardEvent) => {
+      if (!e.key) return;
       if (e.key === 'Shift' || e.key.startsWith('Arrow')) {
         setTimeout(handleSelectionChange, 30);
       }
