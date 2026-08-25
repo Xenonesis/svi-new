@@ -63,16 +63,16 @@ export default function EmployeeLogin() {
           .eq('id', user.id)
           .single();
 
-        if (profile?.role !== 'employee') {
-          // Not an employee, but logged in. Log them out or just show error.
+        if (profile?.role !== 'employee' && profile?.role !== 'admin') {
+          // Not an employee, but logged in. Log them out or show error.
           await supabase.auth.signOut();
           throw new Error('Access denied. Employee portal only.');
         }
 
         setSuccess(true);
         setTimeout(() => {
-          router.push('/employee/attendance');
-        }, 1800);
+          router.push('/employee/dashboard');
+        }, 1200);
       }
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Login failed. Please check your credentials.');

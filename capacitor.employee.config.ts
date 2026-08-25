@@ -1,18 +1,14 @@
 import type { CapacitorConfig } from '@capacitor/cli';
 
-const target = process.env.CAP_APP_TARGET || 'admin';
-const isEmployee = target === 'employee';
-
-const defaultUrl = isEmployee
-  ? 'https://www.sviinfrasolutions.com/employee/dashboard'
-  : 'https://www.sviinfrasolutions.com/admin';
-
-const serverUrl = process.env.CAP_SERVER_URL || defaultUrl;
+// Set CAP_SERVER_URL to dev server for local development, e.g.:
+//   CAP_SERVER_URL=http://192.168.1.100:3001 npx cap run android
+const serverUrl =
+  process.env.CAP_SERVER_URL || 'https://www.sviinfrasolutions.com/employee/dashboard';
 const isDev = !!process.env.CAP_SERVER_URL;
 
 const config: CapacitorConfig = {
-  appId: isEmployee ? 'com.svi.infrasolutions.employee' : 'com.svi.infrasolutions',
-  appName: isEmployee ? 'SVI Workspace' : 'SVI Admin',
+  appId: 'com.svi.infrasolutions.employee',
+  appName: 'SVI Workspace',
   webDir: 'out',
   server: {
     url: serverUrl,
@@ -23,14 +19,14 @@ const config: CapacitorConfig = {
     allowMixedContent: isDev,
     captureInput: true,
     webContentsDebuggingEnabled: isDev,
-    backgroundColor: isEmployee ? '#020617' : '#0a0a0a',
+    backgroundColor: '#020617', // slate-950
     minWebViewVersion: 60,
   },
   plugins: {
     SplashScreen: {
       launchShowDuration: 2000,
       launchAutoHide: true,
-      backgroundColor: isEmployee ? '#020617' : '#0a0a0a',
+      backgroundColor: '#020617',
       androidSplashResourceName: 'splash',
       androidScaleType: 'CENTER_CROP',
       showSpinner: false,
@@ -39,7 +35,7 @@ const config: CapacitorConfig = {
     },
     StatusBar: {
       style: 'DARK',
-      backgroundColor: isEmployee ? '#020617' : '#0a0a0a',
+      backgroundColor: '#020617',
     },
     PushNotifications: {
       presentationOptions: ['badge', 'sound', 'alert'],

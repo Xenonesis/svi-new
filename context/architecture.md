@@ -23,9 +23,22 @@ svi-infra/
 │  │  ├─ settings/                   # Settings panel
 │  │  ├─ updates/                    # System updates & non-technical changelog
 │  │  └─ page.tsx                    # Admin overview
+│  ├─ employee/                       # Employee Workspace (Mobile-first app)
+│  │  ├─ login/                       # Employee login screen
+│  │  ├─ dashboard/                   # Punch Radar, today overview & quick stats
+│  │  ├─ attendance/                  # Punch in/out action, geofencing radar
+│  │  │  ├─ history/                  # Monthly attendance calendar & hours summary
+│  │  │  └─ leaves/                   # Leave balances & application portal
+│  │  ├─ work/                        # Work & Task Tracker
+│  │  │  ├─ tasks/                    # Kanban/List to-dos & priority items
+│  │  │  ├─ site-visits/              # Assigned customer site visits
+│  │  │  └─ leads/                    # Assigned chatbot & WhatsApp leads
+│  │  ├─ profile/                     # Employee badge, team info, settings & logout
+│  │  └─ layout.tsx                   # Mobile app shell with bottom navigation bar
 │  │
-│  ├─ api/                           # 68 REST API routes
+│  ├─ api/                           # 75+ REST API routes
 │  │  ├─ admin/                      # Admin APIs (secured via verifyAdmin guard)
+│  │  ├─ employee/                   # Employee APIs (attendance, work, tasks, leaves)
 │  │  ├─ chat/                       # Chatbot APIs
 │  │  ├─ cron/                       # Scheduled tasks (lottery, campaigns, emails)
 │  │  └─ webhooks/
