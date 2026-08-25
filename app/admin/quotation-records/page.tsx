@@ -32,6 +32,7 @@ export default function QuotationRecordsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState('all');
   const [selectedQuotation, setSelectedQuotation] = useState<SavedQuotation | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedQuotation | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
@@ -83,9 +84,17 @@ export default function QuotationRecordsPage() {
     0
   );
   const completedCount = quotations.filter((q) => q.status === 'completed').length;
+  const draftCount = quotations.filter((q) => q.status === 'draft').length;
 
   // Filtering
   const filtered = quotations.filter((q) => {
+    // Status filter
+    if (statusFilter !== 'all' && q.status !== statusFilter) {
+      return false;
+    }
+
+    if (!searchQuery.trim()) return true;
+
     const query = searchQuery.toLowerCase();
     const fd = q.form_data;
     return (
@@ -93,7 +102,8 @@ export default function QuotationRecordsPage() {
       (fd?.customerName || '').toLowerCase().includes(query) ||
       (fd?.customerPhone || '').toLowerCase().includes(query) ||
       (fd?.projectName || '').toLowerCase().includes(query) ||
-      (fd?.plotNo || '').toLowerCase().includes(query)
+      (fd?.plotNo || '').toLowerCase().includes(query) ||
+      (fd?.area || '').toLowerCase().includes(query)
     );
   });
 
@@ -203,9 +213,17 @@ export default function QuotationRecordsPage() {
       />
 
       {/* Search & Filter Bar */}
-      <QuotationFilterBar searchQuery={searchQuery} onSearchChange={setSearchQuery} />
-
-      {/* Responsive Records Table */}
+      <QuotationFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        counts={{
+          all: totalCount,
+          completed: completedCount,
+          draft: draftCount,
+        }}
+      />
       <QuotationRecordsTable
         loading={loading}
         error={error}
