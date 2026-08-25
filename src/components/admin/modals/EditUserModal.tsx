@@ -2,12 +2,23 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, ChevronDown, FileText, Mail, Pencil, Phone, Shield, X } from 'lucide-react';
+import {
+  AlertCircle,
+  ChevronDown,
+  FileText,
+  Mail,
+  Pencil,
+  Phone,
+  Save,
+  Shield,
+  X,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { PROPERTY_LABELS } from '../helpers/propertyLabels';
 import { INPUT_CLS, LABEL_CLS, MODAL_OVERLAY_CLASS } from '../helpers/formStyles';
 import { getDisplayProperties, togglePropertySelection } from '../helpers/propertyUtils';
-
 interface EditUserModalProps {
   user: UserProfile;
   onClose: () => void;
@@ -48,29 +59,73 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (
-      !form.full_name ||
-      !form.real_email ||
-      !form.phone ||
-      !form.property_interest ||
-      !form.notes
-    ) {
-      setError('All fields (Name, Email, Phone, Property Interest, and Notes) are required.');
+    setError('');
+
+    const fullName = form.full_name.trim();
+    const realEmail = form.real_email.trim().toLowerCase();
+    const phone = form.phone.trim();
+    const propertyInterest = form.property_interest.trim();
+    const notes = form.notes.trim();
+
+    if (!fullName) {
+      setError('Please enter the client full name.');
       return;
     }
+    if (!realEmail) {
+      setError('Please enter the Real Email Address.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(realEmail)) {
+      setError(
+        `The Real Email Address "${realEmail}" is invalid. Please check for typos (e.g. .com).`
+      );
+      return;
+    }
+    if (!phone) {
+      setError('Please enter a phone number.');
+      return;
+    }
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      setError('Phone number must contain at least 10 valid digits.');
+      return;
+    }
+    if (!propertyInterest) {
+      setError('Please select at least one Property Interest.');
+      return;
+    }
+    if (!notes) {
+      setError('Please provide internal notes.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch(`/api/admin/users/${user.id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          full_name: fullName,
+          real_email: realEmail,
+          phone,
+          property_interest: propertyInterest,
+          notes,
+        }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to update user');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMessage = extractApiErrorMessage(json, 'Failed to update user.');
+        setError(errMessage);
+        return;
+      }
+      toast.success(`User "${fullName}" updated successfully.`);
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(
+        extractApiErrorMessage(err, 'Network error or server unavailable. Please try again.')
+      );
     } finally {
       setLoading(false);
     }
@@ -108,9 +163,9 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
 
         <form onSubmit={handleSubmit} className="space-y-4 p-6 font-sans">
           {error && (
-            <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              {error}
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-400 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400 dark:text-red-300" />
+              <span className="flex-1 leading-relaxed">{error}</span>
             </div>
           )}
 

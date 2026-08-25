@@ -3,10 +3,9 @@
 import { Calendar, CheckCircle2, Save, UserCheck, XCircle, Clock } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
-
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { AttendanceStatus, Team, TeamMember } from '@/src/lib/supabase/types';
-
 interface MarkAttendanceProps {
   token: string;
   showToast: (type: 'success' | 'error', msg: string) => void;
@@ -155,12 +154,13 @@ export default function MarkAttendance({
         },
         body: JSON.stringify({ records }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(extractApiErrorMessage(json, 'Failed to save attendance'));
+      }
       showToast('success', `Attendance saved for ${records.length} member(s).`);
     } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Failed to save attendance');
-    } finally {
+      showToast('error', extractApiErrorMessage(err, 'Failed to save attendance'));
       setSaving(false);
     }
   };

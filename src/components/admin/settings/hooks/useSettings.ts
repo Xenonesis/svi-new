@@ -6,6 +6,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useTheme } from '@/src/components/ThemeProvider';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { getUserAgentInfo, ACCENTS } from '../helpers';
 
 /* ─── Types ─────────────────────────────────────────────────── */
@@ -312,8 +313,8 @@ export function useSettings() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ key, value }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Save failed');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(extractApiErrorMessage(json, 'Save failed'));
       return json;
     },
     onSuccess: () => {
@@ -333,11 +334,11 @@ export function useSettings() {
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ full_name: profile.fullName, phone: profile.phone }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to update profile.');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(extractApiErrorMessage(json, 'Failed to update profile.'));
       showToast('success', 'Profile updated successfully!');
-    } catch (e) {
-      showToast('error', (e as Error).message || 'Failed to save profile.');
+    } catch (e: unknown) {
+      showToast('error', extractApiErrorMessage(e, 'Failed to save profile.'));
     }
   };
 

@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { RefreshCw, Search, Users, X, Briefcase } from 'lucide-react';
+import { AlertCircle, Briefcase, Check, RefreshCw, Search, Shield, Users, X } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 
 interface AdvisorProfile {
   id: string;
@@ -85,14 +86,16 @@ export function AdvisorSettingsModal({ onClose, token, showToast }: AdvisorSetti
         }),
       });
 
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to update dynamic list.');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(extractApiErrorMessage(json, 'Failed to update dynamic list.'));
+      }
 
       showToast('success', 'Public advisors and employees updated successfully!');
       onClose();
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      showToast('error', err.message || 'An error occurred while saving.');
+      showToast('error', extractApiErrorMessage(err, 'An error occurred while saving.'));
     } finally {
       setSaveLoading(false);
     }

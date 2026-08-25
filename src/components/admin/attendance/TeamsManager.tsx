@@ -14,9 +14,9 @@ import {
 import { AnimatePresence, motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { Team, TeamMember, UserProfile } from '@/src/lib/supabase/types';
-
 interface TeamsManagerProps {
   token: string;
   showToast: (type: 'success' | 'error', msg: string) => void;
@@ -63,13 +63,14 @@ function TeamModal({
         },
         body: JSON.stringify({ name, description }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to save team');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(extractApiErrorMessage(json, 'Failed to save team'));
+      }
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
-    } finally {
+      setError(extractApiErrorMessage(err, 'Something went wrong'));
       setLoading(false);
     }
   };
@@ -279,14 +280,15 @@ export default function TeamsManager({
         },
         body: JSON.stringify({ user_id: userId }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error);
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(extractApiErrorMessage(json, 'Failed to add member'));
+      }
       await fetchMembers(teamId);
       onTeamsChange();
       showToast('success', 'Member added to team.');
     } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Failed to add member');
-    } finally {
+      showToast('error', extractApiErrorMessage(err, 'Failed to add member'));
       setAddMemberLoading(false);
     }
   };
@@ -298,14 +300,14 @@ export default function TeamsManager({
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error);
+        const json = await res.json().catch(() => ({}));
+        throw new Error(extractApiErrorMessage(json, 'Failed to remove member'));
       }
       await fetchMembers(teamId);
       onTeamsChange();
       showToast('success', `${name} removed from team.`);
     } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Failed to remove member');
+      showToast('error', extractApiErrorMessage(err, 'Failed to remove member'));
     }
   };
 
@@ -318,15 +320,13 @@ export default function TeamsManager({
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error);
+        const json = await res.json().catch(() => ({}));
+        throw new Error(extractApiErrorMessage(json, 'Delete failed'));
       }
       onTeamsChange();
       showToast('success', `${deleteTarget.name} has been deleted.`);
     } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Delete failed');
-    } finally {
-      setDeleteLoading(false);
+      showToast('error', extractApiErrorMessage(err, 'Delete failed'));
       setDeleteTarget(null);
     }
   };

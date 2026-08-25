@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
-
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 interface Schedule {
   id: string;
   lottery_id: string;
@@ -130,15 +130,16 @@ export function useScheduleDraw(): UseScheduleDrawReturn {
             include_countdown_in_email: includeCountdownInEmail,
           }),
         });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error || 'Failed to schedule draw');
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(extractApiErrorMessage(json, 'Failed to schedule draw'));
+        }
         onSuccess(
           `Draw scheduled for ${new Date(scheduledAtUTC).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' })} IST.`
         );
         setExistingSchedule(json.schedule);
-      } catch (err: any) {
-        onError(err.message);
-      } finally {
+      } catch (err: unknown) {
+        onError(extractApiErrorMessage(err, 'Failed to schedule draw'));
         setScheduleSaving(false);
       }
     },
@@ -161,14 +162,14 @@ export function useScheduleDraw(): UseScheduleDrawReturn {
           headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
           body: JSON.stringify({ lotteryId }),
         });
-        const json = await res.json();
-        if (!res.ok) throw new Error(json.error || 'Failed to cancel schedule');
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          throw new Error(extractApiErrorMessage(json, 'Failed to cancel schedule'));
+        }
         onSuccess('Scheduled draw has been cancelled.');
         resetScheduleState();
-      } catch (err: any) {
-        onError(err.message);
-      } finally {
-        setScheduleSaving(false);
+      } catch (err: unknown) {
+        onError(extractApiErrorMessage(err, 'Failed to cancel schedule'));
       }
     },
     [existingSchedule, resetScheduleState]

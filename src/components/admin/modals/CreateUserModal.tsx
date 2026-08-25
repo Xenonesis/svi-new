@@ -3,10 +3,11 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { AlertCircle, Eye, EyeOff, FileText, Mail, Phone, Plus, X } from 'lucide-react';
+import { toast } from 'sonner';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { PROPERTY_LABELS } from '../helpers/propertyLabels';
 import { INPUT_CLS, LABEL_CLS, MODAL_OVERLAY_CLASS } from '../helpers/formStyles';
 import { getDisplayProperties, togglePropertySelection } from '../helpers/propertyUtils';
-
 interface CreateUserModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -48,37 +49,102 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (
-      !form.email ||
-      !form.password ||
-      !form.full_name ||
-      !form.real_email ||
-      !form.phone ||
-      !form.property_interest ||
-      !form.notes
-    ) {
+    setError('');
+
+    const fullName = form.full_name.trim();
+    const email = form.email.trim().toLowerCase();
+    const realEmail = form.real_email.trim().toLowerCase();
+    const password = form.password;
+    const phone = form.phone.trim();
+    const propertyInterest = form.property_interest.trim();
+    const notes = form.notes.trim();
+
+    if (!fullName) {
+      setError('Please enter the client full name.');
+      return;
+    }
+
+    if (!email) {
+      setError('Please enter the SVI Email Address.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError(`The SVI Email Address "${email}" is invalid. Please check for typos (e.g. .com).`);
+      return;
+    }
+
+    if (!realEmail) {
+      setError('Please enter the Real Email Address.');
+      return;
+    }
+    if (!emailRegex.test(realEmail)) {
       setError(
-        'All fields (Name, SVI Email, Email, Password, Phone, Property Interest, and Notes) are required.'
+        `The Real Email Address "${realEmail}" is invalid. Please check for typos (e.g. .com).`
       );
       return;
     }
-    if (form.password.length < 8) {
-      setError('Password must be at least 8 characters.');
+
+    if (!password) {
+      setError('Please enter a password.');
       return;
     }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+
+    if (!phone) {
+      setError('Please enter a phone number.');
+      return;
+    }
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      setError('Phone number must contain at least 10 valid digits.');
+      return;
+    }
+
+    if (!propertyInterest) {
+      setError('Please select at least one Property Interest.');
+      return;
+    }
+
+    if (!notes) {
+      setError('Please provide internal notes.');
+      return;
+    }
+
     setLoading(true);
     try {
       const res = await fetch('/api/admin/users', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify(form),
+        body: JSON.stringify({
+          full_name: fullName,
+          email,
+          real_email: realEmail,
+          password,
+          phone,
+          property_interest: propertyInterest,
+          notes,
+        }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to create user');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMessage = extractApiErrorMessage(
+          json,
+          'Failed to create user. Please check the details and try again.'
+        );
+        setError(errMessage);
+        return;
+      }
+      toast.success(`User "${fullName}" created successfully.`);
       onSuccess();
       onClose();
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Something went wrong');
+      setError(
+        extractApiErrorMessage(err, 'Network error or server unavailable. Please try again.')
+      );
     } finally {
       setLoading(false);
     }
@@ -116,9 +182,9 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
 
         <form onSubmit={handleSubmit} className="space-y-4 p-6 font-sans">
           {error && (
-            <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2.5 text-sm text-red-400">
-              <AlertCircle className="h-4 w-4 flex-shrink-0" />
-              {error}
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-400 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400 dark:text-red-300" />
+              <span className="flex-1 leading-relaxed">{error}</span>
             </div>
           )}
 

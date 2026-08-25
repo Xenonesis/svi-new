@@ -58,22 +58,67 @@ export async function POST(request: NextRequest) {
     try {
       body = await request.json();
     } catch {
-      throw AppError.badRequest('Invalid JSON body');
+      throw AppError.badRequest('Invalid JSON body in request.');
     }
 
-    const { email, password, full_name, phone, property_interest, notes, real_email } = body;
+    const fullName = body.full_name?.trim();
+    const email = body.email?.trim().toLowerCase();
+    const realEmail = body.real_email?.trim().toLowerCase();
+    const password = body.password;
+    const phone = body.phone?.trim();
+    const propertyInterest = body.property_interest?.trim();
+    const notes = body.notes?.trim();
 
-    if (
-      !email ||
-      !password ||
-      !full_name ||
-      !real_email ||
-      !phone ||
-      !property_interest ||
-      !notes
-    ) {
+    if (!fullName) {
+      throw AppError.badRequest('Full Name is required.');
+    }
+    if (!email) {
+      throw AppError.badRequest('SVI Email Address is required.');
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
       throw AppError.badRequest(
-        'Name, SVI Email, Real Email, Password, Phone, Property Interest, and Notes are required'
+        `The SVI Email Address "${email}" is invalid. Please check for typos (e.g. .com).`
+      );
+    }
+    if (!realEmail) {
+      throw AppError.badRequest('Real Email Address is required.');
+    }
+    if (!emailRegex.test(realEmail)) {
+      throw AppError.badRequest(
+        `The Real Email Address "${realEmail}" is invalid. Please check for typos (e.g. .com).`
+      );
+    }
+    if (!password) {
+      throw AppError.badRequest('Password is required.');
+    }
+    if (password.length < 8) {
+      throw AppError.badRequest('Password must be at least 8 characters long.');
+    }
+    if (!phone) {
+      throw AppError.badRequest('Phone Number is required.');
+    }
+    const phoneDigits = phone.replace(/\D/g, '');
+    if (phoneDigits.length < 10) {
+      throw AppError.badRequest('Phone Number must contain at least 10 valid digits.');
+    }
+    if (!propertyInterest) {
+      throw AppError.badRequest('Please select at least one Property Interest.');
+    }
+    if (!notes) {
+      throw AppError.badRequest('Internal Notes are required.');
+    }
+
+    // Pre-check if profile already exists with this SVI Email
+    const { data: existingEmailProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('id, full_name, email, role')
+      .eq('email', email)
+      .maybeSingle();
+
+    if (existingEmailProfile) {
+      throw AppError.badRequest(
+        `An account with the SVI Email "${email}" already exists (${existingEmailProfile.full_name || 'User'}, role: ${existingEmailProfile.role || 'client'}).`
       );
     }
 
@@ -84,7 +129,25 @@ export async function POST(request: NextRequest) {
       email_confirm: true, // auto-confirm so they can log in immediately
     });
 
-    if (authError) throw AppError.badRequest(authError.message);
+    if (authError) {
+      const rawMsg = authError.message || '';
+      if (
+        /already registered|already exists|email address has already been registered/i.test(rawMsg)
+      ) {
+        throw AppError.badRequest(
+          `An account with the email "${email}" has already been registered in authentication.`
+        );
+      }
+      if (/password/i.test(rawMsg)) {
+        throw AppError.badRequest(`Password does not meet security requirements: ${rawMsg}`);
+      }
+      if (/validate email|invalid email/i.test(rawMsg)) {
+        throw AppError.badRequest(
+          `The email address "${email}" is invalid. Please verify the domain and formatting.`
+        );
+      }
+      throw AppError.badRequest(rawMsg || 'Failed to create user account in authentication.');
+    }
 
     const newUserId = authData.user.id;
 
@@ -94,24 +157,36 @@ export async function POST(request: NextRequest) {
       .insert({
         id: newUserId,
         email,
-        full_name,
+        full_name: fullName,
         phone: phone || null,
-        property_interest: property_interest || null,
+        property_interest: propertyInterest || null,
         notes: notes || null,
         role: 'client',
         created_by: admin.id,
-        real_email: real_email || null,
+        real_email: realEmail || null,
       })
       .select()
       .single();
 
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(newUserId);
-      throw AppError.internal(profileError.message);
+      if (
+        profileError.code === '23505' ||
+        /duplicate key|unique constraint/i.test(profileError.message)
+      ) {
+        if (/phone/i.test(profileError.message)) {
+          throw AppError.badRequest(`A user with the phone number "${phone}" already exists.`);
+        }
+        if (/email/i.test(profileError.message)) {
+          throw AppError.badRequest(`A user with the email "${email}" already exists.`);
+        }
+        throw AppError.badRequest('A user with these unique details already exists.');
+      }
+      throw AppError.internal(`Failed to save user profile: ${profileError.message}`);
     }
 
     // 3. Send automated notification to client's real email address if enabled in settings
-    if (real_email) {
+    if (realEmail) {
       try {
         let isSharingEnabled = true;
         const { data: sharingSetting } = await supabaseAdmin
@@ -130,12 +205,12 @@ export async function POST(request: NextRequest) {
             const resend = new Resend(resendApiKey);
             const { data: emailData, error: sendErr } = await resend.emails.send({
               from: 'SVI Infra <noreply@sviiinfrasolutions.com>',
-              to: real_email,
+              to: realEmail,
               subject: 'Your SVI Infra Portal Account is Ready',
               html: `
               <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; rounded-corners: 10px;">
                 <h2 style="color: #d4af37; font-family: serif;">Welcome to SVI Infra Solutions</h2>
-                <p>Hello <strong>${full_name}</strong>,</p>
+                <p>Hello <strong>${fullName}</strong>,</p>
                 <p>Your authorized client portal account has been successfully created. You can now log in using the details below:</p>
                 <div style="background-color: #f9f9f9; color: #333333; padding: 15px; border-radius: 8px; margin: 20px 0;">
                   <p style="margin: 5px 0;"><strong>SVI Email Address:</strong> ${email}</p>
@@ -163,10 +238,9 @@ export async function POST(request: NextRequest) {
 
     // Create notification for all admins about new user registration
     try {
-      await NotificationHelper.userRegistered(full_name, newUserId);
+      await NotificationHelper.userRegistered(fullName, newUserId);
     } catch (notifError) {
       console.error('Failed to create notification:', notifError);
-      // Don't fail the request if notification fails
     }
 
     return NextResponse.json({ user: profile }, { status: 201 });

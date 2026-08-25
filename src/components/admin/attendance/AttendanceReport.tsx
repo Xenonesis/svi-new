@@ -4,6 +4,7 @@ import { BarChart3, Search } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 import type { AttendanceReportRow, Team } from '@/src/lib/supabase/types';
 
@@ -34,14 +35,13 @@ export default function AttendanceReport({ token, showToast, teams }: Attendance
       const res = await fetch(`/api/admin/attendance/report?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+      const json = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const json = await res.json();
-        throw new Error(json.error);
+        throw new Error(extractApiErrorMessage(json, 'Failed to load report'));
       }
-      const json = await res.json();
       setReport(json.report || []);
     } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Failed to load report');
+      showToast('error', extractApiErrorMessage(err, 'Failed to load report'));
     } finally {
       setLoading(false);
     }

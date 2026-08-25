@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Send, RefreshCw } from 'lucide-react';
+import { AlertCircle, Check, Loader2, Mail, RefreshCw, Send, X } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { Lottery } from '../types';
 
 interface BulkEmailModalProps {
@@ -102,13 +103,14 @@ export function BulkEmailModal({
           html: `<div style="font-family:sans-serif;max-width:600px;margin:auto;padding:24px">${htmlBody}</div>`,
         }),
       });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to send emails');
+      const json = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        throw new Error(extractApiErrorMessage(json, 'Failed to send emails'));
+      }
       onSuccess(`Email sent to ${emails.length} participant(s).`);
       onClose();
-    } catch (err: any) {
-      onError(err.message);
-    } finally {
+    } catch (err: unknown) {
+      onError(extractApiErrorMessage(err, 'Failed to send emails'));
       setSending(false);
     }
   };

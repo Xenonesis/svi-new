@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Trash2 } from 'lucide-react';
-
+import { AlertCircle, Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 export function AddEmployeeModal({
   onClose,
   onSuccess,
@@ -35,8 +36,43 @@ export function AddEmployeeModal({
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
-    setLoading(true);
 
+    const fullName = formData.full_name.trim();
+    const email = formData.email.trim().toLowerCase();
+    const password = formData.password;
+    const phone = formData.phone.trim();
+    const notes = formData.notes.trim();
+
+    if (!fullName) {
+      setError('Please enter the employee full name.');
+      return;
+    }
+    if (!email) {
+      setError('Please enter the email address.');
+      return;
+    }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setError(`The Email Address "${email}" is invalid. Please check for typos (e.g. .com).`);
+      return;
+    }
+    if (!password) {
+      setError('Please enter a password.');
+      return;
+    }
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+    if (phone) {
+      const phoneDigits = phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10) {
+        setError('Phone number must contain at least 10 valid digits.');
+        return;
+      }
+    }
+
+    setLoading(true);
     try {
       const res = await fetch('/api/admin/employees', {
         method: 'POST',
@@ -44,13 +80,26 @@ export function AddEmployeeModal({
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          full_name: fullName,
+          email,
+          password,
+          phone: phone || null,
+          notes: notes || null,
+        }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to create employee');
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errMessage = extractApiErrorMessage(data, 'Failed to create employee.');
+        setError(errMessage);
+        return;
+      }
+      toast.success(`Employee "${fullName}" created successfully.`);
       onSuccess();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err: unknown) {
+      setError(
+        extractApiErrorMessage(err, 'Network error or server unavailable. Please try again.')
+      );
     } finally {
       setLoading(false);
     }
@@ -78,8 +127,9 @@ export function AddEmployeeModal({
 
         <form onSubmit={handleSubmit} className="space-y-4 p-6">
           {error && (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-600 dark:border-red-500/20 dark:bg-red-500/10 dark:text-red-400">
-              {error}
+            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
+              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500 dark:text-red-400" />
+              <span className="flex-1 leading-relaxed">{error}</span>
             </div>
           )}
 
