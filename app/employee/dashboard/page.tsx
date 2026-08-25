@@ -19,6 +19,9 @@ import {
   Sparkles,
   Loader2,
   RefreshCw,
+  Plus,
+  FileText,
+  CalendarDays,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
@@ -27,53 +30,50 @@ import { toast } from 'sonner';
 interface DashboardData {
   employee: {
     id: string;
-    name: string;
+    full_name: string;
     email: string;
-    role: string;
     department?: string | null;
+    role: string;
   };
   today: {
     date: string;
-    punch_status: 'not_punched' | 'punched_in' | 'punched_out';
+    punch_status: 'punched_in' | 'punched_out' | 'not_punched';
     punch_in_time: string | null;
     punch_out_time: string | null;
     total_hours: number | null;
     is_late: boolean;
-    is_geofence_verified: boolean;
   };
   metrics: {
-    pending_tasks_count: number;
+    weekly_hours: number;
+    pending_tasks: number;
     completed_tasks_today: number;
-    active_site_visits_count: number;
-    pending_leads_count: number;
-    days_present_this_week: number;
-    hours_logged_this_week: number;
+    assigned_leads: number;
+    upcoming_site_visits: number;
   };
   urgent_tasks: Array<{
     id: string;
     title: string;
-    priority: string;
-    category: string;
-    status: string;
+    description?: string | null;
+    priority: 'low' | 'medium' | 'high' | 'urgent';
+    status: 'pending' | 'in_progress' | 'completed' | 'cancelled';
     due_date?: string | null;
   }>;
   upcoming_site_visits: Array<{
     id: string;
+    preferred_date: string;
+    preferred_time?: string | null;
     status: string;
-    preferred_date?: string | null;
-    notes?: string | null;
-    contact?: {
-      name?: string;
-      phone?: string;
-    };
+    location?: string | null;
+    property?: { title: string; location?: string } | null;
+    contact?: { full_name?: string; phone?: string } | null;
   }>;
   recent_leads: Array<{
     id: string;
     name: string;
-    phone?: string | null;
-    lifecycle_status: string;
-    temperature?: string | null;
-    project_interest?: string | null;
+    phone: string;
+    lead_temperature: string;
+    lead_status: string;
+    created_at: string;
   }>;
 }
 
@@ -88,12 +88,12 @@ export default function EmployeeDashboardPage() {
     if (isRefresh) setRefreshing(true);
     try {
       const res = await fetch('/api/employee/work/dashboard');
-      if (!res.ok) throw new Error('Failed to load dashboard data');
-      const json = await res.json();
-      setData(json);
-    } catch (err) {
-      console.error(err);
-      toast.error('Could not refresh dashboard');
+      if (res.ok) {
+        const json = await res.json();
+        setData(json.dashboard);
+      }
+    } catch {
+      toast.error('Failed to load dashboard data');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -110,15 +110,14 @@ export default function EmployeeDashboardPage() {
       const now = new Date();
       setCurrentTime(now);
 
-      if (data?.today?.punch_status === 'punched_in' && data?.today?.punch_in_time) {
-        const inTime = new Date(data.today.punch_in_time);
-        const diffMs = Math.max(0, now.getTime() - inTime.getTime());
-        const totalSec = Math.floor(diffMs / 1000);
-        const hours = Math.floor(totalSec / 3600);
-        const mins = Math.floor((totalSec % 3600) / 60);
-        const secs = totalSec % 60;
+      if (data?.today?.punch_status === 'punched_in' && data.today.punch_in_time) {
+        const start = new Date(data.today.punch_in_time);
+        const diffSec = Math.max(0, Math.floor((now.getTime() - start.getTime()) / 1000));
+        const hours = Math.floor(diffSec / 3600);
+        const minutes = Math.floor((diffSec % 3600) / 60);
+        const seconds = diffSec % 60;
         setElapsedTime(
-          `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`
+          `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`
         );
       }
     }, 1000);
@@ -135,8 +134,8 @@ export default function EmployeeDashboardPage() {
         body: JSON.stringify({ id: taskId, status: newStatus }),
       });
       if (res.ok) {
-        toast.success(newStatus === 'completed' ? 'Task marked complete!' : 'Task reopened');
-        fetchDashboard();
+        toast.success(newStatus === 'completed' ? 'Task marked completed' : 'Task marked pending');
+        fetchDashboard(true);
       }
     } catch {
       toast.error('Failed to update task');
@@ -146,7 +145,7 @@ export default function EmployeeDashboardPage() {
   if (loading) {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-7 w-7 animate-spin text-blue-600 dark:text-blue-400" />
+        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
         <p className="text-xs font-medium text-slate-500">Loading your workspace...</p>
       </div>
     );
@@ -155,323 +154,435 @@ export default function EmployeeDashboardPage() {
   const punchStatus = data?.today?.punch_status || 'not_punched';
 
   return (
-    <div className="space-y-5 pb-6">
-      {/* 1. Welcome & Shift Greeting */}
-      <div className="flex items-center justify-between">
+    <div className="space-y-6 pb-6">
+      {/* Top Welcome Bar */}
+      <div className="flex flex-col justify-between gap-4 rounded-3xl border border-slate-200/80 bg-gradient-to-r from-blue-900/10 via-indigo-900/5 to-transparent p-5 backdrop-blur-sm sm:flex-row sm:items-center dark:border-slate-800 dark:from-blue-950/40">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
-            Hello, {data?.employee?.name?.split(' ')[0] || 'Employee'}
-          </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            {format(currentTime, 'EEEE, dd MMMM yyyy')}
+          <div className="flex items-center gap-2">
+            <h1 className="text-lg font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+              Welcome back, {data?.employee?.full_name?.split(' ')[0] || 'Staff'} 👋
+            </h1>
+          </div>
+          <p className="mt-1 text-xs text-slate-600 sm:text-sm dark:text-slate-400">
+            {format(currentTime, 'EEEE, d MMMM yyyy')} •{' '}
+            <span className="font-mono font-semibold text-blue-600 dark:text-blue-400">
+              {format(currentTime, 'hh:mm:ss a')}
+            </span>
           </p>
         </div>
-        <button
-          onClick={() => fetchDashboard(true)}
-          disabled={refreshing}
-          className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 shadow-sm transition-all hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
-        >
-          <RefreshCw className={clsx('h-4 w-4', refreshing && 'animate-spin text-blue-500')} />
-        </button>
-      </div>
 
-      {/* 2. Punch Radar / Shift Status Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-gradient-to-br from-white via-slate-50/50 to-blue-50/30 p-5 shadow-sm dark:border-slate-800 dark:from-slate-900 dark:via-slate-900/90 dark:to-blue-950/20"
-      >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <span
-              className={clsx(
-                'relative flex h-3 w-3 rounded-full',
-                punchStatus === 'punched_in' && 'bg-emerald-500',
-                punchStatus === 'punched_out' && 'bg-amber-500',
-                punchStatus === 'not_punched' && 'bg-slate-400'
-              )}
-            >
-              {punchStatus === 'punched_in' && (
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-              )}
-            </span>
-            <span className="text-xs font-semibold tracking-wider text-slate-600 uppercase dark:text-slate-300">
-              {punchStatus === 'punched_in'
-                ? 'Active On Shift'
-                : punchStatus === 'punched_out'
-                  ? 'Shift Completed'
-                  : 'Not Punched In'}
-            </span>
-          </div>
-
-          <span className="font-mono text-xs font-medium text-slate-500 dark:text-slate-400">
-            {format(currentTime, 'hh:mm:ss a')}
-          </span>
-        </div>
-
-        {/* Live Timer or Shift Hours */}
-        <div className="my-4 flex items-baseline justify-between">
-          {punchStatus === 'punched_in' ? (
-            <div>
-              <div className="font-mono text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                {elapsedTime}
-              </div>
-              <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                <Clock className="h-3.5 w-3.5" />
-                Checked in at{' '}
-                {data?.today?.punch_in_time
-                  ? format(new Date(data.today.punch_in_time), 'hh:mm a')
-                  : '--:--'}
-              </p>
-            </div>
-          ) : punchStatus === 'punched_out' ? (
-            <div>
-              <div className="font-mono text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                {data?.today?.total_hours ? `${data.today.total_hours} hrs` : '--'}
-              </div>
-              <p className="mt-0.5 flex items-center gap-1 text-xs font-medium text-amber-600 dark:text-amber-400">
-                <CheckCircle2 className="h-3.5 w-3.5" />
-                Checked out at{' '}
-                {data?.today?.punch_out_time
-                  ? format(new Date(data.today.punch_out_time), 'hh:mm a')
-                  : '--:--'}
-              </p>
-            </div>
-          ) : (
-            <div>
-              <div className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-                Ready for Shift
-              </div>
-              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                Regular Shift: 09:00 AM – 06:00 PM
-              </p>
-            </div>
-          )}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          <button
+            onClick={() => fetchDashboard(true)}
+            disabled={refreshing}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 disabled:opacity-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <RefreshCw className={clsx('h-3.5 w-3.5', refreshing && 'animate-spin')} />
+            <span className="hidden sm:inline">Refresh</span>
+          </button>
 
           <Link
             href="/employee/attendance"
             className={clsx(
-              'flex items-center gap-1.5 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-md transition-all',
+              'flex items-center gap-2 rounded-xl px-3.5 py-1.5 text-xs font-bold shadow-md transition-all',
               punchStatus === 'punched_in'
-                ? 'bg-amber-600 shadow-amber-600/20 hover:bg-amber-500'
-                : punchStatus === 'punched_out'
-                  ? 'bg-slate-700 hover:bg-slate-600'
-                  : 'bg-blue-600 shadow-blue-600/20 hover:bg-blue-500'
+                ? 'bg-amber-600 text-white shadow-amber-600/20 hover:bg-amber-500'
+                : 'bg-emerald-600 text-white shadow-emerald-600/20 hover:bg-emerald-500'
             )}
           >
-            {punchStatus === 'punched_in'
-              ? 'Punch Out'
-              : punchStatus === 'punched_out'
-                ? 'View Logs'
-                : 'Punch In'}
-            <ArrowRight className="h-3.5 w-3.5" />
+            <Clock className="h-3.5 w-3.5" />
+            <span>
+              {punchStatus === 'punched_in' ? 'Shift Active (Punch Out)' : 'Punch In Now'}
+            </span>
           </Link>
         </div>
-
-        {data?.today?.is_late && (
-          <div className="flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-3 py-1.5 text-xs text-amber-700 dark:text-amber-300">
-            <AlertCircle className="h-3.5 w-3.5 shrink-0" />
-            <span>Marked late for today’s shift cutoff.</span>
-          </div>
-        )}
-      </motion.div>
-
-      {/* 3. Quick Stats Grid */}
-      <div className="grid grid-cols-2 gap-3">
-        <Link
-          href="/employee/work?tab=tasks"
-          className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all hover:border-blue-300 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-blue-900"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-50 text-blue-600 dark:bg-blue-950/60 dark:text-blue-400">
-              <ListTodo className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white">
-              {data?.metrics?.pending_tasks_count ?? 0}
-            </span>
-          </div>
-          <p className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
-            Active Tasks
-          </p>
-          <p className="text-[11px] text-slate-500">
-            {data?.metrics?.completed_tasks_today ?? 0} completed today
-          </p>
-        </Link>
-
-        <Link
-          href="/employee/work?tab=site-visits"
-          className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all hover:border-emerald-300 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-emerald-900"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-50 text-emerald-600 dark:bg-emerald-950/60 dark:text-emerald-400">
-              <Compass className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white">
-              {data?.metrics?.active_site_visits_count ?? 0}
-            </span>
-          </div>
-          <p className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
-            Site Visits
-          </p>
-          <p className="text-[11px] text-slate-500">Scheduled tours</p>
-        </Link>
-
-        <Link
-          href="/employee/work?tab=leads"
-          className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all hover:border-indigo-300 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-indigo-900"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600 dark:bg-indigo-950/60 dark:text-indigo-400">
-              <Users className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white">
-              {data?.metrics?.pending_leads_count ?? 0}
-            </span>
-          </div>
-          <p className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
-            Assigned Leads
-          </p>
-          <p className="text-[11px] text-slate-500">Follow-up inquiries</p>
-        </Link>
-
-        <Link
-          href="/employee/attendance/history"
-          className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm transition-all hover:border-purple-300 dark:border-slate-800 dark:bg-slate-900/60 dark:hover:border-purple-900"
-        >
-          <div className="flex items-center justify-between">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-purple-50 text-purple-600 dark:bg-purple-950/60 dark:text-purple-400">
-              <TrendingUp className="h-5 w-5" />
-            </div>
-            <span className="text-xl font-bold text-slate-900 dark:text-white">
-              {data?.metrics?.hours_logged_this_week ?? 0}h
-            </span>
-          </div>
-          <p className="mt-3 text-xs font-semibold text-slate-700 dark:text-slate-200">
-            Weekly Hours
-          </p>
-          <p className="text-[11px] text-slate-500">
-            {data?.metrics?.days_present_this_week ?? 0} days present
-          </p>
-        </Link>
       </div>
 
-      {/* 4. Urgent Action Items / To-Dos */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-1.5">
-            <Sparkles className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-            <h2 className="text-sm font-bold text-slate-900 dark:text-white">
-              Priority Action Items
-            </h2>
-          </div>
-          <Link
-            href="/employee/work?tab=tasks"
-            className="flex items-center gap-0.5 text-xs font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400"
+      {/* Main 2-Column Desktop Grid */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
+        {/* LEFT COLUMN (5 Columns on Desktop) */}
+        <div className="space-y-6 lg:col-span-5">
+          {/* Live Radar Punch Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            className={clsx(
+              'relative overflow-hidden rounded-3xl border p-6 shadow-sm transition-all',
+              punchStatus === 'punched_in'
+                ? 'border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-emerald-500/5 to-transparent dark:border-emerald-500/20 dark:from-emerald-950/30'
+                : punchStatus === 'punched_out'
+                  ? 'border-blue-500/30 bg-gradient-to-br from-blue-500/10 via-blue-500/5 to-transparent dark:border-blue-500/20 dark:from-blue-950/30'
+                  : 'border-slate-200/90 bg-white dark:border-slate-800 dark:bg-slate-900/70'
+            )}
           >
-            View All <ChevronRight className="h-3.5 w-3.5" />
-          </Link>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div
+                  className={clsx(
+                    'h-2.5 w-2.5 animate-pulse rounded-full',
+                    punchStatus === 'punched_in'
+                      ? 'bg-emerald-500'
+                      : punchStatus === 'punched_out'
+                        ? 'bg-blue-500'
+                        : 'bg-slate-400'
+                  )}
+                />
+                <span className="text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                  {punchStatus === 'punched_in'
+                    ? 'Shift In Progress'
+                    : punchStatus === 'punched_out'
+                      ? 'Shift Completed'
+                      : 'Shift Not Started'}
+                </span>
+              </div>
+
+              {data?.today?.is_late && (
+                <span className="rounded-full bg-amber-500/10 px-2 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
+                  Late Arrival
+                </span>
+              )}
+            </div>
+
+            {/* Radar Center Dial */}
+            <div className="my-6 flex flex-col items-center justify-center text-center">
+              <div className="relative flex h-32 w-32 items-center justify-center rounded-full border-4 border-slate-100 bg-slate-50 shadow-inner dark:border-slate-800 dark:bg-slate-950/80">
+                {punchStatus === 'punched_in' && (
+                  <div className="absolute inset-0 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+                )}
+                <div className="flex flex-col items-center">
+                  <Clock
+                    className={clsx(
+                      'h-6 w-6',
+                      punchStatus === 'punched_in'
+                        ? 'text-emerald-500'
+                        : punchStatus === 'punched_out'
+                          ? 'text-blue-500'
+                          : 'text-slate-400'
+                    )}
+                  />
+                  <span className="mt-1 font-mono text-xs font-bold text-slate-800 dark:text-slate-200">
+                    {punchStatus === 'punched_in'
+                      ? elapsedTime
+                      : punchStatus === 'punched_out'
+                        ? `${(data?.today?.total_hours || 0).toFixed(1)} hrs`
+                        : '00:00:00'}
+                  </span>
+                  <span className="text-[9px] text-slate-400">
+                    {punchStatus === 'punched_in' ? 'Active' : 'Duration'}
+                  </span>
+                </div>
+              </div>
+
+              <div className="mt-4 flex w-full items-center justify-around border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                <div>
+                  <p className="text-[10px] text-slate-400">Punch In</p>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200">
+                    {data?.today?.punch_in_time
+                      ? format(new Date(data.today.punch_in_time), 'hh:mm a')
+                      : '--:--'}
+                  </p>
+                </div>
+                <div className="h-6 w-px bg-slate-200 dark:bg-slate-800" />
+                <div>
+                  <p className="text-[10px] text-slate-400">Punch Out</p>
+                  <p className="font-semibold text-slate-800 dark:text-slate-200">
+                    {data?.today?.punch_out_time
+                      ? format(new Date(data.today.punch_out_time), 'hh:mm a')
+                      : '--:--'}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <Link
+              href="/employee/attendance"
+              className="flex w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 py-3 text-xs font-bold text-white shadow-lg transition-all hover:bg-slate-800 dark:bg-blue-600 dark:hover:bg-blue-500"
+            >
+              Open GPS Attendance Terminal <ArrowRight className="h-4 w-4" />
+            </Link>
+          </motion.div>
+
+          {/* 4 Stat Metrics Grid */}
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Weekly Hours
+                </span>
+                <TrendingUp className="h-4 w-4 text-blue-500" />
+              </div>
+              <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
+                {data?.metrics?.weekly_hours || 0}{' '}
+                <span className="text-xs font-normal text-slate-400">hrs</span>
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Pending Tasks
+                </span>
+                <ListTodo className="h-4 w-4 text-amber-500" />
+              </div>
+              <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
+                {data?.metrics?.pending_tasks || 0}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Assigned Leads
+                </span>
+                <Users className="h-4 w-4 text-emerald-500" />
+              </div>
+              <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
+                {data?.metrics?.assigned_leads || 0}
+              </p>
+            </div>
+
+            <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+                  Site Visits
+                </span>
+                <Compass className="h-4 w-4 text-purple-500" />
+              </div>
+              <p className="mt-2 text-xl font-black text-slate-900 dark:text-white">
+                {data?.metrics?.upcoming_site_visits || 0}
+              </p>
+            </div>
+          </div>
+
+          {/* Quick Shortcuts */}
+          <div className="rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+            <h3 className="mb-3 text-xs font-bold tracking-wider text-slate-400 uppercase">
+              Quick Shortcuts
+            </h3>
+            <div className="grid grid-cols-3 gap-2 text-center text-xs font-semibold">
+              <Link
+                href="/employee/attendance/history"
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <CalendarDays className="h-4 w-4 text-blue-500" />
+                <span className="text-[11px]">Apply Leave</span>
+              </Link>
+              <Link
+                href="/employee/work?tab=logs"
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <FileText className="h-4 w-4 text-emerald-500" />
+                <span className="text-[11px]">Daily Log</span>
+              </Link>
+              <Link
+                href="/employee/work?tab=tasks"
+                className="flex flex-col items-center gap-1.5 rounded-xl border border-slate-100 bg-slate-50 p-2.5 text-slate-700 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800"
+              >
+                <Plus className="h-4 w-4 text-purple-500" />
+                <span className="text-[11px]">New Task</span>
+              </Link>
+            </div>
+          </div>
         </div>
 
-        {data?.urgent_tasks && data.urgent_tasks.length > 0 ? (
-          <div className="space-y-2">
-            {data.urgent_tasks.map((task) => (
-              <div
-                key={task.id}
-                className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-white p-3 shadow-sm dark:border-slate-800 dark:bg-slate-900/60"
+        {/* RIGHT COLUMN (7 Columns on Desktop) */}
+        <div className="space-y-6 lg:col-span-7">
+          {/* Urgent & Priority Tasks */}
+          <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+            <div className="mb-4 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-500">
+                  <ListTodo className="h-4 w-4" />
+                </div>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                  Today&apos;s Priority Tasks
+                </h2>
+              </div>
+              <Link
+                href="/employee/work?tab=tasks"
+                className="flex items-center gap-1 text-xs font-semibold text-blue-600 hover:underline dark:text-blue-400"
               >
-                <div className="mr-2 flex min-w-0 flex-1 items-center gap-3">
-                  <button
-                    onClick={() => toggleTask(task.id, task.status)}
-                    className="flex h-5 w-5 shrink-0 items-center justify-center rounded-md border border-slate-300 text-transparent transition-colors hover:border-blue-500 hover:text-blue-500 dark:border-slate-700"
+                All Tasks <ChevronRight className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+
+            {!data?.urgent_tasks || data.urgent_tasks.length === 0 ? (
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 py-8 text-center dark:border-slate-800">
+                <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                <p className="mt-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                  All caught up! No urgent tasks pending.
+                </p>
+                <Link
+                  href="/employee/work?tab=tasks"
+                  className="mt-3 text-xs font-bold text-blue-600 dark:text-blue-400"
+                >
+                  + Add a new task
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-2.5">
+                {data.urgent_tasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-start justify-between rounded-2xl border border-slate-100 bg-slate-50/70 p-3.5 transition-all dark:border-slate-800 dark:bg-slate-950/40"
                   >
-                    <CheckCircle2 className="h-4 w-4" />
-                  </button>
-                  <div className="truncate">
-                    <p className="truncate text-xs font-medium text-slate-900 dark:text-white">
-                      {task.title}
-                    </p>
-                    <div className="mt-0.5 flex items-center gap-2 text-[10px] text-slate-500">
-                      <span className="capitalize">{task.category.replace('_', ' ')}</span>
-                      {task.due_date && (
-                        <span>• Due {format(new Date(task.due_date), 'MMM dd')}</span>
+                    <div className="flex items-start gap-3">
+                      <button
+                        onClick={() => toggleTask(task.id, task.status)}
+                        className={clsx(
+                          'mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors',
+                          task.status === 'completed'
+                            ? 'border-emerald-500 bg-emerald-500 text-white'
+                            : 'border-slate-300 hover:border-slate-500 dark:border-slate-700'
+                        )}
+                      >
+                        {task.status === 'completed' && <CheckCircle2 className="h-3 w-3" />}
+                      </button>
+                      <div>
+                        <p
+                          className={clsx(
+                            'text-xs font-semibold',
+                            task.status === 'completed'
+                              ? 'text-slate-400 line-through dark:text-slate-500'
+                              : 'text-slate-800 dark:text-slate-200'
+                          )}
+                        >
+                          {task.title}
+                        </p>
+                        {task.due_date && (
+                          <p className="mt-0.5 text-[10px] text-slate-400">
+                            Due: {format(new Date(task.due_date), 'd MMM, hh:mm a')}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+
+                    <span
+                      className={clsx(
+                        'rounded-full px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase',
+                        task.priority === 'urgent'
+                          ? 'bg-red-500/10 text-red-600 dark:text-red-400'
+                          : task.priority === 'high'
+                            ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                            : 'bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300'
+                      )}
+                    >
+                      {task.priority}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Next Scheduled Property Site Visit */}
+          {data?.upcoming_site_visits && data.upcoming_site_visits.length > 0 && (
+            <div className="rounded-3xl border border-purple-500/20 bg-gradient-to-br from-purple-500/5 to-transparent p-5 shadow-sm dark:border-purple-500/30 dark:from-purple-950/20">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-purple-500/10 text-purple-500">
+                    <Compass className="h-4 w-4" />
+                  </div>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Next Scheduled Site Visit
+                  </h2>
+                </div>
+                <Link
+                  href="/employee/work?tab=visits"
+                  className="text-xs font-semibold text-purple-600 hover:underline dark:text-purple-400"
+                >
+                  View All
+                </Link>
+              </div>
+
+              {(() => {
+                const visit = data.upcoming_site_visits[0];
+                return (
+                  <div className="rounded-2xl border border-purple-200/60 bg-white/90 p-4 shadow-sm dark:border-purple-900/40 dark:bg-slate-900/80">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <h4 className="text-xs font-bold text-slate-900 dark:text-white">
+                          {visit.property?.title || 'Property Site Visit'}
+                        </h4>
+                        <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400">
+                          <MapPin className="h-3 w-3 text-purple-500" />
+                          {visit.location || visit.property?.location || 'Jaipur Site'}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-bold text-purple-700 dark:bg-purple-950 dark:text-purple-300">
+                        {visit.status}
+                      </span>
+                    </div>
+
+                    <div className="mt-3 flex items-center justify-between border-t border-slate-100 pt-3 text-xs dark:border-slate-800">
+                      <div className="flex items-center gap-1.5 text-slate-600 dark:text-slate-400">
+                        <Calendar className="h-3.5 w-3.5 text-purple-500" />
+                        <span>
+                          {format(new Date(visit.preferred_date), 'd MMM yyyy')}
+                          {visit.preferred_time ? ` (${visit.preferred_time})` : ''}
+                        </span>
+                      </div>
+
+                      {visit.contact?.phone && (
+                        <a
+                          href={`tel:${visit.contact.phone}`}
+                          className="flex items-center gap-1 rounded-lg bg-emerald-500/10 px-2 py-1 text-[11px] font-bold text-emerald-600 dark:text-emerald-400"
+                        >
+                          <Phone className="h-3 w-3" /> Call Client
+                        </a>
                       )}
                     </div>
                   </div>
-                </div>
+                );
+              })()}
+            </div>
+          )}
 
-                <span
-                  className={clsx(
-                    'shrink-0 rounded-md px-2 py-0.5 text-[10px] font-semibold tracking-wider uppercase',
-                    task.priority === 'urgent'
-                      ? 'border border-red-500/20 bg-red-500/10 text-red-600 dark:text-red-400'
-                      : 'border border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                  )}
-                >
-                  {task.priority}
-                </span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="rounded-xl border border-dashed border-slate-200 p-6 text-center text-xs text-slate-500 dark:border-slate-800">
-            No urgent tasks for today. You’re all caught up!
-          </div>
-        )}
-      </div>
-
-      {/* 5. Next Scheduled Site Visit */}
-      {data?.upcoming_site_visits && data.upcoming_site_visits.length > 0 && (
-        <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-1.5 text-sm font-bold text-slate-900 dark:text-white">
-              <Compass className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-              Next Scheduled Site Visit
-            </h2>
-            <Link
-              href="/employee/work?tab=site-visits"
-              className="flex items-center gap-0.5 text-xs font-medium text-emerald-600 hover:text-emerald-500 dark:text-emerald-400"
-            >
-              All Visits <ChevronRight className="h-3.5 w-3.5" />
-            </Link>
-          </div>
-
-          {(() => {
-            const visit = data.upcoming_site_visits[0];
-            return (
-              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 dark:border-emerald-500/20 dark:bg-emerald-950/20">
-                <div className="flex items-start justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-slate-900 dark:text-white">
-                      {visit.contact?.name || 'Customer Site Tour'}
-                    </span>
-                    <p className="mt-0.5 flex items-center gap-1 text-xs text-slate-500 dark:text-slate-400">
-                      <Calendar className="h-3 w-3" />
-                      {visit.preferred_date
-                        ? format(new Date(visit.preferred_date), 'EEE, MMM dd • hh:mm a')
-                        : 'Date to be confirmed'}
-                    </p>
+          {/* Assigned Leads Preview */}
+          {data?.recent_leads && data.recent_leads.length > 0 && (
+            <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-500">
+                    <Users className="h-4 w-4" />
                   </div>
-                  <span className="rounded-full bg-emerald-500/20 px-2.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
-                    {visit.status}
-                  </span>
+                  <h2 className="text-sm font-bold text-slate-900 dark:text-white">
+                    Assigned Customer Leads
+                  </h2>
                 </div>
+                <Link
+                  href="/employee/work?tab=leads"
+                  className="text-xs font-semibold text-emerald-600 hover:underline dark:text-emerald-400"
+                >
+                  View All
+                </Link>
+              </div>
 
-                {visit.contact?.phone && (
-                  <div className="mt-3 flex items-center gap-2">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                {data.recent_leads.slice(0, 4).map((lead) => (
+                  <div
+                    key={lead.id}
+                    className="flex items-center justify-between rounded-2xl border border-slate-100 bg-slate-50/70 p-3 dark:border-slate-800 dark:bg-slate-950/40"
+                  >
+                    <div>
+                      <p className="text-xs font-bold text-slate-900 dark:text-white">
+                        {lead.name}
+                      </p>
+                      <p className="text-[10px] text-slate-500">{lead.lead_status}</p>
+                    </div>
                     <a
-                      href={`tel:${visit.contact.phone}`}
-                      className="flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2 text-xs font-medium text-white shadow-sm transition-colors hover:bg-emerald-500"
+                      href={`tel:${lead.phone}`}
+                      className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 dark:text-emerald-400"
                     >
                       <Phone className="h-3.5 w-3.5" />
-                      Call Customer ({visit.contact.phone})
                     </a>
                   </div>
-                )}
+                ))}
               </div>
-            );
-          })()}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }

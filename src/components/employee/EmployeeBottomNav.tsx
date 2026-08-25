@@ -43,7 +43,7 @@ export default function EmployeeBottomNav() {
   }
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200/80 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg dark:border-slate-800/80 dark:bg-slate-950/90">
+    <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200/80 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden dark:border-slate-800/80 dark:bg-slate-950/90">
       <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
         {navItems.map((item) => {
           const Icon = item.icon;

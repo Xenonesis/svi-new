@@ -85,7 +85,9 @@
     "calculatorsDesc": "Payment & Returns Calculators",
     "careersDesc": "Join our growing real estate team",
     "blogDesc": "Latest property insights & updates",
-    "paymentDesc": "Quick & secure online project payments"
+    "paymentDesc": "Quick & secure online project payments",
+    "employeePortal": "Staff Workspace",
+    "employeePortalDesc": "Employee attendance & daily work tracker"
   },
   "footer": {
     "quickLinks": "Quick Links",

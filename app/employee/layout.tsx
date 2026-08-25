@@ -11,9 +11,11 @@ export const metadata = {
 export default function EmployeeLayout({ children }: { children: React.ReactNode }) {
   return (
     <EmployeeGuard>
-      <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 antialiased dark:bg-slate-950 dark:text-slate-100">
+      <div className="flex min-h-screen flex-col bg-slate-50 text-slate-900 antialiased transition-colors dark:bg-slate-950 dark:text-slate-100">
         <EmployeeHeader />
-        <main className="mx-auto w-full max-w-lg flex-1 px-4 py-4 pb-24">{children}</main>
+        <main className="mx-auto w-full max-w-7xl flex-1 px-4 py-5 pb-24 sm:px-6 md:pb-12 lg:px-8">
+          {children}
+        </main>
         <EmployeeBottomNav />
       </div>
     </EmployeeGuard>

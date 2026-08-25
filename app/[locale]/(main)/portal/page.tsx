@@ -123,6 +123,22 @@ export default function PortalDashboard() {
           </div>
         )}
       </div>
+
+      {/* Employee Quick Switcher */}
+      <div className="flex flex-col justify-between gap-3 rounded-2xl border border-blue-500/20 bg-blue-500/5 p-4 text-xs sm:flex-row sm:items-center dark:bg-blue-950/20">
+        <div className="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+          <span className="font-semibold">SVI Staff Member?</span>
+          <span className="text-slate-500">
+            Track your attendance, site visits, and daily work tasks.
+          </span>
+        </div>
+        <a
+          href="/employee/dashboard"
+          className="self-start font-bold text-blue-600 hover:underline sm:self-auto dark:text-blue-400"
+        >
+          Open Staff Workspace →
+        </a>
+      </div>
     </div>
   );
 }

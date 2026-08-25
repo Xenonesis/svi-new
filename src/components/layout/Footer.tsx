@@ -169,6 +169,14 @@ const Footer = memo(function Footer() {
                   {t('footer.raiseGrievance')}
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/employee/login"
+                  className="text-[11px] font-bold tracking-wider text-blue-600 uppercase transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  Staff & Employee Portal →
+                </Link>
+              </li>
               <li className="text-brand-gold dark:text-brand-gold text-[11px] font-semibold tracking-wider uppercase">
                 {t('footer.residentialProperties')}
               </li>

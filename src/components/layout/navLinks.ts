@@ -10,4 +10,5 @@ export const SECONDARY_NAV_LINKS = [
   { nameKey: 'careers' as const, path: '/careers' },
   { nameKey: 'blog' as const, path: '/blog' },
   { nameKey: 'payment' as const, path: '/payment' },
+  { nameKey: 'employeePortal' as const, path: '/employee/login' },
 ] as const;

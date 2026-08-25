@@ -1,6 +1,13 @@
 'use client';
 
-import { ChevronDown, Calculator, Briefcase, FileText, CreditCard } from 'lucide-react';
+import {
+  ChevronDown,
+  Calculator,
+  Briefcase,
+  FileText,
+  CreditCard,
+  ShieldCheck,
+} from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -37,6 +44,12 @@ const MORE_ITEMS = [
     nameKey: 'payment',
     descKey: 'paymentDesc',
     icon: CreditCard,
+  },
+  {
+    path: '/employee/login',
+    nameKey: 'employeePortal',
+    descKey: 'employeePortalDesc',
+    icon: ShieldCheck,
   },
 ] as const;
 
