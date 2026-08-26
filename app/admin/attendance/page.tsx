@@ -6,7 +6,10 @@ import {
   BarChart3,
   CalendarCheck,
   CheckCircle2,
+  Clock,
+  FileText,
   LayoutDashboard,
+  Sliders,
   Users,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
@@ -20,15 +23,19 @@ import TeamsManager from '@/src/components/admin/attendance/TeamsManager';
 import LiveStatus from '@/src/components/admin/attendance/LiveStatus';
 import AttendanceSettings from '@/src/components/admin/attendance/AttendanceSettings';
 import LocationManager from '@/src/components/admin/attendance/LocationManager';
+import MasterTimesheet from '@/src/components/admin/attendance/MasterTimesheet';
+import LeaveAndRegularizationCenter from '@/src/components/admin/attendance/LeaveAndRegularizationCenter';
 import { supabase } from '@/src/lib/supabase/client';
 import type { Team } from '@/src/lib/supabase/types';
 
-type Tab = 'overview' | 'report' | 'settings';
+type Tab = 'overview' | 'timesheet' | 'approvals' | 'report' | 'settings';
 
-const TABS: { id: Tab; label: string; icon: typeof Users }[] = [
+const TABS: { id: Tab; label: string; icon: typeof Users; badge?: boolean }[] = [
   { id: 'overview', label: 'Overview', icon: LayoutDashboard },
+  { id: 'timesheet', label: 'Master Timesheet', icon: Clock },
+  { id: 'approvals', label: 'Approvals', icon: CheckCircle2, badge: true },
   { id: 'report', label: 'Reports', icon: BarChart3 },
-  { id: 'settings', label: 'Configuration', icon: Users },
+  { id: 'settings', label: 'Configuration', icon: Sliders },
 ];
 
 const GRID_STYLE = {
@@ -43,10 +50,12 @@ function AttendanceContent() {
   const [token, setToken] = useState('');
   const [activeTab, setActiveTab] = useState<Tab>(() => {
     const tab = searchParams.get('tab') as Tab | null;
-    return tab && ['overview', 'report', 'settings'].includes(tab) ? tab : 'overview';
+    return tab && ['overview', 'timesheet', 'approvals', 'report', 'settings'].includes(tab)
+      ? tab
+      : 'overview';
   });
   const [isMarkModalOpen, setIsMarkModalOpen] = useState(false);
-
+  const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
   // Shared teams state — fetched once at page level
   const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
@@ -119,6 +128,26 @@ function AttendanceContent() {
     if (token) fetchTeams();
   }, [token, fetchTeams]);
 
+  // Fetch pending approvals count for tab badge
+  useEffect(() => {
+    if (!token) return;
+    Promise.all([
+      fetch('/api/admin/attendance/leaves?status=pending', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .catch(() => ({ stats: { pending: 0 } })),
+      fetch('/api/admin/attendance/regularizations?status=pending', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((r) => r.json())
+        .catch(() => ({ stats: { pending: 0 } })),
+    ]).then(([leavesData, regsData]) => {
+      const total = (leavesData.stats?.pending || 0) + (regsData.stats?.pending || 0);
+      setPendingApprovalsCount(total);
+    });
+  }, [token, activeTab]);
+
   // Allow children to trigger a teams refresh (e.g. after create/delete)
   const refreshTeams = useCallback(() => {
     fetchingRef.current = false;
@@ -165,7 +194,7 @@ function AttendanceContent() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex cursor-pointer items-center gap-2 rounded-xl px-5 py-3 text-xs font-bold tracking-widest uppercase transition-all ${
+                  className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider uppercase transition-all ${
                     isActive
                       ? 'bg-brand-gold/10 text-brand-gold border-brand-gold/25 border shadow-lg'
                       : 'text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300'
@@ -173,6 +202,11 @@ function AttendanceContent() {
                 >
                   <Icon className="h-4 w-4" />
                   {tab.label}
+                  {tab.badge && pendingApprovalsCount > 0 && (
+                    <span className="py-0.2 rounded-full bg-amber-500 px-1.5 text-[10px] font-black text-white">
+                      {pendingApprovalsCount}
+                    </span>
+                  )}
                 </button>
               );
             })}
@@ -199,6 +233,8 @@ function AttendanceContent() {
               </div>
             </div>
           )}
+          {activeTab === 'timesheet' && token && <MasterTimesheet token={token} teams={teams} />}
+          {activeTab === 'approvals' && token && <LeaveAndRegularizationCenter token={token} />}
           {activeTab === 'report' && token && (
             <AttendanceReport
               token={token}

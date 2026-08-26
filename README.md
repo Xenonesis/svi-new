@@ -6,7 +6,7 @@
 
 A premium real estate development platform — modern public website, full-featured admin portal, employee workspace, AI-powered chatbot, and an end-to-end document/email/lottery suite.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.2-black?logo=next.js&logoColor=white)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16.3-black?logo=next.js&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38bdf8?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
@@ -66,10 +66,11 @@ This repository hosts the company's full digital platform — a **public marketi
 | **Auth**          | Cookie-based Supabase SSR; admin auth handled in-app, not in global middleware |
 | **Documents**     | Client-side jsPDF generation (BBA, invoices, allotment, offer letters)         |
 | **State**         | Zustand stores with `persist` middleware for theme & auth                      |
-| **UI**            | Tailwind v4, Motion animations, MapLibre GL maps, 3D Three.js scenes           |
-| **AI**            | Streaming Groq (Llama 4) chatbot + Gemini content generation                   |
+| **UI**            | Tailwind v4, Motion animations, MapLibre GL maps, GSAP micro-interactions      |
+| **AI**            | Streaming Groq (Llama 4) chatbot + WhatsApp sales agent                        |
 | **Email**         | Resend transactional + Tiptap-powered campaign editor                          |
 | **PWA**           | Service worker with push notifications, background sync, offline support       |
+| **Mobile**        | Capacitor Android builds for admin & employee apps                             |
 | **Quality gates** | Husky pre-commit (lint+format), Commitlint, Vitest, Playwright e2e             |
 
 ---
@@ -109,6 +110,7 @@ This repository hosts the company's full digital platform — a **public marketi
   - 📄 **Payment Receipt** / Invoice
   - All with **PDF and PNG image** download options
 - **Document records** — Allotment records, BBA records, offer letter records, payment receipt records, quotation records
+- **Quotation generator** — `/admin/quotation` property price quotations with Indian number-to-words, GST breakdown, and PDF/image export
 - **Property management** — CRUD for real estate listings with image management
 - **Registration manager** — View, filter, assign advisors, analytics, filters
 - **Email suite** — Tiptap rich text composer, sent history with replies, **templates**, **domains**, **marketing campaigns**, **contact picker & contact groups**, deleted messages, **Resend usage dashboard**, AI-assisted email composition, scheduled emails, email drafts
@@ -119,15 +121,20 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Settings** — Tabbed interface: Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs
 - **Chat logs** — Conversation history for the AI chatbot with lead information
 - **Site visits** — Manage and track property site visit requests
-- **Employees** — Employee directory management
+- **Employees** — Employee directory management with full CRUD, profile photos, and admin-side employee API (`/api/admin/employees`)
 - **System updates** — `/admin/updates` release timeline, categorized update stats, and upcoming operational roadmap
 
 ### 👥 Employee Portal
 
+A dedicated staff workspace with its own auth boundary, dashboard, and work-tracking suite:
+
 - **Employee login** at `/employee/login` (separate route group)
-- **Attendance** at `/(employee)/attendance` — dedicated staff check-in/out surface with geofencing
-- Distinct auth boundary from admin and clients
-- Employee API endpoints for attendance check-in/out
+- **Dashboard** at `/employee/dashboard` — punch terminal, assigned leads, priority tasks, site visits, quick shortcuts
+- **Attendance** at `/employee/attendance` — geofenced punch-in/out with shift guidelines, plus `/employee/attendance/history`
+- **Work tracking** at `/employee/work` — tabbed surface for tasks, leads, daily logs, and site visits
+- **Profile** at `/employee/profile` — digital staff ID card and workspace settings
+- **Legacy route group** `/(employee)/attendance` retained for deep links
+- **Employee API** — `/api/employee/attendance/*` (punch-in/out, status, history, leaves, regularize) and `/api/employee/work/*` (dashboard, tasks, leads, logs, site-visits)
 
 ### 🏢 Client Portal
 
@@ -141,7 +148,7 @@ This repository hosts the company's full digital platform — a **public marketi
 ### 🤖 AI & Automation
 
 - **Streaming chatbot** (`/api/chat`) — Vercel AI SDK + `@ai-sdk/groq` (Llama 4) with lead capture
-- **Content generation** — `@google/genai` for server-side content
+- **WhatsApp sales agent** — Autonomous AI agent (`src/lib/whatsapp/`) with tool calling, opt-out handling, business-hours policy, Meta Cloud API webhook, and pg_cron scheduled follow-ups
 - **Admin chat logs** — Review conversations for support & compliance with lead data
 - **AI email composition** — AI-assisted email drafting in the admin email suite
 - **Cron endpoints** (`/api/cron/*`) — Scheduled task runners:
@@ -149,6 +156,7 @@ This repository hosts the company's full digital platform — a **public marketi
   - Campaign email processing
   - Scheduled email dispatch
   - Registration cleanup
+  - WhatsApp follow-up scheduler
 - **Push notifications** — VAPID-based web push notifications with subscription management
 
 ---
@@ -378,6 +386,7 @@ flowchart LR
 | **Offer Letter**                  | `/admin/offer-letter`     | Sales compensation slabs, installment plan, salary details       |
 | **Payment Plan**                  | `/admin/payment-plan`     | Milestone-based payment schedule, due dates                      |
 | **Payment Receipt**               | `/admin/payment-receipt`  | Transaction details, bank info, company seal                     |
+| **Quotation**                     | `/admin/quotation`        | Property pricing, GST breakdown, amount in Indian words          |
 
 ### Record Management
 
@@ -623,7 +632,7 @@ The actual `vercel.json` includes:
 
 - `devCommand`: `next dev --port 3000` (Vercel preview/dev uses port 3000; local dev via `pnpm dev` uses port 3001)
 - `headers`: `/api/admin/*` gets `X-Robots-Tag: noindex, nofollow`
-- `crons`: All four cron endpoints run at `0 0 * * *` except `cleanup-registrations` at `0 6 * * *`
+- `crons`: All cron endpoints run at `0 0 * * *`, except `cleanup-registrations` at `0 6 * * *` and `whatsapp` at `0 2 * * *`
 
 ```json
 {
@@ -660,6 +669,10 @@ The actual `vercel.json` includes:
     {
       "path": "/api/cron/cleanup-registrations",
       "schedule": "0 6 * * *"
+    },
+    {
+      "path": "/api/cron/whatsapp",
+      "schedule": "0 2 * * *"
     }
   ]
 }
@@ -846,38 +859,24 @@ useEffect(() => {
 
 ---
 
-## 🎮 3D Scene Implementation
+## ✨ Motion & Animation
 
-The project includes Three.js-based 3D scenes for immersive property visualization:
+The project uses two animation libraries for distinct purposes:
 
 ### Technology Stack
 
-| Library              | Version    | Purpose                                               |
-| -------------------- | ---------- | ----------------------------------------------------- |
-| `three`              | `^0.184.0` | Core 3D engine                                        |
-| `@react-three/fiber` | `^9.6.1`   | React renderer for Three.js                           |
-| `@react-three/drei`  | `^10.7.7`  | Utility components (OrbitControls, Environment, etc.) |
+| Library  | Version   | Purpose                                                         |
+| -------- | --------- | --------------------------------------------------------------- |
+| `motion` | `^13.1.1` | React animations — entrances, scroll-reveal, layout transitions |
+| `gsap`   | `^3.15.0` | High-performance particle/spotlight effects (`MagicBento`)      |
 
-### Usage
+### Usage patterns
 
-3D scenes are lazy-loaded to avoid impacting initial page load performance:
-
-```tsx
-import dynamic from 'next/dynamic';
-
-const BuildingViewer = dynamic(() => import('@/src/components/properties/BuildingViewer'), {
-  ssr: false,
-  loading: () => <BuildingViewerSkeleton />,
-});
-```
-
-### Features
-
-- Interactive 3D building models
-- Orbit controls for user navigation
-- Environment mapping for realistic lighting
-- Responsive to container size changes
-- Graceful fallback for devices without WebGL support
+- `AnimatedSection` wraps sections with scroll-triggered reveals via `useInView`
+- Hero, timeline, and stats use spring-physics motion variants
+- `MagicBento` renders a GPU-accelerated particle grid with GSAP tweens
+- `text-reveal.tsx` provides staggered text entrance animations
+- Lottery wins trigger confetti via `canvas-confetti`
 
 ---
 
@@ -924,6 +923,7 @@ pnpm analyze
 | Campaign processing      | Daily midnight | `/api/cron/campaigns`                |
 | Scheduled email dispatch | Daily midnight | `/api/cron/process-scheduled-emails` |
 | Lottery draw execution   | Daily midnight | `/api/cron/lottery`                  |
+| WhatsApp follow-ups      | Daily 02:00    | `/api/cron/whatsapp`                 |
 
 ### Running Migrations
 
@@ -935,7 +935,7 @@ supabase db push
 
 # Manual SQL execution via Supabase Dashboard
 # Open SQL Editor and run migration files in supabase/migrations/ in timestamp order
-# The 51 migrations are already ordered; run all of them
+# The 64 migrations are already ordered; run all of them
 ```
 
 ---
@@ -1028,6 +1028,10 @@ The changelog is rendered at `/changelog` (public, bilingual) from `src/lib/chan
 
 ### Recent releases
 
+- **Employee workspace & work tracking** — full employee portal (dashboard, punch attendance, tasks, leads, daily logs, site visits, digital staff ID card) with `/api/employee/work/*` endpoints
+- **WhatsApp sales agent MVP** — autonomous AI agent with tool calling, opt-out list, business-hours policy, Meta Cloud API webhook, and pg_cron follow-up scheduler
+- **Quotation module** — quotation generator + records with GST breakdown and Indian number-to-words
+- **Email events & messages** — `email_messages`, `email_events`, `email_suppressions` tables for delivery tracking; read/archive/tags on inbox
 - **Hindi BBA legal documents** — full Hindi legal page set (`legal-hindi/`) with Hindi preview content and `language` toggle on the BBA generator
 - **Changelog page** — public release timeline with markdown rendering
 - **Email contact picker** — `ContactPicker` / `RecipientInput` with admin contact list + contact groups
@@ -1043,14 +1047,14 @@ Initial release with:
 - **Public website** — Landing page, about, projects, blog, contact, FAQ, careers, leadership, calculators, exclusive offers, lottery, privacy policy, terms, grievance, payment
 - **Client portal** — Authenticated area with documents, payments, properties, settings
 - **Admin portal** — Dashboard, attendance, document generation (BBA, allotment, offer letter, payment plan, receipts), properties, registrations, email suite (compose, campaigns, templates, domains, AI), lottery management, notifications, settings, chat logs, employees, site visits
-- **Employee portal** — Login and attendance check-in/out with geofencing
+- **Employee portal** — Login, dashboard, geofenced punch attendance, work tracking (tasks/leads/logs/site visits), digital staff ID card
 - **PWA** — Service worker, push notifications, background sync, share target, offline support
 - **AI chatbot** — Groq Llama 4 streaming chat with lead capture and conversation logging
 - **Email system** — Resend integration, TipTap editor, campaigns, scheduled emails, drafts, inbound webhooks
 - **Document generation** — Client-side PDF/PNG via jsPDF + html2canvas-pro
 - **i18n** — English/Hindi with next-intl locale routing
 - **Authentication** — Supabase SSR; admin auth protected in-app, not by global middleware
-- **Database** — 51 timestamped migration files covering all features
+- **Database** — 64 timestamped migration files covering all features
 - **Testing** — Vitest unit/integration tests, Playwright e2e tests
 - **Tooling** — Husky, Commitlint, ESLint, Prettier, lint-staged
 
@@ -1090,54 +1094,51 @@ Initial release with:
 
 ### Core Framework
 
-| Layer      | Technology            | Version    | Why we chose it                         |
-| ---------- | --------------------- | ---------- | --------------------------------------- |
-| Framework  | **Next.js**           | `^16.2.12` | App Router, RSC, route handlers         |
-| UI library | **React**             | `^19.2.8`  | Server Components, `use()` hook         |
-| Language   | **TypeScript**        | `^6.0.3`   | Strict mode, end-to-end type safety     |
-| Bundler    | **Webpack** (default) | bundled    | Stable build, full Next.js plugin chain |
+| Layer      | Technology            | Version   | Why we chose it                          |
+| ---------- | --------------------- | --------- | ---------------------------------------- |
+| Framework  | **Next.js**           | `^16.3.2` | App Router, RSC, route handlers          |
+| UI library | **React**             | `^19.2.8` | Server Components, `use()` hook          |
+| Language   | **TypeScript**        | `^6.0.2`  | Strict mode, end-to-end type safety      |
+| Bundler    | **Turbopack/Webpack** | bundled   | Turbopack dev/build, Webpack for analyze |
 
 ### Styling & UI
 
 | Technology                 | Version                        | Purpose                               |
 | -------------------------- | ------------------------------ | ------------------------------------- |
 | **Tailwind CSS**           | `^4.3.3`                       | Utility-first CSS                     |
-| **Motion (Framer Motion)** | `^12.42.2`                     | Scroll-reveal & micro-interactions    |
-| **Lucide React**           | `^1.27.0`                      | Open-source icon set                  |
+| **Motion (Framer Motion)** | `^13.1.1`                      | Scroll-reveal & micro-interactions    |
+| **GSAP**                   | `^3.15.0`                      | Particle effects (`MagicBento`)       |
+| **Lucide React**           | `^1.33.0`                      | Open-source icon set                  |
 | **Recharts**               | `^3.10.1`                      | Composable charts for admin dashboard |
-| **Sonner**                 | `^2.0.7`                       | Toast notifications                   |
+| **Sonner**                 | `^2.0.8`                       | Toast notifications                   |
 | **canvas-confetti**        | `^1.9.4`                       | Confetti for lottery wins             |
 | **clsx / tailwind-merge**  | `^2.1.1` / `^3.6.0`            | Conditional class composition         |
 | **Radix UI**               | dialog, dropdown-menu, tooltip | Accessible headless UI primitives     |
 
-### State, Data & 3D
+### State, Data & Animation
 
-| Technology               | Version    | Purpose                                     |
-| ------------------------ | ---------- | ------------------------------------------- |
-| **Zustand**              | `^5.0.14`  | Lightweight stores (`authStore`, `uiStore`) |
-| **TanStack React Query** | `^5.101.0` | Server-state caching, optimistic updates    |
-| **TanStack React Table** | `^8.21.3`  | Data tables for admin panels                |
-| **@react-three/fiber**   | `^9.6.1`   | 3D scene rendering                          |
-| **@react-three/drei**    | `^10.7.7`  | Useful 3D helpers                           |
-| **three**                | `^0.184.0` | 3D engine                                   |
-| **date-fns**             | `^4.4.0`   | Date formatting                             |
+| Technology               | Version    | Purpose                                                        |
+| ------------------------ | ---------- | -------------------------------------------------------------- |
+| **Zustand**              | `^5.0.15`  | Lightweight stores (`authStore`, `uiStore`, `comparisonStore`) |
+| **TanStack React Query** | `^5.101.4` | Server-state caching, optimistic updates                       |
+| **TanStack React Table** | `^9.1.2`   | Data tables for admin panels                                   |
+| **date-fns**             | `^4.4.0`   | Date formatting                                                |
 
 ### Backend, Auth & Database
 
 | Technology        | Version    | Purpose                                |
 | ----------------- | ---------- | -------------------------------------- |
-| **Supabase JS**   | `^2.110.8` | PostgreSQL + auth + storage + realtime |
-| **@supabase/ssr** | `^0.12.3`  | Cookie-based SSR sessions              |
-| **next-intl**     | `^4.13.4`  | Locale routing (en/hi) + translations  |
+| **Supabase JS**   | `^2.112.3` | PostgreSQL + auth + storage + realtime |
+| **@supabase/ssr** | `^0.12.4`  | Cookie-based SSR sessions              |
+| **next-intl**     | `^4.13.7`  | Locale routing (en/hi) + translations  |
 
 ### AI Providers
 
 | Technology        | Version   | Purpose                              |
 | ----------------- | --------- | ------------------------------------ |
-| **ai (Vercel)**   | `^7.0.37` | Streaming chat & generative UI       |
-| **@ai-sdk/groq**  | `^4.0.13` | Llama 4 inference                    |
-| **@ai-sdk/react** | `^4.0.40` | React hooks for AI SDK               |
-| **@google/genai** | `^2.4.0`  | Server-side content generation       |
+| **ai (Vercel)**   | `^7.0.77` | Streaming chat & generative UI       |
+| **@ai-sdk/groq**  | `^4.0.30` | Llama 4 inference                    |
+| **@ai-sdk/react** | `^4.0.80` | React hooks for AI SDK               |
 | **web-push**      | `^3.6.7`  | Server-side push notification sender |
 
 ### Documents, Forms & Email
@@ -1145,69 +1146,37 @@ Initial release with:
 | Technology          | Version   | Purpose                                                          |
 | ------------------- | --------- | ---------------------------------------------------------------- |
 | **jsPDF**           | `^4.2.1`  | Client-side PDF generation                                       |
-| **html2canvas-pro** | `^2.3.2`  | HTML → canvas for PDF content                                    |
+| **html2canvas-pro** | `^2.3.9`  | HTML → canvas for PDF content                                    |
 | **html2pdf.js**     | `^0.14.0` | Alternative PDF generation library                               |
+| **canvg**           | `^4.0.3`  | SVG → canvas rasterization for PDF export                        |
 | **ExcelJS**         | `^4.4.0`  | Excel parsing & export                                           |
-| **Resend**          | `^6.18.0` | Transactional + marketing email                                  |
-| **TipTap**          | `^3.29.1` | Rich text editor (compose, link, image, color, highlight, align) |
+| **Resend**          | `^6.22.0` | Transactional + marketing email                                  |
+| **TipTap**          | `^3.30.2` | Rich text editor (compose, link, image, color, highlight, align) |
 | **heic-convert**    | `^2.1.0`  | HEIC → JPEG/PNG in browser                                       |
+| **sharp**           | `^0.35.3` | Build-time image optimization                                    |
 | **Zod**             | `^4.4.3`  | Schema validation for API payloads                               |
-| **maplibre-gl**     | `^5.24.0` | Open-source vector map rendering (no API key)                    |
+| **maplibre-gl**     | `^6.5.0`  | Open-source vector map rendering (no API key)                    |
 
-### Analytics, Testing & Tooling
+### Mobile & Analytics, Testing & Tooling
 
-| Technology                  | Version                        | Purpose                                  |
-| --------------------------- | ------------------------------ | ---------------------------------------- |
-| **Next.js**                 | `^16.2.12`                     | App Router, RSC, route handlers          |
-| **React**                   | `^19.2.8`                      | Server Components, `use()` hook          |
-| **TypeScript**              | `^6.0.3`                       | Strict mode, end-to-end type safety      |
-| **Tailwind CSS**            | `^4.3.3`                       | Utility-first CSS                        |
-| **Motion**                  | `^12.42.2`                     | Scroll-reveal & micro-interactions       |
-| **Supabase JS**             | `^2.110.8`                     | PostgreSQL + auth + storage + realtime   |
-| **@supabase/ssr**           | `^0.12.3`                      | Cookie-based SSR sessions                |
-| **next-intl**               | `^4.13.4`                      | Locale routing (en/hi) + translations    |
-| **Zustand**                 | `^5.0.14`                      | Lightweight stores                       |
-| **TanStack React Query**    | `^5.101.0`                     | Server-state caching, optimistic updates |
-| **TanStack React Table**    | `^8.21.3`                      | Data tables for admin panels             |
-| **ai (Vercel)**             | `^7.0.37`                      | Streaming chat & generative UI           |
-| **@ai-sdk/groq**            | `^4.0.13`                      | Llama 4 inference                        |
-| **@ai-sdk/react**           | `^4.0.40`                      | React hooks for AI SDK                   |
-| **@google/genai**           | `^2.4.0`                       | Server-side content generation           |
-| **Resend**                  | `^6.18.0`                      | Transactional + marketing email          |
-| **TipTap**                  | `^3.29.1`                      | Rich text editor                         |
-| **jsPDF**                   | `^4.2.1`                       | Client-side PDF generation               |
-| **html2canvas-pro**         | `^2.3.2`                       | HTML → canvas for PDF content            |
-| **html2pdf.js**             | `^0.14.0`                      | Alternative PDF generation               |
-| **ExcelJS**                 | `^4.4.0`                       | Excel parsing & export                   |
-| **Zod**                     | `^4.4.3`                       | Schema validation                        |
-| **maplibre-gl**             | `^5.24.0`                      | Open-source vector maps                  |
-| **three**                   | `^0.184.0`                     | 3D engine                                |
-| **@react-three/fiber**      | `^9.6.1`                       | 3D scene rendering                       |
-| **@react-three/drei**       | `^10.7.7`                      | Useful 3D helpers                        |
-| **web-push**                | `^3.6.7`                       | Server-side push notifications           |
-| **@serwist/next**           | `^9.5.12`                      | Next.js service worker integration       |
-| **@serwist/sw**             | `^9.5.12`                      | Service worker runtime                   |
-| **@sentry/nextjs**          | `^10.68.0`                     | Error monitoring                         |
-| **@capacitor/core**         | `^8.4.2`                       | Cross-platform native runtime            |
-| **Lucide React**            | `^1.27.0`                      | Icon set                                 |
-| **Recharts**                | `^3.10.1`                      | Admin dashboard charts                   |
-| **Sonner**                  | `^2.0.7`                       | Toast notifications                      |
-| **canvas-confetti**         | `^1.9.4`                       | Lottery win confetti                     |
-| **clsx / tailwind-merge**   | `^2.1.1` / `^3.6.0`            | Conditional class composition            |
-| **Radix UI**                | dialog, dropdown-menu, tooltip | Accessible primitives                    |
-| **heic-convert**            | `^2.1.0`                       | HEIC → JPEG/PNG in browser               |
-| **date-fns**                | `^4.4.0`                       | Date formatting                          |
-| **@vercel/analytics**       | `^2.0.1`                       | Page-view tracking                       |
-| **@vercel/speed-insights**  | `^2.0.0`                       | Real-user Core Web Vitals                |
-| **Vitest** + **jsdom**      | `^4.1.10` / `^30.0.0`          | Unit & integration tests                 |
-| **Playwright**              | `^1.62.0`                      | End-to-end browser tests                 |
-| **ESLint** (flat config)    | `^10.8.0`                      | Type-aware linting                       |
-| **Prettier**                | `^3.9.6`                       | Formatter + Tailwind class sort          |
-| **Husky** + **lint-staged** | `^9.1.7` / `^17.0.7`           | Git hooks                                |
-| **Commitlint**              | `^21.2.1`                      | Conventional commit enforcement          |
-| **@next/bundle-analyzer**   | `^16.2.12`                     | Bundle size inspection                   |
-| **tsx**                     | `^4.22.4`                      | TypeScript execution for scripts         |
-| **Testing Library**         | React + DOM + jest-dom         | Component testing utilities              |
+| Technology                  | Version                | Purpose                                 |
+| --------------------------- | ---------------------- | --------------------------------------- |
+| **@capacitor/core**         | `^8.5.0`               | Cross-platform native runtime (Android) |
+| **@serwist/next**           | `^9.5.12`              | Next.js service worker integration      |
+| **@serwist/sw**             | `^9.5.12`              | Service worker runtime                  |
+| **@sentry/nextjs**          | `^10.70.0`             | Error monitoring                        |
+| **@vercel/analytics**       | `^2.0.1`               | Page-view tracking                      |
+| **@vercel/speed-insights**  | `^2.0.0`               | Real-user Core Web Vitals               |
+| **web-vitals**              | `^6.1.1`               | Client-side vitals measurement          |
+| **Vitest** + **jsdom**      | `^4.1.11` / `^30.0.1`  | Unit & integration tests                |
+| **Playwright**              | `^1.62.1`              | End-to-end browser tests                |
+| **ESLint** (flat config)    | `^10.9.0`              | Type-aware linting                      |
+| **Prettier**                | `^3.9.6`               | Formatter + Tailwind class sort         |
+| **Husky** + **lint-staged** | `^9.1.7` / `^17.3.0`   | Git hooks                               |
+| **Commitlint**              | `^21.2.2`              | Conventional commit enforcement         |
+| **@next/bundle-analyzer**   | `^16.3.2`              | Bundle size inspection                  |
+| **tsx**                     | `^4.23.12`             | TypeScript execution for scripts        |
+| **Testing Library**         | React + DOM + jest-dom | Component testing utilities             |
 
 ---
 
@@ -1252,17 +1221,17 @@ Initial release with:
 
 ### Key architectural decisions
 
-1. **PWA-first** — Hand-crafted service worker (`public/sw.js`) with cache-first static, network-first navigations, stale-while-revalidate images; offline fallback page; Web App Manifest with share target & window-controls-overlay
+1. **PWA-first** — Serwist service worker (`src/sw.ts` → `public/sw.js`) with cache-first static, network-first navigations, stale-while-revalidate images; offline fallback page; Web App Manifest with share target & window-controls-overlay
 2. **Hybrid RSC** — Server Components by default; `"use client"` islands for maps, animations, admin interactivity
 3. **Locale-first routing** — `app/[locale]/(main)/...` with `next-intl` for English/Hindi
-4. **Layered role groups** — `app/admin` (admin), `app/employee` (staff), `app/(employee)` (grouped route), `app/[locale]/(main)/portal` (client)
-5. **Cookie-based SSR auth** — `@supabase/ssr` + middleware guard on `/admin/:path*`
-6. **Client-side PDF** — jsPDF + html2canvas-pro to avoid server CPU cost; templates live in `src/lib/bba/`
+4. **Layered role groups** — `app/admin` (admin), `app/employee` (staff workspace), `app/(employee)` (grouped route), `app/[locale]/(main)/portal` (client)
+5. **In-app auth guards** — `@supabase/ssr` sessions validated inside pages/API handlers via `verifyAdmin()` / `withAdminAuth`; not in global middleware
+6. **Client-side PDF** — jsPDF + html2canvas-pro to avoid server CPU cost; legal page templates live in `src/components/admin/bba/legal*/`
 7. **Centralized SEO** — `src/lib/seo.ts` exposes `createMetadata()` with OG, Twitter, canonical, robots
 8. **Optimistic UI** — TanStack Query wraps admin mutations; Zustand persists theme + auth slice
-9. **No API key for maps** — MapLibre GL uses open vector tiles
+9. **No API key for maps** — MapLibre GL uses open vector tiles (proxied via `/api/map-tiles/[z]/[x]/[y]`)
 10. **Feature flags in DB** — `portal_settings` table drives lottery visibility, etc.
-11. **Webpack dev server on port 3001** — configured in package.json scripts
+11. **Turbopack dev server on port 3001** — configured in package.json scripts; Webpack used for bundle analysis
 
 ---
 
@@ -1306,7 +1275,7 @@ svi-new/
 │   │   │   ├── layout.tsx         #   Public layout (Header/Footer)
 │   │   │   └── page.tsx           #   Landing page
 │   │   └── layout.tsx             # Locale layout
-│   ├── admin/                     # Admin portal (middleware-protected)
+│   ├── admin/                     # Admin portal (in-app auth protected)
 │   │   ├── allotment-letter/      #   Allotment letter PDF generator
 │   │   ├── allotment-records/     #   Allotment record management
 │   │   ├── attendance/            #   Employee check-in + reports
@@ -1316,7 +1285,7 @@ svi-new/
 │   │   ├── chat-logs/             #   AI chatbot conversation history
 │   │   ├── dashboard/             #   Analytics & KPIs
 │   │   ├── email/                 #   Email suite (compose, campaigns, templates...)
-│   │   ├── employees/             #   Employee directory
+│   │   ├── employees/             #   Employee directory management
 │   │   ├── ivr/                   #   IVR call management
 │   │   ├── lottery/               #   Lottery draw management
 │   │   ├── notifications/         #   Notification center
@@ -1327,15 +1296,22 @@ svi-new/
 │   │   ├── payment-receipts/      #   Payment receipt records
 │   │   ├── portal-allotments/     #   Client-facing allotments
 │   │   ├── properties/            #   Property CRUD
+│   │   ├── quotation/             #   Quotation generator
+│   │   ├── quotation-records/     #   Quotation record management
 │   │   ├── registrations/         #   User registration management
 │   │   ├── settings/              #   Tabbed system configuration
 │   │   ├── site-visits/           #   Site visit management
 │   │   ├── updates/               #   System updates and roadmap
+│   │   ├── whatsapp/              #   WhatsApp inbox + AI sales agent controls
 │   │   ├── layout.tsx             #   Admin layout (sidebar + header)
 │   │   └── page.tsx               #   Admin login
-│   ├── employee/                  # Employee portal
-│   │   └── login/                 #   /employee/login
-│   ├── (employee)/                # Employee route group
+│   ├── employee/                  # Employee workspace (staff portal)
+│   │   ├── attendance/            #   Punch attendance + history/
+│   │   ├── dashboard/             #   Staff dashboard (punch terminal, tasks, leads)
+│   │   ├── login/                 #   /employee/login
+│   │   ├── profile/               #   Digital staff ID card + settings
+│   │   └── work/                  #   Tasks / leads / logs / site visits
+│   ├── (employee)/                # Employee route group (legacy deep links)
 │   │   └── attendance/            #   Staff attendance surface
 │   ├── share/                     # PWA share target handler
 │   │   └── page.tsx               #   Share target page
@@ -1348,6 +1324,9 @@ svi-new/
 │   │   │   │   ├── analytics/     #       Analytics
 │   │   │   │   ├── report/        #       Reports
 │   │   │   │   ├── approve/       #       Approvals
+│   │   │   │   ├── live/          #       Live attendance feed
+│   │   │   │   ├── locations/     #       Geofence locations
+│   │   │   │   ├── settings/      #       Attendance settings
 │   │   │   │   └── teams/         #       Teams with members
 │   │   │   ├── campaigns/         #     Email campaigns
 │   │   │   ├── careers/           #     Careers endpoints
@@ -1355,14 +1334,15 @@ svi-new/
 │   │   │   ├── contact-groups/    #     Email contact groups
 │   │   │   ├── documents/         #     Document CRUD
 │   │   │   ├── email/             #     Email sending + AI + status
-│   │   │   ├── employees/         #     Employee endpoints
+│   │   │   ├── employees/         #     Employee CRUD (+ [id])
 │   │   │   ├── ivr/               #     IVR endpoints
 │   │   │   ├── lottery/           #     Draw + schedule management
 │   │   │   ├── notifications/     #     Notification CRUD
 │   │   │   ├── properties/        #     Property CRUD
 │   │   │   ├── registrations/     #     Registration + analytics + filters
 │   │   │   ├── settings/          #     Portal settings
-│   │   │   └── users/             #     User CRUD
+│   │   │   ├── users/             #     User CRUD
+│   │   │   └── whatsapp/          #     WhatsApp inbox management
 │   │   ├── changelog/             #   Release changelog data
 │   │   ├── chat/                  #   Streaming AI chat
 │   │   │   ├── leads/             #     Lead capture
@@ -1372,24 +1352,31 @@ svi-new/
 │   │   │   ├── campaigns/         #     Campaign processing
 │   │   │   ├── cleanup-registrations/ # Registration cleanup
 │   │   │   ├── lottery/           #     Draw execution
-│   │   │   └── process-scheduled-emails/ # Scheduled email dispatch
+│   │   │   ├── process-scheduled-emails/ # Scheduled email dispatch
+│   │   │   └── whatsapp/          #     WhatsApp follow-up scheduler
+│   │   ├── csrf-refresh/          #   CSRF token refresh
 │   │   ├── employee/              #   Employee endpoints
-│   │   │   └── attendance/        #     Check-in/out
+│   │   │   ├── attendance/        #     punch-in/out, status, history, leaves, regularize
+│   │   │   └── work/              #     dashboard, tasks, leads, logs, site-visits
 │   │   ├── grievance/             #   Grievance form
-│   │   │   └── notify/            #     Notification
 │   │   ├── lottery/               #   Public lottery data
 │   │   │   └── schedule/          #     Schedule info
+│   │   ├── map-tiles/[z]/[x]/[y]/ #   MapLibre tile proxy
+│   │   ├── monitoring/            #   Sentry tunnel route
+│   │   ├── nearby-places/         #   Nearby places data
 │   │   ├── project-images/        #   Image serving
 │   │   ├── properties/            #   Public listings
 │   │   ├── push/                  #   Push notifications
 │   │   │   ├── subscribe/         #     Subscribe
 │   │   │   └── unsubscribe/       #     Unsubscribe
-│   │   ├── registration/          #   User registration
-│   │   │   └── notify/            #     Notification
+│   │   ├── registration/          #   User registration (+ captcha)
+│   │   ├── sentry-test/           #   Sentry test endpoint
 │   │   ├── site-visit/            #   Site visit requests
-│   │   └── webhooks/              #   External integrations
-│   │       └── resend/            #     Resend webhooks
-│   │           └── incoming/      #       Inbound email
+│   │   ├── webhooks/              #   External integrations
+│   │   │   └── resend/            #     Resend webhooks
+│   │   │       └── incoming/      #       Inbound email
+│   │   └── whatsapp/              #   Meta Cloud API webhook
+│   │       └── webhook/           #     Verification + message intake
 │   ├── layout.tsx                 # Root layout (ClientProviders)
 │   ├── error.tsx / global-error.tsx
 │   ├── loading.tsx                # Suspense fallback
@@ -1400,67 +1387,107 @@ svi-new/
 │   └── globals.css                # Tailwind v4 + tokens
 ├── src/
 │   ├── components/
-│   │   ├── common/                # Reusable UI primitives
-│   │   │   └── ui/                #   Atomic UI components
 │   │   ├── admin/                 # Admin-specific widgets
+│   │   │   ├── allotment-letter/  #   Allotment letter form + preview
+│   │   │   ├── allotment-records/ #   Records table + filters
 │   │   │   ├── attendance/        #   Attendance components
-│   │   │   ├── bba/               #   BBA components + legal
-│   │   │   ├── ChartComponents/   #   Chart components
-│   │   │   ├── DocumentGenerator/ #   Document generation
+│   │   │   ├── bba/               #   BBA components
+│   │   │   │   ├── legal/         #     English legal pages
+│   │   │   │   └── legal-hindi/   #     Hindi legal pages (*Hindi.tsx)
+│   │   │   ├── careers/           #   Careers management
+│   │   │   ├── ChartComponents/   #   Recharts chart wrappers
+│   │   │   ├── dashboard/         #   Dashboard widgets
+│   │   │   ├── DocumentGenerator/ #   Document generation UI
 │   │   │   ├── email/             #   Email suite
 │   │   │   │   ├── campaigns/     #     Campaign components
-│   │   │   │   ├── compose/       #     Composer components
+│   │   │   │   ├── compose/       #     Composer (ContactPicker, RecipientInput)
 │   │   │   │   ├── hooks/         #     Email hooks
 │   │   │   │   └── sections/      #     Email sections
-│   │   │   ├── helpers/           #   Helper utilities
+│   │   │   ├── helpers/           #   Badge, property tags, labels
+│   │   │   ├── ivr/               #   IVR management
 │   │   │   ├── lottery/           #   Lottery management
 │   │   │   │   ├── hooks/         #     Lottery hooks
 │   │   │   │   ├── modals/        #     Lottery modals
 │   │   │   │   └── wizard/        #     Lottery wizard
-│   │   │   ├── modals/            #   Shared modals
-│   │   │   ├── OfferLetter/       #   Offer letter components
-│   │   │   ├── registrations/     #   Registration components
-│   │   │   ├── settings/          #   Settings components
-│   │   │   │   └── hooks/         #     Settings hooks
-│   │   │   └── Shared/            #   Shared admin components
+│   │   │   ├── modals/            #   Shared modals (advisor, user CRUD)
+│   │   │   ├── notifications/     #   Notification dropdown
+│   │   │   ├── OfferLetter/       #   Offer letter components (+ tests)
+│   │   │   ├── offer-letter-records/ # Offer letter records UI
+│   │   │   ├── payment-receipts/  #   Receipt records UI
+│   │   │   ├── portal-allotments/ #   Client allotments UI
+│   │   │   ├── quotation/         #   Quotation generator components
+│   │   │   ├── quotation-records/ #   Quotation stats, filters, records table
+│   │   │   ├── registrations/     #   Registration table + filters + modals
+│   │   │   ├── settings/          #   Settings tabs + hooks
+│   │   │   ├── Shared/            #   AdminSkeleton, AdminStatsCard, Modal
+│   │   │   ├── updates/           #   System updates timeline
+│   │   │   └── whatsapp/          #   Conversation list, chat panel, lead drawer
+│   │   ├── brochure/              #   Project brochure sections
+│   │   ├── changelog/             #   ChangelogTimeline, ReleaseMarkdown
+│   │   ├── common/                #   Analytics, CookieConsent, ExitIntentPopup, Schema
 │   │   ├── contact/               # Contact form components
+│   │   ├── employee/              # Employee portal widgets
+│   │   │   ├── attendance/        #   PunchTerminalWidget, GeofenceStatusCard...
+│   │   │   ├── dashboard/         #   Metrics grid, punch terminal, shortcuts
+│   │   │   ├── profile/           #   DigitalStaffIdCard, WorkspaceSettingsCard
+│   │   │   └── work/              #   TasksView, LeadsView, DailyLogsView...
+│   │   ├── exclusive-offers/      # Exclusive offers sections
 │   │   ├── faq/                   # FAQ components
 │   │   ├── home/                  # Landing page sections
-│   │   ├── layout/                # Header, Footer, nav
+│   │   │   ├── calculator/        #   EMI sliders + results
+│   │   │   ├── chat/              #   ChatBot sub-components (8)
+│   │   │   └── hero/              #   HeroBackground, HeroContent, HeroControls
+│   │   ├── layout/                # Header, Footer, nav (+ useHeaderNavigation)
 │   │   ├── lottery/               # Public lottery client
 │   │   │   ├── hooks/             #   Lottery hooks
-│   │   │   └── sections/          #   Lottery sections
+│   │   │   └── sections/          #   CountdownBanner, DrawArenaModal, HallOfFame
+│   │   ├── motion/                # text-reveal.tsx animation primitive
 │   │   ├── portal/                # Client portal components
 │   │   ├── projects/              # Project showcase components
 │   │   ├── properties/            # Property widgets
 │   │   ├── registration/          # Registration components
 │   │   ├── ui/                    # Shared UI primitives
+│   │   │   ├── AnimatedSection.tsx    # Scroll-reveal wrapper
+│   │   │   ├── MagicBento.tsx         # GSAP particle bento grid
+│   │   │   ├── spotlight-card.tsx     # Mouse-tracking spotlight card
+│   │   │   └── ...                    # BackToTop, Breadcrumbs, ThemeToggle, etc.
 │   │   ├── Captcha.tsx
 │   │   ├── ClientProviders.tsx    # Theme + Query providers
 │   │   ├── PwaPushPrompt.tsx      # Push notification permission banner
 │   │   ├── PwaRegister.tsx        # SW registration + update banner + sync toast
 │   │   ├── QueryProvider.tsx
 │   │   └── ThemeProvider.tsx
-│   ├── data/                      # company_settings.json, email-templates.json, faq/
-│   ├── hooks/                     # useMounted, useLotteryVisibility, ...
+│   ├── data/                      # areas.ts, projects.ts, company_settings.json,
+│   │                              # email-templates.json, blur-data-urls.json, faq/
+│   ├── hooks/                     # useMounted, useLotteryVisibility, useApi,
+│   │                              # useDashboard, useBbaRecords, useCustomerPortal...
 │   ├── i18n/                      # next-intl routing, navigation, request
 │   ├── lib/
-│   │   ├── api/                   # rateLimit, Zod schemas, withAdminAuth
+│   │   ├── api/                   # rateLimit, withAdminAuth, schemas, validate,
+│   │   │                          # compression, errors, fetcher, parseError, response
 │   │   ├── data/                  # Data access utilities
 │   │   ├── hooks/                 # Cross-cutting hooks
 │   │   ├── lottery/               # Campaign helpers
 │   │   ├── pwa/                   # PWA utilities (push, background sync, sendPush)
-│   │   ├── repositories/          # Server data access
-│   │   ├── supabase/              # client / admin / server / types
-│   │   ├── utils/                 # documentExporter, templateParser
+│   │   ├── quotation/             # calculateQuotation, numberToIndianWords,
+│   │   │                          # quotationNumber, format, types
+│   │   ├── repositories/          # Server data access layer
+│   │   ├── schemas/               # Shared Zod schemas
+│   │   ├── supabase/              # client / admin / server / types / verifyAdmin
+│   │   ├── utils/                 # documentExporter, templateParser, phone
+│   │   ├── whatsapp/              # AI sales agent: agent, agent-tools, processor,
+│   │   │                          # policy, opt-out, persistence, provider, signature
 │   │   ├── blog.ts                # Typed blog posts
-│   │   ├── chat-context.ts
+│   │   ├── captcha.ts             # Server-side captcha verification
+│   │   ├── changelog.ts           # Release timeline data
+│   │   ├── chat-context.ts        # Chatbot context builder
+│   │   ├── emi.ts                 # EMI calculation helpers
 │   │   ├── email-templates.ts
 │   │   ├── nearby-places.ts
 │   │   ├── seo.ts                 # createMetadata() helper
 │   │   └── utils.ts
-│   ├── services/                  # API service wrappers
-│   ├── stores/                    # Zustand stores (authStore, uiStore)
+│   ├── services/                  # API service wrappers (offerLetterApi)
+│   ├── stores/                    # Zustand stores (authStore, uiStore, comparisonStore)
 │   └── index.css
 ├── e2e/                           # Playwright e2e tests
 │   ├── playwright.config.ts       # Playwright configuration
@@ -1517,22 +1544,31 @@ svi-new/
 │   ├── verify-email-features.ts
 │   └── verify-groups.ts
 ├── supabase/                      # Migrations & config
-│   ├── migrations/                # 51 timestamp-ordered SQL migrations
+│   ├── migrations/                # 64 timestamp-ordered SQL migrations
 │   ├── config.toml                # Supabase CLI config
 │   └── .temp/                     # Temporary migration artifacts
 ├── __tests__/                     # Vitest unit/integration tests
-│   ├── api/                       # API tests
-│   │   └── admin/                 #   Admin endpoint tests
-│   ├── bba/                       # BBA tests
-│   └── utils/                     # Utility tests
+│   ├── api/                       # API tests (captcha, compression, fetcher,
+│   │   │                          # parseError, registration)
+│   │   └── admin/                 # analytics, attendance, documents, teams,
+│   │                              # users, verifyAdmin
+│   ├── mocks/                     # Test mocks (server-only)
+│   ├── quotation/                 # calculateQuotation, numberToIndianWords
+│   ├── utils/                     # phone, templateParser
+│   └── whatsapp/                  # policy, webhook-route
 ├── messages/                      # i18n message catalogs
 │   ├── en.json                    # English translations
 │   └── hi.json                    # Hindi translations
 ├── types/                         # Ambient type declarations
 │   └── next-pwa.d.ts              # PWA type declarations
-├── proxy.ts                       # Reverse-proxy helpers
+├── proxy.ts                       # i18n middleware + CSRF cookie setup
+├── capacitor.config.ts            # Base Capacitor config
+├── capacitor.admin.config.ts      # Admin Android app config
+├── capacitor.employee.config.ts   # Employee Android app config
+├── instrumentation.ts             # Sentry server init
+├── instrumentation-client.ts      # Sentry client init
 ├── next.config.mjs
-├── eslint.config.js
+├── eslint.config.mjs
 ├── tsconfig.json
 ├── vercel.json
 └── package.json
@@ -1710,7 +1746,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/thank-you`          | Post-submission confirmation              |
 | `/share`              | PWA share target handler                  |
 
-### Admin (middleware-protected)
+### Admin (in-app auth protected)
 
 | Route                         | Description                                                                           |
 | ----------------------------- | ------------------------------------------------------------------------------------- |
@@ -1724,7 +1760,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/admin/careers`              | Careers management                                                                    |
 | `/admin/chat-logs`            | AI chatbot conversation history                                                       |
 | `/admin/email`                | Compose, sent, templates, domains, campaigns                                          |
-| `/admin/employees`            | Employee directory                                                                    |
+| `/admin/employees`            | Employee directory management                                                         |
 | `/admin/ivr`                  | IVR call management                                                                   |
 | `/admin/lottery`              | Draw management & scheduling                                                          |
 | `/admin/notifications`        | Notification center                                                                   |
@@ -1735,49 +1771,73 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/admin/payment-receipts`     | Payment receipt records                                                               |
 | `/admin/portal-allotments`    | Client-facing allotments                                                              |
 | `/admin/properties`           | Property CRUD                                                                         |
+| `/admin/quotation`            | Quotation generator with GST breakdown and Indian words                               |
+| `/admin/quotation-records`    | Saved quotation records, filters, stats, PDF/image export, delete workflow            |
 | `/admin/registrations`        | Registration management                                                               |
 | `/admin/settings`             | Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs |
 | `/admin/site-visits`          | Site visit management                                                                 |
-| `/admin/whatsapp`             | WhatsApp inbox, AI/human/paused mode, follow-ups, templates, lead drawer              |
-| `/admin/quotation-records`    | Saved quotation records, filters, stats, PDF/image export, delete workflow            |
 | `/admin/updates`              | System release timeline, categorized update stats, upcoming operational roadmap       |
-| `/admin/whatsapp`             | WhatsApp inbox, follow-ups, templates, lead drawer, conversation management           |
-| `/admin/quotation-records`    | Quotation record management                                                           |
+| `/admin/whatsapp`             | WhatsApp inbox, AI/human/paused mode, follow-ups, templates, lead drawer              |
 
 ### Employee
 
-| Route                    | Description                      |
-| ------------------------ | -------------------------------- |
-| `/employee/login`        | Staff authentication             |
-| `/(employee)/attendance` | Staff check-in/out (route group) |
+| Route                          | Description                                        |
+| ------------------------------ | -------------------------------------------------- |
+| `/employee/login`              | Staff authentication                               |
+| `/employee/dashboard`          | Punch terminal, assigned leads, tasks, site visits |
+| `/employee/attendance`         | Geofenced punch-in/out + shift guidelines          |
+| `/employee/attendance/history` | Attendance history                                 |
+| `/employee/work`               | Tasks / leads / daily logs / site visits tabs      |
+| `/employee/profile`            | Digital staff ID card + workspace settings         |
+| `/(employee)/attendance`       | Legacy route group for deep links                  |
 
 ### API
 
 #### Public
 
-| Route                                | Method | Description               |
-| ------------------------------------ | ------ | ------------------------- |
-| `/api/chat`                          | POST   | Streaming AI chat         |
-| `/api/changelog`                     | GET    | Release changelog data    |
-| `/api/chat/leads`                    | POST   | Chat lead capture         |
-| `/api/chat/log`                      | POST   | Conversation logging      |
-| `/api/contact`                       | POST   | Contact form              |
-| `/api/cron/campaigns`                | POST   | Campaign processing       |
-| `/api/cron/cleanup-registrations`    | POST   | Registration cleanup      |
-| `/api/cron/lottery`                  | POST   | Draw execution            |
-| `/api/cron/process-scheduled-emails` | POST   | Scheduled email dispatch  |
-| `/api/grievance`                     | POST   | Grievance form            |
-| `/api/grievance/notify`              | POST   | Grievance notification    |
-| `/api/lottery`                       | GET    | Public lottery data       |
-| `/api/lottery/schedule`              | GET    | Lottery schedule          |
-| `/api/project-images`                | GET    | Image serving             |
-| `/api/properties`                    | GET    | Public listings           |
-| `/api/push/subscribe`                | POST   | Push subscription         |
-| `/api/push/unsubscribe`              | POST   | Push unsubscription       |
-| `/api/registration`                  | POST   | User registration         |
-| `/api/registration/notify`           | POST   | Registration notification |
-| `/api/site-visit`                    | POST   | Site visit request        |
-| `/api/webhooks/resend/incoming`      | POST   | Inbound email webhook     |
+| Route                                | Method   | Description              |
+| ------------------------------------ | -------- | ------------------------ |
+| `/api/chat`                          | POST     | Streaming AI chat        |
+| `/api/changelog`                     | GET      | Release changelog data   |
+| `/api/chat/leads`                    | POST     | Chat lead capture        |
+| `/api/chat/log`                      | POST     | Conversation logging     |
+| `/api/contact`                       | POST     | Contact form             |
+| `/api/cron/campaigns`                | POST     | Campaign processing      |
+| `/api/cron/cleanup-registrations`    | POST     | Registration cleanup     |
+| `/api/cron/lottery`                  | POST     | Draw execution           |
+| `/api/cron/process-scheduled-emails` | POST     | Scheduled email dispatch |
+| `/api/cron/whatsapp`                 | POST     | WhatsApp follow-ups      |
+| `/api/csrf-refresh`                  | GET      | CSRF token refresh       |
+| `/api/grievance`                     | POST     | Grievance form           |
+| `/api/lottery/schedule`              | GET      | Lottery schedule         |
+| `/api/map-tiles/[z]/[x]/[y]`         | GET      | MapLibre tile proxy      |
+| `/api/monitoring`                    | POST     | Sentry tunnel route      |
+| `/api/nearby-places`                 | GET      | Nearby places data       |
+| `/api/project-images`                | GET      | Image serving            |
+| `/api/properties`                    | GET      | Public listings          |
+| `/api/push/subscribe`                | POST     | Push subscription        |
+| `/api/push/unsubscribe`              | POST     | Push unsubscription      |
+| `/api/registration`                  | POST     | User registration        |
+| `/api/registration/captcha`          | GET      | Captcha challenge        |
+| `/api/site-visit`                    | POST     | Site visit request       |
+| `/api/webhooks/resend/incoming`      | POST     | Inbound email webhook    |
+| `/api/whatsapp/webhook`              | GET/POST | Meta Cloud API webhook   |
+
+#### Employee
+
+| Route                                 | Method   | Description                       |
+| ------------------------------------- | -------- | --------------------------------- |
+| `/api/employee/attendance/punch-in`   | POST     | Geofenced punch-in                |
+| `/api/employee/attendance/punch-out`  | POST     | Punch-out with work log           |
+| `/api/employee/attendance/status`     | GET      | Current attendance status         |
+| `/api/employee/attendance/history`    | GET      | Attendance history                |
+| `/api/employee/attendance/leaves`     | GET      | Leave records                     |
+| `/api/employee/attendance/regularize` | POST     | Attendance regularization request |
+| `/api/employee/work/dashboard`        | GET      | Work dashboard metrics            |
+| `/api/employee/work/tasks`            | GET      | Assigned tasks                    |
+| `/api/employee/work/leads`            | GET      | Assigned leads                    |
+| `/api/employee/work/logs`             | GET/POST | Daily work logs                   |
+| `/api/employee/work/site-visits`      | GET      | Assigned site visits              |
 
 #### Admin
 
@@ -1789,6 +1849,9 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/api/admin/attendance/analytics`                          | Attendance analytics    |
 | `/api/admin/attendance/report`                             | Attendance reports      |
 | `/api/admin/attendance/approve`                            | Attendance approvals    |
+| `/api/admin/attendance/live`                               | Live attendance feed    |
+| `/api/admin/attendance/locations`                          | Geofence locations      |
+| `/api/admin/attendance/settings`                           | Attendance settings     |
 | `/api/admin/attendance/teams` (+ `/[id]/members/[userId]`) | Team management         |
 | `/api/admin/bba`                                           | BBA management          |
 | `/api/admin/campaigns` (+ `/[id]`, `/[id]/send`)           | Email campaigns         |
@@ -1797,7 +1860,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/api/admin/contact-groups` (+ `/[id]`)                    | Contact groups          |
 | `/api/admin/documents` (+ `[id]`)                          | Document CRUD           |
 | `/api/admin/email` (+ `/ai`, `/status`)                    | Email sending + AI      |
-| `/api/admin/employees` (+ `[id]`)                          | Employee endpoints      |
+| `/api/admin/employees` (+ `[id]`)                          | Employee CRUD           |
 | `/api/admin/ivr`                                           | IVR endpoints           |
 | `/api/admin/lottery` (+ `/draw`, `/schedule`)              | Draw management         |
 | `/api/admin/notifications` (+ `[id]`)                      | Notification CRUD       |
@@ -1805,6 +1868,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/api/admin/registrations` (+ `/analytics`, `/filters`)    | Registration management |
 | `/api/admin/settings`                                      | Portal settings         |
 | `/api/admin/users` (+ `[id]`)                              | User CRUD               |
+| `/api/admin/whatsapp`                                      | WhatsApp inbox mgmt     |
 
 ---
 
@@ -1840,27 +1904,36 @@ Admin layout additionally wraps children in `AdminSessionProvider`.
 | `Footer`                  | Site footer with columns, newsletter, social links, Google Maps link |
 | `FloatingContact`         | Sticky mobile contact bar + floating WhatsApp-style contact button   |
 
-### Public UI primitives (`src/components/common/ui` and `src/components/ui`)
+### Public UI primitives (`src/components/ui`)
 
-| Component             | Description                              |
-| --------------------- | ---------------------------------------- |
-| `AnimatedSection`     | Scroll-reveal via `motion` `useInView`   |
-| `BackToTop`           | Floating scroll-to-top                   |
-| `Breadcrumbs`         | Auto-generated from URL path             |
-| `CookieConsent`       | GDPR consent banner w/ localStorage      |
-| `DynamicSkeleton`     | Loading placeholders                     |
-| `ErrorBoundary`       | React error boundary + fallback          |
-| `HoverZoomImage`      | CSS transform zoom on hover              |
-| `LanguageToggle`      | EN / हिं switcher                        |
-| `ReadingProgress`     | Top-of-page scroll indicator             |
-| `ScrollToTop`         | Auto-scroll on route change              |
-| `StatsCounter`        | Spring-physics count-up on scroll        |
-| `ThemeToggle`         | Light/dark/system switcher               |
-| `AnalyticsTracker`    | Vercel Analytics + Speed Insights mount  |
-| `StaggerTestimonials` | Staggered motion variants                |
-| `SpotlightCard`       | Card with mouse-tracking spotlight glare |
-| `DotField`            | Background noise/dot texture pattern     |
-| `ProjectCardSkeleton` | Loading placeholder for project cards    |
+| Component               | Description                              |
+| ----------------------- | ---------------------------------------- |
+| `AnimatedSection`       | Scroll-reveal via `motion` `useInView`   |
+| `BackToTop`             | Floating scroll-to-top                   |
+| `Breadcrumbs`           | Auto-generated from URL path             |
+| `DotField`              | Background noise/dot texture pattern     |
+| `DynamicSkeleton`       | Loading placeholders                     |
+| `ErrorBoundary`         | React error boundary + fallback          |
+| `ExpandableDescription` | Clamp/expand long text                   |
+| `HoverZoomImage`        | CSS transform zoom on hover              |
+| `LanguageToggle`        | EN / हिं switcher                        |
+| `MagicBento`            | GSAP particle bento grid + spotlight     |
+| `ProjectCardSkeleton`   | Loading placeholder for project cards    |
+| `ScrollToTop`           | Auto-scroll on route change              |
+| `spotlight-card`        | Card with mouse-tracking spotlight glare |
+| `stagger-testimonials`  | Staggered motion variants                |
+| `StatsCounter`          | Spring-physics count-up on scroll        |
+| `ThemeToggle`           | Light/dark/system switcher               |
+
+### Common components (`src/components/common`)
+
+| Component          | Description                             |
+| ------------------ | --------------------------------------- |
+| `Analytics`        | Vercel Analytics + Speed Insights mount |
+| `CookieConsent`    | GDPR consent banner w/ localStorage     |
+| `ExitIntentPopup`  | Exit-intent lead capture popup          |
+| `Schema`           | JSON-LD structured data injection       |
+| `social-icons.tsx` | Social media icon set                   |
 
 ### Home (`src/components/home/`)
 

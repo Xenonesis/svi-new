@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
+import { leaveStore } from '@/src/lib/attendance/leaveStore';
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
@@ -12,17 +11,7 @@ export async function GET(request: NextRequest) {
       throw AppError.unauthorized('Please log in to view leaves');
     }
 
-    const { data: leaves, error } = await supabaseAdmin
-      .from('employee_leaves')
-      .select('*')
-      .eq('user_id', verified.user.id)
-      .order('created_at', { ascending: false });
-
-    if (error) {
-      console.error('Error fetching leaves:', error);
-      throw AppError.internal('Failed to fetch leave requests');
-    }
-
+    const leaves = await leaveStore.getAllLeaves({ userId: verified.user.id });
     // Compute annual leave quota summary
     const currentYear = new Date().getFullYear();
     const approvedThisYear = (leaves || []).filter(
@@ -105,25 +94,14 @@ export async function POST(request: NextRequest) {
       totalDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
     }
 
-    const { data: newLeave, error: insertError } = await supabaseAdmin
-      .from('employee_leaves')
-      .insert({
-        user_id: verified.user.id,
-        leave_type,
-        start_date,
-        end_date,
-        total_days: totalDays,
-        reason: reason.trim(),
-        status: 'pending',
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      console.error('Error submitting leave:', insertError);
-      throw AppError.internal('Failed to submit leave request');
-    }
-
+    const newLeave = await leaveStore.createLeave({
+      user_id: verified.user.id,
+      leave_type,
+      start_date,
+      end_date,
+      total_days: totalDays,
+      reason: reason.trim(),
+    });
     return NextResponse.json({
       success: true,
       message: 'Leave application submitted successfully',
@@ -147,19 +125,13 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Only allow cancelling pending leaves belonging to the user
-    const { data: updated, error } = await supabaseAdmin
-      .from('employee_leaves')
-      .update({ status: 'cancelled', updated_at: new Date().toISOString() })
-      .eq('id', body.id)
-      .eq('user_id', verified.user.id)
-      .eq('status', 'pending')
-      .select()
-      .single();
+    const updated = await leaveStore.updateLeaveStatus(body.id, {
+      status: 'cancelled',
+    });
 
-    if (error || !updated) {
+    if (!updated) {
       throw AppError.badRequest('Leave not found or cannot be cancelled');
     }
-
     return NextResponse.json({
       success: true,
       message: 'Leave request cancelled',
