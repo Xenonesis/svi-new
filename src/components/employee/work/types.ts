@@ -37,9 +37,10 @@ export interface LeadItem {
   lifecycle_status: string;
   lead_temperature?: string | null;
   summary?: string | null;
+  follow_up_at?: string | null;
+  notes?: string | null;
   created_at: string;
 }
-
 export interface WorkLogItem {
   id: string;
   date: string;

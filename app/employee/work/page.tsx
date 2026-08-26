@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Plus, UserPlus } from 'lucide-react';
 import { toast } from 'sonner';
 import { WorkStatsSummary } from '@/src/components/employee/work/WorkStatsSummary';
 import { WorkTabNavigation } from '@/src/components/employee/work/WorkTabNavigation';
@@ -12,6 +12,9 @@ import { SiteVisitsView } from '@/src/components/employee/work/SiteVisitsView';
 import { LeadsView } from '@/src/components/employee/work/LeadsView';
 import { DailyLogsView } from '@/src/components/employee/work/DailyLogsView';
 import { SubmitShiftLogModal } from '@/src/components/employee/work/SubmitShiftLogModal';
+import { AddLeadModal } from '@/src/components/employee/work/AddLeadModal';
+import { LeadTrackerDrawer } from '@/src/components/employee/work/LeadTrackerDrawer';
+import { FollowUpReminderBanner } from '@/src/components/employee/work/FollowUpReminderBanner';
 import type {
   TaskItem,
   SiteVisitItem,
@@ -36,6 +39,8 @@ export default function EmployeeWorkTrackerPage() {
   // Modal states
   const [showAddTaskModal, setShowAddTaskModal] = useState(false);
   const [showAddLogModal, setShowAddLogModal] = useState(false);
+  const [showAddLeadModal, setShowAddLeadModal] = useState(false);
+  const [selectedLeadForDrawer, setSelectedLeadForDrawer] = useState<LeadItem | null>(null);
 
   // Fetch all work tracker data
   const fetchData = useCallback(async () => {
@@ -203,17 +208,31 @@ export default function EmployeeWorkTrackerPage() {
 
   return (
     <div className="space-y-6 pb-6">
-      {/* Title */}
-      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+      {/* Title & Quick Actions */}
+      <div className="flex flex-col justify-between gap-3 sm:flex-row sm:items-center">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-            Daily Work Tracker
+            Daily Work & Lead Tracker
           </h1>
           <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
             Manage your daily tasks, customer site visits, assigned leads, and shift reports
           </p>
         </div>
+
+        {/* Quick Add Lead Button on Header */}
+        <button
+          onClick={() => setShowAddLeadModal(true)}
+          className="flex items-center gap-1.5 self-start rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2 text-xs font-bold text-white shadow-md shadow-blue-500/20 transition-all hover:scale-102 hover:from-blue-500 hover:to-indigo-500 sm:self-auto"
+        >
+          <UserPlus className="h-4 w-4" /> Add Lead
+        </button>
       </div>
+
+      {/* Audio-Visual Follow-up Reminder Banner */}
+      <FollowUpReminderBanner
+        leads={leads}
+        onSelectLead={(lead) => setSelectedLeadForDrawer(lead)}
+      />
 
       {/* Summary Metrics */}
       <WorkStatsSummary
@@ -257,7 +276,12 @@ export default function EmployeeWorkTrackerPage() {
           )}
 
           {activeTab === 'leads' && (
-            <LeadsView leads={leads} onUpdateLeadStatus={handleUpdateLeadStatus} />
+            <LeadsView
+              leads={leads}
+              onUpdateLeadStatus={handleUpdateLeadStatus}
+              onSelectLead={(lead) => setSelectedLeadForDrawer(lead)}
+              onAddNewLead={() => setShowAddLeadModal(true)}
+            />
           )}
 
           {activeTab === 'logs' && (
@@ -266,7 +290,7 @@ export default function EmployeeWorkTrackerPage() {
         </>
       )}
 
-      {/* Modals */}
+      {/* Modals & Drawers */}
       <AddTaskModal
         isOpen={showAddTaskModal}
         onClose={() => setShowAddTaskModal(false)}
@@ -277,6 +301,19 @@ export default function EmployeeWorkTrackerPage() {
         isOpen={showAddLogModal}
         onClose={() => setShowAddLogModal(false)}
         onSubmit={handleCreateLog}
+      />
+
+      <AddLeadModal
+        isOpen={showAddLeadModal}
+        onClose={() => setShowAddLeadModal(false)}
+        onLeadAdded={fetchData}
+      />
+
+      <LeadTrackerDrawer
+        lead={selectedLeadForDrawer}
+        isOpen={!!selectedLeadForDrawer}
+        onClose={() => setSelectedLeadForDrawer(null)}
+        onLeadUpdated={fetchData}
       />
     </div>
   );
