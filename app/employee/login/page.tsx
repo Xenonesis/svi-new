@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { motion } from 'motion/react';
 import { UserCircle2, ArrowRight, AlertCircle, MapPin } from 'lucide-react';
 import React, { useState } from 'react';
@@ -137,15 +138,29 @@ export default function EmployeeLogin() {
             </motion.div>
           )}
 
-          <div className="mb-8 text-center">
-            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-gray-50 text-emerald-600 dark:border-gray-600 dark:bg-gray-800 dark:text-emerald-400">
-              <MapPin size={32} />
+          <div className="mb-8 flex flex-col items-center text-center">
+            {/* Official SVI Logo Capsule Pill */}
+            <div className="mb-6 inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md ring-1 ring-black/5 transition-all duration-300 dark:ring-white/10">
+              <Image
+                src="/logo.png"
+                alt="SVI Infra Solutions Pvt. Ltd."
+                width={282}
+                height={83}
+                quality={100}
+                priority
+                className="h-8 w-auto object-contain"
+              />
             </div>
-            <h1 className="text-brand-navy mb-2 font-serif text-3xl dark:text-white">
-              Employee Portal
-            </h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Log in to mark your daily attendance.
+            <div className="flex items-center gap-2">
+              <h1 className="text-brand-navy font-serif text-2xl font-bold tracking-tight md:text-3xl dark:text-white">
+                Employee Workspace
+              </h1>
+              <span className="rounded-full bg-blue-500/10 px-2.5 py-0.5 text-xs font-semibold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400">
+                Staff
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-gray-500 md:text-sm dark:text-gray-400">
+              Log in to track work, site visits, and daily attendance.
             </p>
           </div>
 

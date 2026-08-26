@@ -51,20 +51,22 @@ export function DigitalStaffIdCard({
 
         {/* Card Header with SVI Logo & Holographic Badge */}
         <div className="relative flex items-center justify-between border-b border-white/10 pb-4">
-          <div className="flex items-center gap-2.5">
-            <Image
-              src="/logo.png"
-              alt="SVI Infra Solutions"
-              width={36}
-              height={36}
-              className="rounded-lg bg-white/10 p-1 backdrop-blur-md"
-            />
+          <div className="flex items-center gap-3">
+            <div className="rounded-[14px] bg-white px-2.5 py-1 shadow-sm">
+              <Image
+                src="/logo.png"
+                alt="SVI Infra Solutions"
+                width={282}
+                height={83}
+                quality={100}
+                className="h-5 w-auto object-contain"
+              />
+            </div>
             <div>
               <p className="text-xs font-black tracking-widest uppercase">SVI INFRA</p>
               <p className="text-[9px] font-medium tracking-wider text-slate-400">STAFF IDENTITY</p>
             </div>
           </div>
-
           <span className="flex items-center gap-1 rounded-full border border-emerald-500/30 bg-emerald-500/20 px-2.5 py-0.5 text-[9px] font-bold text-emerald-300">
             <Sparkles className="h-3 w-3" /> VERIFIED
           </span>

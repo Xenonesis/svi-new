@@ -82,23 +82,28 @@ export default function EmployeeHeader() {
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 backdrop-blur-md transition-colors sm:px-6 lg:px-8 dark:border-slate-800/80 dark:bg-slate-950/90">
       {/* Brand & Sub-Brand */}
-      <Link href="/employee/dashboard" className="flex shrink-0 items-center gap-3">
-        <div className="relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-xl bg-slate-900 p-1.5 shadow-sm dark:bg-slate-800">
+      <Link href="/employee/dashboard" className="group flex shrink-0 items-center gap-3">
+        {/* Official SVI Logo Capsule Pill (Matching Home Page Navbar) */}
+        <div className="relative inline-flex shrink-0 items-center rounded-[20px] bg-white px-3.5 py-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-md active:scale-[0.98] dark:ring-white/15">
           <Image
             src="/logo.png"
-            alt="SVI Logo"
-            width={32}
-            height={32}
-            className="object-contain"
+            alt="SVI Infra Solutions Pvt. Ltd."
+            width={282}
+            height={83}
+            quality={100}
             priority
+            className="h-7 w-auto object-contain transition-all duration-300 sm:h-7.5"
           />
         </div>
+
+        <div className="hidden h-6 w-px bg-slate-200 sm:block dark:bg-slate-800" />
+
         <div className="flex flex-col">
           <div className="flex items-center gap-1.5">
             <span className="text-sm font-bold tracking-tight text-slate-900 dark:text-white">
               SVI Workspace
             </span>
-            <span className="hidden rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-600 sm:inline-block dark:bg-blue-400/10 dark:text-blue-400">
+            <span className="inline-block rounded-full bg-blue-500/10 px-2 py-0.5 text-[10px] font-semibold text-blue-600 dark:bg-blue-400/10 dark:text-blue-400">
               Staff
             </span>
           </div>
@@ -107,7 +112,6 @@ export default function EmployeeHeader() {
           </span>
         </div>
       </Link>
-
       {/* Desktop Navigation Tabs (Hidden on mobile) */}
       <nav className="hidden items-center gap-1 rounded-2xl border border-slate-200/80 bg-slate-100/70 p-1 md:flex dark:border-slate-800 dark:bg-slate-900/60">
         {navTabs.map((tab) => {
