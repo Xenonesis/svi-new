@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { motion } from 'motion/react';
-import { UserCircle2, ArrowRight, AlertCircle, MapPin } from 'lucide-react';
+import { UserCircle2, ArrowRight, AlertCircle, MapPin, Eye, EyeOff } from 'lucide-react';
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
@@ -16,7 +16,7 @@ export default function EmployeeLogin() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
-
+  const [showPassword, setShowPassword] = useState(false);
   // Validation & touched states
   const [identifierTouched, setIdentifierTouched] = useState(false);
   const [passwordTouched, setPasswordTouched] = useState(false);
@@ -176,7 +176,7 @@ export default function EmployeeLogin() {
             </motion.div>
           )}
 
-          <form onSubmit={handlePasswordLogin} className="space-y-6">
+          <form onSubmit={handlePasswordLogin} noValidate className="space-y-6">
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <label className="text-brand-navy text-[10px] font-bold tracking-widest uppercase dark:text-gray-300">
@@ -224,25 +224,34 @@ export default function EmployeeLogin() {
                   </motion.span>
                 )}
               </div>
-              <input
-                type="password"
-                minLength={10}
-                pattern="(?=.*\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\w]).{10,}"
-                title="Password must be at least 10 characters with uppercase, lowercase, number, and special character"
-                value={password}
-                onChange={(e) => {
-                  setPassword(e.target.value);
-                  if (passwordTouched) setPasswordTouched(false);
-                }}
-                onBlur={() => setPasswordTouched(true)}
-                required
-                placeholder="••••••••"
-                className={`focus:border-brand-gold w-full rounded-lg border px-4 py-3 text-gray-900 transition-colors focus:outline-none ${
-                  showPasswordError
-                    ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
-                    : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-                }`}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (passwordTouched) setPasswordTouched(false);
+                  }}
+                  onBlur={() => setPasswordTouched(true)}
+                  required
+                  placeholder="••••••••"
+                  className={`focus:border-brand-gold w-full rounded-lg border px-4 py-3 pr-11 text-gray-900 transition-colors focus:outline-none ${
+                    showPasswordError
+                      ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
+                      : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
+                  }`}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  tabIndex={-1}
+                  className="absolute top-1/2 right-3 -translate-y-1/2 rounded-md p-1.5 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
+                  title={showPassword ? 'Hide password' : 'Show password'}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
             </div>
 
             <button
