@@ -49,11 +49,19 @@ export async function POST(request: NextRequest) {
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { lat, lon } = body;
-    if (lat === undefined || lon === undefined) {
+    const rawLat = body.lat ?? body.latitude;
+    const rawLon = body.lon ?? body.longitude;
+
+    if (rawLat === undefined || rawLon === undefined || rawLat === null || rawLon === null) {
       throw AppError.badRequest('Location coordinates (lat, lon) are required');
     }
 
+    const lat = Number(rawLat);
+    const lon = Number(rawLon);
+
+    if (isNaN(lat) || isNaN(lon)) {
+      throw AppError.badRequest('Invalid GPS coordinate values');
+    }
     const now = new Date();
     const today = now.toISOString().split('T')[0];
 
@@ -85,15 +93,9 @@ export async function POST(request: NextRequest) {
     const istNow = new Date(now.getTime() + istOffset);
     const currentTimeStr = istNow.toISOString().slice(11, 16); // "HH:MM"
 
-    // Block punch-in after cutoff
-    if (currentTimeStr > punchInCutoff) {
-      throw AppError.badRequest(
-        `Punch-in is not allowed after ${punchInCutoff}. Please contact your admin.`
-      );
-    }
-
-    // Check if late (after start time but before cutoff)
+    // Check late and cutoff thresholds
     const isLate = currentTimeStr > punchInStart;
+    const isAfterCutoff = currentTimeStr > punchInCutoff;
 
     // Geofence verification against all active locations
     const { data: locations } = await supabaseAdmin
@@ -103,6 +105,7 @@ export async function POST(request: NextRequest) {
 
     let isGeofenceVerified = false;
     let closestDistance: number | null = null;
+    let matchedLocationName: string | null = null;
 
     if (locations && locations.length > 0) {
       for (const loc of locations) {
@@ -111,11 +114,13 @@ export async function POST(request: NextRequest) {
 
         if (closestDistance === null || dist < closestDistance) {
           closestDistance = Math.round(dist);
+          matchedLocationName = loc.name;
         }
 
         if (dist <= radius) {
           isGeofenceVerified = true;
           closestDistance = Math.round(dist);
+          matchedLocationName = loc.name;
           break;
         }
       }
@@ -124,7 +129,8 @@ export async function POST(request: NextRequest) {
       isGeofenceVerified = true;
     }
 
-    // Find employee's team
+    // Find employee's team with automatic fallback if not yet assigned
+    let teamId: string | null = null;
     const { data: teamMember } = await supabaseAdmin
       .from('team_members')
       .select('team_id')
@@ -132,24 +138,50 @@ export async function POST(request: NextRequest) {
       .limit(1)
       .maybeSingle();
 
-    if (!teamMember) {
-      throw AppError.badRequest('You are not assigned to any team. Contact your admin.');
+    if (teamMember?.team_id) {
+      teamId = teamMember.team_id;
+    } else {
+      const { data: firstTeam } = await supabaseAdmin
+        .from('teams')
+        .select('id')
+        .order('created_at', { ascending: true })
+        .limit(1)
+        .maybeSingle();
+
+      if (firstTeam) {
+        teamId = firstTeam.id;
+        await supabaseAdmin.from('team_members').insert({
+          team_id: firstTeam.id,
+          user_id: user.id,
+        });
+      }
     }
+
+    // Status must be one of allowed enum values: 'present', 'absent', 'half_day', 'leave', 'pending'
+    // Late arrivals are marked 'present' with is_late = true and documented in notes
+    const statusValue = isGeofenceVerified ? 'present' : 'pending';
+
+    const noteText = isAfterCutoff
+      ? `Late arrival punch-in at ${currentTimeStr} IST (Cutoff was ${punchInCutoff})`
+      : isLate
+        ? `Late punch-in at ${currentTimeStr} IST (Shift starts ${punchInStart})`
+        : `On-time punch-in at ${currentTimeStr} IST`;
 
     // Insert punch-in record
     const { data: newRecord, error: insertError } = await supabaseAdmin
       .from('attendance_records')
       .insert({
         user_id: user.id,
-        team_id: teamMember.team_id,
+        team_id: teamId,
         date: today,
-        status: isGeofenceVerified ? 'present' : 'pending',
+        status: statusValue,
         punch_in_time: now.toISOString(),
         check_in_lat: lat,
         check_in_lon: lon,
         is_geofence_verified: isGeofenceVerified,
         geofence_distance_meters: closestDistance,
         is_late: isLate,
+        notes: noteText,
         created_at: now.toISOString(),
       })
       .select()
@@ -157,17 +189,30 @@ export async function POST(request: NextRequest) {
 
     if (insertError) {
       console.error('Error inserting punch-in record:', insertError);
-      throw AppError.internal('Failed to punch in');
+      if (insertError.code === '23505') {
+        throw AppError.badRequest('You have already punched in for today.');
+      }
+      throw AppError.badRequest(
+        `Could not record attendance: ${insertError.message || 'Database error'}`
+      );
     }
+    const message = isAfterCutoff
+      ? `Punched in successfully! (Marked Late Arrival: ${currentTimeStr} IST)`
+      : isLate
+        ? `Punched in! (Late Arrival recorded: shift starts at ${punchInStart})`
+        : 'Successfully punched in! Have a productive shift.';
 
     return NextResponse.json({
       success: true,
+      message,
       record: newRecord,
       geofence: {
         verified: isGeofenceVerified,
         distance: closestDistance,
+        location_name: matchedLocationName,
       },
       is_late: isLate,
+      is_after_cutoff: isAfterCutoff,
     });
   } catch (err) {
     return handleApiError(err);

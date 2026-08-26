@@ -1,20 +1,57 @@
 'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
-import { Loader2, RefreshCw } from 'lucide-react';
+import {
+  Loader2,
+  RefreshCw,
+  UserCheck,
+  ShieldCheck,
+  MapPin,
+  Calendar,
+  Briefcase,
+  FileText,
+} from 'lucide-react';
 import { toast } from 'sonner';
+import { format } from 'date-fns';
 import { PunchTerminalWidget } from '@/src/components/employee/attendance/PunchTerminalWidget';
 import { GeofenceStatusCard } from '@/src/components/employee/attendance/GeofenceStatusCard';
 import { ShiftGuidelinesCard } from '@/src/components/employee/attendance/ShiftGuidelinesCard';
 import { PunchOutWorkLogModal } from '@/src/components/employee/attendance/PunchOutWorkLogModal';
+import {
+  PunchFeedbackBanner,
+  type FeedbackNotice,
+} from '@/src/components/employee/attendance/PunchFeedbackBanner';
 
 interface StatusState {
+  user_id?: string;
+  full_name?: string;
+  email?: string;
+  team_name?: string;
   status: 'not_punched' | 'punched_in' | 'punched_out';
   punch_in_time: string | null;
   punch_out_time: string | null;
   total_hours: number | null;
   is_late: boolean;
   is_geofence_verified: boolean;
+  summary_text?: string | null;
+  client_interactions_count?: number;
+  site_visits_conducted_count?: number;
+}
+
+interface AttendanceSettings {
+  punch_in_start?: string;
+  punch_in_cutoff?: string;
+  punch_out_start?: string;
+  punch_out_end?: string;
+  geofence_radius_meters?: number;
+}
+
+interface GeofenceLocation {
+  id: string;
+  name: string;
+  latitude: number;
+  longitude: number;
+  radius_meters: number;
 }
 
 export default function EmployeeAttendancePunchPage() {
@@ -27,6 +64,15 @@ export default function EmployeeAttendancePunchPage() {
     is_geofence_verified: false,
   });
 
+  const [settings, setSettings] = useState<AttendanceSettings>({
+    punch_in_start: '09:00',
+    punch_in_cutoff: '10:30',
+    punch_out_start: '17:00',
+    punch_out_end: '21:00',
+    geofence_radius_meters: 200,
+  });
+
+  const [locations, setLocations] = useState<GeofenceLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [punching, setPunching] = useState(false);
   const [elapsedTime, setElapsedTime] = useState('00:00:00');
@@ -34,12 +80,14 @@ export default function EmployeeAttendancePunchPage() {
     'acquiring'
   );
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [accuracy, setAccuracy] = useState<number | null>(null);
 
   // Work Log Modal on Punch-out
   const [showWorkLogModal, setShowWorkLogModal] = useState(false);
   const [workSummary, setWorkSummary] = useState('');
   const [clientCount, setClientCount] = useState(0);
   const [visitCount, setVisitCount] = useState(0);
+  const [feedbackNotice, setFeedbackNotice] = useState<FeedbackNotice | null>(null);
 
   const fetchStatus = useCallback(async () => {
     try {
@@ -47,14 +95,13 @@ export default function EmployeeAttendancePunchPage() {
       if (res.ok) {
         const json = await res.json();
         if (json.status) {
-          setStatusData({
-            status: json.status.status || 'not_punched',
-            punch_in_time: json.status.punch_in_time || null,
-            punch_out_time: json.status.punch_out_time || null,
-            total_hours: json.status.total_hours || null,
-            is_late: !!json.status.is_late,
-            is_geofence_verified: !!json.status.is_geofence_verified,
-          });
+          setStatusData(json.status);
+        }
+        if (json.settings) {
+          setSettings(json.settings);
+        }
+        if (json.locations) {
+          setLocations(json.locations);
         }
       }
     } catch {
@@ -69,11 +116,13 @@ export default function EmployeeAttendancePunchPage() {
   }, [fetchStatus]);
 
   // Acquire Geolocation
-  useEffect(() => {
-    if (!navigator.geolocation) {
+  const requestLocation = useCallback(() => {
+    if (typeof window === 'undefined' || !navigator.geolocation) {
       setLocationStatus('error');
       return;
     }
+
+    setLocationStatus('acquiring');
 
     navigator.geolocation.getCurrentPosition(
       (pos) => {
@@ -81,14 +130,20 @@ export default function EmployeeAttendancePunchPage() {
           lat: pos.coords.latitude,
           lon: pos.coords.longitude,
         });
+        setAccuracy(pos.coords.accuracy || null);
         setLocationStatus('ready');
       },
-      () => {
+      (err) => {
+        console.warn('Geolocation error:', err.message);
         setLocationStatus('error');
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
     );
   }, []);
+
+  useEffect(() => {
+    requestLocation();
+  }, [requestLocation]);
 
   // Live Timer ticker for Active Shift
   useEffect(() => {
@@ -117,27 +172,66 @@ export default function EmployeeAttendancePunchPage() {
     setPunching(true);
     try {
       let currentCoords = coords;
-      if (!currentCoords && navigator.geolocation) {
+
+      // If coords are not ready yet, request them freshly
+      if (!currentCoords && typeof navigator !== 'undefined' && navigator.geolocation) {
         try {
           const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
             navigator.geolocation.getCurrentPosition(resolve, reject, {
               enableHighAccuracy: true,
-              timeout: 6000,
+              timeout: 8000,
             });
           });
           currentCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
           setCoords(currentCoords);
+          setAccuracy(pos.coords.accuracy || null);
+          setLocationStatus('ready');
         } catch {
-          // Proceed with null coords (backend fallback)
+          const notice: FeedbackNotice = {
+            type: 'error',
+            title: 'GPS Location Required',
+            message:
+              'We need your device location to verify that you are within the approved office work zone.',
+            reason: 'Browser Geolocation permission was denied or timed out.',
+            actionLabel: 'Allow GPS & Retry',
+            onAction: () => executePunch(type),
+            secondaryActionLabel: 'Refresh GPS',
+            onSecondaryAction: () => requestLocation(),
+          };
+          setFeedbackNotice(notice);
+          toast.error('Location coordinates required', {
+            description: 'Please enable GPS location permission in your browser.',
+          });
+          setPunching(false);
+          return;
         }
+      }
+      if (!currentCoords) {
+        const notice: FeedbackNotice = {
+          type: 'error',
+          title: 'Location Signal Missing',
+          message: 'GPS coordinates could not be retrieved from your device.',
+          reason: 'Location service returned null coordinates.',
+          actionLabel: 'Detect Location',
+          onAction: () => requestLocation(),
+        };
+        setFeedbackNotice(notice);
+        toast.error('Location signal missing', {
+          description: 'Please enable location permissions and tap Detect Location.',
+        });
+        setPunching(false);
+        return;
       }
 
       const endpoint =
         type === 'in' ? '/api/employee/attendance/punch-in' : '/api/employee/attendance/punch-out';
 
+      // Send both lat/lon and latitude/longitude to guarantee compatibility
       const bodyPayload: Record<string, unknown> = {
-        latitude: currentCoords?.lat,
-        longitude: currentCoords?.lon,
+        lat: currentCoords.lat,
+        lon: currentCoords.lon,
+        latitude: currentCoords.lat,
+        longitude: currentCoords.lon,
       };
 
       if (type === 'out') {
@@ -155,21 +249,70 @@ export default function EmployeeAttendancePunchPage() {
       const data = await res.json();
 
       if (res.ok) {
-        toast.success(
-          type === 'in'
-            ? 'Successfully punched in! Have a great day.'
-            : 'Shift completed! Punch out recorded.'
-        );
+        const successMsg =
+          data.message ||
+          (type === 'in'
+            ? 'Successfully punched in! Have a productive shift.'
+            : 'Shift completed! Punch-out recorded.');
+
+        setFeedbackNotice({
+          type: 'success',
+          title: type === 'in' ? 'Punch-In Successful!' : 'Shift Ended Successfully!',
+          message: successMsg,
+          reason: data.geofence?.location_name
+            ? `Verified at ${data.geofence.location_name} (Distance: ${data.geofence.distance ?? 0}m)`
+            : 'Geofence verified',
+        });
+
+        toast.success(type === 'in' ? 'Punch-In Recorded' : 'Shift Completed', {
+          description: successMsg,
+        });
         setShowWorkLogModal(false);
         setWorkSummary('');
         setClientCount(0);
         setVisitCount(0);
         fetchStatus();
       } else {
-        toast.error(data.error?.message || `Failed to punch ${type}`);
+        const errorMsg = data.error?.message || data.error || `Failed to punch ${type}`;
+        const isAlreadyPunched = errorMsg.toLowerCase().includes('already punched');
+        const isGeofence =
+          errorMsg.toLowerCase().includes('geofence') ||
+          errorMsg.toLowerCase().includes('location');
+
+        setFeedbackNotice({
+          type: isAlreadyPunched ? 'info' : isGeofence ? 'warning' : 'error',
+          title: isAlreadyPunched
+            ? 'Already Recorded'
+            : `Unable to Punch ${type === 'in' ? 'In' : 'Out'}`,
+          message: isAlreadyPunched
+            ? 'Your attendance has already been recorded for today.'
+            : errorMsg,
+          reason: data.error?.details || errorMsg,
+          actionLabel: isAlreadyPunched ? 'Refresh Status' : 'Try Again',
+          onAction: () => (isAlreadyPunched ? fetchStatus() : executePunch(type)),
+          secondaryActionLabel: 'Refresh GPS',
+          onSecondaryAction: () => requestLocation(),
+        });
+
+        toast.error(`Punch ${type === 'in' ? 'In' : 'Out'} Notice`, {
+          description: errorMsg,
+        });
       }
-    } catch {
-      toast.error(`Error recording punch ${type}`);
+    } catch (err: unknown) {
+      const errMessage =
+        err instanceof Error ? err.message : 'Network or server communication issue';
+      setFeedbackNotice({
+        type: 'error',
+        title: 'Connection or Server Error',
+        message:
+          'Could not connect to the attendance service. Please check your internet connection.',
+        reason: errMessage,
+        actionLabel: 'Retry',
+        onAction: () => executePunch(type),
+      });
+      toast.error('Network Error', {
+        description: 'Unable to reach the server. Please check connection and retry.',
+      });
     } finally {
       setPunching(false);
     }
@@ -183,32 +326,58 @@ export default function EmployeeAttendancePunchPage() {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
         <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-        <p className="text-xs font-medium text-slate-500">Checking attendance status...</p>
+        <p className="text-xs font-medium text-slate-500">
+          Checking attendance status & timing rules...
+        </p>
       </div>
     );
   }
 
+  const todayFormatted = format(new Date(), 'EEEE, dd MMMM yyyy');
+
   return (
-    <div className="space-y-6 pb-6">
-      {/* Title */}
-      <div className="flex flex-col justify-between gap-2 sm:flex-row sm:items-center">
+    <div className="space-y-6 pb-8">
+      {/* Header with Employee Profile Banner & Quick Refresh */}
+      <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <div>
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-            GPS Attendance Terminal
-          </h1>
-          <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-            Geofence verified punch-in and shift tracker
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
+              GPS Attendance Terminal
+            </h1>
+            <span className="rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[11px] font-bold text-emerald-600 dark:text-emerald-400">
+              Live IST
+            </span>
+          </div>
+          <p className="mt-0.5 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
+            {todayFormatted} • Geofence verified shift tracker
           </p>
         </div>
 
-        <button
-          onClick={fetchStatus}
-          className="flex items-center gap-1.5 self-start rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 sm:self-auto dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
-        >
-          <RefreshCw className="h-3.5 w-3.5" />
-          <span>Refresh Status</span>
-        </button>
+        {/* User Info & Refresh */}
+        <div className="flex items-center gap-2.5 self-start sm:self-auto">
+          {statusData.full_name && (
+            <div className="hidden rounded-xl border border-slate-200/80 bg-white px-3 py-1.5 text-right sm:block dark:border-slate-800 dark:bg-slate-900">
+              <span className="block text-xs font-bold text-slate-800 dark:text-slate-200">
+                {statusData.full_name}
+              </span>
+              <span className="block text-[10px] text-slate-400">
+                Team: {statusData.team_name || 'TEAM SVI'}
+              </span>
+            </div>
+          )}
+
+          <button
+            onClick={fetchStatus}
+            className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-bold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            <span>Refresh Status</span>
+          </button>
+        </div>
       </div>
+
+      {/* Actionable Feedback Banner */}
+      <PunchFeedbackBanner notice={feedbackNotice} onDismiss={() => setFeedbackNotice(null)} />
 
       {/* 2-Column Desktop Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
@@ -218,22 +387,76 @@ export default function EmployeeAttendancePunchPage() {
             statusData={statusData}
             elapsedTime={elapsedTime}
             punching={punching}
+            settings={settings}
             onPunchIn={() => executePunch('in')}
             onPunchOutClick={handlePunchOutClick}
           />
         </div>
 
-        {/* RIGHT COLUMN: GPS Details & Shift Guidelines (7 Cols) */}
+        {/* RIGHT COLUMN: GPS Live Radar & Admin Shift Guidelines (7 Cols) */}
         <div className="space-y-6 lg:col-span-7">
           <GeofenceStatusCard
             locationStatus={locationStatus}
             coords={coords}
+            accuracy={accuracy}
             isGeofenceVerified={statusData.is_geofence_verified}
+            activeLocations={locations}
+            onRefreshLocation={requestLocation}
+            onRequestPermission={requestLocation}
           />
 
-          <ShiftGuidelinesCard />
+          <ShiftGuidelinesCard settings={settings} locations={locations} />
         </div>
       </div>
+
+      {/* Today's Shift Work Log Summary (if punched out) */}
+      {statusData.status === 'punched_out' &&
+        (statusData.summary_text || statusData.total_hours) && (
+          <div className="rounded-3xl border border-blue-200/80 bg-blue-50/40 p-5 shadow-sm dark:border-blue-900/40 dark:bg-blue-950/20">
+            <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400">
+              <FileText className="h-4 w-4" />
+              <h3 className="text-sm font-bold">Today's Completed Shift Summary</h3>
+            </div>
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="rounded-2xl border border-blue-100 bg-white p-3 dark:border-blue-900/30 dark:bg-slate-900/60">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">
+                  Total Duty Hours
+                </span>
+                <p className="mt-1 font-mono text-sm font-black text-slate-900 dark:text-white">
+                  {statusData.total_hours
+                    ? `${statusData.total_hours.toFixed(2)} hrs`
+                    : 'Completed'}
+                </p>
+              </div>
+              <div className="rounded-2xl border border-blue-100 bg-white p-3 dark:border-blue-900/30 dark:bg-slate-900/60">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">
+                  Client Meetings
+                </span>
+                <p className="mt-1 font-mono text-sm font-black text-slate-900 dark:text-white">
+                  {statusData.client_interactions_count || 0} interactions
+                </p>
+              </div>
+              <div className="rounded-2xl border border-blue-100 bg-white p-3 dark:border-blue-900/30 dark:bg-slate-900/60">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">
+                  Site Visits Done
+                </span>
+                <p className="mt-1 font-mono text-sm font-black text-slate-900 dark:text-white">
+                  {statusData.site_visits_conducted_count || 0} visits
+                </p>
+              </div>
+            </div>
+            {statusData.summary_text && (
+              <div className="mt-3 rounded-2xl border border-blue-100 bg-white p-3.5 dark:border-blue-900/30 dark:bg-slate-900/60">
+                <span className="text-[10px] font-bold text-slate-400 uppercase">
+                  Work Log / Summary
+                </span>
+                <p className="mt-1 text-xs text-slate-700 dark:text-slate-300">
+                  {statusData.summary_text}
+                </p>
+              </div>
+            )}
+          </div>
+        )}
 
       {/* Work Summary Modal on Punch-Out */}
       <PunchOutWorkLogModal

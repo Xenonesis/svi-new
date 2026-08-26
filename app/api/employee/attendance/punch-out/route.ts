@@ -38,11 +38,19 @@ export async function POST(request: NextRequest) {
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { lat, lon } = body;
-    if (lat === undefined || lon === undefined) {
+    const rawLat = body.lat ?? body.latitude;
+    const rawLon = body.lon ?? body.longitude;
+
+    if (rawLat === undefined || rawLon === undefined || rawLat === null || rawLon === null) {
       throw AppError.badRequest('Location coordinates (lat, lon) are required');
     }
 
+    const lat = Number(rawLat);
+    const lon = Number(rawLon);
+
+    if (isNaN(lat) || isNaN(lon)) {
+      throw AppError.badRequest('Invalid GPS coordinate values');
+    }
     const now = new Date();
     const today = now.toISOString().split('T')[0];
 
@@ -70,6 +78,7 @@ export async function POST(request: NextRequest) {
 
     let isGeofenceVerified = false;
     let closestDistance: number | null = null;
+    let matchedLocationName: string | null = null;
 
     if (locations && locations.length > 0) {
       for (const loc of locations) {
@@ -78,11 +87,13 @@ export async function POST(request: NextRequest) {
 
         if (closestDistance === null || dist < closestDistance) {
           closestDistance = Math.round(dist);
+          matchedLocationName = loc.name;
         }
 
         if (dist <= radius) {
           isGeofenceVerified = true;
           closestDistance = Math.round(dist);
+          matchedLocationName = loc.name;
           break;
         }
       }
@@ -95,7 +106,12 @@ export async function POST(request: NextRequest) {
     const totalHours =
       Math.round(((now.getTime() - punchInTime.getTime()) / (1000 * 60 * 60)) * 100) / 100;
 
-    // Update record with punch-out data
+    const summaryText = typeof body.summary_text === 'string' ? body.summary_text.trim() : null;
+    const clientCount = Number(body.client_interactions_count) || 0;
+    const visitCount = Number(body.site_visits_conducted_count) || 0;
+
+    // Update record with punch-out data and daily work log
+    // Update attendance record with punch-out timestamp and duration
     const { data: updatedRecord, error: updateError } = await supabaseAdmin
       .from('attendance_records')
       .update({
@@ -112,15 +128,31 @@ export async function POST(request: NextRequest) {
 
     if (updateError) {
       console.error('Error updating punch-out record:', updateError);
-      throw AppError.internal('Failed to punch out');
+      throw AppError.badRequest(
+        `Could not record punch out: ${updateError.message || 'Database error'}`
+      );
+    }
+
+    // Also log work summary to employee_work_logs if provided
+    if (summaryText) {
+      await supabaseAdmin.from('employee_work_logs').insert({
+        user_id: user.id,
+        date: today,
+        attendance_record_id: todayRecord.id,
+        summary: summaryText,
+        client_interactions_count: clientCount,
+        site_visits_conducted_count: visitCount,
+      });
     }
 
     return NextResponse.json({
       success: true,
+      message: 'Shift completed! Punch-out recorded successfully.',
       record: updatedRecord,
       geofence: {
         verified: isGeofenceVerified,
         distance: closestDistance,
+        location_name: matchedLocationName,
       },
       total_hours: totalHours,
     });
