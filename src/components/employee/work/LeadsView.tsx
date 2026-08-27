@@ -1,9 +1,38 @@
 'use client';
 
-import React from 'react';
 import { Phone, MessageSquare, Plus, Clock, ChevronRight } from 'lucide-react';
 import { clsx } from 'clsx';
 import type { LeadItem } from './types';
+
+/**
+ * Normalizes phone numbers by stripping all non-digit characters.
+ * Useful for WhatsApp direct links (wa.me/...) which require digits only.
+ */
+export function normalizePhoneNumber(phone: string): string {
+  if (!phone) return '';
+  return phone.replace(/\D/g, '');
+}
+
+/**
+ * Formats a telephone link URI (`tel:`), preserving leading + for country code
+ * while stripping spaces, parentheses, dashes, and other formatting characters.
+ */
+export function formatTelLink(phone: string): string {
+  if (!phone) return '';
+  const cleaned = phone.replace(/[^\d+]/g, '');
+  return `tel:${cleaned}`;
+}
+
+/**
+ * Generates a direct WhatsApp link with normalized phone number and URL-encoded message.
+ */
+export function formatWhatsAppLink(phone: string, message?: string): string {
+  const cleanPhone = normalizePhoneNumber(phone);
+  const defaultText = 'Hello, I am contacting you from SVI Infra regarding your property inquiry.';
+  const text = message !== undefined ? message : defaultText;
+  const encodedText = encodeURIComponent(text);
+  return `https://wa.me/${cleanPhone}?text=${encodedText}`;
+}
 
 interface LeadsViewProps {
   leads: LeadItem[];
@@ -140,24 +169,29 @@ export function LeadsView({
                   )}
                 </div>
 
-                {/* Bottom actions */}
+                {/* Bottom actions: 1-Tap Call & WhatsApp */}
                 <div className="mt-4 border-t border-slate-100 pt-3 dark:border-slate-800">
                   <div className="flex items-center gap-2">
                     {lead.phone && (
                       <>
                         <a
-                          href={`tel:${lead.phone}`}
-                          className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-blue-600 py-1.5 text-xs font-semibold text-white hover:bg-blue-500"
+                          href={formatTelLink(lead.phone)}
+                          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-slate-700/60 bg-slate-900 px-3 py-2 text-xs font-semibold text-white shadow-sm transition-all hover:bg-slate-800 active:scale-95 dark:border-slate-700 dark:bg-slate-800 dark:hover:bg-slate-700"
+                          title={`Call ${lead.name}`}
                         >
-                          <Phone className="h-3 w-3" /> Call
+                          <Phone className="h-3.5 w-3.5" /> Call
                         </a>
                         <a
-                          href={`https://wa.me/${lead.phone.replace(/[^0-9]/g, '')}`}
+                          href={formatWhatsAppLink(
+                            lead.phone,
+                            `Hello ${lead.name ? lead.name + ', ' : ''}I am contacting you from SVI Infra regarding your property inquiry${lead.project_interest ? ' for ' + lead.project_interest : ''}.`
+                          )}
                           target="_blank"
                           rel="noreferrer"
-                          className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-emerald-600 py-1.5 text-xs font-semibold text-white hover:bg-emerald-500"
+                          className="flex flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/30 bg-emerald-600 px-3 py-2 text-xs font-semibold text-white shadow-sm shadow-emerald-600/20 transition-all hover:bg-emerald-500 active:scale-95 dark:bg-emerald-600 dark:hover:bg-emerald-500"
+                          title="WhatsApp client"
                         >
-                          <MessageSquare className="h-3 w-3" /> WhatsApp
+                          <MessageSquare className="h-3.5 w-3.5" /> WhatsApp
                         </a>
                       </>
                     )}
@@ -165,10 +199,10 @@ export function LeadsView({
                     {onSelectLead && (
                       <button
                         onClick={() => onSelectLead(lead)}
-                        className="flex items-center justify-center gap-1 rounded-xl bg-slate-100 px-3 py-1.5 text-xs font-bold text-slate-700 hover:bg-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
+                        className="flex items-center justify-center gap-1 rounded-xl border border-slate-200/80 bg-slate-100 px-3 py-2 text-xs font-bold text-slate-700 transition-all hover:bg-slate-200 active:scale-95 dark:border-slate-800 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
                         title="Track lead details & notes"
                       >
-                        Track <ChevronRight className="h-3 w-3" />
+                        Track <ChevronRight className="h-3.5 w-3.5" />
                       </button>
                     )}
                   </div>
