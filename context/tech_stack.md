@@ -48,6 +48,8 @@
 - **Service Worker / PWA:** Serwist (9.5.12), Web Push API, Background Sync
 - **Infrastructure:** Vercel (Hosting, Edge, Cron), Supabase (Postgres Database, Auth, Storage)
 - **Monitoring:** Sentry (10.68.0)
-- **Native Android:** Capacitor (8.4.2)
+- **Native Android (Capacitor 8.5.0):** Dual-App Multi-Flavor architecture utilizing Gradle product flavors (`admin` -> `com.svi.infrasolutions` "SVI Admin", `employee` -> `com.svi.infrasolutions.employee` "SVI Workspace"), dynamic target switching via `CAP_APP_TARGET` in `capacitor.config.ts`, standalone flavor configs (`capacitor.admin.config.ts`, `capacitor.employee.config.ts`), and dedicated npm build/sync scripts (`cap:admin:*`, `cap:employee:*`)
+- **Biometrics & Hardware Auth:** WebAuthn / Passkey API for biometric fingerprint and facial recognition authentication
+- **Offline Storage & Resilience:** LocalStorage / IndexedDB queue for offline attendance punch caching and automatic background resynchronization
 - **Testing:** Playwright (E2E), Vitest (Unit)
 - **Code Quality:** Husky, lint-staged, commitlint, ESLint, Prettier

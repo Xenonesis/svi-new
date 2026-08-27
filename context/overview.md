@@ -25,3 +25,9 @@
 4. **Document Generation:** Produces PDF documents (allotment letters, offer letters, BBA) in both English and Hindi.
 5. **AI Integration:** Chatbot lead capture (Groq/Vercel AI) and smart email composing.
 6. **WhatsApp Sales MVP:** Official Meta Cloud API integration code for inbound assistance, project-level matching, consent and opt-out enforcement, requested site visits, human takeover, durable retries, and a protected admin inbox. Production sending remains disabled until account-owner setup is complete.
+7. **SVI Workspace Mobile App (Employee Portal):** A dedicated, standalone Android mobile application (`com.svi.infrasolutions.employee` / "SVI Workspace") and mobile-first PWA alongside the SVI Admin App:
+   - **Live Radar Punch Terminal:** Geofenced attendance tracking with real-time GPS proximity validation against configured office boundaries.
+   - **Offline Punch Queue & Auto-Sync:** Zero-data-loss punch submission queue storing punches locally during offline periods or network drops, automatically syncing to the server upon reconnection with visual queue badges.
+   - **Biometric Quick-Punch:** WebAuthn / Passkey integration allowing fast, secure biometric punch-in via device fingerprint, Face ID, or system biometrics with an easy settings toggle.
+   - **Field & Sales Operations:** On-site GPS check-in for customer property site visits (calculating real-time distance to the development site) and 1-tap direct phone calls (`tel:`) and WhatsApp chats (`wa.me`) for assigned leads with automatic activity logging.
+   - **Work & Compensation Center:** Mobile task boards, leave application portal, and transparent compensation breakdowns with gated payslip PDF downloads.
