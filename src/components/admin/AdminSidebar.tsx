@@ -1,13 +1,11 @@
 'use client';
 
 import {
-  Banknote,
   Bell,
   Briefcase,
   Building2,
   Calculator,
   Calendar,
-  CheckSquare,
   ChevronLeft,
   ChevronRight,
   ClipboardList,
@@ -56,9 +54,7 @@ const managementItems = [
   { name: 'Portal Allotments', path: '/admin/portal-allotments', icon: Building2 },
   { name: 'Registrations', path: '/admin/registrations', icon: ClipboardList },
   { name: 'Site Visits', path: '/admin/site-visits', icon: Calendar },
-  { name: 'Employees', path: '/admin/employees', icon: Users },
-  { name: 'Attendance', path: '/admin/attendance', icon: CheckSquare },
-  { name: 'Payroll & Salary', path: '/admin/payroll', icon: Banknote },
+  { name: 'Workforce & HR', path: '/admin/workforce', icon: Users },
   { name: 'Properties', path: '/admin/properties', icon: Building2 },
   { name: 'Careers', path: '/admin/careers', icon: Briefcase },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },
@@ -241,7 +237,13 @@ function SidebarContent({
         </div>
 
         {managementItems.map((item) => {
-          const active = pathname === item.path || pathname.startsWith(`${item.path}/`);
+          const isWorkforce = item.path === '/admin/workforce';
+          const active = isWorkforce
+            ? pathname.startsWith('/admin/workforce') ||
+              pathname.startsWith('/admin/employees') ||
+              pathname.startsWith('/admin/attendance') ||
+              pathname.startsWith('/admin/payroll')
+            : pathname === item.path || pathname.startsWith(`${item.path}/`);
           return (
             <Link
               key={item.name}

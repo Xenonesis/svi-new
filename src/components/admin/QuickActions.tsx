@@ -62,13 +62,13 @@ const actions: QuickAction[] = [
   {
     label: 'Mark Attendance',
     icon: CheckSquare,
-    href: '/admin/attendance?tab=mark',
+    href: '/admin/workforce?tab=attendance&action=mark',
     color: 'bg-emerald-500/20 text-emerald-400 hover:bg-emerald-500/30',
   },
   {
     label: 'Attendance Report',
     icon: BarChart3,
-    href: '/admin/attendance?tab=report',
+    href: '/admin/workforce?tab=reports',
     color: 'bg-cyan-500/20 text-cyan-400 hover:bg-cyan-500/30',
   },
   {
