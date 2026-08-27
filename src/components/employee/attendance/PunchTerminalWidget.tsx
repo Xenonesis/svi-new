@@ -39,8 +39,10 @@ interface PunchTerminalWidgetProps {
   settings?: AttendanceSettingsProps;
   onPunchIn: () => void;
   onPunchOutClick: () => void;
+  queuedPunchesCount?: number;
+  onSyncOffline?: () => void;
+  isSyncingOffline?: boolean;
 }
-
 function formatTime12(timeStr?: string): string {
   if (!timeStr) return '--:--';
   const clean = timeStr.replace(/"/g, '');
@@ -60,6 +62,9 @@ export function PunchTerminalWidget({
   settings,
   onPunchIn,
   onPunchOutClick,
+  queuedPunchesCount = 0,
+  onSyncOffline,
+  isSyncingOffline = false,
 }: PunchTerminalWidgetProps) {
   const isPunchedIn = statusData.status === 'punched_in';
   const isPunchedOut = statusData.status === 'punched_out';
@@ -152,6 +157,41 @@ export function PunchTerminalWidget({
           )}
         </div>
       </div>
+
+      {/* Offline Punch Queue Badge */}
+      {queuedPunchesCount > 0 && (
+        <div className="mb-4 flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50/90 p-3 text-left shadow-sm dark:border-amber-700/50 dark:bg-amber-950/40">
+          <div className="flex items-center gap-2">
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/20 text-sm font-bold text-amber-700 dark:text-amber-300">
+              ⚡
+            </span>
+            <div>
+              <p className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                {queuedPunchesCount} Offline Punch{queuedPunchesCount > 1 ? 'es' : ''} Queued
+              </p>
+              <p className="text-[10px] text-amber-700 dark:text-amber-400">
+                Auto-sync active when online
+              </p>
+            </div>
+          </div>
+          {onSyncOffline && (
+            <button
+              onClick={onSyncOffline}
+              disabled={isSyncingOffline}
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-amber-600 px-3 py-1.5 text-xs font-bold text-white shadow transition hover:bg-amber-500 disabled:opacity-50"
+            >
+              {isSyncingOffline ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <span>Syncing...</span>
+                </>
+              ) : (
+                <span>Sync Now</span>
+              )}
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Shift Timer Radial */}
       <div className="relative mx-auto my-5 flex h-48 w-48 items-center justify-center rounded-full border-8 border-slate-100 bg-slate-50/80 shadow-inner dark:border-slate-800 dark:bg-slate-950/80">

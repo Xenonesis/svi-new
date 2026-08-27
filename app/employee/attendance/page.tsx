@@ -21,7 +21,7 @@ import {
   PunchFeedbackBanner,
   type FeedbackNotice,
 } from '@/src/components/employee/attendance/PunchFeedbackBanner';
-
+import { offlinePunchQueue, QueuedPunch } from '@/src/lib/attendance/offlinePunchQueue';
 interface StatusState {
   user_id?: string;
   full_name?: string;
@@ -89,6 +89,18 @@ export default function EmployeeAttendancePunchPage() {
   const [visitCount, setVisitCount] = useState(0);
   const [feedbackNotice, setFeedbackNotice] = useState<FeedbackNotice | null>(null);
 
+  // Offline Punch Queue State
+  const [offlineQueue, setOfflineQueue] = useState<QueuedPunch[]>([]);
+  const [isSyncingOffline, setIsSyncingOffline] = useState(false);
+
+  useEffect(() => {
+    setOfflineQueue(offlinePunchQueue.getQueue());
+    const unsubscribe = offlinePunchQueue.subscribe((queue) => {
+      setOfflineQueue([...queue]);
+    });
+    return unsubscribe;
+  }, []);
+
   const fetchStatus = useCallback(async () => {
     try {
       const res = await fetch('/api/employee/attendance/status');
@@ -113,6 +125,26 @@ export default function EmployeeAttendancePunchPage() {
 
   useEffect(() => {
     fetchStatus();
+  }, [fetchStatus]);
+
+  const handleSyncOffline = useCallback(async () => {
+    setIsSyncingOffline(true);
+    try {
+      const { synced, failed } = await offlinePunchQueue.syncPendingPunches();
+      if (synced > 0) {
+        toast.success(`Synced ${synced} offline punch${synced > 1 ? 'es' : ''}`);
+        await fetchStatus();
+      }
+      if (failed > 0) {
+        toast.error(`Failed to sync ${failed} offline punch${failed > 1 ? 'es' : ''}`);
+      }
+    } catch {
+      toast.error('Sync failed', {
+        description: 'Please check your connection and try again.',
+      });
+    } finally {
+      setIsSyncingOffline(false);
+    }
   }, [fetchStatus]);
 
   // Acquire Geolocation
@@ -170,9 +202,8 @@ export default function EmployeeAttendancePunchPage() {
 
   const executePunch = async (type: 'in' | 'out') => {
     setPunching(true);
+    let currentCoords = coords;
     try {
-      let currentCoords = coords;
-
       // If coords are not ready yet, request them freshly
       if (!currentCoords && typeof navigator !== 'undefined' && navigator.geolocation) {
         try {
@@ -219,6 +250,42 @@ export default function EmployeeAttendancePunchPage() {
         toast.error('Location signal missing', {
           description: 'Please enable location permissions and tap Detect Location.',
         });
+        setPunching(false);
+        return;
+      }
+
+      // Offline detection before sending network request
+      const isDeviceOffline = typeof navigator !== 'undefined' && !navigator.onLine;
+      if (isDeviceOffline) {
+        offlinePunchQueue.enqueue({
+          type,
+          timestamp: new Date().toISOString(),
+          coords: currentCoords,
+          workSummary: type === 'out' ? workSummary : undefined,
+          clientCount: type === 'out' ? clientCount : undefined,
+          visitCount: type === 'out' ? visitCount : undefined,
+        });
+
+        toast.info(
+          'You are currently offline. Your punch has been securely saved locally and will auto-sync once online.'
+        );
+
+        setFeedbackNotice({
+          type: 'info',
+          title: 'Offline Punch Saved Locally',
+          message:
+            'You are currently offline. Your punch has been securely saved locally and will auto-sync once online.',
+          reason: 'No internet connection detected.',
+          actionLabel: 'Sync Now',
+          onAction: () => handleSyncOffline(),
+        });
+
+        if (type === 'out') {
+          setShowWorkLogModal(false);
+          setWorkSummary('');
+          setClientCount(0);
+          setVisitCount(0);
+        }
         setPunching(false);
         return;
       }
@@ -301,6 +368,46 @@ export default function EmployeeAttendancePunchPage() {
     } catch (err: unknown) {
       const errMessage =
         err instanceof Error ? err.message : 'Network or server communication issue';
+
+      const isNetworkIssue =
+        (typeof navigator !== 'undefined' && !navigator.onLine) ||
+        errMessage.toLowerCase().includes('failed to fetch') ||
+        errMessage.toLowerCase().includes('network') ||
+        errMessage.toLowerCase().includes('offline');
+
+      if (isNetworkIssue && currentCoords) {
+        offlinePunchQueue.enqueue({
+          type,
+          timestamp: new Date().toISOString(),
+          coords: currentCoords,
+          workSummary: type === 'out' ? workSummary : undefined,
+          clientCount: type === 'out' ? clientCount : undefined,
+          visitCount: type === 'out' ? visitCount : undefined,
+        });
+
+        toast.info(
+          'You are currently offline. Your punch has been securely saved locally and will auto-sync once online.'
+        );
+
+        setFeedbackNotice({
+          type: 'info',
+          title: 'Offline Punch Saved Locally',
+          message:
+            'You are currently offline. Your punch has been securely saved locally and will auto-sync once online.',
+          reason: 'Network connection lost during punch attempt.',
+          actionLabel: 'Sync Now',
+          onAction: () => handleSyncOffline(),
+        });
+
+        if (type === 'out') {
+          setShowWorkLogModal(false);
+          setWorkSummary('');
+          setClientCount(0);
+          setVisitCount(0);
+        }
+        return;
+      }
+
       setFeedbackNotice({
         type: 'error',
         title: 'Connection or Server Error',
@@ -379,6 +486,41 @@ export default function EmployeeAttendancePunchPage() {
       {/* Actionable Feedback Banner */}
       <PunchFeedbackBanner notice={feedbackNotice} onDismiss={() => setFeedbackNotice(null)} />
 
+      {/* Offline Punch Sync Notice Banner */}
+      {offlineQueue.length > 0 && (
+        <div className="flex flex-col justify-between gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-amber-900 shadow-sm sm:flex-row sm:items-center dark:border-amber-700/50 dark:bg-amber-950/40 dark:text-amber-200">
+          <div className="flex items-center gap-3">
+            <span className="flex h-8 w-8 items-center justify-center rounded-xl bg-amber-500/20 text-base font-bold text-amber-700 dark:text-amber-300">
+              ⚡
+            </span>
+            <div>
+              <p className="text-xs font-bold sm:text-sm">
+                {offlineQueue.length} Offline Punch{offlineQueue.length > 1 ? 'es' : ''} Queued
+                (Auto-sync active)
+              </p>
+              <p className="text-[11px] text-amber-700 dark:text-amber-400">
+                Punches recorded offline will automatically upload when network connection is
+                restored.
+              </p>
+            </div>
+          </div>
+          <button
+            onClick={handleSyncOffline}
+            disabled={isSyncingOffline}
+            className="flex cursor-pointer items-center justify-center gap-1.5 self-start rounded-xl bg-amber-600 px-3.5 py-1.5 text-xs font-bold text-white shadow transition hover:bg-amber-500 disabled:opacity-50 sm:self-auto"
+          >
+            {isSyncingOffline ? (
+              <>
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <span>Syncing...</span>
+              </>
+            ) : (
+              <span>Sync Now</span>
+            )}
+          </button>
+        </div>
+      )}
+
       {/* 2-Column Desktop Grid */}
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-12">
         {/* LEFT COLUMN: Main Terminal Card (5 Cols) */}
@@ -390,6 +532,9 @@ export default function EmployeeAttendancePunchPage() {
             settings={settings}
             onPunchIn={() => executePunch('in')}
             onPunchOutClick={handlePunchOutClick}
+            queuedPunchesCount={offlineQueue.length}
+            onSyncOffline={handleSyncOffline}
+            isSyncingOffline={isSyncingOffline}
           />
         </div>
 
