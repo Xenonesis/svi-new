@@ -21,6 +21,7 @@ svi-infra/
 │  │  ├─ lottery/                    # Admin lottery management
 │  │  ├─ registrations/
 │  │  ├─ settings/                   # Settings panel
+│  │  ├─ payroll/                      # Payroll & Salary Management (salary setup, attendance LOP calculation, payslip releases)
 │  │  ├─ updates/                    # System updates & non-technical changelog
 │  │  └─ page.tsx                    # Admin overview
 │  ├─ employee/                       # Employee Workspace (Mobile-first app)
@@ -33,6 +34,7 @@ svi-infra/
 │  │  │  ├─ tasks/                    # Kanban/List to-dos & priority items
 │  │  │  ├─ site-visits/              # Assigned customer site visits
 │  │  │  └─ leads/                    # Assigned chatbot & WhatsApp leads
+│  │  ├─ payroll/                      # My Compensation & Gated Payslip Downloads
 │  │  ├─ profile/                     # Employee badge, team info, settings & logout
 │  │  └─ layout.tsx                   # Mobile app shell with bottom navigation bar
 │  │
@@ -85,4 +87,5 @@ svi-infra/
 - **Authentication:** Managed by Supabase (SSR cookies). A central `useAuthStore` tracks session status to prevent duplicate roundtrips on route changes.
 - **Admin Attendance Management:** `/admin/attendance` features a comprehensive 5-tab workspace: Overview (analytics & live radar), Master Timesheet (granular punch logs, geofence radius metrics, client call counts, site visits, and admin manual override), Approvals (pending employee leave requests & punch regularization requests with real-time badges), Reports (filterable summaries), and Configuration (shift timing rules, multiple office geofence locations, and team management).
 - **Employee Performance & Lead Tracking:** Admin can view any employee's individual performance dashboard via `/admin/employees` (KPIs for attendance, punctuality, conversion rate, site visits, and all created/assigned leads with chronological interaction timelines). On the employee side, `/employee/work` provides rapid lead creation (`AddLeadModal`), stage-by-stage pipeline tracking with interaction logs (`LeadTrackerDrawer`), native Web Audio melodic chime reminders (`followUpAudio`), and automated Admin notification dispatching when follow-ups are scheduled.
+- **Payroll & Salary Management:** Admin manages employee compensation structures via `/admin/payroll`, calculates monthly payroll runs linked directly to attendance (calculating LOP deductions from absent shifts and adding performance incentives), and strictly controls payslip releases via single-tap employee switches or master bulk release. On the employee side, `/employee/payroll` provides transparent compensation breakdowns, but payslip PDF downloads remain strictly locked and gated until the Admin explicitly allows download.
 - **WhatsApp MVP:** `src/lib/whatsapp/` contains the server-only Meta provider, raw-body signature validation, deterministic messaging policy, allowlisted AI tools, durable persistence, and job processors. `/api/whatsapp/webhook` verifies and persists provider events then uses Next.js `after()` to drain immediate background work; `/api/cron/whatsapp` runs daily on Vercel Hobby as a safety sweep (or periodically via Supabase `pg_cron`); `/api/admin/whatsapp` protects inbox reads and mutations with `verifyAdmin`.

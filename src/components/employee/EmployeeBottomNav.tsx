@@ -3,7 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Clock, CheckSquare, CalendarDays, User } from 'lucide-react';
+import { LayoutDashboard, Clock, CheckSquare, CalendarDays, User, Banknote } from 'lucide-react';
 import { clsx } from 'clsx';
 
 const navItems = [
@@ -26,6 +26,11 @@ const navItems = [
     name: 'History',
     href: '/employee/attendance/history',
     icon: CalendarDays,
+  },
+  {
+    name: 'Salary',
+    href: '/employee/payroll',
+    icon: Banknote,
   },
   {
     name: 'Profile',

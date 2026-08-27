@@ -66,18 +66,21 @@ The WhatsApp channel uses server-only, RLS-protected tables. Browser roles have 
 
 ## HR, Attendance & Employee Workspace
 
-| Table Name                   | Purpose                                                                                          |
-| ---------------------------- | ------------------------------------------------------------------------------------------------ |
-| `activity_logs`              | Audit trail of actions performed by admins                                                       |
-| `careers`                    | Job openings posted on the careers page                                                          |
-| `teams`                      | Employee departments and teams                                                                   |
-| `team_members`               | Mapping of users to teams                                                                        |
-| `attendance_records`         | Employee punch-in / punch-out records and geofence verification                                  |
-| `attendance_settings`        | Shift timings, cutoffs, and geofence radius settings                                             |
-| `geofence_locations`         | Admin-configured authorized office/site geofence coordinates                                     |
-| `attendance_sessions`        | Dynamic daily attendance sessions                                                                |
-| `employee_tasks`             | Task tracking, to-dos, priorities, categories, and due dates                                     |
-| `employee_work_logs`         | Daily work summaries, completed tasks, and client interaction logs                               |
-| `employee_leaves`            | Leave applications, balance tracking, and approval workflow                                      |
-| `attendance_regularizations` | Missed punch regularization requests and admin approval workflow                                 |
-| `lead_activities`            | Chronological audit trail of employee lead notes, status updates, calls, and follow-up reminders |
+| Table Name                   | Purpose                                                                                               |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `activity_logs`              | Audit trail of actions performed by admins                                                            |
+| `careers`                    | Job openings posted on the careers page                                                               |
+| `teams`                      | Employee departments and teams                                                                        |
+| `team_members`               | Mapping of users to teams                                                                             |
+| `attendance_records`         | Employee punch-in / punch-out records and geofence verification                                       |
+| `attendance_settings`        | Shift timings, cutoffs, and geofence radius settings                                                  |
+| `geofence_locations`         | Admin-configured authorized office/site geofence coordinates                                          |
+| `attendance_sessions`        | Dynamic daily attendance sessions                                                                     |
+| `employee_tasks`             | Task tracking, to-dos, priorities, categories, and due dates                                          |
+| `employee_work_logs`         | Daily work summaries, completed tasks, and client interaction logs                                    |
+| `employee_leaves`            | Leave applications, balance tracking, and approval workflow                                           |
+| `attendance_regularizations` | Missed punch regularization requests and admin approval workflow                                      |
+| `lead_activities`            | Chronological audit trail of employee lead notes, status updates, calls, and follow-up reminders      |
+| `employee_salary_structures` | Base salary packages, Basic/HRA/Allowances, statutory deductions (PT, TDS, PF, ESI), and bank details |
+| `monthly_payrolls`           | Monthly payroll run batches, total expenses, approval status, and master payslip release toggle       |
+| `payroll_items`              | Per-employee itemized monthly payslip, attendance LOP deductions, incentives, and download permission |

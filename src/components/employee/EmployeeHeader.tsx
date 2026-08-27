@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import {
+  Banknote,
   LayoutDashboard,
   Clock,
   CheckSquare,
@@ -38,6 +39,11 @@ const navTabs = [
     name: 'Attendance & Leaves',
     href: '/employee/attendance/history',
     icon: CalendarDays,
+  },
+  {
+    name: 'Salary & Payslips',
+    href: '/employee/payroll',
+    icon: Banknote,
   },
   {
     name: 'Profile & Settings',

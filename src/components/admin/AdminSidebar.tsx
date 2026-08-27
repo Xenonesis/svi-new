@@ -1,6 +1,7 @@
 'use client';
 
 import {
+  Banknote,
   Bell,
   Briefcase,
   Building2,
@@ -57,6 +58,7 @@ const managementItems = [
   { name: 'Site Visits', path: '/admin/site-visits', icon: Calendar },
   { name: 'Employees', path: '/admin/employees', icon: Users },
   { name: 'Attendance', path: '/admin/attendance', icon: CheckSquare },
+  { name: 'Payroll & Salary', path: '/admin/payroll', icon: Banknote },
   { name: 'Properties', path: '/admin/properties', icon: Building2 },
   { name: 'Careers', path: '/admin/careers', icon: Briefcase },
   { name: 'Notifications', path: '/admin/notifications', icon: Bell },

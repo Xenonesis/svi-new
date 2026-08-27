@@ -1,7 +1,17 @@
 'use client';
 
-import React from 'react';
-import { Clock, Building, Shield, Smartphone, Globe, Sun, Moon } from 'lucide-react';
+import Link from 'next/link';
+import {
+  Clock,
+  Building,
+  Shield,
+  Smartphone,
+  Globe,
+  Sun,
+  Moon,
+  Banknote,
+  ArrowRight,
+} from 'lucide-react';
 
 interface WorkspaceSettingsCardProps {
   theme: string | undefined;
@@ -11,6 +21,28 @@ interface WorkspaceSettingsCardProps {
 export function WorkspaceSettingsCard({ theme, onThemeToggle }: WorkspaceSettingsCardProps) {
   return (
     <div className="space-y-6">
+      {/* Compensation & Payslips Link Card */}
+      <Link
+        href="/employee/payroll"
+        className="group flex items-center justify-between rounded-3xl border border-amber-500/20 bg-amber-500/5 p-5 shadow-xs transition-all hover:bg-amber-500/10 dark:border-amber-500/20 dark:bg-amber-500/5 dark:hover:bg-amber-500/10"
+      >
+        <div className="flex items-center gap-3.5">
+          <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-amber-500 text-slate-950 shadow-sm transition-transform group-hover:scale-105">
+            <Banknote className="h-5 w-5" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+              My Salary & Monthly Payslips
+            </h3>
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              View agreed package, attendance LOP, and download released payslips
+            </p>
+          </div>
+        </div>
+        <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-white text-slate-700 shadow-xs transition-transform group-hover:translate-x-1 dark:bg-slate-800 dark:text-slate-200">
+          <ArrowRight className="h-4 w-4" />
+        </div>
+      </Link>
       {/* Official Shift & Guidelines */}
       <div className="space-y-4 rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
         <h3 className="text-xs font-bold tracking-wider text-slate-400 uppercase">
