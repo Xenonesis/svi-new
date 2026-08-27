@@ -38,9 +38,11 @@
     "cap:employee:sync": "cross-env CAP_APP_TARGET=employee npx cap sync android",
     "cap:employee:open": "cross-env CAP_APP_TARGET=employee npx cap open android",
     "cap:employee:run": "cross-env CAP_APP_TARGET=employee npx cap run android",
+    "cap:employee:build": "cross-env CAP_APP_TARGET=employee npx cap sync android && cd android && gradlew assembleEmployeeRelease && cd ..",
     "cap:admin:sync": "cross-env CAP_APP_TARGET=admin npx cap sync android",
     "cap:admin:open": "cross-env CAP_APP_TARGET=admin npx cap open android",
     "cap:admin:run": "cross-env CAP_APP_TARGET=admin npx cap run android",
+    "cap:admin:build": "cross-env CAP_APP_TARGET=admin npx cap sync android && cd android && gradlew assembleAdminRelease && cd ..",
     "cap:assets": "npx @capacitor/assets generate --android"
   },
   "dependencies": {

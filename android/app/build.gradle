@@ -16,6 +16,25 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    flavorDimensions "default"
+    productFlavors {
+        admin {
+            dimension "default"
+            applicationId "com.svi.infrasolutions"
+            resValue "string", "app_name", "SVI Admin"
+            resValue "string", "title_activity_main", "SVI Admin"
+            resValue "string", "package_name", "com.svi.infrasolutions"
+            resValue "string", "custom_url_scheme", "com.svi.infrasolutions"
+        }
+        employee {
+            dimension "default"
+            applicationId "com.svi.infrasolutions.employee"
+            resValue "string", "app_name", "SVI Workspace"
+            resValue "string", "title_activity_main", "SVI Workspace"
+            resValue "string", "package_name", "com.svi.infrasolutions.employee"
+            resValue "string", "custom_url_scheme", "com.svi.infrasolutions.employee"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
