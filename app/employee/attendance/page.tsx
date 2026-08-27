@@ -536,6 +536,7 @@ export default function EmployeeAttendancePunchPage() {
             queuedPunchesCount={offlineQueue.length}
             onSyncOffline={handleSyncOffline}
             isSyncingOffline={isSyncingOffline}
+            userId={statusData.user_id}
           />
         </div>
 

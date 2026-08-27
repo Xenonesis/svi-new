@@ -1,5 +1,6 @@
 'use client';
 
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Clock,
@@ -11,14 +12,81 @@ import {
   Moon,
   Banknote,
   ArrowRight,
+  Fingerprint,
 } from 'lucide-react';
+import { clsx } from 'clsx';
+import { toast } from 'sonner';
+import { supabase } from '@/src/lib/supabase/client';
+import { biometricAuth } from '@/src/lib/auth/biometricAuth';
 
 interface WorkspaceSettingsCardProps {
   theme: string | undefined;
   onThemeToggle: () => void;
+  profile?: { id: string; email: string; full_name?: string } | null;
 }
 
-export function WorkspaceSettingsCard({ theme, onThemeToggle }: WorkspaceSettingsCardProps) {
+export function WorkspaceSettingsCard({
+  theme,
+  onThemeToggle,
+  profile,
+}: WorkspaceSettingsCardProps) {
+  const [currentUserId, setCurrentUserId] = useState<string | null>(profile?.id || null);
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(profile?.email || null);
+  const [biometricEnabled, setBiometricEnabled] = useState(false);
+  const [togglingBiometric, setTogglingBiometric] = useState(false);
+
+  useEffect(() => {
+    if (profile?.id) {
+      setCurrentUserId(profile.id);
+      setCurrentUserEmail(profile.email);
+    } else {
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user) {
+          setCurrentUserId(data.user.id);
+          setCurrentUserEmail(data.user.email || '');
+        }
+      });
+    }
+  }, [profile]);
+
+  useEffect(() => {
+    if (currentUserId) {
+      setBiometricEnabled(biometricAuth.isRegistered(currentUserId));
+    }
+  }, [currentUserId]);
+
+  const handleBiometricToggle = async () => {
+    if (!currentUserId || togglingBiometric) return;
+    setTogglingBiometric(true);
+
+    try {
+      if (!biometricEnabled) {
+        const email = currentUserEmail || 'employee@svi.internal';
+        const success = await biometricAuth.register(currentUserId, email);
+        if (success) {
+          setBiometricEnabled(true);
+          toast.success('Biometric Quick Punch enabled', {
+            description: 'You can now punch with Fingerprint or Face ID.',
+          });
+        } else {
+          toast.error('Could not enable Biometric Quick Punch', {
+            description: 'Verification prompt canceled or unsupported on this device.',
+          });
+        }
+      } else {
+        biometricAuth.unregister(currentUserId);
+        setBiometricEnabled(false);
+        toast.success('Biometric Quick Punch disabled', {
+          description: 'Passkey credentials removed from this device.',
+        });
+      }
+    } catch {
+      toast.error('Failed to update biometric settings');
+    } finally {
+      setTogglingBiometric(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Compensation & Payslips Link Card */}
@@ -43,6 +111,7 @@ export function WorkspaceSettingsCard({ theme, onThemeToggle }: WorkspaceSetting
           <ArrowRight className="h-4 w-4" />
         </div>
       </Link>
+
       {/* Official Shift & Guidelines */}
       <div className="space-y-4 rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
         <h3 className="text-xs font-bold tracking-wider text-slate-400 uppercase">
@@ -77,6 +146,52 @@ export function WorkspaceSettingsCard({ theme, onThemeToggle }: WorkspaceSetting
               200m Verification Radius
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* Biometric Quick-Punch Passkey Settings */}
+      <div className="rounded-3xl border border-slate-200/80 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900/60">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400">
+              <Fingerprint className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <p className="text-xs font-bold text-slate-900 dark:text-white">
+                  Biometric Quick Punch
+                </p>
+                {biometricEnabled && (
+                  <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                    Active
+                  </span>
+                )}
+              </div>
+              <p className="text-[10px] text-slate-500 dark:text-slate-400">
+                Verify identity with Fingerprint, Face ID, or Windows Hello
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            role="switch"
+            aria-checked={biometricEnabled}
+            disabled={togglingBiometric || !currentUserId}
+            onClick={handleBiometricToggle}
+            className={clsx(
+              'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-hidden disabled:opacity-50',
+              biometricEnabled ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-700'
+            )}
+          >
+            <span
+              aria-hidden="true"
+              className={clsx(
+                'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-sm ring-0 transition duration-200 ease-in-out',
+                biometricEnabled ? 'translate-x-5' : 'translate-x-0'
+              )}
+            />
+          </button>
         </div>
       </div>
 

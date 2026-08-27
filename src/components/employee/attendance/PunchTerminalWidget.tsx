@@ -1,20 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Clock,
-  LogIn,
-  LogOut,
-  Loader2,
-  CheckCircle2,
-  AlertCircle,
-  ShieldCheck,
-  Sparkles,
-} from 'lucide-react';
+import { Clock, LogIn, LogOut, Loader2, ShieldCheck, Fingerprint } from 'lucide-react';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
+import { toast } from 'sonner';
+import { supabase } from '@/src/lib/supabase/client';
+import { biometricAuth } from '@/src/lib/auth/biometricAuth';
 
 interface StatusState {
+  user_id?: string;
+  email?: string;
   status: 'not_punched' | 'punched_in' | 'punched_out';
   punch_in_time: string | null;
   punch_out_time: string | null;
@@ -42,7 +38,9 @@ interface PunchTerminalWidgetProps {
   queuedPunchesCount?: number;
   onSyncOffline?: () => void;
   isSyncingOffline?: boolean;
+  userId?: string;
 }
+
 function formatTime12(timeStr?: string): string {
   if (!timeStr) return '--:--';
   const clean = timeStr.replace(/"/g, '');
@@ -65,12 +63,18 @@ export function PunchTerminalWidget({
   queuedPunchesCount = 0,
   onSyncOffline,
   isSyncingOffline = false,
+  userId,
 }: PunchTerminalWidgetProps) {
   const isPunchedIn = statusData.status === 'punched_in';
   const isPunchedOut = statusData.status === 'punched_out';
 
   // Live real-time clock for the terminal
   const [currentLiveTime, setCurrentLiveTime] = useState<string>('');
+  const [currentUserId, setCurrentUserId] = useState<string | null>(
+    userId || statusData.user_id || null
+  );
+  const [isBiometricRegistered, setIsBiometricRegistered] = useState<boolean>(false);
+  const [verifyingBiometric, setVerifyingBiometric] = useState<boolean>(false);
 
   useEffect(() => {
     const updateTime = () => {
@@ -81,6 +85,49 @@ export function PunchTerminalWidget({
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (userId) {
+      setCurrentUserId(userId);
+    } else if (statusData.user_id) {
+      setCurrentUserId(statusData.user_id);
+    } else {
+      supabase.auth.getUser().then(({ data }) => {
+        if (data?.user?.id) {
+          setCurrentUserId(data.user.id);
+        }
+      });
+    }
+  }, [userId, statusData.user_id]);
+
+  useEffect(() => {
+    if (currentUserId) {
+      setIsBiometricRegistered(biometricAuth.isRegistered(currentUserId));
+    }
+  }, [currentUserId]);
+
+  const handleBiometricPunch = async () => {
+    if (!currentUserId || verifyingBiometric || punching) return;
+    setVerifyingBiometric(true);
+
+    try {
+      const verified = await biometricAuth.verify(currentUserId);
+      if (verified) {
+        toast.success('Biometric Passkey verified');
+        if (!isPunchedIn) {
+          onPunchIn();
+        } else {
+          onPunchOutClick();
+        }
+      } else {
+        toast.error('Biometric verification canceled or failed');
+      }
+    } catch {
+      toast.error('Biometric verification error');
+    } finally {
+      setVerifyingBiometric(false);
+    }
+  };
 
   const adminShiftStart = formatTime12(settings?.punch_in_start || '09:00');
   const adminShiftEnd = formatTime12(settings?.punch_out_start || '17:00');
@@ -267,6 +314,37 @@ export function PunchTerminalWidget({
           <p className="text-[10px] text-slate-400">Official End: {adminShiftEnd}</p>
         </div>
       </div>
+
+      {/* Biometric Quick Punch Trigger (if registered on this device) */}
+      {isBiometricRegistered && (
+        <button
+          type="button"
+          onClick={handleBiometricPunch}
+          disabled={punching || verifyingBiometric}
+          className={clsx(
+            'mb-3 flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border py-3 text-xs font-bold tracking-wide shadow-xs transition-all disabled:opacity-50',
+            isPunchedIn
+              ? 'border-rose-200/80 bg-rose-50/60 text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:bg-rose-900/40'
+              : 'border-emerald-200/80 bg-emerald-50/60 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:bg-emerald-900/40'
+          )}
+        >
+          {verifyingBiometric ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              <span>Verifying Biometric Passkey...</span>
+            </div>
+          ) : (
+            <div className="flex items-center gap-2">
+              <Fingerprint className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+              <span>
+                {isPunchedIn
+                  ? 'Quick Punch-Out (Fingerprint / Face ID)'
+                  : 'Quick Punch-In (Fingerprint / Face ID)'}
+              </span>
+            </div>
+          )}
+        </button>
+      )}
 
       {/* Primary Punch Action Button */}
       {!isPunchedIn ? (

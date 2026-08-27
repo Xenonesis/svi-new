@@ -110,7 +110,11 @@ export default function EmployeeProfilePage() {
 
         {/* RIGHT COLUMN: Shift Guidelines & Preferences (7 Columns) */}
         <div className="space-y-6 lg:col-span-7">
-          <WorkspaceSettingsCard theme={theme} onThemeToggle={handleThemeToggle} />
+          <WorkspaceSettingsCard
+            theme={theme}
+            onThemeToggle={handleThemeToggle}
+            profile={profile}
+          />
         </div>
       </div>
     </div>
