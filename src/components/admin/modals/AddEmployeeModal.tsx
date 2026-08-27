@@ -17,6 +17,7 @@ export function AddEmployeeModal({
   const [formData, setFormData] = useState({
     full_name: '',
     email: '',
+    real_email: '',
     phone: '',
     password: '',
     notes: '',
@@ -39,10 +40,10 @@ export function AddEmployeeModal({
 
     const fullName = formData.full_name.trim();
     const email = formData.email.trim().toLowerCase();
+    const realEmail = formData.real_email.trim().toLowerCase();
     const password = formData.password;
     const phone = formData.phone.trim();
     const notes = formData.notes.trim();
-
     if (!fullName) {
       setError('Please enter the employee full name.');
       return;
@@ -83,6 +84,7 @@ export function AddEmployeeModal({
         body: JSON.stringify({
           full_name: fullName,
           email,
+          real_email: realEmail || null,
           password,
           phone: phone || null,
           notes: notes || null,
@@ -149,7 +151,7 @@ export function AddEmployeeModal({
 
             <div className="col-span-2 md:col-span-1">
               <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Email *
+                SVI Corporate Email *
               </label>
               <input
                 required
@@ -157,11 +159,24 @@ export function AddEmployeeModal({
                 value={formData.email}
                 onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
                 className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="john@example.com"
+                placeholder="name@sviinfra.com"
               />
             </div>
 
             <div className="col-span-2 md:col-span-1">
+              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                Personal / Real Email
+              </label>
+              <input
+                type="email"
+                value={formData.real_email}
+                onChange={(e) => setFormData((p) => ({ ...p, real_email: e.target.value }))}
+                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                placeholder="name@gmail.com"
+              />
+            </div>
+
+            <div className="col-span-2">
               <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 Phone
               </label>

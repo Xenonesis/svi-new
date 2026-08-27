@@ -20,9 +20,42 @@ export interface Employee {
   id: string;
   full_name: string;
   email: string;
+  real_email?: string | null;
   phone: string | null;
   notes: string | null;
   created_at: string;
+}
+
+/**
+ * Returns the official SVI Corporate Email address for an employee.
+ * If the email is already an SVI domain, returns it.
+ * If the email is a personal domain (e.g. Gmail), derives the official SVI email.
+ */
+export function getSviEmail(employee: {
+  email: string;
+  full_name?: string;
+  real_email?: string | null;
+}): string {
+  const rawEmail = (employee.email || '').trim();
+  if (
+    /@svi(?:infra|infrasolutions)?\.(?:com|in)/i.test(rawEmail) ||
+    rawEmail.toLowerCase().includes('@svi')
+  ) {
+    return rawEmail.toLowerCase();
+  }
+
+  const prefix = rawEmail.split('@')[0] || '';
+  if (prefix) {
+    const clean = prefix.replace(/\.sviinfrasolutions$/i, '').replace(/\.svi$/i, '');
+    return `${clean.toLowerCase()}@sviinfra.com`;
+  }
+
+  if (employee.full_name) {
+    const slug = employee.full_name.trim().toLowerCase().replace(/\s+/g, '.');
+    return `${slug}@sviinfra.com`;
+  }
+
+  return rawEmail;
 }
 
 interface EmployeeCardProps {
@@ -42,6 +75,7 @@ export function EmployeeCard({
   const [copiedEmail, setCopiedEmail] = useState(false);
 
   const cleanNotes = employee.notes || '';
+  const sviEmail = getSviEmail(employee);
 
   const handleCopyId = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -105,16 +139,26 @@ export function EmployeeCard({
 
         {/* Contact Info */}
         <div className="mt-5 space-y-2.5">
-          {/* Email / Login ID */}
+          {/* SVI Corporate Email */}
           <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:bg-white/5 dark:text-gray-200">
             <div className="flex min-w-0 items-center gap-2.5">
-              <Mail size={14} className="shrink-0 text-gray-400" />
-              <span className="truncate text-xs font-medium">{employee.email}</span>
+              <Mail size={14} className="shrink-0 text-amber-500" />
+              <div className="flex min-w-0 items-center gap-1.5">
+                <span
+                  className="truncate text-xs font-semibold text-gray-900 dark:text-white"
+                  title={sviEmail}
+                >
+                  {sviEmail}
+                </span>
+                <span className="rounded bg-amber-500/10 px-1 py-0.5 text-[9px] font-bold tracking-wider text-amber-600 uppercase dark:bg-amber-400/15 dark:text-amber-300">
+                  SVI
+                </span>
+              </div>
             </div>
             <button
-              onClick={() => handleCopyEmail(employee.email)}
+              onClick={() => handleCopyEmail(sviEmail)}
               className="shrink-0 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-white"
-              title="Copy Login Email"
+              title="Copy SVI Email"
             >
               {copiedEmail ? (
                 <CheckCircle2 size={13} className="text-emerald-500" />
@@ -123,6 +167,15 @@ export function EmployeeCard({
               )}
             </button>
           </div>
+
+          {/* Personal Real Email (if exists and different from SVI email) */}
+          {employee.real_email && employee.real_email.toLowerCase() !== sviEmail.toLowerCase() && (
+            <div className="flex items-center justify-between gap-2 px-1 text-[11px] text-gray-500 dark:text-gray-400">
+              <span className="truncate" title={employee.real_email}>
+                Personal: {employee.real_email}
+              </span>
+            </div>
+          )}
 
           {employee.phone && (
             <div className="flex items-center gap-2.5 px-1 text-xs text-gray-600 dark:text-gray-400">

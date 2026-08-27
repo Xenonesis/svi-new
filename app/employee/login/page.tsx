@@ -48,8 +48,25 @@ export default function EmployeeLogin() {
 
     setIsSubmitting(true);
     try {
+      let loginEmail = identifier.trim().toLowerCase();
+
+      // Support login with either SVI corporate email or personal real email
+      try {
+        const { data: matchedProfile } = await supabase
+          .from('profiles')
+          .select('email, real_email')
+          .or(`email.ilike.${loginEmail},real_email.ilike.${loginEmail}`)
+          .maybeSingle();
+
+        if (matchedProfile?.email) {
+          loginEmail = matchedProfile.email;
+        }
+      } catch {
+        // Fallback directly to identifier if query fails
+      }
+
       const { error: authError } = await supabase.auth.signInWithPassword({
-        email: identifier,
+        email: loginEmail,
         password,
       });
       if (authError) throw authError;

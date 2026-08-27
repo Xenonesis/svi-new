@@ -129,11 +129,13 @@ export async function POST(request: NextRequest) {
     const newUserId = authData.user.id;
 
     // 2. Insert profile row
+    const realEmail = body.real_email?.trim().toLowerCase() || null;
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
       .insert({
         id: newUserId,
         email,
+        real_email: realEmail,
         full_name: fullName,
         phone: phone || null,
         notes: notes || null,
