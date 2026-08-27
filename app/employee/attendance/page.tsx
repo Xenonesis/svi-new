@@ -371,10 +371,11 @@ export default function EmployeeAttendancePunchPage() {
 
       const isNetworkIssue =
         (typeof navigator !== 'undefined' && !navigator.onLine) ||
+        err instanceof TypeError ||
         errMessage.toLowerCase().includes('failed to fetch') ||
+        errMessage.toLowerCase().includes('load failed') ||
         errMessage.toLowerCase().includes('network') ||
         errMessage.toLowerCase().includes('offline');
-
       if (isNetworkIssue && currentCoords) {
         offlinePunchQueue.enqueue({
           type,

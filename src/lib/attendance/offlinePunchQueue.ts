@@ -24,7 +24,22 @@ function readFromStorage(): QueuedPunch[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) ? parsed : [];
+    if (!Array.isArray(parsed)) return [];
+
+    // Recover any punches stranded in 'syncing' status from interrupted sessions
+    if (!isSyncing && parsed.some((p) => p && p.status === 'syncing')) {
+      const recovered = parsed.map((p) =>
+        p && p.status === 'syncing' ? { ...p, status: 'pending' as const } : p
+      );
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(recovered));
+      } catch {
+        // ignore
+      }
+      return recovered;
+    }
+
+    return parsed;
   } catch (err) {
     console.error('Failed to parse offline punch queue from storage:', err);
     return [];
@@ -111,9 +126,22 @@ export const offlinePunchQueue = {
     let failedCount = 0;
 
     try {
-      const queue = readFromStorage();
-      if (queue.length === 0) {
+      // Ensure any interrupted 'syncing' punches are reset to 'pending'
+      const initialQueue = readFromStorage();
+      if (initialQueue.length === 0) {
         return { synced: 0, failed: 0 };
+      }
+      let hasRecovered = false;
+      const queue = initialQueue.map((p) => {
+        if (p.status === 'syncing') {
+          hasRecovered = true;
+          return { ...p, status: 'pending' as const };
+        }
+        return p;
+      });
+      if (hasRecovered) {
+        writeToStorage(queue);
+        notifySubscribers(queue);
       }
 
       // Process punches in FIFO order
@@ -123,7 +151,6 @@ export const offlinePunchQueue = {
         if (!punch || (punch.status !== 'pending' && punch.status !== 'failed')) {
           continue;
         }
-
         punch.status = 'syncing';
         writeToStorage(currentQueue);
         notifySubscribers(currentQueue);

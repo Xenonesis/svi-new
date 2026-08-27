@@ -330,5 +330,32 @@ describe('OfflinePunchQueue', () => {
 
       expect(syncSpy).toHaveBeenCalled();
     });
+
+    it('recovers interrupted syncing punches from previous sessions', async () => {
+      const interruptedPunch: QueuedPunch = {
+        id: 'punch_interrupted_123',
+        type: 'in',
+        timestamp: '2026-08-27T08:30:00.000Z',
+        coords: { lat: 12.9716, lon: 77.5946 },
+        status: 'syncing',
+      };
+      localStorage.setItem('svi_offline_punch_queue', JSON.stringify([interruptedPunch]));
+
+      // getQueue should reflect the recovered punch
+      const queueBeforeSync = offlinePunchQueue.getQueue();
+      expect(queueBeforeSync).toHaveLength(1);
+      expect(queueBeforeSync[0].id).toBe('punch_interrupted_123');
+      expect(queueBeforeSync[0].status).toBe('pending');
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true, message: 'Punch in recorded' }),
+      });
+
+      const result = await offlinePunchQueue.syncPendingPunches();
+      expect(result).toEqual({ synced: 1, failed: 0 });
+      expect(offlinePunchQueue.getQueue()).toHaveLength(0);
+    });
   });
 });
