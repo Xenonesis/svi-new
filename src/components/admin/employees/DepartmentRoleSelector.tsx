@@ -224,7 +224,7 @@ export function DepartmentRoleSelector({
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 4, scale: 0.98 }}
               transition={{ duration: 0.15 }}
-              className="absolute top-full z-50 mt-1.5 max-h-72 w-full overflow-y-auto rounded-2xl border border-gray-200 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#181826] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]"
+              className="scrollbar-gold absolute top-full z-50 mt-1.5 max-h-52 w-full overflow-y-auto rounded-2xl border border-gray-200 bg-white p-2 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#181826] dark:shadow-[0_12px_40px_rgba(0,0,0,0.6)]"
             >
               {/* If no exact match and query typed, offer as custom */}
               {query && !isPredefined && (

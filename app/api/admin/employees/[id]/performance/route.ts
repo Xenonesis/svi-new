@@ -21,7 +21,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     // 1. Fetch employee profile
     const { data: profile, error: profileErr } = await supabaseAdmin
       .from('profiles')
-      .select('id, full_name, email, phone, notes, created_at, role')
+      .select('id, full_name, email, phone, notes, created_at, role, department')
       .eq('id', employeeId)
       .single();
 

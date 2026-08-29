@@ -117,9 +117,13 @@ export function AddEmployeeModal({
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="dark:bg-brand-dark-surface w-full max-w-lg overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10"
+        className="dark:bg-brand-dark-surface relative flex max-h-[90vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10"
       >
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/5">
+        {/* Top Gold Accent Bar */}
+        <div className="via-brand-gold absolute top-0 right-0 left-0 z-10 h-1 bg-gradient-to-r from-transparent to-transparent opacity-60" />
+
+        {/* Modal Header */}
+        <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/5">
           <h2 className="text-brand-navy font-serif text-lg font-semibold dark:text-white">
             New Employee
           </h2>
@@ -131,7 +135,12 @@ export function AddEmployeeModal({
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 p-6">
+        {/* Scrollable Form Body */}
+        <form
+          id="add-employee-form"
+          onSubmit={handleSubmit}
+          className="scrollbar-gold flex-1 space-y-4 overflow-y-auto overscroll-contain p-6"
+        >
           {error && (
             <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500 dark:text-red-400" />
@@ -234,24 +243,26 @@ export function AddEmployeeModal({
               />
             </div>
           </div>
-
-          <div className="mt-6 flex gap-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded-lg border border-gray-200 bg-gray-50 py-3 text-xs font-bold tracking-widest text-gray-600 uppercase transition-all hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light flex-1 rounded-lg py-3 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-50"
-            >
-              {loading ? 'Creating...' : 'Create Employee'}
-            </button>
-          </div>
         </form>
+
+        {/* Modal Actions Footer */}
+        <div className="flex shrink-0 gap-3 border-t border-gray-100 bg-gray-50/70 p-4 px-6 backdrop-blur-sm dark:border-white/5 dark:bg-[#12121a]/80">
+          <button
+            type="button"
+            onClick={onClose}
+            className="flex-1 rounded-lg border border-gray-200 bg-gray-50 py-2.5 text-xs font-bold tracking-widest text-gray-600 uppercase transition-all hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            form="add-employee-form"
+            disabled={loading}
+            className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light flex-1 rounded-lg py-2.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-50"
+          >
+            {loading ? 'Creating...' : 'Create Employee'}
+          </button>
+        </div>
       </motion.div>
     </div>
   );
