@@ -30,9 +30,9 @@ import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 // Employee Directory
 import { EmployeeCard, type Employee } from '@/src/components/admin/employees/EmployeeCard';
 import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
+import { EditEmployeeModal } from '@/src/components/admin/employees/EditEmployeeModal';
 import { ResetPasswordModal } from '@/src/components/admin/employees/ResetPasswordModal';
 import { EmployeePerformanceModal } from '@/src/components/admin/employees/EmployeePerformanceModal';
-
 // Attendance & Approvals
 import AttendanceDashboard from '@/src/components/admin/attendance/AttendanceDashboard';
 import LiveStatus from '@/src/components/admin/attendance/LiveStatus';
@@ -138,6 +138,7 @@ function WorkforceContent() {
   >('all');
   const [directorySort, setDirectorySort] = useState<'recent' | 'name' | 'status'>('recent');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [resetTarget, setResetTarget] = useState<Employee | null>(null);
   const [performanceTarget, setPerformanceTarget] = useState<Employee | null>(null);
   // Attendance & Teams state
@@ -771,6 +772,7 @@ function WorkforceContent() {
                       key={emp.id}
                       employee={emp}
                       liveStatus={liveStatusMap.get(emp.id)}
+                      onEdit={() => setEditingEmployee(emp)}
                       onDelete={() => handleDeleteEmployee(emp.id)}
                       onResetPassword={() => setResetTarget(emp)}
                       onViewPerformance={() => setPerformanceTarget(emp)}
@@ -977,6 +979,28 @@ function WorkforceContent() {
               setShowAddModal(false);
               showToast('success', 'Employee profile created successfully');
               fetchEmployees();
+            }}
+            token={token}
+          />
+        )}
+        {editingEmployee && token && (
+          <EditEmployeeModal
+            employee={editingEmployee}
+            onClose={() => setEditingEmployee(null)}
+            onSuccess={(updated) => {
+              setEmployees((prev) =>
+                prev.map((e) =>
+                  e.id === editingEmployee.id
+                    ? {
+                        ...e,
+                        full_name: updated.full_name,
+                        phone: updated.phone,
+                        notes: updated.notes,
+                      }
+                    : e
+                )
+              );
+              setEditingEmployee(null);
             }}
             token={token}
           />

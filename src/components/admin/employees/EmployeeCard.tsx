@@ -5,6 +5,7 @@ import { motion } from 'motion/react';
 import { format } from 'date-fns';
 import {
   Trash2,
+  Pencil,
   Mail,
   Phone,
   Calendar,
@@ -75,6 +76,7 @@ export function getWhatsAppUrl(phone: string, name: string): string {
 interface EmployeeCardProps {
   employee: Employee;
   liveStatus?: EmployeeLiveStatus | null;
+  onEdit: () => void;
   onDelete: () => void;
   onResetPassword: () => void;
   onViewPerformance: () => void;
@@ -83,6 +85,7 @@ interface EmployeeCardProps {
 export function EmployeeCard({
   employee,
   liveStatus,
+  onEdit,
   onDelete,
   onResetPassword,
   onViewPerformance,
@@ -148,13 +151,22 @@ export function EmployeeCard({
               </div>
             </div>
           </div>
-          <button
-            onClick={onDelete}
-            className="absolute top-4 right-4 shrink-0 rounded-lg p-2 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
-            title="Delete Employee"
-          >
-            <Trash2 size={16} />
-          </button>
+          <div className="absolute top-4 right-4 flex items-center gap-1">
+            <button
+              onClick={onEdit}
+              className="shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+              title="Edit Profile & Details"
+            >
+              <Pencil size={15} />
+            </button>
+            <button
+              onClick={onDelete}
+              className="shrink-0 rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 dark:hover:bg-red-500/10"
+              title="Delete Employee"
+            >
+              <Trash2 size={15} />
+            </button>
+          </div>
         </div>
 
         {/* Live Attendance Status Badge */}
