@@ -29,6 +29,7 @@ import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 
 // Employee Directory
 import { EmployeeCard, type Employee } from '@/src/components/admin/employees/EmployeeCard';
+import { DirectoryStatsCards } from '@/src/components/admin/employees/DirectoryStatsCards';
 import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
 import { EditEmployeeModal } from '@/src/components/admin/employees/EditEmployeeModal';
 import { ResetPasswordModal } from '@/src/components/admin/employees/ResetPasswordModal';
@@ -663,6 +664,16 @@ function WorkforceContent() {
                   </button>
                 </div>
               </div>
+
+              {/* Top KPI Metrics Strip */}
+              <DirectoryStatsCards
+                totalEmployees={statusCounts.all}
+                punchedInCount={statusCounts.punched_in}
+                punchedOutCount={statusCounts.punched_out}
+                notPunchedCount={statusCounts.not_punched}
+                activeFilter={statusFilter}
+                onSelectFilter={setStatusFilter}
+              />
 
               {/* Filter Chips & Sort Controls */}
               <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200/60 pb-4 dark:border-white/5">
