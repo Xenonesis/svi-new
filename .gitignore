@@ -63,7 +63,6 @@ blog.html
 *.exe
 *.pdf
 !public/Shivani Vatika/shivani-vatika-11th-brochure.pdf
-salary*
 .playwright-mcp/
 
 # Next.js
