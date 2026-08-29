@@ -44,12 +44,11 @@ describe('OfferLetterPreviewContent', () => {
     expect(screen.getByText('rajesh.sharma@example.com')).toBeInTheDocument();
   });
 
-  it('renders mandatory onboarding documentation clause with /admin/offer-letter requirements', () => {
+  it('renders mandatory onboarding documentation clause with HR Onboarding Desk requirements', () => {
     render(<OfferLetterPreviewContent formData={baseFormData} companyInfo={mockCompanyInfo} />);
 
-    // Mandatory portal reference
-    expect(screen.getAllByText(/\/admin\/offer-letter/i).length).toBeGreaterThan(0);
-
+    // Mandatory HR Onboarding Desk reference
+    expect(screen.getAllByText(/SVI HR Onboarding Desk/i).length).toBeGreaterThan(0);
     // Document requirements
     expect(screen.getByText(/1\. Academic Credentials:/i)).toBeInTheDocument();
     expect(screen.getByText(/2\. Photographic Records:/i)).toBeInTheDocument();

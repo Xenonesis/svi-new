@@ -64,7 +64,7 @@ export function useEmailPrefill({
   // Prefill replyTo with default reply addresses
   useEffect(() => {
     if (adminEmail && !replyTo) {
-      setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail}`);
+      setReplyTo(`info@sviinfrasolutions.com, ${adminEmail}`);
     }
   }, [adminEmail, replyTo, setReplyTo]);
 

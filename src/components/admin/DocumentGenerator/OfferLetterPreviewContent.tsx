@@ -499,10 +499,12 @@ export default function OfferLetterPreviewContent({
               <p className="mb-2 text-[11px] font-medium text-gray-900">
                 In compliance with corporate governance standards and regulatory audit mandates,
                 your formal appointment is strictly conditional upon the timely submission and
-                authentication of all mandatory pre-employment records via the designated corporate
-                portal at{' '}
-                <span className="font-mono font-bold text-[#1e3a8a]">/admin/offer-letter</span>. You
-                are required to upload high-resolution certified copies of the following:
+                authentication of all mandatory pre-employment records via the designated SVI HR
+                Onboarding Desk (
+                <span className="font-semibold text-[#1e3a8a]">
+                  {companyInfo.company_email || 'hr@sviinfrasolutions.com'}
+                </span>
+                ). You are required to submit high-resolution certified copies of the following:
               </p>
 
               <div className="grid grid-cols-1 gap-2 text-[11px] md:grid-cols-2">
@@ -857,10 +859,9 @@ export default function OfferLetterPreviewContent({
                 </p>
                 <p className="mb-3 text-[10px] leading-tight font-medium text-gray-800 italic">
                   &ldquo;I hereby unconditionally accept this offer of employment and agree to abide
-                  by all terms, covenants, onboarding documentation requirements via{' '}
-                  <span className="font-mono font-bold">/admin/offer-letter</span>, and policies
-                  outlined herein. I affirm all credentials provided are authentic and
-                  truthful.&rdquo;
+                  by all terms, covenants, onboarding documentation requirements via the designated
+                  SVI HR Onboarding Desk, and policies outlined herein. I affirm all credentials
+                  provided are authentic and truthful.&rdquo;
                 </p>
                 <div className="space-y-1.5 text-[11px] text-gray-900">
                   <div className="flex items-center justify-between">
