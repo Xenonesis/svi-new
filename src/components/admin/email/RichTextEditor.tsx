@@ -49,8 +49,10 @@ interface RichTextEditorProps {
   onApplyTemplate?: (
     html: string,
     templateName?: string,
-    variables?: Record<string, string>
+    variables?: Record<string, string>,
+    subject?: string
   ) => void;
+  onUpdateSubject?: (subject: string) => void;
 }
 
 const TOOLBAR_BUTTON_CLASS =
@@ -68,6 +70,7 @@ export function RichTextEditor({
   recipientName,
   subject,
   onApplyTemplate,
+  onUpdateSubject,
 }: RichTextEditorProps) {
   const [showLinkInput, setShowLinkInput] = useState(false);
   const [linkUrl, setLinkUrl] = useState('');
@@ -445,9 +448,16 @@ export function RichTextEditor({
           <AIComposePopover
             open={showAIPopover}
             onClose={() => setShowAIPopover(false)}
-            onInsert={(html) => editor.chain().focus().insertContent(html).run()}
-            onReplace={(html) => editor.chain().focus().clearContent().insertContent(html).run()}
+            onInsert={(html, subj) => {
+              if (subj) onUpdateSubject?.(subj);
+              editor.chain().focus().insertContent(html).run();
+            }}
+            onReplace={(html, subj) => {
+              if (subj) onUpdateSubject?.(subj);
+              editor.chain().focus().clearContent().insertContent(html).run();
+            }}
             onApplyTemplate={onApplyTemplate}
+            onUpdateSubject={onUpdateSubject}
             recipientName={recipientName}
             subject={subject}
           />

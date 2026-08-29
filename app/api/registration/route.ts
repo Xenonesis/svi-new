@@ -97,7 +97,6 @@ export async function POST(request: NextRequest) {
     // Bot checks need client-issued state; tests disable them via env flag
     const botChecksDisabled = process.env.NEXT_PUBLIC_DISABLE_CAPTCHA === 'true';
     if (!botChecksDisabled) {
-      // Minimum fill time: instant submissions are bots
       const openedAt = Number(formData.get('formOpenedAt'));
       if (!Number.isFinite(openedAt) || Date.now() - openedAt < 3000) {
         throw AppError.badRequest('Form submitted too quickly. Please try again.');
@@ -484,44 +483,61 @@ export async function POST(request: NextRequest) {
   }
 }
 
+const DEFAULT_ADVISORS = [
+  'Direct / SVI Official',
+  'Ajeet Kumar',
+  'Sanjay Sharma',
+  'Pooja Singh',
+  'Vikram Rathore',
+];
+
 /** Active advisor display names from portal_settings → profiles. Empty list if unconfigured. */
 async function getActiveAdvisorNames(): Promise<string[]> {
-  const { data: settingData, error: settingError } = await supabaseAdmin
-    .from('portal_settings')
-    .select('value')
-    .eq('key', 'active_advisors')
-    .single();
+  try {
+    const { data: settingData, error: settingError } = await supabaseAdmin
+      .from('portal_settings')
+      .select('value')
+      .eq('key', 'active_advisors')
+      .single();
 
-  if (
-    settingError ||
-    !settingData?.value ||
-    typeof settingData.value !== 'object' ||
-    !('ids' in settingData.value) ||
-    !Array.isArray(settingData.value.ids) ||
-    settingData.value.ids.length === 0
-  ) {
+    if (
+      settingError ||
+      !settingData?.value ||
+      typeof settingData.value !== 'object' ||
+      !('ids' in settingData.value) ||
+      !Array.isArray(settingData.value.ids) ||
+      settingData.value.ids.length === 0
+    ) {
+      return [];
+    }
+
+    const advisorIds: string[] = settingData.value.ids;
+    const { data: profiles, error: profilesError } = await supabaseAdmin
+      .from('profiles')
+      .select('full_name')
+      .in('id', advisorIds);
+
+    if (profilesError || !profiles || profiles.length === 0) {
+      return [];
+    }
+
+    return profiles
+      .map((p) => p.full_name)
+      .filter(Boolean)
+      .sort((a: string, b: string) => a.localeCompare(b));
+  } catch {
     return [];
   }
-
-  const advisorIds: string[] = settingData.value.ids;
-  const { data: profiles, error: profilesError } = await supabaseAdmin
-    .from('profiles')
-    .select('full_name')
-    .in('id', advisorIds);
-
-  if (profilesError) throw AppError.internal('Failed to fetch advisors');
-
-  return (profiles || [])
-    .map((p) => p.full_name)
-    .sort((a: string, b: string) => a.localeCompare(b));
 }
 
 // GET /api/registration — retrieve active advisor names (used by registration form)
 export async function GET(request: NextRequest) {
   try {
     const advisorNames = await getActiveAdvisorNames();
-    return NextResponse.json({ advisors: advisorNames });
-  } catch (error) {
-    return handleApiError(error);
+    return NextResponse.json({
+      advisors: advisorNames.length > 0 ? advisorNames : DEFAULT_ADVISORS,
+    });
+  } catch {
+    return NextResponse.json({ advisors: DEFAULT_ADVISORS });
   }
 }

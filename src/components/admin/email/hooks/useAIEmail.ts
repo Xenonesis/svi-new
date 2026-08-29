@@ -178,6 +178,7 @@ export function useAIEmail() {
     action: 'template_match' | 'ai_template';
     templateId: string;
     templateName: string;
+    subject?: string;
     variables: Record<string, string>;
     html: string;
   }
@@ -211,6 +212,7 @@ export function useAIEmail() {
           action: data.action || 'ai_template',
           templateId: data.templateId || '_ai_generated',
           templateName: data.templateName || 'AI Corporate Template',
+          subject: data.subject || '',
           variables: data.variables || {},
           html: data.html || '',
         };

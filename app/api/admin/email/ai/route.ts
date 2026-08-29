@@ -234,6 +234,7 @@ Analyze the email subject, user instructions/prompt, requested tone (${tone || '
 1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:
 {
   "action": "template_match",
+  "subject": "<matching template subject with relevant placeholders, or refined subject line>",
   "templateId": "<matching template id from list>",
   "templateName": "<matching template name>",
   "variables": {
@@ -246,6 +247,7 @@ Analyze the email subject, user instructions/prompt, requested tone (${tone || '
 2) If NO MATCH with existing templates, create a custom, high-end, responsive HTML email template using the EXACT luxury structure above:
 {
   "action": "ai_template",
+  "subject": "<crisp, executive, and punchy email subject line accurately summarizing the email intent>",
   "templateId": "_ai_generated",
   "templateName": "<short 2-4 word descriptive title>",
   "variables": {
@@ -254,7 +256,6 @@ Analyze the email subject, user instructions/prompt, requested tone (${tone || '
   },
   "html": "<!DOCTYPE html><html>...complete valid HTML email...</html>"
 }
-
 RECIPIENT DATA:
 ${JSON.stringify(recipientData, null, 2)}
 
@@ -292,28 +293,33 @@ IMPORTANT: Respond with ONLY a valid JSON object matching the schema above. No m
             throw new Error('Failed to parse AI response JSON');
           }
         }
-
+        let matchedTpl: any = null;
         if (parsed.action === 'template_match' && parsed.templateId) {
-          const tpl = (emailTemplates as Array<any>).find(
+          matchedTpl = (emailTemplates as Array<any>).find(
             (t) =>
               t.id === parsed.templateId ||
               t.name.toLowerCase() === (parsed.templateName || '').toLowerCase()
           );
-          if (tpl) {
-            parsed.templateId = tpl.id;
-            parsed.templateName = tpl.name;
-            if (!parsed.html) parsed.html = tpl.html;
+          if (matchedTpl) {
+            parsed.templateId = matchedTpl.id;
+            parsed.templateName = matchedTpl.name;
+            if (!parsed.html) parsed.html = matchedTpl.html;
           } else {
             parsed.action = 'ai_template';
             parsed.templateId = '_ai_generated';
           }
         }
 
+        let finalSubject = parsed.subject || '';
+        if (!finalSubject && parsed.action === 'template_match' && matchedTpl?.subject) {
+          finalSubject = matchedTpl.subject;
+        }
         return NextResponse.json({
           success: true,
           action: parsed.action || 'ai_template',
           templateId: parsed.templateId || '_ai_generated',
           templateName: parsed.templateName || 'AI Generated',
+          subject: finalSubject,
           variables: parsed.variables || {},
           html: parsed.html || '',
         });

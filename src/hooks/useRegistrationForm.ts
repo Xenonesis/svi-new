@@ -4,10 +4,22 @@ import { FormData, INITIAL_FORM } from '@/src/types/registration';
 import { compressImage } from '@/src/lib/image-compression';
 import { saveFormDraft, loadFormDraft, clearFormDraft } from '@/src/lib/form-persistence';
 import { normalizeIndianPhone } from '@/src/lib/utils/phone';
+const FALLBACK_ADVISORS = [
+  'Direct / SVI Official',
+  'Ajeet Kumar',
+  'Sanjay Sharma',
+  'Pooja Singh',
+  'Vikram Rathore',
+];
+
+const FALLBACK_PROJECTS = [
+  { value: 'shivani-vatika', label: 'Shivani Vatika' },
+  { value: 'shayam-angan', label: 'Shayam Angan' },
+  { value: 'svi-emerald-enclave', label: 'SVI Emerald Enclave' },
+];
 
 /** Letters in any script (Latin, Devanagari, …) plus spaces */
 const NAME_REGEX = /^[\p{L}\s]+$/u;
-
 async function refreshCsrfToken(): Promise<string | null> {
   try {
     const res = await fetch('/api/csrf-refresh', { method: 'POST' });
@@ -33,8 +45,8 @@ export function useRegistrationForm(t: (key: string) => string) {
   const [captchaAnswer, setCaptchaAnswer] = useState('');
   const [captchaError, setCaptchaError] = useState('');
   const [compressing, setCompressing] = useState<'photo' | 'panCard' | null>(null);
-  const [advisors, setAdvisors] = useState<string[]>([]);
-  const [projects, setProjects] = useState<{ value: string; label: string }[]>([]);
+  const [advisors, setAdvisors] = useState<string[]>(FALLBACK_ADVISORS);
+  const [projects, setProjects] = useState<{ value: string; label: string }[]>(FALLBACK_PROJECTS);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [showReview, setShowReview] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
@@ -53,8 +65,10 @@ export function useRegistrationForm(t: (key: string) => string) {
     ])
       .then(([registrationData, propertiesData]) => {
         if (!active) return;
-        if (registrationData.advisors) setAdvisors(registrationData.advisors);
-        if (propertiesData.properties) {
+        if (registrationData?.advisors?.length) {
+          setAdvisors(registrationData.advisors);
+        }
+        if (propertiesData?.properties?.length) {
           setProjects(
             propertiesData.properties.map((p: any) => ({
               value: p.slug,

@@ -37,8 +37,10 @@ interface EmailBodyEditorProps {
   onApplyTemplate?: (
     html: string,
     templateName?: string,
-    variables?: Record<string, string>
+    variables?: Record<string, string>,
+    subject?: string
   ) => void;
+  onUpdateSubject?: (subject: string) => void;
   onVariableChange?: (key: string, value: string) => void;
   onAutoFillAll?: () => void;
   onUpdateTemplateHtml?: (html: string) => void;
@@ -57,6 +59,7 @@ export function EmailBodyEditor({
   quotedHtml,
   onRemoveQuoted,
   onApplyTemplate,
+  onUpdateSubject,
   onVariableChange,
   onAutoFillAll,
   onUpdateTemplateHtml,
@@ -279,8 +282,8 @@ export function EmailBodyEditor({
             recipientName={toStr.split(',')[0]?.trim()}
             subject={subject}
             onApplyTemplate={onApplyTemplate}
+            onUpdateSubject={onUpdateSubject}
           />
-
           {/* Collapsible Quoted Email History Widget */}
           {quotedHtml && (
             <div className="mt-3 border-t border-gray-100 pt-3 dark:border-gray-800">

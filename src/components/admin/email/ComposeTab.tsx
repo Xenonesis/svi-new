@@ -431,11 +431,16 @@ export function ComposeTab({
 
     if (!result) return;
 
+    if (result.subject && result.subject.trim()) {
+      setSubject(result.subject.trim());
+      setSubjectTemplate(result.subject.trim());
+    }
+
     if (result.action === 'template_match') {
       // Load existing template
       const tpl = EMAIL_TEMPLATES.find((t) => t.id === result.templateId);
       if (tpl) {
-        setSubjectTemplate(tpl.subject);
+        if (!result.subject) setSubjectTemplate(tpl.subject);
         setTemplateHtml(tpl.html);
         setSelectedTemplate(result.templateId);
         // Fill variables from suggestion
@@ -453,7 +458,6 @@ export function ComposeTab({
         return;
       }
     }
-
     // AI-generated template
     const rawHtml = result.html || '';
     setTemplateHtml(rawHtml);
@@ -485,11 +489,16 @@ export function ComposeTab({
   const handleApplyTemplate = (
     rawHtml: string,
     templateName?: string,
-    variables?: Record<string, string>
+    variables?: Record<string, string>,
+    suggestedSubject?: string
   ) => {
     setTemplateHtml(rawHtml);
     setSelectedTemplate('_ai_generated');
     setAutoComposeName(templateName || 'AI Corporate Template');
+    if (suggestedSubject && suggestedSubject.trim()) {
+      setSubject(suggestedSubject.trim());
+      setSubjectTemplate(suggestedSubject.trim());
+    }
     const vars = extractTemplateVars(rawHtml);
     const initialVars: Record<string, string> = {};
     vars.forEach((v) => {
@@ -721,9 +730,8 @@ export function ComposeTab({
           quotedHtml={quotedHtml}
           onRemoveQuoted={() => setQuotedHtml(null)}
           onApplyTemplate={handleApplyTemplate}
+          onUpdateSubject={handleSubjectChange}
           onVariableChange={(key, value) => setTemplateVars((prev) => ({ ...prev, [key]: value }))}
-          onAutoFillAll={handleQuickAutoFill}
-          onUpdateTemplateHtml={setTemplateHtml}
           setHtml={setHtml}
           getPreviewHtml={getPreviewHtml}
         />

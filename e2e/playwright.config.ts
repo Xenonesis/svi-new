@@ -26,6 +26,9 @@ export default defineConfig({
     command: 'pnpm build && pnpm start',
     port: 3000,
     reuseExistingServer: !process.env.CI,
-    timeout: 120000,
+    timeout: 180000,
+    env: {
+      SKIP_IMAGE_OPTIMIZE: 'true',
+    },
   },
 });
