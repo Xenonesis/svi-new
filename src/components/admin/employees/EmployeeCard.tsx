@@ -19,9 +19,21 @@ import {
   PhoneCall,
   Send,
   Briefcase,
+  Target,
+  TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
+
+export interface EmployeeStats {
+  totalLeads: number;
+  activeLeads: number;
+  wonLeads: number;
+  presentDays: number;
+  totalDays: number;
+  attendanceRate: number;
+}
+
 export interface Employee {
   id: string;
   full_name: string;
@@ -31,8 +43,8 @@ export interface Employee {
   department?: string | null;
   notes: string | null;
   created_at: string;
+  stats?: EmployeeStats;
 }
-
 /**
  * Returns the official SVI Corporate Email address for an employee.
  * If the email is already an SVI domain, returns it.
@@ -341,7 +353,44 @@ export function EmployeeCard({
       </div>
 
       {/* Performance & Actions Footer */}
-      <div className="mt-5 space-y-3 border-t border-gray-100 pt-4 dark:border-white/10">
+      <div className="mt-4 space-y-2.5 border-t border-gray-100 pt-3.5 dark:border-white/10">
+        {/* Mini-KPI Strip */}
+        <div className="grid grid-cols-2 gap-2">
+          <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50/70 p-2 dark:border-white/5 dark:bg-white/[0.03]">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <Target size={13} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[9px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                Active Leads
+              </p>
+              <p className="truncate text-xs font-bold text-gray-900 dark:text-white">
+                {employee.stats?.activeLeads ?? 0}{' '}
+                <span className="text-[10px] font-normal text-gray-500">
+                  ({employee.stats?.wonLeads ?? 0} Won)
+                </span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 rounded-xl border border-gray-100 bg-gray-50/70 p-2 dark:border-white/5 dark:bg-white/[0.03]">
+            <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <TrendingUp size={13} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-[9px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                Attendance
+              </p>
+              <p className="truncate text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                {employee.stats?.attendanceRate ?? 100}%{' '}
+                <span className="text-[10px] font-normal text-gray-500">
+                  ({employee.stats?.presentDays ?? 0}d)
+                </span>
+              </p>
+            </div>
+          </div>
+        </div>
+
         {/* Performance Dashboard Button */}
         <button
           onClick={onViewPerformance}

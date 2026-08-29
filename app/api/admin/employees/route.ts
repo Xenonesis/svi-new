@@ -31,8 +31,74 @@ export async function GET(request: NextRequest) {
 
     if (error) throw AppError.internal(error.message);
 
+    const employees = data || [];
+    const employeeIds = employees.map((e) => e.id);
+
+    const statsMap: Record<
+      string,
+      {
+        totalLeads: number;
+        activeLeads: number;
+        wonLeads: number;
+        presentDays: number;
+        totalDays: number;
+        attendanceRate: number;
+      }
+    > = {};
+
+    if (employeeIds.length > 0) {
+      const [leadsRes, attRes] = await Promise.all([
+        supabaseAdmin
+          .from('chat_leads')
+          .select('assigned_to, lifecycle_status')
+          .in('assigned_to', employeeIds),
+        supabaseAdmin
+          .from('attendance_records')
+          .select('user_id, status')
+          .in('user_id', employeeIds),
+      ]);
+
+      const leads = leadsRes.data || [];
+      const attendance = attRes.data || [];
+
+      employeeIds.forEach((id) => {
+        const empLeads = leads.filter((l) => l.assigned_to === id);
+        const totalLeads = empLeads.length;
+        const wonLeads = empLeads.filter((l) => l.lifecycle_status === 'won').length;
+        const activeLeads = empLeads.filter(
+          (l) => l.lifecycle_status !== 'won' && l.lifecycle_status !== 'lost'
+        ).length;
+
+        const empAtt = attendance.filter((a) => a.user_id === id);
+        const totalDays = empAtt.length;
+        const presentDays = empAtt.filter((a) => a.status === 'present').length;
+        const attendanceRate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
+
+        statsMap[id] = {
+          totalLeads,
+          activeLeads,
+          wonLeads,
+          presentDays,
+          totalDays,
+          attendanceRate,
+        };
+      });
+    }
+
+    const employeesWithStats = employees.map((emp) => ({
+      ...emp,
+      stats: statsMap[emp.id] || {
+        totalLeads: 0,
+        activeLeads: 0,
+        wonLeads: 0,
+        presentDays: 0,
+        totalDays: 0,
+        attendanceRate: 100,
+      },
+    }));
+
     return NextResponse.json({
-      employees: data,
+      employees: employeesWithStats,
       total: count || 0,
       page,
       limit,

@@ -17,6 +17,8 @@ import {
   Mail,
   Phone,
   Briefcase,
+  Target,
+  TrendingUp,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Employee } from './EmployeeCard';
@@ -82,12 +84,14 @@ export function EmployeeTableView({
               <th scope="col" className="px-4 py-4">
                 Live Status
               </th>
+              <th scope="col" className="px-4 py-4">
+                Performance
+              </th>
               <th scope="col" className="px-4 py-4 text-right">
                 Actions
               </th>
             </tr>
           </thead>
-
           {/* Table Body */}
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {employees.map((emp) => {
@@ -262,13 +266,38 @@ export function EmployeeTableView({
                         <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
                         <span>
                           Punched Out
-                          {live.total_hours != null ? ` (${live.total_hours.toFixed(1)}h)` : ''}
+                          {live.punch_out_time ? (
+                            <span className="opacity-90">
+                              {' '}
+                              ({format(new Date(live.punch_out_time), 'hh:mm a')})
+                            </span>
+                          ) : null}
                         </span>
                       </div>
                     )}
                   </td>
 
-                  {/* Column 5: Actions */}
+                  {/* Column 5: Performance & Mini KPIs */}
+                  <td className="px-4 py-3.5 whitespace-nowrap">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-gray-900 dark:text-white">
+                        <Target size={12} className="shrink-0 text-blue-500" />
+                        <span>{emp.stats?.activeLeads ?? 0} Active</span>
+                        <span className="text-[10px] font-normal text-gray-500">
+                          ({emp.stats?.wonLeads ?? 0} Won)
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        <TrendingUp size={12} className="shrink-0" />
+                        <span>{emp.stats?.attendanceRate ?? 100}% Att.</span>
+                        <span className="text-[10px] font-normal text-gray-500">
+                          ({emp.stats?.presentDays ?? 0}d)
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+
+                  {/* Column 6: Actions */}
                   <td className="px-4 py-3.5 text-right whitespace-nowrap">
                     <div className="inline-flex items-center gap-1.5">
                       <button
