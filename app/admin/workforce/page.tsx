@@ -22,6 +22,7 @@ import {
   Search,
   Sliders,
   Sparkles,
+  UploadCloud,
   UserCircle2,
   Users,
   X,
@@ -38,6 +39,7 @@ import { EmployeeCard, type Employee } from '@/src/components/admin/employees/Em
 import { EmployeeTableView } from '@/src/components/admin/employees/EmployeeTableView';
 import { DirectoryStatsCards } from '@/src/components/admin/employees/DirectoryStatsCards';
 import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
+import { BulkImportEmployeesModal } from '@/src/components/admin/employees/BulkImportEmployeesModal';
 import { EditEmployeeModal } from '@/src/components/admin/employees/EditEmployeeModal';
 import { ResetPasswordModal } from '@/src/components/admin/employees/ResetPasswordModal';
 import { EmployeePerformanceModal } from '@/src/components/admin/employees/EmployeePerformanceModal';
@@ -151,10 +153,10 @@ function WorkforceContent() {
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [showBulkImportModal, setShowBulkImportModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [resetTarget, setResetTarget] = useState<Employee | null>(null);
   const [performanceTarget, setPerformanceTarget] = useState<Employee | null>(null);
-
   // Attendance & Teams state
   const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
@@ -676,6 +678,17 @@ function WorkforceContent() {
                     <span className="hidden sm:inline">Refresh</span>
                   </button>
 
+                  {/* Bulk Import Button */}
+                  <button
+                    type="button"
+                    onClick={() => setShowBulkImportModal(true)}
+                    className="flex shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 shadow-2xs transition-all hover:bg-gray-50 active:scale-95 dark:border-white/10 dark:bg-[#181822] dark:text-gray-300 dark:hover:bg-white/5"
+                    title="Bulk Import Employees via CSV or Excel"
+                  >
+                    <UploadCloud className="text-brand-gold h-4 w-4" />
+                    <span className="hidden sm:inline">Bulk Import</span>
+                  </button>
+
                   {/* Export Dropdown */}
                   <div className="relative">
                     <button
@@ -1096,6 +1109,16 @@ function WorkforceContent() {
               setShowAddModal(false);
               showToast('success', 'Employee profile created successfully');
               fetchEmployees();
+            }}
+            token={token}
+          />
+        )}
+        {showBulkImportModal && token && (
+          <BulkImportEmployeesModal
+            onClose={() => setShowBulkImportModal(false)}
+            onSuccess={() => {
+              fetchEmployees();
+              fetchMetrics();
             }}
             token={token}
           />
