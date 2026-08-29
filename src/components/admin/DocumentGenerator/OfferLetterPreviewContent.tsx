@@ -337,13 +337,7 @@ export default function OfferLetterPreviewContent({
                     The Company shall compensate you with a fixed Net In-Hand Salary of{' '}
                     <span className="font-bold text-[#1e3a8a]">
                       ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
-                    </span>{' '}
-                    {formData.salaryCtc && (
-                      <span className="font-bold text-gray-800">
-                        (equivalent to an annualized Net In-Hand Remuneration of ₹{' '}
-                        {formatINR(annualCTC)})
-                      </span>
-                    )}
+                    </span>
                     , payable monthly in arrears directly into your designated bank account, subject
                     to applicable statutory compliances and regulatory withholdings under prevailing
                     tax and labor statutes.

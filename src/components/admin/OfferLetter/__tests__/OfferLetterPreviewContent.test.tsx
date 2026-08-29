@@ -181,8 +181,6 @@ describe('OfferLetterPreviewContent', () => {
 
     expect(screen.getByText(/fixed Net In-Hand Salary of/i)).toBeInTheDocument();
     expect(screen.getByText(/₹ 25,000\.00 per month/i)).toBeInTheDocument();
-    expect(
-      screen.getByText(/annualized Net In-Hand Remuneration of ₹ 3,00,000\.00/i)
-    ).toBeInTheDocument();
+    expect(screen.queryByText(/annualized Net In-Hand Remuneration/i)).not.toBeInTheDocument();
   });
 });
