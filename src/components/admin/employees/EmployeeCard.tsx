@@ -18,6 +18,7 @@ import {
   MessageSquare,
   PhoneCall,
   Send,
+  Briefcase,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
@@ -27,6 +28,7 @@ export interface Employee {
   email: string;
   real_email?: string | null;
   phone: string | null;
+  department?: string | null;
   notes: string | null;
   created_at: string;
 }
@@ -148,6 +150,12 @@ export function EmployeeCard({
                     <Copy size={12} />
                   )}
                 </button>
+              </div>
+              <div className="mt-1.5 flex items-center gap-1.5">
+                <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/20 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-700 dark:border-amber-400/20 dark:bg-amber-400/10 dark:text-amber-300">
+                  <Briefcase size={10} />
+                  <span>{employee.department || 'Sales & Operations'}</span>
+                </span>
               </div>
             </div>
           </div>

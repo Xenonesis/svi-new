@@ -40,8 +40,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { password, full_name, phone, notes } = body;
-
+    const { password, full_name, phone, department, notes } = body;
     // If new password provided, update Supabase Auth User credentials
     if (password) {
       if (typeof password !== 'string' || password.length < 8) {
@@ -57,8 +56,8 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     const updateData: Record<string, any> = {};
     if (full_name !== undefined) updateData.full_name = full_name.trim();
     if (phone !== undefined) updateData.phone = phone?.trim() || null;
+    if (department !== undefined) updateData.department = department?.trim() || null;
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
-
     if (Object.keys(updateData).length > 0) {
       const { error: profileError } = await supabaseAdmin
         .from('profiles')

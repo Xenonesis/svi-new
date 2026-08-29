@@ -19,6 +19,7 @@ export function AddEmployeeModal({
     email: '',
     real_email: '',
     phone: '',
+    department: '',
     password: '',
     notes: '',
   });
@@ -43,6 +44,7 @@ export function AddEmployeeModal({
     const realEmail = formData.real_email.trim().toLowerCase();
     const password = formData.password;
     const phone = formData.phone.trim();
+    const department = formData.department.trim();
     const notes = formData.notes.trim();
     if (!fullName) {
       setError('Please enter the employee full name.');
@@ -87,6 +89,7 @@ export function AddEmployeeModal({
           real_email: realEmail || null,
           password,
           phone: phone || null,
+          department: department || null,
           notes: notes || null,
         }),
       });
@@ -187,6 +190,37 @@ export function AddEmployeeModal({
                 className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
                 placeholder="+91 98000 00000"
               />
+            </div>
+
+            <div className="col-span-2">
+              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                Role & Department (Optional)
+              </label>
+              <input
+                type="text"
+                value={formData.department}
+                onChange={(e) => setFormData((p) => ({ ...p, department: e.target.value }))}
+                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                placeholder="e.g. Senior Sales Executive • Sales & CRM"
+              />
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {[
+                  'Sales & CRM',
+                  'Telecaller & Leads',
+                  'Operations & Admin',
+                  'Legal & Accounts',
+                  'Field Executive',
+                ].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setFormData((p) => ({ ...p, department: preset }))}
+                    className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10"
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </div>
             </div>
 
             <div className="col-span-2">

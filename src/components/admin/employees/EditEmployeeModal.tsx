@@ -2,33 +2,37 @@
 
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, User, Phone, FileText, AlertCircle, Save, CheckCircle2, Mail } from 'lucide-react';
+import { X, User, Phone, FileText, AlertCircle, Save, Mail, Briefcase } from 'lucide-react';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { Employee } from './EmployeeCard';
-
 interface EditEmployeeModalProps {
   employee: Employee;
   onClose: () => void;
-  onSuccess: (updated: { full_name: string; phone: string | null; notes: string | null }) => void;
+  onSuccess: (updated: {
+    full_name: string;
+    phone: string | null;
+    department: string | null;
+    notes: string | null;
+  }) => void;
   token: string;
 }
 
 export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditEmployeeModalProps) {
   const [fullName, setFullName] = useState(employee.full_name || '');
   const [phone, setPhone] = useState(employee.phone || '');
+  const [department, setDepartment] = useState(employee.department || '');
   const [notes, setNotes] = useState(employee.notes || '');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
 
     const cleanName = fullName.trim();
     const cleanPhone = phone.trim();
+    const cleanDepartment = department.trim();
     const cleanNotes = notes.trim();
-
     if (!cleanName) {
       setError('Please enter the employee full name.');
       return;
@@ -55,6 +59,7 @@ export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditE
         body: JSON.stringify({
           full_name: cleanName,
           phone: cleanPhone || null,
+          department: cleanDepartment || null,
           notes: cleanNotes || null,
         }),
       });
@@ -68,6 +73,7 @@ export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditE
       onSuccess({
         full_name: cleanName,
         phone: cleanPhone || null,
+        department: cleanDepartment || null,
         notes: cleanNotes || null,
       });
       onClose();
@@ -192,11 +198,49 @@ export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditE
                 />
               </div>
             </div>
+            {/* Department / Role */}
+            <div>
+              <label className="mb-1.5 block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Role & Department
+              </label>
+              <div className="relative">
+                <Briefcase
+                  size={14}
+                  className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  value={department}
+                  onChange={(e) => setDepartment(e.target.value)}
+                  placeholder="e.g. Senior Sales Executive • Sales & CRM"
+                  className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pr-4 pl-9 text-xs text-gray-900 transition-all focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-white/10"
+                />
+              </div>
+              {/* Quick Preset Pills */}
+              <div className="mt-1.5 flex flex-wrap gap-1.5">
+                {[
+                  'Sales & CRM',
+                  'Telecaller & Leads',
+                  'Operations & Admin',
+                  'Legal & Accounts',
+                  'Field Executive',
+                ].map((preset) => (
+                  <button
+                    key={preset}
+                    type="button"
+                    onClick={() => setDepartment(preset)}
+                    className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10"
+                  >
+                    {preset}
+                  </button>
+                ))}
+              </div>
+            </div>
 
             {/* Notes / Remarks */}
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                Designation, Department or Notes
+                Internal HR Notes
               </label>
               <div className="relative">
                 <FileText size={14} className="absolute top-3 left-3 text-gray-400" />

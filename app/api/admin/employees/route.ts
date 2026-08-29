@@ -59,8 +59,8 @@ export async function POST(request: NextRequest) {
     const email = body.email?.trim().toLowerCase();
     const password = body.password;
     const phone = body.phone?.trim();
+    const department = body.department?.trim();
     const notes = body.notes?.trim();
-
     if (!fullName) {
       throw AppError.badRequest('Full Name is required.');
     }
@@ -138,8 +138,8 @@ export async function POST(request: NextRequest) {
         real_email: realEmail,
         full_name: fullName,
         phone: phone || null,
+        department: department || null,
         notes: notes || null,
-        role: 'employee',
         created_by: admin.id,
       })
       .select()

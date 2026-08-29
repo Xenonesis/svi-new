@@ -1135,6 +1135,7 @@ function WorkforceContent() {
                         ...e,
                         full_name: updated.full_name,
                         phone: updated.phone,
+                        department: updated.department,
                         notes: updated.notes,
                       }
                     : e

@@ -16,6 +16,7 @@ import {
   UserCircle2,
   Mail,
   Phone,
+  Briefcase,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Employee } from './EmployeeCard';
@@ -108,9 +109,15 @@ export function EmployeeTableView({
                         {emp.full_name.charAt(0).toUpperCase()}
                       </div>
                       <div className="min-w-0">
-                        <p className="truncate font-semibold text-gray-900 dark:text-white">
-                          {emp.full_name}
-                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="truncate font-semibold text-gray-900 dark:text-white">
+                            {emp.full_name}
+                          </p>
+                          <span className="inline-flex items-center gap-1 rounded border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-medium text-amber-700 dark:text-amber-300">
+                            <Briefcase size={9} />
+                            <span>{emp.department || 'Sales & Operations'}</span>
+                          </span>
+                        </div>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[11px]">
                           <span
                             className="text-brand-gold truncate font-mono font-medium"
@@ -118,7 +125,7 @@ export function EmployeeTableView({
                           >
                             {sviEmail}
                           </span>
-                          <span className="py-0.2 rounded bg-amber-500/10 px-1 text-[9px] font-bold text-amber-600 uppercase dark:bg-amber-400/15 dark:text-amber-300">
+                          <span className="rounded bg-amber-500/10 px-1 py-0.5 text-[9px] font-bold text-amber-600 uppercase dark:bg-amber-400/15 dark:text-amber-300">
                             SVI
                           </span>
                           <button
