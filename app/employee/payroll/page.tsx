@@ -92,7 +92,8 @@ export default function EmployeePayrollPage() {
         </div>
         <h1 className="flex items-center gap-2.5 text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-white">
           <Banknote className="text-brand-gold h-7 w-7" />
-          My Compensation <span className="text-gradient-gold italic">& Payslips</span>
+          My Compensation{' '}
+          <span className="text-gradient-gold inline-block pr-2.5 italic">& Payslips</span>
         </h1>
         <p className="text-xs text-slate-500 sm:text-sm dark:text-slate-400">
           Transparent monthly compensation structure, attendance LOP metrics, and official payslips.

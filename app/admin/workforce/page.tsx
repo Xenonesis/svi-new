@@ -379,7 +379,7 @@ function WorkforceContent() {
             <h1 className="text-brand-navy mt-2 font-serif text-3xl font-bold tracking-tight sm:text-4xl dark:text-white">
               Workforce &amp; HR{' '}
               <span
-                className="text-gradient-gold animate-bg-pan inline-block italic"
+                className="text-gradient-gold animate-bg-pan inline-block pr-2.5 italic"
                 style={{
                   backgroundSize: '200% 200%',
                   backgroundImage:

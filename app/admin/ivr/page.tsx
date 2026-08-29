@@ -153,7 +153,7 @@ export default function IvrManagerPage() {
             <h1 className="text-brand-navy mb-1.5 font-serif text-4xl tracking-tight dark:text-white">
               IVR{' '}
               <span
-                className="text-gradient-gold animate-bg-pan inline-block italic"
+                className="text-gradient-gold animate-bg-pan inline-block pr-2.5 italic"
                 style={{
                   backgroundSize: '200% 200%',
                   backgroundImage:

@@ -169,7 +169,7 @@ export default function AdminDashboard() {
             <h1 className="text-brand-navy mb-2 font-serif text-4xl tracking-tight transition-colors duration-300 dark:text-white">
               System{' '}
               <span
-                className="text-gradient-gold animate-bg-pan inline-block italic"
+                className="text-gradient-gold animate-bg-pan inline-block pr-2.5 italic"
                 style={{
                   backgroundSize: '200% 200%',
                   backgroundImage:
