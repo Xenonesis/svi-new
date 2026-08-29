@@ -29,8 +29,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'motion/react';
 import { supabase } from '@/src/lib/supabase/client';
-import { useState } from 'react';
-
+import { useUIStore } from '@/src/stores/uiStore';
 interface AdminSidebarProps {
   mobileOpen?: boolean;
   onMobileClose?: () => void;
@@ -106,42 +105,21 @@ function SidebarContent({
 
   return (
     <>
-      {/* Collapse toggle — desktop only */}
-      {!isMobile && (
-        <button
-          onClick={() => setCollapsed(!collapsed)}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          className="bg-brand-gold text-brand-navy absolute top-6 -right-3 z-50 flex h-6 w-6 cursor-pointer items-center justify-center rounded-full shadow-lg transition-transform hover:scale-110 focus:outline-none"
-        >
-          {collapsed ? (
-            <ChevronRight className="h-3.5 w-3.5" />
-          ) : (
-            <ChevronLeft className="h-3.5 w-3.5" />
-          )}
-        </button>
-      )}
-
       {/* Logo */}
       <div
-        className={`flex h-20 items-center border-b border-gray-100 transition-all duration-300 dark:border-white/5 ${
+        className={`flex h-16 items-center border-b border-gray-100 transition-all duration-300 dark:border-white/5 ${
           collapsed && !isMobile ? 'justify-center px-2' : 'px-4'
         }`}
       >
         {collapsed && !isMobile ? (
           <Link
             href="/admin/dashboard"
-            className="group relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-white p-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-105 hover:shadow-md active:scale-95 dark:ring-white/10"
+            className="group border-brand-gold/30 hover:border-brand-gold relative flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border bg-gradient-to-br from-amber-500/20 to-amber-600/10 p-1 shadow-xs transition-all duration-300 outline-none hover:scale-105 hover:shadow-md active:scale-95"
             aria-label="SVI Infra Solutions Pvt. Ltd."
           >
-            <Image
-              src="/logo-icon.png"
-              alt="SVI Infra Solutions"
-              width={96}
-              height={96}
-              quality={100}
-              priority
-              className="h-7 w-7 object-contain transition-transform duration-300 group-hover:scale-110"
-            />
+            <span className="font-serif text-xs font-black tracking-tight text-amber-600 dark:text-amber-400">
+              SVI
+            </span>
             {renderTooltip('SVI Infra Solutions')}
           </Link>
         ) : (
@@ -162,7 +140,6 @@ function SidebarContent({
           </Link>
         )}
       </div>
-
       {/* Nav */}
       <div
         className={`flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto py-6 ${collapsed && !isMobile ? 'scrollbar-none px-2' : 'scrollbar-gold px-3'}`}
@@ -315,7 +292,8 @@ function SidebarContent({
 const AdminSidebar = ({ mobileOpen = false, onMobileClose }: AdminSidebarProps) => {
   const pathname = usePathname();
   const router = useRouter();
-  const [collapsed, setCollapsed] = useState(false);
+  const collapsed = useUIStore((s) => s.sidebarCollapsed);
+  const setCollapsed = useUIStore((s) => s.setSidebarCollapsed);
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
@@ -326,8 +304,8 @@ const AdminSidebar = ({ mobileOpen = false, onMobileClose }: AdminSidebarProps) 
     <>
       {/* Desktop sidebar — hidden on mobile */}
       <motion.aside
-        animate={{ width: collapsed ? 80 : 224 }}
-        transition={{ duration: 0.3, ease: 'easeInOut' }}
+        animate={{ width: collapsed ? 76 : 224 }}
+        transition={{ duration: 0.25, ease: 'easeInOut' }}
         className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/90 relative z-40 hidden h-screen flex-col border-r border-gray-200 bg-white/90 backdrop-blur-xl transition-colors duration-300 md:flex"
       >
         <SidebarContent
@@ -337,7 +315,6 @@ const AdminSidebar = ({ mobileOpen = false, onMobileClose }: AdminSidebarProps) 
           handleLogout={handleLogout}
         />
       </motion.aside>
-
       {/* Mobile drawer overlay */}
       <AnimatePresence>
         {mobileOpen && (

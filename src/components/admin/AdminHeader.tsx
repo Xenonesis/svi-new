@@ -1,11 +1,10 @@
 'use client';
 
-import { Menu, Moon, Search, Sun, Monitor } from 'lucide-react';
-
+import { Menu, PanelLeft, PanelLeftClose, Moon, Search, Sun, Monitor } from 'lucide-react';
+import { useUIStore } from '@/src/stores/uiStore';
 import NotificationDropdown from './NotificationDropdown';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
-
 interface AdminHeaderProps {
   isDark: boolean;
   toggleTheme: () => void;
@@ -37,21 +36,40 @@ export default function AdminHeader({
       .join(' ');
   }
 
+  const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
+  const toggleSidebarCollapsed = useUIStore((s) => s.toggleSidebarCollapsed);
   const [_loggingOut, _setLoggingOut] = useState(false);
+
+  const handleToggleNav = () => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      onMenuClick?.();
+    } else {
+      toggleSidebarCollapsed();
+    }
+  };
 
   return (
     <header className="dark:border-brand-gold/15 relative sticky top-0 z-30 border-b border-gray-200 bg-white/80 backdrop-blur-xl transition-colors duration-300 dark:bg-[#0d0d14]/75">
       <div className="flex h-16 items-center justify-between px-4 sm:px-6">
         <div className="flex items-center gap-3">
-          {/* Hamburger button — mobile only */}
+          {/* Unified Responsive Navigation / Sidebar Toggle */}
           <button
-            onClick={onMenuClick}
-            aria-label="Open navigation menu"
-            className="touch-target hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-xl text-gray-600 transition-colors hover:bg-gray-100 active:bg-gray-200 md:hidden dark:text-gray-300 dark:hover:bg-white/10"
+            onClick={handleToggleNav}
+            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Toggle navigation menu'}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Toggle navigation menu'}
+            className="touch-target hover:text-brand-gold flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 active:scale-95 dark:text-gray-400 dark:hover:bg-white/10"
           >
-            <Menu className="h-5 w-5" />
+            <span className="flex items-center justify-center md:hidden">
+              <Menu className="h-5 w-5" />
+            </span>
+            <span className="hidden items-center justify-center md:flex">
+              {sidebarCollapsed ? (
+                <PanelLeft className="h-4.5 w-4.5" />
+              ) : (
+                <PanelLeftClose className="h-4.5 w-4.5" />
+              )}
+            </span>
           </button>
-
           {/* Breadcrumb */}
           <div className="flex items-center gap-2 text-sm font-medium text-gray-500 dark:text-gray-400">
             <span className="hover:text-brand-gold hidden cursor-pointer transition-colors sm:inline">

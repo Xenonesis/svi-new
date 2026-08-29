@@ -6,12 +6,16 @@ export type Theme = 'light' | 'dark' | 'system';
 interface UIState {
   /** Mobile sidebar open state */
   mobileSidebarOpen: boolean;
+  /** Desktop sidebar collapsed state */
+  sidebarCollapsed: boolean;
   /** Whether dark mode is currently active (resolved from theme) */
   isDark: boolean;
   /** Theme preference */
   theme: Theme;
 
   setMobileSidebarOpen: (open: boolean) => void;
+  setSidebarCollapsed: (collapsed: boolean) => void;
+  toggleSidebarCollapsed: () => void;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
   setIsDark: (dark: boolean) => void;
@@ -42,10 +46,13 @@ export const useUIStore = create<UIState>()(
   persist(
     (set, get) => ({
       mobileSidebarOpen: false,
+      sidebarCollapsed: false,
       isDark: false,
       theme: 'system',
 
       setMobileSidebarOpen: (open) => set({ mobileSidebarOpen: open }),
+      setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
+      toggleSidebarCollapsed: () => set((s) => ({ sidebarCollapsed: !s.sidebarCollapsed })),
 
       toggleTheme: () => {
         const { theme } = get();
