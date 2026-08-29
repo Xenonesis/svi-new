@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'motion/react';
 import {
   Users,
@@ -9,15 +10,19 @@ import {
   Briefcase,
   Plus,
   FileText,
-  Phone,
+  PhoneCall,
+  MessageCircle,
   Mail,
+  Copy,
+  Check,
   Pencil,
   Trash2,
+  Calendar,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { RoleSwitcher } from '@/src/components/admin/helpers/RoleSwitcher';
 import { renderPropertyInterestTags } from '@/src/components/admin/helpers/PropertyInterestTags';
-
 interface DashboardUsersTableProps {
   users: UserProfile[];
   loading: boolean;
@@ -51,6 +56,16 @@ export function DashboardUsersTable({
   onDeleteUser,
   onRoleChange,
 }: DashboardUsersTableProps) {
+  const [copiedId, setCopiedId] = useState<string | null>(null);
+
+  const copyToClipboard = (text: string, id: string, label = 'Copied') => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    setCopiedId(id);
+    toast.success(`${label} copied to clipboard`);
+    setTimeout(() => setCopiedId(null), 2000);
+  };
+
   const filtered = users.filter(
     (u) =>
       u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
@@ -58,11 +73,10 @@ export function DashboardUsersTable({
       u.real_email?.toLowerCase().includes(search.toLowerCase()) ||
       u.phone?.includes(search)
   );
-
   return (
     <>
       {/* Toolbar */}
-      <div className="mb-6 flex flex-col gap-3 font-sans sm:flex-row">
+      <div className="mb-6 flex flex-col gap-3 font-sans sm:flex-row sm:items-center">
         <div className="relative flex-1">
           <Search className="text-brand-gold absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2" />
           <input
@@ -70,7 +84,7 @@ export function DashboardUsersTable({
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search by name, email or phone..."
-            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-lg border border-gray-200 bg-white py-3 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
+            className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
           />
           {search && (
             <button
@@ -82,34 +96,39 @@ export function DashboardUsersTable({
             </button>
           )}
         </div>
-        <button
-          onClick={onRefresh}
-          className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-        >
-          <RefreshCw className="h-3.5 w-3.5" /> Refresh
-        </button>
-        <button
-          onClick={onAddEmployee}
-          className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-        >
-          <Briefcase className="h-3.5 w-3.5" /> Add Employee
-        </button>
-        <button
-          onClick={onManageTeam}
-          className="dark:bg-brand-dark-surface/85 flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-5 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
-        >
-          <div className="flex items-center gap-1">
-            <Users className="h-3.5 w-3.5" />
-            <Briefcase className="h-3.5 w-3.5" />
-          </div>
-          Manage Public Team
-        </button>
-        <button
-          onClick={onAddUser}
-          className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center gap-2 rounded-lg px-6 py-3 text-xs font-bold tracking-widest uppercase shadow-lg transition-all"
-        >
-          <Plus className="h-4 w-4" /> Add User
-        </button>
+
+        {/* Action Buttons Toolbar */}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={onRefresh}
+            className="dark:bg-brand-dark-surface/85 touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase transition-all hover:bg-gray-50 active:scale-95 sm:flex-none dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+            title="Refresh list"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            <span>Refresh</span>
+          </button>
+          <button
+            onClick={onAddEmployee}
+            className="dark:bg-brand-dark-surface/85 touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase transition-all hover:bg-gray-50 active:scale-95 sm:flex-none dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+          >
+            <Briefcase className="h-3.5 w-3.5 text-amber-500" />
+            <span>Add Employee</span>
+          </button>
+          <button
+            onClick={onManageTeam}
+            className="dark:bg-brand-dark-surface/85 touch-target flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-3.5 py-2.5 text-xs font-bold tracking-wider text-gray-700 uppercase transition-all hover:bg-gray-50 active:scale-95 sm:flex-none dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+          >
+            <Users className="h-3.5 w-3.5 text-blue-500" />
+            <span>Team</span>
+          </button>
+          <button
+            onClick={onAddUser}
+            className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold touch-target flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold tracking-wider uppercase shadow-md transition-all active:scale-95 sm:w-auto"
+          >
+            <Plus className="h-4 w-4" />
+            <span>Add User</span>
+          </button>
+        </div>
       </div>
 
       {/* Users Table */}
@@ -185,117 +204,153 @@ export function DashboardUsersTable({
             </p>
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full font-sans text-sm">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50/80 backdrop-blur-md transition-colors duration-300 dark:border-white/5 dark:bg-white/5">
-                  {[
-                    'User Profile',
-                    'Contact Info',
-                    'Property Interests',
-                    'Joined Date',
-                    'Actions',
-                  ].map((h, idx) => (
-                    <th
-                      key={h}
-                      className={`px-6 py-5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400 ${idx === 4 ? 'text-right' : 'text-left'}`}
-                    >
-                      {h}
-                    </th>
-                  ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                {filtered.map((u, i) => (
-                  <motion.tr
+          <>
+            {/* Mobile Adaptive Cards View (< md) */}
+            <div className="divide-y divide-gray-100 p-3 md:hidden dark:divide-white/5">
+              {filtered.map((u, i) => {
+                const cleanPhone = u.phone ? u.phone.replace(/\D/g, '') : '';
+                const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+
+                return (
+                  <motion.div
                     key={u.id}
-                    initial={{ opacity: 0, y: 5 }}
+                    initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.02, duration: 0.3, ease: 'easeOut' }}
-                    className="group transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5"
+                    transition={{ delay: i * 0.02, duration: 0.25 }}
+                    className="flex flex-col gap-3 rounded-2xl bg-white/50 p-4 transition-all active:bg-gray-50/80 dark:bg-white/[0.02] dark:active:bg-white/[0.05]"
                   >
-                    {/* User Profile */}
-                    <td className="px-6 py-4">
-                      <div className="flex items-center gap-3.5">
-                        <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-sm font-semibold text-gray-600 dark:border-white/10 dark:bg-white/10 dark:text-gray-300">
+                    {/* Card Header: Avatar, Name & Role */}
+                    <div className="flex items-start justify-between gap-3">
+                      <div className="flex items-center gap-3">
+                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gradient-to-br from-gray-100 to-gray-200 text-sm font-bold text-gray-700 shadow-2xs dark:border-white/10 dark:from-white/10 dark:to-white/5 dark:text-gray-200">
                           {u.full_name?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div className="flex flex-col">
-                          <div className="flex items-center gap-2">
-                            <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                              {u.full_name}
-                            </span>
-                            {roleLoading[u.id] ? (
-                              <span className="border-brand-gold h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
-                            ) : (
-                              <RoleSwitcher
-                                role={u.role}
-                                onRoleChange={(newRole) => onRoleChange(u, newRole)}
-                                disabled={u.id === currentAdminId}
-                              />
-                            )}
-                          </div>
-                          <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                          <span className="text-base font-bold text-gray-900 dark:text-white">
+                            {u.full_name}
+                          </span>
+                          <span className="text-xs text-gray-500 dark:text-gray-400">
                             {u.email}
-                          </div>
-                          {u.notes && (
-                            <div className="mt-1.5 flex items-start gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
-                              <FileText className="mt-0.5 h-3 w-3 flex-shrink-0" />
-                              <span className="max-w-[200px] truncate" title={u.notes}>
-                                {u.notes}
-                              </span>
-                            </div>
-                          )}
+                          </span>
                         </div>
                       </div>
-                    </td>
 
-                    {/* Contact Info */}
-                    <td className="px-6 py-4">
-                      <div className="flex flex-col gap-1.5 text-sm text-gray-700 dark:text-gray-300">
-                        {u.phone ? (
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-3.5 w-3.5 text-gray-400" />
-                            {u.phone}
-                          </div>
+                      {/* Role Switcher */}
+                      <div className="shrink-0">
+                        {roleLoading[u.id] ? (
+                          <span className="border-brand-gold inline-block h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
                         ) : (
-                          <span className="text-gray-400 dark:text-gray-600">—</span>
+                          <RoleSwitcher
+                            role={u.role}
+                            onRoleChange={(newRole) => onRoleChange(u, newRole)}
+                            disabled={u.id === currentAdminId}
+                          />
                         )}
-                        {u.real_email ? (
-                          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                            <Mail className="h-3.5 w-3.5 text-gray-400" />
-                            <span className="max-w-[160px] truncate" title={u.real_email}>
-                              {u.real_email}
-                            </span>
-                          </div>
-                        ) : null}
                       </div>
-                    </td>
+                    </div>
+
+                    {/* Notes if any */}
+                    {u.notes && (
+                      <div className="flex items-start gap-1.5 rounded-lg bg-amber-50/60 px-2.5 py-1.5 text-xs text-amber-800 dark:bg-amber-500/10 dark:text-amber-300">
+                        <FileText className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                        <span className="leading-tight">{u.notes}</span>
+                      </div>
+                    )}
+
+                    {/* Contact Action Badges */}
+                    <div className="flex flex-wrap items-center gap-2 pt-1">
+                      {u.phone ? (
+                        <>
+                          {/* 1-Tap Phone Call */}
+                          <a
+                            href={`tel:${u.phone}`}
+                            className="touch-target inline-flex items-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-700 transition-all hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300"
+                          >
+                            <PhoneCall className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                            <span className="font-mono">{u.phone}</span>
+                          </a>
+
+                          {/* 1-Tap WhatsApp */}
+                          {cleanPhone && (
+                            <a
+                              href={`https://wa.me/${waPhone}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="touch-target inline-flex h-9 w-9 items-center justify-center rounded-xl border border-emerald-500/20 bg-emerald-600/15 text-emerald-600 transition-all hover:bg-emerald-600/25 active:scale-95 dark:border-emerald-400/20 dark:bg-emerald-400/15 dark:text-emerald-300"
+                              title="Open WhatsApp Chat"
+                            >
+                              <MessageCircle className="h-4 w-4" />
+                            </a>
+                          )}
+
+                          {/* Copy Phone */}
+                          <button
+                            onClick={() =>
+                              copyToClipboard(u.phone!, `phone-${u.id}`, 'Phone number')
+                            }
+                            className="touch-target inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-500 transition-all hover:bg-gray-100 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
+                            title="Copy Phone"
+                          >
+                            {copiedId === `phone-${u.id}` ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        </>
+                      ) : null}
+
+                      {u.real_email ? (
+                        <>
+                          <a
+                            href={`mailto:${u.real_email}`}
+                            className="touch-target inline-flex items-center gap-1.5 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3 py-2 text-xs font-medium text-blue-700 transition-all hover:bg-blue-500/20 active:scale-95 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-300"
+                          >
+                            <Mail className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                            <span className="max-w-[170px] truncate">{u.real_email}</span>
+                          </a>
+                          <button
+                            onClick={() => copyToClipboard(u.real_email!, `email-${u.id}`, 'Email')}
+                            className="touch-target inline-flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-500 transition-all hover:bg-gray-100 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
+                            title="Copy Email"
+                          >
+                            {copiedId === `email-${u.id}` ? (
+                              <Check className="h-3.5 w-3.5 text-emerald-500" />
+                            ) : (
+                              <Copy className="h-3.5 w-3.5" />
+                            )}
+                          </button>
+                        </>
+                      ) : null}
+                    </div>
 
                     {/* Property Interests */}
-                    <td className="w-[300px] px-6 py-4">
-                      {u.property_interest ? (
-                        renderPropertyInterestTags(u.property_interest, properties)
-                      ) : (
-                        <span className="text-xs text-gray-400 dark:text-gray-600">—</span>
-                      )}
-                    </td>
+                    {u.property_interest && (
+                      <div className="pt-1">
+                        <div className="mb-1 text-[11px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
+                          Interests
+                        </div>
+                        {renderPropertyInterestTags(u.property_interest, properties)}
+                      </div>
+                    )}
 
-                    {/* Joined Date */}
-                    <td className="px-6 py-4 text-xs text-gray-600 dark:text-gray-400">
-                      {new Date(u.created_at).toLocaleDateString('en-IN', {
-                        day: '2-digit',
-                        month: 'short',
-                        year: 'numeric',
-                      })}
-                    </td>
+                    {/* Card Footer: Joined Date & Action Buttons */}
+                    <div className="mt-1 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/5">
+                      <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                        <Calendar className="h-3.5 w-3.5 text-gray-400" />
+                        <span>
+                          {new Date(u.created_at).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </span>
+                      </div>
 
-                    {/* Actions */}
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
+                      <div className="flex items-center gap-2">
                         <button
                           onClick={() => onEditUser(u)}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                          className="touch-target flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-600 transition-all hover:bg-gray-100 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
                           title="Edit User Profile"
                         >
                           <Pencil className="h-4 w-4" />
@@ -303,19 +358,207 @@ export function DashboardUsersTable({
                         {u.id !== currentAdminId && (
                           <button
                             onClick={() => onDeleteUser(u)}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                            className="touch-target flex h-9 w-9 items-center justify-center rounded-xl border border-red-500/20 bg-red-50 text-red-600 transition-all hover:bg-red-100 active:scale-95 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400"
                             title="Delete User"
                           >
                             <Trash2 className="h-4 w-4" />
                           </button>
                         )}
                       </div>
-                    </td>
-                  </motion.tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+
+            {/* Desktop Table View (>= md) */}
+            <div className="hidden overflow-x-auto md:block">
+              <table className="w-full font-sans text-sm">
+                <thead>
+                  <tr className="border-b border-gray-200 bg-gray-50/80 backdrop-blur-md transition-colors duration-300 dark:border-white/5 dark:bg-white/5">
+                    {[
+                      'User Profile',
+                      'Contact Info',
+                      'Property Interests',
+                      'Joined Date',
+                      'Actions',
+                    ].map((h, idx) => (
+                      <th
+                        key={h}
+                        className={`px-6 py-5 text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400 ${idx === 4 ? 'text-right' : 'text-left'}`}
+                      >
+                        {h}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                  {filtered.map((u, i) => {
+                    const cleanPhone = u.phone ? u.phone.replace(/\D/g, '') : '';
+                    const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+
+                    return (
+                      <motion.tr
+                        key={u.id}
+                        initial={{ opacity: 0, y: 5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: i * 0.02, duration: 0.3, ease: 'easeOut' }}
+                        className="group transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5"
+                      >
+                        {/* User Profile */}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3.5">
+                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-sm font-semibold text-gray-600 dark:border-white/10 dark:bg-white/10 dark:text-gray-300">
+                              {u.full_name?.charAt(0).toUpperCase() || 'U'}
+                            </div>
+                            <div className="flex flex-col">
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm font-semibold text-gray-900 dark:text-white">
+                                  {u.full_name}
+                                </span>
+                                {roleLoading[u.id] ? (
+                                  <span className="border-brand-gold h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+                                ) : (
+                                  <RoleSwitcher
+                                    role={u.role}
+                                    onRoleChange={(newRole) => onRoleChange(u, newRole)}
+                                    disabled={u.id === currentAdminId}
+                                  />
+                                )}
+                              </div>
+                              <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                                {u.email}
+                              </div>
+                              {u.notes && (
+                                <div className="mt-1.5 flex items-start gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
+                                  <FileText className="mt-0.5 h-3 w-3 flex-shrink-0" />
+                                  <span className="max-w-[200px] truncate" title={u.notes}>
+                                    {u.notes}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </td>
+
+                        {/* Contact Info (Enhanced Interactive Pills) */}
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-2 text-sm">
+                            {u.phone ? (
+                              <div className="flex items-center gap-1.5">
+                                <a
+                                  href={`tel:${u.phone}`}
+                                  className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-700 transition-all hover:bg-emerald-500/20 active:scale-95 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300"
+                                  title="Call user"
+                                >
+                                  <PhoneCall className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                                  <span className="font-mono">{u.phone}</span>
+                                </a>
+                                {cleanPhone && (
+                                  <a
+                                    href={`https://wa.me/${waPhone}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex h-6 w-6 items-center justify-center rounded-md border border-emerald-500/20 bg-emerald-600/15 text-emerald-600 transition-all hover:bg-emerald-600/25 active:scale-95 dark:border-emerald-400/20 dark:bg-emerald-400/15 dark:text-emerald-300"
+                                    title="WhatsApp Chat"
+                                  >
+                                    <MessageCircle className="h-3 w-3" />
+                                  </a>
+                                )}
+                                <button
+                                  onClick={() =>
+                                    copyToClipboard(u.phone!, `desk-phone-${u.id}`, 'Phone')
+                                  }
+                                  className="inline-flex h-6 w-6 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                                  title="Copy Phone"
+                                >
+                                  {copiedId === `desk-phone-${u.id}` ? (
+                                    <Check className="h-3 w-3 text-emerald-500" />
+                                  ) : (
+                                    <Copy className="h-3 w-3" />
+                                  )}
+                                </button>
+                              </div>
+                            ) : (
+                              <span className="text-xs text-gray-400 dark:text-gray-600">—</span>
+                            )}
+
+                            {u.real_email ? (
+                              <div className="flex items-center gap-1.5 text-xs">
+                                <a
+                                  href={`mailto:${u.real_email}`}
+                                  className="hover:text-brand-gold inline-flex items-center gap-1.5 text-gray-600 dark:text-gray-400 dark:hover:text-amber-400"
+                                  title="Email user"
+                                >
+                                  <Mail className="h-3.5 w-3.5 text-gray-400" />
+                                  <span className="max-w-[150px] truncate" title={u.real_email}>
+                                    {u.real_email}
+                                  </span>
+                                </a>
+                                <button
+                                  onClick={() =>
+                                    copyToClipboard(u.real_email!, `desk-email-${u.id}`, 'Email')
+                                  }
+                                  className="inline-flex h-5 w-5 items-center justify-center rounded-md text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                                  title="Copy Email"
+                                >
+                                  {copiedId === `desk-email-${u.id}` ? (
+                                    <Check className="h-2.5 w-2.5 text-emerald-500" />
+                                  ) : (
+                                    <Copy className="h-2.5 w-2.5" />
+                                  )}
+                                </button>
+                              </div>
+                            ) : null}
+                          </div>
+                        </td>
+
+                        {/* Property Interests */}
+                        <td className="w-[300px] px-6 py-4">
+                          {u.property_interest ? (
+                            renderPropertyInterestTags(u.property_interest, properties)
+                          ) : (
+                            <span className="text-xs text-gray-400 dark:text-gray-600">—</span>
+                          )}
+                        </td>
+
+                        {/* Joined Date */}
+                        <td className="px-6 py-4 text-xs text-gray-600 dark:text-gray-400">
+                          {new Date(u.created_at).toLocaleDateString('en-IN', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric',
+                          })}
+                        </td>
+
+                        {/* Actions */}
+                        <td className="px-6 py-4 text-right">
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => onEditUser(u)}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-300"
+                              title="Edit User Profile"
+                            >
+                              <Pencil className="h-4 w-4" />
+                            </button>
+                            {u.id !== currentAdminId && (
+                              <button
+                                onClick={() => onDeleteUser(u)}
+                                className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                                title="Delete User"
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </button>
+                            )}
+                          </div>
+                        </td>
+                      </motion.tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+          </>
         )}
       </div>
     </>

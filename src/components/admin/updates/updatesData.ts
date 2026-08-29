@@ -2,6 +2,178 @@ import { SystemUpdateRelease, RoadmapItem } from './types';
 
 export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
   {
+    id: 'rel-2026-08-29-b',
+    date: '2026-08-29',
+    formattedDate: '29 August 2026',
+    version: 'v1.8.5',
+    title: 'Mobile-First Responsive System, Unified Navigation & 1-Tap Action Contacts',
+    summary:
+      'Engineered a comprehensive mobile-first design overhaul across the entire platform, featuring unified responsive navigation, 1-tap phone calling, direct WhatsApp chatting, and adaptive touch cards.',
+    category: 'Staff & Operations',
+    isLatest: true,
+    items: [
+      {
+        title: 'Unified Smart Navigation & Clean Luxury Sidebar',
+        description:
+          'Replaced floating border buttons with a single adaptive control that acts as a mobile slide-out drawer on phones and an elegant sidebar toggle on desktop. Features a crisp gold SVI monogram emblem in collapsed mode.',
+        benefit:
+          'Completely eliminates visual obstruction and provides a clean, modern SaaS navigation experience.',
+        tag: 'Design & Speed',
+      },
+      {
+        title: '1-Tap Direct Action Contact Pills (Call, WhatsApp & Email)',
+        description:
+          'Transformed static phone numbers and emails in the user directory into interactive touch pills with instant phone dialer launch (tel:), direct WhatsApp chat opening (wa.me), and one-click clipboard copying with live toast feedback.',
+        benefit:
+          'Enables administrators and sales managers to contact buyers and team members in 1 second.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Adaptive Table-to-Card Mobile Interface',
+        description:
+          'Eliminated horizontal table scroll fatigue on mobile screens by automatically rendering high-density touch cards displaying customer profiles, roles, contact pills, and quick-action buttons.',
+        benefit: 'Effortless viewing and record management on any smartphone or tablet.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Mobile Touch Ergonomics & Safe Area Optimization',
+        description:
+          'Implemented dynamic viewport heights (dvh), notch-safe padding (pb-safe/pt-safe), tactile active scale touch feedback, and 16px font enforcement to prevent iOS input auto-zooming.',
+        benefit:
+          'Delivers a native app feel in both mobile web browsers and installed Android apps.',
+        tag: 'Design & Speed',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-08-29-a',
+    date: '2026-08-29',
+    formattedDate: '29 August 2026',
+    version: 'v1.8.0',
+    title: 'Unified Workforce Directory, Live Attendance Filters & Bulk Operations',
+    summary:
+      'Launched bulk CSV/Excel employee onboarding, live attendance filter chips, KPI statistics strip, directory Excel export, and dual card/table layout modes.',
+    category: 'Staff & Operations',
+    items: [
+      {
+        title: 'Bulk CSV & Excel Employee Import with Templates',
+        description:
+          'Added bulk onboarding modal with downloadable CSV and Excel templates, drag-and-drop file upload, real-time validation preview, and single-click batch employee creation.',
+        benefit: 'Onboard an entire company department of 50+ staff in under 30 seconds.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Live Attendance Filter Chips & Status Badges',
+        description:
+          'Interactive filter chips for Present, Late, Absent, On Leave, and Not Punched staff with live auto-refreshing attendance status badges and role pills.',
+        benefit: 'Provides instant real-time visibility into workforce office presence.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Interactive KPI Metric Cards & Mini Stats Pills',
+        description:
+          'Top metric cards strip displaying active staff count, today attendance rate, and pending regularizations, along with individual KPI stats pills on employee cards.',
+        benefit: 'Gives management immediate high-level workforce performance indicators.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Directory Excel & CSV Data Export',
+        description:
+          'Added 1-click full export of employee records, departments, designations, salary info, and contact details to formatted Excel and CSV spreadsheets.',
+        benefit: 'Simplifies monthly HR reporting, compliance audits, and payroll exports.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Compact Table & Card Layout Switcher',
+        description:
+          'Dual-view mode allowing administrators to toggle between rich executive cards and a high-density tabular view with sticky headers.',
+        benefit: 'Supports both quick visual scanning and dense data operations.',
+        tag: 'Improvement',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-08-27',
+    date: '2026-08-27',
+    formattedDate: '27 August 2026',
+    version: 'v1.7.0',
+    title: 'Dual-App Android Architecture, Biometric Quick-Punch & Offline Sync',
+    summary:
+      'Configured dedicated Android product flavors separating Admin and Employee apps, biometric quick-punch, offline queue with background sync, and integrated payroll engine.',
+    category: 'Staff & Operations',
+    items: [
+      {
+        title: 'Dual-App Android Architecture Configuration',
+        description:
+          'Configured dedicated Android product flavors separating Admin App (com.svi.infrasolutions) and Employee Workspace App (com.svi.infrasolutions.employee) with dedicated app icons and splash screens.',
+        benefit: 'Keeps employee workspace workflows independent from administrative tools.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Biometric Quick-Punch & Fingerprint Verification',
+        description:
+          'Support for biometric authentication (fingerprint / face unlock) for fast, secure, tamper-resistant attendance punching.',
+        benefit: 'Cuts attendance punch time to 1 second while preventing buddy punching.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Offline Punch Queue with Automatic Background Sync',
+        description:
+          'Implemented an offline-first punch queue that safely caches attendance punches during poor network conditions and automatically syncs upon reconnection.',
+        benefit: 'Ensures zero missed attendance logs during network dropouts.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Comprehensive Payroll & Salary Structure Engine',
+        description:
+          'Integrated salary setup drawer with base pay, HRA, special allowances, PF, ESIC, professional tax deductions, and automated monthly payslip generation.',
+        benefit: 'Full end-to-end statutory payroll calculations inside the Workforce hub.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Unified Workforce HR Hub Consolidation',
+        description:
+          'Consolidated separate Employee, Attendance, and Payroll pages into a single high-performance Workforce Hub with seamless sub-tab navigation.',
+        benefit: 'Streamlines daily HR operations into a single cohesive interface.',
+        tag: 'Design & Speed',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-08-26',
+    date: '2026-08-26',
+    formattedDate: '26 August 2026',
+    version: 'v1.6.5',
+    title: 'Employee Leads CRM, Site Visit Tracking & Digital Staff ID Card',
+    summary:
+      'Introduced lead assignment tracking for sales staff, GPS geofenced site visits, and digital employee ID cards with QR code verification.',
+    category: 'Staff & Operations',
+    items: [
+      {
+        title: 'Employee Lead Management & Follow-Up Tracker',
+        description:
+          'Sales executives can manage assigned customer leads, record interaction notes, schedule follow-ups, and update lead status directly from their mobile portal.',
+        benefit: 'Increases sales follow-up velocity and prevents lead leakage.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'On-Site GPS Geofenced Check-In',
+        description:
+          'Field staff can log location-verified check-ins during on-site customer property tours and site visits.',
+        benefit: 'Provides accurate timestamped records of customer property viewings.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Digital Employee ID Card with QR Verification',
+        description:
+          'Official digital identity card in employee portal featuring employee photo, designation, official corporate email, and scannable verification QR code.',
+        benefit:
+          'Professional digital staff identity for field sales executives and site engineers.',
+        tag: 'New Feature',
+      },
+    ],
+  },
+  {
     id: 'rel-2026-08-20',
     date: '2026-08-20',
     formattedDate: '20 August 2026',
@@ -10,7 +182,6 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     summary:
       'Launched official SVI Infra luxury corporate email templates, high-speed AI letter generator with live timing, and flexible blank-mode editing.',
     category: 'Email & Marketing',
-    isLatest: true,
     items: [
       {
         title: 'Official SVI Luxury Corporate Email Templates',
