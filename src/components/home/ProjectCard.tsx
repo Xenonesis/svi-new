@@ -27,8 +27,9 @@ export default function ProjectCard({
     <StaggerItem>
       <motion.div
         whileHover={{ y: -4 }}
-        transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-        className="group block overflow-hidden border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
+        whileTap={{ scale: 0.985 }}
+        transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+        className="group block touch-manipulation overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow duration-300 hover:shadow-lg dark:border-gray-700 dark:bg-gray-800"
       >
         <div className="bg-brand-navy img-zoom-container relative h-52 overflow-hidden sm:h-64 md:h-72">
           <div className="from-brand-navy/60 absolute inset-0 z-10 bg-gradient-to-t via-transparent to-transparent transition-opacity group-hover:opacity-70" />
@@ -53,7 +54,7 @@ export default function ProjectCard({
           </h3>
           <Link
             href="/projects/completed"
-            className="text-brand-navy group-hover:text-brand-gold inline-flex items-center gap-2 text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
+            className="text-brand-navy group-hover:text-brand-gold touch-target inline-flex items-center gap-2 py-1 text-xs font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
           >
             {exploreLabel}
             <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />

@@ -22,7 +22,7 @@ export function MobileDrawerHeader({
 }: MobileDrawerHeaderProps) {
   const t = useTranslations('nav');
   return (
-    <div className="absolute top-5 right-5 left-5 flex items-center justify-between gap-2">
+    <div className="absolute top-[max(1.25rem,env(safe-area-inset-top))] right-5 left-5 flex items-center justify-between gap-2">
       <Link
         href="/"
         onClick={onClose}
@@ -45,10 +45,10 @@ export function MobileDrawerHeader({
         <ThemeToggle theme={theme} mounted={mounted} onToggle={onToggleTheme} variant="mobile" />
         <button
           onClick={onClose}
-          className="border-gray-150 text-brand-navy rounded-full border bg-gray-50/70 p-2 transition-all duration-300 hover:bg-gray-100 dark:border-white/15 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/20"
+          className="touch-target border-gray-150 text-brand-navy flex h-10 w-10 items-center justify-center rounded-full border bg-gray-50/80 transition-all duration-300 hover:bg-gray-100 dark:border-white/15 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-white/20"
           aria-label={t('closeMenu')}
         >
-          <X size={16} />
+          <X size={18} />
         </button>
       </div>
     </div>

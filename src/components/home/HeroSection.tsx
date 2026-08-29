@@ -83,11 +83,39 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [nextHeroSlide, prevHeroSlide]);
+  const touchStartX = useRef<number>(0);
+  const touchEndX = useRef<number>(0);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    touchEndX.current = e.targetTouches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStartX.current || !touchEndX.current) return;
+    const distance = touchStartX.current - touchEndX.current;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+
+    if (isLeftSwipe) {
+      nextHeroSlide();
+    } else if (isRightSwipe) {
+      prevHeroSlide();
+    }
+    touchStartX.current = 0;
+    touchEndX.current = 0;
+  };
 
   return (
     <section
       ref={heroRef}
-      className="relative flex min-h-[90svh] items-center justify-center overflow-hidden py-20 sm:min-h-[85vh] md:min-h-[900px] lg:py-32"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      className="relative flex min-h-[90dvh] touch-pan-y items-center justify-center overflow-hidden py-16 sm:min-h-[85vh] md:min-h-[900px] lg:py-32"
       role="region"
       aria-label={t('ariaHeroSection')}
     >

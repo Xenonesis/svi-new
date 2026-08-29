@@ -375,9 +375,18 @@ export function PunchTerminalWidget({
       {/* Primary Punch Action Button */}
       {!isPunchedIn ? (
         <button
-          onClick={onPunchIn}
+          onClick={() => {
+            if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+              try {
+                navigator.vibrate(30);
+              } catch (_err) {
+                void _err;
+              }
+            }
+            onPunchIn();
+          }}
           disabled={punching}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-emerald-600/30 transition-all hover:bg-emerald-500 disabled:opacity-50"
+          className="touch-target flex w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-emerald-600/30 transition-all hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-50"
         >
           {punching ? (
             <div className="flex items-center gap-2">
@@ -393,9 +402,18 @@ export function PunchTerminalWidget({
         </button>
       ) : (
         <button
-          onClick={onPunchOutClick}
+          onClick={() => {
+            if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+              try {
+                navigator.vibrate(30);
+              } catch (_err) {
+                void _err;
+              }
+            }
+            onPunchOutClick();
+          }}
           disabled={punching}
-          className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-2xl bg-rose-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-rose-600/30 transition-all hover:bg-rose-500 disabled:opacity-50"
+          className="touch-target flex w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-2xl bg-rose-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-rose-600/30 transition-all hover:bg-rose-500 active:scale-[0.98] disabled:opacity-50"
         >
           {punching ? (
             <div className="flex items-center gap-2">

@@ -47,7 +47,7 @@ export default function AdminHeader({
           <button
             onClick={onMenuClick}
             aria-label="Open navigation menu"
-            className="hover:text-brand-gold flex h-9 w-9 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 md:hidden dark:text-gray-400 dark:hover:bg-white/10"
+            className="touch-target hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-xl text-gray-600 transition-colors hover:bg-gray-100 active:bg-gray-200 md:hidden dark:text-gray-300 dark:hover:bg-white/10"
           >
             <Menu className="h-5 w-5" />
           </button>

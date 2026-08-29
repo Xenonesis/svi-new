@@ -53,9 +53,19 @@
     -webkit-tap-highlight-color: transparent;
   }
 
+  /* Prevent auto-zoom on iOS Safari when focusing input fields */
+  @media screen and (max-width: 767px) {
+    input:not([type="checkbox"]):not([type="radio"]),
+    select,
+    textarea {
+      font-size: 16px !important;
+    }
+  }
+
   body {
     @apply bg-brand-bg text-brand-navy dark:bg-brand-dark-bg font-sans antialiased dark:text-gray-100;
     overflow-x: hidden;
+    min-height: 100dvh;
   }
 
   /* Ensure page content doesn't hide behind the mobile sticky contact bar */
@@ -266,6 +276,68 @@
     .timeline-blob {
       display: none;
     }
+  }
+
+  /* Safe Area Insets Utilities for Mobile / Notch / Home Indicator */
+  .pb-safe {
+    padding-bottom: max(0.75rem, env(safe-area-inset-bottom, 0px));
+  }
+  .pt-safe {
+    padding-top: max(0.75rem, env(safe-area-inset-top, 0px));
+  }
+  .pl-safe {
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+  }
+  .pr-safe {
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+  }
+  .bottom-safe {
+    bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .top-safe {
+    top: env(safe-area-inset-top, 0px);
+  }
+
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+
+  /* Touch manipulation & fast touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    touch-action: manipulation;
+  }
+
+  .touch-snap-x {
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  .touch-snap-start {
+    scroll-snap-align: start;
+  }
+  .touch-snap-center {
+    scroll-snap-align: center;
+  }
+
+  /* Dynamic Viewport Heights */
+  .min-h-dvh {
+    min-height: 100dvh;
+  }
+  .h-dvh {
+    height: 100dvh;
+  }
+  .max-h-dvh {
+    max-height: 100dvh;
   }
 }
 

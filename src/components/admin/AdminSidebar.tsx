@@ -359,18 +359,25 @@ const AdminSidebar = ({ mobileOpen = false, onMobileClose }: AdminSidebarProps) 
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ duration: 0.28, ease: 'easeInOut' }}
-              className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/95 fixed top-0 left-0 z-50 flex h-screen w-64 flex-col border-r border-gray-200 bg-white/95 backdrop-blur-xl md:hidden"
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={{ left: 0.6, right: 0.05 }}
+              onDragEnd={(_, info) => {
+                if (info.offset.x < -60 || info.velocity.x < -300) {
+                  onMobileClose?.();
+                }
+              }}
+              className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/95 fixed top-0 left-0 z-50 flex h-dvh w-72 max-w-[85vw] flex-col border-r border-gray-200 bg-white/95 pt-[max(1rem,env(safe-area-inset-top,0px))] pb-[max(1rem,env(safe-area-inset-bottom,0px))] backdrop-blur-xl md:hidden"
             >
               {/* Close button */}
               <button
                 onClick={onMobileClose}
-                className="absolute top-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/20"
+                className="touch-target absolute top-4 right-4 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-white/10 dark:text-gray-300 dark:hover:bg-white/20"
                 aria-label="Close menu"
               >
                 <X className="h-4 w-4" />
               </button>
-
               <SidebarContent
                 collapsed={false}
                 setCollapsed={() => {}}

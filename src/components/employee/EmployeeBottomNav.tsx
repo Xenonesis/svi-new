@@ -48,8 +48,8 @@ export default function EmployeeBottomNav() {
   }
 
   return (
-    <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200/80 bg-white/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-lg md:hidden dark:border-slate-800/80 dark:bg-slate-950/90">
-      <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-2">
+    <nav className="fixed right-0 bottom-0 left-0 z-40 border-t border-slate-200/80 bg-white/90 pb-[max(0.25rem,env(safe-area-inset-bottom,0px))] backdrop-blur-lg md:hidden dark:border-slate-800/80 dark:bg-slate-950/90">
+      <div className="mx-auto flex h-16 max-w-lg items-center justify-around px-1">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
@@ -61,7 +61,7 @@ export default function EmployeeBottomNav() {
               key={item.name}
               href={item.href}
               className={clsx(
-                'relative flex flex-1 flex-col items-center justify-center py-1.5 transition-all duration-150',
+                'touch-target relative flex flex-1 flex-col items-center justify-center py-1 transition-all duration-150 active:scale-95',
                 isActive
                   ? 'font-semibold text-blue-600 dark:text-blue-400'
                   : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
