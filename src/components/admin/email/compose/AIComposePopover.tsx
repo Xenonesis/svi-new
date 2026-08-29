@@ -129,58 +129,179 @@ export function AIComposePopover({
   }, [preview]);
 
   // Smart Auto-Fill helper
+  // Comprehensive Smart Auto-Fill helper
+  const runSmartAutoFill = useCallback(
+    (htmlContent: string, currentPrompt: string, baseVars: Record<string, string> = {}) => {
+      const vars = extractTemplateVars(htmlContent);
+      const updated: Record<string, string> = { ...baseVars };
+      const p = (currentPrompt || prompt).toLowerCase();
+
+      vars.forEach((v) => {
+        if (baseVars[v]) {
+          updated[v] = baseVars[v];
+          return;
+        }
+        const vLower = v.toLowerCase().replace(/_/g, '');
+
+        if (
+          vLower === 'name' ||
+          vLower.includes('recipient') ||
+          vLower.includes('customer') ||
+          vLower.includes('candidate')
+        ) {
+          updated[v] = recipientName || 'Sanu Mishra';
+        } else if (
+          vLower.includes('leavestart') ||
+          vLower.includes('startdate') ||
+          vLower.includes('fromdate') ||
+          vLower === 'start'
+        ) {
+          const dateObj = new Date();
+          dateObj.setDate(dateObj.getDate() + 3);
+          updated[v] = dateObj.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          });
+        } else if (
+          vLower.includes('leaveend') ||
+          vLower.includes('enddate') ||
+          vLower.includes('todate') ||
+          vLower === 'end'
+        ) {
+          const dateObj = new Date();
+          dateObj.setDate(dateObj.getDate() + 7);
+          updated[v] = dateObj.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          });
+        } else if (
+          vLower.includes('totalday') ||
+          vLower.includes('workingday') ||
+          vLower.includes('duration') ||
+          vLower.includes('days')
+        ) {
+          const match = p.match(/(\d+)\s*(?:day|days|working\s*day)/i);
+          updated[v] = match ? match[1] : '4';
+        } else if (
+          vLower.includes('reason') ||
+          vLower.includes('purpose') ||
+          vLower.includes('cause')
+        ) {
+          if (
+            p.includes('sick') ||
+            p.includes('health') ||
+            p.includes('medical') ||
+            p.includes('doctor')
+          ) {
+            updated[v] = 'Medical recovery & health consultation';
+          } else if (p.includes('vacation') || p.includes('trip') || p.includes('travel')) {
+            updated[v] = 'Annual family travel & vacation';
+          } else if (p.includes('emergency')) {
+            updated[v] = 'Urgent family emergency';
+          } else {
+            updated[v] = 'Personal & family commitments';
+          }
+        } else if (
+          vLower.includes('manager') ||
+          vLower.includes('supervisor') ||
+          vLower.includes('approver')
+        ) {
+          updated[v] = 'HR & Operations Management';
+        } else if (
+          vLower.includes('employee') ||
+          vLower.includes('applicant') ||
+          vLower.includes('sender')
+        ) {
+          updated[v] = recipientName || 'Sanu Mishra';
+        } else if (
+          vLower.includes('property') ||
+          vLower.includes('project') ||
+          vLower.includes('township') ||
+          vLower.includes('plot')
+        ) {
+          if (p.includes('shivani') || p.includes('vatika')) {
+            updated[v] = 'Plot #A-104, Shivani Vatika';
+          } else if (p.includes('shyam') || p.includes('aangan')) {
+            updated[v] = 'Unit #B-202, Shyam Aangan';
+          } else if (p.includes('plot')) {
+            const match = p.match(/plot\s*#?([a-z0-9-]+)/i);
+            updated[v] = match ? `Plot #${match[1]}` : 'Plot #A-104, Shivani Vatika';
+          } else {
+            updated[v] = 'Shivani Vatika 11th';
+          }
+        } else if (
+          vLower.includes('due') ||
+          vLower.includes('amount') ||
+          vLower.includes('emi') ||
+          vLower.includes('price')
+        ) {
+          const match = p.match(/(?:rs\.?|inr|₹)?\s*(\d+[,\d]*k?|\d+000)/i);
+          updated[v] = match ? (match[1].startsWith('₹') ? match[1] : `₹${match[1]}`) : '₹50,000';
+        } else if (
+          vLower.includes('missed') ||
+          vLower.includes('count') ||
+          vLower.includes('installments')
+        ) {
+          const match = p.match(/(\d+)\s*(?:month|emi|installment|missed)/i);
+          updated[v] = match ? match[1] : '2';
+        } else if (
+          vLower.includes('role') ||
+          vLower.includes('designation') ||
+          vLower.includes('position')
+        ) {
+          if (p.includes('developer') || p.includes('react') || p.includes('fullstack')) {
+            updated[v] = 'Full Stack Developer';
+          } else if (p.includes('designer') || p.includes('ui') || p.includes('ux')) {
+            updated[v] = 'UI/UX Design Specialist';
+          } else if (p.includes('sales')) {
+            updated[v] = 'Senior Sales Executive';
+          } else {
+            updated[v] = 'Freelance Consultant';
+          }
+        } else if (
+          vLower.includes('compensation') ||
+          vLower.includes('salary') ||
+          vLower.includes('stipend') ||
+          vLower.includes('fee')
+        ) {
+          const match = p.match(/(?:rs\.?|inr|₹)?\s*(\d+k|\d+,\d+|\d+000)/i);
+          updated[v] = match
+            ? match[1].startsWith('₹')
+              ? `${match[1]} / month`
+              : `₹${match[1]} / month`
+            : '₹45,000 / month';
+        } else if (vLower.includes('date') || vLower === 'date') {
+          const dateObj = new Date();
+          if (vLower.includes('due') || vLower.includes('start'))
+            dateObj.setDate(dateObj.getDate() + 7);
+          updated[v] = dateObj.toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+          });
+        } else if (vLower.includes('url') || vLower.includes('portal') || vLower.includes('link')) {
+          updated[v] = 'https://www.sviinfrasolutions.com';
+        } else if (!updated[v]) {
+          const formatted = v
+            .replace(/([a-z])([A-Z])/g, '$1 $2')
+            .replace(/_/g, ' ')
+            .replace(/\b\w/g, (c) => c.toUpperCase());
+          updated[v] = formatted;
+        }
+      });
+
+      return updated;
+    },
+    [prompt, recipientName]
+  );
+
   const handleSmartAutoFill = useCallback(() => {
-    const vars = extractTemplateVars(preview);
-    const updated: Record<string, string> = { ...customVars };
-    const p = prompt.toLowerCase();
-
-    vars.forEach((v) => {
-      if (v === 'name') {
-        updated[v] = recipientName || 'Sanu Mishra';
-      } else if (v.includes('date') || v === 'start_date') {
-        const today = new Date();
-        today.setDate(today.getDate() + 7);
-        updated[v] = today.toLocaleDateString('en-IN', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        });
-      } else if (v === 'role' || v.includes('designation') || v.includes('position')) {
-        if (p.includes('developer') || p.includes('react') || p.includes('fullstack')) {
-          updated[v] = 'Full Stack Developer';
-        } else if (p.includes('designer') || p.includes('ui') || p.includes('ux')) {
-          updated[v] = 'UI/UX Design Specialist';
-        } else if (p.includes('sales') || p.includes('executive')) {
-          updated[v] = 'Senior Sales Executive';
-        } else {
-          updated[v] = 'Freelance Consultant';
-        }
-      } else if (v === 'project' || v.includes('township') || v.includes('location')) {
-        if (p.includes('shivani') || p.includes('vatika')) {
-          updated[v] = 'Shivani Vatika 11th';
-        } else if (p.includes('shyam') || p.includes('aangan')) {
-          updated[v] = 'Shyam Aangan';
-        } else {
-          updated[v] = 'SVI Luxury Townships';
-        }
-      } else if (
-        v === 'compensation' ||
-        v.includes('salary') ||
-        v.includes('stipend') ||
-        v.includes('fee')
-      ) {
-        const numMatch = prompt.match(/\b(\d+k|\d+,\d+|\d+000)\b/i);
-        updated[v] = numMatch ? `₹${numMatch[1]} / month` : '₹45,000 / month';
-      } else if (v.includes('url') || v.includes('portal') || v.includes('link')) {
-        updated[v] = 'https://www.sviinfrasolutions.com';
-      } else if (!updated[v]) {
-        updated[v] = v.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-      }
-    });
-
+    if (!preview) return;
+    const updated = runSmartAutoFill(preview, prompt, customVars);
     setCustomVars(updated);
-  }, [preview, prompt, recipientName, customVars]);
-
+  }, [preview, prompt, customVars, runSmartAutoFill]);
   const handleGenerate = useCallback(async () => {
     if (!prompt.trim() || loading) return;
     setPreview('');
@@ -210,42 +331,14 @@ export function AIComposePopover({
           variables: result.variables,
         });
 
-        // Initialize smart initial vars
-        const vars = extractTemplateVars(result.html);
-        const init: Record<string, string> = {};
-        const p = prompt.trim().toLowerCase();
-
-        vars.forEach((v) => {
-          if (result.variables?.[v]) {
-            init[v] = result.variables[v];
-          } else if (v === 'name') {
-            init[v] = recipientName || 'Sanu Mishra';
-          } else if (v.includes('date') || v === 'start_date') {
-            init[v] = new Date().toLocaleDateString('en-IN', {
-              day: 'numeric',
-              month: 'short',
-              year: 'numeric',
-            });
-          } else if (v === 'role') {
-            if (p.includes('developer')) init[v] = 'Full Stack Developer';
-            else if (p.includes('designer')) init[v] = 'UI/UX Designer';
-            else init[v] = 'Freelance Consultant';
-          } else if (v === 'project') {
-            if (p.includes('shivani')) init[v] = 'Shivani Vatika 11th';
-            else init[v] = 'SVI Luxury Townships';
-          } else if (v === 'compensation') {
-            const match = prompt.match(/\b(\d+k|\d+,\d+|\d+000)\b/i);
-            init[v] = match ? `₹${match[1]} / month` : '₹45,000 / month';
-          } else if (v.includes('url') || v.includes('portal') || v.includes('link')) {
-            init[v] = 'https://www.sviinfrasolutions.com';
-          }
-        });
-        setCustomVars(init);
+        // Automatically run smart variable extraction and auto-fill
+        const populatedVars = runSmartAutoFill(result.html, prompt.trim(), result.variables || {});
+        setCustomVars(populatedVars);
       }
     } catch (err) {
       console.error('[AICompose] Error generating:', err);
     }
-  }, [prompt, tone, recipientName, subject, autoCompose, loading]);
+  }, [prompt, tone, recipientName, subject, autoCompose, loading, runSmartAutoFill]);
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -254,54 +347,144 @@ export function AIComposePopover({
     }
   };
 
-  // Build resolved preview HTML for iframe
+  // Build resolved preview HTML for iframe with luxury styling and high-contrast normalization
   const resolvedPreviewHtml = useMemo(() => {
     if (!preview) return '';
     const vars = extractTemplateVars(preview);
     const resolvedVars: Record<string, string> = {};
 
     vars.forEach((v) => {
-      if (customVars[v]) {
+      if (customVars[v] !== undefined && customVars[v].trim() !== '') {
         resolvedVars[v] = customVars[v];
       } else if (templateMeta?.variables?.[v]) {
         resolvedVars[v] = templateMeta.variables[v];
       } else if (v === 'name') {
         resolvedVars[v] = recipientName || 'Sanu Mishra';
-      } else if (v.includes('date')) {
-        resolvedVars[v] = new Date().toLocaleDateString('en-IN', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        });
-      } else if (v.includes('portal') || v.includes('url') || v.includes('link')) {
-        resolvedVars[v] = 'https://www.sviinfrasolutions.com';
       } else {
-        resolvedVars[v] = `{{${v}}}`;
+        resolvedVars[v] = `[${v.replace(/_/g, ' ').toUpperCase()}]`;
       }
     });
 
     const parsed = getPreviewHtml(preview, resolvedVars);
 
-    // Ensure full HTML document wrapper for iframe
-    if (!parsed.includes('<html')) {
+    const normalizerCss = `
+      <style>
+        * { box-sizing: border-box; }
+        html, body {
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          background-color: #f1f5f9 !important;
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif !important;
+          color: #0f172a !important;
+          -webkit-text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+          -webkit-font-smoothing: antialiased;
+        }
+        body {
+          padding: 12px 6px !important;
+        }
+        table {
+          border-collapse: collapse !important;
+          mso-table-lspace: 0pt;
+          mso-table-rspace: 0pt;
+          max-width: 100% !important;
+        }
+        table[align="center"], table[style*="max-width:600px"], table[width="600"] {
+          width: 100% !important;
+          max-width: 600px !important;
+          margin: 0 auto !important;
+        }
+        img { max-width: 100% !important; height: auto !important; }
+
+        /* Guaranteed crisp high-contrast header text on dark navy banner */
+        tr[style*="#0f172a"] h1, tr[style*="#0f172a"] p, tr[style*="#1e293b"] h1, tr[style*="#1e293b"] p,
+        td[style*="#0f172a"] h1, td[style*="#0f172a"] p, td[style*="#1e293b"] h1, td[style*="#1e293b"] p,
+        div[style*="#0f172a"] h1, div[style*="#0f172a"] p, div[style*="#1e293b"] h1, div[style*="#1e293b"] p {
+          color: #ffffff !important;
+        }
+        tr[style*="#0f172a"] p, tr[style*="#1e293b"] p, td[style*="#0f172a"] p, td[style*="#1e293b"] p {
+          color: #cbd5e1 !important;
+        }
+        tr[style*="#0f172a"] span, tr[style*="#1e293b"] span, td[style*="#0f172a"] span, td[style*="#1e293b"] span {
+          color: #D4AF37 !important;
+        }
+
+        /* Table cards & structure styling */
+        table td { word-break: break-word; }
+        table[style*="border"] td, table[style*="background-color:#f8fafc"] td {
+          padding: 10px 12px !important;
+        }
+
+        /* Guaranteed crisp high-contrast footer text & link styling */
+        div[style*="text-align:center"] p {
+          color: #334155 !important;
+        }
+        div[style*="text-align:center"] p:first-child {
+          color: #0f172a !important;
+          font-weight: 800 !important;
+          font-size: 13px !important;
+        }
+        div[style*="text-align:center"] p:last-child {
+          color: #64748b !important;
+          font-weight: 600 !important;
+        }
+        div[style*="text-align:center"] a {
+          color: #1e3a8a !important;
+          font-weight: 700 !important;
+          text-decoration: underline !important;
+        }
+
+        /* Mobile Responsive Viewport Overrides */
+        @media only screen and (max-width: 600px) {
+          body { padding: 8px 4px !important; }
+          table[style*="max-width:600px"], table[width="600"] {
+            width: 100% !important;
+            border-radius: 10px !important;
+          }
+          td[style*="padding:36px"], td[style*="padding:32px"], td[style*="padding:40px"] {
+            padding: 20px 14px !important;
+          }
+          h1[style*="font-size:24px"], h1[style*="font-size:28px"], h1[style*="font-size:22px"] {
+            font-size: 19px !important;
+            line-height: 1.3 !important;
+          }
+          h2[style*="font-size:18px"], h2[style*="font-size:19px"] {
+            font-size: 16px !important;
+          }
+          table[style*="border-collapse"] td {
+            padding: 8px 8px !important;
+            font-size: 11.5px !important;
+          }
+          a[style*="padding:14px 36px"], a[style*="padding:14px 32px"] {
+            display: block !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            text-align: center !important;
+            padding: 13px 16px !important;
+          }
+        }
+      </style>
+    `;
+
+    if (parsed.includes('<head>')) {
+      return parsed.replace('<head>', `<head>${normalizerCss}`);
+    } else if (parsed.includes('<html')) {
+      return parsed.replace(/<html[^>]*>/, `$&<head>${normalizerCss}</head>`);
+    } else {
       return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    body { margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; }
-    * { box-sizing: border-box; }
-  </style>
+  ${normalizerCss}
 </head>
-<body style="margin:0;padding:20px 10px;background-color:#f1f5f9;">
+<body>
   ${parsed}
 </body>
 </html>`;
     }
-    return parsed;
   }, [preview, customVars, templateMeta, recipientName]);
-
   const handleCopy = () => {
     if (!preview) return;
     const resolved = getPreviewHtml(preview, customVars);
@@ -373,9 +556,9 @@ export function AIComposePopover({
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
                       AI Email & Template Writer
                     </h3>
-                    <span className="bg-brand-gold/10 text-brand-gold inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-semibold">
-                      <Zap className="h-2.5 w-2.5" />
-                      ~2-3s ultra-fast
+                    <span className="bg-brand-gold/15 text-brand-gold inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-[10px] font-bold tracking-wide">
+                      <Sparkles className="h-2.5 w-2.5" />
+                      Enterprise AI
                     </span>
                   </div>
                   <p className="text-[11px] text-gray-500 dark:text-gray-400">
@@ -465,9 +648,6 @@ export function AIComposePopover({
                       <>
                         <Sparkles className="h-3.5 w-3.5" />
                         <span>Generate Corporate Template</span>
-                        <span className="py-0.2 text-brand-dark-surface/80 rounded bg-black/10 px-1.5 text-[10px] font-semibold dark:bg-black/20">
-                          ~2.5s
-                        </span>
                       </>
                     )}
                   </button>
@@ -499,13 +679,18 @@ export function AIComposePopover({
                 <motion.div
                   initial={{ opacity: 0, y: 6 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="border-brand-gold/30 bg-brand-gold/5 dark:border-brand-gold/20 dark:bg-brand-gold/[0.03] rounded-xl border p-4"
+                  className="border-brand-gold/30 bg-brand-gold/5 dark:border-brand-gold/20 dark:bg-brand-gold/[0.04] rounded-xl border p-4"
                 >
                   <div className="mb-3 flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <SlidersHorizontal className="text-brand-gold h-4 w-4" />
-                      <span className="text-xs font-bold tracking-wide text-gray-900 uppercase dark:text-white">
-                        Fill Template Details ({extractedVariables.length} fields)
+                      <div className="bg-brand-gold/20 text-brand-gold flex h-5 w-5 items-center justify-center rounded">
+                        <SlidersHorizontal className="h-3 w-3" />
+                      </div>
+                      <span className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-white">
+                        Template Variables ({extractedVariables.length})
+                      </span>
+                      <span className="rounded bg-emerald-500/15 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-400">
+                        Live Sync
                       </span>
                     </div>
 
@@ -517,35 +702,39 @@ export function AIComposePopover({
                         title="Auto-fill details from your prompt"
                       >
                         <Wand2 className="h-3 w-3" />
-                        <span>⚡ Smart Auto-Fill</span>
+                        <span>⚡ Re-Fill Fields</span>
                       </button>
                       <button
                         type="button"
                         onClick={() => setShowVarEditor(!showVarEditor)}
                         className="text-[11px] font-medium text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
                       >
-                        {showVarEditor ? 'Hide Fields' : 'Show Fields'}
+                        {showVarEditor ? 'Collapse' : 'Expand'}
                       </button>
                     </div>
                   </div>
 
                   {showVarEditor && (
-                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       {extractedVariables.map((v) => {
                         const val = customVars[v] || '';
                         const isFilled = Boolean(val.trim());
                         return (
                           <div key={v} className="flex flex-col">
-                            <label className="mb-1 flex items-center justify-between text-[11px] font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300">
-                              <span>{v.replace(/_/g, ' ')}</span>
+                            <div className="mb-1 flex items-center justify-between">
+                              <label className="text-[10px] font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                                {v.replace(/_/g, ' ')}
+                              </label>
                               {isFilled ? (
-                                <span className="text-[10px] text-emerald-600 dark:text-emerald-400">
+                                <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
                                   ✓ Filled
                                 </span>
                               ) : (
-                                <span className="text-[10px] text-amber-500">Required</span>
+                                <span className="text-[9px] font-semibold text-amber-500">
+                                  Required
+                                </span>
                               )}
-                            </label>
+                            </div>
                             <input
                               type="text"
                               value={val}
@@ -562,7 +751,6 @@ export function AIComposePopover({
                   )}
                 </motion.div>
               )}
-
               {/* Output Preview (Sandboxed Iframe) */}
               {preview && (
                 <div className="rounded-xl border border-gray-200/80 bg-gray-50/70 p-3.5 dark:border-gray-800 dark:bg-gray-900/60">

@@ -8,6 +8,7 @@ export const extractTemplateVars = (html: string): string[] => {
   const cleanVars = matches
     .map((m) =>
       m
+        .replace(/<[^>]+>/g, '') // Strip any stray HTML tags (e.g. <strong>, <em>) inside brackets
         .replace(/[{}]/g, '')
         .replace(/^[#/^>&]/, '')
         .trim()
@@ -37,15 +38,18 @@ export const getPreviewHtml = (
     return '';
   });
 
-  // 2. Process standard variables - only replace if value is non-empty
+  // 2. Process standard variables - replace if value provided, tolerating inner formatting tags
+  const escapeRegExp = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   Object.entries(templateVars).forEach(([key, value]) => {
-    const pattern = new RegExp('\\{\\{' + key + '\\}\\}', 'g');
+    const pattern = new RegExp(
+      '\\{\\{(?:<[^>]+>)*' + escapeRegExp(key) + '(?:<[^>]+>)*\\}\\}',
+      'gi'
+    );
     result = result.replace(
       pattern,
       value !== undefined && value !== null && value.trim() !== '' ? value : '{{' + key + '}}'
     );
   });
-
   return result;
 };
 

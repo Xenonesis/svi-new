@@ -13,10 +13,31 @@ export const maxDuration = 30;
 
 const EMAIL_SYSTEM_PROMPT = `You are an elite corporate email HTML template designer and writer for SVI Infra Solutions Pvt. Ltd., a premier real estate developer in India.
 Write high-end, responsive, executive-level business emails in polished Indian English.
-- Use respectful salutations (Dear/Respected)
-- Replace dense text with structured 2-column detail cards, alert boxes, and action roadmaps
-- End with dedicated HR/Advisor desk contact and full corporate footer
-- Use ₹ for currency (e.g. ₹50,00,000)
+
+─── PERSPECTIVE & SALUTATION RULES (CRITICAL) ───
+1. Employee-to-Management / HR Requests (e.g. Leave Application, Resignation, Formal Request, Expense Claim):
+   - SENDER: The Employee.
+   - RECIPIENT: Management or HR.
+   - SALUTATION: MUST be "Respected Sir/Madam," or "Dear Management," or "Dear HR Team," or "Dear {{manager_name}},".
+   - NEVER address "Dear Valued Employee," when drafting a leave request or employee-authored application!
+   - SIGN-OFF: "Warm regards, / Sincerely,<br><strong>{{applicant_name}}</strong><br>{{designation}} | SVI Infra Solutions".
+
+2. Company-to-Employee (e.g. Leave Approval/Rejection, Offer Letter, Policy Notice, Appreciation):
+   - SENDER: HR or Management.
+   - RECIPIENT: The Employee.
+   - SALUTATION: "Dear {{name}}," or "Dear Team Member,".
+
+3. Company-to-Client/Customer (e.g. Payment Reminder, Booking Confirmation, Demand Notice, Festival Greeting):
+   - SENDER: SVI Infra Solutions.
+   - RECIPIENT: The Customer / Investor.
+   - SALUTATION: "Dear {{name}}," or "Dear Valued Customer,".
+
+─── GENERAL FORMATTING RULES ───
+- Write direct, contextual, and professional email content tailored strictly to what the user prompts.
+- Do NOT add unsolicited 'Next Steps', 'Action Roadmaps', or 'Portal CTA Buttons' unless specifically requested in the prompt.
+- End with dedicated HR/Advisor desk contact and full corporate footer.
+- Use clean, pure variable placeholders without HTML inside braces (e.g. use {{start_date}} and <strong>{{start_date}}</strong>, NEVER {{<strong>start_date</strong>}}).
+- Use ₹ for currency (e.g. ₹50,00,000).
 - Important Context: The current year is ${new Date().getFullYear()}, corporate office is Block E-220, 2nd Floor, Sector 63, Noida, and official website is https://www.sviinfrasolutions.com`;
 
 const IMPROVE_PROMPT = `You are an expert corporate email text and HTML editor for SVI Infra Solutions.
@@ -116,68 +137,98 @@ export async function POST(request: NextRequest) {
 EXISTING TEMPLATES:
 ${templatesList}
 
-─── LUXURY CORPORATE DESIGN SYSTEM ───
-Always construct email with this EXACT table structure (cross-client compatible, inline CSS, high-contrast colors):
-- Outer wrapper: width="100%" bgcolor="#f1f5f9" style="padding:40px 0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;"
-- Main container: width="600" align="center" bgcolor="#ffffff" style="max-width:600px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0;"
-- Header:
-  <tr style="background-color:#0f172a;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a2744 100%);border-bottom:3px solid #D4AF37;">
-    <td style="padding:36px 30px;text-align:center;">
-      <span style="display:inline-block;padding:5px 14px;background-color:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;margin-bottom:12px;">CATEGORY LABEL</span>
-      <h1 style="color:#ffffff;font-size:24px;margin:0;font-family:Georgia,serif;font-weight:700;letter-spacing:0.5px;">SVI Infra Solutions</h1>
-      <p style="color:#cbd5e1;font-size:13px;margin:8px 0 0;font-weight:400;">Sub-heading / Subject Summary</p>
-    </td>
-  </tr>
+─── LUXURY MOBILE-RESPONSIVE CORPORATE DESIGN SYSTEM ───
+Always construct email with this clean, 100% mobile-responsive HTML email architecture:
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="x-apple-disable-message-reformatting">
+  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
+  <title>SVI Infra Solutions</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; }
+    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { -ms-interpolation-mode: bicubic; max-width: 100%; height: auto; }
+    @media only screen and (max-width: 600px) {
+      .email-wrapper { padding: 12px 6px !important; }
+      .email-card { width: 100% !important; max-width: 100% !important; border-radius: 12px !important; }
+      .header-cell { padding: 24px 16px !important; }
+      .header-title { font-size: 20px !important; line-height: 1.3 !important; }
+      .header-subtitle { font-size: 12px !important; }
+      .body-cell { padding: 22px 16px !important; font-size: 14px !important; }
+      .details-table th, .details-table td { padding: 8px 10px !important; font-size: 12px !important; }
+      .cta-button { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; padding: 14px 18px !important; }
+      .helpdesk-bar { padding: 14px 16px !important; font-size: 11.5px !important; }
+      .footer-cell { padding: 18px 12px !important; font-size: 11px !important; }
+    }
+  </style>
+</head>
+<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+  <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0;padding:28px 10px;background-color:#f1f5f9;width:100%;">
+    <tr>
+      <td align="center">
+        <!-- Main Card Container: Fluid 100% with max-width 600px -->
+        <table class="email-card" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0;margin:0 auto;">
+          <!-- Header Banner -->
+          <tr style="background-color:#0f172a;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a2744 100%);border-bottom:3px solid #D4AF37;">
+            <td class="header-cell" style="padding:32px 24px;text-align:center;">
+              <span style="display:inline-block;padding:4px 12px;background-color:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37 !important;font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">CATEGORY LABEL</span>
+              <h1 class="header-title" style="color:#ffffff !important;font-size:22px;margin:0;font-family:Georgia,serif;font-weight:700;letter-spacing:0.5px;line-height:1.3;">SVI Infra Solutions</h1>
+              <p class="header-subtitle" style="color:#cbd5e1 !important;font-size:12.5px;margin:6px 0 0;font-weight:400;line-height:1.4;">Sub-heading / Subject Summary</p>
+            </td>
+          </tr>
 - Body Content (inside <td style="padding:36px 32px;background-color:#ffffff;color:#0f172a;">):
-  - Highlight/Success Alert Box:
-    <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
-      <p style="margin:0;color:#15803d;font-weight:700;font-size:13.5px;">✓ Highlight Message / Status</p>
-      <p style="margin:4px 0 0;color:#166534;font-size:12.5px;line-height:1.5;">Sub-message description</p>
-    </div>
-  - Salutation: <h2 style="color:#0f172a;font-size:19px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
-  - Main text paragraphs: <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;">Paragraph content...</p>
-  - Key-Value Details Card (for structured info, roles, units, payments, dates):
-    <table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:24px 0;overflow:hidden;font-size:13px;">
-      <tr style="background-color:#f1f5f9;">
-        <td style="padding:12px 16px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;" colspan="2">Key Information Details</td>
-      </tr>
-      <tr style="background-color:#ffffff;">
-        <td style="padding:11px 16px;color:#64748b;font-weight:600;width:40%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 1</td>
-        <td style="padding:11px 16px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_1}}</td>
-      </tr>
-      <tr style="background-color:#f8fafc;">
-        <td style="padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 2</td>
-        <td style="padding:11px 16px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_2}}</td>
-      </tr>
-      <tr style="background-color:#ffffff;">
-        <td style="padding:11px 16px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;">Label 3</td>
-        <td style="padding:11px 16px;color:#0f172a;font-weight:700;">{{variable_3}}</td>
-      </tr>
-    </table>
-  - Action Roadmap / Next Steps:
-    <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:24px 0;">
-      <h3 style="margin:0 0 12px;color:#0f172a;font-size:14px;font-weight:700;">📌 Next Steps:</h3>
-      <ol style="margin:0;padding-left:20px;color:#475569;font-size:13px;line-height:1.9;">
-        <li>Review your details carefully.</li>
-        <li>Complete the verification / documentation step.</li>
-        <li>Our team will contact you for kickoff & onboarding.</li>
-      </ol>
-    </div>
-  - CTA Button:
-    <div style="text-align:center;margin:32px 0 20px;">
-      <a href="{{portal_url}}" style="background-color:#D4AF37;background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:14px 36px;border-radius:30px;text-decoration:none;font-weight:800;font-size:13px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;">View Details on Portal</a>
-    </div>
+  - Salutation (CONTEXTUAL):
+    * If request from Employee to HR/Management (Leave, Resignation, Claim): <h2 style="color:#0f172a !important;font-size:18px;margin:0 0 14px;font-weight:700;">Respected Sir/Madam,</h2> (or Dear Management,)
+    * If Company to Customer: <h2 style="color:#0f172a !important;font-size:18px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
+    * If Company to Employee: <h2 style="color:#0f172a !important;font-size:18px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
+  - Main text paragraphs: <p style="color:#334155 !important;font-size:14px;line-height:1.7;margin:0 0 18px;">Paragraph content addressing user prompt directly...</p>
+
+  - CONDITIONAL ELEMENTS (ONLY include when explicitly justified or requested):
+    * Key-Value / Application Details Card: Use when the email includes structured facts (leave dates, duration, reason, plot info, amounts, dues).
+      <table class="details-table" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin:18px 0;overflow:hidden;font-size:13px;">
+        <thead>
+          <tr style="background-color:#f1f5f9;"><th colspan="2" style="padding:10px 14px;text-align:left;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Summary Details</th></tr>
+        </thead>
+        <tbody>
+          <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;width:38%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 1</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_1}}</td></tr>
+          <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;">Label 2</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;">{{variable_2}}</td></tr>
+        </tbody>
+      </table>
+    * Highlight/Alert Box: ONLY for urgent warnings or important notices.
+      <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
+        <p style="margin:0;color:#15803d;font-weight:700;font-size:13.5px;">✓ Status / Notice</p>
+      </div>
+
+    * Action Roadmap / Next Steps: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly asks for next steps or action points. NEVER fabricate generic steps (such as 'settle outstanding EMI', 'verify details', etc.) unless the user asked for them.
+      <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:24px 0;">
+        <h3 style="margin:0 0 12px;color:#0f172a;font-size:14px;font-weight:700;">📌 Next Steps:</h3>
+        <ol style="margin:0;padding-left:20px;color:#475569;font-size:13px;line-height:1.9;">
+          <li>...specific steps from user prompt...</li>
+        </ol>
+      </div>
+
+    * CTA Button: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly requests a button, portal link, or call-to-action.
+      <div style="text-align:center;margin:28px 0 18px;">
+        <a href="{{portal_url}}" class="cta-button" style="background-color:#D4AF37;background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:14px 32px;border-radius:30px;text-decoration:none;font-weight:800;font-size:13px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;min-height:44px;line-height:16px;">Action Button</a>
+      </div>
+
 - Advisor / Helpdesk Bar:
-  <div style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:18px 28px;font-size:12px;color:#64748b;">
+  <div class="helpdesk-bar" style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 24px;font-size:12px;color:#64748b;word-break:break-word;">
     <strong style="color:#0f172a;">Need assistance?</strong> SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91-73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;">info@sviinfrasolutions.com</a>
   </div>
 - Corporate Legal Footer:
-  <div style="padding:24px 20px;text-align:center;background-color:#f1f5f9;border-top:1px solid #e2e8f0;">
-    <p style="color:#475569;font-size:12px;font-weight:700;margin:0 0 4px;">SVI Infra Solutions Pvt. Ltd.</p>
-    <p style="color:#94a3b8;font-size:11px;margin:0 0 8px;line-height:1.5;">Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#64748b;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
-    <p style="color:#cbd5e1;font-size:10px;margin:0;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
+  <div class="footer-cell" style="padding:22px 18px;text-align:center;background-color:#f8fafc;border-top:1px solid #cbd5e1;word-break:break-word;">
+    <p style="color:#0f172a !important;font-size:13px;font-weight:800;letter-spacing:0.3px;margin:0 0 5px;">SVI Infra Solutions Pvt. Ltd.</p>
+    <p style="color:#334155 !important;font-size:12px;margin:0 0 6px;line-height:1.6;font-weight:500;">Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#1e3a8a !important;font-weight:700;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
+    <p style="color:#64748b !important;font-size:11px;margin:0;font-weight:600;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
   </div>
-
+CRITICAL RULE:
+- DO NOT include 'Next Steps' or 'View Details on Portal' CTA buttons by default. Only generate them if the user's prompt explicitly asks for next steps or a portal action button.
 TASK:
 Analyze the email subject, user instructions/prompt, requested tone (${tone || 'Professional'}), and recipient details.
 1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:

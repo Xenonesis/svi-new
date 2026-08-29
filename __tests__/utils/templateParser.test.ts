@@ -34,6 +34,13 @@ describe('templateParser', () => {
       const result = extractTemplateVars(html);
       expect(result).toEqual([]);
     });
+
+    it('should strip embedded HTML tags from inside variable braces', () => {
+      const html =
+        '<p>Leave from {{<strong>leaveStartDate</strong>}} to {{<em>leaveEndDate</em>}} for {{reason}}</p>';
+      const result = extractTemplateVars(html);
+      expect(result).toEqual(['leaveStartDate', 'leaveEndDate', 'reason']);
+    });
   });
 
   describe('getPreviewHtml', () => {
@@ -79,6 +86,13 @@ describe('templateParser', () => {
       expect(result).toBe('Hello John and {{unknown}}');
     });
 
+    it('should replace variables even if inner tags were inside curly braces in source HTML', () => {
+      const source =
+        '<p>Leave from {{<strong>leaveStartDate</strong>}} to {{<em>leaveEndDate</em>}}</p>';
+      const vars = { leaveStartDate: '1 Sep 2026', leaveEndDate: '5 Sep 2026' };
+      const result = getPreviewHtml(source, vars);
+      expect(result).toBe('<p>Leave from 1 Sep 2026 to 5 Sep 2026</p>');
+    });
     it('should handle null/undefined source gracefully', () => {
       expect(getPreviewHtml(null, {})).toBe('');
     });
