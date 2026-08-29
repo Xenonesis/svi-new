@@ -365,8 +365,8 @@ export default function LeaveAndRegularizationCenter({ token }: LeaveAndRegulari
                 className={clsx(
                   'rounded-md px-2.5 py-1 capitalize transition-all',
                   statusFilter === st
-                    ? 'bg-white font-bold text-slate-900 shadow-xs dark:bg-slate-600 dark:text-white'
-                    : 'text-slate-500 hover:text-slate-800 dark:text-slate-400'
+                    ? 'bg-white font-bold text-slate-900 shadow-xs dark:bg-slate-700 dark:text-white'
+                    : 'text-slate-500 hover:bg-white/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-700/50 dark:hover:text-white'
                 )}
               >
                 {st}
@@ -390,9 +390,64 @@ export default function LeaveAndRegularizationCenter({ token }: LeaveAndRegulari
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="flex min-h-[300px] flex-col items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white p-8 dark:border-slate-800 dark:bg-slate-900">
-          <RefreshCw className="h-6 w-6 animate-spin text-blue-500" />
-          <p className="text-xs text-slate-400">Loading requests...</p>
+        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-xs dark:border-slate-800 dark:bg-slate-900">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="border-b border-slate-100 bg-slate-50/75 text-[11px] font-bold text-slate-500 uppercase dark:border-slate-800 dark:bg-slate-800/50 dark:text-slate-400">
+                <tr>
+                  <th className="px-4 py-3">Employee</th>
+                  <th className="px-4 py-3">{section === 'leaves' ? 'Type' : 'Target Date'}</th>
+                  <th className="px-4 py-3">
+                    {section === 'leaves' ? 'Dates & Duration' : 'Correction Type'}
+                  </th>
+                  <th className="px-4 py-3">
+                    {section === 'leaves' ? 'Reason' : 'Suggested Punch Time'}
+                  </th>
+                  <th className="px-4 py-3">{section === 'leaves' ? 'Status' : 'Reason'}</th>
+                  {section !== 'leaves' && <th className="px-4 py-3">Status</th>}
+                  <th className="px-4 py-3 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
+                {[...Array(5)].map((_, i) => (
+                  <tr key={i} className="animate-pulse">
+                    <td className="px-4 py-3.5">
+                      <div className="space-y-1.5">
+                        <div className="h-3.5 w-28 rounded-md bg-slate-200 dark:bg-slate-800" />
+                        <div className="h-2.5 w-36 rounded-md bg-slate-100 dark:bg-slate-800/60" />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="h-5 w-20 rounded-md bg-slate-200 dark:bg-slate-800" />
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="space-y-1.5">
+                        <div className="h-3.5 w-24 rounded-md bg-slate-200 dark:bg-slate-800" />
+                        <div className="h-2.5 w-16 rounded-md bg-slate-100 dark:bg-slate-800/60" />
+                      </div>
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="h-3.5 w-40 rounded-md bg-slate-200 dark:bg-slate-800" />
+                    </td>
+                    <td className="px-4 py-3.5">
+                      <div className="h-5 w-18 rounded-full bg-slate-200 dark:bg-slate-800" />
+                    </td>
+                    {section !== 'leaves' && (
+                      <td className="px-4 py-3.5">
+                        <div className="h-5 w-18 rounded-full bg-slate-200 dark:bg-slate-800" />
+                      </td>
+                    )}
+                    <td className="px-4 py-3.5 text-right">
+                      <div className="ml-auto flex items-center justify-end gap-1.5">
+                        <div className="h-7 w-7 rounded-lg bg-slate-200 dark:bg-slate-800" />
+                        <div className="h-7 w-7 rounded-lg bg-slate-200 dark:bg-slate-800" />
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : section === 'leaves' ? (
         /* LEAVE REQUESTS TABLE / CARDS */
