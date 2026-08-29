@@ -15,6 +15,8 @@ import {
   Download,
   FileSpreadsheet,
   FileText,
+  LayoutGrid,
+  List,
   Plus,
   RefreshCw,
   Search,
@@ -33,6 +35,7 @@ import DynamicSkeleton from '@/src/components/ui/DynamicSkeleton';
 
 // Employee Directory
 import { EmployeeCard, type Employee } from '@/src/components/admin/employees/EmployeeCard';
+import { EmployeeTableView } from '@/src/components/admin/employees/EmployeeTableView';
 import { DirectoryStatsCards } from '@/src/components/admin/employees/DirectoryStatsCards';
 import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
 import { EditEmployeeModal } from '@/src/components/admin/employees/EditEmployeeModal';
@@ -145,6 +148,7 @@ function WorkforceContent() {
     'all' | 'punched_in' | 'punched_out' | 'not_punched'
   >('all');
   const [directorySort, setDirectorySort] = useState<'recent' | 'name' | 'status'>('recent');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
@@ -807,25 +811,65 @@ function WorkforceContent() {
                 </div>
 
                 {/* Sort Dropdown */}
-                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                  <span className="hidden sm:inline">Sort:</span>
-                  <select
-                    value={directorySort}
-                    onChange={(e) =>
-                      setDirectorySort(e.target.value as 'recent' | 'name' | 'status')
-                    }
-                    className="focus:border-brand-gold rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-2xs transition-all focus:outline-none dark:border-white/10 dark:bg-[#181822] dark:text-gray-200"
-                  >
-                    <option value="recent">Recently Joined</option>
-                    <option value="name">Name (A → Z)</option>
-                    <option value="status">Active Status</option>
-                  </select>
+                <div className="flex items-center gap-3">
+                  {/* Sort Dropdown */}
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                    <span className="hidden sm:inline">Sort:</span>
+                    <select
+                      value={directorySort}
+                      onChange={(e) =>
+                        setDirectorySort(e.target.value as 'recent' | 'name' | 'status')
+                      }
+                      className="focus:border-brand-gold rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-2xs transition-all focus:outline-none dark:border-white/10 dark:bg-[#181822] dark:text-gray-200"
+                    >
+                      <option value="recent">Recently Joined</option>
+                      <option value="name">Name (A → Z)</option>
+                      <option value="status">Active Status</option>
+                    </select>
+                  </div>
+
+                  {/* Grid vs Table View Switcher */}
+                  <div className="flex items-center rounded-xl border border-gray-200 bg-white p-0.5 dark:border-white/10 dark:bg-[#181822]">
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('grid')}
+                      className={`rounded-lg p-1.5 transition-all ${
+                        viewMode === 'grid'
+                          ? 'border-brand-gold/30 bg-brand-gold/15 text-brand-gold border shadow-xs'
+                          : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'
+                      }`}
+                      title="Card Grid View"
+                    >
+                      <LayoutGrid size={15} />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setViewMode('table')}
+                      className={`rounded-lg p-1.5 transition-all ${
+                        viewMode === 'table'
+                          ? 'border-brand-gold/30 bg-brand-gold/15 text-brand-gold border shadow-xs'
+                          : 'text-gray-400 hover:text-gray-700 dark:hover:text-white'
+                      }`}
+                      title="Compact Table View"
+                    >
+                      <List size={15} />
+                    </button>
+                  </div>
                 </div>
               </div>
 
-              {/* Employee Cards Grid */}
+              {/* Employee Cards Grid or Table View */}
               {loadingEmployees ? (
                 <DynamicSkeleton type="property-grid" count={3} />
+              ) : viewMode === 'table' ? (
+                <EmployeeTableView
+                  employees={filteredEmployees}
+                  liveStatusMap={liveStatusMap}
+                  onEdit={(emp) => setEditingEmployee(emp)}
+                  onDelete={(id) => handleDeleteEmployee(id)}
+                  onResetPassword={(emp) => setResetTarget(emp)}
+                  onViewPerformance={(emp) => setPerformanceTarget(emp)}
+                />
               ) : filteredEmployees.length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-gray-300 py-16 text-center dark:border-gray-700">
                   <UserCircle2 className="mx-auto mb-3 h-12 w-12 text-gray-400 dark:text-gray-600" />
