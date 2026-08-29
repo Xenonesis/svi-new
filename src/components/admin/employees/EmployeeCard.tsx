@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
+import { format } from 'date-fns';
 import {
   Trash2,
   Mail,
@@ -11,11 +12,11 @@ import {
   Copy,
   CheckCircle2,
   KeyRound,
-  TrendingUp,
   BarChart3,
+  Clock,
 } from 'lucide-react';
 import { toast } from 'sonner';
-
+import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
 export interface Employee {
   id: string;
   full_name: string;
@@ -60,6 +61,7 @@ export function getSviEmail(employee: {
 
 interface EmployeeCardProps {
   employee: Employee;
+  liveStatus?: EmployeeLiveStatus | null;
   onDelete: () => void;
   onResetPassword: () => void;
   onViewPerformance: () => void;
@@ -67,6 +69,7 @@ interface EmployeeCardProps {
 
 export function EmployeeCard({
   employee,
+  liveStatus,
   onDelete,
   onResetPassword,
   onViewPerformance,
@@ -137,8 +140,68 @@ export function EmployeeCard({
           </button>
         </div>
 
+        {/* Live Attendance Status Badge */}
+        <div className="mb-4">
+          {!liveStatus || liveStatus.status === 'not_punched' ? (
+            <div className="flex items-center justify-between rounded-xl border border-slate-200/80 bg-slate-50/80 px-3 py-2 text-xs font-medium text-slate-500 transition-colors dark:border-white/10 dark:bg-white/5 dark:text-slate-400">
+              <div className="flex items-center gap-2">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-slate-400 dark:bg-slate-500" />
+                <span>Not Checked In Today</span>
+              </div>
+              <Clock size={12} className="text-slate-400" />
+            </div>
+          ) : liveStatus.status === 'punched_in' ? (
+            <div className="flex items-center justify-between rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-700 transition-colors dark:border-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="relative flex h-2.5 w-2.5 shrink-0">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+                  <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-emerald-500" />
+                </span>
+                <span className="truncate">
+                  Punched In
+                  {liveStatus.punch_in_time ? (
+                    <span className="font-normal opacity-90">
+                      {' '}
+                      • {format(new Date(liveStatus.punch_in_time), 'hh:mm a')}
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+              {liveStatus.is_late ? (
+                <span className="shrink-0 rounded-md bg-amber-500/15 px-1.5 py-0.5 text-[10px] font-bold text-amber-700 uppercase dark:text-amber-300">
+                  Late
+                </span>
+              ) : (
+                <span className="shrink-0 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                  Active Now
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className="flex items-center justify-between rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-2 text-xs font-medium text-amber-700 transition-colors dark:border-amber-500/20 dark:bg-amber-500/15 dark:text-amber-400">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="h-2 w-2 shrink-0 rounded-full bg-amber-500" />
+                <span className="truncate">
+                  Punched Out
+                  {liveStatus.punch_out_time ? (
+                    <span className="opacity-90">
+                      {' '}
+                      • {format(new Date(liveStatus.punch_out_time), 'hh:mm a')}
+                    </span>
+                  ) : null}
+                </span>
+              </div>
+              {liveStatus.total_hours != null && (
+                <span className="shrink-0 text-[11px] font-semibold text-amber-700 dark:text-amber-300">
+                  {liveStatus.total_hours.toFixed(1)}h logged
+                </span>
+              )}
+            </div>
+          )}
+        </div>
+
         {/* Contact Info */}
-        <div className="mt-5 space-y-2.5">
+        <div className="space-y-2.5">
           {/* SVI Corporate Email */}
           <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50 px-3 py-2 text-sm text-gray-700 dark:bg-white/5 dark:text-gray-200">
             <div className="flex min-w-0 items-center gap-2.5">

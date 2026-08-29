@@ -43,7 +43,7 @@ import LeaveAndRegularizationCenter from '@/src/components/admin/attendance/Leav
 import TeamsManager from '@/src/components/admin/attendance/TeamsManager';
 import LocationManager from '@/src/components/admin/attendance/LocationManager';
 import AttendanceSettings from '@/src/components/admin/attendance/AttendanceSettings';
-import type { Team } from '@/src/lib/supabase/types';
+import type { Team, EmployeeLiveStatus } from '@/src/lib/supabase/types';
 
 // Payroll
 import { MonthlyPayrollRunView } from '@/src/components/admin/payroll/MonthlyPayrollRunView';
@@ -142,7 +142,7 @@ function WorkforceContent() {
   const [teamsLoading, setTeamsLoading] = useState(true);
   const [pendingApprovalsCount, setPendingApprovalsCount] = useState(0);
   const [punchedInCount, setPunchedInCount] = useState<number | null>(null);
-
+  const [liveStatuses, setLiveStatuses] = useState<EmployeeLiveStatus[]>([]);
   // Payroll structures state
   const [structures, setStructures] = useState<SalaryStructure[]>([]);
   const [loadingStructures, setLoadingStructures] = useState(true);
@@ -156,6 +156,13 @@ function WorkforceContent() {
     }
   }, []);
 
+  const liveStatusMap = useMemo(() => {
+    const map = new Map<string, EmployeeLiveStatus>();
+    for (const item of liveStatuses) {
+      map.set(item.user_id, item);
+    }
+    return map;
+  }, [liveStatuses]);
   // Admin Auth Verification
   useEffect(() => {
     const controller = new AbortController();
@@ -282,6 +289,7 @@ function WorkforceContent() {
       setPendingApprovalsCount(pendingTotal);
 
       if (Array.isArray(liveRes.statuses)) {
+        setLiveStatuses(liveRes.statuses);
         const punchedIn = liveRes.statuses.filter(
           (s: { status: string }) => s.status === 'punched_in'
         ).length;
@@ -571,15 +579,32 @@ function WorkforceContent() {
                   </p>
                 </div>
 
-                <div className="relative w-full max-w-md">
-                  <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    placeholder="Search by name, email, or phone..."
-                    value={employeeSearch}
-                    onChange={(e) => setEmployeeSearch(e.target.value)}
-                    className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 shadow-2xs transition-all focus:outline-none dark:border-white/10 dark:bg-[#181822] dark:text-white dark:placeholder-gray-500"
-                  />
+                <div className="flex w-full items-center gap-2 md:w-auto">
+                  <div className="relative w-full md:w-80">
+                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <input
+                      type="text"
+                      placeholder="Search by name, email, or phone..."
+                      value={employeeSearch}
+                      onChange={(e) => setEmployeeSearch(e.target.value)}
+                      className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-4 pl-10 text-sm text-gray-900 placeholder-gray-400 shadow-2xs transition-all focus:outline-none dark:border-white/10 dark:bg-[#181822] dark:text-white dark:placeholder-gray-500"
+                    />
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      fetchEmployees();
+                      fetchMetrics();
+                    }}
+                    disabled={loadingEmployees}
+                    className="flex shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 shadow-2xs transition-all hover:bg-gray-50 active:scale-95 disabled:opacity-60 dark:border-white/10 dark:bg-[#181822] dark:text-gray-300 dark:hover:bg-white/5"
+                    title="Refresh Directory & Live Status"
+                  >
+                    <RefreshCw
+                      className={`text-brand-gold h-4 w-4 ${loadingEmployees ? 'animate-spin' : ''}`}
+                    />
+                    <span className="hidden sm:inline">Refresh</span>
+                  </button>
                 </div>
               </div>
 
@@ -604,6 +629,7 @@ function WorkforceContent() {
                     <EmployeeCard
                       key={emp.id}
                       employee={emp}
+                      liveStatus={liveStatusMap.get(emp.id)}
                       onDelete={() => handleDeleteEmployee(emp.id)}
                       onResetPassword={() => setResetTarget(emp)}
                       onViewPerformance={() => setPerformanceTarget(emp)}
