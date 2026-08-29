@@ -133,10 +133,13 @@ function WorkforceContent() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loadingEmployees, setLoadingEmployees] = useState(true);
   const [employeeSearch, setEmployeeSearch] = useState('');
+  const [statusFilter, setStatusFilter] = useState<
+    'all' | 'punched_in' | 'punched_out' | 'not_punched'
+  >('all');
+  const [directorySort, setDirectorySort] = useState<'recent' | 'name' | 'status'>('recent');
   const [showAddModal, setShowAddModal] = useState(false);
   const [resetTarget, setResetTarget] = useState<Employee | null>(null);
   const [performanceTarget, setPerformanceTarget] = useState<Employee | null>(null);
-
   // Attendance & Teams state
   const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
@@ -339,18 +342,70 @@ function WorkforceContent() {
     }
   };
 
-  // Filtered Employees
+  // Status Counts for Directory Filter Chips
+  const statusCounts = useMemo(() => {
+    let inCount = 0;
+    let outCount = 0;
+    let notCount = 0;
+    for (const emp of employees) {
+      const status = liveStatusMap.get(emp.id)?.status;
+      if (status === 'punched_in') inCount++;
+      else if (status === 'punched_out') outCount++;
+      else notCount++;
+    }
+    return {
+      all: employees.length,
+      punched_in: inCount,
+      punched_out: outCount,
+      not_punched: notCount,
+    };
+  }, [employees, liveStatusMap]);
+
+  // Filtered & Sorted Employees
   const filteredEmployees = useMemo(() => {
     const q = employeeSearch.toLowerCase().trim();
-    if (!q) return employees;
-    return employees.filter(
-      (e) =>
-        e.full_name.toLowerCase().includes(q) ||
-        e.email.toLowerCase().includes(q) ||
-        (e.phone && e.phone.toLowerCase().includes(q))
-    );
-  }, [employees, employeeSearch]);
+    let list = employees;
 
+    // 1. Search Query Filter
+    if (q) {
+      list = list.filter(
+        (e) =>
+          e.full_name.toLowerCase().includes(q) ||
+          e.email.toLowerCase().includes(q) ||
+          (e.real_email && e.real_email.toLowerCase().includes(q)) ||
+          (e.phone && e.phone.toLowerCase().includes(q)) ||
+          (e.notes && e.notes.toLowerCase().includes(q))
+      );
+    }
+
+    // 2. Attendance Status Filter
+    if (statusFilter !== 'all') {
+      list = list.filter((e) => {
+        const s = liveStatusMap.get(e.id)?.status || 'not_punched';
+        return s === statusFilter;
+      });
+    }
+
+    // 3. Sort
+    return [...list].sort((a, b) => {
+      if (directorySort === 'name') {
+        return a.full_name.localeCompare(b.full_name);
+      }
+      if (directorySort === 'status') {
+        const statusOrder: Record<string, number> = {
+          punched_in: 0,
+          punched_out: 1,
+          not_punched: 2,
+        };
+        const sA = statusOrder[liveStatusMap.get(a.id)?.status || 'not_punched'] ?? 3;
+        const sB = statusOrder[liveStatusMap.get(b.id)?.status || 'not_punched'] ?? 3;
+        if (sA !== sB) return sA - sB;
+        return a.full_name.localeCompare(b.full_name);
+      }
+      // 'recent' default
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+  }, [employees, employeeSearch, statusFilter, directorySort, liveStatusMap]);
   // Format current month for payroll cycle KPI
   const currentMonthName = useMemo(() => {
     return new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
@@ -605,6 +660,92 @@ function WorkforceContent() {
                     />
                     <span className="hidden sm:inline">Refresh</span>
                   </button>
+                </div>
+              </div>
+
+              {/* Filter Chips & Sort Controls */}
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200/60 pb-4 dark:border-white/5">
+                {/* Status Filter Chips */}
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('all')}
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                      statusFilter === 'all'
+                        ? 'border-brand-gold/40 bg-brand-gold/15 text-brand-gold border shadow-xs'
+                        : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <Users size={12} />
+                    <span>All</span>
+                    <span className="py-0.2 ml-0.5 rounded-full bg-black/5 px-1.5 text-[10px] dark:bg-white/10">
+                      {statusCounts.all}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('punched_in')}
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                      statusFilter === 'punched_in'
+                        ? 'border border-emerald-500/40 bg-emerald-500/15 text-emerald-600 shadow-xs dark:text-emerald-400'
+                        : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                    <span>Punched In</span>
+                    <span className="py-0.2 ml-0.5 rounded-full bg-emerald-500/15 px-1.5 text-[10px] text-emerald-700 dark:text-emerald-300">
+                      {statusCounts.punched_in}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('punched_out')}
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                      statusFilter === 'punched_out'
+                        ? 'border border-amber-500/40 bg-amber-500/15 text-amber-600 shadow-xs dark:text-amber-400'
+                        : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-amber-500" />
+                    <span>Punched Out</span>
+                    <span className="py-0.2 ml-0.5 rounded-full bg-amber-500/15 px-1.5 text-[10px] text-amber-700 dark:text-amber-300">
+                      {statusCounts.punched_out}
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setStatusFilter('not_punched')}
+                    className={`inline-flex items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                      statusFilter === 'not_punched'
+                        ? 'border border-slate-400/40 bg-slate-200/50 text-slate-700 shadow-xs dark:bg-white/20 dark:text-white'
+                        : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                    }`}
+                  >
+                    <span className="h-2 w-2 rounded-full bg-slate-400" />
+                    <span>Not Checked In</span>
+                    <span className="py-0.2 ml-0.5 rounded-full bg-slate-100 px-1.5 text-[10px] text-slate-600 dark:bg-white/10 dark:text-slate-300">
+                      {statusCounts.not_punched}
+                    </span>
+                  </button>
+                </div>
+
+                {/* Sort Dropdown */}
+                <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                  <span className="hidden sm:inline">Sort:</span>
+                  <select
+                    value={directorySort}
+                    onChange={(e) =>
+                      setDirectorySort(e.target.value as 'recent' | 'name' | 'status')
+                    }
+                    className="focus:border-brand-gold rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-700 shadow-2xs transition-all focus:outline-none dark:border-white/10 dark:bg-[#181822] dark:text-gray-200"
+                  >
+                    <option value="recent">Recently Joined</option>
+                    <option value="name">Name (A → Z)</option>
+                    <option value="status">Active Status</option>
+                  </select>
                 </div>
               </div>
 
