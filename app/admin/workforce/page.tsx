@@ -10,7 +10,11 @@ import {
   Calendar,
   CalendarCheck,
   CheckCircle2,
+  ChevronDown,
   Clock,
+  Download,
+  FileSpreadsheet,
+  FileText,
   Plus,
   RefreshCw,
   Search,
@@ -34,7 +38,10 @@ import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal
 import { EditEmployeeModal } from '@/src/components/admin/employees/EditEmployeeModal';
 import { ResetPasswordModal } from '@/src/components/admin/employees/ResetPasswordModal';
 import { EmployeePerformanceModal } from '@/src/components/admin/employees/EmployeePerformanceModal';
-// Attendance & Approvals
+import {
+  exportEmployeesToCSV,
+  exportEmployeesToExcel,
+} from '@/src/components/admin/employees/exportEmployees';
 import AttendanceDashboard from '@/src/components/admin/attendance/AttendanceDashboard';
 import LiveStatus from '@/src/components/admin/attendance/LiveStatus';
 import MasterTimesheet from '@/src/components/admin/attendance/MasterTimesheet';
@@ -138,10 +145,12 @@ function WorkforceContent() {
     'all' | 'punched_in' | 'punched_out' | 'not_punched'
   >('all');
   const [directorySort, setDirectorySort] = useState<'recent' | 'name' | 'status'>('recent');
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [resetTarget, setResetTarget] = useState<Employee | null>(null);
   const [performanceTarget, setPerformanceTarget] = useState<Employee | null>(null);
+
   // Attendance & Teams state
   const [teams, setTeams] = useState<(Team & { member_count: number })[]>([]);
   const [teamsLoading, setTeamsLoading] = useState(true);
@@ -662,6 +671,59 @@ function WorkforceContent() {
                     />
                     <span className="hidden sm:inline">Refresh</span>
                   </button>
+
+                  {/* Export Dropdown */}
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setExportMenuOpen((prev) => !prev)}
+                      className="flex shrink-0 items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2.5 text-xs font-semibold text-gray-700 shadow-2xs transition-all hover:bg-gray-50 active:scale-95 dark:border-white/10 dark:bg-[#181822] dark:text-gray-300 dark:hover:bg-white/5"
+                      title="Export Directory"
+                    >
+                      <Download className="text-brand-gold h-4 w-4" />
+                      <span className="hidden sm:inline">Export</span>
+                      <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
+                    </button>
+
+                    {exportMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-20"
+                          onClick={() => setExportMenuOpen(false)}
+                        />
+                        <div className="absolute top-full right-0 z-30 mt-1.5 w-48 overflow-hidden rounded-xl border border-gray-200 bg-white p-1 shadow-xl dark:border-white/10 dark:bg-[#181822]">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setExportMenuOpen(false);
+                              exportEmployeesToCSV(filteredEmployees, liveStatusMap);
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-amber-50 hover:text-amber-700 dark:text-gray-300 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                          >
+                            <FileText size={14} className="text-amber-500" />
+                            <div>
+                              <p className="font-semibold">Export CSV</p>
+                              <p className="text-[10px] text-gray-400">Plain text (.csv)</p>
+                            </div>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setExportMenuOpen(false);
+                              exportEmployeesToExcel(filteredEmployees, liveStatusMap);
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 dark:text-gray-300 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                          >
+                            <FileSpreadsheet size={14} className="text-emerald-500" />
+                            <div>
+                              <p className="font-semibold">Export Excel</p>
+                              <p className="text-[10px] text-gray-400">Styled workbook (.xlsx)</p>
+                            </div>
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
               </div>
 
