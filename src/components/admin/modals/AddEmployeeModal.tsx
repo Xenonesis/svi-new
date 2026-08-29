@@ -2,9 +2,49 @@
 
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, Trash2 } from 'lucide-react';
+import { AlertCircle, Briefcase, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
+
+const OFFER_LETTER_ROLES = [
+  {
+    department: 'Sales Department',
+    roles: [
+      { label: 'Telecaller', value: 'Telecaller' },
+      { label: 'BDE (Business Development Executive)', value: 'BDE' },
+      { label: 'BDM (Business Development Manager)', value: 'BDM' },
+      { label: 'Sales Manager', value: 'Sales Manager' },
+      { label: 'Team Leader (Sales)', value: 'Team Leader' },
+    ],
+  },
+  {
+    department: 'IT Department',
+    roles: [
+      { label: 'Software Engineer', value: 'Software Engineer' },
+      { label: 'Full Stack Developer', value: 'Full Stack Developer' },
+      { label: 'IT Executive', value: 'IT Executive' },
+    ],
+  },
+  {
+    department: 'Management & Operations',
+    roles: [
+      { label: 'Project Manager', value: 'Project Manager' },
+      { label: 'Operations Executive', value: 'Operations Executive' },
+      { label: 'Legal & Accounts', value: 'Legal & Accounts' },
+      { label: 'Field Executive', value: 'Field Executive' },
+    ],
+  },
+];
+
+const QUICK_ROLE_PILLS = [
+  'Telecaller',
+  'BDE',
+  'BDM',
+  'Sales Manager',
+  'Team Leader',
+  'Software Engineer',
+  'Operations Executive',
+];
 export function AddEmployeeModal({
   onClose,
   onSuccess,
@@ -192,30 +232,72 @@ export function AddEmployeeModal({
               />
             </div>
 
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Role & Department (Optional)
+            <div className="col-span-2 space-y-2">
+              <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                Role & Department (Offer Letter Roles)
               </label>
-              <input
-                type="text"
-                value={formData.department}
-                onChange={(e) => setFormData((p) => ({ ...p, department: e.target.value }))}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="e.g. Senior Sales Executive • Sales & CRM"
-              />
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {[
-                  'Sales & CRM',
-                  'Telecaller & Leads',
-                  'Operations & Admin',
-                  'Legal & Accounts',
-                  'Field Executive',
-                ].map((preset) => (
+
+              {/* Role Select Dropdown from Offer Letter */}
+              <select
+                value={
+                  OFFER_LETTER_ROLES.flatMap((g) => g.roles).some(
+                    (r) => r.value === formData.department
+                  )
+                    ? formData.department
+                    : formData.department
+                      ? '__custom__'
+                      : ''
+                }
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val !== '__custom__') {
+                    setFormData((p) => ({ ...p, department: val }));
+                  }
+                }}
+                aria-label="Select Role from Offer Letter"
+                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 text-xs text-gray-800 transition-colors focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-gray-200"
+              >
+                <option value="">— Select Designation / Role from Offer Letter —</option>
+                {OFFER_LETTER_ROLES.map((group) => (
+                  <optgroup key={group.department} label={group.department}>
+                    {group.roles.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+                <option value="__custom__">+ Custom Designation / Type below…</option>
+              </select>
+
+              {/* Editable input */}
+              <div className="relative">
+                <Briefcase
+                  size={14}
+                  className="absolute top-1/2 left-3 -translate-y-1/2 text-gray-400"
+                />
+                <input
+                  type="text"
+                  value={formData.department}
+                  onChange={(e) => setFormData((p) => ({ ...p, department: e.target.value }))}
+                  className="focus:border-brand-gold w-full rounded-lg border border-gray-200 py-2.5 pr-4 pl-9 text-xs focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                  placeholder="e.g. Telecaller or BDM or Custom Role"
+                />
+              </div>
+
+              {/* Quick Preset Pills */}
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[10px] text-gray-400">Quick:</span>
+                {QUICK_ROLE_PILLS.map((preset) => (
                   <button
                     key={preset}
                     type="button"
                     onClick={() => setFormData((p) => ({ ...p, department: preset }))}
-                    className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10"
+                    className={`rounded-md border px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                      formData.department === preset
+                        ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                    }`}
                   >
                     {preset}
                   </button>

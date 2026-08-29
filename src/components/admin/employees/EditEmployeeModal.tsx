@@ -6,6 +6,47 @@ import { X, User, Phone, FileText, AlertCircle, Save, Mail, Briefcase } from 'lu
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { Employee } from './EmployeeCard';
+
+const OFFER_LETTER_ROLES = [
+  {
+    department: 'Sales Department',
+    roles: [
+      { label: 'Telecaller', value: 'Telecaller' },
+      { label: 'BDE (Business Development Executive)', value: 'BDE' },
+      { label: 'BDM (Business Development Manager)', value: 'BDM' },
+      { label: 'Sales Manager', value: 'Sales Manager' },
+      { label: 'Team Leader (Sales)', value: 'Team Leader' },
+    ],
+  },
+  {
+    department: 'IT Department',
+    roles: [
+      { label: 'Software Engineer', value: 'Software Engineer' },
+      { label: 'Full Stack Developer', value: 'Full Stack Developer' },
+      { label: 'IT Executive', value: 'IT Executive' },
+    ],
+  },
+  {
+    department: 'Management & Operations',
+    roles: [
+      { label: 'Project Manager', value: 'Project Manager' },
+      { label: 'Operations Executive', value: 'Operations Executive' },
+      { label: 'Legal & Accounts', value: 'Legal & Accounts' },
+      { label: 'Field Executive', value: 'Field Executive' },
+    ],
+  },
+];
+
+const QUICK_ROLE_PILLS = [
+  'Telecaller',
+  'BDE',
+  'BDM',
+  'Sales Manager',
+  'Team Leader',
+  'Software Engineer',
+  'Operations Executive',
+];
+
 interface EditEmployeeModalProps {
   employee: Employee;
   onClose: () => void;
@@ -199,10 +240,43 @@ export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditE
               </div>
             </div>
             {/* Department / Role */}
-            <div>
-              <label className="mb-1.5 block text-xs font-semibold text-gray-700 dark:text-gray-300">
-                Role & Department
+            <div className="space-y-2">
+              <label className="block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                Role & Department (Offer Letter Roles)
               </label>
+
+              {/* Role Select Dropdown from Offer Letter */}
+              <select
+                value={
+                  OFFER_LETTER_ROLES.flatMap((g) => g.roles).some((r) => r.value === department)
+                    ? department
+                    : department
+                      ? '__custom__'
+                      : ''
+                }
+                onChange={(e) => {
+                  const val = e.target.value;
+                  if (val !== '__custom__') {
+                    setDepartment(val);
+                  }
+                }}
+                aria-label="Select Role from Offer Letter"
+                className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-gray-50 px-3 py-2.5 text-xs text-gray-900 transition-colors focus:bg-white focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-gray-200"
+              >
+                <option value="">— Select Designation / Role from Offer Letter —</option>
+                {OFFER_LETTER_ROLES.map((group) => (
+                  <optgroup key={group.department} label={group.department}>
+                    {group.roles.map((role) => (
+                      <option key={role.value} value={role.value}>
+                        {role.label}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+                <option value="__custom__">+ Custom Designation / Type below…</option>
+              </select>
+
+              {/* Editable input */}
               <div className="relative">
                 <Briefcase
                   size={14}
@@ -212,31 +286,30 @@ export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditE
                   type="text"
                   value={department}
                   onChange={(e) => setDepartment(e.target.value)}
-                  placeholder="e.g. Senior Sales Executive • Sales & CRM"
+                  placeholder="e.g. Telecaller or BDM or Custom Role"
                   className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-gray-50 py-2.5 pr-4 pl-9 text-xs text-gray-900 transition-all focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-white/10"
                 />
               </div>
+
               {/* Quick Preset Pills */}
-              <div className="mt-1.5 flex flex-wrap gap-1.5">
-                {[
-                  'Sales & CRM',
-                  'Telecaller & Leads',
-                  'Operations & Admin',
-                  'Legal & Accounts',
-                  'Field Executive',
-                ].map((preset) => (
+              <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                <span className="text-[10px] text-gray-400">Quick:</span>
+                {QUICK_ROLE_PILLS.map((preset) => (
                   <button
                     key={preset}
                     type="button"
                     onClick={() => setDepartment(preset)}
-                    className="rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] font-medium text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10"
+                    className={`rounded-md border px-2 py-0.5 text-[10px] font-medium transition-colors ${
+                      department === preset
+                        ? 'border-amber-500/40 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                        : 'border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                    }`}
                   >
                     {preset}
                   </button>
                 ))}
               </div>
             </div>
-
             {/* Notes / Remarks */}
             <div>
               <label className="mb-1.5 block text-xs font-semibold text-gray-700 dark:text-gray-300">
