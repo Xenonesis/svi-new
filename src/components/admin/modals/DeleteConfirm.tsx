@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Loader2 } from 'lucide-react';
 import type { UserProfile } from '@/src/lib/supabase/types';
 
 interface DeleteConfirmProps {
@@ -34,21 +34,20 @@ export function DeleteConfirm({ user, onConfirm, onClose, loading }: DeleteConfi
         </p>
         <div className="flex gap-3 font-sans">
           <button
+            type="button"
             onClick={onClose}
-            className="flex-1 cursor-pointer rounded-lg border border-gray-200 bg-gray-100 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+            disabled={loading}
+            className="flex-1 cursor-pointer rounded-lg border border-gray-200 bg-gray-100 py-3 text-xs font-bold tracking-widest text-gray-700 uppercase transition-all hover:bg-gray-200 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
           >
             Cancel
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 py-3 text-xs font-bold tracking-widest text-white uppercase shadow-lg transition-all hover:bg-red-500"
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 py-3 text-xs font-bold tracking-widest text-white uppercase shadow-lg transition-all hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-75"
           >
-            {loading ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            ) : (
-              'Delete'
-            )}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : 'Delete'}
           </button>
         </div>
       </motion.div>

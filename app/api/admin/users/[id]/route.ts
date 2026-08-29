@@ -22,14 +22,72 @@ export async function DELETE(
       .from('profiles')
       .select('full_name')
       .eq('id', id)
-      .single();
+      .maybeSingle();
 
-    // Delete from auth (cascades via DB trigger to profiles table)
-    const { error } = await supabaseAdmin.auth.admin.deleteUser(id);
-    if (error) throw AppError.internal(error.message);
+    // 1. Gracefully clean up/nullify dependent relational records
+    try {
+      await Promise.allSettled([
+        supabaseAdmin.from('tasks').delete().eq('user_id', id),
+        supabaseAdmin.from('tasks').update({ assigned_by: null }).eq('assigned_by', id),
+        supabaseAdmin.from('work_logs').delete().eq('user_id', id),
+        supabaseAdmin.from('leave_requests').delete().eq('user_id', id),
+        supabaseAdmin.from('leave_requests').update({ reviewed_by: null }).eq('reviewed_by', id),
+        supabaseAdmin.from('attendance_regularizations').delete().eq('user_id', id),
+        supabaseAdmin
+          .from('attendance_regularizations')
+          .update({ reviewed_by: null })
+          .eq('reviewed_by', id),
+        supabaseAdmin.from('salary_structures').delete().eq('user_id', id),
+        supabaseAdmin.from('payroll_items').delete().eq('user_id', id),
+        supabaseAdmin
+          .from('monthly_payrolls')
+          .update({ processed_by: null })
+          .eq('processed_by', id),
+        supabaseAdmin
+          .from('chat_leads')
+          .update({ lead_created_by: null })
+          .eq('lead_created_by', id),
+        supabaseAdmin.from('chat_leads').update({ assigned_to: null }).eq('assigned_to', id),
+        supabaseAdmin
+          .from('chat_lead_activities')
+          .update({ employee_id: null })
+          .eq('employee_id', id),
+        supabaseAdmin.from('attendance_records').delete().eq('user_id', id),
+        supabaseAdmin.from('attendance_logs').delete().eq('user_id', id),
+        supabaseAdmin.from('team_members').delete().eq('user_id', id),
+        supabaseAdmin.from('team_attendance').delete().eq('user_id', id),
+        supabaseAdmin.from('employee_locations').delete().eq('admin_id', id),
+        supabaseAdmin.from('allotments').delete().eq('user_id', id),
+        supabaseAdmin.from('payment_milestones').delete().eq('user_id', id),
+        supabaseAdmin.from('email_drafts').delete().eq('user_id', id),
+        supabaseAdmin.from('email_stars').delete().eq('admin_id', id),
+        supabaseAdmin.from('email_deletions').delete().eq('admin_id', id),
+        supabaseAdmin.from('notifications').delete().eq('user_id', id),
+      ]);
+    } catch (cleanupErr) {
+      console.warn('Non-blocking relation cleanup warning during user delete:', cleanupErr);
+    }
 
-    // Create notification for all admins about user deletion
-    if (userProfile) {
+    // 2. Delete from auth.users (if user exists in auth)
+    try {
+      const { error: authError } = await supabaseAdmin.auth.admin.deleteUser(id);
+      if (authError && !authError.message?.toLowerCase().includes('not found')) {
+        console.warn('Auth admin delete user warning:', authError.message);
+      }
+    } catch (authErr) {
+      console.warn('Auth delete error ignored if user not in auth:', authErr);
+    }
+
+    // 3. Explicitly delete from profiles table
+    const { error: profileError } = await supabaseAdmin.from('profiles').delete().eq('id', id);
+
+    if (profileError) {
+      console.error('Failed to delete profile record:', profileError);
+      throw AppError.internal(profileError.message);
+    }
+
+    // 4. Create notification for all admins about user deletion
+    if (userProfile?.full_name) {
       try {
         await NotificationHelper.userDeleted(userProfile.full_name);
       } catch (notifError) {

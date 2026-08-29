@@ -106,21 +106,30 @@ export default function AllotmentRecordsPage() {
   const handleDelete = async () => {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
       if (response.ok) {
         setAllotments((prev) => prev.filter((a) => a.id !== deleteTarget.id));
         setDeleteTarget(null);
       } else {
-        alert('Failed to delete allotment record');
+        const errData = await response.json().catch(() => ({}));
+        alert(errData.error || 'Failed to delete allotment record');
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      alert('Error deleting allotment record');
+      const isAbort = err instanceof Error && err.name === 'AbortError';
+      alert(
+        isAbort ? 'Request timed out while deleting record.' : 'Error deleting allotment record'
+      );
     } finally {
+      clearTimeout(timeoutId);
       setDeleteLoading(false);
     }
   };

@@ -93,21 +93,30 @@ export default function OfferLetterRecordsPage() {
   const handleDelete = async () => {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
       if (response.ok) {
         setOffers((prev) => prev.filter((o) => o.id !== deleteTarget.id));
         setDeleteTarget(null);
       } else {
-        alert('Failed to delete offer letter record');
+        const errData = await response.json().catch(() => ({}));
+        alert(errData.error || 'Failed to delete offer letter record');
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      alert('Error deleting offer letter record');
+      const isAbort = err instanceof Error && err.name === 'AbortError';
+      alert(
+        isAbort ? 'Request timed out while deleting record.' : 'Error deleting offer letter record'
+      );
     } finally {
+      clearTimeout(timeoutId);
       setDeleteLoading(false);
     }
   };

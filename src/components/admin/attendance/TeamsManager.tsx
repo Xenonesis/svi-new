@@ -3,6 +3,7 @@
 import {
   AlertCircle,
   Edit3,
+  Loader2,
   Plus,
   RefreshCw,
   Trash2,
@@ -192,15 +193,12 @@ function DeleteConfirm({
             Cancel
           </button>
           <button
+            type="button"
             onClick={onConfirm}
             disabled={loading}
-            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 py-3 text-xs font-bold tracking-widest text-white uppercase shadow-lg transition-all hover:bg-red-500"
+            className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 py-3 text-xs font-bold tracking-widest text-white uppercase shadow-lg transition-all hover:bg-red-500 disabled:cursor-not-allowed disabled:opacity-75"
           >
-            {loading ? (
-              <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-            ) : (
-              'Delete'
-            )}
+            {loading ? <Loader2 className="h-4 w-4 animate-spin text-white" /> : 'Delete'}
           </button>
         </div>
       </motion.div>

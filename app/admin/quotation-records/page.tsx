@@ -110,18 +110,26 @@ export default function QuotationRecordsPage() {
   const handleDelete = async () => {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const res = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
       if (!res.ok) throw new Error('Delete failed');
       setQuotations((prev) => prev.filter((q) => q.id !== deleteTarget.id));
       setDeleteTarget(null);
       toast.success('Quotation deleted.');
-    } catch {
-      toast.error('Unable to delete quotation.');
+    } catch (err: unknown) {
+      const isAbort = err instanceof Error && err.name === 'AbortError';
+      toast.error(
+        isAbort ? 'Request timed out while deleting quotation.' : 'Unable to delete quotation.'
+      );
     } finally {
+      clearTimeout(timeoutId);
       setDeleteLoading(false);
     }
   };

@@ -73,21 +73,28 @@ export default function ReceiptRecordsPage() {
   const handleDelete = async () => {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
       if (response.ok) {
         setReceipts((prev) => prev.filter((r) => r.id !== deleteTarget.id));
         setDeleteTarget(null);
       } else {
-        alert('Failed to delete receipt');
+        const errData = await response.json().catch(() => ({}));
+        alert(errData.error || 'Failed to delete receipt');
       }
-    } catch (err) {
+    } catch (err: unknown) {
       console.error(err);
-      alert('Error deleting receipt');
+      const isAbort = err instanceof Error && err.name === 'AbortError';
+      alert(isAbort ? 'Request timed out while deleting receipt.' : 'Error deleting receipt');
     } finally {
+      clearTimeout(timeoutId);
       setDeleteLoading(false);
     }
   };

@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 
 import ActivityTimeline from '@/src/components/admin/ActivityTimeline';
 import QuickActions from '@/src/components/admin/QuickActions';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';
@@ -95,22 +96,33 @@ export default function AdminDashboard() {
   const handleDelete = async () => {
     if (!deleteTarget) return;
     setDeleteLoading(true);
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const res = await fetch(`/api/admin/users/${deleteTarget.id}`, {
         method: 'DELETE',
         headers: { Authorization: `Bearer ${token}` },
+        signal: controller.signal,
       });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const j = await res.json();
-        throw new Error(j.error);
+        throw new Error(extractApiErrorMessage(data, 'Failed to delete user'));
       }
       queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
       showToast('success', `${deleteTarget.full_name} has been deleted.`);
-    } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Delete failed');
-    } finally {
-      setDeleteLoading(false);
       setDeleteTarget(null);
+    } catch (err: unknown) {
+      const isAbort = err instanceof Error && err.name === 'AbortError';
+      showToast(
+        'error',
+        isAbort
+          ? 'Request timed out while deleting user. Please check your connection and try again.'
+          : extractApiErrorMessage(err, 'Failed to delete user')
+      );
+    } finally {
+      clearTimeout(timeoutId);
+      setDeleteLoading(false);
     }
   };
 
