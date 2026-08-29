@@ -14,6 +14,9 @@ import {
   KeyRound,
   BarChart3,
   Clock,
+  MessageSquare,
+  PhoneCall,
+  Send,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
@@ -59,6 +62,16 @@ export function getSviEmail(employee: {
   return rawEmail;
 }
 
+/**
+ * Builds a standard WhatsApp chat URL for the employee.
+ */
+export function getWhatsAppUrl(phone: string, name: string): string {
+  const digits = phone.replace(/[^0-9]/g, '');
+  const cleanPhone = digits.length === 10 ? `91${digits}` : digits;
+  const text = encodeURIComponent(`Hi ${name},`);
+  return `https://wa.me/${cleanPhone}?text=${text}`;
+}
+
 interface EmployeeCardProps {
   employee: Employee;
   liveStatus?: EmployeeLiveStatus | null;
@@ -76,10 +89,9 @@ export function EmployeeCard({
 }: EmployeeCardProps) {
   const [copiedId, setCopiedId] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
-
-  const cleanNotes = employee.notes || '';
+  const [copiedPhone, setCopiedPhone] = useState(false);
   const sviEmail = getSviEmail(employee);
-
+  const cleanNotes = employee.notes || '';
   const handleCopyId = (text: string) => {
     navigator.clipboard.writeText(text);
     setCopiedId(true);
@@ -89,9 +101,14 @@ export function EmployeeCard({
 
   const handleCopyEmail = (email: string) => {
     navigator.clipboard.writeText(email);
-    setCopiedEmail(true);
-    toast.success('Employee Login Email copied');
     setTimeout(() => setCopiedEmail(false), 2000);
+  };
+
+  const handleCopyPhone = (phone: string) => {
+    navigator.clipboard.writeText(phone);
+    setCopiedPhone(true);
+    toast.success('Phone number copied');
+    setTimeout(() => setCopiedPhone(false), 2000);
   };
 
   return (
@@ -218,17 +235,26 @@ export function EmployeeCard({
                 </span>
               </div>
             </div>
-            <button
-              onClick={() => handleCopyEmail(sviEmail)}
-              className="shrink-0 text-gray-400 transition-colors hover:text-gray-700 dark:hover:text-white"
-              title="Copy SVI Email"
-            >
-              {copiedEmail ? (
-                <CheckCircle2 size={13} className="text-emerald-500" />
-              ) : (
-                <Copy size={13} />
-              )}
-            </button>
+            <div className="flex shrink-0 items-center gap-1">
+              <a
+                href={`mailto:${sviEmail}`}
+                className="rounded p-1 text-gray-400 transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:text-amber-400"
+                title={`Send email to ${sviEmail}`}
+              >
+                <Send size={12} />
+              </a>
+              <button
+                onClick={() => handleCopyEmail(sviEmail)}
+                className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-200/60 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-white"
+                title="Copy SVI Email"
+              >
+                {copiedEmail ? (
+                  <CheckCircle2 size={12} className="text-emerald-500" />
+                ) : (
+                  <Copy size={12} />
+                )}
+              </button>
+            </div>
           </div>
 
           {/* Personal Real Email (if exists and different from SVI email) */}
@@ -240,10 +266,46 @@ export function EmployeeCard({
             </div>
           )}
 
+          {/* Phone & Quick Communication Actions */}
           {employee.phone && (
-            <div className="flex items-center gap-2.5 px-1 text-xs text-gray-600 dark:text-gray-400">
-              <Phone size={13} className="text-gray-400" />
-              <span>{employee.phone}</span>
+            <div className="flex items-center justify-between gap-2 rounded-lg bg-gray-50/50 px-3 py-2 text-xs text-gray-700 dark:bg-white/[0.03] dark:text-gray-200">
+              <div className="flex min-w-0 items-center gap-2">
+                <Phone size={13} className="shrink-0 text-gray-400" />
+                <span className="font-mono text-xs text-gray-700 dark:text-gray-300">
+                  {employee.phone}
+                </span>
+              </div>
+              <div className="flex shrink-0 items-center gap-1.5">
+                <a
+                  href={getWhatsAppUrl(employee.phone, employee.full_name)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-2 py-1 text-[11px] font-semibold text-emerald-600 transition-all hover:bg-emerald-500/20 active:scale-95 dark:bg-emerald-500/15 dark:text-emerald-400"
+                  title="Chat on WhatsApp"
+                >
+                  <MessageSquare size={11} />
+                  <span>WhatsApp</span>
+                </a>
+                <a
+                  href={`tel:${employee.phone}`}
+                  className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-1 text-[11px] font-semibold text-blue-600 transition-all hover:bg-blue-500/20 active:scale-95 dark:bg-blue-500/15 dark:text-blue-400"
+                  title="Direct Call"
+                >
+                  <PhoneCall size={11} />
+                  <span>Call</span>
+                </a>
+                <button
+                  onClick={() => handleCopyPhone(employee.phone!)}
+                  className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-200/60 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-white"
+                  title="Copy Phone Number"
+                >
+                  {copiedPhone ? (
+                    <CheckCircle2 size={12} className="text-emerald-500" />
+                  ) : (
+                    <Copy size={12} />
+                  )}
+                </button>
+              </div>
             </div>
           )}
 
