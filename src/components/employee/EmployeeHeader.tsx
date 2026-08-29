@@ -98,7 +98,7 @@ export default function EmployeeHeader() {
             height={83}
             quality={100}
             priority
-            className="h-7 w-auto object-contain transition-all duration-300 sm:h-7.5"
+            className="h-7 w-auto max-w-full object-contain transition-all duration-300 sm:h-8"
           />
         </div>
 

@@ -124,7 +124,7 @@ function SidebarContent({
       {/* Logo */}
       <div
         className={`flex h-20 items-center border-b border-gray-100 transition-all duration-300 dark:border-white/5 ${
-          collapsed && !isMobile ? 'justify-center px-2' : 'px-4 sm:px-5'
+          collapsed && !isMobile ? 'justify-center px-2' : 'px-4'
         }`}
       >
         {collapsed && !isMobile ? (
@@ -147,7 +147,7 @@ function SidebarContent({
         ) : (
           <Link
             href="/admin/dashboard"
-            className="group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-3.5 py-2 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-[1.02] hover:shadow-md active:scale-[0.98] dark:ring-white/10"
+            className="group relative inline-flex max-w-[170px] shrink-0 items-center justify-center rounded-[20px] bg-white px-3 py-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-[1.02] hover:shadow-md active:scale-[0.98] dark:ring-white/10"
             aria-label="SVI Infra Solutions Pvt. Ltd."
           >
             <Image
@@ -157,7 +157,7 @@ function SidebarContent({
               height={83}
               quality={100}
               priority
-              className="h-7.5 w-auto shrink-0 object-contain transition-all duration-300 sm:h-8"
+              className="h-7 w-auto max-w-full object-contain transition-all duration-300 sm:h-8"
             />
           </Link>
         )}
@@ -216,7 +216,7 @@ function SidebarContent({
                   />
                 )}
                 <item.icon
-                  className={`h-4.5 w-4.5 ${active ? 'text-brand-gold' : 'group-hover:text-brand-gold transition-colors'}`}
+                  className={`h-4 w-4 shrink-0 ${active ? 'text-brand-gold' : 'group-hover:text-brand-gold transition-colors'}`}
                 />
               </div>
               <span className={labelClass}>{item.name}</span>
@@ -259,7 +259,7 @@ function SidebarContent({
                   />
                 )}
                 <item.icon
-                  className={`h-4.5 w-4.5 ${active ? 'text-brand-gold' : 'group-hover:text-brand-gold transition-colors'}`}
+                  className={`h-4 w-4 shrink-0 ${active ? 'text-brand-gold' : 'group-hover:text-brand-gold transition-colors'}`}
                 />
               </div>
               <span className={labelClass}>{item.name}</span>
