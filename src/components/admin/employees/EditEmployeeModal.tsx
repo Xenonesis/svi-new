@@ -118,8 +118,11 @@ export function EditEmployeeModal({ employee, onClose, onSuccess, token }: EditE
                 <h3 className="font-serif text-lg font-bold text-gray-900 dark:text-white">
                   Edit Employee Profile
                 </h3>
-                <p className="font-mono text-xs text-gray-500 dark:text-gray-400">
-                  ID: {employee.id.slice(0, 8)}...
+                <p
+                  className="font-mono text-xs text-gray-500 select-all dark:text-gray-400"
+                  title={employee.id}
+                >
+                  ID: {employee.id}
                 </p>
               </div>
             </div>

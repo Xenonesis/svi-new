@@ -148,8 +148,11 @@ export function EmployeeCard({
                 {employee.full_name}
               </h3>
               <div className="mt-0.5 flex items-center gap-2">
-                <p className="text-brand-gold truncate font-mono text-[11px] font-bold tracking-wider uppercase">
-                  ID: {employee.id.slice(0, 8)}...
+                <p
+                  className="text-brand-gold font-mono text-[11px] font-bold tracking-wider uppercase select-all"
+                  title={employee.id}
+                >
+                  ID: {employee.id}
                 </p>
                 <button
                   onClick={() => handleCopyId(employee.id)}

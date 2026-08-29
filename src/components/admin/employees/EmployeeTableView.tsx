@@ -160,8 +160,11 @@ export function EmployeeTableView({
                   {/* Column 2: ID & Joined */}
                   <td className="px-4 py-3.5 whitespace-nowrap">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-mono text-[11px] font-bold text-gray-600 dark:text-gray-400">
-                        {emp.id.slice(0, 8)}...
+                      <span
+                        className="font-mono text-[11px] font-bold text-gray-600 select-all dark:text-gray-400"
+                        title={emp.id}
+                      >
+                        {emp.id}
                       </span>
                       <button
                         onClick={() => handleCopy(emp.id, 'Employee ID', idCopyKey)}
