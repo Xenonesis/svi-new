@@ -9,7 +9,7 @@ import { OfferLetterForm } from '@/src/components/admin/OfferLetter/OfferLetterF
 import { OfferLetterFormData, SavedOffer } from '@/src/components/admin/OfferLetter/types';
 import { useEffect, useState, useCallback } from 'react';
 import { FileText, X } from 'lucide-react';
-
+import { toast } from 'sonner';
 const INITIAL_FORM_DATA: OfferLetterFormData = {
   date: '',
   name: '',
@@ -74,7 +74,19 @@ export default function OfferLetterPage() {
   const [showSlabs, setShowSlabs] = useState(false);
   const [salesCustomDesignation, setSalesCustomDesignation] = useState('');
   const [showCustomDesignation, setShowCustomDesignation] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
 
+  const getCandidateFilename = useCallback(
+    (ext: 'pdf' | 'png' = 'pdf') => {
+      const rawName = formData.name?.trim() || 'Candidate';
+      const cleanName = rawName
+        .replace(/[^a-zA-Z0-9_-]/g, '_')
+        .replace(/_+/g, '_')
+        .replace(/^_|_$/g, '');
+      return `Offer_Letter_${cleanName || 'Candidate'}.${ext}`;
+    },
+    [formData.name]
+  );
   // Load saved offer letters from database
   useEffect(() => {
     if (!token) return;
@@ -206,6 +218,14 @@ export default function OfferLetterPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.name?.trim()) {
+      toast.error('Please enter candidate name before generating offer letter.');
+      return;
+    }
+
+    setIsGenerating(true);
+    let currentDocId = documentId;
+
     if (token) {
       try {
         const response = await fetch('/api/admin/documents', {
@@ -222,6 +242,7 @@ export default function OfferLetterPage() {
         });
         if (response.ok) {
           const data = await response.json();
+          currentDocId = data.document.id;
           setDocumentId(data.document.id);
           setSavedOffers((prev) => {
             const index = prev.findIndex((item) => item.id === data.document.id);
@@ -239,12 +260,43 @@ export default function OfferLetterPage() {
         console.error('Failed to save document:', error);
       }
     }
+
     setPreview(true);
+
+    // Auto generate & download PDF named after candidate
+    try {
+      const filename = getCandidateFilename('pdf');
+      // Allow preview DOM element to mount
+      const { promise, resolve } = Promise.withResolvers<void>();
+      setTimeout(resolve, 300);
+      await promise;
+      await exportToPDF({ elementId: 'offerPreview', filename });
+      toast.success(`Offer Letter downloaded: ${filename}`);
+
+      if (currentDocId && token) {
+        try {
+          await fetch(`/api/admin/documents/${currentDocId}`, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ status: 'completed' }),
+          });
+        } catch (error) {
+          console.error('Failed to update document status:', error);
+        }
+      }
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF');
+    } finally {
+      setIsGenerating(false);
+    }
   };
 
   const handleDownloadPDF = async () => {
     try {
-      await exportToPDF({ elementId: 'offerPreview', filename: 'Offer_Letter.pdf' });
+      const filename = getCandidateFilename('pdf');
+      await exportToPDF({ elementId: 'offerPreview', filename });
+      toast.success(`Downloaded: ${filename}`);
       if (documentId && token) {
         try {
           await fetch(`/api/admin/documents/${documentId}`, {
@@ -258,17 +310,20 @@ export default function OfferLetterPage() {
       }
     } catch (error) {
       console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF');
     }
   };
 
   const handleDownloadImage = async () => {
     try {
-      await exportToImage({ elementId: 'offerPreview', filename: 'Offer_Letter.png' });
+      const filename = getCandidateFilename('png');
+      await exportToImage({ elementId: 'offerPreview', filename });
+      toast.success(`Downloaded: ${filename}`);
     } catch (error) {
       console.error('Error generating Image:', error);
+      toast.error('Failed to generate Image');
     }
   };
-
   const matchedSlab = formData.salaryCtc
     ? SALARY_SLABS.find((s) => parseFloat(formData.salaryCtc) === s.salary)
     : formData.target
@@ -337,6 +392,7 @@ export default function OfferLetterPage() {
           setFormData={setFormData}
           savedOffers={savedOffers}
           selectedRecordId={selectedRecordId}
+          isGenerating={isGenerating}
           showSalesOptions={showSalesOptions}
           setShowSalesOptions={setShowSalesOptions}
           showSlabs={showSlabs}
@@ -357,7 +413,14 @@ export default function OfferLetterPage() {
         {/* ──────────────── Preview ──────────────── */}
         <div className="dark:bg-brand-dark-surface relative flex h-[calc(100vh-140px)] min-h-[600px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-white/10">
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-white/10">
-            <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Preview</h2>
+            <div className="flex items-center gap-2.5">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Preview</h2>
+              {formData.name?.trim() && (
+                <span className="hidden rounded-md bg-emerald-500/10 px-2 py-0.5 font-mono text-[11px] font-medium text-emerald-600 sm:inline-block dark:bg-emerald-500/15 dark:text-emerald-400">
+                  {getCandidateFilename('pdf')}
+                </span>
+              )}
+            </div>
             {preview && (
               <button
                 onClick={() => {

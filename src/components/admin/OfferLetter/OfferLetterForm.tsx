@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
-import { FileSignature, RefreshCw, SlidersHorizontal, ChevronDown } from 'lucide-react';
+import { FileSignature, RefreshCw, SlidersHorizontal, ChevronDown, Loader2 } from 'lucide-react';
 import { SlabSelector, SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
 import { SalesCompensationSection } from '@/src/components/admin/OfferLetter/SalesCompensationSection';
 import { OfferLetterFormData, SavedOffer } from './types';
@@ -13,6 +13,7 @@ interface OfferLetterFormProps {
   setFormData: React.Dispatch<React.SetStateAction<OfferLetterFormData>>;
   savedOffers: SavedOffer[];
   selectedRecordId?: string;
+  isGenerating?: boolean;
   showSalesOptions: boolean;
   setShowSalesOptions: (val: boolean) => void;
   showSlabs: boolean;
@@ -37,6 +38,7 @@ export function OfferLetterForm({
   setFormData,
   savedOffers,
   selectedRecordId,
+  isGenerating = false,
   showSalesOptions,
   setShowSalesOptions,
   showSlabs,
@@ -332,9 +334,18 @@ export function OfferLetterForm({
 
         <button
           type="submit"
-          className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 text-xs font-bold tracking-widest uppercase shadow-sm transition-all"
+          disabled={isGenerating}
+          className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3 text-xs font-bold tracking-widest uppercase shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <RefreshCw className="h-4 w-4" /> Generate Offer Letter
+          {isGenerating ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" /> Generating &amp; Downloading...
+            </>
+          ) : (
+            <>
+              <RefreshCw className="h-4 w-4" /> Generate Offer Letter
+            </>
+          )}
         </button>
       </form>
     </div>
