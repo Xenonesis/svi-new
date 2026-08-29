@@ -130,7 +130,10 @@ export function RecipientInput({
             ) : (
               <AlertCircle className="h-3 w-3 shrink-0 text-red-500" />
             )}
-            <span className="max-w-[160px] truncate">
+            <span
+              className="break-all"
+              title={recipient.name ? `${recipient.name} <${recipient.email}>` : recipient.email}
+            >
               {recipient.name ? `${recipient.name} <${recipient.email}>` : recipient.email}
             </span>
             <button

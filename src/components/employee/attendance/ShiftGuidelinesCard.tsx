@@ -14,9 +14,12 @@ import {
 
 interface AttendanceSettingsProps {
   punch_in_start?: string;
+  punch_in_late_after?: string;
   punch_in_cutoff?: string;
   punch_out_start?: string;
   punch_out_end?: string;
+  min_hours_half_day?: number;
+  min_hours_full_day?: number;
   geofence_radius_meters?: number;
 }
 
@@ -47,11 +50,13 @@ function formatTime12(timeStr?: string): string {
 
 export function ShiftGuidelinesCard({ settings, locations }: ShiftGuidelinesCardProps) {
   const shiftStart = formatTime12(settings?.punch_in_start || '09:00');
+  const lateGraceTime = formatTime12(settings?.punch_in_late_after || '09:15');
   const shiftEnd = formatTime12(settings?.punch_out_start || '17:00');
   const lateCutoff = formatTime12(settings?.punch_in_cutoff || '10:30');
   const punchOutWindowEnd = formatTime12(settings?.punch_out_end || '21:00');
+  const minHalfDayHrs = settings?.min_hours_half_day ?? 4;
+  const minFullDayHrs = settings?.min_hours_full_day ?? 8;
   const radiusMeters = settings?.geofence_radius_meters || 200;
-
   const officeNames =
     locations && locations.length > 0
       ? locations.map((l) => l.name).join(', ')
@@ -97,18 +102,39 @@ export function ShiftGuidelinesCard({ settings, locations }: ShiftGuidelinesCard
           </div>
         </div>
 
-        {/* Punch In Window & Cutoff */}
+        {/* On-Time Grace & Late Threshold */}
         <div className="flex items-center justify-between rounded-xl bg-slate-50/80 p-2.5 dark:bg-slate-950/40">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/10 text-emerald-600 dark:text-emerald-400">
+              <CheckCircle2 className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                On-Time Grace Window
+              </span>
+              <p className="text-[10px] text-slate-400">Till {lateGraceTime} • 100% Day Salary</p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+              Grace: {lateGraceTime}
+            </span>
+            <p className="text-[10px] text-slate-400">After {lateGraceTime} = Late</p>
+          </div>
+        </div>
+
+        {/* Half Day Cutoff & Salary Impact */}
+        <div className="flex items-center justify-between rounded-xl bg-amber-50/70 p-2.5 dark:bg-amber-950/30">
           <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-amber-500/10 text-amber-600 dark:text-amber-400">
               <AlertCircle className="h-3.5 w-3.5" />
             </div>
             <div>
-              <span className="font-semibold text-slate-900 dark:text-white">
-                Late Arrival Threshold
+              <span className="font-semibold text-amber-950 dark:text-amber-200">
+                Half-Day Trigger (50% Salary)
               </span>
-              <p className="text-[10px] text-slate-400">
-                Punch-in after {shiftStart} is marked Late
+              <p className="text-[10px] text-amber-800/80 dark:text-amber-300/80">
+                Punched after {lateCutoff} OR &lt;{minFullDayHrs}h worked
               </p>
             </div>
           </div>
@@ -116,7 +142,30 @@ export function ShiftGuidelinesCard({ settings, locations }: ShiftGuidelinesCard
             <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
               Cutoff: {lateCutoff}
             </span>
-            <p className="text-[10px] text-slate-400">Requires note after cutoff</p>
+            <p className="text-[10px] text-amber-700 dark:text-amber-300">Counts as 0.5 Day</p>
+          </div>
+        </div>
+
+        {/* Duty Hours Breakdown */}
+        <div className="flex items-center justify-between rounded-xl bg-slate-50/80 p-2.5 dark:bg-slate-950/40">
+          <div className="flex items-center gap-2 text-slate-600 dark:text-slate-300">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-500/10 text-blue-600 dark:text-blue-400">
+              <Clock className="h-3.5 w-3.5" />
+            </div>
+            <div>
+              <span className="font-semibold text-slate-900 dark:text-white">
+                Daily Duty Thresholds
+              </span>
+              <p className="text-[10px] text-slate-400">
+                Full Day: &ge;{minFullDayHrs}h | Half Day: &ge;{minHalfDayHrs}h
+              </p>
+            </div>
+          </div>
+          <div className="text-right">
+            <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
+              {minFullDayHrs}h Standard
+            </span>
+            <p className="text-[10px] text-slate-400">&lt;{minHalfDayHrs}h = Loss of Pay</p>
           </div>
         </div>
 

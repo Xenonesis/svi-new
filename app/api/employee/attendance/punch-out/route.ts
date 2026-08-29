@@ -101,17 +101,51 @@ export async function POST(request: NextRequest) {
       isGeofenceVerified = true;
     }
 
+    // Get attendance settings for duty hour rules
+    const { data: settings } = await supabaseAdmin.from('attendance_settings').select('key, value');
+    const settingsMap: Record<string, string> = {};
+    for (const s of settings || []) {
+      settingsMap[s.key] = typeof s.value === 'string' ? s.value : JSON.stringify(s.value);
+    }
+
+    const minHoursHalfDay = Number(settingsMap['min_hours_half_day']?.replace(/"/g, '')) || 4.0;
+    const minHoursFullDay = Number(settingsMap['min_hours_full_day']?.replace(/"/g, '')) || 8.0;
+
     // Calculate total hours
     const punchInTime = new Date(todayRecord.punch_in_time);
     const totalHours =
       Math.round(((now.getTime() - punchInTime.getTime()) / (1000 * 60 * 60)) * 100) / 100;
+
+    // Evaluate final attendance status based on duty hours
+    let finalStatus = todayRecord.status;
+    let additionalNote = '';
+    let outMessage = `Shift completed! ${totalHours} hrs logged. Full Day attendance recorded (100% Day Salary).`;
+
+    if (todayRecord.status === 'present') {
+      if (totalHours < minHoursHalfDay) {
+        finalStatus = 'half_day';
+        additionalNote = `Short duty (${totalHours}h < ${minHoursHalfDay}h min)`;
+        outMessage = `Shift ended. ${totalHours} hrs logged (<${minHoursHalfDay}h minimum). Marked as Half Day (50% Day Salary).`;
+      } else if (totalHours < minHoursFullDay) {
+        finalStatus = 'half_day';
+        additionalNote = `Half-day duty (${totalHours}h < ${minHoursFullDay}h standard)`;
+        outMessage = `Shift ended. ${totalHours} hrs logged (<${minHoursFullDay}h full shift). Marked as Half Day (50% Day Salary).`;
+      }
+    } else if (todayRecord.status === 'half_day') {
+      outMessage = `Shift completed! ${totalHours} hrs logged. Half Day attendance recorded (50% Day Salary).`;
+    }
+
+    const updatedNotes = todayRecord.notes
+      ? additionalNote
+        ? `${todayRecord.notes} | ${additionalNote}`
+        : todayRecord.notes
+      : additionalNote || null;
 
     const summaryText = typeof body.summary_text === 'string' ? body.summary_text.trim() : null;
     const clientCount = Number(body.client_interactions_count) || 0;
     const visitCount = Number(body.site_visits_conducted_count) || 0;
 
     // Update record with punch-out data and daily work log
-    // Update attendance record with punch-out timestamp and duration
     const { data: updatedRecord, error: updateError } = await supabaseAdmin
       .from('attendance_records')
       .update({
@@ -120,12 +154,13 @@ export async function POST(request: NextRequest) {
         punch_out_lon: lon,
         punch_out_geofence_verified: isGeofenceVerified,
         total_hours: totalHours,
+        status: finalStatus,
+        notes: updatedNotes,
         updated_at: now.toISOString(),
       })
       .eq('id', todayRecord.id)
       .select()
       .single();
-
     if (updateError) {
       console.error('Error updating punch-out record:', updateError);
       throw AppError.badRequest(
@@ -147,7 +182,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      message: 'Shift completed! Punch-out recorded successfully.',
+      message: outMessage,
       record: updatedRecord,
       geofence: {
         verified: isGeofenceVerified,

@@ -58,12 +58,14 @@ export async function GET(request: NextRequest) {
 
     const settingsMap: Record<string, any> = {
       punch_in_start: '09:00',
+      punch_in_late_after: '09:15',
       punch_in_cutoff: '10:30',
       punch_out_start: '17:00',
       punch_out_end: '21:00',
+      min_hours_half_day: 4,
+      min_hours_full_day: 8,
       geofence_radius_meters: 200,
     };
-
     for (const s of settingsData || []) {
       if (typeof s.value === 'string') {
         settingsMap[s.key] = s.value.replace(/^"|"$/g, '');
@@ -105,6 +107,7 @@ export async function GET(request: NextRequest) {
       email: profile.email,
       team_name: teamName,
       status,
+      record_status: todayRecord?.status || null,
       punch_in_time: todayRecord?.punch_in_time || null,
       punch_out_time: todayRecord?.punch_out_time || null,
       total_hours: todayRecord?.total_hours || null,
@@ -112,6 +115,7 @@ export async function GET(request: NextRequest) {
       is_geofence_verified: todayRecord?.is_geofence_verified || false,
       punch_out_geofence_verified: todayRecord?.punch_out_geofence_verified || false,
       geofence_distance_meters: todayRecord?.geofence_distance_meters || null,
+      notes: todayRecord?.notes || null,
       summary_text: todayWorkLog?.summary || null,
       client_interactions_count: todayWorkLog?.client_interactions_count || 0,
       site_visits_conducted_count: todayWorkLog?.site_visits_conducted_count || 0,

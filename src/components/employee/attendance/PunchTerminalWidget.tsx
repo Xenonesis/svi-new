@@ -12,22 +12,26 @@ interface StatusState {
   user_id?: string;
   email?: string;
   status: 'not_punched' | 'punched_in' | 'punched_out';
+  record_status?: 'present' | 'half_day' | 'absent' | 'leave' | 'pending' | null;
   punch_in_time: string | null;
   punch_out_time: string | null;
   total_hours: number | null;
   is_late: boolean;
   is_geofence_verified: boolean;
+  notes?: string | null;
   summary_text?: string | null;
 }
 
 interface AttendanceSettingsProps {
   punch_in_start?: string;
+  punch_in_late_after?: string;
   punch_in_cutoff?: string;
   punch_out_start?: string;
   punch_out_end?: string;
+  min_hours_half_day?: number;
+  min_hours_full_day?: number;
   geofence_radius_meters?: number;
 }
-
 interface PunchTerminalWidgetProps {
   statusData: StatusState;
   elapsedTime: string;
@@ -191,8 +195,18 @@ export function PunchTerminalWidget({
               : 'Ready to Punch'}
         </span>
 
-        <div className="flex items-center gap-1.5">
-          {statusData.is_late && (
+        <div className="flex flex-wrap items-center gap-1.5">
+          {statusData.record_status === 'half_day' && (
+            <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold text-amber-700 dark:text-amber-300">
+              Half Day (50% Salary)
+            </span>
+          )}
+          {statusData.record_status === 'present' && (
+            <span className="rounded-full bg-emerald-500/15 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+              Full Day (100% Salary)
+            </span>
+          )}
+          {statusData.is_late && statusData.record_status !== 'half_day' && (
             <span className="rounded-full bg-amber-500/15 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
               Late Arrival
             </span>
@@ -269,16 +283,19 @@ export function PunchTerminalWidget({
         </div>
       </div>
 
-      {/* Progress towards 8h shift goal (if punched in or completed) */}
+      {/* Progress towards shift targets (4h Half Day & 8h Full Day) */}
       {(isPunchedIn || isPunchedOut) && (
-        <div className="mb-4 space-y-1.5 text-left">
+        <div className="mb-4 space-y-2 text-left">
           <div className="flex items-center justify-between text-xs">
-            <span className="text-slate-500">Shift Target (8 Hours)</span>
+            <span className="text-slate-500">
+              Shift Target ({settings?.min_hours_full_day ?? 8}h Full Day •{' '}
+              {settings?.min_hours_half_day ?? 4}h Half Day)
+            </span>
             <span className="font-mono font-bold text-slate-900 dark:text-white">
               {shiftProgressPercent}% completed
             </span>
           </div>
-          <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
+          <div className="h-2.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
             <div
               className={clsx(
                 'h-full rounded-full transition-all duration-500',
@@ -286,6 +303,15 @@ export function PunchTerminalWidget({
               )}
               style={{ width: `${shiftProgressPercent}%` }}
             />
+          </div>
+          <div className="flex justify-between text-[10px] text-slate-400">
+            <span>0h (Start)</span>
+            <span className="font-semibold text-amber-600 dark:text-amber-400">
+              {settings?.min_hours_half_day ?? 4}h (Half Day: 50% Salary)
+            </span>
+            <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+              {settings?.min_hours_full_day ?? 8}h (Full Day: 100% Salary)
+            </span>
           </div>
         </div>
       )}

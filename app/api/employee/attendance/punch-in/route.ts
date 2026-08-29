@@ -85,8 +85,9 @@ export async function POST(request: NextRequest) {
       settingsMap[s.key] = typeof s.value === 'string' ? s.value : JSON.stringify(s.value);
     }
 
-    const punchInCutoff = settingsMap['punch_in_cutoff']?.replace(/"/g, '') || '10:30';
     const punchInStart = settingsMap['punch_in_start']?.replace(/"/g, '') || '09:00';
+    const punchInLateAfter = settingsMap['punch_in_late_after']?.replace(/"/g, '') || '09:15';
+    const punchInCutoff = settingsMap['punch_in_cutoff']?.replace(/"/g, '') || '10:30';
 
     // Check time - convert to IST (UTC+5:30) for comparison
     const istOffset = 5.5 * 60 * 60 * 1000;
@@ -94,7 +95,7 @@ export async function POST(request: NextRequest) {
     const currentTimeStr = istNow.toISOString().slice(11, 16); // "HH:MM"
 
     // Check late and cutoff thresholds
-    const isLate = currentTimeStr > punchInStart;
+    const isLate = currentTimeStr > punchInLateAfter;
     const isAfterCutoff = currentTimeStr > punchInCutoff;
 
     // Geofence verification against all active locations
@@ -157,16 +158,15 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Status must be one of allowed enum values: 'present', 'absent', 'half_day', 'leave', 'pending'
-    // Late arrivals are marked 'present' with is_late = true and documented in notes
-    const statusValue = isGeofenceVerified ? 'present' : 'pending';
+    // Status: If punched after cutoff, automatically assign 'half_day' (50% salary).
+    // If punched on-time or late within shift window, assign 'present' (or 'pending' if geofence unverified).
+    const statusValue = isAfterCutoff ? 'half_day' : isGeofenceVerified ? 'present' : 'pending';
 
     const noteText = isAfterCutoff
-      ? `Late arrival punch-in at ${currentTimeStr} IST (Cutoff was ${punchInCutoff})`
+      ? `Half-Day arrival punch-in at ${currentTimeStr} IST (Cutoff was ${punchInCutoff})`
       : isLate
-        ? `Late punch-in at ${currentTimeStr} IST (Shift starts ${punchInStart})`
+        ? `Late punch-in at ${currentTimeStr} IST (Grace period was till ${punchInLateAfter})`
         : `On-time punch-in at ${currentTimeStr} IST`;
-
     // Insert punch-in record
     const { data: newRecord, error: insertError } = await supabaseAdmin
       .from('attendance_records')
@@ -197,11 +197,10 @@ export async function POST(request: NextRequest) {
       );
     }
     const message = isAfterCutoff
-      ? `Punched in successfully! (Marked Late Arrival: ${currentTimeStr} IST)`
+      ? `Punched in at ${currentTimeStr} IST (After ${punchInCutoff} Cutoff). Recorded as Half Day (50% Day Salary count).`
       : isLate
-        ? `Punched in! (Late Arrival recorded: shift starts at ${punchInStart})`
-        : 'Successfully punched in! Have a productive shift.';
-
+        ? `Punched in at ${currentTimeStr} IST (Late Arrival). Grace was till ${punchInLateAfter}. Full-day shift active.`
+        : `Successfully punched in on-time at ${currentTimeStr} IST! Have a productive shift.`;
     return NextResponse.json({
       success: true,
       message,

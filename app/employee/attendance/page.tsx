@@ -28,11 +28,13 @@ interface StatusState {
   email?: string;
   team_name?: string;
   status: 'not_punched' | 'punched_in' | 'punched_out';
+  record_status?: 'present' | 'half_day' | 'absent' | 'leave' | 'pending' | null;
   punch_in_time: string | null;
   punch_out_time: string | null;
   total_hours: number | null;
   is_late: boolean;
   is_geofence_verified: boolean;
+  notes?: string | null;
   summary_text?: string | null;
   client_interactions_count?: number;
   site_visits_conducted_count?: number;
@@ -40,12 +42,14 @@ interface StatusState {
 
 interface AttendanceSettings {
   punch_in_start?: string;
+  punch_in_late_after?: string;
   punch_in_cutoff?: string;
   punch_out_start?: string;
   punch_out_end?: string;
+  min_hours_half_day?: number;
+  min_hours_full_day?: number;
   geofence_radius_meters?: number;
 }
-
 interface GeofenceLocation {
   id: string;
   name: string;
@@ -66,12 +70,14 @@ export default function EmployeeAttendancePunchPage() {
 
   const [settings, setSettings] = useState<AttendanceSettings>({
     punch_in_start: '09:00',
+    punch_in_late_after: '09:15',
     punch_in_cutoff: '10:30',
     punch_out_start: '17:00',
     punch_out_end: '21:00',
+    min_hours_half_day: 4,
+    min_hours_full_day: 8,
     geofence_radius_meters: 200,
   });
-
   const [locations, setLocations] = useState<GeofenceLocation[]>([]);
   const [loading, setLoading] = useState(true);
   const [punching, setPunching] = useState(false);

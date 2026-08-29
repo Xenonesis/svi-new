@@ -114,10 +114,13 @@ export interface GeofenceLocation {
 }
 
 export interface AttendanceSettingsMap {
-  punch_in_start: string; // "09:00"
-  punch_in_cutoff: string; // "10:30"
-  punch_out_start: string; // "17:00"
-  punch_out_end: string; // "21:00"
+  punch_in_start: string; // "09:00" - Shift window start
+  punch_in_late_after: string; // "09:15" - Late grace cutoff (punches after this are marked Late)
+  punch_in_cutoff: string; // "10:30" - Half-day cutoff (punches after this count as Half Day)
+  punch_out_start: string; // "17:00" - Shift standard end
+  punch_out_end: string; // "21:00" - Max allowed punch out
+  min_hours_half_day: number; // 4.0 - Minimum hours for Half Day (50% salary)
+  min_hours_full_day: number; // 8.0 - Minimum hours for Full Day (100% salary)
   geofence_radius_meters: number; // 200
 }
 

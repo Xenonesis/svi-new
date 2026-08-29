@@ -31,12 +31,14 @@ export async function GET(request: NextRequest) {
     // Default values if not set
     const defaultSettings = {
       punch_in_start: '09:00',
+      punch_in_late_after: '09:15',
       punch_in_cutoff: '10:30',
       punch_out_start: '17:00',
       punch_out_end: '21:00',
+      min_hours_half_day: 4,
+      min_hours_full_day: 8,
       geofence_radius_meters: 200,
     };
-
     return NextResponse.json({ settings: { ...defaultSettings, ...settingsMap } });
   } catch (err) {
     return handleApiError(err);
@@ -57,20 +59,28 @@ export async function PUT(request: NextRequest) {
 
     const {
       punch_in_start,
+      punch_in_late_after,
       punch_in_cutoff,
       punch_out_start,
       punch_out_end,
+      min_hours_half_day,
+      min_hours_full_day,
       geofence_radius_meters,
     } = body;
 
     const updates = [
-      { key: 'punch_in_start', value: JSON.stringify(punch_in_start) },
-      { key: 'punch_in_cutoff', value: JSON.stringify(punch_in_cutoff) },
-      { key: 'punch_out_start', value: JSON.stringify(punch_out_start) },
-      { key: 'punch_out_end', value: JSON.stringify(punch_out_end) },
-      { key: 'geofence_radius_meters', value: JSON.stringify(geofence_radius_meters) },
+      { key: 'punch_in_start', value: JSON.stringify(punch_in_start || '09:00') },
+      { key: 'punch_in_late_after', value: JSON.stringify(punch_in_late_after || '09:15') },
+      { key: 'punch_in_cutoff', value: JSON.stringify(punch_in_cutoff || '10:30') },
+      { key: 'punch_out_start', value: JSON.stringify(punch_out_start || '17:00') },
+      { key: 'punch_out_end', value: JSON.stringify(punch_out_end || '21:00') },
+      { key: 'min_hours_half_day', value: JSON.stringify(Number(min_hours_half_day) || 4) },
+      { key: 'min_hours_full_day', value: JSON.stringify(Number(min_hours_full_day) || 8) },
+      {
+        key: 'geofence_radius_meters',
+        value: JSON.stringify(Number(geofence_radius_meters) || 200),
+      },
     ];
-
     const { error } = await supabaseAdmin
       .from('attendance_settings')
       .upsert(updates, { onConflict: 'key' });
