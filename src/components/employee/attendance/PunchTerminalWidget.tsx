@@ -115,16 +115,22 @@ export function PunchTerminalWidget({
     setVerifyingBiometric(true);
 
     try {
-      const verified = await biometricAuth.verify(currentUserId);
-      if (verified) {
+      const result = await biometricAuth.verifyWithFeedback(currentUserId);
+      if (result.success) {
         toast.success('Biometric Passkey verified');
         if (!isPunchedIn) {
           onPunchIn();
         } else {
           onPunchOutClick();
         }
+      } else if (result.reason === 'canceled') {
+        toast.info('Biometric prompt closed', {
+          description: 'You can punch in manually using the GPS button below.',
+        });
       } else {
-        toast.error('Biometric verification canceled or failed');
+        toast.error('Biometric verification not recognized', {
+          description: 'Please retry or use standard 1-tap GPS attendance.',
+        });
       }
     } catch {
       toast.error('Biometric verification error');

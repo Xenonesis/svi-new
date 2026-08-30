@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { leaveStore } from '@/src/lib/attendance/leaveStore';
@@ -32,14 +33,28 @@ export async function GET(request: NextRequest) {
         .filter((l) => l.leave_type === 'unpaid')
         .reduce((sum, l) => sum + Number(l.total_days || 0), 0),
     };
+    // Fetch Admin Configured Quota Settings
+    const { data: settingsData } = await supabaseAdmin
+      .from('attendance_settings')
+      .select('key, value')
+      .in('key', ['annual_casual_leaves', 'annual_sick_leaves', 'annual_earned_leaves']);
+
+    const settingsMap: Record<string, number> = {};
+    for (const s of settingsData || []) {
+      const num = typeof s.value === 'number' ? s.value : Number(String(s.value).replace(/"/g, ''));
+      if (!isNaN(num)) settingsMap[s.key] = num;
+    }
+
+    const casualTotal = settingsMap.annual_casual_leaves ?? 12;
+    const sickTotal = settingsMap.annual_sick_leaves ?? 8;
+    const earnedTotal = settingsMap.annual_earned_leaves ?? 15;
 
     const quota = {
-      casual_total: 12,
-      sick_total: 8,
-      earned_total: 15,
+      casual_total: casualTotal,
+      sick_total: sickTotal,
+      earned_total: earnedTotal,
       ...breakdown,
     };
-
     return NextResponse.json({
       leaves: leaves || [],
       quota,

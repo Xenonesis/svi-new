@@ -122,14 +122,14 @@ export function DashboardLeaveAndStreakCard({
               Casual (CL)
             </p>
             <p className="font-mono text-sm font-extrabold text-blue-600 dark:text-blue-400">
-              {casual} <span className="text-[9px] font-normal text-slate-400">/ 6</span>
+              {casual} <span className="text-[9px] font-normal text-slate-400">left</span>
             </p>
           </div>
 
           <div className="rounded-xl border border-slate-200/80 bg-white p-2 dark:border-white/5 dark:bg-slate-900">
             <p className="text-[10px] font-medium text-slate-500 dark:text-slate-400">Sick (SL)</p>
             <p className="font-mono text-sm font-extrabold text-emerald-600 dark:text-emerald-400">
-              {sick} <span className="text-[9px] font-normal text-slate-400">/ 6</span>
+              {sick} <span className="text-[9px] font-normal text-slate-400">left</span>
             </p>
           </div>
 
@@ -138,7 +138,7 @@ export function DashboardLeaveAndStreakCard({
               Earned (EL)
             </p>
             <p className="font-mono text-sm font-extrabold text-purple-600 dark:text-purple-400">
-              {earned} <span className="text-[9px] font-normal text-slate-400">/ 12</span>
+              {earned} <span className="text-[9px] font-normal text-slate-400">left</span>
             </p>
           </div>
         </div>

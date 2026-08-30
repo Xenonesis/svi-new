@@ -122,6 +122,9 @@ export interface AttendanceSettingsMap {
   min_hours_half_day: number; // 4.0 - Minimum hours for Half Day (50% salary)
   min_hours_full_day: number; // 8.0 - Minimum hours for Full Day (100% salary)
   geofence_radius_meters: number; // 200
+  annual_casual_leaves?: number; // 12
+  annual_sick_leaves?: number; // 8
+  annual_earned_leaves?: number; // 15
 }
 
 export type EmployeePunchStatus = 'not_punched' | 'punched_in' | 'punched_out';

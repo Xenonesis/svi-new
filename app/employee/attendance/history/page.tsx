@@ -26,17 +26,17 @@ export default function EmployeeAttendanceHistoryPage() {
   // Modals & Inspection
   const [showLeaveModal, setShowLeaveModal] = useState(false);
   const [showRegularizeModal, setShowRegularizeModal] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedDayRecord, setSelectedDayRecord] = useState<AttendanceRecord | null>(null);
 
   // Fetch Attendance History & Leaves
   const fetchHistory = useCallback(async (monthDate: Date) => {
     try {
       setLoading(true);
-      const year = monthDate.getFullYear();
-      const month = monthDate.getMonth() + 1;
+      const monthStr = format(monthDate, 'yyyy-MM');
 
       const [historyRes, leavesRes] = await Promise.all([
-        fetch(`/api/employee/attendance/history?year=${year}&month=${month}`),
+        fetch(`/api/employee/attendance/history?month=${monthStr}`),
         fetch('/api/employee/attendance/leaves'),
       ]);
 
@@ -60,6 +60,11 @@ export default function EmployeeAttendanceHistoryPage() {
   useEffect(() => {
     fetchHistory(currentMonth);
   }, [currentMonth, fetchHistory]);
+
+  const handleSelectDay = (dateStr: string, record: AttendanceRecord | null) => {
+    setSelectedDate(dateStr);
+    setSelectedDayRecord(record);
+  };
 
   const handleApplyLeave = async (leaveData: {
     leave_type: string;
@@ -130,10 +135,20 @@ export default function EmployeeAttendanceHistoryPage() {
             onMonthChange={setCurrentMonth}
             records={records}
             loading={loading}
-            onSelectRecord={setSelectedDayRecord}
+            selectedDate={selectedDate}
+            onSelectDay={handleSelectDay}
           />
 
-          <DayDetailCard record={selectedDayRecord} onClose={() => setSelectedDayRecord(null)} />
+          <DayDetailCard
+            dateStr={selectedDate}
+            record={selectedDayRecord}
+            onClose={() => {
+              setSelectedDate(null);
+              setSelectedDayRecord(null);
+            }}
+            onOpenRegularizeModal={() => setShowRegularizeModal(true)}
+            onOpenLeaveModal={() => setShowLeaveModal(true)}
+          />
         </div>
 
         {/* RIGHT COLUMN: Monthly Stats & Leave Balances (5 Columns) */}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Clock, AlertCircle, ShieldAlert, CheckCircle2 } from 'lucide-react';
+import { Save, Clock, AlertCircle, ShieldAlert, CheckCircle2, Palmtree } from 'lucide-react';
 import type { AttendanceSettingsMap } from '@/src/lib/supabase/types';
 
 interface AttendanceSettingsProps {
@@ -200,6 +200,83 @@ export default function AttendanceSettings({ token, showToast }: AttendanceSetti
                 <p className="mt-1 text-[9px] text-gray-400">&ge; 8h gives 100% salary.</p>
               </div>
             </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Annual Leave Quota Policy Configuration */}
+      <div className="space-y-4 rounded-xl border border-gray-200 bg-gray-50 p-5 dark:border-gray-800 dark:bg-gray-900/50">
+        <div className="flex items-center justify-between">
+          <h3 className="flex items-center gap-2 font-bold text-gray-900 dark:text-white">
+            <Palmtree size={16} className="text-purple-500" /> Annual Leave Policy & Quota
+          </h3>
+          <span className="font-mono text-xs font-bold text-purple-600 dark:text-purple-400">
+            {(settings.annual_casual_leaves ?? 12) +
+              (settings.annual_sick_leaves ?? 8) +
+              (settings.annual_earned_leaves ?? 15)}{' '}
+            Days Total Paid Leave/Year
+          </span>
+        </div>
+
+        <div className="grid gap-3.5 sm:grid-cols-3">
+          <div>
+            <label className="mb-1 block text-[10px] font-bold tracking-widest text-blue-600 uppercase dark:text-blue-400">
+              Casual Leave (CL) Quota
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="60"
+              value={settings.annual_casual_leaves ?? 12}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  annual_casual_leaves: Number(e.target.value) || 0,
+                })
+              }
+              className="focus:border-brand-gold w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
+            <p className="mt-1 text-[10px] text-gray-400">Standard annual casual leaves.</p>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-[10px] font-bold tracking-widest text-emerald-600 uppercase dark:text-emerald-400">
+              Sick Leave (SL) Quota
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="60"
+              value={settings.annual_sick_leaves ?? 8}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  annual_sick_leaves: Number(e.target.value) || 0,
+                })
+              }
+              className="focus:border-brand-gold w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
+            <p className="mt-1 text-[10px] text-gray-400">Medical / health leave balance.</p>
+          </div>
+
+          <div>
+            <label className="mb-1 block text-[10px] font-bold tracking-widest text-purple-600 uppercase dark:text-purple-400">
+              Earned / Privilege Leave (EL)
+            </label>
+            <input
+              type="number"
+              min="0"
+              max="90"
+              value={settings.annual_earned_leaves ?? 15}
+              onChange={(e) =>
+                setSettings({
+                  ...settings,
+                  annual_earned_leaves: Number(e.target.value) || 0,
+                })
+              }
+              className="focus:border-brand-gold w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+            />
+            <p className="mt-1 text-[10px] text-gray-400">Earned / annual privilege leave.</p>
           </div>
         </div>
       </div>

@@ -13,14 +13,21 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url);
-    // Format: 'YYYY-MM' (e.g. '2026-08')
-    const monthParam = searchParams.get('month') || new Date().toISOString().slice(0, 7);
+    const rawMonth = searchParams.get('month');
+    const rawYear = searchParams.get('year');
 
-    // Validate month format YYYY-MM
-    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthParam)) {
-      throw AppError.badRequest('Invalid month format. Expected YYYY-MM');
+    let monthParam: string;
+    if (rawYear && rawMonth && !rawMonth.includes('-')) {
+      monthParam = `${rawYear}-${String(parseInt(rawMonth, 10)).padStart(2, '0')}`;
+    } else if (rawMonth && /^\d{4}-(0[1-9]|1[0-2])$/.test(rawMonth)) {
+      monthParam = rawMonth;
+    } else {
+      monthParam = new Date().toISOString().slice(0, 7);
     }
 
+    if (!/^\d{4}-(0[1-9]|1[0-2])$/.test(monthParam)) {
+      monthParam = new Date().toISOString().slice(0, 7);
+    }
     const startDate = `${monthParam}-01`;
     // Compute end of month
     const [yearStr, monthStr] = monthParam.split('-');

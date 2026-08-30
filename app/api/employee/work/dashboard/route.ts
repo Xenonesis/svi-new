@@ -137,12 +137,27 @@ export async function GET(request: NextRequest) {
       .eq('is_active', true)
       .order('created_at', { ascending: true });
 
-    // 9. Leave Quota Breakdown
+    // 9. Leave Quota Breakdown with Admin Configured Settings
+    const { data: leaveSettings } = await supabaseAdmin
+      .from('attendance_settings')
+      .select('key, value')
+      .in('key', ['annual_casual_leaves', 'annual_sick_leaves', 'annual_earned_leaves']);
+
+    const leaveConfig: Record<string, number> = {};
+    for (const s of leaveSettings || []) {
+      const num = typeof s.value === 'number' ? s.value : Number(String(s.value).replace(/"/g, ''));
+      if (!isNaN(num)) leaveConfig[s.key] = num;
+    }
+
+    const maxCasual = leaveConfig.annual_casual_leaves ?? 12;
+    const maxSick = leaveConfig.annual_sick_leaves ?? 8;
+    const maxEarned = leaveConfig.annual_earned_leaves ?? 15;
+
     let leaveSummary = {
-      casual_remaining: 6,
-      sick_remaining: 6,
-      earned_remaining: 12,
-      total_remaining: 24,
+      casual_remaining: maxCasual,
+      sick_remaining: maxSick,
+      earned_remaining: maxEarned,
+      total_remaining: maxCasual + maxSick + maxEarned,
     };
 
     try {
@@ -163,10 +178,13 @@ export async function GET(request: NextRequest) {
       }
 
       leaveSummary = {
-        casual_remaining: Math.max(0, 6 - casualUsed),
-        sick_remaining: Math.max(0, 6 - sickUsed),
-        earned_remaining: Math.max(0, 12 - earnedUsed),
-        total_remaining: Math.max(0, 24 - (casualUsed + sickUsed + earnedUsed)),
+        casual_remaining: Math.max(0, maxCasual - casualUsed),
+        sick_remaining: Math.max(0, maxSick - sickUsed),
+        earned_remaining: Math.max(0, maxEarned - earnedUsed),
+        total_remaining: Math.max(
+          0,
+          maxCasual + maxSick + maxEarned - (casualUsed + sickUsed + earnedUsed)
+        ),
       };
     } catch {
       // Use default balances if store fails

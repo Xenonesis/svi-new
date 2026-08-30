@@ -12,15 +12,16 @@ interface AttendanceHeatmapCalendarProps {
   onMonthChange: (newMonth: Date) => void;
   records: AttendanceRecord[];
   loading: boolean;
-  onSelectRecord: (record: AttendanceRecord) => void;
+  selectedDate?: string | null;
+  onSelectDay: (dateStr: string, record: AttendanceRecord | null) => void;
 }
-
 export function AttendanceHeatmapCalendar({
   currentMonth,
   onMonthChange,
   records,
   loading,
-  onSelectRecord,
+  selectedDate,
+  onSelectDay,
 }: AttendanceHeatmapCalendarProps) {
   const monthStart = startOfMonth(currentMonth);
   const monthEnd = endOfMonth(currentMonth);
@@ -93,45 +94,83 @@ export function AttendanceHeatmapCalendar({
             <div key={`blank-${i}`} className="h-12 rounded-xl bg-transparent" />
           ))}
 
-          {/* Days in Month */}
           {daysInMonth.map((day) => {
             const dateStr = format(day, 'yyyy-MM-dd');
-            const rec = records.find((r) => r.date === dateStr);
+            const rec = records.find((r) => r.date === dateStr) || null;
             const isToday = isSameDay(day, new Date());
+            const isSelected = selectedDate === dateStr;
+            const isSunday = getDay(day) === 0;
 
-            let statusColor = 'bg-slate-50 text-slate-700 dark:bg-slate-800/40 dark:text-slate-300';
+            let statusColor =
+              'border border-transparent bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-slate-100 dark:bg-slate-800/40 dark:text-slate-300 dark:hover:border-white/10 dark:hover:bg-slate-800';
+
             if (rec) {
               if (rec.status === 'present') {
                 statusColor = rec.is_late
-                  ? 'bg-amber-500/15 text-amber-700 dark:text-amber-300 border border-amber-500/30'
-                  : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30';
+                  ? 'border border-amber-500/30 bg-amber-500/15 text-amber-700 dark:text-amber-300'
+                  : 'border border-emerald-500/30 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300';
               } else if (rec.status === 'half_day') {
                 statusColor =
-                  'bg-blue-500/15 text-blue-700 dark:text-blue-300 border border-blue-500/30';
+                  'border border-blue-500/30 bg-blue-500/15 text-blue-700 dark:text-blue-300';
               } else if (rec.status === 'leave') {
                 statusColor =
-                  'bg-purple-500/15 text-purple-700 dark:text-purple-300 border border-purple-500/30';
+                  'border border-purple-500/30 bg-purple-500/15 text-purple-700 dark:text-purple-300';
               }
+            } else if (isSunday) {
+              statusColor =
+                'border border-transparent bg-slate-50/50 text-slate-400 dark:bg-slate-900/30 dark:text-slate-600';
             }
 
             return (
               <button
                 key={dateStr}
-                onClick={() => rec && onSelectRecord(rec)}
-                disabled={!rec}
+                type="button"
+                onClick={() => {
+                  if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+                    try {
+                      navigator.vibrate(8);
+                    } catch {
+                      // ignore
+                    }
+                  }
+                  onSelectDay(dateStr, rec);
+                }}
                 className={clsx(
-                  'flex h-12 flex-col items-center justify-center rounded-2xl text-xs transition-all',
+                  'flex h-12 flex-col items-center justify-center rounded-2xl text-xs transition-all active:scale-95',
                   statusColor,
+                  isSelected && 'ring-2 ring-blue-500 ring-offset-2 dark:ring-offset-slate-950',
                   isToday &&
-                    'font-bold ring-2 ring-blue-500 ring-offset-1 dark:ring-offset-slate-950',
-                  rec ? 'cursor-pointer hover:scale-105 active:scale-95' : 'cursor-default'
+                    !isSelected &&
+                    'ring-2 ring-[#d98b40] ring-offset-1 dark:ring-offset-slate-950',
+                  'cursor-pointer hover:scale-[1.03]'
                 )}
               >
-                <span className="font-semibold">{format(day, 'd')}</span>
-                {rec && (
-                  <span className="font-mono text-[10px] opacity-80">
-                    {rec.total_hours ? `${rec.total_hours}h` : rec.status}
+                <span
+                  className={clsx(
+                    'font-semibold',
+                    isToday && 'font-black text-[#d98b40] dark:text-[#e5a962]'
+                  )}
+                >
+                  {format(day, 'd')}
+                </span>
+                {rec ? (
+                  <span className="font-mono text-[9px] font-bold opacity-90">
+                    {rec.total_hours
+                      ? `${Number(rec.total_hours).toFixed(1)}h`
+                      : rec.status === 'leave'
+                        ? 'Leave'
+                        : 'P'}
                   </span>
+                ) : isSunday ? (
+                  <span className="font-mono text-[8px] font-medium tracking-tight text-slate-400 dark:text-slate-600">
+                    OFF
+                  </span>
+                ) : isToday ? (
+                  <span className="font-mono text-[8px] font-bold text-[#d98b40] dark:text-[#e5a962]">
+                    TODAY
+                  </span>
+                ) : (
+                  <span className="text-[9px] opacity-0">-</span>
                 )}
               </button>
             );

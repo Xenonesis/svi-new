@@ -73,11 +73,13 @@ export const biometricAuth = {
   },
 
   /**
-   * Registers a biometric credential (Passkey) for the user.
-   * Falls back gracefully in local dev or non-HTTPS environments.
+   * Registers a biometric credential (Passkey) for the user with detailed outcome feedback.
    */
-  async register(userId: string, email: string): Promise<boolean> {
-    if (!userId || typeof window === 'undefined') return false;
+  async registerWithFeedback(
+    userId: string,
+    email: string
+  ): Promise<{ success: boolean; reason?: 'canceled' | 'unsupported' | 'security' | 'failed' }> {
+    if (!userId || typeof window === 'undefined') return { success: false, reason: 'failed' };
 
     // Check if WebAuthn creation API is present
     if (!navigator?.credentials?.create) {
@@ -91,9 +93,9 @@ export const biometricAuth = {
       };
       try {
         localStorage.setItem(`${STORAGE_PREFIX}${userId}`, JSON.stringify(record));
-        return true;
+        return { success: true };
       } catch {
-        return false;
+        return { success: false, reason: 'unsupported' };
       }
     }
 
@@ -153,15 +155,15 @@ export const biometricAuth = {
         };
 
         localStorage.setItem(`${STORAGE_PREFIX}${userId}`, JSON.stringify(record));
-        return true;
+        return { success: true };
       }
 
-      return false;
+      return { success: false, reason: 'failed' };
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'name' in err) {
         if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
-          // User canceled or timed out
-          return false;
+          // User intentionally closed or canceled the prompt
+          return { success: false, reason: 'canceled' };
         }
 
         if (err.name === 'SecurityError' || err.name === 'NotSupportedError') {
@@ -175,23 +177,32 @@ export const biometricAuth = {
           };
           try {
             localStorage.setItem(`${STORAGE_PREFIX}${userId}`, JSON.stringify(fallbackRecord));
-            return true;
+            return { success: true };
           } catch {
-            return false;
+            return { success: false, reason: 'unsupported' };
           }
         }
       }
 
-      return false;
+      return { success: false, reason: 'failed' };
     }
   },
 
   /**
-   * Prompts the user for biometric verification (Face ID / Fingerprint / Passkey)
-   * and returns true if successfully verified.
+   * Registers a biometric credential (Passkey) for the user (Boolean wrapper).
    */
-  async verify(userId: string): Promise<boolean> {
-    if (!this.isRegistered(userId)) return false;
+  async register(userId: string, email: string): Promise<boolean> {
+    const res = await this.registerWithFeedback(userId, email);
+    return res.success;
+  },
+
+  /**
+   * Prompts the user for biometric verification with detailed outcome feedback.
+   */
+  async verifyWithFeedback(
+    userId: string
+  ): Promise<{ success: boolean; reason?: 'canceled' | 'failed' | 'not_registered' }> {
+    if (!this.isRegistered(userId)) return { success: false, reason: 'not_registered' };
 
     let record: StoredBiometricCredential | null = null;
     try {
@@ -200,14 +211,14 @@ export const biometricAuth = {
         record = JSON.parse(raw) as StoredBiometricCredential;
       }
     } catch {
-      return false;
+      return { success: false, reason: 'failed' };
     }
 
-    if (!record) return false;
+    if (!record) return { success: false, reason: 'not_registered' };
 
     // If recorded in fallback mode or navigator.credentials is not available
     if (record.isFallback || !navigator?.credentials?.get) {
-      return true;
+      return { success: true };
     }
 
     try {
@@ -243,21 +254,29 @@ export const biometricAuth = {
         },
       });
 
-      return Boolean(assertion);
+      return { success: Boolean(assertion) };
     } catch (err: unknown) {
       if (err && typeof err === 'object' && 'name' in err) {
         if (err.name === 'NotAllowedError' || err.name === 'AbortError') {
-          return false;
+          return { success: false, reason: 'canceled' };
         }
 
         if (err.name === 'SecurityError' || err.name === 'NotSupportedError') {
-          return Boolean(record);
+          return { success: Boolean(record) };
         }
       }
-      return false;
+      return { success: false, reason: 'failed' };
     }
   },
 
+  /**
+   * Prompts the user for biometric verification (Face ID / Fingerprint / Passkey)
+   * and returns true if successfully verified.
+   */
+  async verify(userId: string): Promise<boolean> {
+    const res = await this.verifyWithFeedback(userId);
+    return res.success;
+  },
   /**
    * Unregisters and removes the stored biometric passkey credential for a user.
    */

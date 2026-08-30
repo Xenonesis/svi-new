@@ -62,15 +62,24 @@ export function WorkspaceSettingsCard({
     try {
       if (!biometricEnabled) {
         const email = currentUserEmail || 'employee@svi.internal';
-        const success = await biometricAuth.register(currentUserId, email);
-        if (success) {
+        const result = await biometricAuth.registerWithFeedback(currentUserId, email);
+        if (result.success) {
           setBiometricEnabled(true);
-          toast.success('Biometric Quick Punch enabled', {
-            description: 'You can now punch with Fingerprint or Face ID.',
+          toast.success('Biometric Quick Punch Enabled', {
+            description: 'You can now punch in with Fingerprint, Face ID, or Windows Hello.',
+          });
+        } else if (result.reason === 'canceled') {
+          toast.info('Biometric setup closed', {
+            description: 'No changes made. You can enable Fingerprint/Face ID anytime.',
+          });
+        } else if (result.reason === 'unsupported') {
+          toast.info('Biometric Sensor Not Detected', {
+            description:
+              'Device biometric sensor was not found. Standard GPS punch remains active.',
           });
         } else {
-          toast.error('Could not enable Biometric Quick Punch', {
-            description: 'Verification prompt canceled or unsupported on this device.',
+          toast.error('Could not complete biometric setup', {
+            description: 'Please check your device screen lock / security settings and retry.',
           });
         }
       } else {

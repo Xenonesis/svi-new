@@ -38,6 +38,9 @@ export async function GET(request: NextRequest) {
       min_hours_half_day: 4,
       min_hours_full_day: 8,
       geofence_radius_meters: 200,
+      annual_casual_leaves: 12,
+      annual_sick_leaves: 8,
+      annual_earned_leaves: 15,
     };
     return NextResponse.json({ settings: { ...defaultSettings, ...settingsMap } });
   } catch (err) {
@@ -66,8 +69,10 @@ export async function PUT(request: NextRequest) {
       min_hours_half_day,
       min_hours_full_day,
       geofence_radius_meters,
+      annual_casual_leaves,
+      annual_sick_leaves,
+      annual_earned_leaves,
     } = body;
-
     const updates = [
       { key: 'punch_in_start', value: JSON.stringify(punch_in_start || '09:00') },
       { key: 'punch_in_late_after', value: JSON.stringify(punch_in_late_after || '09:15') },
@@ -79,6 +84,18 @@ export async function PUT(request: NextRequest) {
       {
         key: 'geofence_radius_meters',
         value: JSON.stringify(Number(geofence_radius_meters) || 200),
+      },
+      {
+        key: 'annual_casual_leaves',
+        value: JSON.stringify(Number(annual_casual_leaves ?? 12)),
+      },
+      {
+        key: 'annual_sick_leaves',
+        value: JSON.stringify(Number(annual_sick_leaves ?? 8)),
+      },
+      {
+        key: 'annual_earned_leaves',
+        value: JSON.stringify(Number(annual_earned_leaves ?? 15)),
       },
     ];
     const { error } = await supabaseAdmin
