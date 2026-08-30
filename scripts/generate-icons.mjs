@@ -18,120 +18,70 @@ const androidResDir = path.join(root, 'android', 'app', 'src', 'main', 'res');
   if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
 });
 
-// Official SVI Brand Palette extracted directly from public/logo.png
-const NAVY = '#003560';
-const GOLD = '#db8d3d';
-
-/**
- * Generates the official SVI House Emblem SVG with precision geometry
- * matching public/logo.png from the Navbar pixel-for-pixel:
- * - Navy roof (#003560) apex at (35,4), eaves extending to (5,32) and (65,32)
- * - Crisp white interior fill (#ffffff) ensuring high visibility on dark and light browser tabs
- * - Navy left vertical pillar from y=31.5 to 53
- * - Gold right vertical pillar (#db8d3d) from y=31.5 to 53
- * - Gold bottom foundation bar (#db8d3d) spanning y=46 to 53
- * - 2x2 Navy center window panes (x=[24..29], [32..37], y=[26..31], [33.5..38.5])
- */
-function createSviNavbarEmblemSvg({
-  size = 512,
-  includeBackground = false,
-  backgroundColor = '#ffffff',
-  padding = 0,
-  round = false,
-}) {
-  const contentSize = size - padding * 2;
-  const offset = padding;
-  // Bounding box in source logo space is 70 x 58
-  const scale = contentSize / 60;
-  const transX = offset - (10 * scale);
-  const transY = offset - (2 * scale);
-
-  let bgElement = '';
-  if (includeBackground) {
-    if (round) {
-      bgElement = `<circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="${backgroundColor}" />`;
-    } else {
-      bgElement = `<rect width="${size}" height="${size}" rx="${size * 0.22}" fill="${backgroundColor}" />`;
-    }
-  }
-
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
-  ${bgElement}
-  <g transform="translate(${transX}, ${transY}) scale(${scale})">
-    <!-- House body white fill -->
-    <polygon points="35,12 13,32 13,53 51,53 51,32" fill="#ffffff" />
-    
-    <!-- Dark Navy Roof -->
-    <polygon points="35,4 65,32 57,32 35,12 13,32 5,32" fill="${NAVY}" />
-    
-    <!-- Left Wall Pillar (Navy) -->
-    <rect x="13" y="31.5" width="5.5" height="21.5" fill="${NAVY}" />
-    
-    <!-- Right Wall Pillar (Gold) -->
-    <rect x="45.5" y="31.5" width="5.5" height="21.5" fill="${GOLD}" />
-    
-    <!-- Bottom Foundation (Gold) -->
-    <rect x="18.5" y="46" width="32.5" height="7" fill="${GOLD}" />
-    
-    <!-- 2x2 Windows (Navy) -->
-    <rect x="24" y="26" width="5.5" height="5.5" rx="0.5" fill="${NAVY}" />
-    <rect x="31.5" y="26" width="5.5" height="5.5" rx="0.5" fill="${NAVY}" />
-    <rect x="24" y="33.5" width="5.5" height="5.5" rx="0.5" fill="${NAVY}" />
-    <rect x="31.5" y="33.5" width="5.5" height="5.5" rx="0.5" fill="${NAVY}" />
-  </g>
-</svg>`;
-}
-
 /**
  * Creates multi-resolution ICO binary from PNG buffers.
  */
 function createIco(pngBuffers) {
   const count = pngBuffers.length;
-  const headerSize = 6;
-  const dirEntrySize = 16;
-  let offset = headerSize + count * dirEntrySize;
-
-  const header = Buffer.alloc(headerSize);
-  header.writeUInt16LE(0, 0); // Reserved
-  header.writeUInt16LE(1, 2); // Type: 1 = ICO
-  header.writeUInt16LE(count, 4); // Number of images
+  const header = Buffer.alloc(6);
+  header.writeUInt16LE(0, 0);
+  header.writeUInt16LE(1, 2);
+  header.writeUInt16LE(count, 4);
 
   const dirEntries = [];
-  for (const item of pngBuffers) {
-    const entry = Buffer.alloc(dirEntrySize);
-    entry.writeUInt8(item.width >= 256 ? 0 : item.width, 0);
-    entry.writeUInt8(item.height >= 256 ? 0 : item.height, 1);
-    entry.writeUInt8(0, 2); // Color palette
-    entry.writeUInt8(0, 3); // Reserved
-    entry.writeUInt16LE(1, 4); // Color planes
-    entry.writeUInt16LE(32, 6); // Bits per pixel
-    entry.writeUInt32LE(item.buffer.length, 8); // Image size in bytes
-    entry.writeUInt32LE(offset, 12); // Offset to image data
+  let offset = 6 + count * 16;
+
+  for (const { width, height, buffer } of pngBuffers) {
+    const entry = Buffer.alloc(16);
+    entry.writeUInt8(width >= 256 ? 0 : width, 0);
+    entry.writeUInt8(height >= 256 ? 0 : height, 1);
+    entry.writeUInt8(0, 2);
+    entry.writeUInt8(0, 3);
+    entry.writeUInt16LE(1, 4);
+    entry.writeUInt16LE(32, 6);
+    entry.writeUInt32LE(buffer.length, 8);
+    entry.writeUInt32LE(offset, 12);
     dirEntries.push(entry);
-    offset += item.buffer.length;
+    offset += buffer.length;
   }
 
   return Buffer.concat([header, ...dirEntries, ...pngBuffers.map((b) => b.buffer)]);
 }
 
 async function main() {
-  console.log('1. Generating master vector SVG emblem (Navbar logo spec)...');
-  const masterSvg = createSviNavbarEmblemSvg({ size: 512, includeBackground: false });
-  fs.writeFileSync(path.join(root, 'public', 'favicon.svg'), masterSvg);
-  console.log('✓ public/favicon.svg (Vector SVG Favicon)');
+  const masterBadgePath = path.join(root, 'public', 'logo-app-badge.png');
+  if (!fs.existsSync(masterBadgePath)) {
+    throw new Error('Master badge source image public/logo-app-badge.png not found');
+  }
 
-  console.log('\n2. Generating public/logo-icon.png (512×512 master transparent emblem)...');
-  const masterPng = await sharp(Buffer.from(masterSvg)).png({ compressionLevel: 9 }).toBuffer();
-  fs.writeFileSync(path.join(root, 'public', 'logo-icon.png'), masterPng);
+  console.log('1. Loading master badge source asset...');
+  const masterBuf = fs.readFileSync(masterBadgePath);
+
+  console.log('\n2. Generating public/favicon.svg (Vector SVG Favicon with high-definition art)...');
+  const base64 = masterBuf.toString('base64');
+  const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1254 1254" width="100%" height="100%">
+  <image width="1254" height="1254" href="data:image/png;base64,${base64}"/>
+</svg>`;
+  fs.writeFileSync(path.join(root, 'public', 'favicon.svg'), svgContent);
+  console.log('✓ public/favicon.svg');
+
+  console.log('\n3. Generating public/logo-icon.png (512×512 master transparent emblem)...');
+  const master512 = await sharp(masterBuf)
+    .resize(512, 512, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  fs.writeFileSync(path.join(root, 'public', 'logo-icon.png'), master512);
   console.log('✓ public/logo-icon.png (512×512)');
 
-  console.log('\n3. Generating multi-resolution favicons in public/favicons/ ...');
+  console.log('\n4. Generating multi-resolution favicons in public/favicons/ ...');
   const FAVICON_SIZES = [16, 32, 48, 64, 128, 256];
   const icoPngBuffers = [];
 
   for (const size of FAVICON_SIZES) {
-    const sizeSvg = createSviNavbarEmblemSvg({ size, includeBackground: false });
-    const buf = await sharp(Buffer.from(sizeSvg)).png({ compressionLevel: 9 }).toBuffer();
+    const buf = await sharp(masterBuf)
+      .resize(size, size, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
     const dest = path.join(faviconsDir, `favicon_${size}x${size}.png`);
     fs.writeFileSync(dest, buf);
     console.log(`✓ public/favicons/favicon_${size}x${size}.png (${size}×${size})`);
@@ -141,50 +91,75 @@ async function main() {
     }
   }
 
-  console.log('\n4. Generating production multi-layer favicon.ico (16×16, 32×32, 48×48, 64×64)...');
+  console.log('\n5. Generating production multi-layer favicon.ico (16×16, 32×32, 48×48, 64×64)...');
   const icoData = createIco(icoPngBuffers);
   fs.writeFileSync(path.join(root, 'public', 'favicon.ico'), icoData);
   fs.writeFileSync(path.join(appDir, 'favicon.ico'), icoData);
   console.log('✓ public/favicon.ico');
   console.log('✓ app/favicon.ico');
 
-  console.log('\n5. Generating Apple touch icons & App Router static icons (Navbar Capsule Style)...');
-  const appleSvg = createSviNavbarEmblemSvg({ size: 180, includeBackground: true, backgroundColor: '#ffffff', padding: 16 });
-  const applePng = await sharp(Buffer.from(appleSvg)).png({ compressionLevel: 9 }).toBuffer();
+  console.log('\n6. Generating Apple touch icons & App Router static icons...');
+  const applePng = await sharp(masterBuf)
+    .resize(180, 180, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
   fs.writeFileSync(path.join(root, 'public', 'apple-touch-icon.png'), applePng);
   fs.writeFileSync(path.join(appDir, 'apple-icon.png'), applePng);
   console.log('✓ public/apple-touch-icon.png (180×180)');
   console.log('✓ app/apple-icon.png (180×180)');
 
-  const appIconSvg = createSviNavbarEmblemSvg({ size: 512, includeBackground: false });
-  const appIconPng = await sharp(Buffer.from(appIconSvg)).png({ compressionLevel: 9 }).toBuffer();
+  const appIconPng = await sharp(masterBuf)
+    .resize(512, 512, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
   fs.writeFileSync(path.join(appDir, 'icon.png'), appIconPng);
   console.log('✓ app/icon.png (512×512)');
 
-  console.log('\n6. Generating PWA launcher icons (72 to 512px)...');
+  console.log('\n7. Generating PWA launcher icons (72 to 512px)...');
   const PWA_SIZES = [72, 96, 128, 144, 152, 192, 384, 512];
   for (const size of PWA_SIZES) {
-    const pwaSvg = createSviNavbarEmblemSvg({
-      size,
-      includeBackground: true,
-      backgroundColor: '#ffffff',
-      padding: Math.round(size * 0.12),
-    });
-    const pwaPng = await sharp(Buffer.from(pwaSvg)).png({ compressionLevel: 9 }).toBuffer();
+    const pwaPng = await sharp(masterBuf)
+      .resize(size, size, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+      .png({ compressionLevel: 9 })
+      .toBuffer();
     const dest = path.join(iconsDir, `icon-${size}x${size}.png`);
     fs.writeFileSync(dest, pwaPng);
     console.log(`✓ public/icons/icon-${size}x${size}.png (${size}×${size})`);
   }
 
-  console.log('\n7. Generating resources/icon.png (1024×1024) for Capacitor native builds...');
-  const resSvg = createSviNavbarEmblemSvg({ size: 1024, includeBackground: true, backgroundColor: '#ffffff', padding: 120 });
-  const resPng = await sharp(Buffer.from(resSvg)).png({ compressionLevel: 9 }).toBuffer();
+  console.log('\n8. Generating resources/icon.png (1024×1024) and splash.png for Capacitor native builds...');
+  const resPng = await sharp(masterBuf)
+    .resize(1024, 1024, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
   fs.writeFileSync(path.join(resourcesDir, 'icon.png'), resPng);
   console.log('✓ resources/icon.png (1024×1024)');
 
+  const resSplash = await sharp({
+    create: {
+      width: 1024,
+      height: 1024,
+      channels: 4,
+      background: { r: 255, g: 255, b: 255, alpha: 1 },
+    },
+  })
+    .composite([
+      {
+        input: await sharp(masterBuf)
+          .resize(480, 480, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+          .toBuffer(),
+        gravity: 'centre',
+      },
+    ])
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  fs.writeFileSync(path.join(resourcesDir, 'splash.png'), resSplash);
+  console.log('✓ resources/splash.png (1024×1024)');
+
   if (fs.existsSync(androidResDir)) {
-    console.log('\n8. Generating Android mipmap launcher icons...');
+    console.log('\n9. Generating Android mipmap launcher icons & adaptive layers...');
     const MIPMAP_DENSITIES = [
+      { name: 'ldpi', size: 36, adaptiveSize: 81 },
       { name: 'mdpi', size: 48, adaptiveSize: 108 },
       { name: 'hdpi', size: 72, adaptiveSize: 162 },
       { name: 'xhdpi', size: 96, adaptiveSize: 216 },
@@ -197,22 +172,123 @@ async function main() {
       if (!fs.existsSync(folder)) fs.mkdirSync(folder, { recursive: true });
 
       // Standard legacy launcher
-      const launcherSvg = createSviNavbarEmblemSvg({ size, includeBackground: true, backgroundColor: '#ffffff', padding: Math.round(size * 0.12) });
-      await sharp(Buffer.from(launcherSvg)).png().toFile(path.join(folder, 'ic_launcher.png'));
+      await sharp(masterBuf)
+        .resize(size, size, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
+        .png({ compressionLevel: 9 })
+        .toFile(path.join(folder, 'ic_launcher.png'));
 
-      // Round launcher
-      const roundSvg = createSviNavbarEmblemSvg({ size, includeBackground: true, backgroundColor: '#ffffff', padding: Math.round(size * 0.12), round: true });
-      await sharp(Buffer.from(roundSvg)).png().toFile(path.join(folder, 'ic_launcher_round.png'));
+      // Round launcher with smooth circular clip
+      const roundMask = Buffer.from(
+        `<svg width="${size}" height="${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${size / 2}" fill="white"/></svg>`
+      );
+      await sharp(masterBuf)
+        .resize(size, size, { kernel: sharp.kernel.lanczos3, fit: 'cover' })
+        .composite([{ input: roundMask, blend: 'dest-in' }])
+        .png({ compressionLevel: 9 })
+        .toFile(path.join(folder, 'ic_launcher_round.png'));
 
-      // Adaptive foreground
-      const fgSvg = createSviNavbarEmblemSvg({ size: adaptiveSize, includeBackground: false, padding: Math.round(adaptiveSize * 0.2) });
-      await sharp(Buffer.from(fgSvg)).png().toFile(path.join(folder, 'ic_launcher_foreground.png'));
+      // Adaptive Background (clean solid white layer)
+      await sharp({
+        create: {
+          width: adaptiveSize,
+          height: adaptiveSize,
+          channels: 4,
+          background: { r: 255, g: 255, b: 255, alpha: 1 },
+        },
+      })
+        .png({ compressionLevel: 9 })
+        .toFile(path.join(folder, 'ic_launcher_background.png'));
 
-      console.log(`✓ android mipmap-${name} (launcher & adaptive foreground)`);
+      // Adaptive Foreground (badge scaled to ~68% safe zone, centered)
+      const badgeSize = Math.round(adaptiveSize * 0.68);
+      const innerBadge = await sharp(masterBuf)
+        .resize(badgeSize, badgeSize, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'contain',
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        })
+        .toBuffer();
+
+      await sharp({
+        create: {
+          width: adaptiveSize,
+          height: adaptiveSize,
+          channels: 4,
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        },
+      })
+        .composite([{ input: innerBadge, gravity: 'centre' }])
+        .png({ compressionLevel: 9 })
+        .toFile(path.join(folder, 'ic_launcher_foreground.png'));
+
+      console.log(`✓ android mipmap-${name} (launcher, round, bg, & adaptive fg)`);
     }
+
+    console.log('\n10. Generating Android splash screen drawables...');
+    const SPLASH_SCREENS = [
+      { folder: 'drawable', width: 320, height: 480, night: false },
+      { folder: 'drawable-night', width: 320, height: 240, night: true },
+      { folder: 'drawable-port-ldpi', width: 240, height: 320, night: false },
+      { folder: 'drawable-port-mdpi', width: 320, height: 480, night: false },
+      { folder: 'drawable-port-hdpi', width: 480, height: 800, night: false },
+      { folder: 'drawable-port-xhdpi', width: 720, height: 1280, night: false },
+      { folder: 'drawable-port-xxhdpi', width: 960, height: 1600, night: false },
+      { folder: 'drawable-port-xxxhdpi', width: 1280, height: 1920, night: false },
+      { folder: 'drawable-port-night-ldpi', width: 240, height: 320, night: true },
+      { folder: 'drawable-port-night-mdpi', width: 320, height: 480, night: true },
+      { folder: 'drawable-port-night-hdpi', width: 480, height: 800, night: true },
+      { folder: 'drawable-port-night-xhdpi', width: 720, height: 1280, night: true },
+      { folder: 'drawable-port-night-xxhdpi', width: 960, height: 1600, night: true },
+      { folder: 'drawable-port-night-xxxhdpi', width: 1280, height: 1920, night: true },
+      { folder: 'drawable-land-ldpi', width: 320, height: 240, night: false },
+      { folder: 'drawable-land-mdpi', width: 480, height: 320, night: false },
+      { folder: 'drawable-land-hdpi', width: 800, height: 480, night: false },
+      { folder: 'drawable-land-xhdpi', width: 1280, height: 720, night: false },
+      { folder: 'drawable-land-xxhdpi', width: 1600, height: 960, night: false },
+      { folder: 'drawable-land-xxxhdpi', width: 1920, height: 1280, night: false },
+      { folder: 'drawable-land-night-ldpi', width: 320, height: 240, night: true },
+      { folder: 'drawable-land-night-mdpi', width: 480, height: 320, night: true },
+      { folder: 'drawable-land-night-hdpi', width: 800, height: 480, night: true },
+      { folder: 'drawable-land-night-xhdpi', width: 1280, height: 720, night: true },
+      { folder: 'drawable-land-night-xxhdpi', width: 1600, height: 960, night: true },
+      { folder: 'drawable-land-night-xxxhdpi', width: 1920, height: 1280, night: true },
+    ];
+
+    for (const { folder, width, height, night } of SPLASH_SCREENS) {
+      const destDir = path.join(androidResDir, folder);
+      if (!fs.existsSync(destDir)) fs.mkdirSync(destDir, { recursive: true });
+
+      const minDim = Math.min(width, height);
+      const splashLogoSize = Math.round(minDim * 0.42);
+
+      const logoBuf = await sharp(masterBuf)
+        .resize(splashLogoSize, splashLogoSize, {
+          kernel: sharp.kernel.lanczos3,
+          fit: 'contain',
+          background: { r: 0, g: 0, b: 0, alpha: 0 },
+        })
+        .toBuffer();
+
+      const bg = night
+        ? { r: 0, g: 26, b: 51, alpha: 1 } // Deep SVI Navy #001a33
+        : { r: 255, g: 255, b: 255, alpha: 1 }; // Crisp White #ffffff
+
+      await sharp({
+        create: {
+          width,
+          height,
+          channels: 4,
+          background: bg,
+        },
+      })
+        .composite([{ input: logoBuf, gravity: 'centre' }])
+        .png({ compressionLevel: 9 })
+        .toFile(path.join(destDir, 'splash.png'));
+    }
+    console.log('✓ android splash screens generated (all portrait, landscape, day, and night configurations)');
   }
 
-  console.log('\n9. Generating manifest screenshots...');
+  console.log('\n11. Generating manifest screenshots...');
   const SCREENSHOTS = [
     { src: 'hero1.png', out: 'hero1-1280x720.jpg' },
     { src: 'project1.png', out: 'project1-1280x720.jpg' },
@@ -229,7 +305,7 @@ async function main() {
     }
   }
 
-  console.log('\nAll favicons, App Router icons, Android mipmaps, and PWA assets generated successfully from Navbar logo.');
+  console.log('\nAll favicons, App Router icons, Android mipmaps, splash screens, and PWA assets generated successfully from uploaded badge.');
 }
 
 main().catch((err) => {

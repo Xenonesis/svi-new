@@ -85,6 +85,11 @@ export default function EmployeeHeader() {
     setTheme(theme === 'dark' ? 'light' : 'dark');
   };
 
+  // Hide header on login page
+  if (pathname === '/employee/login') {
+    return null;
+  }
+
   return (
     <header className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200/80 bg-white/90 px-4 pt-[env(safe-area-inset-top,0px)] backdrop-blur-md transition-colors sm:px-6 lg:px-8 dark:border-slate-800/80 dark:bg-slate-950/90">
       {/* Brand & Sub-Brand */}
