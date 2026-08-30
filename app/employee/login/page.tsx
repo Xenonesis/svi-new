@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { motion } from 'motion/react';
 import { UserCircle2, ArrowRight, AlertCircle, MapPin, Eye, EyeOff } from 'lucide-react';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import { useTheme } from '@/src/components/ThemeProvider';
@@ -22,6 +22,28 @@ export default function EmployeeLogin() {
   const [passwordTouched, setPasswordTouched] = useState(false);
   const [shake, setShake] = useState(false);
 
+  useEffect(() => {
+    async function checkExistingSession() {
+      try {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        if (session?.user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', session.user.id)
+            .maybeSingle();
+          if (profile?.role === 'employee' || profile?.role === 'admin') {
+            router.replace('/employee/dashboard');
+          }
+        }
+      } catch {
+        // Ignore and allow user to log in manually
+      }
+    }
+    checkExistingSession();
+  }, [router]);
   const identifierIsValid = identifier ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) : true;
   const passwordIsValid = password ? password.length >= 6 : true;
 

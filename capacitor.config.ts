@@ -4,7 +4,7 @@ const target = process.env.CAP_APP_TARGET || 'admin';
 const isEmployee = target === 'employee';
 
 const defaultUrl = isEmployee
-  ? 'https://www.sviinfrasolutions.com/employee/dashboard'
+  ? 'https://www.sviinfrasolutions.com/employee/login'
   : 'https://www.sviinfrasolutions.com/admin';
 
 const serverUrl = process.env.CAP_SERVER_URL || defaultUrl;

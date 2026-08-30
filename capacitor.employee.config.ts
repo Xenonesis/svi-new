@@ -2,8 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 // Set CAP_SERVER_URL to dev server for local development, e.g.:
 //   CAP_SERVER_URL=http://192.168.1.100:3001 npx cap run android
-const serverUrl =
-  process.env.CAP_SERVER_URL || 'https://www.sviinfrasolutions.com/employee/dashboard';
+const serverUrl = process.env.CAP_SERVER_URL || 'https://www.sviinfrasolutions.com/employee/login';
 const isDev = !!process.env.CAP_SERVER_URL;
 
 const config: CapacitorConfig = {

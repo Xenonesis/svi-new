@@ -38,6 +38,17 @@ android {
             resValue "string", "custom_url_scheme", "com.svi.infrasolutions.employee"
         }
     }
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
+        }
+        admin {
+            assets.srcDirs = ['src/admin/assets']
+        }
+        employee {
+            assets.srcDirs = ['src/employee/assets']
+        }
+    }
     signingConfigs {
         release {
             if (file('svi-release-key.jks').exists()) {

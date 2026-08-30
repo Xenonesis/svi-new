@@ -1,0 +1,36 @@
+{
+  "appId": "com.svi.infrasolutions.employee",
+  "appName": "SVI Workspace",
+  "webDir": "out",
+  "server": {
+    "url": "https://www.sviinfrasolutions.com/employee/login",
+    "allowNavigation": ["www.sviinfrasolutions.com", "sviinfrasolutions.com", "*.vercel.app"],
+    "cleartext": false
+  },
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": true,
+    "webContentsDebuggingEnabled": false,
+    "backgroundColor": "#020617",
+    "minWebViewVersion": 60
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 2000,
+      "launchAutoHide": true,
+      "backgroundColor": "#020617",
+      "androidSplashResourceName": "splash",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": true,
+      "splashImmersive": true
+    },
+    "StatusBar": {
+      "style": "DARK",
+      "backgroundColor": "#020617"
+    },
+    "PushNotifications": {
+      "presentationOptions": ["badge", "sound", "alert"]
+    }
+  }
+}
