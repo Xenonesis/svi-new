@@ -8,6 +8,7 @@ import { useTheme } from '@/src/components/ThemeProvider';
 import { toast } from 'sonner';
 import { DigitalStaffIdCard } from '@/src/components/employee/profile/DigitalStaffIdCard';
 import { WorkspaceSettingsCard } from '@/src/components/employee/profile/WorkspaceSettingsCard';
+import { BrandedLoadingState } from '@/src/components/employee/BrandedLoadingState';
 
 interface ProfileData {
   id: string;
@@ -71,10 +72,10 @@ export default function EmployeeProfilePage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-        <p className="text-xs font-medium text-slate-500">Loading your profile...</p>
-      </div>
+      <BrandedLoadingState
+        message="Loading Staff Identity..."
+        subMessage="Retrieving verified employee badge & settings"
+      />
     );
   }
 

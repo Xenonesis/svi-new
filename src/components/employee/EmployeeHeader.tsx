@@ -128,9 +128,10 @@ export default function EmployeeHeader() {
         {navTabs.map((tab) => {
           const Icon = tab.icon;
           const isActive =
-            pathname === tab.href ||
-            (tab.href !== '/employee/dashboard' && pathname?.startsWith(tab.href));
-
+            tab.href === '/employee/attendance'
+              ? pathname === '/employee/attendance'
+              : pathname === tab.href ||
+                (tab.href !== '/employee/dashboard' && pathname?.startsWith(tab.href));
           return (
             <Link
               key={tab.href}

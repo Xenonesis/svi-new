@@ -53,9 +53,10 @@ export default function EmployeeBottomNav() {
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive =
-            pathname === item.href ||
-            (item.href !== '/employee/dashboard' && pathname.startsWith(item.href));
-
+            item.href === '/employee/attendance'
+              ? pathname === '/employee/attendance'
+              : pathname === item.href ||
+                (item.href !== '/employee/dashboard' && pathname.startsWith(item.href));
           return (
             <Link
               key={item.name}

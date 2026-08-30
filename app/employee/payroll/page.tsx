@@ -8,6 +8,7 @@ import type { SalaryStructure, PayrollItem } from '@/src/lib/payroll/types';
 import { formatINR } from '@/src/lib/quotation/format';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { PayslipDocument } from '@/src/components/admin/payroll/PayslipDocument';
+import { BrandedLoadingState } from '@/src/components/employee/BrandedLoadingState';
 
 interface EmployeePayrollOverviewData {
   salaryStructure: SalaryStructure | null;
@@ -101,10 +102,10 @@ export default function EmployeePayrollPage() {
       </div>
 
       {loading ? (
-        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
-          <Loader2 className="text-brand-gold h-8 w-8 animate-spin" />
-          <p className="text-xs font-medium text-slate-500">Loading your payroll details...</p>
-        </div>
+        <BrandedLoadingState
+          message="Loading Payroll Details..."
+          subMessage="Retrieving salary structure and approved payslips"
+        />
       ) : (
         <>
           {/* Salary Structure Card */}

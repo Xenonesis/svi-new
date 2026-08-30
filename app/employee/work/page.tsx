@@ -15,6 +15,7 @@ import { SubmitShiftLogModal } from '@/src/components/employee/work/SubmitShiftL
 import { AddLeadModal } from '@/src/components/employee/work/AddLeadModal';
 import { LeadTrackerDrawer } from '@/src/components/employee/work/LeadTrackerDrawer';
 import { FollowUpReminderBanner } from '@/src/components/employee/work/FollowUpReminderBanner';
+import { BrandedLoadingState } from '@/src/components/employee/BrandedLoadingState';
 import type {
   TaskItem,
   SiteVisitItem,
@@ -256,10 +257,10 @@ export default function EmployeeWorkTrackerPage() {
 
       {/* Tab Views */}
       {loading ? (
-        <div className="flex min-h-[40vh] flex-col items-center justify-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-          <p className="text-xs text-slate-500">Loading your items...</p>
-        </div>
+        <BrandedLoadingState
+          message="Loading Work Assignments..."
+          subMessage="Fetching tasks, customer leads, and scheduled site visits"
+        />
       ) : (
         <>
           {activeTab === 'tasks' && (

@@ -4,6 +4,7 @@ import React from 'react';
 import { ChevronLeft, ChevronRight, Loader2, Calendar as CalendarIcon } from 'lucide-react';
 import { format, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay } from 'date-fns';
 import { clsx } from 'clsx';
+import { BrandedLoadingState } from '@/src/components/employee/BrandedLoadingState';
 import type { AttendanceRecord } from './types';
 
 interface AttendanceHeatmapCalendarProps {
@@ -80,9 +81,11 @@ export function AttendanceHeatmapCalendar({
       </div>
 
       {loading ? (
-        <div className="flex h-64 items-center justify-center">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-        </div>
+        <BrandedLoadingState
+          className="min-h-[220px] py-6"
+          message="Loading Shift Calendar..."
+          subMessage="Calculating monthly attendance records"
+        />
       ) : (
         <div className="grid grid-cols-7 gap-2">
           {/* Blank prefix days */}

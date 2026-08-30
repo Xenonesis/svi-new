@@ -28,6 +28,7 @@ import {
   ensureLocationPermission,
   type LocationResult,
 } from '@/src/lib/location/geolocationService';
+import { BrandedLoadingState } from '@/src/components/employee/BrandedLoadingState';
 interface StatusState {
   user_id?: string;
   full_name?: string;
@@ -454,12 +455,10 @@ export default function EmployeeAttendancePunchPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-[60vh] flex-col items-center justify-center gap-3">
-        <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
-        <p className="text-xs font-medium text-slate-500">
-          Checking attendance status & timing rules...
-        </p>
-      </div>
+      <BrandedLoadingState
+        message="Checking Attendance Status & Geofence..."
+        subMessage="Syncing shift timing rules and active office zones"
+      />
     );
   }
 

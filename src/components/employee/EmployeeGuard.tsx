@@ -3,7 +3,8 @@
 import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
-import { Loader2, ShieldAlert } from 'lucide-react';
+import { ShieldAlert } from 'lucide-react';
+import { BrandedLoadingState } from './BrandedLoadingState';
 
 interface EmployeeGuardProps {
   children: React.ReactNode;
@@ -89,12 +90,11 @@ export default function EmployeeGuard({ children }: EmployeeGuardProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen flex-col items-center justify-center bg-slate-950 text-white">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-          <p className="text-sm font-medium text-slate-400">Loading SVI Workspace...</p>
-        </div>
-      </div>
+      <BrandedLoadingState
+        fullScreen
+        message="Loading SVI Workspace..."
+        subMessage="Verifying staff credentials & security clearance"
+      />
     );
   }
 
