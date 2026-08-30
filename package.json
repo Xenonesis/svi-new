@@ -43,7 +43,10 @@
     "cap:admin:open": "cross-env CAP_APP_TARGET=admin npx cap open android",
     "cap:admin:run": "cross-env CAP_APP_TARGET=admin npx cap run android",
     "cap:admin:build": "node scripts/sync-capacitor-flavors.mjs && cross-env CAP_APP_TARGET=admin npx cap sync android && node scripts/sync-capacitor-flavors.mjs && cd android && gradlew assembleAdminRelease && cd ..",
-    "cap:assets": "npx @capacitor/assets generate --android"
+    "cap:assets": "npx @capacitor/assets generate --android",
+    "gitnexus:analyze": "gitnexus analyze",
+    "gitnexus:status": "gitnexus status",
+    "gitnexus:clean": "gitnexus clean"
   },
   "dependencies": {
     "@ai-sdk/groq": "^4.0.30",
@@ -143,6 +146,7 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "gitnexus": "^1.6.10",
     "globals": "^17.11.0",
     "husky": "^9.1.7",
     "jsdom": "^30.0.1",

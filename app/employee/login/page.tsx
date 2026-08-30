@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
+import { motion } from 'motion/react';
 import {
   Mail,
   Lock,
@@ -13,141 +12,44 @@ import {
   Eye,
   EyeOff,
   CheckCircle2,
-  ShieldCheck,
-  Building2,
-  Send,
-  Loader2,
   ArrowLeft,
-  X,
   HelpCircle,
+  Loader2,
 } from 'lucide-react';
-import { supabase } from '@/src/lib/supabase/client';
-import { toast } from 'sonner';
+import { useEmployeeLoginForm } from '@/src/components/employee/login/useEmployeeLoginForm';
+import { EmployeeLoginHelpModal } from '@/src/components/employee/login/EmployeeLoginHelpModal';
 
 export default function EmployeeLogin() {
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showHelpModal, setShowHelpModal] = useState(false);
-
-  const [identifierTouched, setIdentifierTouched] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
-  const [shake, setShake] = useState(false);
-
-  useEffect(() => {
-    async function checkExistingSession() {
-      try {
-        const {
-          data: { session },
-        } = await supabase.auth.getSession();
-        if (session?.user) {
-          const { data: profile } = await supabase
-            .from('profiles')
-            .select('role')
-            .eq('id', session.user.id)
-            .maybeSingle();
-
-          if (profile?.role === 'employee' || profile?.role === 'admin') {
-            router.replace('/employee/dashboard');
-          }
-        }
-      } catch (err) {
-        console.error('Session verification error:', err);
-      }
-    }
-    checkExistingSession();
-  }, [router]);
-
-  const identifierIsValid = identifier
-    ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier.trim())
-    : true;
-  const passwordIsValid = password ? password.length >= 6 : true;
-
-  const showIdentifierError = identifierTouched && !identifierIsValid;
-  const showPasswordError = passwordTouched && !passwordIsValid;
-
-  const handlePasswordLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setIdentifierTouched(true);
-    setPasswordTouched(true);
-
-    const cleanIdentifier = identifier.trim().toLowerCase();
-
-    if (!cleanIdentifier || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanIdentifier)) {
-      setError('Please enter a valid work email address.');
-      setShake(true);
-      return;
-    }
-
-    if (!password || password.length < 6) {
-      setError('Password must be at least 6 characters long.');
-      setShake(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { data, error: authError } = await supabase.auth.signInWithPassword({
-        email: cleanIdentifier,
-        password,
-      });
-
-      if (authError) {
-        if (authError.message.toLowerCase().includes('invalid login credentials')) {
-          throw new Error('Invalid email or password. Please verify your credentials.');
-        }
-        throw authError;
-      }
-
-      if (!data.user) {
-        throw new Error('Authentication failed. No user record found.');
-      }
-
-      const { data: profile, error: profileError } = await supabase
-        .from('profiles')
-        .select('role, full_name, department')
-        .eq('id', data.user.id)
-        .maybeSingle();
-
-      if (profileError) {
-        console.warn('Profile fetch warning on login:', profileError);
-      }
-
-      if (profile?.role === 'client') {
-        await supabase.auth.signOut();
-        throw new Error(
-          'This portal is strictly reserved for SVI Infra Employees & Staff. Client accounts must log in via the Client Portal.'
-        );
-      }
-
-      setSuccess(true);
-      toast.success(`Welcome, ${profile?.full_name || 'Employee'}`);
-
-      setTimeout(() => {
-        router.replace('/employee/dashboard');
-      }, 1000);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Login failed. Please try again.';
-      setError(msg);
-      setShake(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    identifier,
+    setIdentifier,
+    password,
+    setPassword,
+    error,
+    setError,
+    success,
+    showPassword,
+    setShowPassword,
+    showHelpModal,
+    setShowHelpModal,
+    identifierTouched,
+    setIdentifierTouched,
+    passwordTouched,
+    setPasswordTouched,
+    shake,
+    setShake,
+    isSubmitting,
+    showIdentifierError,
+    showPasswordError,
+    handlePasswordLogin,
+  } = useEmployeeLoginForm();
 
   return (
     <div className="relative flex min-h-[100dvh] flex-col justify-between bg-[#080b11] pt-[env(safe-area-inset-top,0px)] pb-[env(safe-area-inset-bottom,0px)] text-slate-100 antialiased">
       {/* Background Subtle Gradient & Micro-Grid */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        {/* Soft Radial Ambient Vignette */}
         <div className="absolute top-0 left-1/2 h-[600px] w-[900px] -translate-x-1/2 rounded-full bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.06)_0%,rgba(8,11,17,0)_70%)]" />
         <div className="absolute right-0 bottom-0 h-[500px] w-[500px] rounded-full bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.6)_0%,rgba(8,11,17,0)_70%)]" />
-        {/* Precise hairline grid */}
         <div
           className="absolute inset-0 opacity-[0.035]"
           style={{
@@ -171,10 +73,10 @@ export default function EmployeeLogin() {
         <button
           onClick={() => setShowHelpModal(true)}
           type="button"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200"
+          className="inline-flex cursor-pointer items-center gap-1.5 text-xs font-medium text-slate-400 transition-colors hover:text-slate-200"
         >
           <HelpCircle size={14} />
-          <span>Support & Access</span>
+          <span>Support &amp; Access</span>
         </button>
       </header>
 
@@ -213,7 +115,7 @@ export default function EmployeeLogin() {
           {/* Clean Corporate Brand Header */}
           <div className="mb-8 text-center">
             <div className="mb-5 inline-flex items-center justify-center">
-              <div className="rounded-xl bg-white p-2.5 shadow-sm ring-1 ring-white/10">
+              <div className="rounded-xl bg-white p-2.5 shadow-xs ring-1 ring-white/10">
                 <Image
                   src="/logo.png"
                   alt="SVI Infra Solutions"
@@ -288,7 +190,7 @@ export default function EmployeeLogin() {
                 <button
                   type="button"
                   onClick={() => setShowHelpModal(true)}
-                  className="text-[11px] font-medium text-amber-400/90 transition-colors hover:text-amber-300"
+                  className="cursor-pointer text-[11px] font-medium text-amber-400/90 transition-colors hover:text-amber-300"
                 >
                   Forgot password?
                 </button>
@@ -321,7 +223,7 @@ export default function EmployeeLogin() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   tabIndex={-1}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-slate-500 transition-colors hover:text-slate-300"
+                  className="absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3 text-slate-500 transition-colors hover:text-slate-300"
                   aria-label={showPassword ? 'Hide password' : 'Show password'}
                 >
                   {showPassword ? <EyeOff size={15} /> : <Eye size={15} />}
@@ -334,7 +236,7 @@ export default function EmployeeLogin() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#d4af37] px-4 py-3 text-xs font-bold tracking-wide text-slate-950 uppercase transition-all hover:bg-[#c59e26] active:scale-[0.99] disabled:opacity-50"
+                className="flex w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[#d4af37] px-4 py-3 text-xs font-bold tracking-wide text-slate-950 uppercase transition-all hover:bg-[#c59e26] active:scale-[0.99] disabled:opacity-50"
               >
                 {isSubmitting ? (
                   <>
@@ -372,72 +274,7 @@ export default function EmployeeLogin() {
       </footer>
 
       {/* Clean Support Modal */}
-      <AnimatePresence>
-        {showHelpModal && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setShowHelpModal(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
-            />
-            <motion.div
-              initial={{ scale: 0.96, opacity: 0, y: 10 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.96, opacity: 0, y: 10 }}
-              className="relative w-full max-w-sm rounded-2xl border border-slate-800 bg-[#0d121c] p-6 shadow-2xl"
-            >
-              <div className="mb-4 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck size={18} className="text-amber-400" />
-                  <h3 className="text-sm font-semibold text-white">Employee Support</h3>
-                </div>
-                <button
-                  onClick={() => setShowHelpModal(false)}
-                  className="text-slate-400 hover:text-white"
-                >
-                  <X size={16} />
-                </button>
-              </div>
-
-              <p className="text-xs leading-relaxed text-slate-400">
-                If you have forgotten your password or require a new account, please contact the SVI
-                Administration or HR desk.
-              </p>
-
-              <div className="mt-4 rounded-xl border border-slate-800 bg-slate-900/60 p-3 text-xs text-slate-300">
-                <div className="flex items-center gap-2 font-medium text-white">
-                  <Building2 size={14} className="text-amber-400" />
-                  <span>HR & Admin Desk</span>
-                </div>
-                <p className="mt-1 text-[11px] text-slate-400">
-                  Password resets are issued securely by system administrators.
-                </p>
-              </div>
-
-              <div className="mt-5 flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => setShowHelpModal(false)}
-                  className="flex-1 rounded-xl border border-slate-800 py-2 text-xs font-medium text-slate-300 transition-colors hover:bg-slate-800"
-                >
-                  Close
-                </button>
-                <a
-                  href="https://wa.me/?text=Hello%20HR%20Admin,%20I%20need%20assistance%20with%20my%20SVI%20Employee%20Portal%20credentials."
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-xl bg-emerald-600 py-2 text-xs font-semibold text-white transition-colors hover:bg-emerald-700"
-                >
-                  <Send size={13} />
-                  <span>Contact HR</span>
-                </a>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
+      <EmployeeLoginHelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
     </div>
   );
 }

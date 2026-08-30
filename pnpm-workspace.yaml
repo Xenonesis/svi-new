@@ -2,12 +2,28 @@ packages:
   - '.'
 
 allowBuilds:
+  '@ladybugdb/core': true
   '@parcel/watcher': true
+  '@scarf/scarf': true
   '@sentry/cli': true
   '@swc/core': true
   'core-js': true
   'esbuild': true
+  gitnexus: true
+  onnxruntime-node: true
+  protobufjs: true
   'sharp': true
+  tree-sitter: true
+  tree-sitter-c-sharp: true
+  tree-sitter-cpp: true
+  tree-sitter-go: true
+  tree-sitter-java: true
+  tree-sitter-javascript: true
+  tree-sitter-php: true
+  tree-sitter-python: true
+  tree-sitter-ruby: true
+  tree-sitter-rust: true
+  tree-sitter-typescript: true
 
 minimumReleaseAgeExclude:
   - '@ai-sdk/gateway@4.0.23'

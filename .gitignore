@@ -19,6 +19,7 @@ dist/
 # IDE/Tool configs
 .refact/
 .firecrawl/
+.gitnexus/
 
 # Pi local state
 .pi/

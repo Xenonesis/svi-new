@@ -52,4 +52,5 @@
 - **Biometrics & Hardware Auth:** WebAuthn / Passkey API for biometric fingerprint and facial recognition authentication
 - **Offline Storage & Resilience:** LocalStorage / IndexedDB queue for offline attendance punch caching and automatic background resynchronization
 - **Testing:** Playwright (E2E), Vitest (Unit)
+- **Code Intelligence & Graph Analysis:** GitNexus (1.6.10) — local LadybugDB knowledge graph indexing AST symbols, execution flows, call chains, and blast radius impact analysis
 - **Code Quality:** Husky, lint-staged, commitlint, ESLint, Prettier
