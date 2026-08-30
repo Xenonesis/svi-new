@@ -153,7 +153,7 @@ export default function EmployeeAttendancePunchPage() {
     }
   }, [fetchStatus]);
 
-  // Acquire Geolocation
+  // Acquire Geolocation with high-accuracy + low-accuracy fallback
   const requestLocation = useCallback(() => {
     if (typeof window === 'undefined' || !navigator.geolocation) {
       setLocationStatus('error');
@@ -162,27 +162,58 @@ export default function EmployeeAttendancePunchPage() {
 
     setLocationStatus('acquiring');
 
+    const handleSuccess = (pos: GeolocationPosition) => {
+      setCoords({
+        lat: pos.coords.latitude,
+        lon: pos.coords.longitude,
+      });
+      setAccuracy(pos.coords.accuracy || null);
+      setLocationStatus('ready');
+    };
+
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setCoords({
-          lat: pos.coords.latitude,
-          lon: pos.coords.longitude,
-        });
-        setAccuracy(pos.coords.accuracy || null);
-        setLocationStatus('ready');
-      },
+      handleSuccess,
       (err) => {
-        console.warn('Geolocation error:', err.message);
-        setLocationStatus('error');
+        console.warn(
+          'High-accuracy GPS lock timed out or failed, falling back to standard accuracy:',
+          err.message
+        );
+        navigator.geolocation.getCurrentPosition(
+          handleSuccess,
+          (fallbackErr) => {
+            console.warn('Geolocation fallback error:', fallbackErr.message);
+            setLocationStatus('error');
+          },
+          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
+        );
       },
-      { enableHighAccuracy: true, timeout: 12000, maximumAge: 30000 }
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
     );
   }, []);
 
   useEffect(() => {
     requestLocation();
-  }, [requestLocation]);
 
+    if (typeof window !== 'undefined' && navigator.geolocation) {
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          setCoords({
+            lat: pos.coords.latitude,
+            lon: pos.coords.longitude,
+          });
+          setAccuracy(pos.coords.accuracy || null);
+          setLocationStatus('ready');
+        },
+        () => {
+          // Non-blocking on watch ticks
+        },
+        { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
+      );
+      return () => {
+        navigator.geolocation.clearWatch(watchId);
+      };
+    }
+  }, [requestLocation]);
   // Live Timer ticker for Active Shift
   useEffect(() => {
     if (statusData.status === 'punched_in' && statusData.punch_in_time) {
@@ -214,10 +245,19 @@ export default function EmployeeAttendancePunchPage() {
       if (!currentCoords && typeof navigator !== 'undefined' && navigator.geolocation) {
         try {
           const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(resolve, reject, {
-              enableHighAccuracy: true,
-              timeout: 8000,
-            });
+            navigator.geolocation.getCurrentPosition(
+              resolve,
+              () => {
+                navigator.geolocation.getCurrentPosition(resolve, reject, {
+                  enableHighAccuracy: false,
+                  timeout: 10000,
+                });
+              },
+              {
+                enableHighAccuracy: true,
+                timeout: 6000,
+              }
+            );
           });
           currentCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
           setCoords(currentCoords);
