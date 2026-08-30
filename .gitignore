@@ -90,3 +90,4 @@ android/app/build/
 android/build/
 ios/App/Pods/
 ios/App/App.xcworkspace/
+release-apks/

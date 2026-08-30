@@ -16,6 +16,9 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    buildFeatures {
+        resValues true
+    }
     flavorDimensions "default"
     productFlavors {
         admin {
@@ -35,8 +38,19 @@ android {
             resValue "string", "custom_url_scheme", "com.svi.infrasolutions.employee"
         }
     }
+    signingConfigs {
+        release {
+            if (file('svi-release-key.jks').exists()) {
+                storeFile file('svi-release-key.jks')
+                storePassword 'svi-infra-2026'
+                keyAlias 'svi-key'
+                keyPassword 'svi-infra-2026'
+            }
+        }
+    }
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
