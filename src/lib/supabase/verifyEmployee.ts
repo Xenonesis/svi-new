@@ -55,10 +55,9 @@ export async function verifyEmployee(request: NextRequest): Promise<VerifiedEmpl
   // 3. Verify user profile and role
   const { data: profile, error: profileError } = await supabaseAdmin
     .from('profiles')
-    .select('id, email, full_name, role, department, phone')
+    .select('*')
     .eq('id', user.id)
     .single();
-
   if (profileError || !profile) {
     return null;
   }

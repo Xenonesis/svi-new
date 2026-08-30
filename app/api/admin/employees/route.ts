@@ -196,21 +196,30 @@ export async function POST(request: NextRequest) {
 
     // 2. Insert profile row
     const realEmail = body.real_email?.trim().toLowerCase() || null;
-    const { data: profile, error: profileError } = await supabaseAdmin
+    const insertPayload: Record<string, any> = {
+      id: newUserId,
+      email,
+      real_email: realEmail,
+      full_name: fullName,
+      phone: phone || null,
+      department: department || null,
+      notes: notes || null,
+      created_by: admin.id,
+    };
+
+    let { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .insert({
-        id: newUserId,
-        email,
-        real_email: realEmail,
-        full_name: fullName,
-        phone: phone || null,
-        department: department || null,
-        notes: notes || null,
-        created_by: admin.id,
-      })
+      .insert(insertPayload)
       .select()
       .single();
 
+    // Graceful fallback if department column is not yet in Supabase schema cache
+    if (profileError && /department.*schema cache/i.test(profileError.message)) {
+      delete insertPayload.department;
+      const retryRes = await supabaseAdmin.from('profiles').insert(insertPayload).select().single();
+      profile = retryRes.data;
+      profileError = retryRes.error;
+    }
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(newUserId);
       if (

@@ -38,11 +38,7 @@ export default function EmployeeProfilePage() {
           return;
         }
 
-        const { data } = await supabase
-          .from('profiles')
-          .select('id, email, full_name, role, department, phone, created_at')
-          .eq('id', user.id)
-          .single();
+        const { data } = await supabase.from('profiles').select('*').eq('id', user.id).single();
 
         if (data) {
           setProfile(data);

@@ -1,17 +1,17 @@
 # Database Schema (Supabase / PostgreSQL)
 
-The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 64 migrations.
+The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 65 migrations.
 
 ## Core Tables
 
-| Table Name        | Purpose                                                |
-| ----------------- | ------------------------------------------------------ |
-| `profiles`        | Extended user data for accounts, including admin roles |
-| `portal_settings` | Global key-value store for application configuration   |
-| `properties`      | Main property listings and details                     |
-| `project_images`  | Image galleries tied to properties/projects            |
-| `registrations`   | Customer registrations and leads                       |
-| `site_visits`     | Scheduling for property tours                          |
+| Table Name        | Purpose                                                                                                   |
+| ----------------- | --------------------------------------------------------------------------------------------------------- |
+| `profiles`        | Extended user data for accounts, including admin/employee roles, phone, department, real_email, and notes |
+| `portal_settings` | Global key-value store for application configuration                                                      |
+| `properties`      | Main property listings and details                                                                        |
+| `project_images`  | Image galleries tied to properties/projects                                                               |
+| `registrations`   | Customer registrations and leads                                                                          |
+| `site_visits`     | Scheduling for property tours                                                                             |
 
 ## Security & System
 

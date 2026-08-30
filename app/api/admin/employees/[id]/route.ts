@@ -106,10 +106,25 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (department !== undefined) updateData.department = department?.trim() || null;
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
     if (Object.keys(updateData).length > 0) {
-      const { error: profileError } = await supabaseAdmin
+      let { error: profileError } = await supabaseAdmin
         .from('profiles')
         .update(updateData)
         .eq('id', id);
+
+      // Graceful fallback if department column is not yet in Supabase schema cache
+      if (profileError && /department.*schema cache/i.test(profileError.message)) {
+        const { department: _omitted, ...fallbackData } = updateData;
+        if (Object.keys(fallbackData).length > 0) {
+          const fallbackRes = await supabaseAdmin
+            .from('profiles')
+            .update(fallbackData)
+            .eq('id', id);
+          profileError = fallbackRes.error;
+        } else {
+          profileError = null;
+        }
+      }
+
       if (profileError) throw AppError.internal(profileError.message);
     }
 
