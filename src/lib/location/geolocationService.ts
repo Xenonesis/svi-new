@@ -1,4 +1,30 @@
-import { Geolocation, Position, PositionOptions } from '@capacitor/geolocation';
+/**
+ * geolocationService.ts
+ *
+ * Universal location engine for SVI apps.
+ *
+ * Remote-URL Capacitor WebView context
+ * ─────────────────────────────────────
+ * The app loads sviinfrasolutions.com inside a Capacitor WebView.
+ * In this mode Capacitor.isNativePlatform() returns FALSE because the JS
+ * bridge is NOT injected into remote-origin pages.
+ *
+ * We therefore rely on the standard navigator.geolocation API, combined with
+ * the GeolocationPermissions override in MainActivity.java that silently
+ * auto-grants the WebView geolocation prompt whenever the Android OS location
+ * permission is already held by the app.
+ *
+ * Flow on device:
+ *   1. App launches → MainActivity requests ACCESS_FINE_LOCATION from the OS
+ *   2. User taps Allow → OS grants the permission
+ *   3. WebView loads remote page; page calls navigator.geolocation
+ *   4. WebView fires onGeolocationPermissionsShowPrompt → MainActivity
+ *      auto-grants it (OS permission already held) → no second prompt shown
+ *   5. GPS coordinates arrive through the normal browser geolocation path
+ */
+
+import { Geolocation } from '@capacitor/geolocation';
+import type { PositionOptions } from '@capacitor/geolocation';
 import { Capacitor } from '@capacitor/core';
 
 export interface LocationResult {
@@ -8,7 +34,7 @@ export interface LocationResult {
   altitude?: number | null;
   speed?: number | null;
   heading?: number | null;
-  source: 'capacitor-native' | 'browser-high' | 'browser-low';
+  source: 'browser-high' | 'browser-low' | 'capacitor-native';
 }
 
 export interface GeolocationError {
@@ -18,12 +44,14 @@ export interface GeolocationError {
 }
 
 /**
- * Checks and requests location permission on both Native (Capacitor) and Browser environments.
+ * Checks / requests location permission.
+ * In remote-URL WebView builds the OS permission is requested by
+ * MainActivity on startup; here we verify via the Permissions API.
  */
 export async function ensureLocationPermission(): Promise<boolean> {
   if (typeof window === 'undefined') return false;
 
-  // 1. Try Native Capacitor Permission flow if available
+  // Capacitor native plugin — only works when bridge is live (local-URL builds)
   if (Capacitor.isNativePlatform()) {
     try {
       const status = await Geolocation.checkPermissions();
@@ -32,32 +60,32 @@ export async function ensureLocationPermission(): Promise<boolean> {
       }
       const req = await Geolocation.requestPermissions();
       return req.location === 'granted' || req.coarseLocation === 'granted';
-    } catch (nativeErr) {
-      console.warn('Native permission check encountered warning:', nativeErr);
+    } catch {
+      // Plugin unavailable — fall through
     }
   }
 
-  // 2. Fallback to Browser Permissions API if supported
-  if (navigator.permissions && navigator.permissions.query) {
+  // Web Permissions API (non-blocking check)
+  if (navigator.permissions?.query) {
     try {
       const status = await navigator.permissions.query({ name: 'geolocation' });
-      if (status.state === 'granted' || status.state === 'prompt') {
-        return true;
-      }
+      return status.state !== 'denied';
     } catch {
-      // Ignore permissions.query errors (e.g. Firefox/Safari variations)
+      // Firefox / older WebView may throw
     }
   }
 
+  // Assume permission is obtainable — prompt will appear on first call
   return true;
 }
 
 /**
- * Acquires coordinates with multi-tier failover:
- * 1. Native Capacitor High Accuracy
- * 2. Native Capacitor Standard Accuracy
- * 3. Browser Navigator High Accuracy
- * 4. Browser Navigator Standard Accuracy
+ * Acquires device coordinates.
+ *
+ * Priority:
+ *   1. Capacitor native plugin (only when bridge is live — local-URL builds)
+ *   2. navigator.geolocation high-accuracy  ← primary path on remote-URL
+ *   3. navigator.geolocation standard-accuracy (fallback)
  */
 export async function getDeviceCoordinates(
   options: {
@@ -66,60 +94,33 @@ export async function getDeviceCoordinates(
     maximumAge?: number;
   } = {}
 ): Promise<LocationResult> {
-  const { timeout = 10000, enableHighAccuracy = true, maximumAge = 30000 } = options;
+  const { timeout = 12000, enableHighAccuracy = true, maximumAge = 30000 } = options;
 
   if (typeof window === 'undefined') {
     throw { code: 'UNAVAILABLE', message: 'Window is undefined' } as GeolocationError;
   }
 
-  // Attempt 1: Native Capacitor Plugin
+  // Attempt 1 — Capacitor native (bridge must be injected into the page)
   if (Capacitor.isNativePlatform()) {
     try {
       await ensureLocationPermission();
-      const pos: Position = await Geolocation.getCurrentPosition({
-        enableHighAccuracy,
-        timeout,
-        maximumAge,
-      });
-
+      const pos = await Geolocation.getCurrentPosition({ enableHighAccuracy, timeout, maximumAge });
       return {
         latitude: pos.coords.latitude,
         longitude: pos.coords.longitude,
-        accuracy: pos.coords.accuracy || null,
-        altitude: pos.coords.altitude || null,
-        speed: pos.coords.speed || null,
-        heading: pos.coords.heading || null,
+        accuracy: pos.coords.accuracy ?? null,
+        altitude: pos.coords.altitude ?? null,
+        speed: pos.coords.speed ?? null,
+        heading: pos.coords.heading ?? null,
         source: 'capacitor-native',
       };
-    } catch (nativeErr: unknown) {
-      console.warn(
-        'Capacitor native geolocation high-accuracy failed, retrying standard:',
-        nativeErr
-      );
-      try {
-        const fallbackPos: Position = await Geolocation.getCurrentPosition({
-          enableHighAccuracy: false,
-          timeout: 15000,
-          maximumAge: 60000,
-        });
-
-        return {
-          latitude: fallbackPos.coords.latitude,
-          longitude: fallbackPos.coords.longitude,
-          accuracy: fallbackPos.coords.accuracy || null,
-          altitude: fallbackPos.coords.altitude || null,
-          source: 'capacitor-native',
-        };
-      } catch (nativeFallbackErr) {
-        console.warn(
-          'Native fallback also failed, shifting to Web Geolocation API:',
-          nativeFallbackErr
-        );
-      }
+    } catch {
+      // Capacitor native failed — fall through to browser API
     }
   }
 
-  // Attempt 2: Standard Browser / WebView Navigator Geolocation
+  // Attempts 2 & 3 — navigator.geolocation
+  // Works in Android WebView when MainActivity grants the geolocation prompt.
   if (!navigator.geolocation) {
     throw {
       code: 'NOT_SUPPORTED',
@@ -128,30 +129,29 @@ export async function getDeviceCoordinates(
   }
 
   return new Promise<LocationResult>((resolve, reject) => {
-    // Try High Accuracy first
+    // High-accuracy attempt
     navigator.geolocation.getCurrentPosition(
       (pos) => {
         resolve({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy || null,
-          altitude: pos.coords.altitude || null,
-          speed: pos.coords.speed || null,
-          heading: pos.coords.heading || null,
+          accuracy: pos.coords.accuracy ?? null,
+          altitude: pos.coords.altitude ?? null,
+          speed: pos.coords.speed ?? null,
+          heading: pos.coords.heading ?? null,
           source: 'browser-high',
         });
       },
       (err) => {
-        console.warn('Browser High Accuracy GPS failed or timed out:', err.message);
-
-        // Try Standard Accuracy fallback
+        console.warn('GPS high-accuracy failed:', err.code, err.message);
+        // Standard-accuracy fallback
         navigator.geolocation.getCurrentPosition(
-          (fallbackPos) => {
+          (pos) => {
             resolve({
-              latitude: fallbackPos.coords.latitude,
-              longitude: fallbackPos.coords.longitude,
-              accuracy: fallbackPos.coords.accuracy || null,
-              altitude: fallbackPos.coords.altitude || null,
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              accuracy: pos.coords.accuracy ?? null,
+              altitude: pos.coords.altitude ?? null,
               source: 'browser-low',
             });
           },
@@ -171,75 +171,73 @@ export async function getDeviceCoordinates(
 }
 
 /**
- * Subscribes to live position updates with auto-cleanup.
+ * Subscribes to live position updates.
+ * Returns a cleanup function that cancels the watcher.
  */
 export function watchDevicePosition(
   onUpdate: (location: LocationResult) => void,
   onError?: (error: GeolocationError) => void,
   options: PositionOptions = { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
 ): () => void {
-  if (typeof window === 'undefined') return () => {};
-
-  let isCleanedUp = false;
-  let nativeCallbackId: string | null = null;
-  let webWatchId: number | null = null;
+  let watchId: number | null = null;
+  let nativeWatchId: string | null = null;
+  let cancelled = false;
 
   if (Capacitor.isNativePlatform()) {
-    Geolocation.watchPosition(options, (position, err) => {
-      if (isCleanedUp) return;
-      if (err) {
-        if (onError) onError({ code: 'WATCH_ERROR', message: err.message });
-        return;
-      }
-      if (position) {
-        onUpdate({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-          accuracy: position.coords.accuracy || null,
-          altitude: position.coords.altitude || null,
-          source: 'capacitor-native',
-        });
-      }
-    }).then((id) => {
-      if (isCleanedUp) {
-        Geolocation.clearWatch({ id });
-      } else {
-        nativeCallbackId = id;
-      }
-    });
-  } else if (navigator.geolocation) {
-    webWatchId = navigator.geolocation.watchPosition(
+    // Native watcher (local-URL builds)
+    ensureLocationPermission()
+      .then(() =>
+        Geolocation.watchPosition(options, (pos, err) => {
+          if (cancelled) return;
+          if (err) {
+            onError?.({ code: err.code ?? 'UNKNOWN', message: err.message ?? 'Watch error' });
+            return;
+          }
+          if (pos) {
+            onUpdate({
+              latitude: pos.coords.latitude,
+              longitude: pos.coords.longitude,
+              accuracy: pos.coords.accuracy ?? null,
+              altitude: pos.coords.altitude ?? null,
+              source: 'capacitor-native',
+            });
+          }
+        })
+      )
+      .then((id) => {
+        nativeWatchId = id;
+      })
+      .catch(() => {});
+  } else if (typeof window !== 'undefined' && navigator.geolocation) {
+    // Browser watcher — primary path for remote-URL WebView
+    watchId = navigator.geolocation.watchPosition(
       (pos) => {
-        if (isCleanedUp) return;
+        if (cancelled) return;
         onUpdate({
           latitude: pos.coords.latitude,
           longitude: pos.coords.longitude,
-          accuracy: pos.coords.accuracy || null,
-          altitude: pos.coords.altitude || null,
+          accuracy: pos.coords.accuracy ?? null,
+          altitude: pos.coords.altitude ?? null,
           source: 'browser-high',
         });
       },
       (err) => {
-        if (isCleanedUp) return;
-        if (onError) {
-          onError({
-            code: err.code,
-            message: err.message,
-            isPermissionDenied: err.code === err.PERMISSION_DENIED,
-          });
-        }
+        if (cancelled) return;
+        onError?.({
+          code: err.code,
+          message: err.message,
+          isPermissionDenied: err.code === err.PERMISSION_DENIED,
+        });
       },
       options
     );
   }
 
   return () => {
-    isCleanedUp = true;
-    if (nativeCallbackId) {
-      Geolocation.clearWatch({ id: nativeCallbackId });
-    }
-    if (webWatchId !== null && typeof navigator !== 'undefined' && navigator.geolocation) {
-      navigator.geolocation.clearWatch(webWatchId);
+    cancelled = true;
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    if (nativeWatchId !== null) {
+      Geolocation.clearWatch({ id: nativeWatchId }).catch(() => {});
     }
   };
 }
