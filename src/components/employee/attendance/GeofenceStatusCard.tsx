@@ -221,7 +221,7 @@ export function GeofenceStatusCard({
         <div className="mt-3 flex items-center justify-between rounded-xl border border-red-200 bg-red-50 p-3 text-xs text-red-700 dark:border-red-900/40 dark:bg-red-950/30 dark:text-red-300">
           <div className="flex items-center gap-2">
             <ShieldAlert className="h-4 w-4 flex-shrink-0 text-red-500" />
-            <span>GPS location is blocked or unavailable in this browser.</span>
+            <span>GPS location access required to verify office proximity.</span>
           </div>
           {onRequestPermission && (
             <button

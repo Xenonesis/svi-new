@@ -5,14 +5,18 @@ import Link from 'next/link';
 import {
   Compass,
   MapPin,
-  Calendar,
+  Navigation,
   Phone,
   MessageSquare,
   CheckCircle2,
+  Clock,
+  Calendar,
+  ArrowRight,
   Loader2,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
+import { getDeviceCoordinates } from '@/src/lib/location/geolocationService';
 import { formatTelLink, formatWhatsAppLink } from '@/src/components/employee/work/LeadsView';
 import type { DashboardData } from './types';
 interface DashboardSiteVisitsCardProps {
@@ -29,72 +33,46 @@ export function DashboardSiteVisitsCard({ visits }: DashboardSiteVisitsCardProps
   const isCompleted = visit.status === 'completed' || completedVisitId === visit.id;
 
   const handleGpsCheckIn = async () => {
-    if (typeof window === 'undefined' || !navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
-      return;
-    }
-
     setCheckingIn(true);
+    try {
+      const loc = await getDeviceCoordinates({ enableHighAccuracy: true, timeout: 10000 });
+      const lat = loc.latitude;
+      const lon = loc.longitude;
+      const accuracy = Math.round(loc.accuracy || 0);
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const accuracy = Math.round(position.coords.accuracy || 0);
+      const timeStr = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const gpsNote = `GPS On-Site Check-in verified at ${timeStr} (Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)} ±${accuracy}m)`;
 
-        try {
-          const timeStr = new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-          const gpsNote = `GPS On-Site Check-in verified at ${timeStr} (Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)} ±${accuracy}m)`;
+      const res = await fetch('/api/employee/work/site-visits', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: visit.id,
+          status: 'completed',
+          lat,
+          lon,
+          notes: gpsNote,
+        }),
+      });
 
-          const res = await fetch('/api/employee/work/site-visits', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: visit.id,
-              status: 'completed',
-              lat,
-              lon,
-              notes: gpsNote,
-            }),
-          });
-
-          if (res.ok) {
-            toast.success('Site visit verified and completed at current GPS location', {
-              description: `Coordinates: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° (Accuracy: ${accuracy}m)`,
-            });
-            setCompletedVisitId(visit.id);
-            setCheckInTime(timeStr);
-          } else {
-            const data = await res.json().catch(() => null);
-            toast.error(data?.message || 'Failed to complete GPS check-in');
-          }
-        } catch {
-          toast.error('Network error during GPS check-in');
-        } finally {
-          setCheckingIn(false);
-        }
-      },
-      (error) => {
-        setCheckingIn(false);
-        let msg = 'Unable to retrieve your current location';
-        if (error.code === error.PERMISSION_DENIED) {
-          msg = 'Location permission denied. Please allow GPS access in browser settings.';
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          msg = 'Location signal unavailable. Please try again in an open area.';
-        } else if (error.code === error.TIMEOUT) {
-          msg = 'Location request timed out. Please retry.';
-        }
-        toast.error(msg);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
+      if (res.ok) {
+        toast.success('Site visit verified and completed at current GPS location', {
+          description: `Coordinates: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° (Accuracy: ${accuracy}m)`,
+        });
+        setCompletedVisitId(visit.id);
+        setCheckInTime(timeStr);
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || 'Failed to complete GPS check-in');
       }
-    );
+    } catch {
+      toast.error('Unable to retrieve location. Please ensure GPS is enabled.');
+    } finally {
+      setCheckingIn(false);
+    }
   };
 
   return (

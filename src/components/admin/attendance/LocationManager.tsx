@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { MapPin, Plus, Trash2, MapIcon, Search, AlertCircle } from 'lucide-react';
+import { getDeviceCoordinates } from '@/src/lib/location/geolocationService';
 import type { GeofenceLocation } from '@/src/lib/supabase/types';
 
 interface LocationManagerProps {
@@ -115,22 +116,16 @@ export default function LocationManager({ token, showToast }: LocationManagerPro
     }
   };
 
-  const handleGetCurrentLocation = () => {
-    if (!navigator.geolocation) {
-      showToast('error', 'Geolocation is not supported by your browser');
-      return;
+  const handleGetCurrentLocation = async () => {
+    try {
+      const loc = await getDeviceCoordinates({ enableHighAccuracy: true, timeout: 10000 });
+      setNewLat(loc.latitude.toString());
+      setNewLon(loc.longitude.toString());
+      showToast('success', 'Location captured');
+    } catch (err: unknown) {
+      const errorMsg = err instanceof Error ? err.message : 'GPS Signal Timeout';
+      showToast('error', `Could not get location: ${errorMsg}`);
     }
-
-    navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        setNewLat(pos.coords.latitude.toString());
-        setNewLon(pos.coords.longitude.toString());
-        showToast('success', 'Location captured');
-      },
-      (err) => {
-        showToast('error', `Could not get location: ${err.message}`);
-      }
-    );
   };
 
   if (loading)

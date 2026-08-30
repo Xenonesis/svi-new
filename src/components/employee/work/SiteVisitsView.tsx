@@ -5,6 +5,7 @@ import { Calendar, Phone, MessageSquare, MapPin, CheckCircle2, Loader2 } from 'l
 import { format, parseISO } from 'date-fns';
 import { clsx } from 'clsx';
 import { toast } from 'sonner';
+import { getDeviceCoordinates } from '@/src/lib/location/geolocationService';
 import { formatTelLink, formatWhatsAppLink } from './LeadsView';
 import type { SiteVisitItem } from './types';
 
@@ -18,11 +19,10 @@ export function calculateDistanceMeters(
   lon2: number
 ): number {
   const R = 6371e3; // Earth radius in meters
-  const toRad = (deg: number) => (deg * Math.PI) / 180;
-  const φ1 = toRad(lat1);
-  const φ2 = toRad(lat2);
-  const Δφ = toRad(lat2 - lat1);
-  const Δλ = toRad(lon2 - lon1);
+  const φ1 = (lat1 * Math.PI) / 180;
+  const φ2 = (lat2 * Math.PI) / 180;
+  const Δφ = ((lat2 - lat1) * Math.PI) / 180;
+  const Δλ = ((lon2 - lon1) * Math.PI) / 180;
 
   const a =
     Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
@@ -31,7 +31,6 @@ export function calculateDistanceMeters(
 
   return Math.round(R * c);
 }
-
 /**
  * Formats distance in meters to a clean readable string (e.g. '350m' or '2.4km').
  */
@@ -53,76 +52,50 @@ export function SiteVisitsView({ siteVisits, onUpdateStatus }: SiteVisitsViewPro
   >({});
 
   const handleGpsCheckIn = async (visit: SiteVisitItem) => {
-    if (typeof window === 'undefined' || !navigator.geolocation) {
-      toast.error('Geolocation is not supported by your browser');
-      return;
-    }
-
     setCheckingInId(visit.id);
+    try {
+      const loc = await getDeviceCoordinates({ enableHighAccuracy: true, timeout: 10000 });
+      const lat = loc.latitude;
+      const lon = loc.longitude;
+      const accuracy = Math.round(loc.accuracy || 0);
 
-    navigator.geolocation.getCurrentPosition(
-      async (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const accuracy = Math.round(position.coords.accuracy || 0);
+      const timeStr = new Date().toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+      const gpsNote = `GPS On-Site Check-in verified at ${timeStr} (Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)} ±${accuracy}m)`;
+      const combinedNotes = visit.notes ? `${visit.notes} • ${gpsNote}` : gpsNote;
 
-        try {
-          const timeStr = new Date().toLocaleTimeString([], {
-            hour: '2-digit',
-            minute: '2-digit',
-          });
-          const gpsNote = `GPS On-Site Check-in verified at ${timeStr} (Lat: ${lat.toFixed(5)}, Lon: ${lon.toFixed(5)} ±${accuracy}m)`;
-          const combinedNotes = visit.notes ? `${visit.notes} • ${gpsNote}` : gpsNote;
+      const res = await fetch('/api/employee/work/site-visits', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          id: visit.id,
+          status: 'completed',
+          lat,
+          lon,
+          notes: combinedNotes,
+        }),
+      });
 
-          const res = await fetch('/api/employee/work/site-visits', {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              id: visit.id,
-              status: 'completed',
-              lat,
-              lon,
-              notes: combinedNotes,
-            }),
-          });
-
-          if (res.ok) {
-            toast.success('Site visit verified and completed at current GPS location', {
-              description: `Coordinates: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° (Accuracy: ${accuracy}m)`,
-            });
-            setCheckInDetails((prev) => ({
-              ...prev,
-              [visit.id]: { lat, lon, time: timeStr },
-            }));
-            onUpdateStatus(visit.id, 'completed');
-          } else {
-            const data = await res.json().catch(() => null);
-            toast.error(data?.message || 'Failed to complete GPS check-in');
-          }
-        } catch {
-          toast.error('Network error during GPS check-in');
-        } finally {
-          setCheckingInId(null);
-        }
-      },
-      (error) => {
-        setCheckingInId(null);
-        let msg = 'Unable to retrieve your current location';
-        if (error.code === error.PERMISSION_DENIED) {
-          msg = 'Location permission denied. Please allow GPS access in browser settings.';
-        } else if (error.code === error.POSITION_UNAVAILABLE) {
-          msg = 'Location signal unavailable. Please try again in an open area.';
-        } else if (error.code === error.TIMEOUT) {
-          msg = 'Location request timed out. Please retry.';
-        }
-        toast.error(msg);
-      },
-      {
-        enableHighAccuracy: true,
-        timeout: 15000,
-        maximumAge: 10000,
+      if (res.ok) {
+        toast.success('Site visit verified and completed at current GPS location', {
+          description: `Coordinates: ${lat.toFixed(4)}°, ${lon.toFixed(4)}° (Accuracy: ${accuracy}m)`,
+        });
+        setCheckInDetails((prev) => ({
+          ...prev,
+          [visit.id]: { lat, lon, time: timeStr },
+        }));
+        onUpdateStatus(visit.id, 'completed');
+      } else {
+        const data = await res.json().catch(() => null);
+        toast.error(data?.message || 'Failed to complete GPS check-in');
       }
-    );
+    } catch {
+      toast.error('Unable to retrieve GPS coordinates. Please ensure location is enabled.');
+    } finally {
+      setCheckingInId(null);
+    }
   };
 
   if (siteVisits.length === 0) {

@@ -22,6 +22,12 @@ import {
   type FeedbackNotice,
 } from '@/src/components/employee/attendance/PunchFeedbackBanner';
 import { offlinePunchQueue, QueuedPunch } from '@/src/lib/attendance/offlinePunchQueue';
+import {
+  getDeviceCoordinates,
+  watchDevicePosition,
+  ensureLocationPermission,
+  type LocationResult,
+} from '@/src/lib/location/geolocationService';
 interface StatusState {
   user_id?: string;
   full_name?: string;
@@ -153,66 +159,48 @@ export default function EmployeeAttendancePunchPage() {
     }
   }, [fetchStatus]);
 
-  // Acquire Geolocation with high-accuracy + low-accuracy fallback
-  const requestLocation = useCallback(() => {
-    if (typeof window === 'undefined' || !navigator.geolocation) {
-      setLocationStatus('error');
-      return;
-    }
-
+  // Acquire Geolocation with Native Capacitor + Web fallback
+  const requestLocation = useCallback(async () => {
     setLocationStatus('acquiring');
-
-    const handleSuccess = (pos: GeolocationPosition) => {
-      setCoords({
-        lat: pos.coords.latitude,
-        lon: pos.coords.longitude,
+    try {
+      await ensureLocationPermission();
+      const loc: LocationResult = await getDeviceCoordinates({
+        enableHighAccuracy: true,
+        timeout: 10000,
       });
-      setAccuracy(pos.coords.accuracy || null);
-      setLocationStatus('ready');
-    };
 
-    navigator.geolocation.getCurrentPosition(
-      handleSuccess,
-      (err) => {
-        console.warn(
-          'High-accuracy GPS lock timed out or failed, falling back to standard accuracy:',
-          err.message
-        );
-        navigator.geolocation.getCurrentPosition(
-          handleSuccess,
-          (fallbackErr) => {
-            console.warn('Geolocation fallback error:', fallbackErr.message);
-            setLocationStatus('error');
-          },
-          { enableHighAccuracy: false, timeout: 15000, maximumAge: 60000 }
-        );
-      },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 }
-    );
+      setCoords({
+        lat: loc.latitude,
+        lon: loc.longitude,
+      });
+      setAccuracy(loc.accuracy);
+      setLocationStatus('ready');
+    } catch (err: unknown) {
+      console.warn('Geolocation acquisition warning:', err);
+      setLocationStatus('error');
+    }
   }, []);
 
   useEffect(() => {
     requestLocation();
 
-    if (typeof window !== 'undefined' && navigator.geolocation) {
-      const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          setCoords({
-            lat: pos.coords.latitude,
-            lon: pos.coords.longitude,
-          });
-          setAccuracy(pos.coords.accuracy || null);
-          setLocationStatus('ready');
-        },
-        () => {
-          // Non-blocking on watch ticks
-        },
-        { enableHighAccuracy: true, maximumAge: 10000, timeout: 20000 }
-      );
-      return () => {
-        navigator.geolocation.clearWatch(watchId);
-      };
-    }
+    const cleanupWatcher = watchDevicePosition(
+      (loc) => {
+        setCoords({
+          lat: loc.latitude,
+          lon: loc.longitude,
+        });
+        setAccuracy(loc.accuracy);
+        setLocationStatus('ready');
+      },
+      (err) => {
+        console.warn('Live location watch tick warning:', err.message);
+      }
+    );
+
+    return () => {
+      cleanupWatcher();
+    };
   }, [requestLocation]);
   // Live Timer ticker for Active Shift
   useEffect(() => {
@@ -241,27 +229,15 @@ export default function EmployeeAttendancePunchPage() {
     setPunching(true);
     let currentCoords = coords;
     try {
-      // If coords are not ready yet, request them freshly
-      if (!currentCoords && typeof navigator !== 'undefined' && navigator.geolocation) {
+      if (!currentCoords) {
         try {
-          const pos = await new Promise<GeolocationPosition>((resolve, reject) => {
-            navigator.geolocation.getCurrentPosition(
-              resolve,
-              () => {
-                navigator.geolocation.getCurrentPosition(resolve, reject, {
-                  enableHighAccuracy: false,
-                  timeout: 10000,
-                });
-              },
-              {
-                enableHighAccuracy: true,
-                timeout: 6000,
-              }
-            );
+          const loc = await getDeviceCoordinates({
+            enableHighAccuracy: true,
+            timeout: 10000,
           });
-          currentCoords = { lat: pos.coords.latitude, lon: pos.coords.longitude };
+          currentCoords = { lat: loc.latitude, lon: loc.longitude };
           setCoords(currentCoords);
-          setAccuracy(pos.coords.accuracy || null);
+          setAccuracy(loc.accuracy);
           setLocationStatus('ready');
         } catch {
           const notice: FeedbackNotice = {
@@ -269,7 +245,7 @@ export default function EmployeeAttendancePunchPage() {
             title: 'GPS Location Required',
             message:
               'We need your device location to verify that you are within the approved office work zone.',
-            reason: 'Browser Geolocation permission was denied or timed out.',
+            reason: 'Device Location permission was denied or signal timed out.',
             actionLabel: 'Allow GPS & Retry',
             onAction: () => executePunch(type),
             secondaryActionLabel: 'Refresh GPS',
@@ -277,7 +253,7 @@ export default function EmployeeAttendancePunchPage() {
           };
           setFeedbackNotice(notice);
           toast.error('Location coordinates required', {
-            description: 'Please enable GPS location permission in your browser.',
+            description: 'Please enable GPS location permission on your device.',
           });
           setPunching(false);
           return;
