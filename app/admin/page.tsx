@@ -269,7 +269,7 @@ export default function AdminLogin() {
                   onBlur={() => setPasswordTouched(true)}
                   required
                   placeholder="••••••••"
-                  className={`w-full rounded-lg border px-4 py-3 pr-12 font-sans text-sm transition-all focus:ring-2 focus:outline-none ${
+                  className={`w-full rounded-lg border px-4 py-3 pr-12 font-sans text-sm transition-all focus:ring-2 focus:outline-none [&::-ms-clear]:hidden [&::-ms-reveal]:hidden ${
                     showPasswordError
                       ? 'border-red-500 bg-red-500/5 text-gray-900 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
                       : 'focus:border-brand-gold focus:ring-brand-gold/20 border-gray-200 bg-white text-gray-900 dark:border-white/10 dark:bg-[#111118]/80 dark:text-white dark:placeholder-gray-600 dark:focus:bg-white/5'

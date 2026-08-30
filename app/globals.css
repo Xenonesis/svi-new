@@ -560,6 +560,12 @@ table {
   }
 }
 
+/* ─── Hide native browser password reveal/clear toggles (Edge / Chrome / IE) ─── */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none !important;
+}
+
 /* ─── Ensure modals are scrollable on small screens ─── */
 @media (max-width: 639px) {
   .fixed.inset-0.z-50 {

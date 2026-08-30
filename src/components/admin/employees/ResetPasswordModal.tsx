@@ -416,7 +416,7 @@ export function ResetPasswordModal({
                   }}
                   placeholder="Enter or generate password"
                   autoComplete="new-password"
-                  className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 pr-24 pl-10 font-mono text-sm tracking-wide text-gray-900 transition-all placeholder:font-sans placeholder:text-gray-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-gray-600"
+                  className="w-full rounded-2xl border border-gray-200 bg-white py-2.5 pr-24 pl-10 font-mono text-sm tracking-wide text-gray-900 transition-all placeholder:font-sans placeholder:text-gray-400 focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-white dark:placeholder:text-gray-600 [&::-ms-clear]:hidden [&::-ms-reveal]:hidden"
                   required
                 />
 

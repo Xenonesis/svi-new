@@ -311,7 +311,7 @@ export default function EmployeeLogin() {
                   required
                   placeholder="••••••••••••"
                   autoComplete="current-password"
-                  className={`w-full rounded-xl border bg-slate-900/60 py-2.5 pr-10 pl-10 font-mono text-sm text-white transition-colors placeholder:font-sans placeholder:text-slate-500 focus:outline-none ${
+                  className={`w-full rounded-xl border bg-slate-900/60 py-2.5 pr-10 pl-10 font-mono text-sm text-white transition-colors placeholder:font-sans placeholder:text-slate-500 focus:outline-none [&::-ms-clear]:hidden [&::-ms-reveal]:hidden ${
                     showPasswordError
                       ? 'border-rose-500/60 focus:border-rose-500 focus:ring-1 focus:ring-rose-500/20'
                       : 'border-slate-800 focus:border-amber-500/60 focus:ring-1 focus:ring-amber-500/20'

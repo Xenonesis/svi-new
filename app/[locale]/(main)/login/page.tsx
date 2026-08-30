@@ -317,7 +317,7 @@ export default function Login() {
                   onBlur={() => setPasswordTouched(true)}
                   required
                   placeholder={t('passwordPlaceholder')}
-                  className={`focus:border-brand-gold w-full border px-4 py-3 text-gray-900 transition-colors focus:outline-none ${
+                  className={`focus:border-brand-gold w-full border px-4 py-3 text-gray-900 transition-colors focus:outline-none [&::-ms-clear]:hidden [&::-ms-reveal]:hidden ${
                     showPasswordError
                       ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
                       : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
