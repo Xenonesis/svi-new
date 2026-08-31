@@ -173,7 +173,7 @@ describe('OfferLetterPreviewContent', () => {
 
     expect(
       screen.getByText(
-        /Onboarding Incubation Window & Performance-Indexed Post-Tenure Remuneration/i
+        /Structured Onboarding Gestation Window & Performance-Indexed Post-Tenure Remuneration/i
       )
     ).toBeInTheDocument();
     expect(screen.getByText(/3 months/i)).toBeInTheDocument();

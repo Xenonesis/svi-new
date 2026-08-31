@@ -505,18 +505,19 @@ export default function OfferLetterPreviewContent({
                       formData.salesCompensationType === 'grace_period_reduced_percent' && (
                         <div className="border-t border-gray-300 pt-2 text-gray-900">
                           <p className="font-bold text-[#1e3a8a]">
-                            Clause 3.1 &mdash; Onboarding Incubation Window &amp;
+                            Clause 3.1 &mdash; Structured Onboarding Gestation Window &amp;
                             Performance-Indexed Post-Tenure Remuneration:
                           </p>
                           <p className="mt-0.5 text-gray-800">
-                            To facilitate structured pipeline gestation and market familiarization,
-                            an initial onboarding incubation window of{' '}
+                            To facilitate market familiarization, client prospecting, and structured
+                            deal pipeline gestation, an initial onboarding gestation window of{' '}
                             <span className="font-bold text-gray-900">
-                              {formData.gracePeriodMonths || '3'} months
+                              {formData.gracePeriodMonths || '3'}{' '}
+                              {formData.gracePeriodMonths === '1' ? 'month' : 'months'}
                             </span>{' '}
                             from the Date of Appointment (&ldquo;Gestation Window&rdquo;) is hereby
                             established. During this designated gestation window, you shall be
-                            entitled to unabated baseline monthly remuneration of{' '}
+                            entitled to full unabated baseline monthly remuneration of{' '}
                             <span className="font-bold text-gray-900">
                               ₹ {formatINR(formData.salaryCtc || '0')} per month
                             </span>{' '}
@@ -524,35 +525,56 @@ export default function OfferLetterPreviewContent({
                             {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
                               ? 'Net In-Hand entitlement'
                               : 'fixed CTC'}
-                            ) without prejudice to immediate deal closure realization. Effective
-                            from Month{' '}
+                            ) without prejudice to immediate deal closure realization.
+                          </p>
+                          <p className="mt-1 text-gray-800">
+                            Effective from Month{' '}
                             <span className="font-bold text-gray-900">
                               {parseInt(formData.gracePeriodMonths || '3') + 1}
                             </span>{' '}
-                            onward, standard monthly disbursement becomes strictly
-                            performance-contingent upon assigned sales quota realization. In any
-                            subsequent evaluation cycle characterized by sub-quota or zero
-                            transaction yield, monthly emoluments shall automatically be revised to{' '}
-                            <span className="font-bold text-gray-900">
-                              {parseFloat(formData.reducedSalaryPercent || '50')}%
-                            </span>{' '}
-                            of contracted baseline compensation, amounting to{' '}
-                            <span className="font-bold text-gray-900">
-                              ₹{' '}
-                              {(() => {
-                                const pctStr = formData.reducedSalaryPercent;
-                                const pct =
-                                  pctStr !== undefined && pctStr !== '' ? parseFloat(pctStr) : 50;
-                                const ctc = parseFloat(formData.salaryCtc || '0');
-                                if (isNaN(pct) || isNaN(ctc) || !formData.salaryCtc)
-                                  return '[Amount]';
-                                return formatINR(Math.round((pct / 100) * ctc));
-                              })()}{' '}
-                              per month
-                            </span>
-                            . Upon achieving confirmed sales closures and fulfilling benchmark
-                            quotas, standard unabated compensation disbursement shall be restored
-                            for the applicable billing period.
+                            onward, monthly baseline salary disbursement becomes strictly contingent
+                            upon active sales quota realization. In any subsequent evaluation cycle
+                            characterized by sub-quota or zero transaction yield,{' '}
+                            {(() => {
+                              const pctStr = formData.reducedSalaryPercent;
+                              const pct =
+                                pctStr !== undefined && pctStr !== '' ? parseFloat(pctStr) : 50;
+                              const ctc = parseFloat(formData.salaryCtc || '0');
+                              if (pct === 0) {
+                                return (
+                                  <>
+                                    fixed monthly retainership shall automatically be placed in
+                                    abeyance at{' '}
+                                    <span className="font-bold text-gray-900">
+                                      0% of baseline compensation (₹ 0.00 fixed payout)
+                                    </span>
+                                    , transitioning your remuneration structure to a{' '}
+                                    <span className="font-bold text-gray-900">
+                                      100% performance-linked variable sales commission model
+                                    </span>{' '}
+                                    computed as per the Sales Compensation Schedule.
+                                  </>
+                                );
+                              }
+                              return (
+                                <>
+                                  monthly baseline emoluments shall automatically be prorated to{' '}
+                                  <span className="font-bold text-gray-900">{pct}%</span> of
+                                  contracted baseline compensation, amounting to{' '}
+                                  <span className="font-bold text-gray-900">
+                                    ₹{' '}
+                                    {isNaN(pct) || isNaN(ctc) || !formData.salaryCtc
+                                      ? '[Amount]'
+                                      : formatINR(Math.round((pct / 100) * ctc))}{' '}
+                                    per month
+                                  </span>
+                                  , alongside accrued variable performance commissions.
+                                </>
+                              );
+                            })()}{' '}
+                            Upon achieving confirmed sales closures and fulfilling benchmark quotas,
+                            standard unabated contractual baseline salary disbursement shall
+                            immediately be reinstated for the applicable billing period.
                           </p>
                         </div>
                       )}
