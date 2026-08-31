@@ -89,20 +89,38 @@ export function EmailBodyEditor({
   const allFilled = totalVarsCount > 0 && unfilledCount === 0;
 
   // Non-destructive targeted text replacement (preserves outer table & card layout)
-  const handleReplaceSelectedText = (original: string, replacement: string) => {
+  const handleReplaceSelectedText = (
+    original: string,
+    replacement: string,
+    range?: Range | null
+  ) => {
     const cleanReplacement = cleanSnippetHtml(replacement);
-    const target = templateHtml || html;
-    if (!target) return;
 
-    const updated = safeReplaceHtmlContent(target, original, cleanReplacement);
-    if (templateHtml && onUpdateTemplateHtml) {
-      onUpdateTemplateHtml(updated);
+    if (templateHtml) {
+      const updatedTemplate = safeReplaceHtmlContent(templateHtml, original, cleanReplacement);
+      if (onUpdateTemplateHtml) {
+        onUpdateTemplateHtml(updatedTemplate);
+      }
+      setHtml(updatedTemplate);
+    } else if (html) {
+      const updatedHtml = safeReplaceHtmlContent(html, original, cleanReplacement);
+      setHtml(updatedHtml);
     }
-    setHtml(updated);
+
+    // Direct DOM cleanup if range is available inside preview container
+    if (range && previewContainerRef.current) {
+      try {
+        if (!cleanReplacement) {
+          range.deleteContents();
+        }
+      } catch {
+        // Safe ignore DOM range errors
+      }
+    }
   };
 
-  const handleDeleteSelectedText = (original: string) => {
-    handleReplaceSelectedText(original, '');
+  const handleDeleteSelectedText = (original: string, range?: Range | null) => {
+    handleReplaceSelectedText(original, '', range);
   };
 
   return (

@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
-import { extractTemplateVars, getPreviewHtml } from '@/src/lib/utils/templateParser';
-
+import {
+  extractTemplateVars,
+  getPreviewHtml,
+  safeReplaceHtmlContent,
+  cleanEmptyTags,
+} from '@/src/lib/utils/templateParser';
 describe('templateParser', () => {
   describe('extractTemplateVars', () => {
     it('should extract variables from double curly braces', () => {
@@ -95,6 +99,56 @@ describe('templateParser', () => {
     });
     it('should handle null/undefined source gracefully', () => {
       expect(getPreviewHtml(null, {})).toBe('');
+    });
+  });
+
+  describe('cleanEmptyTags', () => {
+    it('should clean empty paragraph and heading tags', () => {
+      const html = '<div><h4></h4><p>Valid content</p><p></p></div>';
+      expect(cleanEmptyTags(html)).toBe('<div><p>Valid content</p></div>');
+    });
+
+    it('should clean empty list elements', () => {
+      const html = '<ol><li></li><li>Item 1</li><li></li></ol>';
+      expect(cleanEmptyTags(html)).toBe('<ol><li>Item 1</li></ol>');
+    });
+  });
+
+  describe('safeReplaceHtmlContent', () => {
+    it('should replace exact text match', () => {
+      const html = '<p>Hello World, welcome!</p>';
+      const result = safeReplaceHtmlContent(html, 'World', 'SVI');
+      expect(result).toBe('<p>Hello SVI, welcome!</p>');
+    });
+
+    it('should delete selected text and clean empty tag when replacement is empty', () => {
+      const html = '<div><h4>📌 Next Steps:</h4><p>Details here</p></div>';
+      const result = safeReplaceHtmlContent(html, '📌 Next Steps:', '');
+      expect(result).toBe('<div><p>Details here</p></div>');
+    });
+
+    it('should match and replace across HTML entities and symbols', () => {
+      const html = '<p>Terms &mdash; Condition &amp; Rules &ldquo;Important&rdquo;</p>';
+      const selection = 'Terms — Condition & Rules “Important”';
+      const result = safeReplaceHtmlContent(html, selection, '');
+      expect(result).toBe('');
+    });
+
+    it('should match and delete multiline list selection from offer letter', () => {
+      const html = `<div>
+        <h4>📌 Next Steps to Finalize Your Onboarding:</h4>
+        <ol>
+          <li>Review the formal appointment letter document.</li>
+          <li>Sign and return the acceptance copy within 48 hours.</li>
+          <li>Submit digital copies of KYC, academic transcripts, and relieving certificate.</li>
+        </ol>
+      </div>`;
+
+      const selected = `📌 Next Steps to Finalize Your Onboarding:\nReview the formal appointment letter document.\nSign and return the acceptance copy within 48 hours.\nSubmit digital copies of KYC, academic transcripts, and relieving certificate.`;
+
+      const result = safeReplaceHtmlContent(html, selected, '');
+      expect(result).not.toContain('Next Steps to Finalize Your Onboarding');
+      expect(result).not.toContain('Review the formal appointment letter');
     });
   });
 });

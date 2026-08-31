@@ -35,7 +35,7 @@ import {
 } from 'lucide-react';
 import { AIComposePopover } from './compose/AIComposePopover';
 import { FloatingSelectionToolbar, cleanSnippetHtml } from './compose/FloatingSelectionToolbar';
-
+import { safeReplaceHtmlContent } from '@/src/lib/utils/templateParser';
 interface RichTextEditorProps {
   value: string;
   onChange: (html: string) => void;
@@ -158,16 +158,36 @@ export function RichTextEditor({
     (original: string, replacement: string) => {
       if (!editor) return;
       const clean = cleanSnippetHtml(replacement);
-      editor.chain().focus().insertContent(clean).run();
+      if (!editor.state.selection.empty) {
+        editor.chain().focus().insertContent(clean).run();
+      } else {
+        const currentHtml = editor.getHTML();
+        const updated = safeReplaceHtmlContent(currentHtml, original, clean);
+        if (updated !== currentHtml) {
+          editor.commands.setContent(updated);
+          onChange(updated);
+        }
+      }
     },
-    [editor]
+    [editor, onChange]
   );
 
-  const handleDeleteSelected = useCallback(() => {
-    if (!editor) return;
-    editor.chain().focus().deleteSelection().run();
-  }, [editor]);
-
+  const handleDeleteSelected = useCallback(
+    (original: string) => {
+      if (!editor) return;
+      if (!editor.state.selection.empty) {
+        editor.chain().focus().deleteSelection().run();
+      } else {
+        const currentHtml = editor.getHTML();
+        const updated = safeReplaceHtmlContent(currentHtml, original, '');
+        if (updated !== currentHtml) {
+          editor.commands.setContent(updated);
+          onChange(updated);
+        }
+      }
+    },
+    [editor, onChange]
+  );
   const colors = [
     '#000000',
     '#434343',

@@ -54,6 +54,28 @@ export const getPreviewHtml = (
 };
 
 /**
+ * Remove empty/residual container tags left behind when content is deleted.
+ */
+export const cleanEmptyTags = (html: string): string => {
+  if (!html) return html;
+  let prev = '';
+  let curr = html;
+  // Iterate until all empty nested tags are removed
+  while (prev !== curr) {
+    prev = curr;
+    curr = curr
+      .replace(/<li[^>]*>\s*<\/li>/gi, '')
+      .replace(/<ol[^>]*>\s*<\/ol>/gi, '')
+      .replace(/<ul[^>]*>\s*<\/ul>/gi, '')
+      .replace(/<h[1-6][^>]*>\s*<\/h[1-6]>/gi, '')
+      .replace(/<p[^>]*>\s*(?:&nbsp;|\s)*<\/p>/gi, '')
+      .replace(/<span[^>]*>\s*<\/span>/gi, '')
+      .replace(/<div style="[^"]*border:[^"]*"[^>]*>\s*<\/div>/gi, '');
+  }
+  return curr;
+};
+
+/**
  * Safe targeted text replacement inside HTML content.
  * Replaces only the text matching `original`, preserving all parent table/card structures.
  */
@@ -63,25 +85,83 @@ export const safeReplaceHtmlContent = (
   replacement: string
 ): string => {
   if (!sourceHtml || !original.trim()) return sourceHtml;
+  const cleanOrig = original.trim();
+
+  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  const getRegexForCharOrWord = (str: string) => {
+    if (str === '&') return '(?:&amp;|&)';
+    if (str === '<') return '(?:&lt;|<)';
+    if (str === '>') return '(?:&gt;|>)';
+    if (str === '"' || str === '“' || str === '”') return '(?:&quot;|&ldquo;|&rdquo;|"|“|”)';
+    if (str === "'" || str === '‘' || str === '’') return "(?:&#39;|&rsquo;|&lsquo;|'|’|‘)";
+    if (str === '—' || str === '–' || str === '-') return '(?:&mdash;|&ndash;|—|–|--|-)';
+    if (str === ' ') return '(?:\\s+|&nbsp;)';
+    return escapeRegex(str);
+  };
 
   // 1. Direct exact match
   if (sourceHtml.includes(original)) {
-    return sourceHtml.replace(original, replacement);
+    const res = sourceHtml.replace(original, replacement);
+    return !replacement.trim() ? cleanEmptyTags(res) : res;
   }
 
   // 2. Exact trimmed match
-  if (sourceHtml.includes(original.trim())) {
-    return sourceHtml.replace(original.trim(), replacement);
+  if (sourceHtml.includes(cleanOrig)) {
+    const res = sourceHtml.replace(cleanOrig, replacement);
+    return !replacement.trim() ? cleanEmptyTags(res) : res;
   }
 
-  // 3. Multi-word flexible regex match (handles newlines, whitespace differences, and embedded inline tags)
-  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const words = original.trim().split(/\s+/).filter(Boolean).map(escapeRegex);
+  // 3. Tokenize by words, punctuation, spaces, emojis with HTML entity resilience
+  const tokens = cleanOrig.match(/[\p{L}\p{N}]+|[^\s\p{L}\p{N}]|\s+/gu);
+  if (tokens && tokens.length > 0) {
+    const patternParts = tokens
+      .filter((t) => !/^\s+$/.test(t))
+      .map((t) => {
+        if (t.length === 1) return getRegexForCharOrWord(t);
+        return escapeRegex(t);
+      });
 
-  if (words.length > 0) {
-    const flexibleRegex = new RegExp(words.join('(?:\\s+|&nbsp;|<[^>]+>)*'), 'i');
-    if (flexibleRegex.test(sourceHtml)) {
-      return sourceHtml.replace(flexibleRegex, replacement);
+    const regexStr = patternParts.join('(?:\\s+|&nbsp;|<[^>]*>)*');
+    try {
+      const flexibleRegex = new RegExp(regexStr, 'iu');
+      if (flexibleRegex.test(sourceHtml)) {
+        const res = sourceHtml.replace(flexibleRegex, replacement);
+        return !replacement.trim() ? cleanEmptyTags(res) : res;
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+
+  // 4. Line-by-line fallback for multi-line block selections
+  const lines = cleanOrig
+    .split(/\n+/)
+    .map((l) => l.trim())
+    .filter((l) => l.length > 2);
+  if (lines.length > 1) {
+    let currentHtml = sourceHtml;
+    let anyReplaced = false;
+    for (const line of lines) {
+      const lineTokens = line.match(/[\p{L}\p{N}]+|[^\s\p{L}\p{N}]|\s+/gu);
+      if (lineTokens && lineTokens.length > 0) {
+        const lineParts = lineTokens
+          .filter((t) => !/^\s+$/.test(t))
+          .map((t) => (t.length === 1 ? getRegexForCharOrWord(t) : escapeRegex(t)));
+        const lineRegexStr = lineParts.join('(?:\\s+|&nbsp;|<[^>]*>)*');
+        try {
+          const lineRegex = new RegExp(lineRegexStr, 'iu');
+          if (lineRegex.test(currentHtml)) {
+            currentHtml = currentHtml.replace(lineRegex, replacement ? replacement : '');
+            anyReplaced = true;
+          }
+        } catch {
+          // Continue loop
+        }
+      }
+    }
+    if (anyReplaced) {
+      return !replacement.trim() ? cleanEmptyTags(currentHtml) : currentHtml;
     }
   }
 

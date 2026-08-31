@@ -732,6 +732,7 @@ export function ComposeTab({
           onApplyTemplate={handleApplyTemplate}
           onUpdateSubject={handleSubjectChange}
           onVariableChange={(key, value) => setTemplateVars((prev) => ({ ...prev, [key]: value }))}
+          onUpdateTemplateHtml={setTemplateHtml}
           setHtml={setHtml}
           getPreviewHtml={getPreviewHtml}
         />

@@ -237,6 +237,7 @@ export function FloatingSelectionToolbar({
             {/* AI Rewrite Action */}
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setShowAIPanel(!showAIPanel);
                 setShowEditPanel(false);
@@ -254,6 +255,7 @@ export function FloatingSelectionToolbar({
             {/* Edit Action */}
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => {
                 setShowEditPanel(!showEditPanel);
                 setShowAIPanel(false);
@@ -271,6 +273,7 @@ export function FloatingSelectionToolbar({
             {/* Delete Action */}
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={handleDelete}
               className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20"
               title="Delete selected text"
@@ -282,13 +285,13 @@ export function FloatingSelectionToolbar({
             {/* Close */}
             <button
               type="button"
+              onMouseDown={(e) => e.preventDefault()}
               onClick={handleClose}
               className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
             >
               <X className="h-3 w-3" />
             </button>
           </div>
-
           {/* AI Tools Dropdown Panel */}
           {showAIPanel && (
             <motion.div
