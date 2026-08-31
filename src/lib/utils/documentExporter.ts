@@ -108,17 +108,34 @@ export async function exportToPDF({
     for (let i = 1; i < sortedBreaks.length; i++) {
       const nextBreak = sortedBreaks[i];
 
-      // If the section between pageStart and nextBreak is larger than a page,
-      // we MUST slice it strictly at pxPerPage intervals to avoid clipping content.
+      // If the section fits within 1 page (or slight ~12% tolerance before an explicit DOM page break),
+      // keep it as one page slice to avoid producing an accidental near-empty blank page.
+      if (nextBreak - pageStart <= pxPerPage * 1.12) {
+        if (nextBreak > pageStart) {
+          slices.push({ start: pageStart, end: nextBreak });
+          pageStart = nextBreak;
+        }
+        continue;
+      }
+
+      // If the section is significantly larger than a page, slice at pxPerPage intervals
       while (nextBreak - pageStart > pxPerPage) {
+        // If what remains before nextBreak is a tiny sliver (< 12% of a page),
+        // let the final slice capture it instead of splitting into a 50px tail on an empty page.
+        if (nextBreak - pageStart <= pxPerPage * 1.12) {
+          break;
+        }
         slices.push({ start: pageStart, end: pageStart + pxPerPage });
         pageStart += pxPerPage;
       }
 
-      // Now the remaining part fits in one page. We MUST flush it here because
-      // nextBreak is an EXPLICIT page break requested by the DOM.
+      // Flush remainder
       if (nextBreak > pageStart) {
-        slices.push({ start: pageStart, end: nextBreak });
+        const sliceH = nextBreak - pageStart;
+        // Ignore negligible residual whitespace sliver (< 60px) right at a page break
+        if (sliceH > 60 || slices.length === 0) {
+          slices.push({ start: pageStart, end: nextBreak });
+        }
         pageStart = nextBreak;
       }
     }
@@ -131,7 +148,7 @@ export async function exportToPDF({
       const sliceH = slice.end - slice.start;
       if (sliceH <= 0) return;
 
-      // Check if this slice is completely blank/white
+      // Check if this slice is completely blank / faint watermark only
       const tmpCheck = document.createElement('canvas');
       tmpCheck.width = canvasW;
       tmpCheck.height = sliceH;
@@ -139,30 +156,34 @@ export async function exportToPDF({
       if (ctxCheck) {
         ctxCheck.drawImage(canvas, 0, slice.start, canvasW, sliceH, 0, 0, canvasW, sliceH);
         const data = ctxCheck.getImageData(0, 0, canvasW, sliceH).data;
-        let isBlank = true;
-        // Step by 4000 (1000 pixels) for much faster blank detection
-        for (let i = 0; i < data.length; i += 4000) {
+        let darkPixelCount = 0;
+        // Sample every 2000 bytes (500 pixels) for fast & reliable text detection
+        for (let i = 0; i < data.length; i += 2000) {
           const r = data[i];
           const g = data[i + 1];
           const b = data[i + 2];
           const a = data[i + 3];
-          if (a > 0 && (r < 245 || g < 245 || b < 245)) {
-            isBlank = false;
-            break;
+          // Real text/borders have distinct dark contrast (r/g/b < 210).
+          // Watermark/blank background is near-white (r/g/b > 240).
+          if (a > 0 && (r < 210 || g < 210 || b < 210)) {
+            darkPixelCount++;
+            if (darkPixelCount > 8) break;
           }
         }
-        if (isBlank) return; // Skip empty slice!
+        // If slice contains almost no visible text/borders, skip it to avoid blank page
+        if (darkPixelCount <= 8) return;
       }
 
       if (pagesAdded > 0) pdf.addPage();
 
       const tmp = document.createElement('canvas');
       tmp.width = canvasW;
-      tmp.height = pxPerPage; // always full A4 height (white fills remainder)
+      const renderH = Math.max(pxPerPage, sliceH);
+      tmp.height = renderH;
       const ctx = tmp.getContext('2d');
       if (ctx) {
         ctx.fillStyle = '#ffffff';
-        ctx.fillRect(0, 0, canvasW, pxPerPage);
+        ctx.fillRect(0, 0, canvasW, renderH);
         ctx.drawImage(canvas, 0, slice.start, canvasW, sliceH, 0, 0, canvasW, sliceH);
       }
 
