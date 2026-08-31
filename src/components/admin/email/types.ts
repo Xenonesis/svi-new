@@ -178,10 +178,15 @@ export interface DraftData {
   replyTo: string;
   fromName: string;
   savedAt: number;
-  /** Structured recipient data (JSON stringified) for preserving names */
+  /** Structured recipient data for preserving names */
   toRecipients?: DraftRecipientData[];
   ccRecipients?: DraftRecipientData[];
   bccRecipients?: DraftRecipientData[];
+  templateHtml?: string | null;
+  selectedTemplate?: string | null;
+  templateVars?: Record<string, string>;
+  previewMode?: boolean;
+  subjectTemplate?: string;
 }
 
 export interface EmailAttachment {

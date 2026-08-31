@@ -87,6 +87,28 @@ export function getDomainStatusColor(status: string) {
 function rowToDraftData(row: Record<string, unknown>): DraftData {
   let html = String(row.html_body || '');
   let quotedHtml: string | undefined = undefined;
+  let templateMeta: {
+    templateHtml?: string | null;
+    selectedTemplate?: string | null;
+    templateVars?: Record<string, string>;
+    previewMode?: boolean;
+    subjectTemplate?: string;
+    toRecipients?: any[];
+    ccRecipients?: any[];
+    bccRecipients?: any[];
+  } | null = null;
+
+  const metaMatch = html.match(/<!-- TEMPLATE_META_START -->([\s\S]*?)<!-- TEMPLATE_META_END -->/);
+  if (metaMatch) {
+    try {
+      templateMeta = JSON.parse(metaMatch[1]);
+    } catch {
+      // ignore JSON parse error
+    }
+    html = html
+      .replace(/<!-- TEMPLATE_META_START -->[\s\S]*?<!-- TEMPLATE_META_END -->/, '')
+      .trim();
+  }
 
   const match = html.match(/<!-- QUOTED_HTML_START -->([\s\S]*?)<!-- QUOTED_HTML_END -->/);
   if (match) {
@@ -114,6 +136,14 @@ function rowToDraftData(row: Record<string, unknown>): DraftData {
     replyTo: String(row.reply_to || ''),
     fromName: String(row.from_name || 'SVI Infra'),
     savedAt: new Date((row.updated_at || row.created_at) as string).getTime(),
+    templateHtml: templateMeta?.templateHtml ?? null,
+    selectedTemplate: templateMeta?.selectedTemplate ?? null,
+    templateVars: templateMeta?.templateVars ?? {},
+    previewMode: templateMeta?.previewMode ?? false,
+    subjectTemplate: templateMeta?.subjectTemplate,
+    toRecipients: templateMeta?.toRecipients,
+    ccRecipients: templateMeta?.ccRecipients,
+    bccRecipients: templateMeta?.bccRecipients,
   };
 }
 
@@ -128,10 +158,40 @@ function draftDataToRow(draft: {
   fromName: string;
   isCurrent?: boolean;
   userId?: string;
+  templateHtml?: string | null;
+  selectedTemplate?: string | null;
+  templateVars?: Record<string, string>;
+  previewMode?: boolean;
+  subjectTemplate?: string;
+  toRecipients?: any[];
+  ccRecipients?: any[];
+  bccRecipients?: any[];
 }) {
-  let fullBody = draft.html;
+  let fullBody = draft.html || '';
+
+  const meta = {
+    templateHtml: draft.templateHtml,
+    selectedTemplate: draft.selectedTemplate,
+    templateVars: draft.templateVars,
+    previewMode: draft.previewMode,
+    subjectTemplate: draft.subjectTemplate,
+    toRecipients: draft.toRecipients,
+    ccRecipients: draft.ccRecipients,
+    bccRecipients: draft.bccRecipients,
+  };
+
+  if (
+    draft.templateHtml ||
+    draft.selectedTemplate ||
+    (draft.templateVars && Object.keys(draft.templateVars).length > 0) ||
+    draft.toRecipients?.length ||
+    draft.ccRecipients?.length
+  ) {
+    fullBody = `${fullBody}\n<!-- TEMPLATE_META_START -->${JSON.stringify(meta)}<!-- TEMPLATE_META_END -->`;
+  }
+
   if (draft.quotedHtml && draft.quotedHtml.trim()) {
-    fullBody = `${draft.html}\n<!-- QUOTED_HTML_START -->${draft.quotedHtml}<!-- QUOTED_HTML_END -->`;
+    fullBody = `${fullBody}\n<!-- QUOTED_HTML_START -->${draft.quotedHtml}<!-- QUOTED_HTML_END -->`;
   }
 
   const row: Record<string, unknown> = {
@@ -215,7 +275,26 @@ export async function saveDraft(draft: {
   quotedHtml?: string | null;
   replyTo: string;
   fromName: string;
+  templateHtml?: string | null;
+  selectedTemplate?: string | null;
+  templateVars?: Record<string, string>;
+  previewMode?: boolean;
+  subjectTemplate?: string;
+  toRecipients?: any[];
+  ccRecipients?: any[];
+  bccRecipients?: any[];
 }): Promise<boolean> {
+  // 1. Instant local persistence (survives page refresh immediately)
+  try {
+    localStorage.setItem(
+      'svi-email-active-draft',
+      JSON.stringify({ ...draft, savedAt: Date.now() })
+    );
+  } catch {
+    // ignore localStorage quota error
+  }
+
+  // 2. Persist to Supabase backend
   const userId = await getUserId();
   if (!userId) return false;
 
@@ -261,6 +340,46 @@ export async function saveDraft(draft: {
 }
 
 export async function loadDraft(): Promise<DraftData | null> {
+  // First check local storage backup for instantaneous recovery on reload
+  try {
+    const local = localStorage.getItem('svi-email-active-draft');
+    if (local) {
+      const parsed = JSON.parse(local);
+      if (
+        parsed &&
+        (parsed.to ||
+          parsed.subject ||
+          parsed.html ||
+          parsed.templateHtml ||
+          parsed.selectedTemplate ||
+          (parsed.templateVars && Object.keys(parsed.templateVars).length > 0))
+      ) {
+        return {
+          id: 'local_active',
+          to: parsed.to || '',
+          cc: parsed.cc || '',
+          bcc: parsed.bcc || '',
+          subject: parsed.subject || '',
+          html: parsed.html || '',
+          quotedHtml: parsed.quotedHtml,
+          replyTo: parsed.replyTo || '',
+          fromName: parsed.fromName || 'SVI Infra',
+          savedAt: parsed.savedAt || Date.now(),
+          templateHtml: parsed.templateHtml ?? null,
+          selectedTemplate: parsed.selectedTemplate ?? null,
+          templateVars: parsed.templateVars ?? {},
+          previewMode: parsed.previewMode ?? false,
+          subjectTemplate: parsed.subjectTemplate,
+          toRecipients: parsed.toRecipients,
+          ccRecipients: parsed.ccRecipients,
+          bccRecipients: parsed.bccRecipients,
+        };
+      }
+    }
+  } catch {
+    // fallback to Supabase
+  }
+
   await ensureMigrated();
   const userId = await getUserId();
   if (!userId) return null;
@@ -280,6 +399,11 @@ export async function loadDraft(): Promise<DraftData | null> {
 }
 
 export async function clearDraft(): Promise<void> {
+  try {
+    localStorage.removeItem('svi-email-active-draft');
+  } catch {
+    // ignore
+  }
   const userId = await getUserId();
   if (!userId) return;
 

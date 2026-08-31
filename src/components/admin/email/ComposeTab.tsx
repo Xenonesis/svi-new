@@ -268,6 +268,14 @@ export function ComposeTab({
     quotedHtml,
     replyTo,
     fromName,
+    templateHtml,
+    selectedTemplate,
+    templateVars,
+    previewMode,
+    subjectTemplate,
+    toRecipients,
+    ccRecipients,
+    bccRecipients,
     setDraftSaved,
     setHasDraft,
     setTo: handleToChange,
@@ -278,8 +286,12 @@ export function ComposeTab({
     setQuotedHtml,
     setReplyTo,
     setFromName,
+    setTemplateHtml,
+    setSelectedTemplate,
+    setTemplateVars,
+    setPreviewMode,
+    setEditorKey,
   });
-
   // Synchronize resolved subject with template variables and subject template
   useEffect(() => {
     setSubject(parseGetPreviewHtml(subjectTemplate, templateVars));

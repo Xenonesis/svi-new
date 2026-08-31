@@ -267,6 +267,29 @@ export function useEmailPrefill({
               if (fd.clientEmail) {
                 setTo(fd.clientEmail);
               }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.clientEmail || '',
+                    cc: '',
+                    bcc: '',
+                    subject: processedSubject,
+                    subjectTemplate: processedSubject,
+                    html: '',
+                    templateHtml: tpl.html,
+                    selectedTemplate: 'allotment_letter',
+                    templateVars: vars,
+                    previewMode: true,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             }
 
             sessionStorage.removeItem('emailPrefillRecord');
@@ -330,10 +353,36 @@ export function useEmailPrefill({
               setHtml('');
               setPreviewMode(true);
               setEditorKey((prev: number) => prev + 1);
+
+              if (fd.emailId || fd.email || fd.clientEmail) {
+                setTo(fd.emailId || fd.email || fd.clientEmail);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.emailId || fd.email || fd.clientEmail || '',
+                    cc: '',
+                    bcc: '',
+                    subject: processedSubject,
+                    subjectTemplate: processedSubject,
+                    html: '',
+                    templateHtml: tpl.html,
+                    selectedTemplate: 'payment',
+                    templateVars: vars,
+                    previewMode: true,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             } else {
-              setSubjectTemplate(`Payment Receipt - ${fd.receiptNo || ''} - ${fd.name || ''}`);
-              setHtml(
-                `
+              const subj = `Payment Receipt - ${fd.receiptNo || ''} - ${fd.name || ''}`;
+              const defaultHtml = `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
   <h2 style="color:#111827;">Payment Receipt</h2>
   <p><strong>Receipt No:</strong> ${fd.receiptNo || 'N/A'}</p>
@@ -345,9 +394,37 @@ export function useEmailPrefill({
   <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
   <p style="color:#666;font-size:13px;">Please find the payment receipt attached for your records.</p>
 </div>
-`.trim()
-              );
+`.trim();
+              setSubjectTemplate(subj);
+              setHtml(defaultHtml);
               setEditorKey((prev: number) => prev + 1);
+
+              if (fd.emailId || fd.email || fd.clientEmail) {
+                setTo(fd.emailId || fd.email || fd.clientEmail);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.emailId || fd.email || fd.clientEmail || '',
+                    cc: '',
+                    bcc: '',
+                    subject: subj,
+                    subjectTemplate: subj,
+                    html: defaultHtml,
+                    templateHtml: null,
+                    selectedTemplate: null,
+                    templateVars: {},
+                    previewMode: false,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             }
 
             sessionStorage.removeItem('emailPrefillRecord');
@@ -421,12 +498,37 @@ export function useEmailPrefill({
               setTemplateVars(vars);
               setHtml('');
               setPreviewMode(true);
+              setEditorKey((prev: number) => prev + 1);
+
+              if (fd.email || fd.clientEmail) {
+                setTo(fd.email || fd.clientEmail);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.email || fd.clientEmail || '',
+                    cc: '',
+                    bcc: '',
+                    subject: processedSubject,
+                    subjectTemplate: processedSubject,
+                    html: '',
+                    templateHtml: tpl.html,
+                    selectedTemplate: 'bba_document',
+                    templateVars: vars,
+                    previewMode: true,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             } else {
-              setSubjectTemplate(
-                `BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`
-              );
-              setHtml(
-                `
+              const subj = `BBA Document - ${fd.projectName || ''} - Unit ${fd.unitNumber || ''}`;
+              const defaultHtml = `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
   <h2 style="color:#111827;">Builder Buyer Agreement</h2>
   <p><strong>Client:</strong> ${fd.salutation ? `${fd.salutation} ` : ''}${fd.clientName || 'N/A'}</p>
@@ -438,18 +540,38 @@ export function useEmailPrefill({
   <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
   <p style="color:#666;font-size:13px;">Please find the BBA document attached for your records.</p>
 </div>
-`.trim()
-              );
-              setTemplateHtml(null);
-              setSelectedTemplate(null);
-              setPreviewMode(false);
-            }
-            setEditorKey((prev: number) => prev + 1);
+`.trim();
+              setSubjectTemplate(subj);
+              setHtml(defaultHtml);
+              setEditorKey((prev: number) => prev + 1);
 
-            if (fd.email) {
-              setTo(fd.email);
-            }
+              if (fd.email || fd.clientEmail) {
+                setTo(fd.email || fd.clientEmail);
+              }
 
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.email || fd.clientEmail || '',
+                    cc: '',
+                    bcc: '',
+                    subject: subj,
+                    subjectTemplate: subj,
+                    html: defaultHtml,
+                    templateHtml: null,
+                    selectedTemplate: null,
+                    templateVars: {},
+                    previewMode: false,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
+            }
             sessionStorage.removeItem('emailPrefillRecord');
             const newUrl = window.location.pathname + '?tab=compose';
             window.history.replaceState({}, '', newUrl);
@@ -513,10 +635,37 @@ export function useEmailPrefill({
               setTemplateVars(vars);
               setHtml('');
               setPreviewMode(true);
+
+              if (fd.emailId) {
+                setTo(fd.emailId);
+              }
+
+              // Instant persistent draft save so refreshing never loses this email
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.emailId || '',
+                    cc: '',
+                    bcc: '',
+                    subject: processedSubject,
+                    subjectTemplate: processedSubject,
+                    html: '',
+                    templateHtml: tpl.html,
+                    selectedTemplate: 'offer_letter',
+                    templateVars: vars,
+                    previewMode: true,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             } else {
-              setSubjectTemplate(`Offer Letter - ${fd.designation || ''} - ${fd.name || ''}`);
-              setHtml(
-                `
+              const subj = `Offer Letter - ${fd.designation || ''} - ${fd.name || ''}`;
+              const defaultHtml = `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
   <h2 style="color:#111827;">Offer Letter</h2>
   <p><strong>Candidate:</strong> ${fd.name || 'N/A'}</p>
@@ -528,17 +677,40 @@ export function useEmailPrefill({
   <hr style="border:none;border-top:1px solid #eee;margin:20px 0;" />
   <p style="color:#666;font-size:13px;">Please find the offer letter attached.</p>
 </div>
-`.trim()
-              );
+`.trim();
+              setSubjectTemplate(subj);
+              setHtml(defaultHtml);
               setTemplateHtml(null);
               setSelectedTemplate(null);
               setPreviewMode(false);
+              if (fd.emailId) {
+                setTo(fd.emailId);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.emailId || '',
+                    cc: '',
+                    bcc: '',
+                    subject: subj,
+                    subjectTemplate: subj,
+                    html: defaultHtml,
+                    templateHtml: null,
+                    selectedTemplate: null,
+                    templateVars: {},
+                    previewMode: false,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             }
             setEditorKey((prev: number) => prev + 1);
-
-            if (fd.emailId) {
-              setTo(fd.emailId);
-            }
 
             sessionStorage.removeItem('emailPrefillRecord');
             const newUrl = window.location.pathname + '?tab=compose';
@@ -550,6 +722,7 @@ export function useEmailPrefill({
       }
     }
   }, [
+    replyTo,
     setSubjectTemplate,
     setTemplateHtml,
     setSelectedTemplate,
@@ -599,10 +772,36 @@ export function useEmailPrefill({
               setTemplateVars(vars);
               setHtml('');
               setPreviewMode(true);
+
+              if (reg.email) {
+                setTo(reg.email);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: reg.email || '',
+                    cc: '',
+                    bcc: '',
+                    subject: processedSubject,
+                    subjectTemplate: processedSubject,
+                    html: '',
+                    templateHtml: tpl.html,
+                    selectedTemplate: 'registration_acknowledgment',
+                    templateVars: vars,
+                    previewMode: true,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             } else {
-              setSubjectTemplate(`Registration Update - SVI Infra`);
-              setHtml(
-                `
+              const subj = `Registration Update - SVI Infra`;
+              const defaultHtml = `
 <div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
   <p>Dear ${reg.name || 'Client'},</p>
   <p>Thank you for registering with SVI Infra Solutions.</p>
@@ -610,11 +809,38 @@ export function useEmailPrefill({
   <br />
   <p>Best regards,<br>SVI Infra Team</p>
 </div>
-`.trim()
-              );
+`.trim();
+              setSubjectTemplate(subj);
+              setHtml(defaultHtml);
               setTemplateHtml(null);
               setSelectedTemplate(null);
               setPreviewMode(false);
+              if (reg.email) {
+                setTo(reg.email);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: reg.email || '',
+                    cc: '',
+                    bcc: '',
+                    subject: subj,
+                    subjectTemplate: subj,
+                    html: defaultHtml,
+                    templateHtml: null,
+                    selectedTemplate: null,
+                    templateVars: {},
+                    previewMode: false,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
             }
 
             setEditorKey((prev: number) => prev + 1);
@@ -622,7 +848,6 @@ export function useEmailPrefill({
             if (reg.email) {
               setTo(reg.email);
             }
-
             sessionStorage.removeItem('emailPrefillRegistration');
             const newUrl = window.location.pathname + '?tab=compose';
             window.history.replaceState({}, '', newUrl);

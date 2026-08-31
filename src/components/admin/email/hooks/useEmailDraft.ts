@@ -10,6 +10,14 @@ export interface UseEmailDraftProps {
   quotedHtml?: string | null;
   replyTo: string;
   fromName: string;
+  templateHtml?: string | null;
+  selectedTemplate?: string | null;
+  templateVars?: Record<string, string>;
+  previewMode?: boolean;
+  subjectTemplate?: string;
+  toRecipients?: any[];
+  ccRecipients?: any[];
+  bccRecipients?: any[];
   setDraftSaved: (val: boolean) => void;
   setHasDraft: (val: boolean) => void;
   setTo: (val: string) => void;
@@ -20,6 +28,11 @@ export interface UseEmailDraftProps {
   setQuotedHtml?: (val: string | null) => void;
   setReplyTo: (val: string) => void;
   setFromName: (val: string) => void;
+  setTemplateHtml?: (val: string | null) => void;
+  setSelectedTemplate?: (val: string | null) => void;
+  setTemplateVars?: (val: Record<string, string>) => void;
+  setPreviewMode?: (val: boolean) => void;
+  setEditorKey?: (val: any) => void;
 }
 
 export function useEmailDraft({
@@ -31,6 +44,14 @@ export function useEmailDraft({
   quotedHtml,
   replyTo,
   fromName,
+  templateHtml,
+  selectedTemplate,
+  templateVars,
+  previewMode,
+  subjectTemplate,
+  toRecipients,
+  ccRecipients,
+  bccRecipients,
   setDraftSaved,
   setHasDraft,
   setTo,
@@ -41,26 +62,127 @@ export function useEmailDraft({
   setQuotedHtml,
   setReplyTo,
   setFromName,
+  setTemplateHtml,
+  setSelectedTemplate,
+  setTemplateVars,
+  setPreviewMode,
+  setEditorKey,
 }: UseEmailDraftProps) {
-  // Load saved draft on mount
+  // Check if draft exists on mount
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const isPrefillUrl =
+        params.get('prefillOffer') === 'true' ||
+        params.get('prefillAllotment') === 'true' ||
+        params.get('prefillBba') === 'true' ||
+        params.get('prefillReceipt') === 'true' ||
+        params.get('prefillRegistration') === 'true';
+
+      if (isPrefillUrl) {
+        return;
+      }
+    }
+
     loadDraft().then((saved) => {
-      if (saved && (saved.to || saved.subject || saved.html || saved.quotedHtml)) {
+      if (
+        saved &&
+        (saved.to ||
+          saved.subject ||
+          saved.html ||
+          saved.quotedHtml ||
+          saved.templateHtml ||
+          saved.selectedTemplate ||
+          (saved.templateVars && Object.keys(saved.templateVars).length > 0))
+      ) {
         setHasDraft(true);
       }
     });
   }, [setHasDraft]);
 
-  // Auto-save draft every 5s
+  // Continuous auto-save (instant local + interval backend)
   useEffect(() => {
-    if (!to && !subject && !html && !quotedHtml) return;
+    const hasContent = Boolean(
+      to ||
+      subject ||
+      html ||
+      quotedHtml ||
+      templateHtml ||
+      selectedTemplate ||
+      (templateVars && Object.keys(templateVars).length > 0)
+    );
+    if (!hasContent) return;
+
+    // Immediate local save
+    try {
+      localStorage.setItem(
+        'svi-email-active-draft',
+        JSON.stringify({
+          to,
+          cc,
+          bcc,
+          subject,
+          html,
+          quotedHtml,
+          replyTo,
+          fromName,
+          templateHtml,
+          selectedTemplate,
+          templateVars,
+          previewMode,
+          subjectTemplate,
+          toRecipients,
+          ccRecipients,
+          bccRecipients,
+          savedAt: Date.now(),
+        })
+      );
+    } catch {
+      // ignore
+    }
+
     const timer = setInterval(() => {
-      saveDraft({ to, cc, bcc, subject, html, quotedHtml, replyTo, fromName }).then();
+      saveDraft({
+        to,
+        cc,
+        bcc,
+        subject,
+        html,
+        quotedHtml,
+        replyTo,
+        fromName,
+        templateHtml,
+        selectedTemplate,
+        templateVars,
+        previewMode,
+        subjectTemplate,
+        toRecipients,
+        ccRecipients,
+        bccRecipients,
+      }).then();
       setDraftSaved(true);
       setTimeout(() => setDraftSaved(false), 2000);
     }, 5000);
     return () => clearInterval(timer);
-  }, [to, cc, bcc, subject, html, quotedHtml, replyTo, fromName, setDraftSaved]);
+  }, [
+    to,
+    cc,
+    bcc,
+    subject,
+    html,
+    quotedHtml,
+    replyTo,
+    fromName,
+    templateHtml,
+    selectedTemplate,
+    templateVars,
+    previewMode,
+    subjectTemplate,
+    toRecipients,
+    ccRecipients,
+    bccRecipients,
+    setDraftSaved,
+  ]);
 
   const restoreDraft = async () => {
     const saved = await loadDraft();
@@ -68,11 +190,23 @@ export function useEmailDraft({
       setTo(saved.to || '');
       setCc(saved.cc || '');
       setBcc(saved.bcc || '');
-      setSubjectTemplate(saved.subject || '');
+      setSubjectTemplate(saved.subjectTemplate || saved.subject || '');
       setHtml(saved.html || '');
       setQuotedHtml?.(saved.quotedHtml || null);
       setReplyTo(saved.replyTo || '');
       setFromName(saved.fromName || 'SVI Infra');
+      if (saved.templateHtml || saved.selectedTemplate) {
+        setTemplateHtml?.(saved.templateHtml || null);
+        setSelectedTemplate?.(saved.selectedTemplate || null);
+        setTemplateVars?.(saved.templateVars || {});
+        setPreviewMode?.(saved.previewMode ?? true);
+      } else {
+        setTemplateHtml?.(null);
+        setSelectedTemplate?.(null);
+        setTemplateVars?.({});
+        setPreviewMode?.(false);
+      }
+      setEditorKey?.((prev: number) => prev + 1);
       setHasDraft(false);
     }
   };
