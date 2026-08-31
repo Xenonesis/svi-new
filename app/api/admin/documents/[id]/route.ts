@@ -98,32 +98,31 @@ export async function DELETE(
     if (!admin) throw AppError.unauthorized();
 
     const { id } = await params;
-    let deletedDocType = 'document';
-    try {
-      const { data: doc } = await supabaseAdmin
-        .from('documents')
-        .select('document_type')
-        .eq('id', id)
-        .single();
-      deletedDocType = doc?.document_type || 'document';
-    } catch {
-      // Document fetch failure is non-blocking
-    }
 
-    const { error } = await supabaseAdmin.from('documents').delete().eq('id', id);
+    // Perform delete and retrieve document_type in a single atomic database query
+    const { data: deletedDocs, error } = await supabaseAdmin
+      .from('documents')
+      .delete()
+      .eq('id', id)
+      .select('document_type');
+
     if (error) throw AppError.internal(error.message);
 
-    try {
-      const { data: profileData } = await supabaseAdmin
-        .from('profiles')
-        .select('full_name')
-        .eq('id', admin.id)
-        .single();
-      await NotificationHelper.documentDeleted(deletedDocType, profileData?.full_name || 'Admin');
-    } catch (notifErr) {
-      console.error('Failed to create document delete notification:', notifErr);
-    }
+    const deletedDocType = deletedDocs?.[0]?.document_type || 'document';
 
+    // Non-blocking background notification dispatch to guarantee instant API response
+    (async () => {
+      try {
+        const { data: profileData } = await supabaseAdmin
+          .from('profiles')
+          .select('full_name')
+          .eq('id', admin.id)
+          .single();
+        await NotificationHelper.documentDeleted(deletedDocType, profileData?.full_name || 'Admin');
+      } catch (notifErr) {
+        console.error('Failed to create document delete notification:', notifErr);
+      }
+    })().catch(() => {});
     return NextResponse.json({ success: true });
   } catch (err) {
     return handleApiError(err);

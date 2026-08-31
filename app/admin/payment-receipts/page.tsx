@@ -3,6 +3,7 @@
 import { useAuthStore } from '@/src/stores/authStore';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
 // Subcomponents
@@ -74,7 +75,7 @@ export default function ReceiptRecordsPage() {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
       const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
@@ -85,14 +86,19 @@ export default function ReceiptRecordsPage() {
       if (response.ok) {
         setReceipts((prev) => prev.filter((r) => r.id !== deleteTarget.id));
         setDeleteTarget(null);
+        toast.success('Payment receipt deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        alert(errData.error || 'Failed to delete receipt');
+        toast.error(errData.error || 'Failed to delete receipt.');
       }
     } catch (err: unknown) {
       console.error(err);
       const isAbort = err instanceof Error && err.name === 'AbortError';
-      alert(isAbort ? 'Request timed out while deleting receipt.' : 'Error deleting receipt');
+      toast.error(
+        isAbort
+          ? 'Deletion request took longer than expected. Please verify your connection.'
+          : 'Error deleting receipt.'
+      );
     } finally {
       clearTimeout(timeoutId);
       setDeleteLoading(false);

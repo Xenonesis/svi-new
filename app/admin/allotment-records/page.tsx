@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback } from 'react';
 import { RefreshCw } from 'lucide-react';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/src/stores/authStore';
 import { supabase } from '@/src/lib/supabase/client';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
@@ -107,7 +108,7 @@ export default function AllotmentRecordsPage() {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
       const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
@@ -118,22 +119,24 @@ export default function AllotmentRecordsPage() {
       if (response.ok) {
         setAllotments((prev) => prev.filter((a) => a.id !== deleteTarget.id));
         setDeleteTarget(null);
+        toast.success('Allotment record deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        alert(errData.error || 'Failed to delete allotment record');
+        toast.error(errData.error || 'Failed to delete allotment record.');
       }
     } catch (err: unknown) {
       console.error(err);
       const isAbort = err instanceof Error && err.name === 'AbortError';
-      alert(
-        isAbort ? 'Request timed out while deleting record.' : 'Error deleting allotment record'
+      toast.error(
+        isAbort
+          ? 'Deletion request took longer than expected. Please verify your connection.'
+          : 'Error deleting allotment record.'
       );
     } finally {
       clearTimeout(timeoutId);
       setDeleteLoading(false);
     }
   };
-
   const handleDownloadPDF = async () => {
     setPdfLoading(true);
     try {

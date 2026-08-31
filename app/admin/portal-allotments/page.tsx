@@ -1,8 +1,9 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
-import { RefreshCw } from 'lucide-react';
 import { useAuthStore } from '@/src/stores/authStore';
+import { RefreshCw, Search, ArrowUpDown, ChevronDown } from 'lucide-react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
+import { toast } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import type { SavedAllotment, CompanyInfo } from '@/src/components/admin/allotment-records/types';
@@ -109,12 +110,14 @@ export default function PortalAllotmentsPage() {
       if (response.ok) {
         fetchAllotments();
         setDeleteTarget(null);
+        toast.success('Allotment record deleted successfully.');
       } else {
-        alert('Failed to delete allotment record');
+        const errData = await response.json().catch(() => ({}));
+        toast.error(errData.error || 'Failed to delete allotment record.');
       }
     } catch (err) {
       console.error(err);
-      alert('Error deleting allotment record');
+      toast.error('Error deleting allotment record.');
     } finally {
       setDeleteLoading(false);
     }

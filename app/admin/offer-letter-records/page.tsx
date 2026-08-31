@@ -3,6 +3,7 @@
 import { useAuthStore } from '@/src/stores/authStore';
 import { RefreshCw } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
+import { toast } from 'sonner';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 import { OfferLetterStatsCards } from '@/src/components/admin/offer-letter-records/OfferLetterStatsCards';
@@ -94,7 +95,7 @@ export default function OfferLetterRecordsPage() {
     if (!deleteTarget || !token) return;
     setDeleteLoading(true);
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
       const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
@@ -105,15 +106,18 @@ export default function OfferLetterRecordsPage() {
       if (response.ok) {
         setOffers((prev) => prev.filter((o) => o.id !== deleteTarget.id));
         setDeleteTarget(null);
+        toast.success('Offer letter record deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        alert(errData.error || 'Failed to delete offer letter record');
+        toast.error(errData.error || 'Failed to delete offer letter record.');
       }
     } catch (err: unknown) {
       console.error(err);
       const isAbort = err instanceof Error && err.name === 'AbortError';
-      alert(
-        isAbort ? 'Request timed out while deleting record.' : 'Error deleting offer letter record'
+      toast.error(
+        isAbort
+          ? 'Deletion request took longer than expected. Please verify your connection.'
+          : 'Error deleting offer letter record.'
       );
     } finally {
       clearTimeout(timeoutId);
@@ -233,17 +237,13 @@ export default function OfferLetterRecordsPage() {
 
       {deleteTarget && (
         <DeleteConfirm
-          user={{
-            id: deleteTarget.id,
-            email: deleteTarget.form_data?.emailId || '',
-            full_name: deleteTarget.form_data?.name || '',
-            phone: null,
-            property_interest: null,
-            role: 'employee',
-            created_at: '',
-            created_by: null,
-            notes: null,
-          }}
+          title="Delete Offer Letter Record?"
+          itemName={
+            deleteTarget.form_data?.name
+              ? `${deleteTarget.form_data.name}${deleteTarget.form_data.designation ? ` (${deleteTarget.form_data.designation})` : ''}`
+              : 'Offer Letter Record'
+          }
+          itemType="offer letter record"
           onConfirm={handleDelete}
           onClose={() => setDeleteTarget(null)}
           loading={deleteLoading}
