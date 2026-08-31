@@ -387,6 +387,12 @@ export function OfferLetterForm({
                 reducedSalaryPercent={formData.reducedSalaryPercent}
                 enablePartialTargetRule={formData.enablePartialTargetRule}
                 partialTargetSalaryPercent={formData.partialTargetSalaryPercent}
+                commissionReleasePercent={formData.commissionReleasePercent}
+                includeSiteVisitPolicy={formData.includeSiteVisitPolicy !== false}
+                siteVisitSchedule={formData.siteVisitSchedule}
+                weeklyOffDays={formData.weeklyOffDays}
+                includeConveyanceAllowance={Boolean(formData.includeConveyanceAllowance)}
+                conveyanceAllowanceAmount={formData.conveyanceAllowanceAmount}
                 includeSalesPolicyBox={formData.includeSalesPolicyBox !== false}
                 onValueChange={(name, value) => setFormData((prev) => ({ ...prev, [name]: value }))}
                 onToggleType={(type) =>

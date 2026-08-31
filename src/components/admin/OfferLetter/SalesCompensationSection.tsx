@@ -1,6 +1,16 @@
 'use client';
 
-import { CircleDollarSign, RefreshCw, Trash2, Plus, Calendar, TrendingUp } from 'lucide-react';
+import {
+  CircleDollarSign,
+  RefreshCw,
+  Trash2,
+  Plus,
+  Calendar,
+  TrendingUp,
+  Percent,
+  Car,
+  MapPin,
+} from 'lucide-react';
 
 interface SalesCompensationSectionProps {
   department: string;
@@ -17,6 +27,12 @@ interface SalesCompensationSectionProps {
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;
   partialTargetSalaryPercent?: string;
+  commissionReleasePercent?: string;
+  includeSiteVisitPolicy?: boolean | string;
+  siteVisitSchedule?: string;
+  weeklyOffDays?: string;
+  includeConveyanceAllowance?: boolean | string;
+  conveyanceAllowanceAmount?: string;
   includeSalesPolicyBox?: boolean;
   onValueChange: (name: string, value: string | boolean) => void;
   onToggleType: (
@@ -38,6 +54,12 @@ export function SalesCompensationSection({
   reducedSalaryPercent,
   enablePartialTargetRule,
   partialTargetSalaryPercent,
+  commissionReleasePercent = '30',
+  includeSiteVisitPolicy = true,
+  siteVisitSchedule = 'Mandatory on Saturdays, Sundays & Scheduled Client Slots',
+  weeklyOffDays = 'Tuesday',
+  includeConveyanceAllowance = false,
+  conveyanceAllowanceAmount = '',
   includeSalesPolicyBox = true,
   onValueChange,
   onToggleType,
@@ -536,6 +558,171 @@ export function SalesCompensationSection({
                     <span className="font-bold">Remuneration Abeyance</span> (Enforced from Month 1)
                   </p>
                 </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Commission Payout Milestone (30% Rule) ── */}
+        <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                Commission Payout Milestone (% Customer Payment Realization)
+              </label>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                Commission is released only after client realizes minimum this % payment to company
+              </p>
+            </div>
+            <div className="flex items-center gap-1">
+              {['25', '30', '50', '100'].map((pct) => (
+                <button
+                  key={pct}
+                  type="button"
+                  onClick={() => onValueChange('commissionReleasePercent', pct)}
+                  className={`rounded-md px-2 py-1 text-[10px] font-bold transition-all ${
+                    (commissionReleasePercent || '30') === pct
+                      ? 'bg-brand-gold text-brand-navy shadow-sm'
+                      : 'border border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400'
+                  }`}
+                >
+                  {pct}%
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="mt-2.5 flex max-w-xs items-center gap-2">
+            <div className="relative w-full">
+              <input
+                type="number"
+                name="commissionReleasePercent"
+                value={commissionReleasePercent || '30'}
+                onChange={(e) => onValueChange('commissionReleasePercent', e.target.value)}
+                placeholder="30"
+                min="1"
+                max="100"
+                className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-sm text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+              />
+              <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs font-bold text-gray-400">
+                %
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Customer Site Visit & Operational Schedule ── */}
+        <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <MapPin className="text-brand-gold h-4 w-4" />
+              <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                Site Visit &amp; Weekend Duty Terms
+              </label>
+            </div>
+            <label className="relative inline-flex cursor-pointer items-center">
+              <input
+                type="checkbox"
+                checked={Boolean(includeSiteVisitPolicy)}
+                onChange={(e) => onValueChange('includeSiteVisitPolicy', e.target.checked)}
+                className="peer sr-only"
+              />
+              <div className="peer peer-checked:after:border-brand-navy peer-checked:bg-brand-gold h-5 w-9 rounded-full bg-gray-200 after:absolute after:top-[2px] after:left-[2px] after:h-4 after:w-4 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full dark:border-gray-600 dark:bg-gray-700" />
+            </label>
+          </div>
+
+          {Boolean(includeSiteVisitPolicy) && (
+            <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold text-gray-600 dark:text-gray-400">
+                  Site Visit Schedule
+                </label>
+                <input
+                  type="text"
+                  name="siteVisitSchedule"
+                  value={siteVisitSchedule || ''}
+                  onChange={(e) => onValueChange('siteVisitSchedule', e.target.value)}
+                  placeholder="Mandatory on Saturdays, Sundays & Scheduled Client Slots"
+                  className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                />
+              </div>
+              <div>
+                <label className="mb-1 block text-[10px] font-semibold text-gray-600 dark:text-gray-400">
+                  Weekly Off Day(s)
+                </label>
+                <input
+                  type="text"
+                  name="weeklyOffDays"
+                  value={weeklyOffDays || ''}
+                  onChange={(e) => onValueChange('weeklyOffDays', e.target.value)}
+                  placeholder="Tuesday (or as per departmental roster)"
+                  className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Conveyance / Fuel Allowance Option ── */}
+        <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Car className="text-brand-gold h-4 w-4" />
+              <div>
+                <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                  Conveyance / Fuel Allowance
+                </label>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                  Enable fixed monthly conveyance or site travel reimbursement
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => onValueChange('includeConveyanceAllowance', true)}
+                className={`rounded-md px-3 py-1 text-xs font-bold transition-all ${
+                  includeConveyanceAllowance
+                    ? 'bg-brand-gold text-brand-navy shadow-sm'
+                    : 'border border-gray-200 bg-white text-gray-600 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400'
+                }`}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => onValueChange('includeConveyanceAllowance', false)}
+                className={`rounded-md px-3 py-1 text-xs font-bold transition-all ${
+                  !includeConveyanceAllowance
+                    ? 'bg-gray-200 text-gray-900 dark:bg-white/20 dark:text-white'
+                    : 'border border-gray-200 bg-white text-gray-600 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400'
+                }`}
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          {Boolean(includeConveyanceAllowance) && (
+            <div className="mt-3 rounded-xl border border-gray-200 bg-white/80 p-3.5 dark:border-white/10 dark:bg-[#111118]/80">
+              <label className="mb-1.5 block text-[10px] font-semibold text-gray-700 dark:text-gray-300">
+                Conveyance / Fuel Terms or Amount
+              </label>
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+                <input
+                  type="text"
+                  name="conveyanceAllowanceAmount"
+                  value={conveyanceAllowanceAmount || ''}
+                  onChange={(e) => onValueChange('conveyanceAllowanceAmount', e.target.value)}
+                  placeholder="e.g. ₹ 3,000 / month or Reimbursable against verified site visit logs"
+                  className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                />
+                <button
+                  type="button"
+                  onClick={() => onValueChange('conveyanceAllowanceAmount', '₹ 3,000 / month')}
+                  className="hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold inline-flex shrink-0 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-2 text-[10px] font-medium text-gray-600 transition-all dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+                >
+                  Set ₹3,000/mo
+                </button>
               </div>
             </div>
           )}

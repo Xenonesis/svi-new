@@ -28,11 +28,16 @@ export interface OfferLetterFormData {
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;
   partialTargetSalaryPercent?: string;
+  commissionReleasePercent?: string;
+  includeSiteVisitPolicy?: boolean | string;
+  siteVisitSchedule?: string;
+  weeklyOffDays?: string;
+  includeConveyanceAllowance?: boolean | string;
+  conveyanceAllowanceAmount?: string;
   includeSalesPolicyBox?: boolean;
   includeDocumentationBox?: boolean;
   includeCandidateParticularsBox?: boolean;
 }
-
 export interface SavedOffer {
   id: string;
   form_data: Partial<OfferLetterFormData>;

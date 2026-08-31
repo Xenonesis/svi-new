@@ -31,6 +31,12 @@ export interface OfferLetterFormData {
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;
   partialTargetSalaryPercent?: string;
+  commissionReleasePercent?: string;
+  includeSiteVisitPolicy?: boolean | string;
+  siteVisitSchedule?: string;
+  weeklyOffDays?: string;
+  includeConveyanceAllowance?: boolean | string;
+  conveyanceAllowanceAmount?: string;
   includeSalesPolicyBox?: boolean;
   includeDocumentationBox?: boolean;
   includeCandidateParticularsBox?: boolean;
@@ -405,6 +411,23 @@ export default function OfferLetterPreviewContent({
                           on confirmed realized revenue, computed in strict compliance with the
                           Company&rsquo;s Sales Compensation Policy.
                         </p>
+                        {/* 30% Payment Realization Milestone */}
+                        <p className="mt-1 text-[10px] text-gray-800">
+                          <span className="font-bold text-gray-900">
+                            Commission Disbursement Milestone (
+                            {formData.commissionReleasePercent || '30'}% Realization Rule):
+                          </span>{' '}
+                          Performance-linked commission shall strictly be released only upon receipt
+                          and realization of a minimum of{' '}
+                          <span className="font-bold text-[#1e3a8a]">
+                            {formData.commissionReleasePercent || '30'}% of the total property
+                            consideration
+                          </span>{' '}
+                          from the customer into the Company&rsquo;s official bank accounts. In the
+                          event of booking cancellation prior to{' '}
+                          {formData.commissionReleasePercent || '30'}% realization, no commission
+                          shall accrue.
+                        </p>
                       </div>
                     )}
 
@@ -725,10 +748,10 @@ export default function OfferLetterPreviewContent({
               </p>
             </div>
 
-            {/* Clause 6: Working Hours & Attendance */}
+            {/* Clause 6: Working Hours, Customer Site Visits & Attendance */}
             <div>
               <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
-                6. Standard Working Hours, Attendance Logging &amp; Shift Regimes
+                6. Standard Working Hours, Customer Site Visits &amp; Attendance Regimes
               </p>
               <p className="mt-0.5 text-gray-800">
                 Your standard working hours shall be from{' '}
@@ -743,12 +766,46 @@ export default function OfferLetterPreviewContent({
                 <span className="font-bold text-gray-900">
                   {formData.workingDays || 'Wednesday to Monday'}
                 </span>{' '}
-                (with weekly off schedules designated as per departmental duty rosters). You are
-                obligated to record your daily attendance via the Company&rsquo;s biometric or
-                digital logging infrastructure. Punctuality is paramount; repeated unauthorized
-                absenteeism or chronic tardiness shall be deemed gross misconduct subject to
-                disciplinary action.
+                (with weekly off scheduled on{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.weeklyOffDays || 'Tuesday'}
+                </span>{' '}
+                or as per departmental duty rosters). You are obligated to record your daily
+                attendance via the Company&rsquo;s biometric or digital logging infrastructure.
+                Punctuality is paramount; repeated unauthorized absenteeism or chronic tardiness
+                shall be deemed gross misconduct.
               </p>
+
+              {/* Customer Site Visits Policy */}
+              {isSalesDepartment && Boolean(formData.includeSiteVisitPolicy ?? true) && (
+                <p className="mt-1 text-gray-800">
+                  <span className="font-bold text-gray-900">
+                    6.1 Mandatory Customer Site Visits &amp; Weekend Operations:
+                  </span>{' '}
+                  Real estate sales operations require active on-ground customer facilitation. You
+                  are contractually obligated to coordinate and execute prospective buyer site
+                  visits as per operational requirements (
+                  {formData.siteVisitSchedule ||
+                    'Mandatory on Saturdays, Sundays & scheduled customer appointment slots'}
+                  ).
+                </p>
+              )}
+
+              {/* Conveyance / Fuel Allowance */}
+              {Boolean(formData.includeConveyanceAllowance) && (
+                <p className="mt-1 text-gray-800">
+                  <span className="font-bold text-gray-900">
+                    6.2 Field Travel &amp; Conveyance Policy:
+                  </span>{' '}
+                  To support customer property visits and field client meetings, the Company shall
+                  provide{' '}
+                  <span className="font-bold text-[#1e3a8a]">
+                    {formData.conveyanceAllowanceAmount ||
+                      'a monthly conveyance allowance / official travel reimbursement against verified site visit logs'}
+                  </span>
+                  , subject to submission and managerial approval of monthly travel expense logs.
+                </p>
+              )}
             </div>
           </div>
         </div>
