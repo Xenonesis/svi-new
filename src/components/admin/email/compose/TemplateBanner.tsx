@@ -64,10 +64,18 @@ export function TemplateBanner({
           );
         } else if (key === 'role' || key.includes('designation')) {
           onVariableChange(key, 'Freelance Consultant');
-        } else if (key === 'project') {
+        } else if (key === 'project' || key === 'projectName') {
           onVariableChange(key, 'Shivani Vatika 11th');
         } else if (key === 'compensation') {
           onVariableChange(key, '₹45,000 / month');
+        } else if (key === 'helpdeskName') {
+          onVariableChange(key, 'SVI Helpdesk:');
+        } else if (key === 'helpdeskPhone') {
+          onVariableChange(key, '+91-73000-07643');
+        } else if (key === 'helpdeskEmail') {
+          onVariableChange(key, 'info@sviinfrasolutions.com');
+        } else if (key === 'helpdeskTitle') {
+          onVariableChange(key, 'Need assistance?');
         } else if (key.includes('url') || key.includes('portal') || key.includes('link')) {
           onVariableChange(key, 'https://www.sviinfrasolutions.com');
         } else {
@@ -167,13 +175,25 @@ export function TemplateBanner({
               return (
                 <div key={key} className="flex flex-col">
                   <label className="mb-1 flex items-center justify-between text-[10px] font-bold tracking-wider text-gray-600 uppercase dark:text-gray-300">
-                    <span>{key.replace(/_/g, ' ')}</span>
+                    <span className="truncate">
+                      {key === 'helpdeskName'
+                        ? 'Helpdesk Name / Desk'
+                        : key === 'helpdeskPhone'
+                          ? 'Helpdesk Phone / Mobile'
+                          : key === 'helpdeskEmail'
+                            ? 'Helpdesk Email Address'
+                            : key === 'helpdeskTitle'
+                              ? 'Assistance Title'
+                              : key.replace(/_/g, ' ')}
+                    </span>
                     {isFilled ? (
-                      <span className="text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <span className="shrink-0 text-[9px] font-semibold text-emerald-600 dark:text-emerald-400">
                         ✓ Ready
                       </span>
                     ) : (
-                      <span className="text-[9px] font-medium text-amber-500">Required</span>
+                      <span className="shrink-0 text-[9px] font-medium text-amber-500">
+                        Required
+                      </span>
                     )}
                   </label>
                   <div className="flex items-center gap-1.5">

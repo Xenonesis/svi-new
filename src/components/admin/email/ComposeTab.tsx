@@ -377,6 +377,12 @@ export function ComposeTab({
     }
     return base;
   };
+  const DEFAULT_HELPDESK_VARS: Record<string, string> = {
+    helpdeskName: 'SVI Helpdesk:',
+    helpdeskPhone: '+91-73000-07643',
+    helpdeskEmail: 'info@sviinfrasolutions.com',
+    helpdeskTitle: 'Need assistance?',
+  };
 
   const loadTemplate = (templateId: string) => {
     const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId);
@@ -386,11 +392,10 @@ export function ComposeTab({
     const vars = extractTemplateVars(tpl.html);
     const initialVars: Record<string, string> = {};
     vars.forEach((v) => {
-      initialVars[v] = templateVars[v] || '';
+      initialVars[v] = templateVars[v] || DEFAULT_HELPDESK_VARS[v] || '';
     });
     setTemplateVars(initialVars);
     setHtml('');
-    setQuotedHtml(null);
     setSelectedTemplate(templateId);
     setPreviewMode(true);
     setEditorKey((prev) => prev + 1);
@@ -547,6 +552,8 @@ export function ComposeTab({
         initialVars[v] = result.variables[v];
       } else if (templateVars[v]) {
         initialVars[v] = templateVars[v];
+      } else if (DEFAULT_HELPDESK_VARS[v]) {
+        initialVars[v] = DEFAULT_HELPDESK_VARS[v];
       } else if (v === 'name') {
         const recipient = toRecipients[0]?.name || toStr.split(',')[0]?.split('@')[0]?.trim();
         initialVars[v] = recipient || '';
@@ -582,6 +589,8 @@ export function ComposeTab({
         initialVars[v] = variables[v];
       } else if (templateVars[v]) {
         initialVars[v] = templateVars[v];
+      } else if (DEFAULT_HELPDESK_VARS[v]) {
+        initialVars[v] = DEFAULT_HELPDESK_VARS[v];
       } else if (v === 'name') {
         const recipient = toRecipients[0]?.name || toStr.split(',')[0]?.split('@')[0]?.trim();
         initialVars[v] = recipient || '';

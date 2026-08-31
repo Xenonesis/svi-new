@@ -257,6 +257,10 @@ export function useEmailPrefill({
                 bankAccountNo: '0894102000013837',
                 bankName: 'IDBI BANK',
                 bankIfsc: 'IBKL0000894',
+                helpdeskName: 'SVI Helpdesk:',
+                helpdeskPhone: '+91-73000-07643',
+                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskTitle: 'Need assistance?',
               };
 
               setTemplateVars(vars);
@@ -347,6 +351,10 @@ export function useEmailPrefill({
                 date: fd.date ? new Date(fd.date).toLocaleDateString('en-GB') : '',
                 receipt_no: fd.receiptNo || '',
                 portal_url: 'https://www.sviinfrasolutions.in',
+                helpdeskName: 'SVI Helpdesk:',
+                helpdeskPhone: '+91-73000-07643',
+                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskTitle: 'Need assistance?',
               };
 
               setTemplateVars(vars);
@@ -493,6 +501,10 @@ export function useEmailPrefill({
                 bankAccountNo: '0894102000013837',
                 bankName: 'IDBI BANK',
                 bankIfsc: 'IBKL0000894',
+                helpdeskName: 'SVI Helpdesk:',
+                helpdeskPhone: '+91-73000-07643',
+                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskTitle: 'Need assistance?',
               };
 
               setTemplateVars(vars);
@@ -630,6 +642,10 @@ export function useEmailPrefill({
                 workingHoursEnd: fd.workingHoursEnd || '6:30 pm',
                 workingDays: fd.workingDays || 'Wednesday to Monday',
                 probationPeriod: fd.probationPeriod || '3',
+                helpdeskName: 'SVI Helpdesk:',
+                helpdeskPhone: '+91-73000-07643',
+                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskTitle: 'Need assistance?',
               };
 
               setTemplateVars(vars);
