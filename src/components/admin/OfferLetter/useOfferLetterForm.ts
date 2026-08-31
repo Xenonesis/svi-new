@@ -208,6 +208,51 @@ export function useOfferLetterForm() {
     loadFromRecord(e.target.value);
   };
 
+  const handleResetForm = useCallback(() => {
+    setDocumentId(null);
+    setSelectedRecordId('');
+    setFormData(INITIAL_FORM_DATA);
+    setShowSalesOptions(false);
+    setShowCustomDesignation(false);
+    setSalesCustomDesignation('');
+    setPreview(false);
+    toast.info('Form reset. Ready to create a new offer letter.');
+  }, []);
+
+  // Detect if an offer letter already exists for this candidate's mobile or email
+  const duplicateCandidate = useMemo(() => {
+    const mobile = (formData.mobileNo || '').replace(/\D/g, '').slice(-10);
+    const email = (formData.emailId || '').trim().toLowerCase();
+
+    if ((!mobile || mobile.length < 10) && (!email || email.length < 5)) {
+      return null;
+    }
+
+    return (
+      savedOffers.find((offer) => {
+        // Skip comparing against currently edited record
+        if (documentId && offer.id === documentId) return false;
+
+        const offerMobile = (offer.form_data?.mobileNo || '').replace(/\D/g, '').slice(-10);
+        const offerEmail = (offer.form_data?.emailId || '').trim().toLowerCase();
+
+        const mobileMatch = mobile && mobile.length >= 10 && offerMobile === mobile;
+        const emailMatch = email && email.length >= 5 && offerEmail === email;
+
+        return mobileMatch || emailMatch;
+      }) || null
+    );
+  }, [formData.mobileNo, formData.emailId, savedOffers, documentId]);
+
+  const loadDuplicateRecord = useCallback(() => {
+    if (duplicateCandidate) {
+      loadFromRecord(duplicateCandidate.id);
+      toast.success(
+        `Loaded existing record for ${duplicateCandidate.form_data?.name || 'Candidate'}`
+      );
+    }
+  }, [duplicateCandidate, loadFromRecord]);
+
   useEffect(() => {
     if (savedOffers.length > 0 && typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
@@ -220,6 +265,8 @@ export function useOfferLetterForm() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isGenerating) return;
+
     if (!formData.name?.trim()) {
       toast.error('Please enter candidate name before generating offer letter.');
       return;
@@ -227,36 +274,64 @@ export function useOfferLetterForm() {
 
     setIsGenerating(true);
     let currentDocId = documentId;
+    const isEditingExisting = Boolean(documentId);
 
     if (token) {
       try {
-        const response = await fetch('/api/admin/documents', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({
-            document_type: 'offer_letter',
-            form_data: formData,
-            status: 'draft',
-          }),
-        });
-        if (response.ok) {
-          const data = await response.json();
-          currentDocId = data.document.id;
-          setDocumentId(data.document.id);
-          setSavedOffers((prev) => {
-            const index = prev.findIndex((item) => item.id === data.document.id);
-            if (index !== -1) {
-              const updated = [...prev];
-              updated[index] = data.document;
-              return updated;
-            } else {
-              return [data.document, ...prev];
-            }
+        if (isEditingExisting && documentId) {
+          // ── EDIT MODE: Update existing document record via PATCH ──
+          const response = await fetch(`/api/admin/documents/${documentId}`, {
+            method: 'PATCH',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              form_data: formData,
+              status: 'draft',
+            }),
           });
-          setSelectedRecordId(data.document.id);
+          if (response.ok) {
+            const data = await response.json();
+            const updatedDoc = data.document || {
+              id: documentId,
+              form_data: formData,
+              created_at: new Date().toISOString(),
+            };
+            setSavedOffers((prev) =>
+              prev.map((item) => (item.id === documentId ? updatedDoc : item))
+            );
+          }
+        } else {
+          // ── CREATE MODE: Insert new document record via POST ──
+          const response = await fetch('/api/admin/documents', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              document_type: 'offer_letter',
+              form_data: formData,
+              status: 'draft',
+            }),
+          });
+          if (response.ok) {
+            const data = await response.json();
+            currentDocId = data.document.id;
+            setDocumentId(data.document.id);
+            setSavedOffers((prev) => {
+              const index = prev.findIndex((item) => item.id === data.document.id);
+              if (index !== -1) {
+                const updated = [...prev];
+                updated[index] = data.document;
+                return updated;
+              } else {
+                return [data.document, ...prev];
+              }
+            });
+            setSelectedRecordId(data.document.id);
+          }
         }
       } catch (error) {
         console.error('Failed to save document:', error);
@@ -272,7 +347,11 @@ export function useOfferLetterForm() {
       setTimeout(resolve, 300);
       await promise;
       await exportToPDF({ elementId: 'offerPreview', filename });
-      toast.success(`Offer Letter downloaded: ${filename}`);
+      toast.success(
+        isEditingExisting
+          ? `Offer Letter updated & downloaded: ${filename}`
+          : `Offer Letter created & downloaded: ${filename}`
+      );
 
       if (currentDocId && token) {
         try {
@@ -292,7 +371,6 @@ export function useOfferLetterForm() {
       setIsGenerating(false);
     }
   };
-
   const handleDownloadPDF = async () => {
     try {
       const filename = getCandidateFilename('pdf');
@@ -352,6 +430,10 @@ export function useOfferLetterForm() {
     isGenerating,
     preview,
     matchedSlab,
+    documentId,
+    duplicateCandidate,
+    loadDuplicateRecord,
+    handleResetForm,
     getCandidateFilename,
     loadFromRecord,
     handleChange,

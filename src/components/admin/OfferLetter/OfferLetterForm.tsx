@@ -1,6 +1,15 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
-import { FileSignature, RefreshCw, SlidersHorizontal, ChevronDown, Loader2 } from 'lucide-react';
+import {
+  FileSignature,
+  RefreshCw,
+  SlidersHorizontal,
+  ChevronDown,
+  Loader2,
+  AlertTriangle,
+  Plus,
+  CheckCircle2,
+} from 'lucide-react';
 import { SlabSelector, SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
 import { SalesCompensationSection } from '@/src/components/admin/OfferLetter/SalesCompensationSection';
 import { OfferLetterFormData, SavedOffer } from './types';
@@ -13,6 +22,10 @@ interface OfferLetterFormProps {
   setFormData: React.Dispatch<React.SetStateAction<OfferLetterFormData>>;
   savedOffers: SavedOffer[];
   selectedRecordId?: string;
+  documentId?: string | null;
+  duplicateCandidate?: SavedOffer | null;
+  loadDuplicateRecord?: () => void;
+  handleResetForm?: () => void;
   isGenerating?: boolean;
   showSalesOptions: boolean;
   setShowSalesOptions: (val: boolean) => void;
@@ -38,6 +51,10 @@ export function OfferLetterForm({
   setFormData,
   savedOffers,
   selectedRecordId,
+  documentId,
+  duplicateCandidate,
+  loadDuplicateRecord,
+  handleResetForm,
   isGenerating = false,
   showSalesOptions,
   setShowSalesOptions,
@@ -57,10 +74,89 @@ export function OfferLetterForm({
 }: OfferLetterFormProps) {
   return (
     <div className="dark:bg-brand-dark-surface/80 relative rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-white/10">
-      <div className="mb-5 flex items-center gap-2 border-b border-gray-100 pb-4 dark:border-white/10">
-        <FileSignature className="text-brand-gold h-4 w-4" />
-        <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Candidate Details</h2>
+      <div className="mb-5 flex items-center justify-between border-b border-gray-100 pb-4 dark:border-white/10">
+        <div className="flex items-center gap-2">
+          <FileSignature className="text-brand-gold h-4 w-4" />
+          <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Candidate Details</h2>
+        </div>
+        {documentId && (
+          <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold text-blue-800 dark:bg-blue-500/20 dark:text-blue-300">
+            <CheckCircle2 className="h-3 w-3" /> Edit Mode
+          </span>
+        )}
       </div>
+
+      {/* ── Active Edit Mode Alert Banner ── */}
+      {documentId && (
+        <div className="mb-4 flex items-center justify-between gap-3 rounded-xl border border-blue-200 bg-blue-50/80 p-3.5 dark:border-blue-500/20 dark:bg-blue-500/10">
+          <div className="flex items-center gap-2.5">
+            <span className="flex h-2 w-2 animate-pulse rounded-full bg-blue-600"></span>
+            <div>
+              <p className="text-xs font-bold text-blue-900 dark:text-blue-200">
+                Updating Existing Offer Letter
+              </p>
+              <p className="text-[10.5px] text-blue-700 dark:text-blue-300">
+                Changes will overwrite this existing record (no duplicate will be created).
+              </p>
+            </div>
+          </div>
+          {handleResetForm && (
+            <button
+              type="button"
+              onClick={handleResetForm}
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-blue-300 bg-white px-2.5 py-1 text-[11px] font-semibold text-blue-800 shadow-xs transition-colors hover:bg-blue-50 dark:border-blue-400/30 dark:bg-[#111118] dark:text-blue-200 dark:hover:bg-white/10"
+            >
+              <Plus className="h-3 w-3" /> New Letter
+            </button>
+          )}
+        </div>
+      )}
+
+      {/* ── Duplicate Candidate Warning Banner ── */}
+      {duplicateCandidate && !documentId && (
+        <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50/90 p-3.5 dark:border-amber-500/30 dark:bg-amber-500/10">
+          <div className="flex items-start gap-2.5">
+            <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600 dark:text-amber-400" />
+            <div className="flex-1">
+              <p className="text-xs font-bold text-amber-900 dark:text-amber-200">
+                Potential Duplicate Candidate Detected
+              </p>
+              <p className="mt-0.5 text-[11px] text-amber-800 dark:text-amber-300">
+                An offer letter already exists for{' '}
+                <span className="font-bold">
+                  {duplicateCandidate.form_data?.name || 'this candidate'}
+                </span>{' '}
+                {duplicateCandidate.form_data?.mobileNo
+                  ? `(Mobile: ${duplicateCandidate.form_data.mobileNo})`
+                  : ''}{' '}
+                created on{' '}
+                <span className="font-bold">
+                  {new Date(duplicateCandidate.created_at).toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </span>
+                .
+              </p>
+              {loadDuplicateRecord && (
+                <div className="mt-2.5 flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={loadDuplicateRecord}
+                    className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-amber-600 px-3 py-1.5 text-xs font-bold text-white shadow-xs transition-colors hover:bg-amber-700 dark:bg-amber-500 dark:hover:bg-amber-600"
+                  >
+                    Load &amp; Update Existing Record
+                  </button>
+                  <span className="text-[10px] text-amber-700 dark:text-amber-400">
+                    (Recommended &mdash; avoids creating duplicate entry)
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         {savedOffers.length > 0 && (
@@ -344,11 +440,13 @@ export function OfferLetterForm({
         >
           {isGenerating ? (
             <>
-              <Loader2 className="h-4 w-4 animate-spin" /> Generating &amp; Downloading...
+              <Loader2 className="h-4 w-4 animate-spin" />{' '}
+              {documentId ? 'Updating & Downloading...' : 'Generating & Downloading...'}
             </>
           ) : (
             <>
-              <RefreshCw className="h-4 w-4" /> Generate Offer Letter
+              <RefreshCw className="h-4 w-4" />{' '}
+              {documentId ? 'Update & Download Offer Letter' : 'Generate Offer Letter'}
             </>
           )}
         </button>

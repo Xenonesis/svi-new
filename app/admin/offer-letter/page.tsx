@@ -15,6 +15,10 @@ export default function OfferLetterPage() {
     savedOffers,
     loadingRecords,
     selectedRecordId,
+    documentId,
+    duplicateCandidate,
+    loadDuplicateRecord,
+    handleResetForm,
     showSalesOptions,
     setShowSalesOptions,
     showSlabs,
@@ -67,6 +71,10 @@ export default function OfferLetterPage() {
           setFormData={setFormData}
           savedOffers={savedOffers}
           selectedRecordId={selectedRecordId}
+          documentId={documentId}
+          duplicateCandidate={duplicateCandidate}
+          loadDuplicateRecord={loadDuplicateRecord}
+          handleResetForm={handleResetForm}
           isGenerating={isGenerating}
           showSalesOptions={showSalesOptions}
           setShowSalesOptions={setShowSalesOptions}
