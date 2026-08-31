@@ -95,7 +95,10 @@ export function ComposeTab({
   // Toggle a contact in the active recipient list
   const handleToggleContact = useCallback(
     (contact: Contact) => {
-      const emailLower = contact.email.toLowerCase();
+      const primaryEmail = (contact.real_email || contact.email).trim();
+      const primaryLower = primaryEmail.toLowerCase();
+      const altLower = (contact.email || '').trim().toLowerCase();
+
       const setRecipients =
         pickerTarget === 'cc'
           ? setCcRecipients
@@ -104,14 +107,21 @@ export function ComposeTab({
             : setToRecipients;
 
       setRecipients((prev) => {
-        const exists = prev.some((r) => r.email.toLowerCase() === emailLower);
+        const exists = prev.some((r) => {
+          const rEmailLower = r.email.trim().toLowerCase();
+          return rEmailLower === primaryLower || (altLower !== '' && rEmailLower === altLower);
+        });
+
         if (exists) {
-          return prev.filter((r) => r.email.toLowerCase() !== emailLower);
+          return prev.filter((r) => {
+            const rEmailLower = r.email.trim().toLowerCase();
+            return rEmailLower !== primaryLower && (altLower === '' || rEmailLower !== altLower);
+          });
         } else {
           return [
             ...prev,
             {
-              email: contact.email,
+              email: primaryEmail,
               name: contact.full_name,
               type: contact.role as Recipient['type'],
               valid: true,
@@ -134,21 +144,75 @@ export function ComposeTab({
           : setToRecipients;
 
     setRecipients((prev) => {
-      const existingEmails = new Set(prev.map((r) => r.email.toLowerCase()));
-      const newOnes = allContacts
-        .filter((c) => !existingEmails.has(c.email.toLowerCase()))
-        .map(
-          (c) =>
-            ({
-              email: c.email,
-              name: c.full_name,
-              type: c.role as Recipient['type'],
-              valid: true,
-            }) as Recipient
-        );
+      const existingEmails = new Set(prev.map((r) => r.email.trim().toLowerCase()));
+      const newOnes: Recipient[] = [];
+
+      for (const c of allContacts) {
+        const primaryEmail = (c.real_email || c.email).trim();
+        const primaryLower = primaryEmail.toLowerCase();
+        const altLower = (c.email || '').trim().toLowerCase();
+
+        if (!existingEmails.has(primaryLower) && (!altLower || !existingEmails.has(altLower))) {
+          existingEmails.add(primaryLower);
+          newOnes.push({
+            email: primaryEmail,
+            name: c.full_name,
+            type: c.role as Recipient['type'],
+            valid: true,
+          });
+        }
+      }
+
       return [...prev, ...newOnes];
     });
   }, [fetchContacts, pickerTarget]);
+
+  // Select specific filtered contacts
+  const handleSelectFilteredContacts = useCallback(
+    (contactsToSelect: Contact[]) => {
+      const setRecipients =
+        pickerTarget === 'cc'
+          ? setCcRecipients
+          : pickerTarget === 'bcc'
+            ? setBccRecipients
+            : setToRecipients;
+
+      setRecipients((prev) => {
+        const existingEmails = new Set(prev.map((r) => r.email.trim().toLowerCase()));
+        const newOnes: Recipient[] = [];
+
+        for (const c of contactsToSelect) {
+          const primaryEmail = (c.real_email || c.email).trim();
+          const primaryLower = primaryEmail.toLowerCase();
+          const altLower = (c.email || '').trim().toLowerCase();
+
+          if (!existingEmails.has(primaryLower) && (!altLower || !existingEmails.has(altLower))) {
+            existingEmails.add(primaryLower);
+            newOnes.push({
+              email: primaryEmail,
+              name: c.full_name,
+              type: c.role as Recipient['type'],
+              valid: true,
+            });
+          }
+        }
+
+        return [...prev, ...newOnes];
+      });
+    },
+    [pickerTarget]
+  );
+
+  // Clear all recipients for current target
+  const handleClearAllContacts = useCallback(() => {
+    const setRecipients =
+      pickerTarget === 'cc'
+        ? setCcRecipients
+        : pickerTarget === 'bcc'
+          ? setBccRecipients
+          : setToRecipients;
+    setRecipients([]);
+  }, [pickerTarget]);
 
   const handleOpenContactPicker = useCallback((target: 'to' | 'cc' | 'bcc' = 'to') => {
     setPickerTarget(target);
@@ -788,6 +852,8 @@ export function ComposeTab({
         selectedEmails={selectedEmailSet}
         onToggle={handleToggleContact}
         onSelectAll={handleSelectAllContacts}
+        onSelectFiltered={handleSelectFilteredContacts}
+        onClearAll={handleClearAllContacts}
         title={
           pickerTarget === 'cc'
             ? 'Select Contacts (CC)'
