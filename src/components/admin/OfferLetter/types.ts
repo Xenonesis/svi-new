@@ -23,6 +23,10 @@ export interface OfferLetterFormData {
   customSalaryPercent: string;
   subsistenceAllowance: string;
   meetingsPerMonth: string;
+  gracePeriodMonths?: string;
+  reducedSalaryPercent?: string;
+  enablePartialTargetRule?: boolean | string;
+  partialTargetSalaryPercent?: string;
 }
 
 export interface SavedOffer {

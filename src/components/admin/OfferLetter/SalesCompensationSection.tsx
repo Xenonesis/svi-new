@@ -12,10 +12,16 @@ interface SalesCompensationSectionProps {
   customSalaryPercent: string;
   meetingsPerMonth: string;
   salaryCtc: string;
-  onValueChange: (name: string, value: string) => void;
-  onToggleType: (type: 'no_sale_no_salary' | 'custom_percent') => void;
+  target?: string;
+  gracePeriodMonths?: string;
+  reducedSalaryPercent?: string;
+  enablePartialTargetRule?: boolean | string;
+  partialTargetSalaryPercent?: string;
+  onValueChange: (name: string, value: string | boolean) => void;
+  onToggleType: (
+    type: 'no_sale_no_salary' | 'custom_percent' | 'grace_period_reduced_percent'
+  ) => void;
 }
-
 export function SalesCompensationSection({
   department,
   designation,
@@ -26,6 +32,11 @@ export function SalesCompensationSection({
   customSalaryPercent,
   meetingsPerMonth,
   salaryCtc,
+  target,
+  gracePeriodMonths,
+  reducedSalaryPercent,
+  enablePartialTargetRule,
+  partialTargetSalaryPercent,
   onValueChange,
   onToggleType,
 }: SalesCompensationSectionProps) {
@@ -56,7 +67,7 @@ export function SalesCompensationSection({
           <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
             Compensation Type
           </label>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
             {/* No Sale No Salary card */}
             <button
               type="button"
@@ -138,6 +149,49 @@ export function SalesCompensationSection({
                   </p>
                   <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
                     Fixed percentage guaranteed during probation
+                  </p>
+                </div>
+              </div>
+            </button>
+
+            {/* Grace Period + Reduced % card */}
+            <button
+              type="button"
+              onClick={() => onToggleType('grace_period_reduced_percent')}
+              className={`group relative overflow-hidden rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                salesCompensationType === 'grace_period_reduced_percent'
+                  ? 'border-brand-gold bg-brand-gold/5 shadow-sm'
+                  : 'border-gray-200 bg-white hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={`mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${
+                    salesCompensationType === 'grace_period_reduced_percent'
+                      ? 'border-brand-gold bg-brand-gold'
+                      : 'border-gray-300 dark:border-white/20'
+                  }`}
+                >
+                  {salesCompensationType === 'grace_period_reduced_percent' && (
+                    <svg
+                      className="text-brand-navy h-3 w-3"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                    >
+                      <path d="M5 12l5 5L20 7" />
+                    </svg>
+                  )}
+                </div>
+                <div>
+                  <p
+                    className={`text-xs font-semibold ${salesCompensationType === 'grace_period_reduced_percent' ? 'text-brand-navy dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Grace Period + Reduced %
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
+                    Full salary till X months, then % on zero sales
                   </p>
                 </div>
               </div>
@@ -280,6 +334,183 @@ export function SalesCompensationSection({
             </div>
           </div>
         )}
+
+        {/* ── Grace Period + Reduced %: Duration + Reduced Percent ── */}
+        {salesCompensationType === 'grace_period_reduced_percent' && (
+          <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+            <div className="grid grid-cols-1 gap-5 md:grid-cols-2">
+              {/* Grace Duration */}
+              <div>
+                <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                  Initial Full Salary Period (Months)
+                </label>
+                <div className="flex flex-col gap-2.5">
+                  <select
+                    name="gracePeriodMonths"
+                    value={gracePeriodMonths || ''}
+                    onChange={(e) => onValueChange('gracePeriodMonths', e.target.value)}
+                    className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                  >
+                    <option value="">Select months…</option>
+                    {Array.from({ length: 36 }, (_, i) => i + 1).map((m) => (
+                      <option key={m} value={m.toString()}>
+                        {m} {m === 1 ? 'month' : 'months'}
+                      </option>
+                    ))}
+                  </select>
+                  {gracePeriodMonths && (
+                    <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[10px] font-medium text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
+                      <Calendar className="h-3 w-3 text-gray-400" />
+                      Full pay until{' '}
+                      {(() => {
+                        const d = new Date();
+                        d.setMonth(d.getMonth() + parseInt(gracePeriodMonths));
+                        return d.toISOString().split('T')[0].split('-').reverse().join('-');
+                      })()}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Reduced Salary Percentage */}
+              <div>
+                <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                  Post-Grace Salary (% on No Sale)
+                </label>
+                <div className="relative">
+                  <input
+                    type="number"
+                    name="reducedSalaryPercent"
+                    value={reducedSalaryPercent || ''}
+                    onChange={(e) => onValueChange('reducedSalaryPercent', e.target.value)}
+                    placeholder="e.g. 50"
+                    min="0"
+                    max="100"
+                    className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 pr-10 font-sans text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
+                  />
+                  <span className="absolute top-1/2 right-3 -translate-y-1/2 text-xs font-medium text-gray-400">
+                    %
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Summary / Calculation Breakdown */}
+            {salaryCtc && (
+              <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+                <div className="rounded-xl border border-blue-200 bg-blue-50/60 p-3.5 dark:border-blue-500/20 dark:bg-blue-500/10">
+                  <p className="text-[10px] font-semibold text-blue-600 uppercase dark:text-blue-400">
+                    Phase 1: Initial{' '}
+                    {gracePeriodMonths
+                      ? `${gracePeriodMonths} Month${parseInt(gracePeriodMonths) > 1 ? 's' : ''}`
+                      : 'Grace Period'}
+                  </p>
+                  <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
+                    100% Guaranteed Pay:{' '}
+                    <span className="font-bold text-blue-700 dark:text-blue-300">
+                      ₹{parseFloat(salaryCtc || '0').toLocaleString('en-IN')}/month
+                    </span>
+                  </p>
+                </div>
+                <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3.5 dark:border-amber-500/20 dark:bg-amber-500/10">
+                  <p className="text-[10px] font-semibold text-amber-600 uppercase dark:text-amber-400">
+                    Phase 2: Month {gracePeriodMonths ? parseInt(gracePeriodMonths) + 1 : 'X'}+ (If
+                    Zero Sales)
+                  </p>
+                  <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
+                    {reducedSalaryPercent || '0'}% Adjusted Pay:{' '}
+                    <span className="font-bold text-amber-700 dark:text-amber-300">
+                      ₹
+                      {reducedSalaryPercent && salaryCtc
+                        ? Math.round(
+                            (parseFloat(reducedSalaryPercent) / 100) * parseFloat(salaryCtc)
+                          ).toLocaleString('en-IN')
+                        : '0'}
+                      /month
+                    </span>
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── Under-Target (1/2 Salary) & Zero-Sale Condition ── */}
+        <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="enablePartialTargetRule"
+                  checked={Boolean(enablePartialTargetRule)}
+                  onChange={(e) => onValueChange('enablePartialTargetRule', e.target.checked)}
+                  className="text-brand-gold focus:ring-brand-gold/50 h-4 w-4 rounded border-gray-300 dark:border-white/20 dark:bg-[#111118]"
+                />
+                <span className="text-xs font-bold text-gray-900 dark:text-white">
+                  Target-Linked Pro-Rata &amp; Zero-Sale Policy
+                </span>
+              </label>
+              <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
+                If sales achieved &lt; assigned target ({target || 'Quota'} Sq. Yd.), 50% (1/2)
+                salary is paid. If zero sales occur, &ldquo;No Sale No Salary&rdquo; applies
+                strictly regardless of month.
+              </p>
+            </div>
+          </div>
+
+          {Boolean(enablePartialTargetRule) && (
+            <div className="mt-3.5 space-y-3 rounded-xl border border-gray-200 bg-white/80 p-4 dark:border-white/10 dark:bg-[#111118]/80">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                {/* Tier 1: Target Met */}
+                <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                  <span className="inline-block rounded bg-emerald-200/60 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 uppercase dark:bg-emerald-500/20 dark:text-emerald-300">
+                    Tier 1 &middot; 100%+ Quota
+                  </span>
+                  <p className="mt-1 text-[11px] font-semibold text-emerald-900 dark:text-emerald-200">
+                    Full Target Achieved
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-emerald-700 dark:text-emerald-300">
+                    100% Salary:{' '}
+                    <span className="font-bold">
+                      ₹{parseFloat(salaryCtc || '0').toLocaleString('en-IN')}
+                    </span>{' '}
+                    + Commission
+                  </p>
+                </div>
+
+                {/* Tier 2: Partial Target */}
+                <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-3 dark:border-amber-500/20 dark:bg-amber-500/10">
+                  <span className="inline-block rounded bg-amber-200/60 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 uppercase dark:bg-amber-500/20 dark:text-amber-300">
+                    Tier 2 &middot; Under Quota (&gt;0)
+                  </span>
+                  <p className="mt-1 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
+                    Partial Target Achieved
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-amber-700 dark:text-amber-300">
+                    1/2 (50%) Salary:{' '}
+                    <span className="font-bold">
+                      ₹{Math.round(parseFloat(salaryCtc || '0') * 0.5).toLocaleString('en-IN')}
+                    </span>
+                  </p>
+                </div>
+
+                {/* Tier 3: Zero Sales */}
+                <div className="rounded-lg border border-red-200 bg-red-50/70 p-3 dark:border-red-500/20 dark:bg-red-500/10">
+                  <span className="inline-block rounded bg-red-200/60 px-1.5 py-0.5 text-[9px] font-bold text-red-800 uppercase dark:bg-red-500/20 dark:text-red-300">
+                    Tier 3 &middot; Zero Sales (0)
+                  </span>
+                  <p className="mt-1 text-[11px] font-semibold text-red-900 dark:text-red-200">
+                    No Sales Closed
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-red-700 dark:text-red-300">
+                    <span className="font-bold">No Sale No Salary</span> (Applies from Month 1)
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
 
         {/* ── Telecaller Monthly Meetings Target ── */}
         {designation === 'Telecaller' && (

@@ -92,5 +92,7 @@ android/build/
 ios/App/Pods/
 ios/App/App.xcworkspace/
 release-apks/
+build-apks/
+*.apk
 android/app/svi-release-key.jks
 out/

@@ -26,6 +26,10 @@ export interface OfferLetterFormData {
   customSalaryPercent?: string;
   subsistenceAllowance?: string;
   meetingsPerMonth?: string;
+  gracePeriodMonths?: string;
+  reducedSalaryPercent?: string;
+  enablePartialTargetRule?: boolean | string;
+  partialTargetSalaryPercent?: string;
 }
 
 export interface CompanyInfo {
@@ -367,7 +371,9 @@ export default function OfferLetterPreviewContent({
                 matchedSlab ||
                 formData.offerSlab ||
                 (isSalesDepartment &&
-                  (formData.salesCompensationType || formData.meetingsPerMonth))) && (
+                  (formData.salesCompensationType ||
+                    formData.enablePartialTargetRule ||
+                    formData.meetingsPerMonth))) && (
                 <div className="mt-2 space-y-2 rounded border border-gray-300 bg-gray-50 p-2.5 shadow-sm">
                   {/* Quota */}
                   {(formData.target || matchedSlab || formData.offerSlab) && (
@@ -458,6 +464,140 @@ export default function OfferLetterPreviewContent({
                           : 'CTC disbursement'}{' '}
                         as specified in Clause 3 shall be restored.
                       </p>
+                    </div>
+                  )}
+
+                  {/* Grace Period + Reduced % */}
+                  {isSalesDepartment &&
+                    formData.salesCompensationType === 'grace_period_reduced_percent' && (
+                      <div className="border-t border-gray-300 pt-2 text-gray-900">
+                        <p className="font-bold text-[#1e3a8a]">
+                          Clause 3.1 &mdash; Initial Guaranteed Grace Period &amp;
+                          Performance-Linked Post-Tenure Remuneration:
+                        </p>
+                        <p className="mt-0.5 text-gray-800">
+                          For an initial onboarding and pipeline development period of{' '}
+                          <span className="font-bold text-gray-900">
+                            {formData.gracePeriodMonths || '3'} months
+                          </span>{' '}
+                          from the Date of Appointment (&ldquo;Initial Grace Period&rdquo;), you
+                          shall receive 100% of your agreed{' '}
+                          {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                            ? 'Net In-Hand salary'
+                            : 'CTC'}{' '}
+                          of{' '}
+                          <span className="font-bold text-gray-900">
+                            ₹ {formatINR(formData.salaryCtc || '0')} per month
+                          </span>{' '}
+                          regardless of sales closure volumes. Commencing from Month{' '}
+                          <span className="font-bold text-gray-900">
+                            {parseInt(formData.gracePeriodMonths || '3') + 1}
+                          </span>{' '}
+                          onward, full salary disbursement is strictly contingent upon regular sales
+                          quota achievement. In any subsequent evaluation cycle where zero (0) sales
+                          transactions or assigned sales quotas are achieved, your monthly
+                          remuneration shall automatically be adjusted to{' '}
+                          <span className="font-bold text-gray-900">
+                            {formData.reducedSalaryPercent || '50'}%
+                          </span>{' '}
+                          of your agreed{' '}
+                          {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                            ? 'Net In-Hand salary'
+                            : 'CTC'}
+                          , amounting to{' '}
+                          <span className="font-bold text-gray-900">
+                            ₹{' '}
+                            {(() => {
+                              const pct = parseFloat(formData.reducedSalaryPercent || '50');
+                              const ctc = parseFloat(formData.salaryCtc || '0');
+                              return pct && ctc
+                                ? formatINR(Math.round((pct / 100) * ctc))
+                                : '[Amount]';
+                            })()}{' '}
+                            per month
+                          </span>
+                          . Upon achieving validated sales closures and meeting assigned quota
+                          targets, 100% full salary disbursement shall be reinstated for that cycle.
+                        </p>
+                      </div>
+                    )}
+
+                  {/* Target-Linked Pro-Rata & Zero-Sale Policy */}
+                  {isSalesDepartment && Boolean(formData.enablePartialTargetRule) && (
+                    <div className="border-t border-gray-300 pt-2 text-gray-900">
+                      <p className="font-bold text-[#1e3a8a]">
+                        Clause 3.2 &mdash; Target-Linked Pro-Rata Remuneration &amp; Zero-Sale
+                        Policy:
+                      </p>
+                      <p className="mt-0.5 text-gray-800">
+                        Your monthly salary disbursement is strictly governed by your assigned sales
+                        quota of{' '}
+                        <span className="font-bold text-gray-900">
+                          {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                          Sq. Yd.
+                        </span>{' '}
+                        per calendar month across the following performance tiers:
+                      </p>
+                      <ul className="mt-1.5 space-y-1 pl-3 text-gray-800">
+                        <li className="flex items-start gap-1.5">
+                          <span className="font-bold text-[#1e3a8a]">&bull;</span>
+                          <div>
+                            <span className="font-semibold text-gray-900">
+                              Tier 1 (Target Achieved &ge;{' '}
+                              {formData.target ||
+                                (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                              Sq. Yd.):
+                            </span>{' '}
+                            100% full{' '}
+                            {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                              ? 'Net In-Hand salary'
+                              : 'CTC'}{' '}
+                            of{' '}
+                            <span className="font-bold text-gray-900">
+                              ₹ {formatINR(formData.salaryCtc || '0')} per month
+                            </span>{' '}
+                            plus eligible sales commissions.
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="font-bold text-amber-600">&bull;</span>
+                          <div>
+                            <span className="font-semibold text-gray-900">
+                              Tier 2 (Partial Target &lt;{' '}
+                              {formData.target ||
+                                (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                              Sq. Yd. with &gt; 0 sales closures):
+                            </span>{' '}
+                            In the event of partial target realization, your monthly remuneration
+                            shall be restricted to{' '}
+                            <span className="font-bold text-gray-900">
+                              1/2 (50%) of agreed salary
+                            </span>
+                            , amounting to{' '}
+                            <span className="font-bold text-gray-900">
+                              ₹ {formatINR(Math.round(parseFloat(formData.salaryCtc || '0') * 0.5))}{' '}
+                              per month
+                            </span>
+                            .
+                          </div>
+                        </li>
+                        <li className="flex items-start gap-1.5">
+                          <span className="font-bold text-red-600">&bull;</span>
+                          <div>
+                            <span className="font-semibold text-gray-900">
+                              Tier 3 (Zero Sales / 0 Closures):
+                            </span>{' '}
+                            In any evaluation cycle where zero (0) sales transactions are closed,
+                            the{' '}
+                            <span className="font-bold text-gray-900">
+                              &ldquo;No Sale No Salary&rdquo;
+                            </span>{' '}
+                            policy shall strictly apply in full force, and no salary disbursement
+                            shall accrue, regardless of whether it is your first month of service or
+                            subsequent tenure.
+                          </div>
+                        </li>
+                      </ul>
                     </div>
                   )}
 

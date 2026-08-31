@@ -24,6 +24,7 @@ interface PaymentReceiptFormProps {
   handleSubmit: (e: React.FormEvent) => void;
   termsAccepted: boolean;
   setTermsAccepted: (accepted: boolean) => void;
+  isSubmitting?: boolean;
 }
 
 export default function PaymentReceiptForm({
@@ -32,6 +33,7 @@ export default function PaymentReceiptForm({
   handleSubmit,
   termsAccepted,
   setTermsAccepted,
+  isSubmitting = false,
 }: PaymentReceiptFormProps) {
   return (
     <div className="dark:bg-brand-dark-surface/65 relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
@@ -184,9 +186,11 @@ export default function PaymentReceiptForm({
 
         <button
           type="submit"
-          className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all"
+          disabled={isSubmitting}
+          className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-6 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-50"
         >
-          <RefreshCw className="h-4 w-4" /> Generate Receipt
+          <RefreshCw className={`h-4 w-4 ${isSubmitting ? 'animate-spin' : ''}`} />
+          {isSubmitting ? 'Generating...' : 'Generate Receipt'}
         </button>
       </form>
     </div>

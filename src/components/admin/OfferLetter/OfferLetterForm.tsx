@@ -284,6 +284,11 @@ export function OfferLetterForm({
                 customSalaryPercent={formData.customSalaryPercent}
                 meetingsPerMonth={formData.meetingsPerMonth}
                 salaryCtc={formData.salaryCtc}
+                target={formData.target}
+                gracePeriodMonths={formData.gracePeriodMonths}
+                reducedSalaryPercent={formData.reducedSalaryPercent}
+                enablePartialTargetRule={formData.enablePartialTargetRule}
+                partialTargetSalaryPercent={formData.partialTargetSalaryPercent}
                 onValueChange={(name, value) => setFormData((prev) => ({ ...prev, [name]: value }))}
                 onToggleType={(type) =>
                   setFormData((prev) => ({

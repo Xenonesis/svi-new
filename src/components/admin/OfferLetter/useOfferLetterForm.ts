@@ -32,6 +32,10 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   customSalaryPercent: '',
   subsistenceAllowance: '',
   meetingsPerMonth: '15',
+  gracePeriodMonths: '',
+  reducedSalaryPercent: '',
+  enablePartialTargetRule: false,
+  partialTargetSalaryPercent: '50',
 };
 
 const SALES_DESIGNATIONS = ['Telecaller', 'BDM', 'BDE', 'Sales Manager', 'Team Leader'];

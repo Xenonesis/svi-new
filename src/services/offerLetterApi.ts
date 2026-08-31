@@ -29,6 +29,11 @@ interface OfferLetterData {
     noSaleMonths?: string;
     customSalaryPercent?: string;
     subsistenceAllowance?: string;
+    meetingsPerMonth?: string;
+    gracePeriodMonths?: string;
+    reducedSalaryPercent?: string;
+    enablePartialTargetRule?: boolean | string;
+    partialTargetSalaryPercent?: string;
   };
 }
 

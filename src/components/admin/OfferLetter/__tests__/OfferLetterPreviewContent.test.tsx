@@ -155,6 +155,52 @@ describe('OfferLetterPreviewContent', () => {
     expect(screen.getByText(/₹ 18,000\.00 per month/i)).toBeInTheDocument();
   });
 
+  it('renders Grace Period with post-tenure reduced percentage clause when configured', () => {
+    const gracePeriodData = {
+      ...baseFormData,
+      salesCompensationType: 'grace_period_reduced_percent',
+      gracePeriodMonths: '3',
+      reducedSalaryPercent: '50',
+      salaryCtc: '30000',
+    };
+
+    render(<OfferLetterPreviewContent formData={gracePeriodData} companyInfo={mockCompanyInfo} />);
+
+    expect(
+      screen.getByText(
+        /Initial Guaranteed Grace Period & Performance-Linked Post-Tenure Remuneration/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/3 months/i)).toBeInTheDocument();
+    expect(screen.getByText(/Commencing from Month/i)).toBeInTheDocument();
+    expect(screen.getByText('4')).toBeInTheDocument();
+    expect(screen.getByText(/50%/i)).toBeInTheDocument();
+    expect(screen.getByText(/₹ 15,000\.00 per month/i)).toBeInTheDocument();
+  });
+
+  it('renders Target-Linked Pro-Rata Remuneration & Zero-Sale Policy clause when enabled', () => {
+    const targetTierData = {
+      ...baseFormData,
+      enablePartialTargetRule: true,
+      salaryCtc: '30000',
+      target: '300',
+    };
+
+    render(<OfferLetterPreviewContent formData={targetTierData} companyInfo={mockCompanyInfo} />);
+
+    expect(
+      screen.getByText(/Target-Linked Pro-Rata Remuneration & Zero-Sale Policy/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Tier 1 \(Target Achieved/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 2 \(Partial Target/i)).toBeInTheDocument();
+    expect(screen.getByText(/1\/2 \(50%\) of agreed salary/i)).toBeInTheDocument();
+    expect(screen.getByText(/₹ 15,000\.00 per month/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 3 \(Zero Sales \/ 0 Closures\)/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/regardless of whether it is your first month of service/i)
+    ).toBeInTheDocument();
+  });
+
   it('renders telecaller mandatory meetings requirement when configured', () => {
     const telecallerData = {
       ...baseFormData,
