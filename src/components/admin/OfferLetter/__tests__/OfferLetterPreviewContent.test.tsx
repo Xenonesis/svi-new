@@ -102,18 +102,23 @@ describe('OfferLetterPreviewContent', () => {
       )
     ).toBeInTheDocument();
 
-    // Clause 9: Restrictive Covenants & Non-Solicitation
+    // Clause 9: Restrictive Covenants & Non-Solicitation & Lead Protection
     expect(
       screen.getByText(
-        /9\. Restrictive Covenants: Non-Solicitation, Exclusivity & Conflict of Interest/i
+        /9\. Restrictive Covenants: Non-Solicitation, Lead Protection & Anti-Kickback/i
       )
     ).toBeInTheDocument();
-
-    // Termination & Separation
     expect(
-      screen.getByText(/Termination of Employment, Separation Protocols & Summary Dismissal/i)
+      screen.getByText(/9\.3 Company Lead Protection, Non-Diversion & Anti-Kickback:/i)
     ).toBeInTheDocument();
 
+    // Termination & Separation & Cash handling
+    expect(
+      screen.getByText(/12\. Termination of Employment, Cash Handling Rules & Summary Dismissal/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/12\.2 Zero-Tolerance Direct Cash Handling & Unauthorized Collections:/i)
+    ).toBeInTheDocument();
     // Clause 14: Governing Law & Arbitration
     expect(screen.getByText(/14\. Governing Law & Dispute Resolution/i)).toBeInTheDocument();
 

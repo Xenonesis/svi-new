@@ -16,6 +16,7 @@ export interface OfferLetterFormData {
   salaryCtc?: string;
   salaryType?: string;
   target?: string;
+  targetUnit?: 'Sq. Yd.' | 'Sq. Ft.' | 'Lakhs' | 'Crores' | string;
   offerSlab?: string;
   workingHoursStart?: string;
   workingHoursEnd?: string;
@@ -55,6 +56,7 @@ export default function OfferLetterPreviewContent({
   matchedSlab: initialMatchedSlab,
 }: OfferLetterPreviewContentProps) {
   const isSalesDepartment = formData.department === 'Sales';
+  const targetUnit = formData.targetUnit || 'Sq. Yd.';
 
   // Resolve matched slab if not explicitly passed
   const matchedSlab =
@@ -389,7 +391,7 @@ export default function OfferLetterPreviewContent({
                           <span className="font-bold text-gray-900">
                             {formData.target ||
                               (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                            Sq. Yd.
+                            {targetUnit}
                           </span>{' '}
                           per calendar month. You shall be eligible to receive a performance-linked
                           sales commission of{' '}
@@ -541,7 +543,7 @@ export default function OfferLetterPreviewContent({
                           <span className="font-bold text-gray-900">
                             {formData.target ||
                               (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                            Sq. Yd.
+                            {targetUnit}
                           </span>{' '}
                           per calendar month under the following performance appraisal tiers:
                         </p>
@@ -553,7 +555,7 @@ export default function OfferLetterPreviewContent({
                                 Tier 1 &mdash; Benchmark Realization (&ge;{' '}
                                 {formData.target ||
                                   (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                                Sq. Yd.):
+                                {targetUnit}):
                               </span>{' '}
                               Disbursement of unabated contracted{' '}
                               {formData.salaryType === 'in_hand' ||
@@ -574,7 +576,7 @@ export default function OfferLetterPreviewContent({
                                 Tier 2 &mdash; Sub-Benchmark Production Yield (&lt;{' '}
                                 {formData.target ||
                                   (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                                Sq. Yd. with active closures):
+                                {targetUnit} with active closures):
                               </span>{' '}
                               Where verified sales realization falls below the assigned monthly
                               threshold despite active transaction closures, monthly remuneration
@@ -822,11 +824,10 @@ export default function OfferLetterPreviewContent({
                 documentation required to vest absolute legal title in the Company.
               </p>
             </div>
-
             {/* Clause 9: Restrictive Covenants & Non-Solicitation */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
-                9. Restrictive Covenants: Non-Solicitation, Exclusivity &amp; Conflict of Interest
+                9. Restrictive Covenants: Non-Solicitation, Lead Protection &amp; Anti-Kickback
               </p>
               <p className="mt-0.5 text-gray-800">
                 <span className="font-bold text-gray-900">9.1 Exclusivity of Employment:</span> You
@@ -844,8 +845,21 @@ export default function OfferLetterPreviewContent({
                 terminate or diminish their commercial relationship with the Company; or (b)
                 solicit, recruit, or hire any employee, executive, or consultant of the Company.
               </p>
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">
+                  9.3 Company Lead Protection, Non-Diversion &amp; Anti-Kickback:
+                </span>{' '}
+                All prospective buyer enquiries, investor rosters, site visit logs, and client
+                databases constitute strictly confidential trade secrets of the Company. You are
+                expressly prohibited from: (a) diverting, transmitting, or selling Company leads or
+                prospects to external real estate developers, brokers, or channel partners; (b)
+                brokering or closing property transactions outside the Company for private gain; or
+                (c) demanding or accepting personal kickbacks or unauthorized brokerage fees. Any
+                breach constitutes criminal breach of trust (under BNS / IPC), resulting in
+                immediate summary dismissal, full forfeiture of pending commissions, and criminal
+                prosecution.
+              </p>
             </div>
-
             {/* Clause 10: Performance Management & PIP */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
@@ -880,7 +894,7 @@ export default function OfferLetterPreviewContent({
             {/* Clause 12: Termination of Employment */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
-                12. Termination of Employment, Separation Protocols &amp; Summary Dismissal
+                12. Termination of Employment, Cash Handling Rules &amp; Summary Dismissal
               </p>
               <p className="mt-0.5 text-gray-800">
                 <span className="font-bold text-gray-900">12.1 Notice Periods:</span> During
@@ -890,15 +904,26 @@ export default function OfferLetterPreviewContent({
                 lieu, subject to full handover clearance.
               </p>
               <p className="mt-0.5 text-gray-800">
-                <span className="font-bold text-gray-900">12.2 Summary Dismissal for Cause:</span>{' '}
-                The Company reserves the right to immediately terminate employment without notice or
-                terminal benefits for: (a) breach of confidentiality/IP; (b) fraud, embezzlement, or
-                criminal conduct; (c) submission of forged/false onboarding credentials; (d) gross
-                insubordination; or (e) continuous unauthorized absence exceeding three (3) business
-                days.
+                <span className="font-bold text-gray-900">
+                  12.2 Zero-Tolerance Direct Cash Handling &amp; Unauthorized Collections:
+                </span>{' '}
+                All customer booking tokens, earnest money, and installment payments must strictly
+                be deposited directly into the Company&rsquo;s official bank accounts against
+                authorized printed SVI receipts. You are strictly barred from accepting direct cash
+                payments from clients or soliciting funds into your personal bank account / UPI ID
+                under any circumstances. Any violation constitutes financial fraud and embezzlement,
+                triggering immediate summary dismissal without dues and the lodging of a Police FIR.
               </p>
               <p className="mt-0.5 text-gray-800">
-                <span className="font-bold text-gray-900">12.3 Asset Handover &amp; NOC:</span> Upon
+                <span className="font-bold text-gray-900">12.3 Summary Dismissal for Cause:</span>{' '}
+                The Company reserves the right to immediately terminate employment without notice or
+                terminal benefits for: (a) breach of confidentiality, IP theft, or lead diversion;
+                (b) financial fraud, unauthorized cash collection, or criminal conduct; (c)
+                submission of forged onboarding credentials; (d) gross insubordination; or (e)
+                continuous unauthorized absence exceeding three (3) business days.
+              </p>
+              <p className="mt-0.5 text-gray-800">
+                <span className="font-bold text-gray-900">12.4 Asset Handover &amp; NOC:</span> Upon
                 separation, all Company laptops, keycards, records, client lists, and digital
                 credentials must be surrendered immediately prior to final dues settlement.
               </p>

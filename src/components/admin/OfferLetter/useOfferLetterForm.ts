@@ -22,6 +22,7 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   salaryCtc: '',
   salaryType: 'CTC',
   target: '',
+  targetUnit: 'Sq. Yd.',
   offerSlab: '',
   workingHoursStart: '10:30 am',
   workingHoursEnd: '6:30 pm',

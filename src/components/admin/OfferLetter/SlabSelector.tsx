@@ -28,10 +28,12 @@ interface SlabSelectorProps {
   salaryCtc: string;
   salaryType?: string;
   target: string;
+  targetUnit?: string;
   offerSlab: string;
   onSalaryChange: (value: string) => void;
   onSalaryTypeChange?: (value: string) => void;
   onTargetChange: (value: string) => void;
+  onTargetUnitChange?: (value: string) => void;
   onOfferSlabChange: (value: string) => void;
   onSalarySelect: (s: SalarySlabType) => void;
   onTargetSelect: (s: SalarySlabType) => void;
@@ -41,10 +43,12 @@ export function SlabSelector({
   salaryCtc,
   salaryType = 'CTC',
   target,
+  targetUnit = 'Sq. Yd.',
   offerSlab,
   onSalaryChange,
   onSalaryTypeChange,
   onTargetChange,
+  onTargetUnitChange,
   onOfferSlabChange,
   onSalarySelect,
   onTargetSelect,
@@ -163,9 +167,29 @@ export function SlabSelector({
 
       {/* Target Input */}
       <div ref={targetRef} className="relative">
-        <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-          Target (Sq. Yd.)
-        </label>
+        <div className="mb-1.5 flex items-center justify-between">
+          <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+            Target ({targetUnit})
+          </label>
+          {onTargetUnitChange && (
+            <div className="flex items-center rounded-md bg-gray-100 p-0.5 dark:bg-white/10">
+              {['Sq. Yd.', 'Sq. Ft.', 'Lakhs', 'Crores'].map((unit) => (
+                <button
+                  key={unit}
+                  type="button"
+                  onClick={() => onTargetUnitChange(unit)}
+                  className={`rounded px-1.5 py-0.5 text-[9px] font-bold transition-all ${
+                    targetUnit === unit
+                      ? 'bg-brand-gold text-brand-navy shadow-sm'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  }`}
+                >
+                  {unit}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
         <input
           type="number"
           name="target"

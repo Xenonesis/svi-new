@@ -299,10 +299,12 @@ export function OfferLetterForm({
               salaryCtc={formData.salaryCtc}
               salaryType={formData.salaryType || 'CTC'}
               target={formData.target}
+              targetUnit={formData.targetUnit || 'Sq. Yd.'}
               offerSlab={formData.offerSlab}
               onSalaryChange={handleSalaryChange}
               onSalaryTypeChange={(val) => setFormData((prev) => ({ ...prev, salaryType: val }))}
               onTargetChange={handleTargetChange}
+              onTargetUnitChange={(val) => setFormData((prev) => ({ ...prev, targetUnit: val }))}
               onOfferSlabChange={(value) => setFormData((prev) => ({ ...prev, offerSlab: value }))}
               onSalarySelect={handleSalarySelect}
               onTargetSelect={handleTargetSelect}

@@ -13,6 +13,7 @@ export interface OfferLetterFormData {
   salaryCtc: string;
   salaryType?: 'CTC' | 'in_hand' | string;
   target: string;
+  targetUnit?: 'Sq. Yd.' | 'Sq. Ft.' | 'Lakhs' | 'Crores' | string;
   offerSlab: string;
   workingHoursStart: string;
   workingHoursEnd: string;
