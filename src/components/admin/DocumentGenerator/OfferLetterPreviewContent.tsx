@@ -471,7 +471,7 @@ export default function OfferLetterPreviewContent({
                           </span>
                           , your remuneration shall be structured at{' '}
                           <span className="font-bold text-gray-900">
-                            {formData.customSalaryPercent || '[X]'}%
+                            {parseFloat(formData.customSalaryPercent || '0')}%
                           </span>{' '}
                           of your agreed{' '}
                           {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
@@ -481,11 +481,13 @@ export default function OfferLetterPreviewContent({
                           <span className="font-bold text-gray-900">
                             ₹{' '}
                             {(() => {
-                              const pct = parseFloat(formData.customSalaryPercent || '0');
+                              const pctStr = formData.customSalaryPercent;
+                              const pct =
+                                pctStr !== undefined && pctStr !== '' ? parseFloat(pctStr) : NaN;
                               const ctc = parseFloat(formData.salaryCtc || '0');
-                              return pct && ctc
-                                ? formatINR(Math.round((pct / 100) * ctc))
-                                : '[Amount]';
+                              if (isNaN(pct) || isNaN(ctc) || !formData.salaryCtc)
+                                return '[Amount]';
+                              return formatINR(Math.round((pct / 100) * ctc));
                             })()}{' '}
                             per month
                           </span>
@@ -532,17 +534,19 @@ export default function OfferLetterPreviewContent({
                             subsequent evaluation cycle characterized by sub-quota or zero
                             transaction yield, monthly emoluments shall automatically be revised to{' '}
                             <span className="font-bold text-gray-900">
-                              {formData.reducedSalaryPercent || '50'}%
+                              {parseFloat(formData.reducedSalaryPercent || '50')}%
                             </span>{' '}
                             of contracted baseline compensation, amounting to{' '}
                             <span className="font-bold text-gray-900">
                               ₹{' '}
                               {(() => {
-                                const pct = parseFloat(formData.reducedSalaryPercent || '50');
+                                const pctStr = formData.reducedSalaryPercent;
+                                const pct =
+                                  pctStr !== undefined && pctStr !== '' ? parseFloat(pctStr) : 50;
                                 const ctc = parseFloat(formData.salaryCtc || '0');
-                                return pct && ctc
-                                  ? formatINR(Math.round((pct / 100) * ctc))
-                                  : '[Amount]';
+                                if (isNaN(pct) || isNaN(ctc) || !formData.salaryCtc)
+                                  return '[Amount]';
+                                return formatINR(Math.round((pct / 100) * ctc));
                               })()}{' '}
                               per month
                             </span>
