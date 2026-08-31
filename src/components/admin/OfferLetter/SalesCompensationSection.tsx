@@ -649,14 +649,23 @@ export function SalesCompensationSection({
                 <label className="mb-1 block text-[10px] font-semibold text-gray-600 dark:text-gray-400">
                   Weekly Off Day(s)
                 </label>
-                <input
-                  type="text"
+                <select
                   name="weeklyOffDays"
-                  value={weeklyOffDays || ''}
+                  value={weeklyOffDays || 'Tuesday'}
                   onChange={(e) => onValueChange('weeklyOffDays', e.target.value)}
-                  placeholder="Tuesday (or as per departmental roster)"
                   className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                />
+                >
+                  <option value="Tuesday">Tuesday</option>
+                  <option value="Wednesday">Wednesday</option>
+                  <option value="Monday">Monday</option>
+                  <option value="Thursday">Thursday</option>
+                  <option value="Friday">Friday</option>
+                  <option value="Saturday">Saturday</option>
+                  <option value="Sunday">Sunday</option>
+                  <option value="Tuesday & Wednesday">Tuesday &amp; Wednesday</option>
+                  <option value="Wednesday & Thursday">Wednesday &amp; Thursday</option>
+                  <option value="Rotational (As per roster)">Rotational (As per roster)</option>
+                </select>
               </div>
             </div>
           )}
