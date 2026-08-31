@@ -452,9 +452,36 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ email: emailData });
     }
 
+    // ─── Email Drafts (Current / All) ───
+    if (action === 'draft') {
+      const { data, error } = await supabaseAdmin
+        .from('email_drafts')
+        .select('*')
+        .eq('user_id', admin.id)
+        .eq('is_current', true)
+        .maybeSingle();
+
+      if (error) {
+        return NextResponse.json({ draft: null, error: error.message });
+      }
+      return NextResponse.json({ draft: data || null });
+    }
+
+    if (action === 'drafts') {
+      const { data, error } = await supabaseAdmin
+        .from('email_drafts')
+        .select('*')
+        .eq('user_id', admin.id)
+        .order('updated_at', { ascending: false });
+
+      if (error) {
+        return NextResponse.json({ drafts: [], error: error.message });
+      }
+      return NextResponse.json({ drafts: data || [] });
+    }
+
     // ─── Inbox / Replies — from email_inbox table ───
     if (action === 'replies' || action === 'inbox') {
-      // Sync latest emails from Resend receiving API
       await syncInboundEmails(resend);
 
       const filter = url.searchParams.get('filter') || 'inbox'; // inbox, unread, starred, archived, all
@@ -1740,6 +1767,71 @@ export async function POST(request: NextRequest) {
           console.error('Failed to create permanent delete notification:', notifErr);
         }
       }
+
+      return NextResponse.json({ success: true });
+    }
+
+    // ─── Save Email Draft (Auto-Save / Manual Save) ───
+    if (action === 'save_draft') {
+      const { row } = body;
+      if (!row) return NextResponse.json({ error: 'Missing draft row' }, { status: 400 });
+
+      const isCurrent = row.is_current ?? true;
+      const rowData = {
+        ...row,
+        user_id: admin.id,
+        is_current: isCurrent,
+        updated_at: new Date().toISOString(),
+      };
+
+      if (isCurrent) {
+        const { data: existing } = await supabaseAdmin
+          .from('email_drafts')
+          .select('id')
+          .eq('user_id', admin.id)
+          .eq('is_current', true)
+          .maybeSingle();
+
+        if (existing) {
+          const { data, error } = await supabaseAdmin
+            .from('email_drafts')
+            .update(rowData)
+            .eq('id', existing.id)
+            .select()
+            .maybeSingle();
+
+          if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+          return NextResponse.json({ success: true, draft: data });
+        }
+      }
+
+      const { data, error } = await supabaseAdmin
+        .from('email_drafts')
+        .insert(rowData)
+        .select()
+        .maybeSingle();
+
+      if (error) return NextResponse.json({ error: error.message }, { status: 400 });
+      return NextResponse.json({ success: true, draft: data });
+    }
+
+    // ─── Clear Current Draft ───
+    if (action === 'clear_draft') {
+      await supabaseAdmin
+        .from('email_drafts')
+        .delete()
+        .eq('user_id', admin.id)
+        .eq('is_current', true);
+
+      return NextResponse.json({ success: true });
+    }
+
+    // ─── Delete Specific Draft ───
+    if (action === 'delete_draft') {
+      const { id } = body;
+      if (!id) return NextResponse.json({ error: 'Missing draft id' }, { status: 400 });
+
+      await supabaseAdmin.from('email_drafts').delete().eq('id', id).eq('user_id', admin.id);
 
       return NextResponse.json({ success: true });
     }

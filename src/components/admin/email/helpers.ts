@@ -2,6 +2,9 @@ import { supabase } from '@/src/lib/supabase/client';
 import type { DraftData } from './types';
 
 export async function getToken(): Promise<string> {
+  const { useAuthStore } = await import('@/src/stores/authStore');
+  const storeToken = useAuthStore.getState().token;
+  if (storeToken) return storeToken;
   const { data } = await supabase.auth.getSession();
   return data.session?.access_token || '';
 }
@@ -248,22 +251,22 @@ async function ensureMigrated(): Promise<void> {
 }
 
 export async function getAllDrafts(): Promise<DraftData[]> {
-  await ensureMigrated();
-  const userId = await getUserId();
-  if (!userId) return [];
-
-  const { data, error } = await supabase
-    .from('email_drafts')
-    .select('*')
-    .eq('user_id', userId)
-    .order('updated_at', { ascending: false });
-
-  if (error || !data) {
-    console.error('Failed to load drafts:', error);
-    return [];
+  try {
+    const token = await getToken();
+    if (!token) return [];
+    const res = await fetch('/api/admin/email?action=drafts', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (Array.isArray(json.drafts)) {
+        return json.drafts.map(rowToDraftData);
+      }
+    }
+  } catch {
+    // fallback
   }
-
-  return data.map(rowToDraftData);
+  return [];
 }
 
 export async function saveDraft(draft: {
@@ -294,46 +297,25 @@ export async function saveDraft(draft: {
     // ignore localStorage quota error
   }
 
-  // 2. Persist to Supabase backend
-  const userId = await getUserId();
-  if (!userId) return false;
-
-  const row = draftDataToRow({ ...draft, isCurrent: true });
-
-  // Try update first (current draft exists)
-  const { data: existing, error: fetchError } = await supabase
-    .from('email_drafts')
-    .select('id')
-    .eq('user_id', userId)
-    .eq('is_current', true)
-    .maybeSingle();
-
-  if (fetchError) {
-    console.error('Failed to check draft:', fetchError);
-    return false;
-  }
-
-  if (existing) {
-    // Update existing current draft
-    const { error: updateError } = await supabase
-      .from('email_drafts')
-      .update(row)
-      .eq('id', existing.id);
-
-    if (updateError) {
-      console.error('Failed to update draft:', updateError);
-      return false;
-    }
-  } else {
-    // Insert new current draft
-    const { error: insertError } = await supabase
-      .from('email_drafts')
-      .insert({ ...row, user_id: userId });
-
-    if (insertError) {
-      console.error('Failed to insert draft:', insertError);
-      return false;
-    }
+  // 2. Persist to API route
+  try {
+    const token = await getToken();
+    if (!token) return true;
+    const row = draftDataToRow({ ...draft, isCurrent: true });
+    const res = await fetch('/api/admin/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        action: 'save_draft',
+        row,
+      }),
+    });
+    if (res.ok) return true;
+  } catch {
+    // Silent fallback to local storage
   }
 
   return true;
@@ -377,25 +359,24 @@ export async function loadDraft(): Promise<DraftData | null> {
       }
     }
   } catch {
-    // fallback to Supabase
+    // fallback to backend
   }
 
-  await ensureMigrated();
-  const userId = await getUserId();
-  if (!userId) return null;
-
-  const { data, error } = await supabase
-    .from('email_drafts')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('is_current', true)
-    .maybeSingle();
-
-  if (error || !data) {
-    return null;
+  try {
+    const token = await getToken();
+    if (!token) return null;
+    const res = await fetch('/api/admin/email?action=draft', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.draft) return rowToDraftData(json.draft);
+    }
+  } catch {
+    // Silent fallback
   }
 
-  return rowToDraftData(data);
+  return null;
 }
 
 export async function clearDraft(): Promise<void> {
@@ -404,24 +385,38 @@ export async function clearDraft(): Promise<void> {
   } catch {
     // ignore
   }
-  const userId = await getUserId();
-  if (!userId) return;
-
-  await supabase.from('email_drafts').delete().eq('user_id', userId).eq('is_current', true);
+  try {
+    const token = await getToken();
+    if (!token) return;
+    await fetch('/api/admin/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'clear_draft' }),
+    });
+  } catch {
+    // ignore
+  }
 }
 
 export async function deleteDraft(id: string): Promise<boolean> {
-  const userId = await getUserId();
-  if (!userId) return false;
-
-  // Allow deleting 'current' via this too
-  const { error } = await supabase.from('email_drafts').delete().eq('id', id).eq('user_id', userId);
-
-  if (error) {
-    console.error('Failed to delete draft:', error);
+  try {
+    const token = await getToken();
+    if (!token) return false;
+    const res = await fetch('/api/admin/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'delete_draft', id }),
+    });
+    return res.ok;
+  } catch {
     return false;
   }
-  return true;
 }
 
 export async function saveNewDraft(draft: {
@@ -434,23 +429,26 @@ export async function saveNewDraft(draft: {
   replyTo: string;
   fromName: string;
 }): Promise<DraftData | null> {
-  const userId = await getUserId();
-  if (!userId) return null;
-
-  const row = draftDataToRow({ ...draft, isCurrent: false });
-
-  const { data, error } = await supabase
-    .from('email_drafts')
-    .insert({ ...row, user_id: userId })
-    .select()
-    .single();
-
-  if (error || !data) {
-    console.error('Failed to save new draft:', error);
+  try {
+    const token = await getToken();
+    if (!token) return null;
+    const row = draftDataToRow({ ...draft, isCurrent: false });
+    const res = await fetch('/api/admin/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ action: 'save_draft', row }),
+    });
+    if (res.ok) {
+      const json = await res.json();
+      if (json.draft) return rowToDraftData(json.draft);
+    }
+  } catch {
     return null;
   }
-
-  return rowToDraftData(data);
+  return null;
 }
 
 // ─── Forward / Reply HTML Builders ──────────────────────────
