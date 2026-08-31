@@ -33,7 +33,7 @@ describe('SalesCompensationSection', () => {
     expect(screen.getByText('Sales Compensation Policy')).toBeInTheDocument();
     expect(screen.getByText('No Sale No Salary')).toBeInTheDocument();
     expect(screen.getByText('Custom % of Salary')).toBeInTheDocument();
-    expect(screen.getByText('Grace Period + Reduced %')).toBeInTheDocument();
+    expect(screen.getByText('Gestation Window + Adjusted Retainer')).toBeInTheDocument();
   });
 
   it('calls onToggleType when compensation type is clicked', () => {
@@ -42,7 +42,7 @@ describe('SalesCompensationSection', () => {
     fireEvent.click(screen.getByText('No Sale No Salary'));
     expect(mockProps.onToggleType).toHaveBeenCalledWith('no_sale_no_salary');
 
-    fireEvent.click(screen.getByText('Grace Period + Reduced %'));
+    fireEvent.click(screen.getByText('Gestation Window + Adjusted Retainer'));
     expect(mockProps.onToggleType).toHaveBeenCalledWith('grace_period_reduced_percent');
   });
 
@@ -59,7 +59,7 @@ describe('SalesCompensationSection', () => {
     expect(screen.getByText('Guaranteed Salary (%)')).toBeInTheDocument();
   });
 
-  it('shows Grace Period + Reduced % options and breakdown when selected', () => {
+  it('shows Gestation Window + Adjusted Retainer options and breakdown when selected', () => {
     render(
       <SalesCompensationSection
         {...mockProps}
@@ -69,8 +69,8 @@ describe('SalesCompensationSection', () => {
       />
     );
 
-    expect(screen.getByText('Initial Full Salary Period (Months)')).toBeInTheDocument();
-    expect(screen.getByText('Post-Grace Salary (% on No Sale)')).toBeInTheDocument();
+    expect(screen.getByText('Initial Gestation Window (Months)')).toBeInTheDocument();
+    expect(screen.getByText('Post-Gestation Retainer (% on Sub-Quota Yield)')).toBeInTheDocument();
     expect(screen.getByText(/Phase 1: Initial 3 Months/i)).toBeInTheDocument();
     expect(screen.getByText(/Phase 2: Month 4\+/i)).toBeInTheDocument();
     expect(screen.getByText(/₹25,000\/month/i)).toBeInTheDocument();
@@ -86,7 +86,7 @@ describe('SalesCompensationSection', () => {
     expect(mockProps.onValueChange).toHaveBeenCalledWith('noSaleMonths', '6');
   });
 
-  it('calls onValueChange when grace period inputs change', () => {
+  it('calls onValueChange when gestation window inputs change', () => {
     render(
       <SalesCompensationSection
         {...mockProps}
@@ -105,12 +105,14 @@ describe('SalesCompensationSection', () => {
     expect(mockProps.onValueChange).toHaveBeenCalledWith('reducedSalaryPercent', '40');
   });
 
-  it('renders Target-Linked Pro-Rata & Zero-Sale Policy toggle and calls onValueChange', () => {
+  it('renders Quota-Indexed Tiered Remuneration toggle and calls onValueChange', () => {
     render(<SalesCompensationSection {...mockProps} />);
 
-    expect(screen.getByText(/Target-Linked Pro-Rata & Zero-Sale Policy/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Quota-Indexed Tiered Remuneration & Performance Contingency Matrix/i)
+    ).toBeInTheDocument();
     const checkbox = screen.getByRole('checkbox', {
-      name: /Target-Linked Pro-Rata & Zero-Sale Policy/i,
+      name: /Quota-Indexed Tiered Remuneration & Performance Contingency Matrix/i,
     });
     fireEvent.click(checkbox);
 
@@ -127,10 +129,11 @@ describe('SalesCompensationSection', () => {
       />
     );
 
-    expect(screen.getByText(/Tier 1 · 100%\+ Quota/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tier 2 · Under Quota \(>0\)/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tier 3 · Zero Sales \(0\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 1 · Benchmark Realization/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 2 · Sub-Benchmark Yield/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 3 · Null Production Yield/i)).toBeInTheDocument();
+    expect(screen.getByText(/Zero Transaction Closure/i)).toBeInTheDocument();
     expect(screen.getByText(/₹15,000/i)).toBeInTheDocument();
-    expect(screen.getByText(/Applies from Month 1/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/Remuneration Abeyance/i).length).toBeGreaterThan(0);
   });
 });

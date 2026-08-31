@@ -472,39 +472,38 @@ export default function OfferLetterPreviewContent({
                     formData.salesCompensationType === 'grace_period_reduced_percent' && (
                       <div className="border-t border-gray-300 pt-2 text-gray-900">
                         <p className="font-bold text-[#1e3a8a]">
-                          Clause 3.1 &mdash; Initial Guaranteed Grace Period &amp;
-                          Performance-Linked Post-Tenure Remuneration:
+                          Clause 3.1 &mdash; Onboarding Incubation Window &amp; Performance-Indexed
+                          Post-Tenure Remuneration:
                         </p>
                         <p className="mt-0.5 text-gray-800">
-                          For an initial onboarding and pipeline development period of{' '}
+                          To facilitate structured pipeline gestation and market familiarization, an
+                          initial onboarding incubation window of{' '}
                           <span className="font-bold text-gray-900">
                             {formData.gracePeriodMonths || '3'} months
                           </span>{' '}
-                          from the Date of Appointment (&ldquo;Initial Grace Period&rdquo;), you
-                          shall receive 100% of your agreed{' '}
-                          {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                            ? 'Net In-Hand salary'
-                            : 'CTC'}{' '}
-                          of{' '}
+                          from the Date of Appointment (&ldquo;Gestation Window&rdquo;) is hereby
+                          established. During this designated gestation window, you shall be
+                          entitled to unabated baseline monthly remuneration of{' '}
                           <span className="font-bold text-gray-900">
                             ₹ {formatINR(formData.salaryCtc || '0')} per month
                           </span>{' '}
-                          regardless of sales closure volumes. Commencing from Month{' '}
+                          (
+                          {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                            ? 'Net In-Hand entitlement'
+                            : 'fixed CTC'}
+                          ) without prejudice to immediate deal closure realization. Effective from
+                          Month{' '}
                           <span className="font-bold text-gray-900">
                             {parseInt(formData.gracePeriodMonths || '3') + 1}
                           </span>{' '}
-                          onward, full salary disbursement is strictly contingent upon regular sales
-                          quota achievement. In any subsequent evaluation cycle where zero (0) sales
-                          transactions or assigned sales quotas are achieved, your monthly
-                          remuneration shall automatically be adjusted to{' '}
+                          onward, standard monthly disbursement becomes strictly
+                          performance-contingent upon assigned sales quota realization. In any
+                          subsequent evaluation cycle characterized by sub-quota or zero transaction
+                          yield, monthly emoluments shall automatically be revised to{' '}
                           <span className="font-bold text-gray-900">
                             {formData.reducedSalaryPercent || '50'}%
                           </span>{' '}
-                          of your agreed{' '}
-                          {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                            ? 'Net In-Hand salary'
-                            : 'CTC'}
-                          , amounting to{' '}
+                          of contracted baseline compensation, amounting to{' '}
                           <span className="font-bold text-gray-900">
                             ₹{' '}
                             {(() => {
@@ -516,8 +515,9 @@ export default function OfferLetterPreviewContent({
                             })()}{' '}
                             per month
                           </span>
-                          . Upon achieving validated sales closures and meeting assigned quota
-                          targets, 100% full salary disbursement shall be reinstated for that cycle.
+                          . Upon achieving confirmed sales closures and fulfilling benchmark quotas,
+                          standard unabated compensation disbursement shall be restored for the
+                          applicable billing period.
                         </p>
                       </div>
                     )}
@@ -526,52 +526,53 @@ export default function OfferLetterPreviewContent({
                   {isSalesDepartment && Boolean(formData.enablePartialTargetRule) && (
                     <div className="border-t border-gray-300 pt-2 text-gray-900">
                       <p className="font-bold text-[#1e3a8a]">
-                        Clause 3.2 &mdash; Target-Linked Pro-Rata Remuneration &amp; Zero-Sale
-                        Policy:
+                        Clause 3.2 &mdash; Quota-Indexed Tiered Remuneration &amp; Performance
+                        Contingency Matrix:
                       </p>
                       <p className="mt-0.5 text-gray-800">
-                        Your monthly salary disbursement is strictly governed by your assigned sales
-                        quota of{' '}
+                        Monthly compensation entitlement is strictly indexed to your assigned sales
+                        benchmark of{' '}
                         <span className="font-bold text-gray-900">
                           {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
                           Sq. Yd.
                         </span>{' '}
-                        per calendar month across the following performance tiers:
+                        per calendar month under the following performance appraisal tiers:
                       </p>
                       <ul className="mt-1.5 space-y-1 pl-3 text-gray-800">
                         <li className="flex items-start gap-1.5">
                           <span className="font-bold text-[#1e3a8a]">&bull;</span>
                           <div>
                             <span className="font-semibold text-gray-900">
-                              Tier 1 (Target Achieved &ge;{' '}
+                              Tier 1 &mdash; Benchmark Realization (&ge;{' '}
                               {formData.target ||
                                 (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
                               Sq. Yd.):
                             </span>{' '}
-                            100% full{' '}
+                            Disbursement of unabated contracted{' '}
                             {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                              ? 'Net In-Hand salary'
+                              ? 'Net In-Hand compensation'
                               : 'CTC'}{' '}
                             of{' '}
                             <span className="font-bold text-gray-900">
                               ₹ {formatINR(formData.salaryCtc || '0')} per month
-                            </span>{' '}
-                            plus eligible sales commissions.
+                            </span>
+                            , in addition to eligible variable incentive apportionments.
                           </div>
                         </li>
                         <li className="flex items-start gap-1.5">
                           <span className="font-bold text-amber-600">&bull;</span>
                           <div>
                             <span className="font-semibold text-gray-900">
-                              Tier 2 (Partial Target &lt;{' '}
+                              Tier 2 &mdash; Sub-Benchmark Production Yield (&lt;{' '}
                               {formData.target ||
                                 (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                              Sq. Yd. with &gt; 0 sales closures):
+                              Sq. Yd. with active closures):
                             </span>{' '}
-                            In the event of partial target realization, your monthly remuneration
-                            shall be restricted to{' '}
+                            Where verified sales realization falls below the assigned monthly
+                            threshold despite active transaction closures, monthly remuneration
+                            shall be restricted to a{' '}
                             <span className="font-bold text-gray-900">
-                              1/2 (50%) of agreed salary
+                              prorated fifty percent (50%) baseline emolument apportionment
                             </span>
                             , amounting to{' '}
                             <span className="font-bold text-gray-900">
@@ -585,22 +586,22 @@ export default function OfferLetterPreviewContent({
                           <span className="font-bold text-red-600">&bull;</span>
                           <div>
                             <span className="font-semibold text-gray-900">
-                              Tier 3 (Zero Sales / 0 Closures):
+                              Tier 3 &mdash; Zero-Production Non-Disbursement Policy (0 closures):
                             </span>{' '}
-                            In any evaluation cycle where zero (0) sales transactions are closed,
-                            the{' '}
+                            In any monthly cycle resulting in zero (0) verified transaction
+                            closures, complete remuneration abeyance shall be enforced under the
+                            Company&rsquo;s{' '}
                             <span className="font-bold text-gray-900">
-                              &ldquo;No Sale No Salary&rdquo;
-                            </span>{' '}
-                            policy shall strictly apply in full force, and no salary disbursement
-                            shall accrue, regardless of whether it is your first month of service or
-                            subsequent tenure.
+                              &ldquo;Zero-Production Non-Disbursement Policy&rdquo;
+                            </span>
+                            . No fixed emoluments, retainership allowances, or retrospective
+                            compensation shall accrue, applicable ab initio from Month 1 and across
+                            all operational cycles.
                           </div>
                         </li>
                       </ul>
                     </div>
                   )}
-
                   {/* Meetings */}
                   {isSalesDepartment && formData.meetingsPerMonth && (
                     <div className="border-t border-gray-300 pt-2 text-[11px] text-gray-800">

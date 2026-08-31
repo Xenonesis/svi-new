@@ -154,7 +154,7 @@ export function SalesCompensationSection({
               </div>
             </button>
 
-            {/* Grace Period + Reduced % card */}
+            {/* Gestation Window + Adjusted Retainer card */}
             <button
               type="button"
               onClick={() => onToggleType('grace_period_reduced_percent')}
@@ -188,10 +188,10 @@ export function SalesCompensationSection({
                   <p
                     className={`text-xs font-semibold ${salesCompensationType === 'grace_period_reduced_percent' ? 'text-brand-navy dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
                   >
-                    Grace Period + Reduced %
+                    Gestation Window + Adjusted Retainer
                   </p>
                   <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
-                    Full salary till X months, then % on zero sales
+                    Baseline retainership during gestation; indexed revision post-tenure
                   </p>
                 </div>
               </div>
@@ -342,7 +342,7 @@ export function SalesCompensationSection({
               {/* Grace Duration */}
               <div>
                 <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-                  Initial Full Salary Period (Months)
+                  Initial Gestation Window (Months)
                 </label>
                 <div className="flex flex-col gap-2.5">
                   <select
@@ -351,7 +351,7 @@ export function SalesCompensationSection({
                     onChange={(e) => onValueChange('gracePeriodMonths', e.target.value)}
                     className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
                   >
-                    <option value="">Select months…</option>
+                    <option value="">Select gestation months…</option>
                     {Array.from({ length: 36 }, (_, i) => i + 1).map((m) => (
                       <option key={m} value={m.toString()}>
                         {m} {m === 1 ? 'month' : 'months'}
@@ -361,7 +361,7 @@ export function SalesCompensationSection({
                   {gracePeriodMonths && (
                     <div className="inline-flex w-fit items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-[10px] font-medium text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
                       <Calendar className="h-3 w-3 text-gray-400" />
-                      Full pay until{' '}
+                      Gestation active until{' '}
                       {(() => {
                         const d = new Date();
                         d.setMonth(d.getMonth() + parseInt(gracePeriodMonths));
@@ -375,7 +375,7 @@ export function SalesCompensationSection({
               {/* Reduced Salary Percentage */}
               <div>
                 <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-                  Post-Grace Salary (% on No Sale)
+                  Post-Gestation Retainer (% on Sub-Quota Yield)
                 </label>
                 <div className="relative">
                   <input
@@ -402,11 +402,11 @@ export function SalesCompensationSection({
                   <p className="text-[10px] font-semibold text-blue-600 uppercase dark:text-blue-400">
                     Phase 1: Initial{' '}
                     {gracePeriodMonths
-                      ? `${gracePeriodMonths} Month${parseInt(gracePeriodMonths) > 1 ? 's' : ''}`
-                      : 'Grace Period'}
+                      ? `${gracePeriodMonths} Month${parseInt(gracePeriodMonths) > 1 ? 's' : ''} Gestation Window`
+                      : 'Gestation Window'}
                   </p>
                   <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
-                    100% Guaranteed Pay:{' '}
+                    Unabated Baseline Pay:{' '}
                     <span className="font-bold text-blue-700 dark:text-blue-300">
                       ₹{parseFloat(salaryCtc || '0').toLocaleString('en-IN')}/month
                     </span>
@@ -414,11 +414,11 @@ export function SalesCompensationSection({
                 </div>
                 <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3.5 dark:border-amber-500/20 dark:bg-amber-500/10">
                   <p className="text-[10px] font-semibold text-amber-600 uppercase dark:text-amber-400">
-                    Phase 2: Month {gracePeriodMonths ? parseInt(gracePeriodMonths) + 1 : 'X'}+ (If
-                    Zero Sales)
+                    Phase 2: Month {gracePeriodMonths ? parseInt(gracePeriodMonths) + 1 : 'X'}+
+                    (Sub-Quota Yield)
                   </p>
                   <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
-                    {reducedSalaryPercent || '0'}% Adjusted Pay:{' '}
+                    {reducedSalaryPercent || '0'}% Adjusted Retainer:{' '}
                     <span className="font-bold text-amber-700 dark:text-amber-300">
                       ₹
                       {reducedSalaryPercent && salaryCtc
@@ -435,7 +435,7 @@ export function SalesCompensationSection({
           </div>
         )}
 
-        {/* ── Under-Target (1/2 Salary) & Zero-Sale Condition ── */}
+        {/* ── Under-Target & Zero-Sale Condition ── */}
         <div className="border-t border-gray-100 pt-5 dark:border-white/10">
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
@@ -448,13 +448,12 @@ export function SalesCompensationSection({
                   className="text-brand-gold focus:ring-brand-gold/50 h-4 w-4 rounded border-gray-300 dark:border-white/20 dark:bg-[#111118]"
                 />
                 <span className="text-xs font-bold text-gray-900 dark:text-white">
-                  Target-Linked Pro-Rata &amp; Zero-Sale Policy
+                  Quota-Indexed Tiered Remuneration &amp; Performance Contingency Matrix
                 </span>
               </label>
               <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
-                If sales achieved &lt; assigned target ({target || 'Quota'} Sq. Yd.), 50% (1/2)
-                salary is paid. If zero sales occur, &ldquo;No Sale No Salary&rdquo; applies
-                strictly regardless of month.
+                Sub-benchmark realization yields 50% prorated baseline retainership; null-closure
+                cycles enforce complete remuneration abeyance ab initio from Month 1.
               </p>
             </div>
           </div>
@@ -465,30 +464,30 @@ export function SalesCompensationSection({
                 {/* Tier 1: Target Met */}
                 <div className="rounded-lg border border-emerald-200 bg-emerald-50/70 p-3 dark:border-emerald-500/20 dark:bg-emerald-500/10">
                   <span className="inline-block rounded bg-emerald-200/60 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 uppercase dark:bg-emerald-500/20 dark:text-emerald-300">
-                    Tier 1 &middot; 100%+ Quota
+                    Tier 1 &middot; Benchmark Realization
                   </span>
                   <p className="mt-1 text-[11px] font-semibold text-emerald-900 dark:text-emerald-200">
-                    Full Target Achieved
+                    Full Benchmark Realized
                   </p>
                   <p className="mt-0.5 text-[10px] text-emerald-700 dark:text-emerald-300">
-                    100% Salary:{' '}
+                    Unabated Baseline:{' '}
                     <span className="font-bold">
                       ₹{parseFloat(salaryCtc || '0').toLocaleString('en-IN')}
                     </span>{' '}
-                    + Commission
+                    + Variable Incentives
                   </p>
                 </div>
 
                 {/* Tier 2: Partial Target */}
                 <div className="rounded-lg border border-amber-200 bg-amber-50/70 p-3 dark:border-amber-500/20 dark:bg-amber-500/10">
                   <span className="inline-block rounded bg-amber-200/60 px-1.5 py-0.5 text-[9px] font-bold text-amber-800 uppercase dark:bg-amber-500/20 dark:text-amber-300">
-                    Tier 2 &middot; Under Quota (&gt;0)
+                    Tier 2 &middot; Sub-Benchmark Yield
                   </span>
                   <p className="mt-1 text-[11px] font-semibold text-amber-900 dark:text-amber-200">
-                    Partial Target Achieved
+                    Sub-Quota Production Yield
                   </p>
                   <p className="mt-0.5 text-[10px] text-amber-700 dark:text-amber-300">
-                    1/2 (50%) Salary:{' '}
+                    50% Baseline Apportionment:{' '}
                     <span className="font-bold">
                       ₹{Math.round(parseFloat(salaryCtc || '0') * 0.5).toLocaleString('en-IN')}
                     </span>
@@ -498,13 +497,13 @@ export function SalesCompensationSection({
                 {/* Tier 3: Zero Sales */}
                 <div className="rounded-lg border border-red-200 bg-red-50/70 p-3 dark:border-red-500/20 dark:bg-red-500/10">
                   <span className="inline-block rounded bg-red-200/60 px-1.5 py-0.5 text-[9px] font-bold text-red-800 uppercase dark:bg-red-500/20 dark:text-red-300">
-                    Tier 3 &middot; Zero Sales (0)
+                    Tier 3 &middot; Null Production Yield
                   </span>
                   <p className="mt-1 text-[11px] font-semibold text-red-900 dark:text-red-200">
-                    No Sales Closed
+                    Zero Transaction Closure
                   </p>
                   <p className="mt-0.5 text-[10px] text-red-700 dark:text-red-300">
-                    <span className="font-bold">No Sale No Salary</span> (Applies from Month 1)
+                    <span className="font-bold">Remuneration Abeyance</span> (Enforced from Month 1)
                   </p>
                 </div>
               </div>

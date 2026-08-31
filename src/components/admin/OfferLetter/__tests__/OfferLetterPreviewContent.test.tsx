@@ -155,7 +155,7 @@ describe('OfferLetterPreviewContent', () => {
     expect(screen.getByText(/₹ 18,000\.00 per month/i)).toBeInTheDocument();
   });
 
-  it('renders Grace Period with post-tenure reduced percentage clause when configured', () => {
+  it('renders Gestation Window with post-tenure adjusted retainer clause when configured', () => {
     const gracePeriodData = {
       ...baseFormData,
       salesCompensationType: 'grace_period_reduced_percent',
@@ -168,17 +168,17 @@ describe('OfferLetterPreviewContent', () => {
 
     expect(
       screen.getByText(
-        /Initial Guaranteed Grace Period & Performance-Linked Post-Tenure Remuneration/i
+        /Onboarding Incubation Window & Performance-Indexed Post-Tenure Remuneration/i
       )
     ).toBeInTheDocument();
     expect(screen.getByText(/3 months/i)).toBeInTheDocument();
-    expect(screen.getByText(/Commencing from Month/i)).toBeInTheDocument();
+    expect(screen.getByText(/Effective from Month/i)).toBeInTheDocument();
     expect(screen.getByText('4')).toBeInTheDocument();
     expect(screen.getByText(/50%/i)).toBeInTheDocument();
     expect(screen.getByText(/₹ 15,000\.00 per month/i)).toBeInTheDocument();
   });
 
-  it('renders Target-Linked Pro-Rata Remuneration & Zero-Sale Policy clause when enabled', () => {
+  it('renders Quota-Indexed Tiered Remuneration & Performance Contingency Matrix when enabled', () => {
     const targetTierData = {
       ...baseFormData,
       enablePartialTargetRule: true,
@@ -189,18 +189,19 @@ describe('OfferLetterPreviewContent', () => {
     render(<OfferLetterPreviewContent formData={targetTierData} companyInfo={mockCompanyInfo} />);
 
     expect(
-      screen.getByText(/Target-Linked Pro-Rata Remuneration & Zero-Sale Policy/i)
+      screen.getByText(/Quota-Indexed Tiered Remuneration & Performance Contingency Matrix/i)
     ).toBeInTheDocument();
-    expect(screen.getByText(/Tier 1 \(Target Achieved/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tier 2 \(Partial Target/i)).toBeInTheDocument();
-    expect(screen.getByText(/1\/2 \(50%\) of agreed salary/i)).toBeInTheDocument();
-    expect(screen.getByText(/₹ 15,000\.00 per month/i)).toBeInTheDocument();
-    expect(screen.getByText(/Tier 3 \(Zero Sales \/ 0 Closures\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 1 — Benchmark Realization/i)).toBeInTheDocument();
+    expect(screen.getByText(/Tier 2 — Sub-Benchmark Production Yield/i)).toBeInTheDocument();
     expect(
-      screen.getByText(/regardless of whether it is your first month of service/i)
+      screen.getByText(/prorated fifty percent \(50%\) baseline emolument apportionment/i)
     ).toBeInTheDocument();
+    expect(screen.getByText(/₹ 15,000\.00 per month/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/Tier 3 — Zero-Production Non-Disbursement Policy/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/applicable ab initio from Month 1/i)).toBeInTheDocument();
   });
-
   it('renders telecaller mandatory meetings requirement when configured', () => {
     const telecallerData = {
       ...baseFormData,
