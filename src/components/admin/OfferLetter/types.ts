@@ -27,6 +27,9 @@ export interface OfferLetterFormData {
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;
   partialTargetSalaryPercent?: string;
+  includeSalesPolicyBox?: boolean;
+  includeDocumentationBox?: boolean;
+  includeCandidateParticularsBox?: boolean;
 }
 
 export interface SavedOffer {

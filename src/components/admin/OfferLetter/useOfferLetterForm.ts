@@ -36,6 +36,9 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   reducedSalaryPercent: '',
   enablePartialTargetRule: false,
   partialTargetSalaryPercent: '50',
+  includeSalesPolicyBox: true,
+  includeDocumentationBox: true,
+  includeCandidateParticularsBox: true,
 };
 
 const SALES_DESIGNATIONS = ['Telecaller', 'BDM', 'BDE', 'Sales Manager', 'Team Leader'];

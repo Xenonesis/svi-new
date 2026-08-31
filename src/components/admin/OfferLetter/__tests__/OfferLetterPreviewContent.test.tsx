@@ -230,4 +230,50 @@ describe('OfferLetterPreviewContent', () => {
     expect(screen.getByText(/₹ 25,000\.00 per month/i)).toBeInTheDocument();
     expect(screen.queryByText(/annualized Net In-Hand Remuneration/i)).not.toBeInTheDocument();
   });
+
+  it('completely hides Sales Policy Box when includeSalesPolicyBox is false', () => {
+    const hiddenSalesBoxData = {
+      ...baseFormData,
+      target: '380',
+      salesCompensationType: 'no_sale_no_salary',
+      includeSalesPolicyBox: false,
+    };
+
+    render(
+      <OfferLetterPreviewContent formData={hiddenSalesBoxData} companyInfo={mockCompanyInfo} />
+    );
+
+    expect(
+      screen.queryByText(/Sales Performance Quota & Commission Matrix:/i)
+    ).not.toBeInTheDocument();
+    expect(
+      screen.queryByText(/Clause 3.1 — Performance-Linked Compensation Condition/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('completely hides Onboarding Documentation Box when includeDocumentationBox is false', () => {
+    const hiddenDocsData = {
+      ...baseFormData,
+      includeDocumentationBox: false,
+    };
+
+    render(<OfferLetterPreviewContent formData={hiddenDocsData} companyInfo={mockCompanyInfo} />);
+
+    expect(
+      screen.queryByText(/4. Mandatory Pre-Employment Onboarding Documentation/i)
+    ).not.toBeInTheDocument();
+  });
+
+  it('completely hides Candidate Particulars Card when includeCandidateParticularsBox is false', () => {
+    const hiddenCandidateCardData = {
+      ...baseFormData,
+      includeCandidateParticularsBox: false,
+    };
+
+    render(
+      <OfferLetterPreviewContent formData={hiddenCandidateCardData} companyInfo={mockCompanyInfo} />
+    );
+
+    expect(screen.queryByText(/Candidate Recipient Particulars:/i)).not.toBeInTheDocument();
+  });
 });

@@ -30,6 +30,9 @@ export interface OfferLetterFormData {
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;
   partialTargetSalaryPercent?: string;
+  includeSalesPolicyBox?: boolean;
+  includeDocumentationBox?: boolean;
+  includeCandidateParticularsBox?: boolean;
 }
 
 export interface CompanyInfo {
@@ -215,44 +218,45 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Balanced Candidate Particulars Card */}
-          <div className="mb-2 rounded border border-gray-300 bg-gray-50/50 px-3 py-1.5">
-            <p className="mb-1 border-b border-gray-300 pb-0.5 text-[10px] font-bold tracking-wider text-gray-700 uppercase">
-              Candidate Recipient Particulars:
-            </p>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
-              <div>
-                <span className="font-bold text-gray-700">Candidate Name:</span>{' '}
-                <span className="font-bold text-[#1e3a8a]">
-                  {formData.name || '[Candidate Full Name]'}
-                </span>
-              </div>
-              <div>
-                <span className="font-bold text-gray-700">Primary Contact:</span>{' '}
-                <span className="font-bold text-gray-900">
-                  {formData.mobileNo ? `+91 ${formData.mobileNo}` : '[Mobile Number]'}
-                </span>
-                {formData.alternativeNo && (
-                  <span className="font-medium text-gray-700">
-                    {' '}
-                    (Alt: +91 {formData.alternativeNo})
+          {Boolean(formData.includeCandidateParticularsBox ?? true) && (
+            <div className="mb-2 rounded border border-gray-300 bg-gray-50/50 px-3 py-1.5">
+              <p className="mb-1 border-b border-gray-300 pb-0.5 text-[10px] font-bold tracking-wider text-gray-700 uppercase">
+                Candidate Recipient Particulars:
+              </p>
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
+                <div>
+                  <span className="font-bold text-gray-700">Candidate Name:</span>{' '}
+                  <span className="font-bold text-[#1e3a8a]">
+                    {formData.name || '[Candidate Full Name]'}
                   </span>
-                )}
-              </div>
-              <div>
-                <span className="font-bold text-gray-700">Residential Address:</span>{' '}
-                <span className="font-medium text-gray-900">
-                  {formData.address || '[Candidate Address]'}
-                </span>
-              </div>
-              <div>
-                <span className="font-bold text-gray-700">Email Address:</span>{' '}
-                <span className="font-mono font-medium text-gray-900">
-                  {formData.emailId || '[Candidate Email ID]'}
-                </span>
+                </div>
+                <div>
+                  <span className="font-bold text-gray-700">Primary Contact:</span>{' '}
+                  <span className="font-bold text-gray-900">
+                    {formData.mobileNo ? `+91 ${formData.mobileNo}` : '[Mobile Number]'}
+                  </span>
+                  {formData.alternativeNo && (
+                    <span className="font-medium text-gray-700">
+                      {' '}
+                      (Alt: +91 {formData.alternativeNo})
+                    </span>
+                  )}
+                </div>
+                <div>
+                  <span className="font-bold text-gray-700">Residential Address:</span>{' '}
+                  <span className="font-medium text-gray-900">
+                    {formData.address || '[Candidate Address]'}
+                  </span>
+                </div>
+                <div>
+                  <span className="font-bold text-gray-700">Email Address:</span>{' '}
+                  <span className="font-mono font-medium text-gray-900">
+                    {formData.emailId || '[Candidate Email ID]'}
+                  </span>
+                </div>
               </div>
             </div>
-          </div>
-
+          )}
           {/* Subject Line */}
           <div className="mb-2 border-y border-gray-400 bg-gray-100/70 py-1 text-center">
             <h3 className="text-[11.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
@@ -364,147 +368,94 @@ export default function OfferLetterPreviewContent({
               </p>
 
               {/* Master Sales Compensation & Terms Box */}
-              {(formData.target ||
-                matchedSlab ||
-                formData.offerSlab ||
-                (isSalesDepartment &&
-                  (formData.salesCompensationType ||
-                    formData.enablePartialTargetRule ||
-                    formData.meetingsPerMonth))) && (
-                <div className="mt-1.5 space-y-1.5 rounded border border-gray-300 bg-gray-50 p-2 text-[9.5px] leading-snug shadow-sm">
-                  {/* Quota */}
-                  {(formData.target || matchedSlab || formData.offerSlab) && (
-                    <div>
-                      <p className="font-bold text-[#1e3a8a]">
-                        Sales Performance Quota &amp; Commission Matrix:
-                      </p>
-                      <p className="mt-0.5 text-gray-800">
-                        Your assigned monthly sales quota is{' '}
-                        <span className="font-bold text-gray-900">
-                          {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                          Sq. Yd.
-                        </span>{' '}
-                        per calendar month. You shall be eligible to receive a performance-linked
-                        sales commission of{' '}
-                        <span className="font-bold text-[#1e3a8a]">
-                          {formData.offerSlab
-                            ? `${formData.offerSlab.replace(/%$/, '')}%`
-                            : matchedSlab
-                              ? matchedSlab.offerSlab
-                              : '3%'}
-                        </span>{' '}
-                        on confirmed realized revenue, computed in strict compliance with the
-                        Company&rsquo;s Sales Compensation Policy.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* No Sale No Salary */}
-                  {isSalesDepartment && formData.salesCompensationType === 'no_sale_no_salary' && (
-                    <div className="border-t border-gray-300 pt-1.5 text-gray-900">
-                      <p className="font-bold text-[#1e3a8a]">
-                        Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No Sale
-                        No Salary&rdquo;):
-                      </p>
-                      <p className="mt-0.5 text-gray-800">
-                        As an express condition of this sales appointment, full monthly salary
-                        disbursement is strictly contingent upon sales quota achievement. In the
-                        event zero (0) confirmed sales transactions are closed within a monthly
-                        evaluation cycle, you shall be entitled solely to a subsistence allowance of{' '}
-                        <span className="font-bold text-gray-900">
-                          {formData.subsistenceAllowance &&
-                          parseFloat(formData.subsistenceAllowance) > 0
-                            ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
-                            : 'such sum as determined by the Company'}
-                        </span>
-                        . No additional salary, allowances, or arrears shall accrue until sales
-                        closures are registered.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Custom Percent */}
-                  {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
-                    <div className="border-t border-gray-300 pt-1.5 text-gray-900">
-                      <p className="font-bold text-[#1e3a8a]">
-                        Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota
-                        Incubation:
-                      </p>
-                      <p className="mt-0.5 text-gray-800">
-                        During your initial incubation period of{' '}
-                        <span className="font-bold text-gray-900">
-                          {formData.probationPeriod || '3'} months
-                        </span>
-                        , your remuneration shall be structured at{' '}
-                        <span className="font-bold text-gray-900">
-                          {formData.customSalaryPercent || '[X]'}%
-                        </span>{' '}
-                        of your agreed{' '}
-                        {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                          ? 'Net In-Hand salary'
-                          : 'CTC'}
-                        , amounting to{' '}
-                        <span className="font-bold text-gray-900">
-                          ₹{' '}
-                          {(() => {
-                            const pct = parseFloat(formData.customSalaryPercent || '0');
-                            const ctc = parseFloat(formData.salaryCtc || '0');
-                            return pct && ctc
-                              ? formatINR(Math.round((pct / 100) * ctc))
-                              : '[Amount]';
-                          })()}{' '}
-                          per month
-                        </span>
-                        . Upon successful achievement of sales benchmarks, full{' '}
-                        {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                          ? 'Net In-Hand salary disbursement'
-                          : 'CTC disbursement'}{' '}
-                        as specified in Clause 3 shall be restored.
-                      </p>
-                    </div>
-                  )}
-
-                  {/* Grace Period + Reduced % */}
-                  {isSalesDepartment &&
-                    formData.salesCompensationType === 'grace_period_reduced_percent' && (
-                      <div className="border-t border-gray-300 pt-1.5 text-gray-900">
+              {Boolean(formData.includeSalesPolicyBox ?? true) &&
+                (formData.target ||
+                  matchedSlab ||
+                  formData.offerSlab ||
+                  (isSalesDepartment &&
+                    (formData.salesCompensationType ||
+                      formData.enablePartialTargetRule ||
+                      formData.meetingsPerMonth))) && (
+                  <div className="mt-1.5 space-y-1.5 rounded border border-gray-300 bg-gray-50 p-2 text-[9.5px] leading-snug shadow-sm">
+                    {/* Quota */}
+                    {(formData.target || matchedSlab || formData.offerSlab) && (
+                      <div>
                         <p className="font-bold text-[#1e3a8a]">
-                          Clause 3.1 &mdash; Onboarding Incubation Window &amp; Performance-Indexed
-                          Post-Tenure Remuneration:
+                          Sales Performance Quota &amp; Commission Matrix:
                         </p>
                         <p className="mt-0.5 text-gray-800">
-                          To facilitate structured pipeline gestation and market familiarization, an
-                          initial onboarding incubation window of{' '}
+                          Your assigned monthly sales quota is{' '}
                           <span className="font-bold text-gray-900">
-                            {formData.gracePeriodMonths || '3'} months
+                            {formData.target ||
+                              (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                            Sq. Yd.
                           </span>{' '}
-                          from the Date of Appointment (&ldquo;Gestation Window&rdquo;) is hereby
-                          established. During this designated gestation window, you shall be
-                          entitled to unabated baseline monthly remuneration of{' '}
+                          per calendar month. You shall be eligible to receive a performance-linked
+                          sales commission of{' '}
+                          <span className="font-bold text-[#1e3a8a]">
+                            {formData.offerSlab
+                              ? `${formData.offerSlab.replace(/%$/, '')}%`
+                              : matchedSlab
+                                ? matchedSlab.offerSlab
+                                : '3%'}
+                          </span>{' '}
+                          on confirmed realized revenue, computed in strict compliance with the
+                          Company&rsquo;s Sales Compensation Policy.
+                        </p>
+                      </div>
+                    )}
+
+                    {/* No Sale No Salary */}
+                    {isSalesDepartment &&
+                      formData.salesCompensationType === 'no_sale_no_salary' && (
+                        <div className="border-t border-gray-300 pt-1.5 text-gray-900">
+                          <p className="font-bold text-[#1e3a8a]">
+                            Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No
+                            Sale No Salary&rdquo;):
+                          </p>
+                          <p className="mt-0.5 text-gray-800">
+                            As an express condition of this sales appointment, full monthly salary
+                            disbursement is strictly contingent upon sales quota achievement. In the
+                            event zero (0) confirmed sales transactions are closed within a monthly
+                            evaluation cycle, you shall be entitled solely to a subsistence
+                            allowance of{' '}
+                            <span className="font-bold text-gray-900">
+                              {formData.subsistenceAllowance &&
+                              parseFloat(formData.subsistenceAllowance) > 0
+                                ? `₹ ${formatINR(formData.subsistenceAllowance)} per month`
+                                : 'such sum as determined by the Company'}
+                            </span>
+                            . No additional salary, allowances, or arrears shall accrue until sales
+                            closures are registered.
+                          </p>
+                        </div>
+                      )}
+
+                    {/* Custom Percent */}
+                    {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
+                      <div className="border-t border-gray-300 pt-1.5 text-gray-900">
+                        <p className="font-bold text-[#1e3a8a]">
+                          Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota
+                          Incubation:
+                        </p>
+                        <p className="mt-0.5 text-gray-800">
+                          During your initial incubation period of{' '}
                           <span className="font-bold text-gray-900">
-                            ₹ {formatINR(formData.salaryCtc || '0')} per month
+                            {formData.probationPeriod || '3'} months
+                          </span>
+                          , your remuneration shall be structured at{' '}
+                          <span className="font-bold text-gray-900">
+                            {formData.customSalaryPercent || '[X]'}%
                           </span>{' '}
-                          (
+                          of your agreed{' '}
                           {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                            ? 'Net In-Hand entitlement'
-                            : 'fixed CTC'}
-                          ) without prejudice to immediate deal closure realization. Effective from
-                          Month{' '}
-                          <span className="font-bold text-gray-900">
-                            {parseInt(formData.gracePeriodMonths || '3') + 1}
-                          </span>{' '}
-                          onward, standard monthly disbursement becomes strictly
-                          performance-contingent upon assigned sales quota realization. In any
-                          subsequent evaluation cycle characterized by sub-quota or zero transaction
-                          yield, monthly emoluments shall automatically be revised to{' '}
-                          <span className="font-bold text-gray-900">
-                            {formData.reducedSalaryPercent || '50'}%
-                          </span>{' '}
-                          of contracted baseline compensation, amounting to{' '}
+                            ? 'Net In-Hand salary'
+                            : 'CTC'}
+                          , amounting to{' '}
                           <span className="font-bold text-gray-900">
                             ₹{' '}
                             {(() => {
-                              const pct = parseFloat(formData.reducedSalaryPercent || '50');
+                              const pct = parseFloat(formData.customSalaryPercent || '0');
                               const ctc = parseFloat(formData.salaryCtc || '0');
                               return pct && ctc
                                 ? formatINR(Math.round((pct / 100) * ctc))
@@ -512,172 +463,236 @@ export default function OfferLetterPreviewContent({
                             })()}{' '}
                             per month
                           </span>
-                          . Upon achieving confirmed sales closures and fulfilling benchmark quotas,
-                          standard unabated compensation disbursement shall be restored for the
-                          applicable billing period.
+                          . Upon successful achievement of sales benchmarks, full{' '}
+                          {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                            ? 'Net In-Hand salary disbursement'
+                            : 'CTC disbursement'}{' '}
+                          as specified in Clause 3 shall be restored.
                         </p>
                       </div>
                     )}
 
-                  {/* Target-Linked Pro-Rata & Zero-Sale Policy */}
-                  {isSalesDepartment && Boolean(formData.enablePartialTargetRule) && (
-                    <div className="border-t border-gray-300 pt-1.5 text-gray-900">
-                      <p className="font-bold text-[#1e3a8a]">
-                        Clause 3.2 &mdash; Quota-Indexed Tiered Remuneration &amp; Performance
-                        Contingency Matrix:
-                      </p>
-                      <p className="mt-0.5 text-gray-800">
-                        Monthly compensation entitlement is strictly indexed to your assigned sales
-                        benchmark of{' '}
-                        <span className="font-bold text-gray-900">
-                          {formData.target || (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                          Sq. Yd.
-                        </span>{' '}
-                        per calendar month under the following performance appraisal tiers:
-                      </p>
-                      <ul className="mt-1 space-y-0.5 pl-2 text-gray-800">
-                        <li className="flex items-start gap-1">
-                          <span className="font-bold text-[#1e3a8a]">&bull;</span>
-                          <div>
-                            <span className="font-semibold text-gray-900">
-                              Tier 1 &mdash; Benchmark Realization (&ge;{' '}
-                              {formData.target ||
-                                (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                              Sq. Yd.):
+                    {/* Grace Period + Reduced % */}
+                    {isSalesDepartment &&
+                      formData.salesCompensationType === 'grace_period_reduced_percent' && (
+                        <div className="border-t border-gray-300 pt-1.5 text-gray-900">
+                          <p className="font-bold text-[#1e3a8a]">
+                            Clause 3.1 &mdash; Onboarding Incubation Window &amp;
+                            Performance-Indexed Post-Tenure Remuneration:
+                          </p>
+                          <p className="mt-0.5 text-gray-800">
+                            To facilitate structured pipeline gestation and market familiarization,
+                            an initial onboarding incubation window of{' '}
+                            <span className="font-bold text-gray-900">
+                              {formData.gracePeriodMonths || '3'} months
                             </span>{' '}
-                            Disbursement of unabated contracted{' '}
-                            {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
-                              ? 'Net In-Hand compensation'
-                              : 'CTC'}{' '}
-                            of{' '}
+                            from the Date of Appointment (&ldquo;Gestation Window&rdquo;) is hereby
+                            established. During this designated gestation window, you shall be
+                            entitled to unabated baseline monthly remuneration of{' '}
                             <span className="font-bold text-gray-900">
                               ₹ {formatINR(formData.salaryCtc || '0')} per month
-                            </span>
-                            , in addition to eligible variable incentive apportionments.
-                          </div>
-                        </li>
-                        <li className="flex items-start gap-1">
-                          <span className="font-bold text-amber-600">&bull;</span>
-                          <div>
-                            <span className="font-semibold text-gray-900">
-                              Tier 2 &mdash; Sub-Benchmark Production Yield (&lt;{' '}
-                              {formData.target ||
-                                (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
-                              Sq. Yd. with active closures):
                             </span>{' '}
-                            Where verified sales realization falls below the assigned monthly
-                            threshold despite active transaction closures, monthly remuneration
-                            shall be restricted to a{' '}
+                            (
+                            {formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand'
+                              ? 'Net In-Hand entitlement'
+                              : 'fixed CTC'}
+                            ) without prejudice to immediate deal closure realization. Effective
+                            from Month{' '}
                             <span className="font-bold text-gray-900">
-                              prorated fifty percent (50%) baseline emolument apportionment
-                            </span>
-                            , amounting to{' '}
+                              {parseInt(formData.gracePeriodMonths || '3') + 1}
+                            </span>{' '}
+                            onward, standard monthly disbursement becomes strictly
+                            performance-contingent upon assigned sales quota realization. In any
+                            subsequent evaluation cycle characterized by sub-quota or zero
+                            transaction yield, monthly emoluments shall automatically be revised to{' '}
                             <span className="font-bold text-gray-900">
-                              ₹ {formatINR(Math.round(parseFloat(formData.salaryCtc || '0') * 0.5))}{' '}
+                              {formData.reducedSalaryPercent || '50'}%
+                            </span>{' '}
+                            of contracted baseline compensation, amounting to{' '}
+                            <span className="font-bold text-gray-900">
+                              ₹{' '}
+                              {(() => {
+                                const pct = parseFloat(formData.reducedSalaryPercent || '50');
+                                const ctc = parseFloat(formData.salaryCtc || '0');
+                                return pct && ctc
+                                  ? formatINR(Math.round((pct / 100) * ctc))
+                                  : '[Amount]';
+                              })()}{' '}
                               per month
                             </span>
-                            .
-                          </div>
-                        </li>
-                        <li className="flex items-start gap-1">
-                          <span className="font-bold text-red-600">&bull;</span>
-                          <div>
-                            <span className="font-semibold text-gray-900">
-                              Tier 3 &mdash; Zero-Production Non-Disbursement Policy (0 closures):
-                            </span>{' '}
-                            In any monthly cycle resulting in zero (0) verified transaction
-                            closures, complete remuneration abeyance shall be enforced under the
-                            Company&rsquo;s{' '}
-                            <span className="font-bold text-gray-900">
-                              &ldquo;Zero-Production Non-Disbursement Policy&rdquo;
-                            </span>
-                            . No fixed emoluments, retainership allowances, or retrospective
-                            compensation shall accrue, applicable ab initio from Month 1 and across
-                            all operational cycles.
-                          </div>
-                        </li>
-                      </ul>
-                    </div>
-                  )}
-                  {/* Meetings */}
-                  {isSalesDepartment && formData.meetingsPerMonth && (
-                    <div className="border-t border-gray-300 pt-1 text-[9.5px] text-gray-800">
-                      <span className="font-bold text-gray-900">
-                        Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
-                      </span>{' '}
-                      You are contractually required to conduct a minimum of{' '}
-                      <span className="font-bold text-gray-900">
-                        {formData.meetingsPerMonth} validated in-person / prospective client
-                        meetings
-                      </span>{' '}
-                      per calendar month. Failure to meet baseline meeting logs shall directly
-                      impact performance evaluations.
-                    </div>
-                  )}
-                </div>
-              )}
+                            . Upon achieving confirmed sales closures and fulfilling benchmark
+                            quotas, standard unabated compensation disbursement shall be restored
+                            for the applicable billing period.
+                          </p>
+                        </div>
+                      )}
+
+                    {/* Target-Linked Pro-Rata & Zero-Sale Policy */}
+                    {isSalesDepartment && Boolean(formData.enablePartialTargetRule) && (
+                      <div className="border-t border-gray-300 pt-1.5 text-gray-900">
+                        <p className="font-bold text-[#1e3a8a]">
+                          Clause 3.2 &mdash; Quota-Indexed Tiered Remuneration &amp; Performance
+                          Contingency Matrix:
+                        </p>
+                        <p className="mt-0.5 text-gray-800">
+                          Monthly compensation entitlement is strictly indexed to your assigned
+                          sales benchmark of{' '}
+                          <span className="font-bold text-gray-900">
+                            {formData.target ||
+                              (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                            Sq. Yd.
+                          </span>{' '}
+                          per calendar month under the following performance appraisal tiers:
+                        </p>
+                        <ul className="mt-1 space-y-0.5 pl-2 text-gray-800">
+                          <li className="flex items-start gap-1">
+                            <span className="font-bold text-[#1e3a8a]">&bull;</span>
+                            <div>
+                              <span className="font-semibold text-gray-900">
+                                Tier 1 &mdash; Benchmark Realization (&ge;{' '}
+                                {formData.target ||
+                                  (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                                Sq. Yd.):
+                              </span>{' '}
+                              Disbursement of unabated contracted{' '}
+                              {formData.salaryType === 'in_hand' ||
+                              formData.salaryType === 'In-Hand'
+                                ? 'Net In-Hand compensation'
+                                : 'CTC'}{' '}
+                              of{' '}
+                              <span className="font-bold text-gray-900">
+                                ₹ {formatINR(formData.salaryCtc || '0')} per month
+                              </span>
+                              , in addition to eligible variable incentive apportionments.
+                            </div>
+                          </li>
+                          <li className="flex items-start gap-1">
+                            <span className="font-bold text-amber-600">&bull;</span>
+                            <div>
+                              <span className="font-semibold text-gray-900">
+                                Tier 2 &mdash; Sub-Benchmark Production Yield (&lt;{' '}
+                                {formData.target ||
+                                  (matchedSlab ? `${matchedSlab.target}` : '[Target]')}{' '}
+                                Sq. Yd. with active closures):
+                              </span>{' '}
+                              Where verified sales realization falls below the assigned monthly
+                              threshold despite active transaction closures, monthly remuneration
+                              shall be restricted to a{' '}
+                              <span className="font-bold text-gray-900">
+                                prorated fifty percent (50%) baseline emolument apportionment
+                              </span>
+                              , amounting to{' '}
+                              <span className="font-bold text-gray-900">
+                                ₹{' '}
+                                {formatINR(Math.round(parseFloat(formData.salaryCtc || '0') * 0.5))}{' '}
+                                per month
+                              </span>
+                              .
+                            </div>
+                          </li>
+                          <li className="flex items-start gap-1">
+                            <span className="font-bold text-red-600">&bull;</span>
+                            <div>
+                              <span className="font-semibold text-gray-900">
+                                Tier 3 &mdash; Zero-Production Non-Disbursement Policy (0 closures):
+                              </span>{' '}
+                              In any monthly cycle resulting in zero (0) verified transaction
+                              closures, complete remuneration abeyance shall be enforced under the
+                              Company&rsquo;s{' '}
+                              <span className="font-bold text-gray-900">
+                                &ldquo;Zero-Production Non-Disbursement Policy&rdquo;
+                              </span>
+                              . No fixed emoluments, retainership allowances, or retrospective
+                              compensation shall accrue, applicable ab initio from Month 1 and
+                              across all operational cycles.
+                            </div>
+                          </li>
+                        </ul>
+                      </div>
+                    )}
+                    {/* Meetings */}
+                    {isSalesDepartment && formData.meetingsPerMonth && (
+                      <div className="border-t border-gray-300 pt-1 text-[9.5px] text-gray-800">
+                        <span className="font-bold text-gray-900">
+                          Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
+                        </span>{' '}
+                        You are contractually required to conduct a minimum of{' '}
+                        <span className="font-bold text-gray-900">
+                          {formData.meetingsPerMonth} validated in-person / prospective client
+                          meetings
+                        </span>{' '}
+                        per calendar month. Failure to meet baseline meeting logs shall directly
+                        impact performance evaluations.
+                      </div>
+                    )}
+                  </div>
+                )}
             </div>
 
             {/* Clause 4: MANDATORY PRE-EMPLOYMENT ONBOARDING DOCUMENTATION */}
-            <div className="rounded border border-[#1e3a8a] bg-gray-50/80 p-2 shadow-sm">
-              <div className="mb-1 flex items-center justify-between border-b border-[#1e3a8a]/40 pb-0.5">
-                <p className="text-[10.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
-                  4. Mandatory Pre-Employment Onboarding Documentation &amp; Verification Protocols
+            {Boolean(formData.includeDocumentationBox ?? true) && (
+              <div className="rounded border border-[#1e3a8a] bg-gray-50/80 p-2 shadow-sm">
+                <div className="mb-1 flex items-center justify-between border-b border-[#1e3a8a]/40 pb-0.5">
+                  <p className="text-[10.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
+                    4. Mandatory Pre-Employment Onboarding Documentation &amp; Verification
+                    Protocols
+                  </p>
+                  <span className="text-[9px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+                    Mandatory Submission Schedule
+                  </span>
+                </div>
+                <p className="mb-1 text-[9.5px] font-medium text-gray-900">
+                  In compliance with corporate governance standards, formal appointment is
+                  conditional upon submission of records via the SVI HR Onboarding Desk (
+                  <span className="font-semibold text-[#1e3a8a]">
+                    {companyInfo.company_email || 'hr@sviinfrasolutions.com'}
+                  </span>
+                  ):
                 </p>
-                <span className="text-[9px] font-bold tracking-wider text-[#1e3a8a] uppercase">
-                  Mandatory Submission Schedule
-                </span>
-              </div>
-              <p className="mb-1 text-[9.5px] font-medium text-gray-900">
-                In compliance with corporate governance standards, formal appointment is conditional
-                upon submission of records via the SVI HR Onboarding Desk (
-                <span className="font-semibold text-[#1e3a8a]">
-                  {companyInfo.company_email || 'hr@sviinfrasolutions.com'}
-                </span>
-                ):
-              </p>
 
-              <div className="grid grid-cols-2 gap-1.5 text-[9.5px]">
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span> Copies
-                  of marksheets &amp; degree certificates (10th, 12th, Bachelor&rsquo;s,
-                  Post-Graduate / Diplomas).
+                <div className="grid grid-cols-2 gap-1.5 text-[9.5px]">
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
+                    <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
+                    Copies of marksheets &amp; degree certificates (10th, 12th, Bachelor&rsquo;s,
+                    Post-Graduate / Diplomas).
+                  </div>
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
+                    <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two
+                    (2) colored passport-sized photos against white background.
+                  </div>
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
+                    <span className="font-bold text-[#1e3a8a]">
+                      3. Identity Verification (Aadhaar):
+                    </span>{' '}
+                    Valid Government-issued Aadhaar Card copy (front &amp; reverse).
+                  </div>
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
+                    <span className="font-bold text-[#1e3a8a]">
+                      4. Tax Registration (PAN Card):
+                    </span>{' '}
+                    Valid PAN Card copy issued by Income Tax Department.
+                  </div>
+                  <div className="col-span-2 rounded border border-gray-300 bg-white p-1.5">
+                    <span className="font-bold text-[#1e3a8a]">
+                      5. Prior Employment Experience &amp; Relieving Credentials:
+                    </span>{' '}
+                    Relieving letter from previous employer, resignation acceptance &amp; pay slips
+                    for 3 consecutive months.
+                  </div>
                 </div>
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two (2)
-                  colored passport-sized photos against white background.
-                </div>
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">
-                    3. Identity Verification (Aadhaar):
-                  </span>{' '}
-                  Valid Government-issued Aadhaar Card copy (front &amp; reverse).
-                </div>
-                <div className="rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">4. Tax Registration (PAN Card):</span>{' '}
-                  Valid PAN Card copy issued by Income Tax Department.
-                </div>
-                <div className="col-span-2 rounded border border-gray-300 bg-white p-1.5">
-                  <span className="font-bold text-[#1e3a8a]">
-                    5. Prior Employment Experience &amp; Relieving Credentials:
-                  </span>{' '}
-                  Relieving letter from previous employer, resignation acceptance &amp; pay slips
-                  for 3 consecutive months.
+                <div className="mt-1 border-t border-gray-300 pt-0.5 text-[8.5px] font-medium text-gray-800">
+                  <p>
+                    Upload in clear{' '}
+                    <span className="font-bold">
+                      PDF, JPEG, or PNG formats (maximum file size 5MB per document)
+                    </span>{' '}
+                    within <span className="font-bold">three (3) business days</span> of acceptance.
+                    Subject to independent{' '}
+                    <span className="font-bold">Background Verification (BGV)</span>.
+                  </p>
                 </div>
               </div>
-              <div className="mt-1 border-t border-gray-300 pt-0.5 text-[8.5px] font-medium text-gray-800">
-                <p>
-                  Upload in clear{' '}
-                  <span className="font-bold">
-                    PDF, JPEG, or PNG formats (maximum file size 5MB per document)
-                  </span>{' '}
-                  within <span className="font-bold">three (3) business days</span> of acceptance.
-                  Subject to independent{' '}
-                  <span className="font-bold">Background Verification (BGV)</span>.
-                </p>
-              </div>
-            </div>
-
+            )}
             {/* Clause 5: Probation Period */}
             <div>
               <p className="text-[11px] font-bold text-[#1e3a8a] uppercase">

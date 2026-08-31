@@ -17,6 +17,7 @@ interface SalesCompensationSectionProps {
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;
   partialTargetSalaryPercent?: string;
+  includeSalesPolicyBox?: boolean;
   onValueChange: (name: string, value: string | boolean) => void;
   onToggleType: (
     type: 'no_sale_no_salary' | 'custom_percent' | 'grace_period_reduced_percent'
@@ -37,6 +38,7 @@ export function SalesCompensationSection({
   reducedSalaryPercent,
   enablePartialTargetRule,
   partialTargetSalaryPercent,
+  includeSalesPolicyBox = true,
   onValueChange,
   onToggleType,
 }: SalesCompensationSectionProps) {
@@ -45,7 +47,7 @@ export function SalesCompensationSection({
   return (
     <div className="mt-1 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50/80 to-white shadow-sm dark:border-white/10 dark:from-white/5 dark:to-transparent">
       {/* Header */}
-      <div className="border-b border-gray-100 px-5 py-3.5 dark:border-white/10">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-gray-100 px-5 py-3.5 dark:border-white/10">
         <div className="flex items-center gap-2.5">
           <div className="bg-brand-gold/10 flex h-8 w-8 items-center justify-center rounded-lg">
             <CircleDollarSign className="text-brand-gold h-4 w-4" />
@@ -59,8 +61,36 @@ export function SalesCompensationSection({
             </p>
           </div>
         </div>
+
+        {/* Manual Show/Hide Box Toggle */}
+        <label className="flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-1.5 shadow-xs transition-colors hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+          <input
+            type="checkbox"
+            checked={includeSalesPolicyBox}
+            onChange={(e) => onValueChange('includeSalesPolicyBox', e.target.checked)}
+            className="text-brand-gold focus:ring-brand-gold h-3.5 w-3.5 rounded border-gray-300"
+          />
+          <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300">
+            {includeSalesPolicyBox ? 'Include Box in Letter' : 'Box Hidden from Letter'}
+          </span>
+          <span
+            className={`rounded-full px-1.5 py-0.5 text-[9px] font-bold ${
+              includeSalesPolicyBox
+                ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+            }`}
+          >
+            {includeSalesPolicyBox ? 'VISIBLE' : 'HIDDEN'}
+          </span>
+        </label>
       </div>
 
+      {!includeSalesPolicyBox && (
+        <div className="border-b border-amber-500/20 bg-amber-500/5 px-5 py-2 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+          ⚠️ <strong>Box Hidden:</strong> This entire sales compensation box, borders, and its
+          clauses will be omitted from the offer letter preview and generated PDF.
+        </div>
+      )}
       <div className="p-5">
         {/* Compensation Type — radio cards */}
         <div className="mb-5">

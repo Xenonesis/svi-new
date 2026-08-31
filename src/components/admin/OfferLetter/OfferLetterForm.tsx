@@ -385,6 +385,7 @@ export function OfferLetterForm({
                 reducedSalaryPercent={formData.reducedSalaryPercent}
                 enablePartialTargetRule={formData.enablePartialTargetRule}
                 partialTargetSalaryPercent={formData.partialTargetSalaryPercent}
+                includeSalesPolicyBox={formData.includeSalesPolicyBox !== false}
                 onValueChange={(name, value) => setFormData((prev) => ({ ...prev, [name]: value }))}
                 onToggleType={(type) =>
                   setFormData((prev) => ({
@@ -431,6 +432,114 @@ export function OfferLetterForm({
             onChange={handleChange}
             placeholder="3"
           />
+        </div>
+
+        {/* ── Document Boxes & Section Visibility Controls ── */}
+        <div className="mt-5 rounded-xl border border-gray-200 bg-gray-50/70 p-4 dark:border-white/10 dark:bg-white/5">
+          <div className="mb-2.5 flex items-center justify-between">
+            <div>
+              <p className="text-xs font-semibold text-gray-900 dark:text-white">
+                Document Sections &amp; Boxes Visibility
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                Manually show or hide framed boxes and borders in the generated letter
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+            {formData.department === 'Sales' && (
+              <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white p-2.5 text-xs transition-colors hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    name="includeSalesPolicyBox"
+                    checked={formData.includeSalesPolicyBox !== false}
+                    onChange={(e) =>
+                      setFormData((prev) => ({ ...prev, includeSalesPolicyBox: e.target.checked }))
+                    }
+                    className="text-brand-gold focus:ring-brand-gold h-4 w-4 rounded border-gray-300"
+                  />
+                  <div>
+                    <span className="font-medium text-gray-800 dark:text-gray-200">
+                      Sales Policy &amp; Quota Box
+                    </span>
+                    <p className="text-[10px] text-gray-400">Clause 3 Performance Terms Box</p>
+                  </div>
+                </div>
+                <span
+                  className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                    formData.includeSalesPolicyBox !== false
+                      ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                  }`}
+                >
+                  {formData.includeSalesPolicyBox !== false ? 'VISIBLE' : 'HIDDEN'}
+                </span>
+              </label>
+            )}
+
+            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white p-2.5 text-xs transition-colors hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="includeDocumentationBox"
+                  checked={formData.includeDocumentationBox !== false}
+                  onChange={(e) =>
+                    setFormData((prev) => ({ ...prev, includeDocumentationBox: e.target.checked }))
+                  }
+                  className="text-brand-gold focus:ring-brand-gold h-4 w-4 rounded border-gray-300"
+                />
+                <div>
+                  <span className="font-medium text-gray-800 dark:text-gray-200">
+                    Onboarding Docs Box
+                  </span>
+                  <p className="text-[10px] text-gray-400">Clause 4 Checklist Box</p>
+                </div>
+              </div>
+              <span
+                className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                  formData.includeDocumentationBox !== false
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                }`}
+              >
+                {formData.includeDocumentationBox !== false ? 'VISIBLE' : 'HIDDEN'}
+              </span>
+            </label>
+
+            <label className="flex cursor-pointer items-center justify-between rounded-lg border border-gray-200 bg-white p-2.5 text-xs transition-colors hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20">
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="includeCandidateParticularsBox"
+                  checked={formData.includeCandidateParticularsBox !== false}
+                  onChange={(e) =>
+                    setFormData((prev) => ({
+                      ...prev,
+                      includeCandidateParticularsBox: e.target.checked,
+                    }))
+                  }
+                  className="text-brand-gold focus:ring-brand-gold h-4 w-4 rounded border-gray-300"
+                />
+                <div>
+                  <span className="font-medium text-gray-800 dark:text-gray-200">
+                    Candidate Particulars Card
+                  </span>
+                  <p className="text-[10px] text-gray-400">Top Details Box</p>
+                </div>
+              </div>
+              <span
+                className={`rounded-full px-2 py-0.5 text-[9px] font-bold ${
+                  formData.includeCandidateParticularsBox !== false
+                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                    : 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                }`}
+              >
+                {formData.includeCandidateParticularsBox !== false ? 'VISIBLE' : 'HIDDEN'}
+              </span>
+            </label>
+          </div>
         </div>
 
         <button
