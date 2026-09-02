@@ -91,6 +91,22 @@ export default function QuotationSummary({
                   </strong>
                 </div>
               </div>
+
+              {tier.paymentMonths && parseInt(tier.paymentMonths, 10) > 1 ? (
+                <div className="mt-2.5 flex items-center justify-between rounded-md border border-emerald-200/60 bg-emerald-50/80 px-2.5 py-1.5 text-[11px] dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                  <span className="font-semibold text-emerald-800 dark:text-emerald-400">
+                    {tier.paymentMonths}-Month Plan Installment:
+                  </span>
+                  <strong className="font-bold text-emerald-700 dark:text-emerald-300">
+                    ≈ {formatINR(Math.ceil(tier.grandTotal / parseInt(tier.paymentMonths, 10)))} /
+                    mo
+                  </strong>
+                </div>
+              ) : (
+                <div className="mt-2 text-right text-[10px] text-gray-400">
+                  Full Upfront (No Installment)
+                </div>
+              )}
             </div>
           ))}
         </div>

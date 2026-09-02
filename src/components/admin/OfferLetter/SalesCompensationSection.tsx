@@ -10,6 +10,7 @@ import {
   Percent,
   Car,
   MapPin,
+  AlertTriangle,
 } from 'lucide-react';
 
 interface SalesCompensationSectionProps {
@@ -108,9 +109,12 @@ export function SalesCompensationSection({
       </div>
 
       {!includeSalesPolicyBox && (
-        <div className="border-b border-amber-500/20 bg-amber-500/5 px-5 py-2 text-[11px] font-medium text-amber-700 dark:text-amber-300">
-          ⚠️ <strong>Box Hidden:</strong> This entire sales compensation box, borders, and its
-          clauses will be omitted from the offer letter preview and generated PDF.
+        <div className="flex items-center gap-2 border-b border-amber-500/20 bg-amber-500/5 px-5 py-2 text-[11px] font-medium text-amber-700 dark:text-amber-300">
+          <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+          <span>
+            <strong>Box Hidden:</strong> This entire sales compensation box, borders, and its
+            clauses will be omitted from the offer letter preview and generated PDF.
+          </span>
         </div>
       )}
       <div className="p-5">

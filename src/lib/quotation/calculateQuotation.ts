@@ -89,11 +89,16 @@ export function calculatePricingTiers(
 
       try {
         const result = calculateQuotation({ area, basicRate, edcRate, plcPercent });
-        return {
+        const months = tier.paymentMonths ? parseInt(tier.paymentMonths, 10) : 0;
+        const monthlyInstallment = months > 1 ? Math.ceil(result.grandTotal / months) : null;
+        const calc: PricingTierCalculation = {
           ...result,
           id: tier.id,
           label: tier.label || `Option`,
+          paymentMonths: tier.paymentMonths,
+          monthlyInstallment,
         };
+        return calc;
       } catch {
         return null;
       }

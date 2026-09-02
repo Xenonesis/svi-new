@@ -1,7 +1,17 @@
 'use client';
 
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
-import { Calculator, RefreshCw, ChevronDown, Plus, Trash2, Layers } from 'lucide-react';
+import {
+  Calculator,
+  RefreshCw,
+  ChevronDown,
+  Plus,
+  Trash2,
+  Layers,
+  Hash,
+  Copy,
+  Check,
+} from 'lucide-react';
 import { useState, useEffect } from 'react';
 import type {
   QuotationFormData,
@@ -51,6 +61,14 @@ export default function QuotationForm({
 
   const [isCustomProject, setIsCustomProject] = useState(false);
 
+  const [copiedQuotationNo, setCopiedQuotationNo] = useState(false);
+
+  const handleCopyQuotationNo = () => {
+    if (!formData.quotationNo) return;
+    navigator.clipboard?.writeText(formData.quotationNo);
+    setCopiedQuotationNo(true);
+    setTimeout(() => setCopiedQuotationNo(false), 2000);
+  };
   // Auto-detect custom project when template/record loads with an unlisted project name
   useEffect(() => {
     if (
@@ -69,17 +87,19 @@ export default function QuotationForm({
     const defaultTiers: PricingTier[] = [
       {
         id: 'tier-1',
-        label: 'Option 1 (Standard Rate)',
+        label: 'Option 1 (One-Time / Full)',
         basicRate: formData.basicRate || '7500',
         edcRate: formData.edcRate || '150',
         plcPercent: formData.plcPercent || '5',
+        paymentMonths: formData.paymentMonths || '',
       },
       {
         id: 'tier-2',
-        label: 'Option 2 (Corner / Prime)',
+        label: 'Option 2 (12-Month Plan)',
         basicRate: String(Number(formData.basicRate || '7500') + 500),
         edcRate: formData.edcRate || '150',
         plcPercent: formData.plcPercent || '5',
+        paymentMonths: '12',
       },
     ];
     if (onTiersChange) {
@@ -97,18 +117,19 @@ export default function QuotationForm({
     if (tiers.length >= 4) return;
     const lastTier = tiers[tiers.length - 1];
     const nextNum = tiers.length + 1;
+    const defaultMonths = nextNum === 3 ? '24' : nextNum === 4 ? '36' : '';
     const newTier: PricingTier = {
       id: `tier-${Date.now()}`,
       label: `Option ${nextNum}`,
       basicRate: String(Number(lastTier?.basicRate || '7500') + 500),
       edcRate: lastTier?.edcRate || '150',
       plcPercent: lastTier?.plcPercent || '5',
+      paymentMonths: defaultMonths,
     };
     if (onTiersChange) {
       onTiersChange([...tiers, newTier]);
     }
   };
-
   const handleRemoveTier = (index: number) => {
     const updated = tiers.filter((_, i) => i !== index);
     if (onTiersChange) {
@@ -123,7 +144,13 @@ export default function QuotationForm({
     }
 
     // Sync primary tier (index 0) with main formData fields for single-rate fallback
-    if (index === 0 && (field === 'basicRate' || field === 'edcRate' || field === 'plcPercent')) {
+    if (
+      index === 0 &&
+      (field === 'basicRate' ||
+        field === 'edcRate' ||
+        field === 'plcPercent' ||
+        field === 'paymentMonths')
+    ) {
       onChange({
         target: { name: field, value },
       } as unknown as React.ChangeEvent<HTMLInputElement>);
@@ -148,41 +175,67 @@ export default function QuotationForm({
           <p className="mb-3 text-[10px] font-bold tracking-widest text-gray-400 uppercase dark:text-gray-500">
             Quotation Info
           </p>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-              <div className="mb-1.5 flex items-center justify-between">
-                <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-                  Quotation Number <span className="text-red-500">*</span>
-                </label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="sm:col-span-2">
+              <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase transition-colors duration-300 dark:text-gray-400">
+                    Quotation Number<span className="ml-0.5 text-red-500">*</span>
+                  </label>
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-0.5 text-[9px] font-semibold text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-400">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                    Auto-Generated
+                  </span>
+                </div>
                 {onRefreshQuotationNo && (
                   <button
                     type="button"
                     onClick={onRefreshQuotationNo}
                     disabled={loadingQuotationNo || isSubmitting}
-                    className="text-brand-gold hover:text-brand-gold/80 inline-flex items-center gap-1 text-[10px] font-semibold transition-colors disabled:opacity-50"
-                    title="Fetch new unique quotation number from DB"
+                    className="text-brand-gold hover:text-brand-gold/80 inline-flex items-center gap-1.5 text-xs font-semibold transition-colors disabled:opacity-50"
+                    title="Generate new unique quotation number"
                   >
-                    <RefreshCw className={`h-3 w-3 ${loadingQuotationNo ? 'animate-spin' : ''}`} />
-                    <span>{loadingQuotationNo ? 'Generating...' : 'Auto DB'}</span>
+                    <RefreshCw
+                      className={`h-3.5 w-3.5 ${loadingQuotationNo ? 'animate-spin' : ''}`}
+                    />
+                    <span>{loadingQuotationNo ? 'Generating...' : 'Refresh Number'}</span>
                   </button>
                 )}
               </div>
               <div className="relative">
+                <div className="text-brand-gold/70 pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5">
+                  <Hash className="h-4 w-4" />
+                </div>
                 <input
                   type="text"
                   name="quotationNo"
                   value={formData.quotationNo}
                   onChange={onChange}
                   required
-                  placeholder={loadingQuotationNo ? 'Generating from DB...' : 'SVI-QTN-...'}
+                  placeholder={loadingQuotationNo ? 'Generating...' : 'SVI-QTN-...'}
                   disabled={loadingQuotationNo}
-                  className="border-brand-navy/20 focus:border-brand-gold focus:ring-brand-gold/20 dark:border-brand-gold/20 dark:bg-brand-gold/5 dark:focus:border-brand-gold w-full rounded-xl border bg-white/50 px-4 py-2 font-mono text-sm text-gray-900 shadow-sm backdrop-blur-sm transition-all outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:text-white"
+                  className="border-brand-navy/20 focus:border-brand-gold focus:ring-brand-gold/20 dark:border-brand-gold/20 dark:bg-brand-gold/5 dark:focus:border-brand-gold w-full rounded-xl border bg-white/50 py-2.5 pr-11 pl-10 font-mono text-sm font-semibold tracking-wider text-gray-900 shadow-sm backdrop-blur-sm transition-all outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:text-white"
                 />
+                {formData.quotationNo && (
+                  <button
+                    type="button"
+                    onClick={handleCopyQuotationNo}
+                    className="hover:text-brand-gold absolute inset-y-0 right-0 flex items-center pr-3.5 text-gray-400 transition-colors"
+                    title={copiedQuotationNo ? 'Copied!' : 'Copy quotation number'}
+                  >
+                    {copiedQuotationNo ? (
+                      <Check className="h-4 w-4 text-emerald-500" />
+                    ) : (
+                      <Copy className="h-4 w-4" />
+                    )}
+                  </button>
+                )}
               </div>
               {validationErrors.quotationNo && (
                 <p className="mt-1 text-xs text-red-500">{validationErrors.quotationNo}</p>
               )}
             </div>
+
             <div>
               <FormField
                 label="Quotation Date"
@@ -196,6 +249,7 @@ export default function QuotationForm({
                 <p className="mt-1 text-xs text-red-500">{validationErrors.quotationDate}</p>
               )}
             </div>
+
             <div>
               <FormField
                 label="Valid Until"
@@ -501,10 +555,21 @@ export default function QuotationForm({
                       <div className="flex items-center gap-3">
                         {tierCalc && (
                           <div className="text-right">
-                            <span className="text-brand-gold text-xs font-bold">
-                              ₹{tierCalc.grandTotal.toLocaleString('en-IN')}
-                            </span>
-                            <span className="ml-1 text-[10px] text-gray-400">
+                            <div className="flex items-baseline justify-end gap-1.5">
+                              <span className="text-brand-gold text-xs font-bold">
+                                ₹{tierCalc.grandTotal.toLocaleString('en-IN')}
+                              </span>
+                              {tier.paymentMonths && parseInt(tier.paymentMonths, 10) > 1 && (
+                                <span className="text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                                  (₹
+                                  {Math.ceil(
+                                    tierCalc.grandTotal / parseInt(tier.paymentMonths, 10)
+                                  ).toLocaleString('en-IN')}
+                                  /mo)
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-[10px] text-gray-400">
                               (₹{tierCalc.effectiveRate.toLocaleString('en-IN')}/yd)
                             </span>
                           </div>
@@ -522,7 +587,7 @@ export default function QuotationForm({
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
                       <div>
                         <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                           Basic Rate / Sq. Yd. (₹) *
@@ -566,7 +631,44 @@ export default function QuotationForm({
                           className="focus:border-brand-gold focus:ring-brand-gold/20 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-xs text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#14151a] dark:text-white"
                         />
                       </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                          Payment Plan (Months)
+                        </label>
+                        <select
+                          value={tier.paymentMonths || ''}
+                          onChange={(e) => handleTierChange(idx, 'paymentMonths', e.target.value)}
+                          className="focus:border-brand-gold focus:ring-brand-gold/20 w-full rounded-lg border border-gray-200 bg-white px-2.5 py-2 font-sans text-xs text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#14151a] dark:text-white"
+                        >
+                          <option value="">Full Upfront (No EMI)</option>
+                          <option value="3">3 Months</option>
+                          <option value="6">6 Months</option>
+                          <option value="9">9 Months</option>
+                          <option value="12">12 Months</option>
+                          <option value="18">18 Months</option>
+                          <option value="24">24 Months</option>
+                          <option value="30">30 Months</option>
+                          <option value="36">36 Months</option>
+                          <option value="48">48 Months</option>
+                          <option value="60">60 Months</option>
+                        </select>
+                      </div>
                     </div>
+
+                    {tier.paymentMonths && parseInt(tier.paymentMonths, 10) > 1 && tierCalc && (
+                      <div className="mt-2.5 flex items-center justify-between rounded-lg border border-emerald-200/60 bg-emerald-50/70 px-3 py-1.5 text-xs text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                        <span className="font-medium">
+                          {tier.paymentMonths}-Month Plan Installment:
+                        </span>
+                        <span className="font-bold text-emerald-700 dark:text-emerald-300">
+                          ≈ ₹
+                          {Math.ceil(
+                            tierCalc.grandTotal / parseInt(tier.paymentMonths, 10)
+                          ).toLocaleString('en-IN')}{' '}
+                          / month
+                        </span>
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -585,36 +687,38 @@ export default function QuotationForm({
         </div>
 
         {/* ── Payment Plan (Months) ─────────────────────────────────────── */}
-        <div>
-          <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-            Payment Plan (Months)
-          </label>
-          <div className="relative">
-            <select
-              name="paymentMonths"
-              value={formData.paymentMonths || ''}
-              onChange={onChange}
-              className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-            >
-              <option value="">No Installment Plan (Full Upfront)</option>
-              <option value="6">6 Months</option>
-              <option value="9">9 Months</option>
-              <option value="12">12 Months</option>
-              <option value="18">18 Months</option>
-              <option value="24">24 Months</option>
-              <option value="30">30 Months</option>
-              <option value="36">36 Months</option>
-              <option value="48">48 Months</option>
-              <option value="60">60 Months</option>
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-              <ChevronDown className="h-4 w-4 text-gray-400" />
+        {!hasMultipleTiers && (
+          <div>
+            <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+              Payment Plan (Months)
+            </label>
+            <div className="relative">
+              <select
+                name="paymentMonths"
+                value={formData.paymentMonths || ''}
+                onChange={onChange}
+                className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+              >
+                <option value="">No Installment Plan (Full Upfront)</option>
+                <option value="6">6 Months</option>
+                <option value="9">9 Months</option>
+                <option value="12">12 Months</option>
+                <option value="18">18 Months</option>
+                <option value="24">24 Months</option>
+                <option value="30">30 Months</option>
+                <option value="36">36 Months</option>
+                <option value="48">48 Months</option>
+                <option value="60">60 Months</option>
+              </select>
+              <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                <ChevronDown className="h-4 w-4 text-gray-400" />
+              </div>
             </div>
+            <p className="mt-1 text-[10px] text-gray-400">
+              Select to show monthly installment breakdown in the quotation preview.
+            </p>
           </div>
-          <p className="mt-1 text-[10px] text-gray-400">
-            Select to show monthly installment breakdown in the quotation preview.
-          </p>
-        </div>
+        )}
 
         {/* ── Notes ──────────────────────────────────────────────────────── */}
         <div>

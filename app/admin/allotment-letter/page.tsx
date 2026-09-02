@@ -3,7 +3,7 @@
 import { DownloadOptions, PreviewContainer } from '@/src/components/admin/DocumentGenerator/Shared';
 import { AllotmentLetterPreview } from '@/src/components/admin/DocumentGenerator/AllotmentLetterPreview';
 import { useAuthStore } from '@/src/stores/authStore';
-import { FileText, X } from 'lucide-react';
+import { FileText, X, RefreshCw, Plus } from 'lucide-react';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { useAllotmentLetterData } from '@/src/hooks/admin/useAllotmentLetterData';
 import { AllotmentLetterForm } from '@/src/components/admin/allotment-letter/AllotmentLetterForm';
@@ -325,15 +325,15 @@ export default function AllotmentLetterPage() {
             <div className="flex flex-col gap-3">
               <button
                 onClick={() => executeSave(duplicateRecordToOverwrite?.id)}
-                className="bg-brand-navy hover:bg-brand-navy/90 cursor-pointer rounded-xl px-4 py-3 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all"
+                className="bg-brand-navy hover:bg-brand-navy/90 flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all"
               >
-                🔄 Overwrite Old One
+                <RefreshCw className="h-4 w-4" /> Overwrite Old One
               </button>
               <button
                 onClick={() => executeSave(null, true)}
-                className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy cursor-pointer rounded-xl px-4 py-3 text-xs font-bold tracking-wider uppercase shadow-md transition-all"
+                className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex cursor-pointer items-center justify-center gap-2 rounded-xl px-4 py-3 text-xs font-bold tracking-wider uppercase shadow-md transition-all"
               >
-                ➕ Save as New
+                <Plus className="h-4 w-4" /> Save as New
               </button>
               <button
                 onClick={() => {

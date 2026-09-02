@@ -111,6 +111,35 @@ describe('calculatePricingTiers', () => {
     expect(results[2].grandTotal).toBe(907500);
     expect(results[2].effectiveRate).toBe(9075);
   });
+  it('computes monthly installment when paymentMonths is specified', () => {
+    const area = 100;
+    const tiers: PricingTier[] = [
+      {
+        id: 'tier-full',
+        label: 'Full Payment',
+        basicRate: '7500',
+        edcRate: '150',
+        plcPercent: '5',
+        paymentMonths: '',
+      },
+      {
+        id: 'tier-12m',
+        label: '12 Months Plan',
+        basicRate: '8000',
+        edcRate: '150',
+        plcPercent: '5',
+        paymentMonths: '12',
+      },
+    ];
+
+    const results = calculatePricingTiers(area, tiers);
+    expect(results[0].paymentMonths).toBe('');
+    expect(results[0].monthlyInstallment).toBeNull();
+
+    expect(results[1].paymentMonths).toBe('12');
+    expect(results[1].grandTotal).toBe(855000);
+    expect(results[1].monthlyInstallment).toBe(71250);
+  });
 
   it('returns empty array when tiers are empty or area is invalid', () => {
     expect(

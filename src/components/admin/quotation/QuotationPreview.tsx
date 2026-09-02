@@ -63,7 +63,7 @@ export default function QuotationPreview({
         style={{
           background: '#0a1628',
           color: '#ffffff',
-          padding: '24px 32px 18px',
+          padding: '14px 28px 10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
@@ -71,13 +71,13 @@ export default function QuotationPreview({
         }}
       >
         {/* Brand Logo from official asset & Company Title */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <div
             style={{
               background: '#ffffff',
-              borderRadius: '10px',
-              padding: '5px',
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+              borderRadius: '8px',
+              padding: '4px',
+              boxShadow: '0 3px 10px rgba(0, 0, 0, 0.2)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -88,13 +88,13 @@ export default function QuotationPreview({
             <img
               src="/logo-icon.png"
               alt="SVI Infra Solutions Pvt. Ltd."
-              width={56}
-              height={56}
+              width={46}
+              height={46}
               style={{
-                width: 56,
-                height: 56,
+                width: 46,
+                height: 46,
                 objectFit: 'contain',
-                borderRadius: '6px',
+                borderRadius: '5px',
                 display: 'block',
               }}
             />
@@ -115,8 +115,8 @@ export default function QuotationPreview({
             </h2>
             <span
               style={{
-                fontSize: '9px',
-                letterSpacing: '0.16em',
+                fontSize: '10.5px',
+                letterSpacing: '0.14em',
                 textTransform: 'uppercase',
                 color: '#C9A84C',
                 fontWeight: 700,
@@ -129,15 +129,15 @@ export default function QuotationPreview({
         </div>
 
         {/* Company Contact Details */}
-        <div style={{ textAlign: 'right', fontSize: '11px' }}>
+        <div style={{ textAlign: 'right', fontSize: '11.5px' }}>
           {companyInfo.company_address && (
             <p
               style={{
                 color: '#cbd5e1',
-                maxWidth: 320,
-                margin: '0 0 4px',
-                fontSize: '10.5px',
-                lineHeight: '1.35',
+                maxWidth: 340,
+                margin: '0 0 3px',
+                fontSize: '11px',
+                lineHeight: '1.3',
               }}
             >
               {companyInfo.company_address}
@@ -150,8 +150,8 @@ export default function QuotationPreview({
               justifyContent: 'flex-end',
               gap: '12px',
               color: '#94a3b8',
-              fontSize: '10.5px',
-              marginTop: '4px',
+              fontSize: '11px',
+              marginTop: '3px',
             }}
           >
             {companyInfo.company_phone && (
@@ -222,22 +222,22 @@ export default function QuotationPreview({
       {/* Gold Metallic Accent Line */}
       <div
         style={{
-          height: 3.5,
+          height: 3,
           background:
             'linear-gradient(90deg, #997B2C 0%, #C9A84C 25%, #F5D68A 50%, #C9A84C 75%, #997B2C 100%)',
         }}
       />
 
       {/* ── BODY CONTAINER ─────────────────────────────────────────────── */}
-      <div style={{ padding: '24px 32px' }}>
+      <div style={{ padding: '14px 26px 14px' }}>
         {/* Title & Document Meta Badge */}
         <div
           style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            marginBottom: 20,
-            paddingBottom: 16,
+            marginBottom: 10,
+            paddingBottom: 8,
             borderBottom: '1px solid #e2e8f0',
           }}
         >
@@ -246,11 +246,11 @@ export default function QuotationPreview({
               <h1
                 style={{
                   fontFamily: 'Georgia, serif',
-                  fontSize: 24,
+                  fontSize: 21,
                   fontWeight: 700,
                   color: '#0a1628',
                   margin: 0,
-                  letterSpacing: '0.03em',
+                  letterSpacing: '0.02em',
                 }}
               >
                 PROPERTY QUOTATION
@@ -258,14 +258,14 @@ export default function QuotationPreview({
               {formData.propertyType && (
                 <span
                   style={{
-                    fontSize: '10px',
+                    fontSize: '10.5px',
                     fontWeight: 700,
                     textTransform: 'uppercase',
                     letterSpacing: '0.08em',
                     backgroundColor: '#fbf7ec',
                     border: '1px solid #eddca8',
                     color: '#854d0e',
-                    padding: '3px 8px',
+                    padding: '2px 7px',
                     borderRadius: '4px',
                   }}
                 >
@@ -273,7 +273,7 @@ export default function QuotationPreview({
                 </span>
               )}
             </div>
-            <p style={{ margin: '4px 0 0', fontSize: '11px', color: '#64748b' }}>
+            <p style={{ margin: '2px 0 0', fontSize: '11.5px', color: '#64748b' }}>
               Official price proposal &amp; payment schedule for customer reference
             </p>
           </div>
@@ -284,17 +284,17 @@ export default function QuotationPreview({
               background: '#f8fafc',
               border: '1px solid #e2e8f0',
               borderRadius: '8px',
-              padding: '8px 14px',
+              padding: '6px 12px',
               textAlign: 'right',
               display: 'flex',
-              gap: '16px',
+              gap: '14px',
             }}
           >
             <div>
               <span
                 style={{
                   display: 'block',
-                  fontSize: '9px',
+                  fontSize: '10px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   color: '#64748b',
@@ -314,11 +314,11 @@ export default function QuotationPreview({
                 {formData.quotationNo || 'SVI-QTN-DRAFT'}
               </span>
             </div>
-            <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '14px' }}>
+            <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '12px' }}>
               <span
                 style={{
                   display: 'block',
-                  fontSize: '9px',
+                  fontSize: '10px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   color: '#64748b',
@@ -327,15 +327,15 @@ export default function QuotationPreview({
               >
                 Issue Date
               </span>
-              <span style={{ fontSize: '11.5px', fontWeight: 600, color: '#334155' }}>
+              <span style={{ fontSize: '12px', fontWeight: 600, color: '#334155' }}>
                 {formatDateDisplay(formData.quotationDate)}
               </span>
             </div>
-            <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '14px' }}>
+            <div style={{ borderLeft: '1px solid #e2e8f0', paddingLeft: '12px' }}>
               <span
                 style={{
                   display: 'block',
-                  fontSize: '9px',
+                  fontSize: '10px',
                   fontWeight: 700,
                   textTransform: 'uppercase',
                   color: '#b45309',
@@ -344,7 +344,7 @@ export default function QuotationPreview({
               >
                 Valid Until
               </span>
-              <span style={{ fontSize: '11.5px', fontWeight: 700, color: '#b45309' }}>
+              <span style={{ fontSize: '12px', fontWeight: 700, color: '#b45309' }}>
                 {formatDateDisplay(formData.validUntil)}
               </span>
             </div>
@@ -352,21 +352,21 @@ export default function QuotationPreview({
         </div>
 
         {/* ── CUSTOMER & PROPERTY CARDS ─────────────────────────────────── */}
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 10 }}>
           {/* Card 1: Quotation Issued To */}
           <div
             style={{
               background: '#f8fafc',
-              borderRadius: '8px',
-              padding: '14px 18px',
+              borderRadius: '6px',
+              padding: '8px 12px',
               border: '1px solid #e2e8f0',
               borderLeft: '4px solid #C9A84C',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
               <svg
-                width="13"
-                height="13"
+                width="12"
+                height="12"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="#C9A84C"
@@ -380,9 +380,9 @@ export default function QuotationPreview({
               <h3
                 style={{
                   margin: 0,
-                  fontSize: '10px',
+                  fontSize: '11px',
                   fontWeight: 800,
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   color: '#0a1628',
                 }}
@@ -390,15 +390,15 @@ export default function QuotationPreview({
                 Quotation Issued To
               </h3>
             </div>
-            <p style={{ fontWeight: 800, fontSize: '14px', margin: '0 0 6px', color: '#0f172a' }}>
+            <p style={{ fontWeight: 800, fontSize: '13.5px', margin: '0 0 3px', color: '#0f172a' }}>
               {formData.customerName || 'Valued Customer'}
             </p>
             <div
               style={{
                 display: 'flex',
                 flexDirection: 'column',
-                gap: '4px',
-                fontSize: '11px',
+                gap: '3px',
+                fontSize: '11.5px',
                 color: '#475569',
               }}
             >
@@ -465,16 +465,16 @@ export default function QuotationPreview({
           <div
             style={{
               background: '#f8fafc',
-              borderRadius: '8px',
-              padding: '14px 18px',
+              borderRadius: '6px',
+              padding: '8px 12px',
               border: '1px solid #e2e8f0',
               borderLeft: '4px solid #0a1628',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
               <svg
-                width="13"
-                height="13"
+                width="12"
+                height="12"
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="#0a1628"
@@ -488,9 +488,9 @@ export default function QuotationPreview({
               <h3
                 style={{
                   margin: 0,
-                  fontSize: '10px',
+                  fontSize: '11px',
                   fontWeight: 800,
-                  letterSpacing: '0.12em',
+                  letterSpacing: '0.1em',
                   textTransform: 'uppercase',
                   color: '#0a1628',
                 }}
@@ -502,26 +502,26 @@ export default function QuotationPreview({
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '8px 12px',
-                fontSize: '11px',
+                gap: '4px 10px',
+                fontSize: '11.5px',
               }}
             >
               <div>
-                <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>
+                <span style={{ color: '#64748b', fontSize: '10.5px', display: 'block' }}>
                   Project Name
                 </span>
-                <strong style={{ color: '#0f172a', fontSize: '12px' }}>
+                <strong style={{ color: '#0f172a', fontSize: '12.5px' }}>
                   {formData.projectName || '—'}
                 </strong>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>
+                <span style={{ color: '#64748b', fontSize: '10.5px', display: 'block' }}>
                   Plot / Unit No.
                 </span>
                 <strong
                   style={{
                     color: '#0a1628',
-                    fontSize: '12px',
+                    fontSize: '12.5px',
                     background: '#e2e8f0',
                     padding: '1px 6px',
                     borderRadius: '4px',
@@ -531,7 +531,7 @@ export default function QuotationPreview({
                 </strong>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>
+                <span style={{ color: '#64748b', fontSize: '10.5px', display: 'block' }}>
                   Property Type
                 </span>
                 <span style={{ color: '#334155', fontWeight: 600 }}>
@@ -539,13 +539,13 @@ export default function QuotationPreview({
                 </span>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '10px', display: 'block' }}>
+                <span style={{ color: '#64748b', fontSize: '10.5px', display: 'block' }}>
                   Plot Area
                 </span>
                 <span style={{ color: '#0a1628', fontWeight: 800 }}>
                   {areaSqYds.toLocaleString('en-IN')} Sq. Yds.
                   {areaSqFt > 0 && (
-                    <span style={{ color: '#64748b', fontWeight: 400, fontSize: '9.5px' }}>
+                    <span style={{ color: '#64748b', fontWeight: 400, fontSize: '10.5px' }}>
                       {' '}
                       ({areaSqFt.toLocaleString('en-IN')} sq.ft)
                     </span>
@@ -559,21 +559,21 @@ export default function QuotationPreview({
         {/* ── PRICE BREAKDOWN TABLE ─────────────────────────────────────── */}
         {hasMultipleTiers ? (
           /* Multi-Tier Comparative Pricing Table */
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 10 }}>
             <div
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                marginBottom: 8,
+                marginBottom: 6,
               }}
             >
               <h3
                 style={{
                   margin: 0,
-                  fontSize: '10.5px',
+                  fontSize: '11.5px',
                   fontWeight: 800,
-                  letterSpacing: '0.1em',
+                  letterSpacing: '0.08em',
                   textTransform: 'uppercase',
                   color: '#0a1628',
                   display: 'flex',
@@ -594,7 +594,7 @@ export default function QuotationPreview({
               </h3>
               <span
                 style={{
-                  fontSize: '10px',
+                  fontSize: '11px',
                   color: '#64748b',
                   fontWeight: 600,
                 }}
@@ -607,7 +607,7 @@ export default function QuotationPreview({
               style={{
                 width: '100%',
                 borderCollapse: 'collapse',
-                fontSize: '11.5px',
+                fontSize: '12px',
                 border: '1px solid #e2e8f0',
                 borderRadius: '6px',
                 overflow: 'hidden',
@@ -617,12 +617,12 @@ export default function QuotationPreview({
                 <tr style={{ background: '#0a1628', color: '#ffffff' }}>
                   <th
                     style={{
-                      padding: '10px 14px',
+                      padding: '7px 12px',
                       textAlign: 'left',
                       fontWeight: 700,
-                      fontSize: '10px',
+                      fontSize: '11px',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                       width: '32%',
                     }}
                   >
@@ -634,10 +634,10 @@ export default function QuotationPreview({
                       <th
                         key={t.id || idx}
                         style={{
-                          padding: '10px 14px',
+                          padding: '7px 12px',
                           textAlign: 'right',
                           fontWeight: 700,
-                          fontSize: '11px',
+                          fontSize: '11.5px',
                           color: isBestValue ? '#F5D68A' : '#ffffff',
                           textTransform: 'uppercase',
                           borderLeft: '1px solid rgba(255,255,255,0.12)',
@@ -650,29 +650,29 @@ export default function QuotationPreview({
                             <span
                               style={{
                                 display: 'block',
-                                fontSize: '8px',
-                                letterSpacing: '0.04em',
+                                fontSize: '9.5px',
+                                letterSpacing: '0.03em',
                                 color: '#38bdf8',
                                 fontWeight: 700,
                                 marginTop: '2px',
                                 textTransform: 'none',
                               }}
                             >
-                              📅 {months}-Month EMI Plan
+                              {months}-Month EMI Plan
                             </span>
                           ) : (
                             <span
                               style={{
                                 display: 'block',
-                                fontSize: '8px',
-                                letterSpacing: '0.04em',
+                                fontSize: '9.5px',
+                                letterSpacing: '0.03em',
                                 color: isBestValue ? '#C9A84C' : '#a3e635',
                                 fontWeight: 600,
                                 marginTop: '2px',
                                 textTransform: 'none',
                               }}
                             >
-                              ⚡ Full Upfront
+                              Full Upfront Payment
                             </span>
                           );
                         })()}
@@ -684,14 +684,14 @@ export default function QuotationPreview({
               <tbody>
                 {/* Basic Rate */}
                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
-                  <td style={{ padding: '9px 14px', color: '#334155', fontWeight: 600 }}>
+                  <td style={{ padding: '6px 12px', color: '#334155', fontWeight: 600 }}>
                     Basic Rate / Sq. Yd.
                   </td>
                   {tierCalculations.map((t, idx) => (
                     <td
                       key={t.id || idx}
                       style={{
-                        padding: '9px 14px',
+                        padding: '6px 12px',
                         textAlign: 'right',
                         borderLeft: '1px solid #f1f5f9',
                         fontWeight: 600,
@@ -704,9 +704,9 @@ export default function QuotationPreview({
 
                 {/* Basic Cost */}
                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
-                  <td style={{ padding: '9px 14px', color: '#334155', fontWeight: 600 }}>
+                  <td style={{ padding: '6px 12px', color: '#334155', fontWeight: 600 }}>
                     Basic Land Cost{' '}
-                    <span style={{ fontSize: '9.5px', color: '#64748b' }}>
+                    <span style={{ fontSize: '10.5px', color: '#64748b' }}>
                       ({areaSqYds} Yds × Rate)
                     </span>
                   </td>
@@ -714,7 +714,7 @@ export default function QuotationPreview({
                     <td
                       key={t.id || idx}
                       style={{
-                        padding: '9px 14px',
+                        padding: '6px 12px',
                         textAlign: 'right',
                         borderLeft: '1px solid #f1f5f9',
                         fontWeight: 600,
@@ -727,9 +727,9 @@ export default function QuotationPreview({
 
                 {/* EDC Amount */}
                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#ffffff' }}>
-                  <td style={{ padding: '9px 14px', color: '#334155' }}>
+                  <td style={{ padding: '6px 12px', color: '#334155' }}>
                     EDC Amount{' '}
-                    <span style={{ fontSize: '9.5px', color: '#64748b' }}>
+                    <span style={{ fontSize: '10.5px', color: '#64748b' }}>
                       (Govt. Dev. Charges)
                     </span>
                   </td>
@@ -737,7 +737,7 @@ export default function QuotationPreview({
                     <td
                       key={t.id || idx}
                       style={{
-                        padding: '9px 14px',
+                        padding: '6px 12px',
                         textAlign: 'right',
                         borderLeft: '1px solid #f1f5f9',
                         color: '#475569',
@@ -745,7 +745,7 @@ export default function QuotationPreview({
                     >
                       {formatINR(t.edcAmount)}
                       {t.edcRate > 0 && (
-                        <span style={{ fontSize: '9px', color: '#94a3b8' }}>
+                        <span style={{ fontSize: '10px', color: '#94a3b8' }}>
                           {' '}
                           (₹{t.edcRate}/yd)
                         </span>
@@ -756,9 +756,9 @@ export default function QuotationPreview({
 
                 {/* PLC Amount */}
                 <tr style={{ borderBottom: '1.5px solid #cbd5e1', background: '#f8fafc' }}>
-                  <td style={{ padding: '9px 14px', color: '#334155' }}>
+                  <td style={{ padding: '6px 12px', color: '#334155' }}>
                     PLC Amount{' '}
-                    <span style={{ fontSize: '9.5px', color: '#64748b' }}>
+                    <span style={{ fontSize: '10.5px', color: '#64748b' }}>
                       (Location Preference)
                     </span>
                   </td>
@@ -766,7 +766,7 @@ export default function QuotationPreview({
                     <td
                       key={t.id || idx}
                       style={{
-                        padding: '9px 14px',
+                        padding: '6px 12px',
                         textAlign: 'right',
                         borderLeft: '1px solid #f1f5f9',
                         color: '#475569',
@@ -774,7 +774,7 @@ export default function QuotationPreview({
                     >
                       {formatINR(t.plcAmount)}
                       {t.plcPercent > 0 && (
-                        <span style={{ fontSize: '9px', color: '#94a3b8' }}>
+                        <span style={{ fontSize: '10px', color: '#94a3b8' }}>
                           {' '}
                           ({t.plcPercent}%)
                         </span>
@@ -789,10 +789,10 @@ export default function QuotationPreview({
                 <tr style={{ background: '#0a1628', color: '#ffffff' }}>
                   <td
                     style={{
-                      padding: '12px 14px',
+                      padding: '8px 12px',
                       fontWeight: 800,
-                      fontSize: '11px',
-                      letterSpacing: '0.06em',
+                      fontSize: '12px',
+                      letterSpacing: '0.05em',
                       textTransform: 'uppercase',
                     }}
                   >
@@ -802,10 +802,10 @@ export default function QuotationPreview({
                     <td
                       key={t.id || idx}
                       style={{
-                        padding: '12px 14px',
+                        padding: '8px 12px',
                         textAlign: 'right',
                         fontWeight: 800,
-                        fontSize: '14px',
+                        fontSize: '15px',
                         color: '#F5D68A',
                         borderLeft: '1px solid rgba(255,255,255,0.15)',
                       }}
@@ -823,17 +823,17 @@ export default function QuotationPreview({
                     borderTop: '1px solid #eddca8',
                   }}
                 >
-                  <td style={{ padding: '8px 14px', fontWeight: 700, fontSize: '10.5px' }}>
+                  <td style={{ padding: '6px 12px', fontWeight: 700, fontSize: '11px' }}>
                     Effective Land Rate
                   </td>
                   {tierCalculations.map((t, idx) => (
                     <td
                       key={t.id || idx}
                       style={{
-                        padding: '8px 14px',
+                        padding: '6px 12px',
                         textAlign: 'right',
                         fontWeight: 700,
-                        fontSize: '11px',
+                        fontSize: '11.5px',
                         borderLeft: '1px solid #eddca8',
                       }}
                     >
@@ -852,9 +852,9 @@ export default function QuotationPreview({
                 >
                   <td
                     style={{
-                      padding: '8px 14px',
+                      padding: '6px 12px',
                       fontWeight: 600,
-                      fontSize: '10px',
+                      fontSize: '11px',
                       color: '#64748b',
                     }}
                   >
@@ -866,10 +866,10 @@ export default function QuotationPreview({
                       <td
                         key={t.id || idx}
                         style={{
-                          padding: '8px 14px',
+                          padding: '6px 12px',
                           textAlign: 'right',
                           fontWeight: 600,
-                          fontSize: '10px',
+                          fontSize: '11px',
                           color: months > 1 ? '#0369a1' : '#15803d',
                           borderLeft: '1px solid #e2e8f0',
                         }}
@@ -885,10 +885,10 @@ export default function QuotationPreview({
             {/* Amount in Words Executive Cards */}
             <div
               style={{
-                marginTop: 12,
+                marginTop: 8,
                 display: 'grid',
                 gridTemplateColumns: `repeat(${tierCalculations.length}, 1fr)`,
-                gap: 10,
+                gap: 8,
               }}
             >
               {tierCalculations.map((t, idx) => (
@@ -899,7 +899,7 @@ export default function QuotationPreview({
                     border: '1px solid #e2e8f0',
                     borderTop: '2px solid #C9A84C',
                     borderRadius: '6px',
-                    padding: '8px 12px',
+                    padding: '6px 10px',
                   }}
                 >
                   <div
@@ -911,7 +911,7 @@ export default function QuotationPreview({
                   >
                     <span
                       style={{
-                        fontSize: '9px',
+                        fontSize: '10px',
                         fontWeight: 800,
                         color: '#0a1628',
                         textTransform: 'uppercase',
@@ -919,16 +919,16 @@ export default function QuotationPreview({
                     >
                       {t.label || `Option ${idx + 1}`}
                     </span>
-                    <strong style={{ fontSize: '11px', color: '#0a1628' }}>
+                    <strong style={{ fontSize: '12px', color: '#0a1628' }}>
                       {formatINR(t.grandTotal)}
                     </strong>
                   </div>
                   <p
                     style={{
-                      margin: '3px 0 0',
+                      margin: '2px 0 0',
                       color: '#475569',
-                      fontSize: '9.5px',
-                      lineHeight: '1.35',
+                      fontSize: '10.5px',
+                      lineHeight: '1.3',
                       fontStyle: 'italic',
                     }}
                   >
@@ -937,17 +937,17 @@ export default function QuotationPreview({
                   {t.paymentMonths && parseInt(t.paymentMonths, 10) > 1 && (
                     <p
                       style={{
-                        margin: '5px 0 0',
+                        margin: '4px 0 0',
                         padding: '3px 6px',
                         background: '#f0fdf4',
                         border: '1px solid #bbf7d0',
                         borderRadius: '4px',
-                        fontSize: '9.5px',
+                        fontSize: '10.5px',
                         fontWeight: 700,
                         color: '#15803d',
                       }}
                     >
-                      📅 {t.paymentMonths}-Month Plan: ≈{' '}
+                      {t.paymentMonths}-Month Plan: ≈{' '}
                       {formatINR(Math.ceil(t.grandTotal / parseInt(t.paymentMonths, 10)))} / month
                     </p>
                   )}
@@ -957,13 +957,13 @@ export default function QuotationPreview({
           </div>
         ) : (
           /* Single Option Pricing Breakdown */
-          <div style={{ marginBottom: 20 }}>
+          <div style={{ marginBottom: 10 }}>
             <h3
               style={{
-                margin: '0 0 8px',
-                fontSize: '10.5px',
+                margin: '0 0 6px',
+                fontSize: '11.5px',
                 fontWeight: 800,
-                letterSpacing: '0.1em',
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
                 color: '#0a1628',
               }}
@@ -984,36 +984,36 @@ export default function QuotationPreview({
                 <tr style={{ background: '#0a1628', color: '#fff' }}>
                   <th
                     style={{
-                      padding: '10px 16px',
+                      padding: '7px 12px',
                       textAlign: 'left',
                       fontWeight: 700,
-                      fontSize: '10.5px',
+                      fontSize: '11px',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                     }}
                   >
                     Particular
                   </th>
                   <th
                     style={{
-                      padding: '10px 16px',
+                      padding: '7px 12px',
                       textAlign: 'center',
                       fontWeight: 700,
-                      fontSize: '10.5px',
+                      fontSize: '11px',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                     }}
                   >
                     Calculation Formula
                   </th>
                   <th
                     style={{
-                      padding: '10px 16px',
+                      padding: '7px 12px',
                       textAlign: 'right',
                       fontWeight: 700,
-                      fontSize: '10.5px',
+                      fontSize: '11px',
                       textTransform: 'uppercase',
-                      letterSpacing: '0.08em',
+                      letterSpacing: '0.06em',
                     }}
                   >
                     Amount (INR)
@@ -1022,15 +1022,15 @@ export default function QuotationPreview({
               </thead>
               <tbody>
                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#fff' }}>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: '#334155' }}>
+                  <td style={{ padding: '6px 12px', fontWeight: 600, color: '#334155' }}>
                     Basic Land Cost
                   </td>
                   <td
                     style={{
-                      padding: '10px 16px',
+                      padding: '6px 12px',
                       textAlign: 'center',
                       color: '#64748b',
-                      fontSize: '11px',
+                      fontSize: '11.5px',
                     }}
                   >
                     {areaSqYds.toLocaleString('en-IN')} Sq. Yds. ×{' '}
@@ -1038,25 +1038,26 @@ export default function QuotationPreview({
                   </td>
                   <td
                     style={{
-                      padding: '10px 16px',
+                      padding: '6px 12px',
                       textAlign: 'right',
                       fontWeight: 700,
                       color: '#0f172a',
+                      fontSize: '12.5px',
                     }}
                   >
                     {formatINR(calculation.basicPrice)}
                   </td>
                 </tr>
                 <tr style={{ borderBottom: '1px solid #f1f5f9', background: '#f8fafc' }}>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: '#334155' }}>
+                  <td style={{ padding: '6px 12px', fontWeight: 600, color: '#334155' }}>
                     External Development Charges (EDC)
                   </td>
                   <td
                     style={{
-                      padding: '10px 16px',
+                      padding: '6px 12px',
                       textAlign: 'center',
                       color: '#64748b',
-                      fontSize: '11px',
+                      fontSize: '11.5px',
                     }}
                   >
                     {areaSqYds.toLocaleString('en-IN')} Sq. Yds. × {formatINR(calculation.edcRate)}
@@ -1064,35 +1065,37 @@ export default function QuotationPreview({
                   </td>
                   <td
                     style={{
-                      padding: '10px 16px',
+                      padding: '6px 12px',
                       textAlign: 'right',
                       fontWeight: 600,
                       color: '#334155',
+                      fontSize: '12px',
                     }}
                   >
                     {formatINR(calculation.edcAmount)}
                   </td>
                 </tr>
                 <tr style={{ borderBottom: '1.5px solid #cbd5e1', background: '#fff' }}>
-                  <td style={{ padding: '10px 16px', fontWeight: 600, color: '#334155' }}>
+                  <td style={{ padding: '6px 12px', fontWeight: 600, color: '#334155' }}>
                     Preferential Location Charges (PLC @ {calculation.plcPercent}%)
                   </td>
                   <td
                     style={{
-                      padding: '10px 16px',
+                      padding: '6px 12px',
                       textAlign: 'center',
                       color: '#64748b',
-                      fontSize: '11px',
+                      fontSize: '11.5px',
                     }}
                   >
                     {calculation.plcPercent}% on Basic Cost ({formatINR(calculation.basicPrice)})
                   </td>
                   <td
                     style={{
-                      padding: '10px 16px',
+                      padding: '6px 12px',
                       textAlign: 'right',
                       fontWeight: 600,
                       color: '#334155',
+                      fontSize: '12px',
                     }}
                   >
                     {formatINR(calculation.plcAmount)}
@@ -1104,9 +1107,9 @@ export default function QuotationPreview({
                   <td
                     colSpan={2}
                     style={{
-                      padding: '14px 16px',
+                      padding: '8px 12px',
                       fontWeight: 800,
-                      fontSize: '13px',
+                      fontSize: '12.5px',
                       textTransform: 'uppercase',
                       letterSpacing: '0.05em',
                     }}
@@ -1115,10 +1118,10 @@ export default function QuotationPreview({
                   </td>
                   <td
                     style={{
-                      padding: '14px 16px',
+                      padding: '8px 12px',
                       textAlign: 'right',
                       fontWeight: 800,
-                      fontSize: '18px',
+                      fontSize: '17px',
                       color: '#F5D68A',
                     }}
                   >
@@ -1134,13 +1137,13 @@ export default function QuotationPreview({
                 >
                   <td
                     colSpan={2}
-                    style={{ padding: '8px 16px', fontSize: '11px', fontWeight: 700 }}
+                    style={{ padding: '5px 12px', fontSize: '11px', fontWeight: 700 }}
                   >
                     Effective Rate per Sq. Yd. (All Inclusive)
                   </td>
                   <td
                     style={{
-                      padding: '8px 16px',
+                      padding: '5px 12px',
                       textAlign: 'right',
                       fontSize: '12px',
                       fontWeight: 800,
@@ -1158,13 +1161,13 @@ export default function QuotationPreview({
                 border: '1px solid #e2e8f0',
                 borderLeft: '4px solid #C9A84C',
                 borderRadius: '6px',
-                padding: '10px 14px',
-                marginTop: '10px',
+                padding: '6px 12px',
+                marginTop: '6px',
               }}
             >
               <span
                 style={{
-                  fontSize: '9px',
+                  fontSize: '10px',
                   fontWeight: 800,
                   color: '#0a1628',
                   textTransform: 'uppercase',
@@ -1175,10 +1178,10 @@ export default function QuotationPreview({
               </span>
               <p
                 style={{
-                  margin: '2px 0 0',
+                  margin: '1px 0 0',
                   fontWeight: 600,
                   color: '#334155',
-                  fontSize: '11.5px',
+                  fontSize: '12px',
                   fontStyle: 'italic',
                 }}
               >
@@ -1212,7 +1215,7 @@ export default function QuotationPreview({
                           textTransform: 'uppercase',
                         }}
                       >
-                        📅 {months}-Month Installment Plan
+                        {months}-Month Installment Plan
                       </span>
                       <span style={{ fontSize: '10px', color: '#F5D68A', fontWeight: 700 }}>
                         ≈ {formatINR(monthly)} / month
@@ -1380,18 +1383,18 @@ export default function QuotationPreview({
 
         {/* ── HIGH-CONVERTING VALUE ADDS (AMENITIES + BANKING + PROCESS) ─ */}
         <div
-          style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 14, marginBottom: 18 }}
+          style={{ display: 'grid', gridTemplateColumns: '1.2fr 1fr', gap: 10, marginBottom: 8 }}
         >
           {/* Left Box: Official Bank Details for Booking Token */}
           <div
             style={{
               background: '#f8fafc',
               border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              padding: '12px 14px',
+              borderRadius: '6px',
+              padding: '8px 12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 6 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 4 }}>
               <svg
                 width="12"
                 height="12"
@@ -1405,7 +1408,7 @@ export default function QuotationPreview({
               <h4
                 style={{
                   margin: 0,
-                  fontSize: '10px',
+                  fontSize: '11px',
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
@@ -1419,22 +1422,22 @@ export default function QuotationPreview({
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '4px 8px',
-                fontSize: '10.5px',
+                gap: '3px 8px',
+                fontSize: '11px',
               }}
             >
               <div>
-                <span style={{ color: '#64748b', fontSize: '9px' }}>Account Name:</span>
+                <span style={{ color: '#64748b', fontSize: '10.5px' }}>Account Name:</span>
                 <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>
                   SVI INFRA SOLUTIONS PVT. LTD.
                 </p>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '9px' }}>Bank Name:</span>
+                <span style={{ color: '#64748b', fontSize: '10.5px' }}>Bank Name:</span>
                 <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>HDFC Bank Ltd.</p>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '9px' }}>A/C Number:</span>
+                <span style={{ color: '#64748b', fontSize: '10.5px' }}>A/C Number:</span>
                 <p
                   style={{ margin: 0, fontWeight: 700, fontFamily: 'monospace', color: '#0a1628' }}
                 >
@@ -1442,7 +1445,7 @@ export default function QuotationPreview({
                 </p>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '9px' }}>IFSC Code:</span>
+                <span style={{ color: '#64748b', fontSize: '10.5px' }}>IFSC Code:</span>
                 <p
                   style={{ margin: 0, fontWeight: 700, fontFamily: 'monospace', color: '#0a1628' }}
                 >
@@ -1452,11 +1455,11 @@ export default function QuotationPreview({
             </div>
             <p
               style={{
-                margin: '6px 0 0',
-                fontSize: '9px',
+                margin: '4px 0 0',
+                fontSize: '10px',
                 color: '#64748b',
                 borderTop: '1px solid #e2e8f0',
-                paddingTop: '4px',
+                paddingTop: '3px',
               }}
             >
               * Payment modes: Cheque / RTGS / NEFT / UPI in favor of{' '}
@@ -1469,11 +1472,11 @@ export default function QuotationPreview({
             style={{
               background: '#f8fafc',
               border: '1px solid #e2e8f0',
-              borderRadius: '8px',
-              padding: '12px 14px',
+              borderRadius: '6px',
+              padding: '8px 12px',
             }}
           >
-            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 8 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginBottom: 5 }}>
               <svg
                 width="12"
                 height="12"
@@ -1487,7 +1490,7 @@ export default function QuotationPreview({
               <h4
                 style={{
                   margin: 0,
-                  fontSize: '10px',
+                  fontSize: '11px',
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   letterSpacing: '0.08em',
@@ -1501,8 +1504,8 @@ export default function QuotationPreview({
               style={{
                 display: 'grid',
                 gridTemplateColumns: '1fr 1fr',
-                gap: '6px',
-                fontSize: '9.5px',
+                gap: '4px 6px',
+                fontSize: '10.5px',
                 color: '#334155',
               }}
             >
@@ -1568,12 +1571,12 @@ export default function QuotationPreview({
             background: '#ffffff',
             border: '1px solid #e2e8f0',
             borderRadius: '6px',
-            padding: '8px 14px',
-            marginBottom: 16,
+            padding: '5px 12px',
+            marginBottom: 8,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
-            fontSize: '9.5px',
+            fontSize: '10.5px',
           }}
         >
           <span
@@ -1581,7 +1584,7 @@ export default function QuotationPreview({
               fontWeight: 800,
               textTransform: 'uppercase',
               color: '#0a1628',
-              fontSize: '9px',
+              fontSize: '10px',
               letterSpacing: '0.05em',
             }}
           >
@@ -1589,17 +1592,50 @@ export default function QuotationPreview({
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569' }}>
             <span style={{ fontWeight: 600 }}>1. Plan Selection</span>
-            <span style={{ color: '#cbd5e1' }}>➔</span>
+            <svg
+              width="9"
+              height="9"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#94a3b8"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
             <span style={{ fontWeight: 600 }}>2. KYC &amp; Token (10%)</span>
-            <span style={{ color: '#cbd5e1' }}>➔</span>
+            <svg
+              width="9"
+              height="9"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#94a3b8"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
             <span style={{ fontWeight: 600 }}>3. Allotment Letter</span>
-            <span style={{ color: '#cbd5e1' }}>➔</span>
+            <svg
+              width="9"
+              height="9"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#94a3b8"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="9 18 15 12 9 6" />
+            </svg>
             <span style={{ fontWeight: 600, color: '#0a1628' }}>4. Registry / Possession</span>
           </div>
         </div>
 
         {/* ── NOTES & TERMS SECTION ─────────────────────────────────────── */}
-        <div style={{ marginBottom: 18 }}>
+        <div style={{ marginBottom: 8 }}>
           {showCustomNotes && (
             <div
               style={{
@@ -1607,17 +1643,17 @@ export default function QuotationPreview({
                 border: '1px solid #e2e8f0',
                 borderLeft: '3px solid #0a1628',
                 borderRadius: '6px',
-                padding: '8px 12px',
-                marginBottom: 8,
+                padding: '6px 10px',
+                marginBottom: 6,
                 fontSize: '11px',
                 color: '#334155',
-                lineHeight: '1.45',
+                lineHeight: '1.4',
                 whiteSpace: 'pre-wrap',
               }}
             >
               <strong
                 style={{
-                  fontSize: '10px',
+                  fontSize: '10.5px',
                   color: '#0a1628',
                   textTransform: 'uppercase',
                   display: 'block',
@@ -1630,12 +1666,12 @@ export default function QuotationPreview({
             </div>
           )}
 
-          <div style={{ fontSize: '10px', color: '#64748b', lineHeight: '1.5' }}>
-            <p style={{ margin: '0 0 2px' }}>
+          <div style={{ fontSize: '10.5px', color: '#64748b', lineHeight: '1.45' }}>
+            <p style={{ margin: '0 0 1px' }}>
               • <strong>Quotation Validity:</strong> Rates are valid until the specified date.
               Allotments are subject to unit availability.
             </p>
-            <p style={{ margin: '0 0 2px' }}>
+            <p style={{ margin: '0 0 1px' }}>
               • <strong>Statutory Charges:</strong> Government stamp duty, registration charges, and
               legal document fees are payable at the time of registry as per applicable state norms.
             </p>
@@ -1645,19 +1681,18 @@ export default function QuotationPreview({
             </p>
           </div>
         </div>
-
         {/* ── SIGNATURE & FOOTER ────────────────────────────────────────── */}
         <div
           style={{
             borderTop: '1px solid #e2e8f0',
-            paddingTop: 16,
+            paddingTop: 8,
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'flex-end',
           }}
         >
           <div style={{ fontSize: '10px', color: '#94a3b8', maxWidth: '360px' }}>
-            <p style={{ margin: '0 0 2px', fontWeight: 600, color: '#64748b' }}>
+            <p style={{ margin: '0 0 1px', fontWeight: 600, color: '#64748b' }}>
               This is a verified computer-generated quotation document.
             </p>
             <p style={{ margin: 0 }}>
@@ -1666,11 +1701,11 @@ export default function QuotationPreview({
           </div>
 
           <div style={{ textAlign: 'center' }}>
-            <div style={{ borderTop: '1.5px solid #0a1628', width: 180, marginBottom: 4 }} />
-            <p style={{ fontSize: '10.5px', fontWeight: 800, color: '#0a1628', margin: 0 }}>
+            <div style={{ borderTop: '1.5px solid #0a1628', width: 180, marginBottom: 3 }} />
+            <p style={{ fontSize: '11px', fontWeight: 800, color: '#0a1628', margin: 0 }}>
               For {companyInfo.company_name || 'SVI Infra Solutions Pvt. Ltd.'}
             </p>
-            <p style={{ fontSize: '9.5px', color: '#64748b', margin: '2px 0 0' }}>
+            <p style={{ fontSize: '10px', color: '#64748b', margin: '1px 0 0' }}>
               Authorized Signatory
             </p>
           </div>

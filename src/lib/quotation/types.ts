@@ -6,11 +6,14 @@ export interface PricingTier {
   basicRate: string;
   edcRate: string;
   plcPercent: string;
+  paymentMonths?: string;
 }
 
 export interface PricingTierCalculation extends QuotationCalculationResult {
   id: string;
   label: string;
+  paymentMonths?: string;
+  monthlyInstallment?: number | null;
 }
 
 export interface QuotationFormData {

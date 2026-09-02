@@ -301,11 +301,12 @@ export default function QuotationPage() {
   const handleTiersChange = useCallback((tiers: PricingTier[]) => {
     setFormData((prev) => {
       const updated = { ...prev, pricingTiers: tiers };
-      // If tier 0 has values, sync with main basicRate/edcRate/plcPercent
+      // If tier 0 has values, sync with main basicRate/edcRate/plcPercent/paymentMonths
       if (tiers.length > 0 && tiers[0]) {
         if (tiers[0].basicRate) updated.basicRate = tiers[0].basicRate;
         if (tiers[0].edcRate) updated.edcRate = tiers[0].edcRate;
         if (tiers[0].plcPercent) updated.plcPercent = tiers[0].plcPercent;
+        if (tiers[0].paymentMonths !== undefined) updated.paymentMonths = tiers[0].paymentMonths;
       }
       return updated;
     });
