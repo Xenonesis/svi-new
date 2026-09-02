@@ -1,15 +1,23 @@
 'use client';
 
-import type { QuotationCalculationResult } from '@/src/lib/quotation/types';
+import type { QuotationCalculationResult, PricingTierCalculation } from '@/src/lib/quotation/types';
 import { formatINR } from '@/src/lib/quotation/format';
+import { Layers } from 'lucide-react';
 
 interface QuotationSummaryProps {
   calculation: QuotationCalculationResult | null;
+  tierCalculations?: PricingTierCalculation[];
   area: string;
 }
 
-export default function QuotationSummary({ calculation, area }: QuotationSummaryProps) {
-  if (!calculation) {
+export default function QuotationSummary({
+  calculation,
+  tierCalculations = [],
+  area,
+}: QuotationSummaryProps) {
+  const hasMultipleTiers = tierCalculations && tierCalculations.length > 1;
+
+  if (!calculation && !hasMultipleTiers) {
     return (
       <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-white/5 dark:bg-white/3">
         <p className="text-xs text-gray-400 dark:text-gray-600">
@@ -19,6 +27,81 @@ export default function QuotationSummary({ calculation, area }: QuotationSummary
     );
   }
 
+  if (hasMultipleTiers) {
+    return (
+      <div className="rounded-xl border border-gray-200 bg-gray-50/70 p-5 dark:border-white/8 dark:bg-white/3">
+        <div className="mb-4 flex items-center justify-between">
+          <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase dark:text-gray-500">
+            Multi-Rate Comparison Summary
+          </p>
+          <span className="bg-brand-gold/15 text-brand-gold inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold">
+            <Layers className="h-2.5 w-2.5" />
+            {tierCalculations.length} Options
+          </span>
+        </div>
+
+        <div className="space-y-3">
+          {tierCalculations.map((tier, idx) => (
+            <div
+              key={tier.id || idx}
+              className="rounded-lg border border-gray-200/80 bg-white p-3.5 shadow-sm dark:border-white/10 dark:bg-[#14151a]"
+            >
+              <div className="flex items-center justify-between border-b border-gray-100 pb-2 dark:border-white/5">
+                <div className="flex items-center gap-2">
+                  <span className="bg-brand-gold/20 text-brand-gold flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
+                    {idx + 1}
+                  </span>
+                  <span className="text-xs font-bold text-gray-900 dark:text-white">
+                    {tier.label || `Option ${idx + 1}`}
+                  </span>
+                </div>
+                <span className="text-xs font-extrabold text-amber-600 dark:text-amber-400">
+                  {formatINR(tier.grandTotal)}
+                </span>
+              </div>
+
+              <div className="mt-2.5 grid grid-cols-2 gap-2 text-[11px] text-gray-600 dark:text-gray-400">
+                <div>
+                  <span className="text-gray-400">Basic Rate:</span>{' '}
+                  <strong className="text-gray-900 dark:text-white">
+                    {formatINR(tier.basicRate)}/yd
+                  </strong>
+                </div>
+                <div className="text-right">
+                  <span className="text-gray-400">Basic Cost:</span>{' '}
+                  <strong className="text-gray-900 dark:text-white">
+                    {formatINR(tier.basicPrice)}
+                  </strong>
+                </div>
+                <div>
+                  <span className="text-gray-400">EDC + PLC:</span>{' '}
+                  <strong className="text-gray-900 dark:text-white">
+                    {formatINR(tier.edcAmount + tier.plcAmount)}
+                  </strong>
+                </div>
+                <div className="text-right">
+                  <span className="text-gray-400">Eff. Rate:</span>{' '}
+                  <strong className="text-amber-600 dark:text-amber-400">
+                    {formatINR(tier.effectiveRate)}/yd
+                  </strong>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!calculation) {
+    return (
+      <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-5 dark:border-white/5 dark:bg-white/3">
+        <p className="text-xs text-gray-400 dark:text-gray-600">
+          Fill in pricing details to see live calculation summary.
+        </p>
+      </div>
+    );
+  }
   const rows = [
     {
       label: 'Plot Area',

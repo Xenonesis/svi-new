@@ -1,5 +1,18 @@
 // Quotation type definitions
 
+export interface PricingTier {
+  id: string;
+  label: string;
+  basicRate: string;
+  edcRate: string;
+  plcPercent: string;
+}
+
+export interface PricingTierCalculation extends QuotationCalculationResult {
+  id: string;
+  label: string;
+}
+
 export interface QuotationFormData {
   quotationNo: string;
   quotationDate: string;
@@ -18,6 +31,8 @@ export interface QuotationFormData {
   basicRate: string;
   edcRate: string;
   plcPercent: string;
+
+  pricingTiers?: PricingTier[];
 
   notes: string;
 }

@@ -1,6 +1,10 @@
 'use client';
 
-import type { QuotationCalculationResult, QuotationFormData } from '@/src/lib/quotation/types';
+import type {
+  QuotationCalculationResult,
+  QuotationFormData,
+  PricingTierCalculation,
+} from '@/src/lib/quotation/types';
 import { formatINR } from '@/src/lib/quotation/format';
 import { numberToIndianWords } from '@/src/lib/quotation/numberToIndianWords';
 import type { CompanyInfo } from '@/src/lib/quotation/types';
@@ -10,14 +14,16 @@ import Image from 'next/image';
 interface QuotationPreviewProps {
   formData: QuotationFormData;
   calculation: QuotationCalculationResult;
+  tierCalculations?: PricingTierCalculation[];
   companyInfo: CompanyInfo;
 }
-
 export default function QuotationPreview({
   formData,
   calculation,
+  tierCalculations = [],
   companyInfo,
 }: QuotationPreviewProps) {
+  const hasMultipleTiers = tierCalculations && tierCalculations.length > 1;
   const amountInWords = numberToIndianWords(calculation.grandTotal);
 
   return (
@@ -282,195 +288,447 @@ export default function QuotationPreview({
           </div>
 
           {/* Price Breakdown Table */}
-          <div style={{ marginBottom: 20 }}>
-            <h3
-              style={{
-                margin: '0 0 12px',
-                fontSize: 10,
-                fontWeight: 700,
-                letterSpacing: '0.15em',
-                textTransform: 'uppercase',
-                color: '#6b7280',
-              }}
-            >
-              Price Breakdown
-            </h3>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-              <thead>
-                <tr style={{ background: '#0a1628', color: '#fff' }}>
-                  <th
-                    style={{
-                      padding: '10px 16px',
-                      textAlign: 'left',
-                      fontWeight: 700,
-                      fontSize: 11,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Particular
-                  </th>
-                  <th
-                    style={{
-                      padding: '10px 16px',
-                      textAlign: 'center',
-                      fontWeight: 700,
-                      fontSize: 11,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Calculation
-                  </th>
-                  <th
-                    style={{
-                      padding: '10px 16px',
-                      textAlign: 'right',
-                      fontWeight: 700,
-                      fontSize: 11,
-                      letterSpacing: '0.1em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Amount
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {/* Basic Price */}
-                <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600 }}>Basic Price</td>
-                  <td
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'center',
-                      color: '#6b7280',
-                      fontSize: 12,
-                    }}
-                  >
-                    {Number(formData.area).toLocaleString('en-IN')} Sq. Yds. ×{' '}
-                    {formatINR(calculation.basicRate)}
-                  </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 600 }}>
-                    {formatINR(calculation.basicPrice)}
-                  </td>
-                </tr>
-                {/* EDC */}
-                <tr style={{ borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600 }}>EDC</td>
-                  <td
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'center',
-                      color: '#6b7280',
-                      fontSize: 12,
-                    }}
-                  >
-                    {Number(formData.area).toLocaleString('en-IN')} Sq. Yds. ×{' '}
-                    {formatINR(calculation.edcRate)}
-                  </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 600 }}>
-                    {formatINR(calculation.edcAmount)}
-                  </td>
-                </tr>
-                {/* PLC */}
-                <tr style={{ borderBottom: '2px solid #0a1628' }}>
-                  <td style={{ padding: '12px 16px', fontWeight: 600 }}>
-                    PLC @ {calculation.plcPercent}%
-                  </td>
-                  <td
-                    style={{
-                      padding: '12px 16px',
-                      textAlign: 'center',
-                      color: '#6b7280',
-                      fontSize: 12,
-                    }}
-                  >
-                    {calculation.plcPercent}% of {formatINR(calculation.basicPrice)}
-                  </td>
-                  <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 600 }}>
-                    {formatINR(calculation.plcAmount)}
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                {/* Grand Total */}
-                <tr style={{ background: '#0a1628', color: '#fff' }}>
-                  <td
-                    colSpan={2}
-                    style={{
-                      padding: '16px 16px',
-                      fontWeight: 800,
-                      fontSize: 16,
-                      letterSpacing: '0.05em',
-                      textTransform: 'uppercase',
-                    }}
-                  >
-                    Grand Total
-                  </td>
-                  <td
-                    style={{
-                      padding: '16px 16px',
-                      textAlign: 'right',
-                      fontWeight: 800,
-                      fontSize: 20,
-                      color: '#C9A84C',
-                    }}
-                  >
-                    {formatINR(calculation.grandTotal)}
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
+          {hasMultipleTiers ? (
+            /* ── Comparative Multiple Pricing Table ────────────────────────── */
+            <div style={{ marginBottom: 24 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 10,
+                }}
+              >
+                <h3
+                  style={{
+                    margin: 0,
+                    fontSize: 10,
+                    fontWeight: 700,
+                    letterSpacing: '0.15em',
+                    textTransform: 'uppercase',
+                    color: '#6b7280',
+                  }}
+                >
+                  Comparative Price Breakdown ({tierCalculations.length} Options)
+                </h3>
+                <span
+                  style={{
+                    fontSize: 10,
+                    color: '#C9A84C',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Plot Area: {Number(formData.area).toLocaleString('en-IN')} Sq. Yds.
+                </span>
+              </div>
 
-            {/* Effective Rate row */}
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 12 }}>
+                <thead>
+                  <tr style={{ background: '#0a1628', color: '#fff' }}>
+                    <th
+                      style={{
+                        padding: '10px 14px',
+                        textAlign: 'left',
+                        fontWeight: 700,
+                        fontSize: 10,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.08em',
+                      }}
+                    >
+                      Particulars
+                    </th>
+                    {tierCalculations.map((t, idx) => (
+                      <th
+                        key={t.id || idx}
+                        style={{
+                          padding: '10px 14px',
+                          textAlign: 'right',
+                          fontWeight: 700,
+                          fontSize: 11,
+                          color: idx === 0 ? '#F5D68A' : '#fff',
+                          textTransform: 'uppercase',
+                          borderLeft: '1px solid rgba(255,255,255,0.15)',
+                        }}
+                      >
+                        {t.label || `Option ${idx + 1}`}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Basic Rate */}
+                  <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '9px 14px', fontWeight: 600 }}>Basic Rate / Sq. Yd.</td>
+                    {tierCalculations.map((t, idx) => (
+                      <td
+                        key={t.id || idx}
+                        style={{
+                          padding: '9px 14px',
+                          textAlign: 'right',
+                          fontWeight: 600,
+                          borderLeft: '1px solid #e5e7eb',
+                        }}
+                      >
+                        {formatINR(t.basicRate)}
+                      </td>
+                    ))}
+                  </tr>
+                  {/* Basic Price */}
+                  <tr style={{ borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                    <td style={{ padding: '9px 14px', fontWeight: 600 }}>
+                      Basic Cost (Plot Area × Rate)
+                    </td>
+                    {tierCalculations.map((t, idx) => (
+                      <td
+                        key={t.id || idx}
+                        style={{
+                          padding: '9px 14px',
+                          textAlign: 'right',
+                          fontWeight: 600,
+                          borderLeft: '1px solid #e5e7eb',
+                        }}
+                      >
+                        {formatINR(t.basicPrice)}
+                      </td>
+                    ))}
+                  </tr>
+                  {/* EDC */}
+                  <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '9px 14px', fontWeight: 600 }}>EDC Amount</td>
+                    {tierCalculations.map((t, idx) => (
+                      <td
+                        key={t.id || idx}
+                        style={{
+                          padding: '9px 14px',
+                          textAlign: 'right',
+                          color: '#4b5563',
+                          borderLeft: '1px solid #e5e7eb',
+                        }}
+                      >
+                        {formatINR(t.edcAmount)}{' '}
+                        <span style={{ fontSize: 10, color: '#9ca3af' }}>
+                          ({formatINR(t.edcRate)}/yd)
+                        </span>
+                      </td>
+                    ))}
+                  </tr>
+                  {/* PLC */}
+                  <tr style={{ borderBottom: '2px solid #0a1628', background: '#f9fafb' }}>
+                    <td style={{ padding: '9px 14px', fontWeight: 600 }}>PLC Amount</td>
+                    {tierCalculations.map((t, idx) => (
+                      <td
+                        key={t.id || idx}
+                        style={{
+                          padding: '9px 14px',
+                          textAlign: 'right',
+                          color: '#4b5563',
+                          borderLeft: '1px solid #e5e7eb',
+                        }}
+                      >
+                        {formatINR(t.plcAmount)}{' '}
+                        <span style={{ fontSize: 10, color: '#9ca3af' }}>({t.plcPercent}%)</span>
+                      </td>
+                    ))}
+                  </tr>
+                </tbody>
+                <tfoot>
+                  {/* Grand Total */}
+                  <tr style={{ background: '#0a1628', color: '#fff' }}>
+                    <td
+                      style={{
+                        padding: '12px 14px',
+                        fontWeight: 800,
+                        fontSize: 13,
+                        textTransform: 'uppercase',
+                        letterSpacing: '0.05em',
+                      }}
+                    >
+                      Grand Total
+                    </td>
+                    {tierCalculations.map((t, idx) => (
+                      <td
+                        key={t.id || idx}
+                        style={{
+                          padding: '12px 14px',
+                          textAlign: 'right',
+                          fontWeight: 800,
+                          fontSize: 15,
+                          color: '#C9A84C',
+                          borderLeft: '1px solid rgba(255,255,255,0.15)',
+                        }}
+                      >
+                        {formatINR(t.grandTotal)}
+                      </td>
+                    ))}
+                  </tr>
+                  {/* Effective Rate */}
+                  <tr style={{ background: '#fefce8', color: '#92400e' }}>
+                    <td style={{ padding: '8px 14px', fontWeight: 700, fontSize: 11 }}>
+                      Effective Rate / Sq. Yd.
+                    </td>
+                    {tierCalculations.map((t, idx) => (
+                      <td
+                        key={t.id || idx}
+                        style={{
+                          padding: '8px 14px',
+                          textAlign: 'right',
+                          fontWeight: 700,
+                          fontSize: 12,
+                          color: '#92400e',
+                          borderLeft: '1px solid #fde68a',
+                        }}
+                      >
+                        {formatINR(t.effectiveRate)} / yd
+                      </td>
+                    ))}
+                  </tr>
+                </tfoot>
+              </table>
+
+              {/* Comparative Amount in Words Cards */}
+              <div
+                style={{
+                  marginTop: 14,
+                  display: 'grid',
+                  gridTemplateColumns: `repeat(${tierCalculations.length}, 1fr)`,
+                  gap: 12,
+                }}
+              >
+                {tierCalculations.map((t, idx) => (
+                  <div
+                    key={t.id || idx}
+                    style={{
+                      background: '#f0fdf4',
+                      border: '1px solid #bbf7d0',
+                      borderRadius: 6,
+                      padding: '10px 12px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: 9,
+                          fontWeight: 700,
+                          color: '#166534',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.05em',
+                        }}
+                      >
+                        {t.label || `Option ${idx + 1}`}
+                      </span>
+                      <strong style={{ fontSize: 12, color: '#166534' }}>
+                        {formatINR(t.grandTotal)}
+                      </strong>
+                    </div>
+                    <p
+                      style={{ margin: '4px 0 0', color: '#15803d', fontSize: 10, lineHeight: 1.4 }}
+                    >
+                      {numberToIndianWords(t.grandTotal)}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            /* ── Single Pricing Breakdown Table ────────────────────────────── */
+            <div style={{ marginBottom: 20 }}>
+              <h3
+                style={{
+                  margin: '0 0 12px',
+                  fontSize: 10,
+                  fontWeight: 700,
+                  letterSpacing: '0.15em',
+                  textTransform: 'uppercase',
+                  color: '#6b7280',
+                }}
+              >
+                Price Breakdown
+              </h3>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                <thead>
+                  <tr style={{ background: '#0a1628', color: '#fff' }}>
+                    <th
+                      style={{
+                        padding: '10px 16px',
+                        textAlign: 'left',
+                        fontWeight: 700,
+                        fontSize: 11,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Particular
+                    </th>
+                    <th
+                      style={{
+                        padding: '10px 16px',
+                        textAlign: 'center',
+                        fontWeight: 700,
+                        fontSize: 11,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Calculation
+                    </th>
+                    <th
+                      style={{
+                        padding: '10px 16px',
+                        textAlign: 'right',
+                        fontWeight: 700,
+                        fontSize: 11,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Amount
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {/* Basic Price */}
+                  <tr style={{ borderBottom: '1px solid #e5e7eb' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>Basic Price</td>
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'center',
+                        color: '#6b7280',
+                        fontSize: 12,
+                      }}
+                    >
+                      {Number(formData.area).toLocaleString('en-IN')} Sq. Yds. ×{' '}
+                      {formatINR(calculation.basicRate)}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 600 }}>
+                      {formatINR(calculation.basicPrice)}
+                    </td>
+                  </tr>
+                  {/* EDC */}
+                  <tr style={{ borderBottom: '1px solid #e5e7eb', background: '#f9fafb' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>EDC</td>
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'center',
+                        color: '#6b7280',
+                        fontSize: 12,
+                      }}
+                    >
+                      {Number(formData.area).toLocaleString('en-IN')} Sq. Yds. ×{' '}
+                      {formatINR(calculation.edcRate)}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 600 }}>
+                      {formatINR(calculation.edcAmount)}
+                    </td>
+                  </tr>
+                  {/* PLC */}
+                  <tr style={{ borderBottom: '2px solid #0a1628' }}>
+                    <td style={{ padding: '12px 16px', fontWeight: 600 }}>
+                      PLC @ {calculation.plcPercent}%
+                    </td>
+                    <td
+                      style={{
+                        padding: '12px 16px',
+                        textAlign: 'center',
+                        color: '#6b7280',
+                        fontSize: 12,
+                      }}
+                    >
+                      {calculation.plcPercent}% of {formatINR(calculation.basicPrice)}
+                    </td>
+                    <td style={{ padding: '12px 16px', textAlign: 'right', fontWeight: 600 }}>
+                      {formatINR(calculation.plcAmount)}
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  {/* Grand Total */}
+                  <tr style={{ background: '#0a1628', color: '#fff' }}>
+                    <td
+                      colSpan={2}
+                      style={{
+                        padding: '16px 16px',
+                        fontWeight: 800,
+                        fontSize: 16,
+                        letterSpacing: '0.05em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      Grand Total
+                    </td>
+                    <td
+                      style={{
+                        padding: '16px 16px',
+                        textAlign: 'right',
+                        fontWeight: 800,
+                        fontSize: 20,
+                        color: '#C9A84C',
+                      }}
+                    >
+                      {formatINR(calculation.grandTotal)}
+                    </td>
+                  </tr>
+                </tfoot>
+              </table>
+
+              {/* Effective Rate row */}
+              <div
+                style={{
+                  background: '#fefce8',
+                  border: '1px solid #fde68a',
+                  borderTop: 'none',
+                  padding: '10px 16px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  borderRadius: '0 0 8px 8px',
+                }}
+              >
+                <span style={{ fontSize: 12, color: '#92400e', fontWeight: 600 }}>
+                  Effective Rate
+                </span>
+                <span style={{ fontSize: 14, fontWeight: 700, color: '#92400e' }}>
+                  {formatINR(calculation.effectiveRate)} / Sq. Yd.
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Amount in Words (for single pricing) */}
+          {!hasMultipleTiers && (
             <div
               style={{
-                background: '#fefce8',
-                border: '1px solid #fde68a',
-                borderTop: 'none',
-                padding: '10px 16px',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                borderRadius: '0 0 8px 8px',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: 8,
+                padding: '12px 16px',
+                marginBottom: 24,
               }}
             >
-              <span style={{ fontSize: 12, color: '#92400e', fontWeight: 600 }}>
-                Effective Rate
+              <span
+                style={{
+                  fontSize: 10,
+                  fontWeight: 700,
+                  color: '#166534',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.1em',
+                }}
+              >
+                Amount in Words
               </span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: '#92400e' }}>
-                {formatINR(calculation.effectiveRate)} / Sq. Yd.
-              </span>
+              <p style={{ margin: '4px 0 0', fontWeight: 600, color: '#166534', fontSize: 13 }}>
+                {amountInWords}
+              </p>
             </div>
-          </div>
-
-          {/* Amount in Words */}
-          <div
-            style={{
-              background: '#f0fdf4',
-              border: '1px solid #bbf7d0',
-              borderRadius: 8,
-              padding: '12px 16px',
-              marginBottom: 24,
-            }}
-          >
-            <span
-              style={{
-                fontSize: 10,
-                fontWeight: 700,
-                color: '#166534',
-                textTransform: 'uppercase',
-                letterSpacing: '0.1em',
-              }}
-            >
-              Amount in Words
-            </span>
-            <p style={{ margin: '4px 0 0', fontWeight: 600, color: '#166534', fontSize: 13 }}>
-              {amountInWords}
-            </p>
-          </div>
-
+          )}
           {/* Notes */}
           <div style={{ marginBottom: 24 }}>
             <h3

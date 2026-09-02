@@ -10,12 +10,14 @@ import QuotationForm from '@/src/components/admin/quotation/QuotationForm';
 import QuotationSummary from '@/src/components/admin/quotation/QuotationSummary';
 import QuotationPreview from '@/src/components/admin/quotation/QuotationPreview';
 
-import { calculateQuotation } from '@/src/lib/quotation/calculateQuotation';
+import { calculateQuotation, calculatePricingTiers } from '@/src/lib/quotation/calculateQuotation';
 import { generateQuotationNumber } from '@/src/lib/quotation/quotationNumber';
 import { localDateString, addDays, parseNumber } from '@/src/lib/quotation/format';
 import type {
   QuotationFormData,
   QuotationCalculationResult,
+  PricingTier,
+  PricingTierCalculation,
   CompanyInfo,
 } from '@/src/lib/quotation/types';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
@@ -74,6 +76,7 @@ export default function QuotationPage() {
   });
 
   const [calculation, setCalculation] = useState<QuotationCalculationResult | null>(null);
+  const [tierCalculations, setTierCalculations] = useState<PricingTierCalculation[]>([]);
   const [hasPreview, setHasPreview] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
@@ -238,16 +241,29 @@ export default function QuotationPage() {
 
     if (isNaN(area) || isNaN(basicRate) || isNaN(edcRate) || isNaN(plcPercent)) {
       setCalculation(null);
-      return;
+    } else {
+      try {
+        const result = calculateQuotation({ area, basicRate, edcRate, plcPercent });
+        setCalculation(result);
+      } catch {
+        setCalculation(null);
+      }
     }
 
-    try {
-      const result = calculateQuotation({ area, basicRate, edcRate, plcPercent });
-      setCalculation(result);
-    } catch {
-      setCalculation(null);
+    // Calculate multiple pricing tiers if defined
+    if (formData.pricingTiers && formData.pricingTiers.length > 0 && !isNaN(area) && area > 0) {
+      const tCalcs = calculatePricingTiers(area, formData.pricingTiers);
+      setTierCalculations(tCalcs);
+    } else {
+      setTierCalculations([]);
     }
-  }, [formData.area, formData.basicRate, formData.edcRate, formData.plcPercent]);
+  }, [
+    formData.area,
+    formData.basicRate,
+    formData.edcRate,
+    formData.plcPercent,
+    formData.pricingTiers,
+  ]);
 
   // ── Handle form change ──────────────────────────────────────────────────
   const handleChange = useCallback(
@@ -282,6 +298,18 @@ export default function QuotationPage() {
     [validationErrors]
   );
 
+  const handleTiersChange = useCallback((tiers: PricingTier[]) => {
+    setFormData((prev) => {
+      const updated = { ...prev, pricingTiers: tiers };
+      // If tier 0 has values, sync with main basicRate/edcRate/plcPercent
+      if (tiers.length > 0 && tiers[0]) {
+        if (tiers[0].basicRate) updated.basicRate = tiers[0].basicRate;
+        if (tiers[0].edcRate) updated.edcRate = tiers[0].edcRate;
+        if (tiers[0].plcPercent) updated.plcPercent = tiers[0].plcPercent;
+      }
+      return updated;
+    });
+  }, []);
   // ── Validation ──────────────────────────────────────────────────────────
   const validate = (): boolean => {
     const errors: Partial<Record<keyof QuotationFormData, string>> = {};
@@ -476,7 +504,9 @@ export default function QuotationPage() {
             formData={formData}
             projects={projects}
             loadingProjects={loadingProjects}
+            tierCalculations={tierCalculations}
             onChange={handleChange}
+            onTiersChange={handleTiersChange}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             validationErrors={validationErrors}
@@ -494,7 +524,11 @@ export default function QuotationPage() {
                 Calculation Summary
               </h2>
             </div>
-            <QuotationSummary calculation={calculation} area={formData.area} />
+            <QuotationSummary
+              calculation={calculation}
+              tierCalculations={tierCalculations}
+              area={formData.area}
+            />
           </div>
         </div>
 
@@ -541,6 +575,7 @@ export default function QuotationPage() {
               <QuotationPreview
                 formData={formData}
                 calculation={calculation}
+                tierCalculations={tierCalculations}
                 companyInfo={companyInfo}
               />
             )}

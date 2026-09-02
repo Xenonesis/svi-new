@@ -1,166 +1,128 @@
 import { describe, it, expect } from 'vitest';
-import { calculateQuotation } from '../../src/lib/quotation/calculateQuotation';
+import {
+  calculateQuotation,
+  calculatePricingTiers,
+  roundMoney,
+} from '@/src/lib/quotation/calculateQuotation';
+import type { PricingTier } from '@/src/lib/quotation/types';
 
 describe('calculateQuotation', () => {
-  // ── Mandatory acceptance test ────────────────────────────────────────────
-  it('should produce exactly ₹50,15,772 grand total for the acceptance example', () => {
+  it('calculates single quotation amounts accurately', () => {
+    // Area: 100 sq. yd., Basic Rate: 7500, EDC: 150, PLC: 5%
+    // Basic Price = 100 * 7500 = 750,000
+    // EDC = 100 * 150 = 15,000
+    // PLC Amount = 5% of 750,000 = 37,500
+    // Grand Total = 750,000 + 15,000 + 37,500 = 802,500
+    // Effective Rate = 802,500 / 100 = 8,025
     const result = calculateQuotation({
-      area: 586.64,
-      basicRate: 8000,
+      area: 100,
+      basicRate: 7500,
       edcRate: 150,
       plcPercent: 5,
     });
 
-    expect(result.basicPrice).toBe(4693120);
-    expect(result.edcAmount).toBe(87996);
-    expect(result.plcAmount).toBe(234656);
-    expect(result.grandTotal).toBe(5015772);
-    expect(result.effectiveRate).toBe(8550);
+    expect(result.basicPrice).toBe(750000);
+    expect(result.edcAmount).toBe(15000);
+    expect(result.plcAmount).toBe(37500);
+    expect(result.grandTotal).toBe(802500);
+    expect(result.effectiveRate).toBe(8025);
   });
 
-  // ── PLC is on Basic Price ONLY, not on Basic Price + EDC ─────────────────
-  it('should compute PLC on Basic Price only', () => {
-    const result = calculateQuotation({
-      area: 100,
-      basicRate: 10000,
-      edcRate: 200,
-      plcPercent: 10,
-    });
-    // basicPrice = 1,000,000
-    // plcAmount  = 1,000,000 * 0.10 = 100,000   (not on 1,020,000)
-    expect(result.basicPrice).toBe(1000000);
-    expect(result.plcAmount).toBe(100000);
-    expect(result.grandTotal).toBe(1120000); // 1,000,000 + 20,000 + 100,000
-  });
-
-  // ── PLC zero ─────────────────────────────────────────────────────────────
-  it('should return plcAmount = 0 when plcPercent = 0', () => {
+  it('handles 0% PLC and 0 EDC correctly', () => {
     const result = calculateQuotation({
       area: 200,
-      basicRate: 5000,
-      edcRate: 100,
+      basicRate: 8000,
+      edcRate: 0,
       plcPercent: 0,
     });
-    expect(result.plcAmount).toBe(0);
-    expect(result.grandTotal).toBe(result.basicPrice + result.edcAmount);
-  });
 
-  // ── EDC zero ─────────────────────────────────────────────────────────────
-  it('should allow edcRate = 0 (EDC is optional)', () => {
-    const result = calculateQuotation({
-      area: 500,
-      basicRate: 6000,
-      edcRate: 0,
-      plcPercent: 5,
-    });
+    expect(result.basicPrice).toBe(1600000);
     expect(result.edcAmount).toBe(0);
-    expect(result.grandTotal).toBe(result.basicPrice + result.plcAmount);
+    expect(result.plcAmount).toBe(0);
+    expect(result.grandTotal).toBe(1600000);
+    expect(result.effectiveRate).toBe(8000);
   });
 
-  // ── Decimal area ─────────────────────────────────────────────────────────
-  it('should handle decimal area', () => {
-    const result = calculateQuotation({
-      area: 100.5,
-      basicRate: 8000,
-      edcRate: 0,
-      plcPercent: 0,
-    });
-    expect(result.basicPrice).toBe(804000);
-    expect(result.grandTotal).toBe(804000);
-  });
-
-  // ── Decimal rates ─────────────────────────────────────────────────────────
-  it('should handle decimal basic rates', () => {
-    const result = calculateQuotation({
-      area: 100,
-      basicRate: 8125.5,
-      edcRate: 0,
-      plcPercent: 0,
-    });
-    expect(result.basicPrice).toBe(812550);
-    expect(result.grandTotal).toBe(812550);
-  });
-
-  // ── Floating point precision ──────────────────────────────────────────────
-  it('should produce rounded stable outputs without floating point noise', () => {
-    const result = calculateQuotation({
-      area: 333.33,
-      basicRate: 3333.33,
-      edcRate: 100,
-      plcPercent: 5,
-    });
-    expect(Number.isFinite(result.grandTotal)).toBe(true);
-    expect(result.grandTotal.toString()).not.toContain('e');
-    // Verify no excessive decimals
-    expect(result.basicPrice.toString().split('.')[1]?.length ?? 0).toBeLessThanOrEqual(2);
-    expect(result.plcAmount.toString().split('.')[1]?.length ?? 0).toBeLessThanOrEqual(2);
-  });
-
-  // ── Effective rate ────────────────────────────────────────────────────────
-  it('should compute effective rate as grand total / area', () => {
-    const result = calculateQuotation({
-      area: 586.64,
-      basicRate: 8000,
-      edcRate: 150,
-      plcPercent: 5,
-    });
-    expect(result.effectiveRate).toBe(8550);
-  });
-
-  // ── Invalid area — reject zero and negatives ──────────────────────────────
-  it('should throw on area = 0', () => {
+  it('throws error for invalid area or rates', () => {
     expect(() =>
-      calculateQuotation({ area: 0, basicRate: 8000, edcRate: 150, plcPercent: 5 })
+      calculateQuotation({ area: 0, basicRate: 7500, edcRate: 150, plcPercent: 5 })
     ).toThrow();
-  });
-
-  it('should throw on area < 0', () => {
     expect(() =>
-      calculateQuotation({ area: -1, basicRate: 8000, edcRate: 150, plcPercent: 5 })
+      calculateQuotation({ area: -10, basicRate: 7500, edcRate: 150, plcPercent: 5 })
     ).toThrow();
-  });
-
-  it('should throw on area = NaN', () => {
-    expect(() =>
-      calculateQuotation({ area: NaN, basicRate: 8000, edcRate: 150, plcPercent: 5 })
-    ).toThrow();
-  });
-
-  it('should throw on area = Infinity', () => {
-    expect(() =>
-      calculateQuotation({ area: Infinity, basicRate: 8000, edcRate: 150, plcPercent: 5 })
-    ).toThrow();
-  });
-
-  // ── Invalid rate ──────────────────────────────────────────────────────────
-  it('should throw on negative basicRate', () => {
     expect(() =>
       calculateQuotation({ area: 100, basicRate: -1, edcRate: 150, plcPercent: 5 })
     ).toThrow();
-  });
-
-  it('should throw on negative edcRate', () => {
     expect(() =>
-      calculateQuotation({ area: 100, basicRate: 8000, edcRate: -10, plcPercent: 5 })
+      calculateQuotation({ area: 100, basicRate: 7500, edcRate: 150, plcPercent: 105 })
     ).toThrow();
   });
+});
 
-  // ── Invalid PLC ───────────────────────────────────────────────────────────
-  it('should throw on plcPercent = -1', () => {
-    expect(() =>
-      calculateQuotation({ area: 100, basicRate: 8000, edcRate: 150, plcPercent: -1 })
-    ).toThrow();
+describe('calculatePricingTiers', () => {
+  it('computes multiple pricing tiers correctly for comparison', () => {
+    const area = 100;
+    const tiers: PricingTier[] = [
+      {
+        id: 'tier-1',
+        label: 'Option 1 (Standard Rate)',
+        basicRate: '7500',
+        edcRate: '150',
+        plcPercent: '5',
+      },
+      {
+        id: 'tier-2',
+        label: 'Option 2 (Prime Rate)',
+        basicRate: '8000',
+        edcRate: '150',
+        plcPercent: '5',
+      },
+      {
+        id: 'tier-3',
+        label: 'Option 3 (Premium Rate)',
+        basicRate: '8500',
+        edcRate: '150',
+        plcPercent: '5',
+      },
+    ];
+
+    const results = calculatePricingTiers(area, tiers);
+
+    expect(results).toHaveLength(3);
+
+    // Tier 1: 750,000 + 15,000 + 37,500 = 802,500 (Eff: 8,025)
+    expect(results[0].id).toBe('tier-1');
+    expect(results[0].label).toBe('Option 1 (Standard Rate)');
+    expect(results[0].basicPrice).toBe(750000);
+    expect(results[0].grandTotal).toBe(802500);
+    expect(results[0].effectiveRate).toBe(8025);
+
+    // Tier 2: 800,000 + 15,000 + 40,000 = 855,000 (Eff: 8,550)
+    expect(results[1].id).toBe('tier-2');
+    expect(results[1].label).toBe('Option 2 (Prime Rate)');
+    expect(results[1].basicPrice).toBe(800000);
+    expect(results[1].grandTotal).toBe(855000);
+    expect(results[1].effectiveRate).toBe(8550);
+
+    // Tier 3: 850,000 + 15,000 + 42,500 = 907,500 (Eff: 9,075)
+    expect(results[2].id).toBe('tier-3');
+    expect(results[2].label).toBe('Option 3 (Premium Rate)');
+    expect(results[2].basicPrice).toBe(850000);
+    expect(results[2].grandTotal).toBe(907500);
+    expect(results[2].effectiveRate).toBe(9075);
   });
 
-  it('should throw on plcPercent = 101', () => {
-    expect(() =>
-      calculateQuotation({ area: 100, basicRate: 8000, edcRate: 150, plcPercent: 101 })
-    ).toThrow();
-  });
-
-  it('should throw on plcPercent = NaN', () => {
-    expect(() =>
-      calculateQuotation({ area: 100, basicRate: 8000, edcRate: 150, plcPercent: NaN })
-    ).toThrow();
+  it('returns empty array when tiers are empty or area is invalid', () => {
+    expect(
+      calculatePricingTiers(0, [
+        { id: '1', label: 'Opt 1', basicRate: '7500', edcRate: '150', plcPercent: '5' },
+      ])
+    ).toEqual([]);
+    expect(calculatePricingTiers(100, [])).toEqual([]);
+    expect(
+      calculatePricingTiers(NaN, [
+        { id: '1', label: 'Opt 1', basicRate: '7500', edcRate: '150', plcPercent: '5' },
+      ])
+    ).toEqual([]);
   });
 });

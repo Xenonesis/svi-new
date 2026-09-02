@@ -1,4 +1,10 @@
-import type { QuotationCalculationInput, QuotationCalculationResult } from './types';
+import type {
+  QuotationCalculationInput,
+  QuotationCalculationResult,
+  PricingTier,
+  PricingTierCalculation,
+} from './types';
+import { parseNumber } from './format';
 
 /**
  * Rounds a currency value to 2 decimal places using banker's rounding avoidance.
@@ -58,4 +64,39 @@ export function calculateQuotation(input: QuotationCalculationInput): QuotationC
     grandTotal,
     effectiveRate,
   };
+}
+
+/**
+ * Calculates multiple pricing tiers for a given plot area.
+ */
+export function calculatePricingTiers(
+  area: number,
+  tiers: PricingTier[]
+): PricingTierCalculation[] {
+  if (!tiers || tiers.length === 0 || !isFinite(area) || isNaN(area) || area <= 0) {
+    return [];
+  }
+
+  return tiers
+    .map((tier) => {
+      const basicRate = parseNumber(tier.basicRate);
+      const edcRate = parseNumber(tier.edcRate);
+      const plcPercent = parseNumber(tier.plcPercent);
+
+      if (isNaN(basicRate) || isNaN(edcRate) || isNaN(plcPercent)) {
+        return null;
+      }
+
+      try {
+        const result = calculateQuotation({ area, basicRate, edcRate, plcPercent });
+        return {
+          ...result,
+          id: tier.id,
+          label: tier.label || `Option`,
+        };
+      } catch {
+        return null;
+      }
+    })
+    .filter((item): item is PricingTierCalculation => item !== null);
 }

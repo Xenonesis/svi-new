@@ -1,17 +1,23 @@
 'use client';
 
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
-import { Calculator, RefreshCw, ChevronDown } from 'lucide-react';
+import { Calculator, RefreshCw, ChevronDown, Plus, Trash2, Layers } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import type { QuotationFormData } from '@/src/lib/quotation/types';
+import type {
+  QuotationFormData,
+  PricingTier,
+  PricingTierCalculation,
+} from '@/src/lib/quotation/types';
 
 interface QuotationFormProps {
   formData: QuotationFormData;
   projects?: { value: string; label: string }[];
   loadingProjects?: boolean;
+  tierCalculations?: PricingTierCalculation[];
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => void;
+  onTiersChange?: (tiers: PricingTier[]) => void;
   onSubmit: (e: React.FormEvent) => void;
   isSubmitting: boolean;
   validationErrors: Partial<Record<keyof QuotationFormData, string>>;
@@ -22,7 +28,9 @@ export default function QuotationForm({
   formData,
   projects = [],
   loadingProjects = false,
+  tierCalculations = [],
   onChange,
+  onTiersChange,
   onSubmit,
   isSubmitting,
   validationErrors,
@@ -52,6 +60,75 @@ export default function QuotationForm({
       setIsCustomProject(true);
     }
   }, [formData.projectName, projectsList]);
+
+  // Multiple Pricing Tiers state
+  const hasMultipleTiers = Boolean(formData.pricingTiers && formData.pricingTiers.length >= 2);
+  const tiers = formData.pricingTiers || [];
+
+  const handleEnableMultipleTiers = () => {
+    const defaultTiers: PricingTier[] = [
+      {
+        id: 'tier-1',
+        label: 'Option 1 (Standard Rate)',
+        basicRate: formData.basicRate || '7500',
+        edcRate: formData.edcRate || '150',
+        plcPercent: formData.plcPercent || '5',
+      },
+      {
+        id: 'tier-2',
+        label: 'Option 2 (Corner / Prime)',
+        basicRate: String(Number(formData.basicRate || '7500') + 500),
+        edcRate: formData.edcRate || '150',
+        plcPercent: formData.plcPercent || '5',
+      },
+    ];
+    if (onTiersChange) {
+      onTiersChange(defaultTiers);
+    }
+  };
+
+  const handleResetToSingleTier = () => {
+    if (onTiersChange) {
+      onTiersChange([]);
+    }
+  };
+
+  const handleAddTier = () => {
+    if (tiers.length >= 4) return;
+    const lastTier = tiers[tiers.length - 1];
+    const nextNum = tiers.length + 1;
+    const newTier: PricingTier = {
+      id: `tier-${Date.now()}`,
+      label: `Option ${nextNum}`,
+      basicRate: String(Number(lastTier?.basicRate || '7500') + 500),
+      edcRate: lastTier?.edcRate || '150',
+      plcPercent: lastTier?.plcPercent || '5',
+    };
+    if (onTiersChange) {
+      onTiersChange([...tiers, newTier]);
+    }
+  };
+
+  const handleRemoveTier = (index: number) => {
+    const updated = tiers.filter((_, i) => i !== index);
+    if (onTiersChange) {
+      onTiersChange(updated);
+    }
+  };
+
+  const handleTierChange = (index: number, field: keyof PricingTier, value: string) => {
+    const updated = tiers.map((tier, i) => (i === index ? { ...tier, [field]: value } : tier));
+    if (onTiersChange) {
+      onTiersChange(updated);
+    }
+
+    // Sync primary tier (index 0) with main formData fields for single-rate fallback
+    if (index === 0 && (field === 'basicRate' || field === 'edcRate' || field === 'plcPercent')) {
+      onChange({
+        target: { name: field, value },
+      } as unknown as React.ChangeEvent<HTMLInputElement>);
+    }
+  };
 
   return (
     <div className="dark:bg-brand-dark-surface/65 relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
@@ -310,60 +387,201 @@ export default function QuotationForm({
 
         {/* ── Pricing ────────────────────────────────────────────────────── */}
         <div>
-          <p className="mb-3 text-[10px] font-bold tracking-widest text-gray-400 uppercase dark:text-gray-500">
-            Pricing Information
-          </p>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
-            <div>
-              <FormField
-                label="Basic Rate / Sq. Yd. (₹)"
-                name="basicRate"
-                type="number"
-                step="any"
-                min="0"
-                value={formData.basicRate}
-                onChange={onChange}
-                required
-                placeholder="e.g. 8000"
-              />
-              {validationErrors.basicRate && (
-                <p className="mt-1 text-xs text-red-500">{validationErrors.basicRate}</p>
+          <div className="mb-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <p className="text-[10px] font-bold tracking-widest text-gray-400 uppercase dark:text-gray-500">
+                Pricing Information
+              </p>
+              {hasMultipleTiers && (
+                <span className="bg-brand-gold/15 text-brand-gold inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold">
+                  <Layers className="h-2.5 w-2.5" />
+                  {tiers.length} Rate Options
+                </span>
               )}
             </div>
-            <div>
-              <FormField
-                label="EDC / Sq. Yd. (₹)"
-                name="edcRate"
-                type="number"
-                step="any"
-                min="0"
-                value={formData.edcRate}
-                onChange={onChange}
-                required
-                placeholder="e.g. 150"
-              />
-              {validationErrors.edcRate && (
-                <p className="mt-1 text-xs text-red-500">{validationErrors.edcRate}</p>
-              )}
-            </div>
-            <div>
-              <FormField
-                label="PLC (%)"
-                name="plcPercent"
-                type="number"
-                step="any"
-                min="0"
-                value={formData.plcPercent}
-                onChange={onChange}
-                required
-                placeholder="e.g. 5"
-              />
-              {validationErrors.plcPercent && (
-                <p className="mt-1 text-xs text-red-500">{validationErrors.plcPercent}</p>
-              )}
-              <p className="mt-1 text-[10px] text-gray-400">PLC is calculated on Basic Price.</p>
-            </div>
+
+            {!hasMultipleTiers ? (
+              <button
+                type="button"
+                onClick={handleEnableMultipleTiers}
+                className="text-brand-gold hover:text-brand-gold-light inline-flex items-center gap-1 text-[11px] font-semibold transition-colors"
+                title="Add multiple pricing scenarios for client comparison"
+              >
+                <Plus className="h-3.5 w-3.5" /> + Add Multiple Pricing Options
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={handleResetToSingleTier}
+                className="text-[10px] font-semibold text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-200"
+              >
+                Switch to Single Rate
+              </button>
+            )}
           </div>
+
+          {!hasMultipleTiers ? (
+            /* Single Pricing Row */
+            <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+              <div>
+                <FormField
+                  label="Basic Rate / Sq. Yd. (₹)"
+                  name="basicRate"
+                  type="number"
+                  step="any"
+                  min="0"
+                  value={formData.basicRate}
+                  onChange={onChange}
+                  required
+                  placeholder="e.g. 8000"
+                />
+                {validationErrors.basicRate && (
+                  <p className="mt-1 text-xs text-red-500">{validationErrors.basicRate}</p>
+                )}
+              </div>
+              <div>
+                <FormField
+                  label="EDC / Sq. Yd. (₹)"
+                  name="edcRate"
+                  type="number"
+                  step="any"
+                  min="0"
+                  value={formData.edcRate}
+                  onChange={onChange}
+                  required
+                  placeholder="e.g. 150"
+                />
+                {validationErrors.edcRate && (
+                  <p className="mt-1 text-xs text-red-500">{validationErrors.edcRate}</p>
+                )}
+              </div>
+              <div>
+                <FormField
+                  label="PLC (%)"
+                  name="plcPercent"
+                  type="number"
+                  step="any"
+                  min="0"
+                  value={formData.plcPercent}
+                  onChange={onChange}
+                  required
+                  placeholder="e.g. 5"
+                />
+                {validationErrors.plcPercent && (
+                  <p className="mt-1 text-xs text-red-500">{validationErrors.plcPercent}</p>
+                )}
+                <p className="mt-1 text-[10px] text-gray-400">PLC is calculated on Basic Price.</p>
+              </div>
+            </div>
+          ) : (
+            /* Multiple Pricing Options Cards */
+            <div className="space-y-3">
+              {tiers.map((tier, idx) => {
+                const tierCalc =
+                  tierCalculations.find((c) => c.id === tier.id) || tierCalculations[idx];
+
+                return (
+                  <div
+                    key={tier.id || idx}
+                    className="rounded-xl border border-gray-200 bg-gray-50/80 p-3.5 shadow-sm transition-all dark:border-white/10 dark:bg-[#111118]/80"
+                  >
+                    <div className="mb-2.5 flex items-center justify-between border-b border-gray-200/60 pb-2 dark:border-white/5">
+                      <div className="flex flex-1 items-center gap-2">
+                        <span className="bg-brand-gold/20 text-brand-gold flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                          {idx + 1}
+                        </span>
+                        <input
+                          type="text"
+                          value={tier.label}
+                          onChange={(e) => handleTierChange(idx, 'label', e.target.value)}
+                          placeholder={`Option ${idx + 1} Name (e.g. Standard Rate)`}
+                          className="w-full max-w-[220px] bg-transparent text-xs font-bold text-gray-900 placeholder-gray-400 focus:underline focus:outline-none dark:text-white dark:placeholder-gray-600"
+                        />
+                      </div>
+                      <div className="flex items-center gap-3">
+                        {tierCalc && (
+                          <div className="text-right">
+                            <span className="text-brand-gold text-xs font-bold">
+                              ₹{tierCalc.grandTotal.toLocaleString('en-IN')}
+                            </span>
+                            <span className="ml-1 text-[10px] text-gray-400">
+                              (₹{tierCalc.effectiveRate.toLocaleString('en-IN')}/yd)
+                            </span>
+                          </div>
+                        )}
+                        {tiers.length > 2 && (
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveTier(idx)}
+                            className="cursor-pointer text-gray-400 transition-colors hover:text-red-500"
+                            title="Remove this pricing option"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                          Basic Rate / Sq. Yd. (₹) *
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          min="0"
+                          value={tier.basicRate}
+                          onChange={(e) => handleTierChange(idx, 'basicRate', e.target.value)}
+                          placeholder="e.g. 7500"
+                          className="focus:border-brand-gold focus:ring-brand-gold/20 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-xs text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#14151a] dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                          EDC / Sq. Yd. (₹) *
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          min="0"
+                          value={tier.edcRate}
+                          onChange={(e) => handleTierChange(idx, 'edcRate', e.target.value)}
+                          placeholder="e.g. 150"
+                          className="focus:border-brand-gold focus:ring-brand-gold/20 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-xs text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#14151a] dark:text-white"
+                        />
+                      </div>
+                      <div>
+                        <label className="mb-1 block text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                          PLC (%) *
+                        </label>
+                        <input
+                          type="number"
+                          step="any"
+                          min="0"
+                          max="100"
+                          value={tier.plcPercent}
+                          onChange={(e) => handleTierChange(idx, 'plcPercent', e.target.value)}
+                          placeholder="e.g. 5"
+                          className="focus:border-brand-gold focus:ring-brand-gold/20 w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-sans text-xs text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#14151a] dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {tiers.length < 4 && (
+                <button
+                  type="button"
+                  onClick={handleAddTier}
+                  className="border-brand-gold/30 hover:border-brand-gold text-brand-gold hover:bg-brand-gold/5 flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-xl border-2 border-dashed py-2 text-xs font-semibold transition-all"
+                >
+                  <Plus className="h-3.5 w-3.5" /> + Add Option {tiers.length + 1}
+                </button>
+              )}
+            </div>
+          )}
         </div>
 
         {/* ── Notes ──────────────────────────────────────────────────────── */}
