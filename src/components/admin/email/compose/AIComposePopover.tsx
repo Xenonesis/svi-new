@@ -668,6 +668,7 @@ export function AIComposePopover({
                 <textarea
                   ref={inputRef}
                   value={prompt}
+                  onChange={(e) => setPrompt(e.target.value)}
                   onKeyDown={handleKeyDown}
                   placeholder="e.g. welcome as freelance consultant for Shivani Vatika project at ₹50,000/month starting 1st September..."
                   rows={3}
