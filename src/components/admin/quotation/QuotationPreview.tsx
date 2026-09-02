@@ -45,7 +45,6 @@ export default function QuotationPreview({
 
   return (
     <div
-      id="quotationPreview"
       className="bg-white font-sans text-slate-900"
       style={{
         minWidth: 720,
@@ -61,13 +60,14 @@ export default function QuotationPreview({
       {/* ── HEADER ──────────────────────────────────────────────────────── */}
       <div
         style={{
-          background: '#0a1628',
+          background: 'linear-gradient(135deg, #07111e 0%, #0d1e36 50%, #0a1628 100%)',
           color: '#ffffff',
-          padding: '14px 28px 10px',
+          padding: '13px 28px 10px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          borderBottom: '1px solid rgba(255,255,255,0.08)',
+          borderTop: '1px solid rgba(201, 168, 76, 0.25)',
+          borderBottom: '1px solid rgba(255, 255, 255, 0.08)',
         }}
       >
         {/* Brand Logo from official asset & Company Title */}
@@ -75,13 +75,13 @@ export default function QuotationPreview({
           <div
             style={{
               background: '#ffffff',
-              borderRadius: '8px',
-              padding: '4px',
-              boxShadow: '0 3px 10px rgba(0, 0, 0, 0.2)',
+              borderRadius: '10px',
+              padding: '5px',
+              boxShadow: '0 4px 14px rgba(0, 0, 0, 0.35)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
-              border: '1px solid rgba(255, 255, 255, 0.2)',
+              border: '1px solid rgba(201, 168, 76, 0.35)',
               flexShrink: 0,
             }}
           >
@@ -94,7 +94,7 @@ export default function QuotationPreview({
                 width: 46,
                 height: 46,
                 objectFit: 'contain',
-                borderRadius: '5px',
+                borderRadius: '6px',
                 display: 'block',
               }}
             />
@@ -115,15 +115,15 @@ export default function QuotationPreview({
             </h2>
             <span
               style={{
-                fontSize: '10.5px',
-                letterSpacing: '0.14em',
+                fontSize: '10px',
+                letterSpacing: '0.18em',
                 textTransform: 'uppercase',
-                color: '#C9A84C',
+                color: '#d4af37',
                 fontWeight: 700,
                 marginTop: '3px',
               }}
             >
-              Real Estate &amp; Infrastructure
+              Real Estate • Infrastructure • Developers
             </span>
           </div>
         </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, Image as ImageIcon, Maximize2, X } from 'lucide-react';
+import { Download, Image as ImageIcon, Maximize2, X, FileText } from 'lucide-react';
 
 import { ReactNode, useEffect, useState } from 'react';
 
@@ -145,15 +145,25 @@ export function PreviewContainer({
   hasPreview: boolean;
 }) {
   return (
-    <div className="custom-scrollbar dark:bg-brand-dark-surface relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-inner sm:p-6 dark:border-white/10 [:fullscreen]:overflow-hidden [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:p-0">
+    <div className="custom-scrollbar dark:bg-brand-dark-surface/40 relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-inner sm:p-6 dark:border-white/10 [:fullscreen]:overflow-hidden [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:p-0">
       {!hasPreview ? (
-        <div className="absolute inset-0 flex items-center justify-center text-sm font-medium text-gray-400 dark:text-gray-600">
-          Fill the form to generate a preview.
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+          <div className="border-brand-gold/30 bg-brand-gold/10 flex h-12 w-12 items-center justify-center rounded-2xl border shadow-sm">
+            <FileText className="text-brand-gold h-6 w-6" />
+          </div>
+          <div>
+            <p className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+              Live Document Preview
+            </p>
+            <p className="mt-1 max-w-xs text-xs text-gray-500 dark:text-gray-400">
+              Fill in the form details to generate and view the real-time document preview.
+            </p>
+          </div>
         </div>
       ) : (
         <div
           id={previewId}
-          className="mx-auto h-full w-full max-w-3xl origin-top transform overflow-y-auto rounded-lg border border-gray-200 bg-white p-8 text-gray-800 shadow-sm [:fullscreen]:h-full [:fullscreen]:max-w-none [:fullscreen]:overflow-y-auto [:fullscreen]:rounded-none [:fullscreen]:border-none"
+          className="mx-auto h-full w-full max-w-3xl origin-top transform overflow-auto rounded-lg border border-gray-200 bg-white p-8 text-gray-800 shadow-sm [:fullscreen]:h-full [:fullscreen]:max-w-none [:fullscreen]:overflow-auto [:fullscreen]:rounded-none [:fullscreen]:border-none"
         >
           {children}
         </div>
