@@ -24,6 +24,10 @@ const DEFAULT_COMPANY_INFO: CompanyInfo = {
   company_email: 'info@sviinfrasolutions.com',
   company_phone: '+91 9216014579',
   company_website: 'www.sviinfrasolutions.in',
+  bank_name: 'IDBI Bank Ltd.',
+  bank_account_no: '0894102000013837',
+  bank_ifsc: 'IBKL0000894',
+  bank_account_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
 };
 
 export default function QuotationRecordsPage() {

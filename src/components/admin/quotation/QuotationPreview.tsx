@@ -1429,19 +1429,21 @@ export default function QuotationPreview({
               <div>
                 <span style={{ color: '#64748b', fontSize: '10.5px' }}>Account Name:</span>
                 <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>
-                  SVI INFRA SOLUTIONS PVT. LTD.
+                  {companyInfo.bank_account_name || 'SVI INFRA SOLUTIONS PVT. LTD.'}
                 </p>
               </div>
               <div>
                 <span style={{ color: '#64748b', fontSize: '10.5px' }}>Bank Name:</span>
-                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>HDFC Bank Ltd.</p>
+                <p style={{ margin: 0, fontWeight: 700, color: '#0f172a' }}>
+                  {companyInfo.bank_name || 'IDBI Bank Ltd.'}
+                </p>
               </div>
               <div>
                 <span style={{ color: '#64748b', fontSize: '10.5px' }}>A/C Number:</span>
                 <p
                   style={{ margin: 0, fontWeight: 700, fontFamily: 'monospace', color: '#0a1628' }}
                 >
-                  50200089216457
+                  {companyInfo.bank_account_no || '0894102000013837'}
                 </p>
               </div>
               <div>
@@ -1449,7 +1451,7 @@ export default function QuotationPreview({
                 <p
                   style={{ margin: 0, fontWeight: 700, fontFamily: 'monospace', color: '#0a1628' }}
                 >
-                  HDFC0001234
+                  {companyInfo.bank_ifsc || 'IBKL0000894'}
                 </p>
               </div>
             </div>
@@ -1462,8 +1464,8 @@ export default function QuotationPreview({
                 paddingTop: '3px',
               }}
             >
-              * Payment modes: Cheque / RTGS / NEFT / UPI in favor of{' '}
-              <strong>SVI INFRA SOLUTIONS PVT. LTD.</strong>
+              * UPI / Cheque / RTGS / NEFT in favor of{' '}
+              <strong>SVI INFRA SOLUTIONS PVT. LTD.</strong> (UPI: 1000221207001410.7300007643@idbi)
             </p>
           </div>
 
