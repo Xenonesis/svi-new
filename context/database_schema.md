@@ -21,12 +21,12 @@ The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RL
 
 ## Records & Documents
 
-| Table Name             | Purpose                                         |
-| ---------------------- | ----------------------------------------------- |
-| `documents`            | Metadata for generated PDF documents            |
-| `allotment_records`    | Tracking records for property allotment letters |
-| `bba_records`          | Tracking records for Builder-Buyer Agreements   |
-| `offer_letter_records` | Tracking records for offer letters              |
+| Table Name             | Purpose                                                                                                                                                                                                                                                                                                             |
+| ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `documents`            | Metadata and form payloads for generated PDF/PNG documents (`quotation`, `allotment_letter`, `payment_receipt`, `payment_plan`, `offer_letter`, `bba`). Features partial unique index `idx_documents_quotation_number` on `((form_data->>'quotationNo'))` and atomic sequence generator `get_next_quotation_number` |
+| `allotment_records`    | Tracking records for property allotment letters                                                                                                                                                                                                                                                                     |
+| `bba_records`          | Tracking records for Builder-Buyer Agreements                                                                                                                                                                                                                                                                       |
+| `offer_letter_records` | Tracking records for offer letters                                                                                                                                                                                                                                                                                  |
 
 ## Email & Communication
 

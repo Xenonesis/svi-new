@@ -34,6 +34,10 @@ export class AppError extends Error {
     return new AppError(400, 'VALIDATION_ERROR', 'Invalid input', details);
   }
 
+  static conflict(message = 'Conflict', details?: unknown) {
+    return new AppError(409, 'CONFLICT', message, details);
+  }
+
   static internal(message = 'Internal server error') {
     return new AppError(500, 'INTERNAL_ERROR', message);
   }

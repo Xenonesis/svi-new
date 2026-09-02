@@ -41,8 +41,25 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     if (status !== undefined) updateData.status = status;
     if (pdf_url !== undefined) updateData.pdf_url = pdf_url;
     if (image_url !== undefined) updateData.image_url = image_url;
-    if (form_data !== undefined) updateData.form_data = form_data;
+    if (form_data !== undefined) {
+      if (form_data && form_data.quotationNo) {
+        const rawQuotationNo = String(form_data.quotationNo).trim();
+        const { data: existingDoc } = await supabaseAdmin
+          .from('documents')
+          .select('id')
+          .eq('document_type', 'quotation')
+          .neq('id', id)
+          .filter('form_data->>quotationNo', 'eq', rawQuotationNo)
+          .maybeSingle();
 
+        if (existingDoc) {
+          throw AppError.conflict(
+            `Quotation number "${rawQuotationNo}" already exists in the database. Please generate a new unique quotation number.`
+          );
+        }
+      }
+      updateData.form_data = form_data;
+    }
     const { data, error } = await supabaseAdmin
       .from('documents')
       .update(updateData)

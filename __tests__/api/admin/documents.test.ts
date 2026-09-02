@@ -172,5 +172,31 @@ describe('Documents API', () => {
       expect(data.document.form_data.salutation).toBe('M/s');
       expect(data.document.form_data.amount).toBe(2100);
     });
+
+    it('should auto-generate unique quotation number from DB if not provided in quotation form_data', async () => {
+      const payload = {
+        document_type: 'quotation',
+        user_id: 'user-123',
+        status: 'draft',
+        form_data: {
+          customerName: 'Aarav Sharma',
+          quotationDate: '2026-09-02',
+          area: 120,
+          basicRate: 8000,
+        },
+      };
+
+      const request = new NextRequest('http://localhost/api/admin/documents', {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      });
+
+      const response = await POST(request);
+      expect(response.status).toBe(201);
+
+      const data = await response.json();
+      expect(data.document).toBeDefined();
+      expect(data.document.form_data.quotationNo).toMatch(/^SVI-QTN-\d{8}-\d{4,}$/);
+    });
   });
 });

@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
+import { getNextQuotationNumberFromDb } from '@/src/lib/quotation/quotationNumber';
 const VALID_DOC_TYPES = [
   'allotment_letter',
   'payment_receipt',
@@ -71,13 +71,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    let finalFormData = form_data;
+    if (document_type === 'quotation') {
+      const rawQuotationNo = form_data?.quotationNo ? String(form_data.quotationNo).trim() : '';
+      if (!rawQuotationNo) {
+        const generatedNo = await getNextQuotationNumberFromDb(
+          supabaseAdmin,
+          form_data?.quotationDate
+        );
+        finalFormData = { ...form_data, quotationNo: generatedNo };
+      } else {
+        const { data: existingDoc } = await supabaseAdmin
+          .from('documents')
+          .select('id')
+          .eq('document_type', 'quotation')
+          .filter('form_data->>quotationNo', 'eq', rawQuotationNo)
+          .maybeSingle();
+
+        if (existingDoc) {
+          throw AppError.conflict(
+            `Quotation number "${rawQuotationNo}" already exists in the database. Please generate a new unique quotation number.`
+          );
+        }
+        finalFormData = { ...form_data, quotationNo: rawQuotationNo };
+      }
+    }
+
     const { data, error } = await supabaseAdmin
       .from('documents')
       .insert({
         document_type,
         user_id: resolvedUserId,
         created_by: admin.id,
-        form_data,
+        form_data: finalFormData,
         pdf_url,
         image_url,
         status: status || 'draft',

@@ -4,8 +4,7 @@ import { useAuthStore } from '@/src/stores/authStore';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { toast } from 'sonner';
-import { FileText } from 'lucide-react';
-
+import { FileText, Plus } from 'lucide-react';
 import { PreviewContainer, DownloadOptions } from '@/src/components/admin/DocumentGenerator/Shared';
 import QuotationForm from '@/src/components/admin/quotation/QuotationForm';
 import QuotationSummary from '@/src/components/admin/quotation/QuotationSummary';
@@ -20,6 +19,16 @@ import type {
   CompanyInfo,
 } from '@/src/lib/quotation/types';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
+import { supabase } from '@/src/lib/supabase/client';
+
+const DEFAULT_PROJECTS = [
+  { value: 'Shyam Aangan', label: 'Shyam Aangan' },
+  { value: 'Shivani Vatika', label: 'Shivani Vatika' },
+  { value: 'Phulera SmartCity', label: 'Phulera SmartCity' },
+  { value: 'Shivani Vatika 11th', label: 'Shivani Vatika 11th' },
+  { value: 'Shyam Aangan Farm House', label: 'Shyam Aangan Farm House' },
+  { value: 'Shyam Aangan Phase 1', label: 'Shyam Aangan Phase 1' },
+];
 
 const DEFAULT_COMPANY_INFO: CompanyInfo = {
   company_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
@@ -39,7 +48,7 @@ function getInitialFormData(): QuotationFormData {
     customerPhone: '',
     customerEmail: '',
     customerAddress: '',
-    projectName: '',
+    projectName: 'Shyam Aangan',
     plotNo: '',
     propertyType: 'Residential Plot',
     area: '',
@@ -75,7 +84,44 @@ export default function QuotationPage() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [templateLoading, setTemplateLoading] = useState(false);
+  const [loadingQuotationNo, setLoadingQuotationNo] = useState(false);
+  const [projects, setProjects] = useState<{ value: string; label: string }[]>(DEFAULT_PROJECTS);
+  const [loadingProjects, setLoadingProjects] = useState(false);
 
+  // ── Fetch next auto-generated unique quotation number from DB ─────────────
+  const fetchNextQuotationNo = useCallback(
+    async (date?: string) => {
+      if (!token) return;
+      setLoadingQuotationNo(true);
+      try {
+        const queryDate = date || localDateString();
+        const res = await fetch(
+          `/api/admin/quotation/next-number?date=${encodeURIComponent(queryDate)}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (!res.ok) throw new Error('Failed to generate quotation number');
+        const json = await res.json();
+        if (json.quotationNo) {
+          stableQuotationNo.current = json.quotationNo;
+          setFormData((prev) => ({ ...prev, quotationNo: json.quotationNo }));
+          return json.quotationNo;
+        }
+      } catch (err) {
+        console.error('Failed to fetch next quotation number from DB:', err);
+      } finally {
+        setLoadingQuotationNo(false);
+      }
+    },
+    [token]
+  );
+
+  // Fetch on initial load
+  useEffect(() => {
+    if (!token || templateId) return;
+    fetchNextQuotationNo();
+  }, [token, templateId, fetchNextQuotationNo]);
   // ── Load company info ───────────────────────────────────────────────────
   useEffect(() => {
     if (!token) return;
@@ -89,6 +135,52 @@ export default function QuotationPage() {
       .catch(() => {
         /* fallback to default */
       });
+  }, [token]);
+
+  // ── Load Projects from /api/admin/properties ────────────────────────────
+  useEffect(() => {
+    let isMounted = true;
+    async function loadProjects() {
+      setLoadingProjects(true);
+      try {
+        if (token) {
+          const res = await fetch('/api/admin/properties', {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.properties && json.properties.length > 0) {
+              const activeProps = json.properties
+                .filter((p: { active?: boolean }) => p.active !== false)
+                .map((p: { name: string }) => ({ value: p.name, label: p.name }));
+              if (isMounted && activeProps.length > 0) {
+                setProjects(activeProps);
+                return;
+              }
+            }
+          }
+        }
+
+        // Fallback to direct supabase query
+        const { data, error } = await supabase
+          .from('properties')
+          .select('name')
+          .eq('active', true)
+          .order('name', { ascending: true });
+
+        if (!error && data && data.length > 0 && isMounted) {
+          setProjects(data.map((p) => ({ value: p.name, label: p.name })));
+        }
+      } catch (err) {
+        console.error('Failed to load properties for quotation dropdown:', err);
+      } finally {
+        if (isMounted) setLoadingProjects(false);
+      }
+    }
+    loadProjects();
+    return () => {
+      isMounted = false;
+    };
   }, [token]);
 
   // ── Load template ───────────────────────────────────────────────────────
@@ -111,8 +203,6 @@ export default function QuotationPage() {
         }
         const fd = doc.form_data as QuotationFormData;
         const today = localDateString();
-        const newNo = generateQuotationNumber();
-        stableQuotationNo.current = newNo;
         setFormData({
           // Copy fields from template
           customerName: fd.customerName || '',
@@ -128,10 +218,11 @@ export default function QuotationPage() {
           plcPercent: fd.plcPercent || '5',
           notes: fd.notes || '',
           // New values — do NOT copy old ID, date, or status
-          quotationNo: newNo,
+          quotationNo: generateQuotationNumber(today),
           quotationDate: today,
           validUntil: addDays(today, 7),
         });
+        fetchNextQuotationNo(today);
         toast.success('Template loaded. Review details and save as a new quotation.');
       })
       .catch(() => toast.error('Unable to load quotation template.'))
@@ -262,15 +353,25 @@ export default function QuotationPage() {
       });
 
       if (!response.ok) {
-        const bodyText = await response.text().catch(() => '');
-        window.alert('API Error: ' + response.status + ' - ' + bodyText);
+        const errorData = await response.json().catch(() => null);
+        const errMsg = errorData?.error || `Failed to save quotation (${response.status})`;
+        toast.error(errMsg);
         return;
       }
 
       const data = await response.json();
+      const savedQuotationNo = data.document?.form_data?.quotationNo;
+      if (savedQuotationNo) {
+        stableQuotationNo.current = savedQuotationNo;
+        setFormData((prev) => ({ ...prev, quotationNo: savedQuotationNo }));
+      }
       setDocumentId(data.document.id);
       setHasPreview(true);
-      toast.success('Quotation saved successfully!');
+      toast.success(
+        savedQuotationNo
+          ? `Quotation No. ${savedQuotationNo} saved successfully!`
+          : 'Quotation saved successfully!'
+      );
     } catch (err) {
       // Use console.log to avoid Next.js intercepting console.error and showing [object Object] overlay
       console.log('Quotation save error:', err instanceof Error ? err.message : String(err));
@@ -278,6 +379,14 @@ export default function QuotationPage() {
     } finally {
       setIsSubmitting(false);
     }
+  };
+  const handleResetForm = () => {
+    const initial = getInitialFormData();
+    setFormData(initial);
+    setDocumentId(null);
+    setHasPreview(false);
+    setValidationErrors({});
+    fetchNextQuotationNo();
   };
 
   // ── Download PDF ─────────────────────────────────────────────────────────
@@ -341,7 +450,7 @@ export default function QuotationPage() {
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
       {/* Page header */}
-      <div className="mb-6 flex items-center justify-between">
+      <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
             Quotation <span className="text-brand-gold italic">Generator</span>
@@ -351,18 +460,28 @@ export default function QuotationPage() {
             downloadable PDF/PNG documents.
           </p>
         </div>
+        <button
+          onClick={handleResetForm}
+          className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex w-fit items-center gap-2 rounded-xl border px-4 py-2 text-xs font-bold tracking-wide uppercase shadow-sm transition-all active:scale-95"
+          title="Reset form and fetch next quotation number from DB"
+        >
+          <Plus className="h-4 w-4" /> New Quotation
+        </button>
       </div>
-
       {/* Desktop: Form | Preview. Mobile: stacked */}
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
         {/* ── Left: Form ───────────────────────────────────────────────── */}
         <div className="flex flex-col gap-6">
           <QuotationForm
             formData={formData}
+            projects={projects}
+            loadingProjects={loadingProjects}
             onChange={handleChange}
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
             validationErrors={validationErrors}
+            onRefreshQuotationNo={() => fetchNextQuotationNo(formData.quotationDate)}
+            loadingQuotationNo={loadingQuotationNo}
           />
 
           {/* Live summary (mobile: show below form; desktop: inside left col) */}
