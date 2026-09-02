@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
+import { isPhoneMatching, normalizePhoneNumber } from '@/src/lib/utils/sviEmailGenerator';
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
@@ -151,12 +151,13 @@ export async function POST(request: NextRequest) {
         throw AppError.badRequest('Phone Number must contain at least 10 valid digits.');
       }
     }
+    const realEmail = body.real_email?.trim().toLowerCase() || null;
 
-    // Pre-check if profile already exists with this Email
+    // 1. Pre-check SVI Email uniqueness in profiles
     const { data: existingProfile } = await supabaseAdmin
       .from('profiles')
       .select('id, full_name, email, role')
-      .eq('email', email)
+      .or(`email.eq.${email},real_email.eq.${email}`)
       .maybeSingle();
 
     if (existingProfile) {
@@ -165,6 +166,40 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // 2. Pre-check Real Email uniqueness in profiles
+    if (realEmail) {
+      const { data: existingRealEmailProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('id, full_name, real_email, role')
+        .or(`real_email.eq.${realEmail},email.eq.${realEmail}`)
+        .maybeSingle();
+
+      if (existingRealEmailProfile) {
+        throw AppError.badRequest(
+          `An account with the Real Email "${realEmail}" already exists in the system (${existingRealEmailProfile.full_name || 'User'}).`
+        );
+      }
+    }
+
+    // 3. Pre-check Phone Number uniqueness in profiles
+    if (phone) {
+      const { digits, last10 } = normalizePhoneNumber(phone);
+      if (digits.length >= 10) {
+        const { data: existingPhoneList } = await supabaseAdmin
+          .from('profiles')
+          .select('id, full_name, phone, role')
+          .ilike('phone', `%${last10}%`);
+
+        if (existingPhoneList && existingPhoneList.length > 0) {
+          const match = existingPhoneList.find((p) => p.phone && isPhoneMatching(p.phone, phone));
+          if (match) {
+            throw AppError.badRequest(
+              `An account with the Phone Number "${phone}" already exists (${match.full_name || 'User'}, role: ${match.role || 'employee'}).`
+            );
+          }
+        }
+      }
+    }
     // 1. Create the auth user via admin API
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
@@ -195,7 +230,6 @@ export async function POST(request: NextRequest) {
     const newUserId = authData.user.id;
 
     // 2. Insert profile row
-    const realEmail = body.real_email?.trim().toLowerCase() || null;
     const insertPayload: Record<string, any> = {
       id: newUserId,
       email,

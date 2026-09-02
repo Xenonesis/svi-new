@@ -1,11 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, Trash2 } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Sparkles, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { DepartmentRoleSelector } from '../employees/DepartmentRoleSelector';
+import { generateSviEmail } from '@/src/lib/utils/sviEmailGenerator';
+
 export function AddEmployeeModal({
   onClose,
   onSuccess,
@@ -24,8 +26,29 @@ export function AddEmployeeModal({
     password: '',
     notes: '',
   });
+
+  const [isEmailManual, setIsEmailManual] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  // Uniqueness validation state
+  const [validating, setValidating] = useState<{
+    email: boolean;
+    real_email: boolean;
+    phone: boolean;
+  }>({ email: false, real_email: false, phone: false });
+
+  const [uniqueErrors, setUniqueErrors] = useState<{
+    email: string | null;
+    real_email: string | null;
+    phone: string | null;
+  }>({ email: null, real_email: null, phone: null });
+
+  const [uniqueValid, setUniqueValid] = useState<{
+    email: boolean;
+    real_email: boolean;
+    phone: boolean;
+  }>({ email: false, real_email: false, phone: false });
 
   const generatePassword = () => {
     const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*';
@@ -34,6 +57,103 @@ export function AddEmployeeModal({
       p += chars.charAt(Math.floor(Math.random() * chars.length));
     }
     setFormData((prev) => ({ ...prev, password: p }));
+  };
+
+  // Debounced uniqueness checker
+  const checkTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const checkUniqueness = useCallback(
+    async (fullName: string, email: string, realEmail: string, phone: string) => {
+      if (!token) return;
+
+      const params = new URLSearchParams();
+      if (fullName) params.set('full_name', fullName);
+      if (email) params.set('email', email);
+      if (realEmail) params.set('real_email', realEmail);
+      if (phone) params.set('phone', phone);
+
+      if (!fullName && !email && !realEmail && !phone) return;
+
+      setValidating({
+        email: Boolean(email || fullName),
+        real_email: Boolean(realEmail),
+        phone: Boolean(phone && phone.replace(/\D/g, '').length >= 10),
+      });
+
+      try {
+        const res = await fetch(`/api/admin/users/check-unique?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        // Update suggested SVI email if user hasn't typed a custom email
+        if (!isEmailManual && data.suggested_svi_email && fullName) {
+          setFormData((prev) => {
+            if (!isEmailManual) {
+              return { ...prev, email: data.suggested_svi_email };
+            }
+            return prev;
+          });
+        }
+
+        setUniqueErrors({
+          email: data.email_error || null,
+          real_email: data.real_email_error || null,
+          phone: data.phone_error || null,
+        });
+
+        setUniqueValid({
+          email: Boolean(email && data.email_available),
+          real_email: Boolean(realEmail && data.real_email_available),
+          phone: Boolean(phone && phone.replace(/\D/g, '').length >= 10 && data.phone_available),
+        });
+      } catch (err) {
+        console.error('Error checking employee uniqueness:', err);
+      } finally {
+        setValidating({ email: false, real_email: false, phone: false });
+      }
+    },
+    [token, isEmailManual]
+  );
+
+  useEffect(() => {
+    if (checkTimerRef.current) clearTimeout(checkTimerRef.current);
+
+    checkTimerRef.current = setTimeout(() => {
+      checkUniqueness(formData.full_name, formData.email, formData.real_email, formData.phone);
+    }, 350);
+
+    return () => {
+      if (checkTimerRef.current) clearTimeout(checkTimerRef.current);
+    };
+  }, [formData.full_name, formData.email, formData.real_email, formData.phone, checkUniqueness]);
+
+  const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newName = e.target.value;
+    if (!isEmailManual) {
+      const generated = generateSviEmail(newName);
+      setFormData((prev) => ({ ...prev, full_name: newName, email: generated }));
+    } else {
+      setFormData((prev) => ({ ...prev, full_name: newName }));
+    }
+    if (error) setError('');
+  };
+
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setIsEmailManual(true);
+    setFormData((prev) => ({ ...prev, email: e.target.value }));
+    if (error) setError('');
+  };
+
+  const handleResetSviEmail = () => {
+    setIsEmailManual(false);
+    const autoEmail = generateSviEmail(formData.full_name);
+    setFormData((prev) => ({ ...prev, email: autoEmail }));
+    checkUniqueness(formData.full_name, autoEmail, formData.real_email, formData.phone);
+    toast.info('SVI Corporate Email synchronized with Full Name.');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -47,33 +167,56 @@ export function AddEmployeeModal({
     const phone = formData.phone.trim();
     const department = formData.department.trim();
     const notes = formData.notes.trim();
+
     if (!fullName) {
-      setError('Please enter the employee full name.');
+      setError('Full Name is required');
       return;
     }
     if (!email) {
-      setError('Please enter the email address.');
+      setError('Email Address is required');
       return;
     }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      setError(`The Email Address "${email}" is invalid. Please check for typos (e.g. .com).`);
+      setError('Invalid email address format');
       return;
     }
+
+    if (uniqueErrors.email) {
+      setError(uniqueErrors.email);
+      return;
+    }
+
+    if (realEmail && !emailRegex.test(realEmail)) {
+      setError('Invalid personal email address format');
+      return;
+    }
+
+    if (uniqueErrors.real_email) {
+      setError(uniqueErrors.real_email);
+      return;
+    }
+
     if (!password) {
-      setError('Please enter a password.');
+      setError('Password is required');
       return;
     }
     if (password.length < 8) {
-      setError('Password must be at least 8 characters long.');
+      setError('Password must be at least 8 characters');
       return;
     }
+
     if (phone) {
       const phoneDigits = phone.replace(/\D/g, '');
       if (phoneDigits.length < 10) {
-        setError('Phone number must contain at least 10 valid digits.');
+        setError('Phone number must contain at least 10 valid digits');
         return;
       }
+    }
+
+    if (uniqueErrors.phone) {
+      setError(uniqueErrors.phone);
+      return;
     }
 
     setLoading(true);
@@ -87,25 +230,26 @@ export function AddEmployeeModal({
         body: JSON.stringify({
           full_name: fullName,
           email,
-          real_email: realEmail || null,
+          real_email: realEmail || undefined,
+          phone: phone || undefined,
+          department: department || undefined,
           password,
-          phone: phone || null,
-          department: department || null,
-          notes: notes || null,
+          notes: notes || undefined,
         }),
       });
+
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        const errMessage = extractApiErrorMessage(data, 'Failed to create employee.');
-        setError(errMessage);
-        return;
+        throw new Error(
+          extractApiErrorMessage(data, 'Failed to create employee. Please try again.')
+        );
       }
-      toast.success(`Employee "${fullName}" created successfully.`);
+
+      toast.success('Employee created successfully');
       onSuccess();
+      onClose();
     } catch (err: unknown) {
-      setError(
-        extractApiErrorMessage(err, 'Network error or server unavailable. Please try again.')
-      );
+      setError(extractApiErrorMessage(err, 'Failed to create employee. Please try again.'));
     } finally {
       setLoading(false);
     }
@@ -131,7 +275,7 @@ export function AddEmployeeModal({
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 dark:hover:text-white"
           >
-            <span className="text-2xl leading-none">&times;</span>
+            <X className="h-5 w-5" />
           </button>
         </div>
 
@@ -156,50 +300,112 @@ export function AddEmployeeModal({
               <input
                 required
                 value={formData.full_name}
-                onChange={(e) => setFormData((p) => ({ ...p, full_name: e.target.value }))}
+                onChange={handleFullNameChange}
                 className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
                 placeholder="John Doe"
               />
             </div>
 
             <div className="col-span-2 md:col-span-1">
-              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                SVI Corporate Email *
-              </label>
-              <input
-                required
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData((p) => ({ ...p, email: e.target.value }))}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="name@sviinfra.com"
-              />
+              <div className="flex items-center justify-between">
+                <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                  SVI Corporate Email *
+                </label>
+                {isEmailManual && formData.full_name && (
+                  <button
+                    type="button"
+                    onClick={handleResetSviEmail}
+                    className="text-brand-gold hover:text-brand-gold-light mb-1 flex items-center gap-1 text-[10px] font-semibold"
+                    title="Regenerate automatic email from Full Name"
+                  >
+                    <Sparkles className="h-3 w-3" /> Auto
+                  </button>
+                )}
+              </div>
+              <div className="relative">
+                <input
+                  required
+                  type="email"
+                  value={formData.email}
+                  onChange={handleEmailChange}
+                  className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-8 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
+                    uniqueErrors.email ? 'border-red-500/50 focus:border-red-500' : ''
+                  }`}
+                  placeholder="name@sviinfra.com"
+                />
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                  {validating.email ? (
+                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                  ) : uniqueErrors.email ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  ) : uniqueValid.email ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : null}
+                </div>
+              </div>
+              {uniqueErrors.email && (
+                <p className="mt-1 text-[10px] font-medium text-red-500">{uniqueErrors.email}</p>
+              )}
             </div>
 
             <div className="col-span-2 md:col-span-1">
               <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 Personal / Real Email
               </label>
-              <input
-                type="email"
-                value={formData.real_email}
-                onChange={(e) => setFormData((p) => ({ ...p, real_email: e.target.value }))}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="name@gmail.com"
-              />
+              <div className="relative">
+                <input
+                  type="email"
+                  value={formData.real_email}
+                  onChange={(e) => setFormData((p) => ({ ...p, real_email: e.target.value }))}
+                  className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-8 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
+                    uniqueErrors.real_email ? 'border-red-500/50 focus:border-red-500' : ''
+                  }`}
+                  placeholder="name@gmail.com"
+                />
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                  {validating.real_email ? (
+                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                  ) : uniqueErrors.real_email ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  ) : uniqueValid.real_email ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : null}
+                </div>
+              </div>
+              {uniqueErrors.real_email && (
+                <p className="mt-1 text-[10px] font-medium text-red-500">
+                  {uniqueErrors.real_email}
+                </p>
+              )}
             </div>
 
             <div className="col-span-2">
               <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
                 Phone
               </label>
-              <input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="+91 98000 00000"
-              />
+              <div className="relative">
+                <input
+                  type="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
+                  className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-8 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
+                    uniqueErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''
+                  }`}
+                  placeholder="+91 98000 00000"
+                />
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                  {validating.phone ? (
+                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                  ) : uniqueErrors.phone ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  ) : uniqueValid.phone ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : null}
+                </div>
+              </div>
+              {uniqueErrors.phone && (
+                <p className="mt-1 text-[10px] font-medium text-red-500">{uniqueErrors.phone}</p>
+              )}
             </div>
 
             <div className="col-span-2">

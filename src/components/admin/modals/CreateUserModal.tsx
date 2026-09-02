@@ -1,13 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { motion } from 'motion/react';
-import { AlertCircle, Eye, EyeOff, FileText, Mail, Phone, Plus, X } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  Eye,
+  EyeOff,
+  FileText,
+  Loader2,
+  Mail,
+  Phone,
+  Plus,
+  RefreshCw,
+  Sparkles,
+  X,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
-import { PROPERTY_LABELS } from '../helpers/propertyLabels';
 import { INPUT_CLS, LABEL_CLS, MODAL_OVERLAY_CLASS } from '../helpers/formStyles';
 import { getDisplayProperties, togglePropertySelection } from '../helpers/propertyUtils';
+import { generateSviEmail } from '@/src/lib/utils/sviEmailGenerator';
+
 interface CreateUserModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -26,25 +40,143 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     notes: '',
   });
 
-  const displayProperties = getDisplayProperties(properties);
-
-  const selectedProperties = form.property_interest ? form.property_interest.split(',') : [];
-
-  const handlePropertyToggle = (slug: string) => {
-    setForm((p) => ({
-      ...p,
-      property_interest: togglePropertySelection(p.property_interest, slug),
-    }));
-  };
+  const [isEmailManual, setIsEmailManual] = useState(false);
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
+  // Uniqueness validation state
+  const [validating, setValidating] = useState<{
+    email: boolean;
+    real_email: boolean;
+    phone: boolean;
+  }>({ email: false, real_email: false, phone: false });
+
+  const [uniqueErrors, setUniqueErrors] = useState<{
+    email: string | null;
+    real_email: string | null;
+    phone: string | null;
+  }>({ email: null, real_email: null, phone: null });
+
+  const [uniqueValid, setUniqueValid] = useState<{
+    email: boolean;
+    real_email: boolean;
+    phone: boolean;
+  }>({ email: false, real_email: false, phone: false });
+
+  const displayProperties = getDisplayProperties(properties);
+  const selectedProperties = form.property_interest ? form.property_interest.split(',') : [];
+
+  const handlePropertyToggle = (slug: string) => {
+    setForm((prev) => ({
+      ...prev,
+      property_interest: togglePropertySelection(prev.property_interest, slug),
+    }));
+  };
+
+  // Debounced uniqueness checker
+  const checkTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const checkUniqueness = useCallback(
+    async (fullName: string, email: string, realEmail: string, phone: string) => {
+      if (!token) return;
+
+      const params = new URLSearchParams();
+      if (fullName) params.set('full_name', fullName);
+      if (email) params.set('email', email);
+      if (realEmail) params.set('real_email', realEmail);
+      if (phone) params.set('phone', phone);
+
+      if (!fullName && !email && !realEmail && !phone) return;
+
+      setValidating({
+        email: Boolean(email || fullName),
+        real_email: Boolean(realEmail),
+        phone: Boolean(phone && phone.replace(/\D/g, '').length >= 10),
+      });
+
+      try {
+        const res = await fetch(`/api/admin/users/check-unique?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (!res.ok) return;
+
+        const data = await res.json();
+
+        // Update suggested SVI email if user hasn't typed a custom email
+        if (!isEmailManual && data.suggested_svi_email && fullName) {
+          setForm((prev) => {
+            if (!isEmailManual) {
+              return { ...prev, email: data.suggested_svi_email };
+            }
+            return prev;
+          });
+        }
+
+        setUniqueErrors({
+          email: data.email_error || null,
+          real_email: data.real_email_error || null,
+          phone: data.phone_error || null,
+        });
+
+        setUniqueValid({
+          email: Boolean(email && data.email_available),
+          real_email: Boolean(realEmail && data.real_email_available),
+          phone: Boolean(phone && phone.replace(/\D/g, '').length >= 10 && data.phone_available),
+        });
+      } catch (err) {
+        console.error('Error checking uniqueness:', err);
+      } finally {
+        setValidating({ email: false, real_email: false, phone: false });
+      }
+    },
+    [token, isEmailManual]
+  );
+
+  // Trigger debounced uniqueness check whenever full_name, email, real_email, or phone changes
+  useEffect(() => {
+    if (checkTimerRef.current) clearTimeout(checkTimerRef.current);
+
+    checkTimerRef.current = setTimeout(() => {
+      checkUniqueness(form.full_name, form.email, form.real_email, form.phone);
+    }, 350);
+
+    return () => {
+      if (checkTimerRef.current) clearTimeout(checkTimerRef.current);
+    };
+  }, [form.full_name, form.email, form.real_email, form.phone, checkUniqueness]);
+
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
-    setForm((p) => ({ ...p, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+
+    if (name === 'full_name') {
+      const newName = value;
+      // Auto-generate SVI Email if email hasn't been manually edited by user
+      if (!isEmailManual) {
+        const generated = generateSviEmail(newName);
+        setForm((prev) => ({ ...prev, full_name: newName, email: generated }));
+      } else {
+        setForm((prev) => ({ ...prev, full_name: newName }));
+      }
+    } else if (name === 'email') {
+      setIsEmailManual(true);
+      setForm((prev) => ({ ...prev, email: value }));
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+
     if (error) setError('');
+  };
+
+  const handleResetSviEmail = () => {
+    setIsEmailManual(false);
+    const autoEmail = generateSviEmail(form.full_name);
+    setForm((prev) => ({ ...prev, email: autoEmail }));
+    checkUniqueness(form.full_name, autoEmail, form.real_email, form.phone);
+    toast.info('SVI Email synchronized with Full Name.');
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -74,6 +206,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
       return;
     }
 
+    if (uniqueErrors.email) {
+      setError(uniqueErrors.email);
+      return;
+    }
+
     if (!realEmail) {
       setError('Please enter the Real Email Address.');
       return;
@@ -82,6 +219,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
       setError(
         `The Real Email Address "${realEmail}" is invalid. Please check for typos (e.g. .com).`
       );
+      return;
+    }
+
+    if (uniqueErrors.real_email) {
+      setError(uniqueErrors.real_email);
       return;
     }
 
@@ -101,6 +243,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     const phoneDigits = phone.replace(/\D/g, '');
     if (phoneDigits.length < 10) {
       setError('Phone number must contain at least 10 valid digits.');
+      return;
+    }
+
+    if (uniqueErrors.phone) {
+      setError(uniqueErrors.phone);
       return;
     }
 
@@ -202,7 +349,19 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
             </div>
 
             <div>
-              <label className={labelCls}>SVI Email Address *</label>
+              <div className="flex items-center justify-between">
+                <label className={labelCls}>SVI Email Address *</label>
+                {isEmailManual && form.full_name && (
+                  <button
+                    type="button"
+                    onClick={handleResetSviEmail}
+                    className="text-brand-gold hover:text-brand-gold-light mb-1.5 flex items-center gap-1 text-[10px] font-semibold"
+                    title="Regenerate automatic email from Full Name"
+                  >
+                    <Sparkles className="h-3 w-3" /> Auto
+                  </button>
+                )}
+              </div>
               <div className="relative">
                 <Mail className="text-brand-gold absolute top-1/2 left-3 h-3.5 w-3.5 -translate-y-1/2" />
                 <input
@@ -212,9 +371,23 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   onChange={handleChange}
                   required
                   placeholder="client@sviinfra.com"
-                  className={`${inputCls} pl-9`}
+                  className={`${inputCls} pr-8 pl-9 ${
+                    uniqueErrors.email ? 'border-red-500/50 focus:border-red-500' : ''
+                  }`}
                 />
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                  {validating.email ? (
+                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                  ) : uniqueErrors.email ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  ) : uniqueValid.email ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : null}
+                </div>
               </div>
+              {uniqueErrors.email && (
+                <p className="mt-1 text-[10px] font-medium text-red-500">{uniqueErrors.email}</p>
+              )}
             </div>
 
             <div>
@@ -228,9 +401,25 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   onChange={handleChange}
                   required
                   placeholder="client@example.com"
-                  className={`${inputCls} pl-9`}
+                  className={`${inputCls} pr-8 pl-9 ${
+                    uniqueErrors.real_email ? 'border-red-500/50 focus:border-red-500' : ''
+                  }`}
                 />
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                  {validating.real_email ? (
+                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                  ) : uniqueErrors.real_email ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  ) : uniqueValid.real_email ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : null}
+                </div>
               </div>
+              {uniqueErrors.real_email && (
+                <p className="mt-1 text-[10px] font-medium text-red-500">
+                  {uniqueErrors.real_email}
+                </p>
+              )}
             </div>
 
             <div>
@@ -266,9 +455,23 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   onChange={handleChange}
                   required
                   placeholder="+91 98000 00000"
-                  className={`${inputCls} pl-9`}
+                  className={`${inputCls} pr-8 pl-9 ${
+                    uniqueErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''
+                  }`}
                 />
+                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                  {validating.phone ? (
+                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                  ) : uniqueErrors.phone ? (
+                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                  ) : uniqueValid.phone ? (
+                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                  ) : null}
+                </div>
               </div>
+              {uniqueErrors.phone && (
+                <p className="mt-1 text-[10px] font-medium text-red-500">{uniqueErrors.phone}</p>
+              )}
             </div>
 
             <div className="col-span-2">

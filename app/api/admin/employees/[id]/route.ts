@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
+import { isPhoneMatching, normalizePhoneNumber } from '@/src/lib/utils/sviEmailGenerator';
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }
@@ -102,15 +102,57 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     // Update profile metadata if provided
     const updateData: Record<string, any> = {};
     if (full_name !== undefined) updateData.full_name = full_name.trim();
-    if (phone !== undefined) updateData.phone = phone?.trim() || null;
+    if (phone !== undefined) {
+      const cleanPhone = phone?.trim() || null;
+      if (cleanPhone) {
+        const { digits, last10 } = normalizePhoneNumber(cleanPhone);
+        if (digits.length >= 10) {
+          const { data: existingPhoneList } = await supabaseAdmin
+            .from('profiles')
+            .select('id, full_name, phone')
+            .neq('id', id)
+            .ilike('phone', `%${last10}%`);
+
+          if (existingPhoneList && existingPhoneList.length > 0) {
+            const match = existingPhoneList.find(
+              (p) => p.phone && isPhoneMatching(p.phone, cleanPhone)
+            );
+            if (match) {
+              throw AppError.badRequest(
+                `An account with the Phone Number "${cleanPhone}" already exists (${match.full_name || 'User'}).`
+              );
+            }
+          }
+        }
+      }
+      updateData.phone = cleanPhone;
+    }
+    if (body.real_email !== undefined) {
+      const cleanRealEmail = body.real_email?.trim().toLowerCase() || null;
+      if (cleanRealEmail) {
+        const { data: existingRealEmail } = await supabaseAdmin
+          .from('profiles')
+          .select('id, full_name')
+          .neq('id', id)
+          .or(`real_email.eq.${cleanRealEmail},email.eq.${cleanRealEmail}`)
+          .maybeSingle();
+
+        if (existingRealEmail) {
+          throw AppError.badRequest(
+            `An account with the Real Email "${cleanRealEmail}" already exists (${existingRealEmail.full_name || 'User'}).`
+          );
+        }
+      }
+      updateData.real_email = cleanRealEmail;
+    }
     if (department !== undefined) updateData.department = department?.trim() || null;
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
+
     if (Object.keys(updateData).length > 0) {
       let { error: profileError } = await supabaseAdmin
         .from('profiles')
         .update(updateData)
         .eq('id', id);
-
       // Graceful fallback if department column is not yet in Supabase schema cache
       if (profileError && /department.*schema cache/i.test(profileError.message)) {
         const { department: _omitted, ...fallbackData } = updateData;

@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { isPhoneMatching, normalizePhoneNumber } from '@/src/lib/utils/sviEmailGenerator';
 
 // DELETE /api/admin/users/[id]
 export async function DELETE(
@@ -131,6 +132,44 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
         updates[key] = body[key];
       }
     }
+    if (updates.real_email) {
+      const cleanRealEmail = updates.real_email.trim().toLowerCase();
+      const { data: existingRealEmail } = await supabaseAdmin
+        .from('profiles')
+        .select('id, full_name')
+        .neq('id', id)
+        .or(`real_email.eq.${cleanRealEmail},email.eq.${cleanRealEmail}`)
+        .maybeSingle();
+
+      if (existingRealEmail) {
+        throw AppError.badRequest(
+          `An account with the Real Email "${cleanRealEmail}" already exists (${existingRealEmail.full_name || 'User'}).`
+        );
+      }
+    }
+
+    if (updates.phone) {
+      const cleanPhone = updates.phone.trim();
+      const { digits, last10 } = normalizePhoneNumber(cleanPhone);
+      if (digits.length >= 10) {
+        const { data: existingPhoneList } = await supabaseAdmin
+          .from('profiles')
+          .select('id, full_name, phone')
+          .neq('id', id)
+          .ilike('phone', `%${last10}%`);
+
+        if (existingPhoneList && existingPhoneList.length > 0) {
+          const match = existingPhoneList.find(
+            (p) => p.phone && isPhoneMatching(p.phone, cleanPhone)
+          );
+          if (match) {
+            throw AppError.badRequest(
+              `An account with the Phone Number "${cleanPhone}" already exists (${match.full_name || 'User'}).`
+            );
+          }
+        }
+      }
+    }
 
     const { data: updated, error: updateErr } = await supabaseAdmin
       .from('profiles')
@@ -138,7 +177,6 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       .eq('id', id)
       .select()
       .single();
-
     if (updateErr) throw AppError.internal(updateErr.message);
 
     return NextResponse.json({ user: updated });
