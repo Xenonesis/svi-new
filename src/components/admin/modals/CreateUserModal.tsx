@@ -41,9 +41,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
   });
 
   const [isEmailManual, setIsEmailManual] = useState(false);
+  const isEmailManualRef = useRef(false);
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [suggestedSviEmail, setSuggestedSviEmail] = useState<string | null>(null);
 
   // Uniqueness validation state
   const [validating, setValidating] = useState<{
@@ -63,7 +65,6 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     real_email: boolean;
     phone: boolean;
   }>({ email: false, real_email: false, phone: false });
-
   const displayProperties = getDisplayProperties(properties);
   const selectedProperties = form.property_interest ? form.property_interest.split(',') : [];
 
@@ -105,13 +106,17 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
         const data = await res.json();
 
         // Update suggested SVI email if user hasn't typed a custom email
-        if (!isEmailManual && data.suggested_svi_email && fullName) {
-          setForm((prev) => {
-            if (!isEmailManual) {
-              return { ...prev, email: data.suggested_svi_email };
-            }
-            return prev;
-          });
+        if (data.suggested_svi_email) {
+          setSuggestedSviEmail(data.suggested_svi_email);
+          // Update suggested SVI email if user hasn't typed a custom email
+          if (!isEmailManualRef.current && fullName) {
+            setForm((prev) => {
+              if (!isEmailManualRef.current) {
+                return { ...prev, email: data.suggested_svi_email };
+              }
+              return prev;
+            });
+          }
         }
 
         setUniqueErrors({
@@ -131,7 +136,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
         setValidating({ email: false, real_email: false, phone: false });
       }
     },
-    [token, isEmailManual]
+    [token]
   );
 
   // Trigger debounced uniqueness check whenever full_name, email, real_email, or phone changes
@@ -155,23 +160,24 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     if (name === 'full_name') {
       const newName = value;
       // Auto-generate SVI Email if email hasn't been manually edited by user
-      if (!isEmailManual) {
+      if (!isEmailManualRef.current) {
         const generated = generateSviEmail(newName);
         setForm((prev) => ({ ...prev, full_name: newName, email: generated }));
       } else {
         setForm((prev) => ({ ...prev, full_name: newName }));
       }
     } else if (name === 'email') {
+      isEmailManualRef.current = true;
       setIsEmailManual(true);
       setForm((prev) => ({ ...prev, email: value }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
     }
-
     if (error) setError('');
   };
 
   const handleResetSviEmail = () => {
+    isEmailManualRef.current = false;
     setIsEmailManual(false);
     const autoEmail = generateSviEmail(form.full_name);
     setForm((prev) => ({ ...prev, email: autoEmail }));
@@ -179,6 +185,43 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     toast.info('SVI Email synchronized with Full Name.');
   };
 
+  const handleApplySuggestedEmail = (emailToUse: string) => {
+    isEmailManualRef.current = true;
+    setIsEmailManual(true);
+    setForm((prev) => ({ ...prev, email: emailToUse }));
+    setUniqueErrors((prev) => ({ ...prev, email: null }));
+    setUniqueValid((prev) => ({ ...prev, email: true }));
+    toast.success(`Applied suggested email: ${emailToUse}`);
+  };
+
+  const handleGeneratePassword = () => {
+    const chars = 'abcdefghjkmnpqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789!@#$%&*';
+    let newPassword = '';
+    for (let i = 0; i < 12; i++) {
+      newPassword += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    setForm((prev) => ({ ...prev, password: newPassword }));
+    setShowPass(true);
+    toast.success('Generated strong random password.');
+  };
+
+  const handleSelectAllProperties = () => {
+    const allSlugs = displayProperties.map((p) => p.slug).join(',');
+    setForm((prev) => ({ ...prev, property_interest: allSlugs }));
+  };
+
+  const handleClearAllProperties = () => {
+    setForm((prev) => ({ ...prev, property_interest: '' }));
+  };
+
+  const handleAppendNote = (noteText: string) => {
+    setForm((prev) => {
+      const current = prev.notes.trim();
+      if (!current) return { ...prev, notes: noteText };
+      if (current.includes(noteText)) return prev;
+      return { ...prev, notes: `${current}, ${noteText}` };
+    });
+  };
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError('');
@@ -355,7 +398,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   <button
                     type="button"
                     onClick={handleResetSviEmail}
-                    className="text-brand-gold hover:text-brand-gold-light mb-1.5 flex items-center gap-1 text-[10px] font-semibold"
+                    className="text-brand-gold hover:text-brand-gold-light mb-1.5 flex items-center gap-1 text-[10px] font-semibold transition-colors"
                     title="Regenerate automatic email from Full Name"
                   >
                     <Sparkles className="h-3 w-3" /> Auto
@@ -371,11 +414,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   onChange={handleChange}
                   required
                   placeholder="client@sviinfra.com"
-                  className={`${inputCls} pr-8 pl-9 ${
+                  className={`${inputCls} pr-10 pl-9 ${
                     uniqueErrors.email ? 'border-red-500/50 focus:border-red-500' : ''
                   }`}
                 />
-                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
                   {validating.email ? (
                     <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
                   ) : uniqueErrors.email ? (
@@ -386,7 +429,28 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                 </div>
               </div>
               {uniqueErrors.email && (
-                <p className="mt-1 text-[10px] font-medium text-red-500">{uniqueErrors.email}</p>
+                <div className="mt-1 space-y-1">
+                  <p className="text-[10px] leading-tight font-medium text-red-500">
+                    {uniqueErrors.email}
+                  </p>
+                  {suggestedSviEmail && suggestedSviEmail !== form.email && (
+                    <div className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold flex items-center justify-between gap-1.5 rounded-lg border p-1.5 text-[10px]">
+                      <div className="flex min-w-0 items-center gap-1">
+                        <Sparkles className="h-3 w-3 shrink-0" />
+                        <span className="truncate">
+                          Try: <strong className="font-semibold">{suggestedSviEmail}</strong>
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleApplySuggestedEmail(suggestedSviEmail)}
+                        className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy shrink-0 rounded px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase transition-colors"
+                      >
+                        Use This
+                      </button>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
 
@@ -401,11 +465,11 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   onChange={handleChange}
                   required
                   placeholder="client@example.com"
-                  className={`${inputCls} pr-8 pl-9 ${
+                  className={`${inputCls} pr-10 pl-9 ${
                     uniqueErrors.real_email ? 'border-red-500/50 focus:border-red-500' : ''
                   }`}
                 />
-                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
                   {validating.real_email ? (
                     <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
                   ) : uniqueErrors.real_email ? (
@@ -416,14 +480,24 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                 </div>
               </div>
               {uniqueErrors.real_email && (
-                <p className="mt-1 text-[10px] font-medium text-red-500">
+                <p className="mt-1 text-[10px] leading-tight font-medium text-red-500">
                   {uniqueErrors.real_email}
                 </p>
               )}
             </div>
 
             <div>
-              <label className={labelCls}>Password *</label>
+              <div className="flex items-center justify-between">
+                <label className={labelCls}>Password *</label>
+                <button
+                  type="button"
+                  onClick={handleGeneratePassword}
+                  className="text-brand-gold hover:text-brand-gold-light mb-1.5 flex items-center gap-1 text-[10px] font-semibold transition-colors"
+                  title="Generate secure random password"
+                >
+                  <Sparkles className="h-3 w-3" /> Generate
+                </button>
+              </div>
               <div className="relative">
                 <input
                   name="password"
@@ -454,12 +528,12 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   value={form.phone}
                   onChange={handleChange}
                   required
-                  placeholder="+91 98000 00000"
-                  className={`${inputCls} pr-8 pl-9 ${
+                  placeholder="9876543210"
+                  className={`${inputCls} pr-10 pl-9 ${
                     uniqueErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''
                   }`}
                 />
-                <div className="absolute top-1/2 right-2.5 -translate-y-1/2">
+                <div className="absolute top-1/2 right-3 -translate-y-1/2">
                   {validating.phone ? (
                     <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
                   ) : uniqueErrors.phone ? (
@@ -470,12 +544,36 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                 </div>
               </div>
               {uniqueErrors.phone && (
-                <p className="mt-1 text-[10px] font-medium text-red-500">{uniqueErrors.phone}</p>
+                <p className="mt-1 text-[10px] leading-tight font-medium text-red-500">
+                  {uniqueErrors.phone}
+                </p>
               )}
             </div>
 
             <div className="col-span-2">
-              <label className={labelCls}>Property Interest * (Select Multiple)</label>
+              <div className="mb-1 flex items-center justify-between">
+                <label className={labelCls}>
+                  Property Interest * ({selectedProperties.length}/{displayProperties.length}{' '}
+                  Selected)
+                </label>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={handleSelectAllProperties}
+                    className="text-brand-gold hover:text-brand-gold-light text-[10px] font-semibold hover:underline"
+                  >
+                    Select All
+                  </button>
+                  <span className="text-[10px] text-gray-400">•</span>
+                  <button
+                    type="button"
+                    onClick={handleClearAllProperties}
+                    className="text-[10px] text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+                  >
+                    Clear
+                  </button>
+                </div>
+              </div>
               <div className="grid max-h-36 grid-cols-2 gap-2 overflow-y-auto rounded-lg border border-gray-200 bg-gray-50/50 p-3 dark:border-white/10 dark:bg-[#111118]">
                 {displayProperties.map((p) => {
                   const isChecked = selectedProperties.includes(p.slug);
@@ -513,6 +611,25 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   className={`${inputCls} resize-none pl-9`}
                 />
               </div>
+              <div className="mt-1.5 flex flex-wrap items-center gap-1.5">
+                <span className="text-[10px] font-medium text-gray-400">Quick Tags:</span>
+                {[
+                  'Site visit scheduled',
+                  'Looking for Villa/Plot',
+                  'Budget ₹40L-₹60L',
+                  'Immediate decision maker',
+                  'High priority investor',
+                ].map((tag) => (
+                  <button
+                    key={tag}
+                    type="button"
+                    onClick={() => handleAppendNote(tag)}
+                    className="hover:border-brand-gold/40 hover:text-brand-gold rounded-md border border-gray-200 bg-gray-50 px-2 py-0.5 text-[10px] text-gray-600 transition-colors dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
+                  >
+                    + {tag}
+                  </button>
+                ))}
+              </div>
             </div>
           </div>
 
@@ -526,8 +643,18 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
             </button>
             <button
               type="submit"
-              disabled={loading}
-              className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-60"
+              disabled={
+                loading ||
+                Boolean(
+                  uniqueErrors.email ||
+                  uniqueErrors.real_email ||
+                  uniqueErrors.phone ||
+                  validating.email ||
+                  validating.real_email ||
+                  validating.phone
+                )
+              }
+              className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
                 <span className="border-brand-navy/45 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
