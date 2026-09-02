@@ -1,4 +1,3 @@
-import React from 'react';
 import { SALARY_SLABS, SalarySlabType } from '@/src/components/admin/OfferLetter/SlabSelector';
 
 export interface OfferLetterFormData {
@@ -122,28 +121,54 @@ export default function OfferLetterPreviewContent({
   const monthlyCTC = parseFloat(formData.salaryCtc || '0');
   const annualCTC = monthlyCTC * 12;
 
-  // Running Header Component for Page 2
+  // Subtle Corporate Security Watermark
+  const SecurityWatermark = () => (
+    <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden select-none">
+      <svg
+        viewBox="0 0 500 200"
+        className="w-[75%] max-w-xl opacity-[0.035]"
+        style={{ transform: 'rotate(-25deg)', pointerEvents: 'none' }}
+      >
+        <text
+          x="50%"
+          y="50%"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="#1e3a8a"
+          fontSize="34"
+          fontWeight="bold"
+          letterSpacing="4"
+        >
+          SVI INFRA SOLUTIONS
+        </text>
+      </svg>
+    </div>
+  );
+
+  // Running Header Component for Pages 2 & 3
   const RunningHeader = () => (
-    <div className="mb-3.5 flex items-center justify-between border-b border-gray-400 pb-2 text-[11.5px] text-gray-700">
+    <div className="mb-3 grid grid-cols-[1fr_auto] items-center border-b border-gray-400 pb-2 text-[11px] text-gray-700">
       <div className="flex items-center gap-2">
         <img
           src="/logo.png"
           alt="Company Logo"
-          className="h-7 w-auto object-contain"
+          className="h-6 w-auto object-contain"
           onError={(e) => (e.currentTarget.style.display = 'none')}
         />
-        <span className="text-gray-400">|</span>
-        <span className="font-semibold tracking-wide text-gray-800 uppercase">
+        <span className="text-gray-300">|</span>
+        <span className="text-[10.5px] font-semibold tracking-wide text-gray-800 uppercase">
           Employment Contract &amp; Offer of Appointment
         </span>
       </div>
-      <div className="text-right font-mono font-bold text-gray-800">{docReferenceNumber}</div>
+      <div className="text-right font-mono text-[10.5px] font-bold text-[#1e3a8a]">
+        {docReferenceNumber}
+      </div>
     </div>
   );
 
-  // Running Footer Component for both pages
+  // Running Footer Component for all pages
   const RunningFooter = ({ pageNum }: { pageNum: number }) => (
-    <div className="mt-auto flex items-center justify-between border-t border-gray-400 pt-2.5 text-[11px] text-gray-600">
+    <div className="mt-auto grid grid-cols-[1fr_auto_auto] items-center gap-2 border-t border-gray-400 pt-2 text-[10px] text-gray-600">
       <div>
         <span className="font-bold text-gray-800">CONFIDENTIAL &amp; PROPRIETARY</span> &mdash;{' '}
         {companyInfo.company_name}
@@ -152,45 +177,45 @@ export default function OfferLetterPreviewContent({
       <div className="flex items-center gap-3">
         <span>
           Candidate Initials:{' '}
-          <span className="inline-block border-b border-gray-500 px-4 font-mono">______</span>
+          <span className="inline-block border-b border-gray-500 px-3 font-mono">______</span>
         </span>
-        <span className="font-bold text-gray-900">Page {pageNum} of 2</span>
+        <span className="font-bold text-gray-900">Page {pageNum} of 3</span>
       </div>
     </div>
   );
 
   return (
-    <div className="bg-white text-left font-sans text-[12px] leading-[1.5] text-gray-900">
+    <div className="offer-letter-document flex flex-col items-center gap-6 bg-gray-200/60 p-2 sm:p-4">
       {/* ========================================================================= */}
       {/* ────────────────────────────── PAGE 1 ─────────────────────────────────── */}
       {/* ========================================================================= */}
       <div
-        className="relative flex flex-col justify-between bg-white px-6 py-5 sm:px-7 sm:py-5"
+        data-pdf-page="true"
+        className="offer-letter-page relative flex flex-col justify-between rounded-sm bg-white text-left font-sans text-gray-900 shadow-md ring-1 ring-black/5"
         style={{
+          width: '794px',
+          minHeight: '1123px',
+          height: '1123px',
+          maxHeight: '1123px',
           boxSizing: 'border-box',
+          padding: '28px 36px 24px 36px',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff',
         }}
       >
-        {/* Background Watermark */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.02]">
-          <img
-            src="/logo.png"
-            alt="Watermark"
-            className="w-[60%] max-w-md object-contain grayscale"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
-          />
-        </div>
+        <SecurityWatermark />
 
-        <div className="relative z-10 flex flex-col">
+        <div className="relative z-10 flex flex-1 flex-col">
           {/* Corporate Header / Letterhead */}
-          <div className="mb-2.5 flex items-start justify-between border-b-2 border-[#1e3a8a] pb-2">
+          <div className="mb-2.5 grid grid-cols-[1fr_auto] items-start gap-4 border-b-2 border-[#1e3a8a] pb-2">
             <div>
-              <h1 className="text-[22px] leading-tight font-bold tracking-wide text-[#1e3a8a] uppercase">
+              <h1 className="text-[20px] leading-tight font-bold tracking-wide text-[#1e3a8a] uppercase">
                 {companyInfo.company_name}
               </h1>
-              <p className="mt-0.5 text-[11.5px] font-semibold text-gray-800">
+              <p className="mt-0.5 text-[11px] font-semibold text-gray-800">
                 Corporate Real Estate, Infrastructure Advisory &amp; Strategic Project Development
               </p>
-              <p className="mt-0.5 text-[11px] text-gray-700">
+              <p className="mt-0.5 text-[10.5px] text-gray-700">
                 Contact:{' '}
                 <span className="font-bold text-gray-900">{companyInfo.company_phone}</span>{' '}
                 &nbsp;|&nbsp; Email:{' '}
@@ -198,20 +223,20 @@ export default function OfferLetterPreviewContent({
                 &nbsp;|&nbsp; Web:{' '}
                 <span className="font-bold text-gray-900">{companyInfo.company_website}</span>
               </p>
-              <p className="text-[10.5px] text-gray-600">Office: {companyInfo.company_address}</p>
+              <p className="text-[10px] text-gray-600">Office: {companyInfo.company_address}</p>
             </div>
-            <div className="w-36 flex-shrink-0 text-right">
+            <div className="w-32 flex-shrink-0 text-right">
               <img
                 src="/logo.png"
                 alt={companyInfo.company_name}
-                className="ml-auto h-11 w-auto object-contain"
+                className="ml-auto h-10 w-auto object-contain"
                 onError={(e) => (e.currentTarget.style.display = 'none')}
               />
             </div>
           </div>
 
           {/* Classification & Metadata Bar */}
-          <div className="mb-2.5 flex items-center justify-between rounded border border-gray-300 bg-gray-50 px-3.5 py-1.5 text-[11.5px]">
+          <div className="mb-2 flex items-center justify-between rounded border border-gray-300 bg-gray-50 px-3 py-1 text-[11px]">
             <div>
               <span className="font-bold text-gray-700">Document Ref:</span>{' '}
               <span className="font-mono font-bold text-[#1e3a8a]">{docReferenceNumber}</span>
@@ -220,18 +245,18 @@ export default function OfferLetterPreviewContent({
               <span className="font-bold text-gray-700">Issuance Date:</span>{' '}
               <span className="font-bold text-gray-900">{currentDateFormatted}</span>
             </div>
-            <div className="text-[10px] font-bold tracking-wider text-gray-800 uppercase">
+            <div className="text-[9.5px] font-bold tracking-wider text-gray-800 uppercase">
               Strictly Private &amp; Confidential
             </div>
           </div>
 
           {/* Balanced Candidate Particulars Card */}
           {Boolean(formData.includeCandidateParticularsBox ?? true) && (
-            <div className="mb-2.5 rounded border border-gray-300 bg-gray-50/70 px-3.5 py-2">
-              <p className="mb-1 border-b border-gray-300 pb-0.5 text-[11px] font-bold tracking-wider text-gray-700 uppercase">
+            <div className="mb-2 rounded border border-gray-300 bg-gray-50/80 px-3 py-1.5">
+              <p className="mb-1 border-b border-gray-300 pb-0.5 text-[10.5px] font-bold tracking-wider text-gray-700 uppercase">
                 Candidate Recipient Particulars:
               </p>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[12px]">
+              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-[11px]">
                 <div>
                   <span className="font-bold text-gray-700">Candidate Name:</span>{' '}
                   <span className="font-bold text-[#1e3a8a]">
@@ -267,14 +292,14 @@ export default function OfferLetterPreviewContent({
           )}
 
           {/* Subject Line */}
-          <div className="mb-2.5 border-y border-gray-400 bg-gray-100/80 py-1.5 text-center">
-            <h3 className="text-[12.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
+          <div className="mb-2 border-y border-gray-400 bg-gray-100/80 py-1 text-center">
+            <h3 className="text-[12px] font-bold tracking-wide text-[#1e3a8a] uppercase">
               Subject: Formal Offer of Employment &amp; Preliminary Contract of Appointment
             </h3>
           </div>
 
           {/* Preamble / Recitals */}
-          <div className="mb-2.5 space-y-1 text-left text-[11.5px] leading-relaxed font-medium text-gray-800">
+          <div className="mb-2 space-y-0.5 text-left text-[11px] leading-[1.45] font-medium text-gray-800">
             <p>
               Dear{' '}
               <span className="font-bold text-[#1e3a8a]">
@@ -294,11 +319,11 @@ export default function OfferLetterPreviewContent({
             </p>
           </div>
 
-          {/* Clauses 1 to 6 */}
-          <div className="space-y-2 text-left text-[11.5px] leading-relaxed">
+          {/* Core Clauses 1 to 3 */}
+          <div className="space-y-1.5 text-left text-[11px] leading-[1.45]">
             {/* Clause 1: Position & Department */}
             <div>
-              <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
+              <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
                 1. Designation, Department &amp; Reporting Matrix
               </p>
               <p className="mt-0.5 text-gray-800">
@@ -322,7 +347,7 @@ export default function OfferLetterPreviewContent({
 
             {/* Clause 2: Location & Mobility */}
             <div>
-              <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
+              <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
                 2. Date of Commencement, Work Location &amp; Mobility
               </p>
               <p className="mt-0.5 text-gray-800">
@@ -342,7 +367,7 @@ export default function OfferLetterPreviewContent({
 
             {/* Clause 3: Compensation & Benefits */}
             <div>
-              <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
+              <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
                 3. Remuneration Structure, Performance Slabs &amp; Statutory Deductions
               </p>
               <p className="mt-0.5 text-gray-800">
@@ -385,7 +410,7 @@ export default function OfferLetterPreviewContent({
                     (formData.salesCompensationType ||
                       formData.enablePartialTargetRule ||
                       formData.meetingsPerMonth))) && (
-                  <div className="mt-2 space-y-2 rounded border border-gray-300 bg-gray-50/90 p-2.5 text-[10.5px] leading-relaxed shadow-sm">
+                  <div className="mt-1.5 space-y-1.5 rounded border border-gray-300 bg-gray-50/90 p-2 text-[10px] leading-[1.4] shadow-xs">
                     {/* Quota */}
                     {(formData.target || matchedSlab || formData.offerSlab) && (
                       <div>
@@ -404,15 +429,17 @@ export default function OfferLetterPreviewContent({
                           <span className="font-bold text-[#1e3a8a]">
                             {formData.offerSlab
                               ? `${formData.offerSlab.replace(/%$/, '')}%`
-                              : matchedSlab
-                                ? matchedSlab.offerSlab
+                              : matchedSlab?.offerSlab
+                                ? matchedSlab.offerSlab.includes('%')
+                                  ? matchedSlab.offerSlab
+                                  : `${matchedSlab.offerSlab}%`
                                 : '3%'}
                           </span>{' '}
                           on confirmed realized revenue, computed in strict compliance with the
                           Company&rsquo;s Sales Compensation Policy.
                         </p>
                         {/* 30% Payment Realization Milestone */}
-                        <p className="mt-1 text-[10px] text-gray-800">
+                        <p className="mt-0.5 text-[9.5px] text-gray-800">
                           <span className="font-bold text-gray-900">
                             Commission Disbursement Milestone (
                             {formData.commissionReleasePercent || '30'}% Realization Rule):
@@ -434,7 +461,7 @@ export default function OfferLetterPreviewContent({
                     {/* No Sale No Salary */}
                     {isSalesDepartment &&
                       formData.salesCompensationType === 'no_sale_no_salary' && (
-                        <div className="border-t border-gray-300 pt-2 text-gray-900">
+                        <div className="border-t border-gray-300 pt-1.5 text-gray-900">
                           <p className="font-bold text-[#1e3a8a]">
                             Clause 3.1 &mdash; Performance-Linked Compensation Condition (&ldquo;No
                             Sale No Salary&rdquo;):
@@ -459,7 +486,7 @@ export default function OfferLetterPreviewContent({
 
                     {/* Custom Percent */}
                     {isSalesDepartment && formData.salesCompensationType === 'custom_percent' && (
-                      <div className="border-t border-gray-300 pt-2 text-gray-900">
+                      <div className="border-t border-gray-300 pt-1.5 text-gray-900">
                         <p className="font-bold text-[#1e3a8a]">
                           Clause 3.1 &mdash; Guaranteed Staggered Remuneration During Quota
                           Incubation:
@@ -503,7 +530,7 @@ export default function OfferLetterPreviewContent({
                     {/* Grace Period + Reduced % */}
                     {isSalesDepartment &&
                       formData.salesCompensationType === 'grace_period_reduced_percent' && (
-                        <div className="border-t border-gray-300 pt-2 text-gray-900">
+                        <div className="border-t border-gray-300 pt-1.5 text-gray-900">
                           <p className="font-bold text-[#1e3a8a]">
                             Clause 3.1 &mdash; Structured Onboarding Gestation Window &amp;
                             Performance-Indexed Post-Tenure Remuneration:
@@ -527,7 +554,7 @@ export default function OfferLetterPreviewContent({
                               : 'fixed CTC'}
                             ) without prejudice to immediate deal closure realization.
                           </p>
-                          <p className="mt-1 text-gray-800">
+                          <p className="mt-0.5 text-gray-800">
                             Effective from Month{' '}
                             <span className="font-bold text-gray-900">
                               {parseInt(formData.gracePeriodMonths || '3') + 1}
@@ -581,7 +608,7 @@ export default function OfferLetterPreviewContent({
 
                     {/* Target-Linked Pro-Rata & Zero-Sale Policy */}
                     {isSalesDepartment && Boolean(formData.enablePartialTargetRule) && (
-                      <div className="border-t border-gray-300 pt-2 text-gray-900">
+                      <div className="border-t border-gray-300 pt-1.5 text-gray-900">
                         <p className="font-bold text-[#1e3a8a]">
                           Clause 3.2 &mdash; Quota-Indexed Tiered Remuneration &amp; Performance
                           Contingency Matrix:
@@ -596,7 +623,7 @@ export default function OfferLetterPreviewContent({
                           </span>{' '}
                           per calendar month under the following performance appraisal tiers:
                         </p>
-                        <ul className="mt-1 space-y-0.5 pl-2 text-gray-800">
+                        <ul className="mt-0.5 space-y-0.5 pl-2 text-gray-800">
                           <li className="flex items-start gap-1">
                             <span className="font-bold text-[#1e3a8a]">&bull;</span>
                             <div>
@@ -665,7 +692,7 @@ export default function OfferLetterPreviewContent({
 
                     {/* Meetings */}
                     {isSalesDepartment && formData.meetingsPerMonth && (
-                      <div className="border-t border-gray-300 pt-1.5 text-[10.5px] text-gray-800">
+                      <div className="border-t border-gray-300 pt-1 text-[9.5px] text-gray-800">
                         <span className="font-bold text-gray-900">
                           Clause 3.2 &mdash; Mandatory Client Meeting Thresholds:
                         </span>{' '}
@@ -681,51 +708,87 @@ export default function OfferLetterPreviewContent({
                   </div>
                 )}
             </div>
+          </div>
+        </div>
 
+        <RunningFooter pageNum={1} />
+      </div>
+
+      {/* ========================================================================= */}
+      {/* ────────────────────────────── PAGE 2 ─────────────────────────────────── */}
+      {/* ========================================================================= */}
+      <div
+        data-pdf-page="true"
+        className="offer-letter-page relative flex flex-col justify-between rounded-sm bg-white text-left font-sans text-gray-900 shadow-md ring-1 ring-black/5"
+        style={{
+          width: '794px',
+          minHeight: '1123px',
+          height: '1123px',
+          maxHeight: '1123px',
+          boxSizing: 'border-box',
+          padding: '28px 36px 24px 36px',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff',
+        }}
+      >
+        <SecurityWatermark />
+
+        <div className="relative z-10 flex flex-1 flex-col">
+          <RunningHeader />
+
+          {/* Section II Banner */}
+          <div className="mb-2 border-y border-gray-400 bg-gray-100/80 py-1 text-center">
+            <h3 className="text-[11.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+              Section II: Operational Protocols, Restrictive Covenants &amp; Governance
+            </h3>
+          </div>
+
+          <div className="space-y-1.5 text-left text-[10.5px] leading-[1.45]">
             {/* Clause 4: MANDATORY PRE-EMPLOYMENT ONBOARDING DOCUMENTATION */}
             {Boolean(formData.includeDocumentationBox ?? true) && (
-              <div className="rounded border border-[#1e3a8a] bg-gray-50/90 p-2.5 shadow-sm">
-                <div className="mb-1 flex items-center justify-between border-b border-[#1e3a8a]/40 pb-0.5">
-                  <p className="text-[11.5px] font-bold tracking-wide text-[#1e3a8a] uppercase">
+              <div className="rounded border border-[#1e3a8a] bg-gray-50/90 p-2 shadow-xs">
+                <div className="mb-1 flex items-center justify-between border-b border-[#1e3a8a]/30 pb-0.5">
+                  <p className="text-[11px] font-bold tracking-wide text-[#1e3a8a] uppercase">
                     4. Mandatory Pre-Employment Onboarding Documentation &amp; Verification
                     Protocols
                   </p>
-                  <span className="text-[10px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+                  <span className="text-[9.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
                     Mandatory Submission Schedule
                   </span>
                 </div>
-                <p className="mb-1.5 text-[10.5px] font-medium text-gray-900">
+                <p className="mb-1 text-[10px] font-medium text-gray-900">
                   In compliance with corporate governance standards, formal appointment is
-                  conditional upon submission of records via the SVI HR Onboarding Desk (
+                  conditional upon submission of records via the{' '}
+                  <span className="font-bold text-[#1e3a8a]">SVI HR Onboarding Desk</span> (
                   <span className="font-semibold text-[#1e3a8a]">
                     {companyInfo.company_email || 'hr@sviinfrasolutions.com'}
                   </span>
                   ):
                 </p>
 
-                <div className="grid grid-cols-2 gap-1.5 text-[10.5px]">
-                  <div className="rounded border border-gray-300 bg-white p-2">
+                <div className="grid grid-cols-2 gap-1 text-[10px]">
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
                     <span className="font-bold text-[#1e3a8a]">1. Academic Credentials:</span>{' '}
                     Copies of marksheets &amp; degree certificates (10th, 12th, Bachelor&rsquo;s,
                     Post-Graduate / Diplomas).
                   </div>
-                  <div className="rounded border border-gray-300 bg-white p-2">
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
                     <span className="font-bold text-[#1e3a8a]">2. Photographic Records:</span> Two
                     (2) colored passport-sized photos against white background.
                   </div>
-                  <div className="rounded border border-gray-300 bg-white p-2">
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
                     <span className="font-bold text-[#1e3a8a]">
                       3. Identity Verification (Aadhaar):
                     </span>{' '}
                     Valid Government-issued Aadhaar Card copy (front &amp; reverse).
                   </div>
-                  <div className="rounded border border-gray-300 bg-white p-2">
+                  <div className="rounded border border-gray-300 bg-white p-1.5">
                     <span className="font-bold text-[#1e3a8a]">
                       4. Tax Registration (PAN Card):
                     </span>{' '}
                     Valid PAN Card copy issued by Income Tax Department.
                   </div>
-                  <div className="col-span-2 rounded border border-gray-300 bg-white p-2">
+                  <div className="col-span-2 rounded border border-gray-300 bg-white p-1.5">
                     <span className="font-bold text-[#1e3a8a]">
                       5. Prior Employment Experience &amp; Relieving Credentials:
                     </span>{' '}
@@ -733,7 +796,7 @@ export default function OfferLetterPreviewContent({
                     for 3 consecutive months.
                   </div>
                 </div>
-                <div className="mt-1.5 border-t border-gray-300 pt-1 text-[9.5px] font-medium text-gray-800">
+                <div className="mt-1 border-t border-gray-300 pt-0.5 text-[9px] font-medium text-gray-800">
                   <p>
                     Upload in clear{' '}
                     <span className="font-bold">
@@ -749,7 +812,7 @@ export default function OfferLetterPreviewContent({
 
             {/* Clause 5: Probation Period */}
             <div>
-              <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
+              <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
                 5. Probationary Period, Performance Assessment &amp; Confirmation Protocols
               </p>
               <p className="mt-0.5 text-gray-800">
@@ -776,7 +839,7 @@ export default function OfferLetterPreviewContent({
 
             {/* Clause 6: Working Hours, Customer Site Visits & Attendance */}
             <div>
-              <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
+              <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
                 6. Standard Working Hours, Customer Site Visits &amp; Attendance Regimes
               </p>
               <p className="mt-0.5 text-gray-800">
@@ -804,7 +867,7 @@ export default function OfferLetterPreviewContent({
 
               {/* Customer Site Visits Policy */}
               {isSalesDepartment && Boolean(formData.includeSiteVisitPolicy ?? true) && (
-                <p className="mt-1 text-gray-800">
+                <p className="mt-0.5 text-gray-800">
                   <span className="font-bold text-gray-900">
                     6.1 Mandatory Customer Site Visits &amp; Weekend Operations:
                   </span>{' '}
@@ -819,7 +882,7 @@ export default function OfferLetterPreviewContent({
 
               {/* Conveyance / Fuel Allowance */}
               {Boolean(formData.includeConveyanceAllowance) && (
-                <p className="mt-1 text-gray-800">
+                <p className="mt-0.5 text-gray-800">
                   <span className="font-bold text-gray-900">
                     6.2 Field Travel &amp; Conveyance Policy:
                   </span>{' '}
@@ -833,43 +896,7 @@ export default function OfferLetterPreviewContent({
                 </p>
               )}
             </div>
-          </div>
-        </div>
 
-        <RunningFooter pageNum={1} />
-      </div>
-
-      {/* ========================================================================= */}
-      {/* ────────────────────────────── PAGE 2 ─────────────────────────────────── */}
-      {/* ========================================================================= */}
-      <div
-        className="relative flex flex-col justify-between bg-white px-6 py-5 sm:px-7 sm:py-5"
-        style={{
-          pageBreakBefore: 'always',
-          boxSizing: 'border-box',
-        }}
-      >
-        {/* Background Watermark */}
-        <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center opacity-[0.02]">
-          <img
-            src="/logo.png"
-            alt="Watermark"
-            className="w-[60%] max-w-md object-contain grayscale"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
-          />
-        </div>
-
-        <div className="relative z-10 flex flex-col">
-          <RunningHeader />
-
-          {/* Document Section Banner */}
-          <div className="mb-2.5 border-y border-gray-400 bg-gray-100/80 py-1.5 text-center">
-            <h3 className="text-[12.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
-              Section II: Terms &amp; Conditions, Restrictive Covenants, Governance &amp; Acceptance
-            </h3>
-          </div>
-
-          <div className="space-y-2 text-left text-[11px] leading-[1.48]">
             {/* Clause 7: Confidentiality, NDA & Trade Secrets */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
@@ -907,6 +934,7 @@ export default function OfferLetterPreviewContent({
                 documentation required to vest absolute legal title in the Company.
               </p>
             </div>
+
             {/* Clause 9: Restrictive Covenants & Non-Solicitation */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
@@ -943,6 +971,7 @@ export default function OfferLetterPreviewContent({
                 prosecution.
               </p>
             </div>
+
             {/* Clause 10: Performance Management & PIP */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
@@ -959,7 +988,42 @@ export default function OfferLetterPreviewContent({
                 legitimate cause for immediate separation without severance.
               </p>
             </div>
+          </div>
+        </div>
 
+        <RunningFooter pageNum={2} />
+      </div>
+
+      {/* ========================================================================= */}
+      {/* ────────────────────────────── PAGE 3 ─────────────────────────────────── */}
+      {/* ========================================================================= */}
+      <div
+        data-pdf-page="true"
+        className="offer-letter-page relative flex flex-col justify-between rounded-sm bg-white text-left font-sans text-gray-900 shadow-md ring-1 ring-black/5"
+        style={{
+          width: '794px',
+          minHeight: '1123px',
+          height: '1123px',
+          maxHeight: '1123px',
+          boxSizing: 'border-box',
+          padding: '28px 36px 24px 36px',
+          overflow: 'hidden',
+          backgroundColor: '#ffffff',
+        }}
+      >
+        <SecurityWatermark />
+
+        <div className="relative z-10 flex flex-1 flex-col">
+          <RunningHeader />
+
+          {/* Section III Banner */}
+          <div className="mb-2 border-y border-gray-400 bg-gray-100/80 py-1 text-center">
+            <h3 className="text-[11.5px] font-bold tracking-wider text-[#1e3a8a] uppercase">
+              Section III: Terms of Separation, Legal Governance &amp; Formal Acceptance
+            </h3>
+          </div>
+
+          <div className="space-y-1.5 text-left text-[10.5px] leading-[1.45]">
             {/* Clause 11: Relocation of Reporting Location */}
             <div>
               <p className="text-[11.5px] font-bold text-[#1e3a8a] uppercase">
@@ -1054,26 +1118,26 @@ export default function OfferLetterPreviewContent({
           </div>
 
           {/* Balanced Dual Signatures & Execution Section */}
-          <div className="mt-3.5 rounded border border-gray-400 bg-gray-50/70 p-3.5 shadow-sm">
-            <div className="grid grid-cols-2 items-end gap-6">
+          <div className="mt-3 rounded border border-gray-400 bg-gray-50/80 p-3 shadow-xs">
+            <div className="grid grid-cols-2 items-end gap-5">
               {/* Employer Execution Block */}
-              <div className="border-r border-gray-300 pr-4">
-                <p className="mb-0.5 text-[11px] font-bold tracking-wider text-gray-700 uppercase">
+              <div className="border-r border-gray-300 pr-3">
+                <p className="mb-0.5 text-[10.5px] font-bold tracking-wider text-gray-700 uppercase">
                   Issued For and on behalf of Organization:
                 </p>
-                <p className="text-[12.5px] font-bold text-[#1e3a8a] uppercase">
+                <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">
                   {companyInfo.company_name}
                 </p>
-                <div className="my-2">
+                <div className="my-1">
                   <img
                     src="/signature.png"
                     alt="Authorized Signatory"
-                    className="h-10 w-auto opacity-90 mix-blend-multiply"
+                    className="h-16 w-auto object-contain"
                     onError={(e) => (e.currentTarget.style.display = 'none')}
                   />
                 </div>
-                <p className="text-[12px] font-bold text-gray-900">Iliyas Ali</p>
-                <p className="text-[11px] font-semibold text-gray-700">
+                <p className="text-[11.5px] font-bold text-gray-900">Iliyas Ali</p>
+                <p className="text-[10.5px] font-semibold text-gray-700">
                   Director &amp; Authorized Signatory
                 </p>
                 <p className="mt-0.5 text-[10px] text-gray-600">
@@ -1082,17 +1146,17 @@ export default function OfferLetterPreviewContent({
               </div>
 
               {/* Candidate Acceptance & Attestation Block */}
-              <div className="pl-1 text-[11px]">
-                <p className="mb-0.5 text-[11.5px] font-bold tracking-wider text-gray-900 uppercase">
+              <div className="pl-1 text-[10.5px]">
+                <p className="mb-0.5 text-[11px] font-bold tracking-wider text-gray-900 uppercase">
                   Candidate Formal Acceptance &amp; Attestation:
                 </p>
-                <p className="mb-2 text-[10px] leading-snug font-medium text-gray-800 italic">
+                <p className="mb-2 text-[9.5px] leading-snug font-medium text-gray-700 italic">
                   &ldquo;I hereby unconditionally accept this offer of employment and agree to abide
                   by all terms, covenants, onboarding documentation requirements via the designated
                   SVI HR Onboarding Desk, and policies outlined herein. I affirm all credentials
                   provided are authentic and truthful.&rdquo;
                 </p>
-                <div className="space-y-1.5 text-[11px] text-gray-900">
+                <div className="space-y-1.5 text-[10.5px] text-gray-900">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold">Candidate Signature:</span>
                     <span className="inline-block w-36 border-b border-gray-500"></span>
@@ -1117,7 +1181,7 @@ export default function OfferLetterPreviewContent({
           </div>
         </div>
 
-        <RunningFooter pageNum={2} />
+        <RunningFooter pageNum={3} />
       </div>
     </div>
   );

@@ -62,6 +62,60 @@ export async function exportToPDF({
     // Let the browser finish layout
     await new Promise((r) => setTimeout(r, 200));
 
+    // ── Check if document specifies discrete pages ─────────────────────────
+    const discretePages = Array.from(
+      clone.querySelectorAll<HTMLElement>('[data-pdf-page="true"], .pdf-page, .offer-letter-page')
+    );
+
+    if (discretePages.length > 0) {
+      clone.style.padding = '0';
+      clone.style.width = 'auto';
+      const A4_W_MM = 210;
+      const A4_H_MM = 297;
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+
+      for (let i = 0; i < discretePages.length; i++) {
+        const pageEl = discretePages[i];
+        if (i > 0) pdf.addPage();
+
+        const prevShadow = pageEl.style.boxShadow;
+        const prevBorder = pageEl.style.border;
+        const prevMargin = pageEl.style.margin;
+        pageEl.style.boxShadow = 'none';
+        pageEl.style.border = 'none';
+        pageEl.style.margin = '0';
+
+        const pageCanvas = await html2canvas(pageEl, {
+          scale,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: '#ffffff',
+          logging: false,
+          imageTimeout: 2000,
+          scrollX: 0,
+          scrollY: 0,
+        });
+
+        pageEl.style.boxShadow = prevShadow;
+        pageEl.style.border = prevBorder;
+        pageEl.style.margin = prevMargin;
+
+        pdf.addImage(
+          pageCanvas.toDataURL('image/jpeg', 0.98),
+          'JPEG',
+          0,
+          0,
+          A4_W_MM,
+          A4_H_MM,
+          undefined,
+          'FAST'
+        );
+      }
+
+      const out = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
+      pdf.save(out);
+      return;
+    }
     const canvas = await html2canvas(clone, {
       scale,
       useCORS: true,
