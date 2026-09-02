@@ -248,10 +248,26 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
                   name="role"
                   value={form.role}
                   onChange={handleChange}
-                  className={`${inputCls} appearance-none rounded-none pr-8 pl-9`}
+                  className={`${inputCls} appearance-none pr-8 pl-9`}
                 >
-                  <option value="client">User</option>
-                  <option value="admin">Admin</option>
+                  <option
+                    value="client"
+                    className="bg-white text-gray-900 dark:bg-[#111118] dark:text-white"
+                  >
+                    User
+                  </option>
+                  <option
+                    value="employee"
+                    className="bg-white text-gray-900 dark:bg-[#111118] dark:text-white"
+                  >
+                    Employee
+                  </option>
+                  <option
+                    value="admin"
+                    className="bg-white text-gray-900 dark:bg-[#111118] dark:text-white"
+                  >
+                    Admin
+                  </option>
                 </select>
               </div>
             </div>
