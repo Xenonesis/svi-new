@@ -168,7 +168,8 @@
     "js-yaml": "^4.3.1",
     "dompurify": ">=3.4.13",
     "browserslist": ">=4.28.7",
-    "adm-zip": ">=0.6.0"
+    "adm-zip": ">=0.6.0",
+    "fast-uri": ">=3.1.6"
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
