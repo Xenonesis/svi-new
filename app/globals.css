@@ -103,11 +103,9 @@
     box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.2);
   }
 
-  /* Respect user's motion preferences */
+  /* Respect user's motion preferences while exempting essential functional spinners */
   @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
+    *:not(.animate-spin):not(.animate-spin *):not([role='status']):not([role='status'] *):not([aria-busy='true']):not([aria-busy='true'] *) {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -339,6 +337,19 @@
   .max-h-dvh {
     max-height: 100dvh;
   }
+}
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite !important;
+  will-change: transform;
 }
 
 @keyframes shimmer {
@@ -902,13 +913,18 @@ input::-ms-clear {
    Three.js HeroCanvas is handled separately in JS (HeroCanvas.tsx).
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  *:not(.animate-spin):not(.animate-spin *):not([role='status']):not([role='status'] *):not([aria-busy='true']):not([aria-busy='true'] *) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+
+  .animate-spin,
+  .animate-spin *,
+  [role='status'],
+  [aria-busy='true'] {
+    animation: spin 1s linear infinite !important;
   }
 
   /* Disable parallax and scroll-linked transforms */
