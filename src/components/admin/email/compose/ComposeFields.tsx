@@ -65,11 +65,20 @@ export function ComposeFields({
 }: ComposeFieldsProps) {
   const [showCcField, setShowCcField] = useState(false);
   const [showBccField, setShowBccField] = useState(false);
-  const defaultReplyVal = `info@sviiinfrasolutions.com, ${adminEmail}`;
-  const hasCustomReply = replyTo && replyTo !== defaultReplyVal && replyTo !== adminEmail;
+  const cleanReply = replyTo.trim();
+  const isDefaultReply =
+    !cleanReply ||
+    cleanReply === `info@sviinfrasolutions.com, ${adminEmail}` ||
+    cleanReply === `info@sviiinfrasolutions.com, ${adminEmail}` ||
+    cleanReply === `info@sviinfrasolutions.com, hr.sviinfrasolutions@gmail.com` ||
+    cleanReply === `info@sviiinfrasolutions.com, hr.sviinfrasolutions@gmail.com` ||
+    cleanReply === 'info@sviinfrasolutions.com' ||
+    cleanReply === 'info@sviiinfrasolutions.com' ||
+    cleanReply === adminEmail;
+  const hasCustomReply = Boolean(cleanReply && !isDefaultReply);
 
   const [showSenderOptions, setShowSenderOptions] = useState(
-    !!hasCustomReply || (!!fromName && fromName !== 'SVI Infra')
+    Boolean(hasCustomReply || (fromName && fromName !== 'SVI Infra'))
   );
   const [showScheduleOptions, setShowScheduleOptions] = useState(!!scheduledAt);
 
@@ -294,8 +303,8 @@ export function ComposeFields({
             </div>
             {/* Reply-To */}
             <div className="flex items-center border-b border-gray-100 px-4 sm:px-6 dark:border-gray-800">
-              <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
-                Reply
+              <label className="w-16 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+                Reply-To
               </label>
               <input
                 type="text"

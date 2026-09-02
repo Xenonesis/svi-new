@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { saveDraft, loadDraft, clearDraft } from '../helpers';
+import type { EmailAttachment } from '../types';
 
 export interface UseEmailDraftProps {
   to: string;
@@ -18,6 +19,8 @@ export interface UseEmailDraftProps {
   toRecipients?: any[];
   ccRecipients?: any[];
   bccRecipients?: any[];
+  inReplyToMessageId?: string | null;
+  attachments?: EmailAttachment[];
   setDraftSaved: (val: boolean) => void;
   setHasDraft: (val: boolean) => void;
   setTo: (val: string) => void;
@@ -33,6 +36,8 @@ export interface UseEmailDraftProps {
   setTemplateVars?: (val: Record<string, string>) => void;
   setPreviewMode?: (val: boolean) => void;
   setEditorKey?: (val: any) => void;
+  setInReplyToMessageId?: (val: string | null) => void;
+  setAttachments?: (val: EmailAttachment[]) => void;
 }
 
 export function useEmailDraft({
@@ -52,6 +57,8 @@ export function useEmailDraft({
   toRecipients,
   ccRecipients,
   bccRecipients,
+  inReplyToMessageId,
+  attachments,
   setDraftSaved,
   setHasDraft,
   setTo,
@@ -67,6 +74,8 @@ export function useEmailDraft({
   setTemplateVars,
   setPreviewMode,
   setEditorKey,
+  setInReplyToMessageId,
+  setAttachments,
 }: UseEmailDraftProps) {
   // Check if draft exists on mount
   useEffect(() => {
@@ -93,7 +102,8 @@ export function useEmailDraft({
           saved.quotedHtml ||
           saved.templateHtml ||
           saved.selectedTemplate ||
-          (saved.templateVars && Object.keys(saved.templateVars).length > 0))
+          (saved.templateVars && Object.keys(saved.templateVars).length > 0) ||
+          (saved.attachments && saved.attachments.length > 0))
       ) {
         setHasDraft(true);
       }
@@ -109,7 +119,8 @@ export function useEmailDraft({
       quotedHtml ||
       templateHtml ||
       selectedTemplate ||
-      (templateVars && Object.keys(templateVars).length > 0)
+      (templateVars && Object.keys(templateVars).length > 0) ||
+      (attachments && attachments.length > 0)
     );
     if (!hasContent) return;
 
@@ -134,6 +145,8 @@ export function useEmailDraft({
           toRecipients,
           ccRecipients,
           bccRecipients,
+          inReplyToMessageId,
+          attachments,
           savedAt: Date.now(),
         })
       );
@@ -159,6 +172,8 @@ export function useEmailDraft({
         toRecipients,
         ccRecipients,
         bccRecipients,
+        inReplyToMessageId,
+        attachments,
       }).then();
       setDraftSaved(true);
       setTimeout(() => setDraftSaved(false), 2000);
@@ -181,6 +196,8 @@ export function useEmailDraft({
     toRecipients,
     ccRecipients,
     bccRecipients,
+    inReplyToMessageId,
+    attachments,
     setDraftSaved,
   ]);
 
@@ -205,6 +222,12 @@ export function useEmailDraft({
         setSelectedTemplate?.(null);
         setTemplateVars?.({});
         setPreviewMode?.(false);
+      }
+      if (saved.inReplyToMessageId !== undefined) {
+        setInReplyToMessageId?.(saved.inReplyToMessageId);
+      }
+      if (saved.attachments && saved.attachments.length > 0) {
+        setAttachments?.(saved.attachments);
       }
       setEditorKey?.((prev: number) => prev + 1);
       setHasDraft(false);

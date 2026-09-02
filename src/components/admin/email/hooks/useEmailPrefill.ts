@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { EMAIL_TEMPLATES } from '../constants';
-import type { ForwardData, ReplyData, TemplatePrefill, DraftData } from '../types';
+import type { ForwardData, ReplyData, TemplatePrefill, DraftData, EmailAttachment } from '../types';
 
 export interface EmailPrefillSetters {
   setTo: (val: string) => void;
@@ -112,7 +112,14 @@ export function useEmailPrefill({
       setTemplateHtml(null);
       setSelectedTemplate(null);
       setInReplyToMessageId(replyData.originalMessageId || null);
-      setAttachments(replyData.attachments || []);
+      setAttachments(
+        (replyData.attachments || []).map((att: EmailAttachment) => ({
+          name: att.name || 'attachment',
+          size: att.size || 0,
+          url: att.url,
+          base64: att.base64,
+        }))
+      );
       setEditorKey((prev: number) => prev + 1);
       onClearPrefill?.();
     }
@@ -162,15 +169,28 @@ export function useEmailPrefill({
       setTo(draftData.to || '');
       setCc(draftData.cc || '');
       setBcc(draftData.bcc || '');
-      setSubjectTemplate(draftData.subject || '');
+      setSubjectTemplate(draftData.subjectTemplate || draftData.subject || '');
       setHtml(draftData.html || '');
       setQuotedHtml(draftData.quotedHtml || null);
       setReplyTo(draftData.replyTo || '');
       setFromName(draftData.fromName || 'SVI Infra');
-      setTemplateHtml(null);
-      setSelectedTemplate(null);
-      setInReplyToMessageId(null);
-      setAttachments([]);
+      if (draftData.templateHtml || draftData.selectedTemplate) {
+        setTemplateHtml?.(draftData.templateHtml || null);
+        setSelectedTemplate?.(draftData.selectedTemplate || null);
+        setTemplateVars?.(draftData.templateVars || {});
+        setPreviewMode?.(draftData.previewMode ?? true);
+      } else {
+        setTemplateHtml?.(null);
+        setSelectedTemplate?.(null);
+        setTemplateVars?.({});
+        setPreviewMode?.(false);
+      }
+      setInReplyToMessageId(draftData.inReplyToMessageId || null);
+      if (draftData.attachments && draftData.attachments.length > 0) {
+        setAttachments(draftData.attachments);
+      } else {
+        setAttachments([]);
+      }
       setScheduledAt(null);
       setEditorKey((prev: number) => prev + 1);
       onClearPrefill?.();
@@ -191,6 +211,8 @@ export function useEmailPrefill({
     setInReplyToMessageId,
     setAttachments,
     setScheduledAt,
+    setTemplateVars,
+    setPreviewMode,
     setEditorKey,
   ]);
 

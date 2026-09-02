@@ -763,10 +763,57 @@ export async function POST(request: NextRequest) {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
+    // Support direct multipart attachment upload (prevents large base64 payloads)
+    const contentType = request.headers.get('content-type') || '';
+    if (contentType.includes('multipart/form-data')) {
+      const formData = await request.formData();
+      const action = formData.get('action');
+
+      if (action === 'upload_attachment') {
+        const file = formData.get('file') as File | null;
+        if (!file) {
+          return NextResponse.json({ error: 'No file provided' }, { status: 400 });
+        }
+        if (file.size > 10 * 1024 * 1024) {
+          return NextResponse.json({ error: 'File exceeds 10MB limit' }, { status: 400 });
+        }
+        await ensureAttachmentBucket();
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+        const fileId = `${Date.now()}_${Math.random().toString(36).slice(2, 9)}`;
+        const storagePath = `outbound/${fileId}_${safeName}`;
+        const buffer = Buffer.from(await file.arrayBuffer());
+
+        const { error: uploadError } = await supabaseAdmin.storage
+          .from('email-attachments')
+          .upload(storagePath, buffer, {
+            contentType: file.type || mimeFromFilename(file.name),
+            upsert: true,
+          });
+
+        if (uploadError) {
+          console.error('Failed to upload email attachment:', uploadError);
+          return NextResponse.json({ error: 'Failed to upload attachment' }, { status: 500 });
+        }
+
+        const { data: urlData } = supabaseAdmin.storage
+          .from('email-attachments')
+          .getPublicUrl(storagePath);
+
+        return NextResponse.json({
+          success: true,
+          filename: file.name,
+          url: urlData.publicUrl,
+          size: file.size,
+          contentType: file.type || mimeFromFilename(file.name),
+        });
+      }
+
+      return NextResponse.json({ error: 'Invalid form-data action' }, { status: 400 });
+    }
+
     const resend = getResend();
     const body = await request.json();
     const { action } = body;
-
     if (action === 'send') {
       const {
         to,
@@ -789,7 +836,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      let defaultReplyTo = 'info@sviiinfrasolutions.com, hr.sviinfrasolutions@gmail.com';
+      let defaultReplyTo = 'info@sviinfrasolutions.com, hr.sviinfrasolutions@gmail.com';
       try {
         const { data: settingsData } = await supabaseAdmin
           .from('portal_settings' as any)
@@ -797,7 +844,7 @@ export async function POST(request: NextRequest) {
           .eq('key', 'email_settings')
           .single();
         if (settingsData?.value?.admin_email) {
-          defaultReplyTo = `info@sviiinfrasolutions.com, ${settingsData.value.admin_email}`;
+          defaultReplyTo = `info@sviinfrasolutions.com, ${settingsData.value.admin_email}`;
         }
       } catch (err) {
         // ignore
@@ -839,34 +886,37 @@ export async function POST(request: NextRequest) {
         if (Array.isArray(attachments) && attachments.length > 0) {
           await ensureAttachmentBucket();
           for (const att of attachments) {
-            const buffer = Buffer.from(att.content, 'base64');
-            const filePath = `${emailId}/${att.filename}`;
-            let url = null;
+            let url = att.path || att.url || null;
 
-            const { error: uploadError } = await supabaseAdmin.storage
-              .from('email-attachments')
-              .upload(filePath, buffer, {
-                contentType: mimeFromFilename(att.filename),
-                upsert: true,
-              });
+            if (!url && att.content) {
+              const buffer = Buffer.from(att.content, 'base64');
+              const filePath = `${emailId}/${att.filename}`;
 
-            if (!uploadError) {
-              const { data: publicUrlData } = supabaseAdmin.storage
+              const { error: uploadError } = await supabaseAdmin.storage
                 .from('email-attachments')
-                .getPublicUrl(filePath);
-              url = publicUrlData.publicUrl;
-            } else {
-              console.error(
-                `Failed to upload scheduled attachment ${att.filename} for email ${emailId}:`,
-                uploadError
-              );
+                .upload(filePath, buffer, {
+                  contentType: mimeFromFilename(att.filename),
+                  upsert: true,
+                });
+
+              if (!uploadError) {
+                const { data: publicUrlData } = supabaseAdmin.storage
+                  .from('email-attachments')
+                  .getPublicUrl(filePath);
+                url = publicUrlData.publicUrl;
+              } else {
+                console.error(
+                  `Failed to upload scheduled attachment ${att.filename} for email ${emailId}:`,
+                  uploadError
+                );
+              }
             }
 
             const { error: attInsertError } = await supabaseAdmin.from('email_attachments').insert({
               email_id: emailId,
               filename: att.filename,
               content_type: mimeFromFilename(att.filename),
-              size: att.size || buffer.length,
+              size: att.size || 0,
               url: url,
             });
 
@@ -897,10 +947,21 @@ export async function POST(request: NextRequest) {
       // Build attachments array for Resend API (Immediate Send)
       const resendAttachments =
         Array.isArray(attachments) && attachments.length > 0
-          ? attachments.map((att: { filename: string; content: string }) => ({
-              filename: att.filename,
-              content: att.content, // base64 string (no data: prefix)
-            }))
+          ? attachments.map(
+              (att: { filename: string; content?: string; path?: string; url?: string }) => {
+                const filePath = att.path || att.url;
+                if (filePath) {
+                  return {
+                    filename: att.filename,
+                    path: filePath,
+                  };
+                }
+                return {
+                  filename: att.filename,
+                  content: att.content || '',
+                };
+              }
+            )
           : undefined;
 
       // Parse replyTo: may be comma-separated string, normalize to array
@@ -947,20 +1008,25 @@ export async function POST(request: NextRequest) {
 
         if (toChunk.length === 0 && ccChunk.length === 0 && bccChunk.length === 0) break;
 
-        const { data: batchResult, error: batchError } = await resend.emails.send({
-          ...baseSendParams,
-          to: toChunk,
-          cc: ccChunk.length > 0 ? ccChunk : undefined,
-          bcc: bccChunk.length > 0 ? bccChunk : undefined,
-        });
+        try {
+          const { data: batchResult, error: batchError } = await resend.emails.send({
+            ...baseSendParams,
+            to: toChunk,
+            cc: ccChunk.length > 0 ? ccChunk : undefined,
+            bcc: bccChunk.length > 0 ? bccChunk : undefined,
+          });
 
-        if (batchError) {
-          results.push({ error: batchError.message, batch: i });
-        } else {
-          results.push({ id: batchResult?.id, batch: i });
+          if (batchError) {
+            results.push({ error: batchError.message, batch: i });
+          } else {
+            results.push({ id: batchResult?.id, batch: i });
+          }
+        } catch (sendErr: unknown) {
+          const errMsg =
+            sendErr instanceof Error ? sendErr.message : 'Failed to send batch via Resend';
+          results.push({ error: errMsg, batch: i });
         }
       }
-
       const errors = results.filter((r) => r.error);
       if (errors.length > 0 && errors.length === results.length) {
         return NextResponse.json(
@@ -987,34 +1053,38 @@ export async function POST(request: NextRequest) {
         await ensureAttachmentBucket();
         const emailId = firstSuccessId;
         for (const att of attachments) {
-          const buffer = Buffer.from(att.content, 'base64');
-          const filePath = `${emailId}/${att.filename}`;
-          let url = null;
+          const filePath = att.path || att.url;
+          let url = filePath || null;
 
-          const { error: uploadError } = await supabaseAdmin.storage
-            .from('email-attachments')
-            .upload(filePath, buffer, {
-              contentType: mimeFromFilename(att.filename),
-              upsert: true,
-            });
+          if (!url && att.content) {
+            const buffer = Buffer.from(att.content, 'base64');
+            const storagePath = `${emailId}/${att.filename}`;
 
-          if (!uploadError) {
-            const { data: publicUrlData } = supabaseAdmin.storage
+            const { error: uploadError } = await supabaseAdmin.storage
               .from('email-attachments')
-              .getPublicUrl(filePath);
-            url = publicUrlData.publicUrl;
-          } else {
-            console.error(
-              `Failed to upload outbound attachment ${att.filename} for email ${emailId}:`,
-              uploadError
-            );
+              .upload(storagePath, buffer, {
+                contentType: mimeFromFilename(att.filename),
+                upsert: true,
+              });
+
+            if (!uploadError) {
+              const { data: publicUrlData } = supabaseAdmin.storage
+                .from('email-attachments')
+                .getPublicUrl(storagePath);
+              url = publicUrlData.publicUrl;
+            } else {
+              console.error(
+                `Failed to upload outbound attachment ${att.filename} for email ${emailId}:`,
+                uploadError
+              );
+            }
           }
 
           const { error: attInsertError } = await supabaseAdmin.from('email_attachments').insert({
             email_id: emailId,
             filename: att.filename,
             content_type: mimeFromFilename(att.filename),
-            size: att.size || buffer.length,
+            size: att.size || 0,
             url: url,
           });
 

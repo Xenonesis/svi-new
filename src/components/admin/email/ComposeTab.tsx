@@ -8,11 +8,12 @@ import { EmailAlerts } from './compose/EmailAlerts';
 import { EmailToolbar } from './compose/EmailToolbar';
 import { toast } from 'sonner';
 import { EMAIL_TEMPLATES } from './constants';
-import { getToken, clearDraft, fileToBase64 } from './helpers';
+import { getToken, clearDraft, fileToBase64, uploadEmailAttachment } from './helpers';
 import {
   extractTemplateVars as parseExtractTemplateVars,
   getPreviewHtml as parseGetPreviewHtml,
 } from '@/src/lib/utils/templateParser';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { ComposeFields } from './compose/ComposeFields';
 import { TemplateBanner } from './compose/TemplateBanner';
 import { AttachmentList } from './compose/AttachmentList';
@@ -340,6 +341,8 @@ export function ComposeTab({
     toRecipients,
     ccRecipients,
     bccRecipients,
+    inReplyToMessageId,
+    attachments,
     setDraftSaved,
     setHasDraft,
     setTo: handleToChange,
@@ -355,6 +358,8 @@ export function ComposeTab({
     setTemplateVars,
     setPreviewMode,
     setEditorKey,
+    setInReplyToMessageId,
+    setAttachments,
   });
   // Synchronize resolved subject with template variables and subject template
   useEffect(() => {
@@ -407,8 +412,15 @@ export function ComposeTab({
     const newAttachments: EmailAttachment[] = [];
     for (const file of Array.from(files)) {
       if (attachments.length + newAttachments.length >= 10) break;
-      const base64 = await fileToBase64(file);
-      newAttachments.push({ file, name: file.name, size: file.size, base64 });
+      // Upload to Supabase storage first; fall back to inline base64 only if that fails
+      const uploaded = await uploadEmailAttachment(file);
+      newAttachments.push({
+        file,
+        name: uploaded.name,
+        size: uploaded.size,
+        url: uploaded.url,
+        base64: uploaded.base64,
+      });
     }
     setAttachments((prev) => [...prev, ...newAttachments]);
     if (fileInputRef.current) fileInputRef.current.value = '';
@@ -452,15 +464,24 @@ export function ComposeTab({
           from: `${fromName} <noreply@sviiinfrasolutions.com>`,
           attachments:
             attachments.length > 0
-              ? attachments.map((a) => ({ filename: a.name, content: a.base64 }))
+              ? attachments.map((a) => ({
+                  filename: a.name,
+                  content: a.url ? undefined : a.base64,
+                  path: a.url,
+                }))
               : undefined,
-          scheduledAt: scheduledAt || undefined,
         }),
       });
-      const data = await res.json();
+      let data: { error?: unknown } = {};
+      try {
+        data = await res.json();
+      } catch {
+        // Non-JSON response (proxy/gateway HTML error page) — res.status is still reliable
+      }
       if (!res.ok || data.error) {
-        setError(data.error || 'Failed to send email');
-        toast.error(data.error || 'Failed to send email');
+        const msg = extractApiErrorMessage(data.error, `Failed to send email (HTTP ${res.status})`);
+        setError(msg);
+        toast.error(msg);
       } else {
         setSent(true);
         await clearDraft();
@@ -490,9 +511,15 @@ export function ComposeTab({
           setScheduledAt(null);
         }, 3000);
       }
-    } catch {
-      setError('Network error. Please try again.');
-      toast.error('Network error. Please try again.');
+    } catch (err) {
+      const msg = extractApiErrorMessage(
+        err,
+        err instanceof TypeError
+          ? 'Network error. Please check your connection and try again.'
+          : 'Failed to send email. Please try again.'
+      );
+      setError(msg);
+      toast.error(msg);
     } finally {
       setSending(false);
     }

@@ -158,7 +158,7 @@ export interface ReplyData {
   originalSubject: string;
   cc?: string[];
   originalMessageId?: string;
-  attachments?: any[];
+  attachments?: EmailAttachment[];
 }
 
 export interface DraftRecipientData {
@@ -187,13 +187,16 @@ export interface DraftData {
   templateVars?: Record<string, string>;
   previewMode?: boolean;
   subjectTemplate?: string;
+  inReplyToMessageId?: string | null;
+  attachments?: EmailAttachment[];
 }
 
 export interface EmailAttachment {
-  file: File;
+  file?: File;
   name: string;
   size: number;
-  base64: string;
+  base64?: string;
+  url?: string;
 }
 
 export interface TemplatePrefill {

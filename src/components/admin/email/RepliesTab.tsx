@@ -29,7 +29,7 @@ import {
 import { toast } from 'sonner';
 import { getToken } from './helpers';
 import { EmailDetailSkeleton } from './Skeletons';
-import type { EmailDetail, ForwardData, ReplyData, InboxEmailItem } from './types';
+import type { EmailDetail, ForwardData, ReplyData, InboxEmailItem, EmailAttachment } from './types';
 import { EmailDetailPanel } from './sections/EmailDetailPanel';
 import { ConfirmDialog } from './ConfirmDialog';
 import { COMMON_TAGS, getTagStyle } from './constants';
@@ -659,14 +659,20 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
       originalSubject: selectedReply.subject,
       cc: selectedReply.cc,
       originalMessageId: selectedReply.id,
-      attachments: selectedReply.attachments || [],
+      attachments: (selectedReply.attachments || []).map(
+        (att: { filename?: string; name?: string; size?: number; url?: string }) => ({
+          name: att.name || att.filename || 'attachment',
+          size: att.size || 0,
+          url: att.url,
+        })
+      ),
     });
   };
 
   const handleReplyInboxItem = async (reply: InboxEmailItem) => {
     if (!onReply) return;
     let html = `<p>${reply.snippet || ''}</p>`;
-    let attachments: unknown[] = [];
+    let attachments: EmailAttachment[] = [];
     try {
       const token = await getToken();
       const res = await fetch(`/api/admin/email?action=inbox_detail&id=${reply.id}`, {
@@ -676,7 +682,13 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
         const data = await res.json();
         if (data.email) {
           html = data.email.html || `<p>${data.email.text || ''}</p>`;
-          attachments = data.email.attachments || [];
+          attachments = (data.email.attachments || []).map(
+            (att: { filename?: string; name?: string; size?: number; url?: string }) => ({
+              name: att.name || att.filename || 'attachment',
+              size: att.size || 0,
+              url: att.url,
+            })
+          );
         }
       }
     } catch {

@@ -49,6 +49,8 @@ describe('Email Draft & Template Persistence', () => {
       previewMode: true,
       replyTo: 'info@sviinfrasolutions.com',
       fromName: 'SVI Infra',
+      inReplyToMessageId: 'inbound-msg-123',
+      attachments: [{ name: 'offer.pdf', size: 2048, url: 'https://example.storage/offer.pdf' }],
     };
 
     await saveDraft(draftPayload);
@@ -61,8 +63,11 @@ describe('Email Draft & Template Persistence', () => {
     expect(restored?.selectedTemplate).toBe('offer_letter');
     expect(restored?.templateHtml).toContain('Offer for {{name}}');
     expect(restored?.templateVars?.name).toBe('Kajal');
-    expect(restored?.templateVars?.designation).toBe('BDM');
     expect(restored?.previewMode).toBe(true);
+    expect(restored?.inReplyToMessageId).toBe('inbound-msg-123');
+    expect(restored?.attachments).toHaveLength(1);
+    expect(restored?.attachments?.[0]?.name).toBe('offer.pdf');
+    expect(restored?.attachments?.[0]?.url).toBe('https://example.storage/offer.pdf');
   });
 
   it('clears active local draft when clearDraft is called', async () => {

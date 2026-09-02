@@ -1,5 +1,5 @@
 import { supabase } from '@/src/lib/supabase/client';
-import type { DraftData } from './types';
+import type { DraftData, EmailAttachment } from './types';
 
 export async function getToken(): Promise<string> {
   const { useAuthStore } = await import('@/src/stores/authStore');
@@ -99,6 +99,8 @@ function rowToDraftData(row: Record<string, unknown>): DraftData {
     toRecipients?: any[];
     ccRecipients?: any[];
     bccRecipients?: any[];
+    inReplyToMessageId?: string | null;
+    attachments?: EmailAttachment[];
   } | null = null;
 
   const metaMatch = html.match(/<!-- TEMPLATE_META_START -->([\s\S]*?)<!-- TEMPLATE_META_END -->/);
@@ -144,12 +146,13 @@ function rowToDraftData(row: Record<string, unknown>): DraftData {
     templateVars: templateMeta?.templateVars ?? {},
     previewMode: templateMeta?.previewMode ?? false,
     subjectTemplate: templateMeta?.subjectTemplate,
+    inReplyToMessageId: templateMeta?.inReplyToMessageId ?? null,
+    attachments: templateMeta?.attachments ?? [],
     toRecipients: templateMeta?.toRecipients,
     ccRecipients: templateMeta?.ccRecipients,
     bccRecipients: templateMeta?.bccRecipients,
   };
 }
-
 function draftDataToRow(draft: {
   to: string;
   cc: string;
@@ -169,6 +172,8 @@ function draftDataToRow(draft: {
   toRecipients?: any[];
   ccRecipients?: any[];
   bccRecipients?: any[];
+  inReplyToMessageId?: string | null;
+  attachments?: EmailAttachment[];
 }) {
   let fullBody = draft.html || '';
 
@@ -181,6 +186,13 @@ function draftDataToRow(draft: {
     toRecipients: draft.toRecipients,
     ccRecipients: draft.ccRecipients,
     bccRecipients: draft.bccRecipients,
+    inReplyToMessageId: draft.inReplyToMessageId,
+    attachments: draft.attachments?.map((a: EmailAttachment) => ({
+      name: a.name,
+      size: a.size,
+      url: a.url,
+      base64: a.url ? undefined : a.base64,
+    })),
   };
 
   if (
@@ -286,12 +298,20 @@ export async function saveDraft(draft: {
   toRecipients?: any[];
   ccRecipients?: any[];
   bccRecipients?: any[];
+  inReplyToMessageId?: string | null;
+  attachments?: EmailAttachment[];
 }): Promise<boolean> {
   // 1. Instant local persistence (survives page refresh immediately)
   try {
+    const safeAttachments = draft.attachments?.map((a: EmailAttachment) => ({
+      name: a.name,
+      size: a.size,
+      url: a.url,
+      base64: a.url ? undefined : a.base64 && a.base64.length < 200_000 ? a.base64 : undefined,
+    }));
     localStorage.setItem(
       'svi-email-active-draft',
-      JSON.stringify({ ...draft, savedAt: Date.now() })
+      JSON.stringify({ ...draft, attachments: safeAttachments, savedAt: Date.now() })
     );
   } catch {
     // ignore localStorage quota error
@@ -352,6 +372,8 @@ export async function loadDraft(): Promise<DraftData | null> {
           templateVars: parsed.templateVars ?? {},
           previewMode: parsed.previewMode ?? false,
           subjectTemplate: parsed.subjectTemplate,
+          inReplyToMessageId: parsed.inReplyToMessageId || null,
+          attachments: parsed.attachments || [],
           toRecipients: parsed.toRecipients,
           ccRecipients: parsed.ccRecipients,
           bccRecipients: parsed.bccRecipients,
@@ -573,4 +595,45 @@ export function fileToBase64(file: File): Promise<string> {
     reader.onerror = reject;
     reader.readAsDataURL(file);
   });
+}
+
+export async function uploadEmailAttachment(file: File): Promise<{
+  name: string;
+  size: number;
+  url?: string;
+  base64?: string;
+}> {
+  try {
+    const token = await getToken();
+    if (!token) throw new Error('Not authenticated');
+    const fd = new FormData();
+    fd.append('action', 'upload_attachment');
+    fd.append('file', file);
+
+    const res = await fetch('/api/admin/email', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: fd,
+    });
+
+    if (res.ok) {
+      const data = await res.json();
+      if (data.url) {
+        return {
+          name: file.name,
+          size: file.size,
+          url: data.url,
+        };
+      }
+    }
+  } catch (err) {
+    console.warn('[ATTACHMENT] Direct upload failed, falling back to base64:', err);
+  }
+
+  const base64 = await fileToBase64(file);
+  return {
+    name: file.name,
+    size: file.size,
+    base64,
+  };
 }
