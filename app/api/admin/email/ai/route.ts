@@ -173,62 +173,87 @@ Always construct email with this clean, 100% mobile-responsive HTML email archit
       <td align="center">
         <!-- Main Card Container: Fluid 100% with max-width 600px -->
         <table class="email-card" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0;margin:0 auto;">
-          <!-- Header Banner -->
-          <tr style="background-color:#0f172a;background:linear-gradient(135deg,#0f172a 0%,#1e293b 50%,#1a2744 100%);border-bottom:3px solid #D4AF37;">
-            <td class="header-cell" style="padding:32px 24px;text-align:center;">
-              <span style="display:inline-block;padding:4px 12px;background-color:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37 !important;font-size:10.5px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:10px;">CATEGORY LABEL</span>
-              <h1 class="header-title" style="color:#ffffff !important;font-size:22px;margin:0;font-family:Georgia,serif;font-weight:700;letter-spacing:0.5px;line-height:1.3;">SVI Infra Solutions</h1>
-              <p class="header-subtitle" style="color:#cbd5e1 !important;font-size:12.5px;margin:6px 0 0;font-weight:400;line-height:1.4;">Sub-heading / Subject Summary</p>
+          <!-- Header Banner with Official Corporate Logo -->
+          <tr class="header-row" style="background-color:#07111e;background:linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%);border-bottom:2px solid #D4AF37;">
+            <td class="header-cell" style="padding:28px 24px 22px;text-align:center;">
+              <div style="background:#ffffff;display:inline-block;padding:6px 14px;border-radius:8px;box-shadow:0 3px 12px rgba(0,0,0,0.3);margin-bottom:12px;">
+                <img src="https://www.sviinfrasolutions.com/logo.png" alt="SVI Infra Solutions" width="160" style="height:36px;width:auto;max-height:40px;display:block;margin:0 auto;border:0;" />
+              </div>
+              <div style="margin-bottom:6px;">
+                <span class="header-pill" style="display:inline-block;padding:3px 12px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.4);border-radius:16px;color:#D4AF37 !important;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">OFFICIAL NOTICE / CATEGORY</span>
+              </div>
+              <h1 class="header-title" style="color:#ffffff !important;font-size:20px;margin:0;font-family:Georgia,serif;font-weight:700;letter-spacing:0.5px;line-height:1.35;">Email Subject / Heading</h1>
+              <p class="header-subtitle" style="color:#cbd5e1 !important;font-size:11.5px;margin:4px 0 0;font-weight:400;line-height:1.4;">SVI INFRA SOLUTIONS PVT. LTD.</p>
             </td>
           </tr>
-- Body Content (inside <td style="padding:36px 32px;background-color:#ffffff;color:#0f172a;">):
-  - Salutation (CONTEXTUAL):
-    * If request from Employee to HR/Management (Leave, Resignation, Claim): <h2 style="color:#0f172a !important;font-size:18px;margin:0 0 14px;font-weight:700;">Respected Sir/Madam,</h2> (or Dear Management,)
-    * If Company to Customer: <h2 style="color:#0f172a !important;font-size:18px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
-    * If Company to Employee: <h2 style="color:#0f172a !important;font-size:18px;margin:0 0 14px;font-weight:700;">Dear {{name}},</h2>
-  - Main text paragraphs: <p style="color:#334155 !important;font-size:14px;line-height:1.7;margin:0 0 18px;">Paragraph content addressing user prompt directly...</p>
+
+<!-- Body Content (inside <td class="email-body-content" style="padding:32px 28px;background-color:#ffffff;color:#0f172a;">) -->
+  - Salutation (MUST BE CRISP, HIGH-CONTRAST DARK TEXT #0f172a, NEVER LIGHT OR FAINT):
+    * If request from Employee to HR/Management: <h2 style="color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;line-height:1.4;">Respected Sir/Madam,</h2> (or Dear Management,)
+    * If Company to Customer: <h2 style="color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;line-height:1.4;">Dear {{name}},</h2>
+    * If Company to Employee: <h2 style="color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;line-height:1.4;">Dear {{name}},</h2>
+  - Main text paragraphs:
+    <p style="color:#334155 !important;font-size:14px;line-height:1.75;margin:0 0 16px;">Paragraph content addressing user prompt directly with professional spacing...</p>
 
   - CONDITIONAL ELEMENTS (ONLY include when explicitly justified or requested):
-    * Key-Value / Application Details Card: Use when the email includes structured facts (leave dates, duration, reason, plot info, amounts, dues).
+    * Key-Value / Application Details Table: When displaying structured facts (e.g. status, dates, amounts, targets).
+      CRITICAL: Every <th> and <td> MUST have explicit inline border and padding styles so it renders perfectly across all clients!
+      Values must be REAL concrete values or executive status badges, NEVER generic phrases like 'Status' or 'Variable Name'.
       <table class="details-table" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin:18px 0;overflow:hidden;font-size:13px;">
         <thead>
-          <tr style="background-color:#f1f5f9;"><th colspan="2" style="padding:10px 14px;text-align:left;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;font-size:12px;text-transform:uppercase;letter-spacing:0.5px;">Summary Details</th></tr>
+          <tr style="background-color:#0f172a;"><th colspan="2" style="padding:10px 14px;text-align:left;font-weight:700;color:#ffffff !important;border:1px solid #0f172a;font-size:11.5px;text-transform:uppercase;letter-spacing:0.5px;">Summary Details</th></tr>
         </thead>
         <tbody>
-          <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;width:38%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;">Label 1</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;">{{variable_1}}</td></tr>
-          <tr><td style="padding:10px 14px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;">Label 2</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;">{{variable_2}}</td></tr>
+          <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:10px 14px;color:#475569;font-weight:600;width:38%;border:1px solid #e2e8f0;background-color:#f8fafc;">Client Form</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border:1px solid #e2e8f0;background-color:#ffffff;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-size:11px;font-weight:700;">Pending</span></td></tr>
+          <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:10px 14px;color:#475569;font-weight:600;border:1px solid #e2e8f0;background-color:#f8fafc;">Allotment Amount</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border:1px solid #e2e8f0;background-color:#ffffff;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-size:11px;font-weight:700;">Awaited</span></td></tr>
+          <tr><td style="padding:10px 14px;color:#475569;font-weight:600;border:1px solid #e2e8f0;background-color:#f8fafc;">Target Completion</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border:1px solid #e2e8f0;background-color:#ffffff;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:#fffbeb;color:#92400e;border:1px solid #fde68a;font-size:11px;font-weight:700;">Incomplete</span></td></tr>
         </tbody>
       </table>
-    * Highlight/Alert Box: ONLY for urgent warnings or important notices.
-      <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;padding:14px 18px;margin-bottom:24px;">
-        <p style="margin:0;color:#15803d;font-weight:700;font-size:13.5px;">✓ Status / Notice</p>
-      </div>
 
-    * Action Roadmap / Next Steps: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly asks for next steps or action points. NEVER fabricate generic steps (such as 'settle outstanding EMI', 'verify details', etc.) unless the user asked for them.
-      <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin:24px 0;">
-        <h3 style="margin:0 0 12px;color:#0f172a;font-size:14px;font-weight:700;">📌 Next Steps:</h3>
-        <ol style="margin:0;padding-left:20px;color:#475569;font-size:13px;line-height:1.9;">
+    * Highlight/Alert Box (SEMANTIC COLORS):
+      - For Warnings / Disciplinary Notices / Salary Holds / Suspensions:
+        <div style="background-color:#fff1f2;border:1px solid #fecdd3;border-left:4px solid #e11d48;border-radius:8px;padding:13px 16px;margin:18px 0;">
+          <p style="margin:0;color:#9f1239;font-weight:700;font-size:13px;line-height:1.5;">Important Notice: Attendance suspension and salary hold will remain in effect until compliance.</p>
+        </div>
+      - For Approvals / Positive Confirmations:
+        <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;padding:13px 16px;margin:18px 0;">
+          <p style="margin:0;color:#15803d;font-weight:700;font-size:13px;line-height:1.5;">✓ Confirmation: Details have been approved and updated.</p>
+        </div>
+      - For General Informational Notices:
+        <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #0f172a;border-radius:8px;padding:13px 16px;margin:18px 0;">
+          <p style="margin:0;color:#0f172a;font-weight:700;font-size:13px;line-height:1.5;">Notice: Please take note of the policy requirements.</p>
+        </div>
+
+    * Action Roadmap / Next Steps: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly asks for next steps or action points.
+      <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin:20px 0;">
+        <h3 style="margin:0 0 10px;color:#0f172a;font-size:13.5px;font-weight:700;">📌 Required Action Steps:</h3>
+        <ol style="margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.8;">
           <li>...specific steps from user prompt...</li>
         </ol>
       </div>
 
     * CTA Button: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly requests a button, portal link, or call-to-action.
-      <div style="text-align:center;margin:28px 0 18px;">
-        <a href="{{portal_url}}" class="cta-button" style="background-color:#D4AF37;background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:14px 32px;border-radius:30px;text-decoration:none;font-weight:800;font-size:13px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;min-height:44px;line-height:16px;">Action Button</a>
+      <div style="text-align:center;margin:24px 0 16px;">
+        <a href="{{portal_url}}" class="cta-button" style="background-color:#D4AF37;background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:13px 30px;border-radius:26px;text-decoration:none;font-weight:800;font-size:12.5px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;min-height:42px;line-height:16px;">Action Button</a>
       </div>
 
+  - Sign-off (Clean professional sign-off):
+    <div style="margin:22px 0 0;color:#334155;font-size:13.5px;line-height:1.6;">Warm regards,<br><strong style="color:#0f172a;">HR & Operations Team</strong><br><span style="color:#64748b;font-size:12px;">SVI Infra Solutions Pvt. Ltd.</span></div>
+
 - Advisor / Helpdesk Bar:
-  <div class="helpdesk-bar" style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 24px;font-size:12px;color:#64748b;word-break:break-word;">
+  <div class="helpdesk-bar" style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:14px 20px;font-size:12px;color:#64748b;word-break:break-word;">
     <strong style="color:#0f172a;">Need assistance?</strong> SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91-73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;">info@sviinfrasolutions.com</a>
   </div>
 - Corporate Legal Footer:
-  <div class="footer-cell" style="padding:22px 18px;text-align:center;background-color:#f8fafc;border-top:1px solid #cbd5e1;word-break:break-word;">
-    <p style="color:#0f172a !important;font-size:13px;font-weight:800;letter-spacing:0.3px;margin:0 0 5px;">SVI Infra Solutions Pvt. Ltd.</p>
-    <p style="color:#334155 !important;font-size:12px;margin:0 0 6px;line-height:1.6;font-weight:500;">Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#1e3a8a !important;font-weight:700;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
-    <p style="color:#64748b !important;font-size:11px;margin:0;font-weight:600;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
+  <div class="footer-cell" style="padding:18px 16px;text-align:center;background-color:#f8fafc;border-top:1px solid #cbd5e1;word-break:break-word;">
+    <p style="color:#0f172a !important;font-size:12.5px;font-weight:800;letter-spacing:0.3px;margin:0 0 4px;">SVI Infra Solutions Pvt. Ltd.</p>
+    <p style="color:#475569 !important;font-size:11.5px;margin:0 0 5px;line-height:1.5;font-weight:500;">Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#1e3a8a !important;font-weight:700;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
+    <p style="color:#64748b !important;font-size:10.5px;margin:0;font-weight:600;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
   </div>
-CRITICAL RULE:
+CRITICAL RULES:
 - DO NOT include 'Next Steps' or 'View Details on Portal' CTA buttons by default. Only generate them if the user's prompt explicitly asks for next steps or a portal action button.
+- The official logo MUST be included in the header banner using https://www.sviinfrasolutions.com/logo.png.
+- Tables MUST have explicit borders on every cell. Status values must be formatted as badges (Pending, Awaited, Approved, etc.).
 TASK:
 Analyze the email subject, user instructions/prompt, requested tone (${tone || 'Professional'}), and recipient details.
 1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:

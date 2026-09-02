@@ -414,25 +414,77 @@ export function AIComposePopover({
         }
         img { max-width: 100% !important; height: auto !important; }
 
-        /* Guaranteed crisp high-contrast header text on dark navy banner */
-        tr[style*="#0f172a"] h1, tr[style*="#0f172a"] p, tr[style*="#1e293b"] h1, tr[style*="#1e293b"] p,
-        td[style*="#0f172a"] h1, td[style*="#0f172a"] p, td[style*="#1e293b"] h1, td[style*="#1e293b"] p,
-        div[style*="#0f172a"] h1, div[style*="#0f172a"] p, div[style*="#1e293b"] h1, div[style*="#1e293b"] p {
+        /* Guaranteed crisp high-contrast header banner styling ONLY */
+        .header-cell h1, tr.header-row h1,
+        tr[style*="linear-gradient"] h1, td[style*="background-color:#07111e"] h1, td[style*="background-color:#0f172a"] h1 {
           color: #ffffff !important;
         }
-        tr[style*="#0f172a"] p, tr[style*="#1e293b"] p, td[style*="#0f172a"] p, td[style*="#1e293b"] p {
+        .header-cell p, tr.header-row p,
+        tr[style*="linear-gradient"] p, td[style*="background-color:#07111e"] p, td[style*="background-color:#0f172a"] p {
           color: #cbd5e1 !important;
         }
-        tr[style*="#0f172a"] span, tr[style*="#1e293b"] span, td[style*="#0f172a"] span, td[style*="#1e293b"] span {
+        .header-cell span.header-pill, .header-cell span, tr.header-row span {
           color: #D4AF37 !important;
         }
 
-        /* Table cards & structure styling */
-        table td { word-break: break-word; }
-        table[style*="border"] td, table[style*="background-color:#f8fafc"] td {
-          padding: 10px 12px !important;
+        /* Email body text MUST be dark, legible, and high-contrast (#0f172a / #334155) */
+        .email-card td:not(.header-cell):not(.footer-cell) h1,
+        .email-card td:not(.header-cell):not(.footer-cell) h2,
+        .email-card td:not(.header-cell):not(.footer-cell) h3,
+        .email-card td:not(.header-cell):not(.footer-cell) strong,
+        td.email-body-content h1, td.email-body-content h2, td.email-body-content h3 {
+          color: #0f172a !important;
+        }
+        .email-card td:not(.header-cell):not(.footer-cell) p,
+        td.email-body-content p {
+          color: #334155 !important;
+        }
+        .email-card td:not(.header-cell):not(.footer-cell) > h2:first-child,
+        .email-card td:not(.header-cell):not(.footer-cell) > p:first-child,
+        td.email-body-content > h2:first-child,
+        td.email-body-content > p:first-child {
+          color: #0f172a !important;
+          font-weight: 700 !important;
         }
 
+        /* Table cards & structured details styling */
+        table {
+          border-collapse: collapse !important;
+        }
+        table td { word-break: break-word; }
+        table.details-table, table[style*="border-collapse"] {
+          width: 100% !important;
+          border-collapse: collapse !important;
+          margin: 18px 0 !important;
+          border: 1px solid #e2e8f0 !important;
+          border-radius: 8px !important;
+          overflow: hidden !important;
+        }
+        table.details-table th, table[style*="border-collapse"] th {
+          background-color: #0f172a !important;
+          color: #ffffff !important;
+          padding: 10px 14px !important;
+          font-size: 11.5px !important;
+          letter-spacing: 0.5px !important;
+          text-transform: uppercase !important;
+          border: 1px solid #0f172a !important;
+        }
+        table.details-table td, table[style*="border-collapse"] td {
+          padding: 10px 14px !important;
+          border: 1px solid #e2e8f0 !important;
+          font-size: 13px !important;
+          vertical-align: middle !important;
+        }
+        table.details-table td:first-child, table[style*="border-collapse"] td:first-child {
+          background-color: #f8fafc;
+          color: #475569;
+          font-weight: 600;
+        }
+        table.details-table td:last-child, table[style*="border-collapse"] td:last-child {
+          background-color: #ffffff;
+          color: #0f172a;
+          font-weight: 700;
+        }
         /* Guaranteed crisp high-contrast footer text & link styling */
         div[style*="text-align:center"] p {
           color: #334155 !important;

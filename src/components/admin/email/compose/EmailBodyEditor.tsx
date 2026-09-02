@@ -259,9 +259,26 @@ export function EmailBodyEditor({
             className="mx-auto overflow-hidden rounded-2xl border border-gray-200/90 bg-white text-gray-900 shadow-xl dark:border-gray-700/80 dark:text-gray-900"
             style={{ maxWidth: '700px' }}
           >
+            <style>{`
+              .email-rendered-preview table { border-collapse: collapse !important; }
+              .email-rendered-preview table.details-table td,
+              .email-rendered-preview table[style*="border-collapse"] td {
+                padding: 10px 14px !important;
+                border: 1px solid #e2e8f0 !important;
+                font-size: 13px !important;
+              }
+              .email-rendered-preview table.details-table th,
+              .email-rendered-preview table[style*="border-collapse"] th {
+                background-color: #0f172a !important;
+                color: #ffffff !important;
+                padding: 10px 14px !important;
+                font-size: 11.5px !important;
+                border: 1px solid #0f172a !important;
+              }
+            `}</style>
             <div
               ref={renderedEmailRef}
-              className="w-full overflow-x-auto bg-white"
+              className="email-rendered-preview w-full overflow-x-auto bg-white"
               dangerouslySetInnerHTML={{
                 __html:
                   previewContent ||
