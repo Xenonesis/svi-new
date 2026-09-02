@@ -103,14 +103,15 @@ export default function QuotationPreview({
             <h2
               style={{
                 margin: 0,
-                fontSize: '18px',
+                fontSize: '17px',
                 fontWeight: 800,
                 color: '#ffffff',
-                letterSpacing: '0.04em',
+                letterSpacing: '0.03em',
                 lineHeight: 1.2,
+                whiteSpace: 'nowrap',
               }}
             >
-              SVI INFRA SOLUTIONS
+              SVI INFRA SOLUTIONS PVT. LTD.
             </h2>
             <span
               style={{
@@ -119,27 +120,16 @@ export default function QuotationPreview({
                 textTransform: 'uppercase',
                 color: '#C9A84C',
                 fontWeight: 700,
-                marginTop: '4px',
+                marginTop: '3px',
               }}
             >
-              Pvt. Ltd. • Real Estate &amp; Infrastructure
+              Real Estate &amp; Infrastructure
             </span>
           </div>
         </div>
 
         {/* Company Contact Details */}
         <div style={{ textAlign: 'right', fontSize: '11px' }}>
-          <p
-            style={{
-              fontWeight: 800,
-              fontSize: '13px',
-              color: '#C9A84C',
-              margin: '0 0 4px',
-              letterSpacing: '0.04em',
-            }}
-          >
-            {companyInfo.company_name || 'SVI INFRA SOLUTIONS PVT. LTD.'}
-          </p>
           {companyInfo.company_address && (
             <p
               style={{
@@ -654,20 +644,38 @@ export default function QuotationPreview({
                         }}
                       >
                         {t.label || `Option ${idx + 1}`}
-                        {isBestValue && (
-                          <span
-                            style={{
-                              display: 'block',
-                              fontSize: '8px',
-                              letterSpacing: '0.05em',
-                              color: '#C9A84C',
-                              fontWeight: 800,
-                              marginTop: '2px',
-                            }}
-                          >
-                            ★ Best Value Plan
-                          </span>
-                        )}
+                        {(() => {
+                          const months = t.paymentMonths ? parseInt(t.paymentMonths, 10) : 0;
+                          return months > 1 ? (
+                            <span
+                              style={{
+                                display: 'block',
+                                fontSize: '8px',
+                                letterSpacing: '0.04em',
+                                color: '#38bdf8',
+                                fontWeight: 700,
+                                marginTop: '2px',
+                                textTransform: 'none',
+                              }}
+                            >
+                              📅 {months}-Month EMI Plan
+                            </span>
+                          ) : (
+                            <span
+                              style={{
+                                display: 'block',
+                                fontSize: '8px',
+                                letterSpacing: '0.04em',
+                                color: isBestValue ? '#C9A84C' : '#a3e635',
+                                fontWeight: 600,
+                                marginTop: '2px',
+                                textTransform: 'none',
+                              }}
+                            >
+                              ⚡ Full Upfront
+                            </span>
+                          );
+                        })()}
                       </th>
                     );
                   })}
@@ -853,8 +861,7 @@ export default function QuotationPreview({
                     Approx. Installment Outflow
                   </td>
                   {tierCalculations.map((t, idx) => {
-                    const label = (t.label || '').toLowerCase();
-                    const months = label.includes('24') ? 24 : label.includes('12') ? 12 : 1;
+                    const months = t.paymentMonths ? parseInt(t.paymentMonths, 10) : 1;
                     return (
                       <td
                         key={t.id || idx}
@@ -863,7 +870,7 @@ export default function QuotationPreview({
                           textAlign: 'right',
                           fontWeight: 600,
                           fontSize: '10px',
-                          color: idx === 0 ? '#15803d' : '#0369a1',
+                          color: months > 1 ? '#0369a1' : '#15803d',
                           borderLeft: '1px solid #e2e8f0',
                         }}
                       >
@@ -927,6 +934,23 @@ export default function QuotationPreview({
                   >
                     {numberToIndianWords(t.grandTotal)}
                   </p>
+                  {t.paymentMonths && parseInt(t.paymentMonths, 10) > 1 && (
+                    <p
+                      style={{
+                        margin: '5px 0 0',
+                        padding: '3px 6px',
+                        background: '#f0fdf4',
+                        border: '1px solid #bbf7d0',
+                        borderRadius: '4px',
+                        fontSize: '9.5px',
+                        fontWeight: 700,
+                        color: '#15803d',
+                      }}
+                    >
+                      📅 {t.paymentMonths}-Month Plan: ≈{' '}
+                      {formatINR(Math.ceil(t.grandTotal / parseInt(t.paymentMonths, 10)))} / month
+                    </p>
+                  )}
                 </div>
               ))}
             </div>
@@ -1418,11 +1442,11 @@ export default function QuotationPreview({
                 </p>
               </div>
               <div>
-                <span style={{ color: '#64748b', fontSize: '9px' }}>IFSC / Branch:</span>
+                <span style={{ color: '#64748b', fontSize: '9px' }}>IFSC Code:</span>
                 <p
                   style={{ margin: 0, fontWeight: 700, fontFamily: 'monospace', color: '#0a1628' }}
                 >
-                  HDFC0001234 (Sec-63 Noida)
+                  HDFC0001234
                 </p>
               </div>
             </div>
