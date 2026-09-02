@@ -5,6 +5,7 @@ import { RefreshCw } from 'lucide-react';
 import { useEffect, useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 import { OfferLetterStatsCards } from '@/src/components/admin/offer-letter-records/OfferLetterStatsCards';
 import { OfferLetterTable } from '@/src/components/admin/offer-letter-records/OfferLetterTable';
@@ -109,7 +110,7 @@ export default function OfferLetterRecordsPage() {
         toast.success('Offer letter record deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        toast.error(errData.error || 'Failed to delete offer letter record.');
+        toast.error(extractApiErrorMessage(errData, 'Failed to delete offer letter record.'));
       }
     } catch (err: unknown) {
       console.error(err);

@@ -6,6 +6,7 @@ import { useEffect, useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { SavedAllotment, CompanyInfo } from '@/src/components/admin/allotment-records/types';
 import { AllotmentViewModal } from '@/src/components/admin/allotment-records/AllotmentViewModal';
 import { AllotmentDeleteModal } from '@/src/components/admin/allotment-records/AllotmentDeleteModal';
@@ -113,7 +114,7 @@ export default function PortalAllotmentsPage() {
         toast.success('Allotment record deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        toast.error(errData.error || 'Failed to delete allotment record.');
+        toast.error(extractApiErrorMessage(errData, 'Failed to delete allotment record.'));
       }
     } catch (err) {
       console.error(err);

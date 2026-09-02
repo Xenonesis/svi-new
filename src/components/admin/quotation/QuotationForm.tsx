@@ -584,6 +584,38 @@ export default function QuotationForm({
           )}
         </div>
 
+        {/* ── Payment Plan (Months) ─────────────────────────────────────── */}
+        <div>
+          <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+            Payment Plan (Months)
+          </label>
+          <div className="relative">
+            <select
+              name="paymentMonths"
+              value={formData.paymentMonths || ''}
+              onChange={onChange}
+              className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+            >
+              <option value="">No Installment Plan (Full Upfront)</option>
+              <option value="6">6 Months</option>
+              <option value="9">9 Months</option>
+              <option value="12">12 Months</option>
+              <option value="18">18 Months</option>
+              <option value="24">24 Months</option>
+              <option value="30">30 Months</option>
+              <option value="36">36 Months</option>
+              <option value="48">48 Months</option>
+              <option value="60">60 Months</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <ChevronDown className="h-4 w-4 text-gray-400" />
+            </div>
+          </div>
+          <p className="mt-1 text-[10px] text-gray-400">
+            Select to show monthly installment breakdown in the quotation preview.
+          </p>
+        </div>
+
         {/* ── Notes ──────────────────────────────────────────────────────── */}
         <div>
           <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">

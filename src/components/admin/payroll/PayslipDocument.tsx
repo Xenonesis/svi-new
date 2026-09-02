@@ -136,7 +136,8 @@ export function PayslipDocument({ item, onClose }: PayslipDocumentProps) {
                   Real Estate & Infrastructure Development
                 </p>
                 <p className="text-[10px] text-slate-500">
-                  Corporate Office: Sector 62, Noida, UP &bull; Reg. Office: Mathura, Uttar Pradesh
+                  Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, UP &bull; Reg. Office:
+                  Mathura, Uttar Pradesh
                 </p>
               </div>
             </div>

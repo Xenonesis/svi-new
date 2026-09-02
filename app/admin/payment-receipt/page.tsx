@@ -10,7 +10,7 @@ import PaymentReceiptPreview from './components/PaymentReceiptPreview';
 
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { getNextReceiptNumber, ReceiptLike } from '@/src/lib/receipt/receiptNumber';
-
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 const getInitialFormData = () => ({
   receiptNo: '',
   date: new Date().toISOString().split('T')[0],
@@ -336,11 +336,11 @@ export default function PaymentReceiptPage() {
           toast.success(`Payment Receipt No. ${currentReceiptNo} generated successfully!`);
         } else {
           const errorData = await response.json().catch(() => ({}));
-          toast.error(errorData.error || 'Failed to save payment receipt');
+          toast.error(extractApiErrorMessage(errorData, 'Failed to save payment receipt'));
         }
       } catch (error) {
         console.error('Failed to save document:', error);
-        toast.error('Network error saving payment receipt');
+        toast.error(extractApiErrorMessage(error, 'Network error saving payment receipt'));
       } finally {
         setIsSubmitting(false);
       }

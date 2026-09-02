@@ -105,7 +105,11 @@ export function QuotationRecordsTable({
             <div className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-rose-500/10 text-rose-500">
               <WifiOff className="h-6 w-6" />
             </div>
-            <p className="mb-3 text-sm font-medium text-rose-500">{error}</p>
+            <p className="mb-3 text-sm font-medium text-rose-500">
+              {typeof error === 'string'
+                ? error
+                : (error as any)?.message || 'Failed to load quotation records'}
+            </p>
             <button
               onClick={onRetry}
               className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-4 py-2 text-xs font-bold uppercase transition-all"

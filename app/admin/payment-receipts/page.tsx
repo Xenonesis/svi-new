@@ -5,7 +5,7 @@ import { RefreshCw } from 'lucide-react';
 import { useEffect, useState, useMemo, useCallback } from 'react';
 import { toast } from 'sonner';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
-
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 // Subcomponents
 import { SavedReceipt } from '@/src/components/admin/payment-receipts/ReceiptTypes';
 import { ReceiptStatsCards } from '@/src/components/admin/payment-receipts/ReceiptStatsCards';
@@ -89,10 +89,9 @@ export default function ReceiptRecordsPage() {
         toast.success('Payment receipt deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        toast.error(errData.error || 'Failed to delete receipt.');
+        toast.error(extractApiErrorMessage(errData, 'Failed to delete receipt.'));
       }
     } catch (err: unknown) {
-      console.error(err);
       const isAbort = err instanceof Error && err.name === 'AbortError';
       toast.error(
         isAbort

@@ -22,7 +22,7 @@ import type {
 } from '@/src/lib/quotation/types';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { supabase } from '@/src/lib/supabase/client';
-
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 const DEFAULT_PROJECTS = [
   { value: 'Shyam Aangan', label: 'Shyam Aangan' },
   { value: 'Shivani Vatika', label: 'Shivani Vatika' },
@@ -382,11 +382,19 @@ export default function QuotationPage() {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => null);
-        const errMsg = errorData?.error || `Failed to save quotation (${response.status})`;
+        const errMsg = extractApiErrorMessage(
+          errorData,
+          `Failed to save quotation (${response.status})`
+        );
+        if (response.status === 409 || errorData?.error?.code === 'CONFLICT') {
+          setValidationErrors((prev) => ({
+            ...prev,
+            quotationNo: errMsg,
+          }));
+        }
         toast.error(errMsg);
         return;
       }
-
       const data = await response.json();
       const savedQuotationNo = data.document?.form_data?.quotationNo;
       if (savedQuotationNo) {
@@ -401,9 +409,8 @@ export default function QuotationPage() {
           : 'Quotation saved successfully!'
       );
     } catch (err) {
-      // Use console.log to avoid Next.js intercepting console.error and showing [object Object] overlay
-      console.log('Quotation save error:', err instanceof Error ? err.message : String(err));
-      toast.error('Unable to save quotation. Please try again.');
+      console.error('Quotation save error:', err instanceof Error ? err.message : String(err));
+      toast.error(extractApiErrorMessage(err, 'Unable to save quotation. Please try again.'));
     } finally {
       setIsSubmitting(false);
     }
@@ -528,6 +535,7 @@ export default function QuotationPage() {
               calculation={calculation}
               tierCalculations={tierCalculations}
               area={formData.area}
+              paymentMonths={formData.paymentMonths}
             />
           </div>
         </div>

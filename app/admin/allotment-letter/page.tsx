@@ -7,7 +7,7 @@ import { FileText, X } from 'lucide-react';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { useAllotmentLetterData } from '@/src/hooks/admin/useAllotmentLetterData';
 import { AllotmentLetterForm } from '@/src/components/admin/allotment-letter/AllotmentLetterForm';
-
+import { AllotmentSavedSelector } from '@/src/components/admin/allotment-letter/AllotmentSavedSelector';
 export default function AllotmentLetterPage() {
   const { token } = useAuthStore();
 
@@ -34,6 +34,7 @@ export default function AllotmentLetterPage() {
     savedAllotments,
     setSavedAllotments,
     loadingRecords,
+    refreshRecords,
     selectedRecordId,
     setSelectedRecordId,
     loadFromRecord,
@@ -174,81 +175,48 @@ export default function AllotmentLetterPage() {
         </div>
       </div>
 
-      <div className="dark:bg-brand-dark-surface/40 mb-6 rounded-xl border border-gray-200 bg-white/60 p-4 shadow-sm backdrop-blur-sm dark:border-white/8">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-2 text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-            <FileText className="h-3.5 w-3.5" />
-            Load from Records
-          </div>
-          <div className="relative flex-1" style={{ minWidth: 280 }}>
-            <select
-              value={selectedRecordId}
-              onChange={(e) => loadFromRecord(e.target.value)}
-              className="focus:border-brand-gold focus:ring-brand-gold/50 w-full appearance-none rounded-lg border border-gray-200 bg-white px-4 py-2 pr-8 text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-            >
-              <option value="" className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white">
-                {loadingRecords
-                  ? 'Loading records...'
-                  : savedAllotments.length === 0
-                    ? '— No saved allotment records found —'
-                    : '— Select a saved allotment —'}
-              </option>
-              {savedAllotments.map((r: any) => (
-                <option
-                  key={r.id}
-                  value={r.id}
-                  className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
-                >
-                  {r.form_data?.clientName || 'Unnamed'} — {r.form_data?.ticketId || 'No ticket'} (
-                  {new Date(r.created_at).toLocaleDateString('en-IN')})
-                </option>
-              ))}
-            </select>
-          </div>
-          {selectedRecordId && (
-            <button
-              type="button"
-              onClick={() => {
-                setSelectedRecordId('');
-                setIsCustomAdvisor(false);
-                setIsCustomSecondPaymentDays(false);
-                setFormData({
-                  clientName: '',
-                  salutation: 'Mr.',
-                  address: '',
-                  ticketId: '',
-                  aadharNumber: '',
-                  fatherName: '',
-                  onBookingPaymentRef: '',
-                  within15DaysPaymentRef: '',
-                  projectName: 'Shyam Aangan',
-                  unitNumber: '',
-                  area: '',
-                  bsp: '',
-                  plc: '',
-                  edc: '',
-                  edcInEmi: 'false',
-                  paymentPlan: '12',
-                  bookingDate: '',
-                  secondPaymentDays: '15',
-                  advisorName: '',
-                  advisorNumber: '',
-                  advisorEmail: '',
-                  emiCount: '12',
-                  emiPercentage: '',
-                  emiStartDate: '',
-                  zeroPercentEmi: 'false',
-                  bookingPaymentPercent: '10',
-                  showSecondInstalment: 'true',
-                });
-              }}
-              className="flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-2 text-xs font-medium text-gray-500 transition-all hover:border-gray-300 hover:text-gray-700 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/20"
-            >
-              <X className="h-3.5 w-3.5" /> Clear
-            </button>
-          )}
-        </div>
-      </div>
+      <AllotmentSavedSelector
+        savedAllotments={savedAllotments}
+        loadingRecords={loadingRecords}
+        selectedRecordId={selectedRecordId}
+        onSelectRecord={loadFromRecord}
+        onRefreshRecords={refreshRecords}
+        onClearRecord={() => {
+          setSelectedRecordId('');
+          setDocumentId(null);
+          setIsCustomAdvisor(false);
+          setIsCustomSecondPaymentDays(false);
+          setFormData({
+            clientName: '',
+            salutation: 'Mr.',
+            address: '',
+            ticketId: '',
+            aadharNumber: '',
+            fatherName: '',
+            onBookingPaymentRef: '',
+            within15DaysPaymentRef: '',
+            projectName: 'Shyam Aangan',
+            unitNumber: '',
+            area: '',
+            bsp: '',
+            plc: '',
+            edc: '',
+            edcInEmi: 'false',
+            paymentPlan: '12',
+            bookingDate: '',
+            secondPaymentDays: '15',
+            advisorName: '',
+            advisorNumber: '',
+            advisorEmail: '',
+            emiCount: '12',
+            emiPercentage: '',
+            emiStartDate: '',
+            zeroPercentEmi: 'false',
+            bookingPaymentPercent: '10',
+            showSecondInstalment: 'true',
+          });
+        }}
+      />
 
       <div className="grid grid-cols-1 gap-8 xl:grid-cols-2">
         <div className="dark:bg-brand-dark-surface/65 relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">

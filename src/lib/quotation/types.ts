@@ -34,6 +34,8 @@ export interface QuotationFormData {
 
   pricingTiers?: PricingTier[];
 
+  paymentMonths?: string;
+
   notes: string;
 }
 

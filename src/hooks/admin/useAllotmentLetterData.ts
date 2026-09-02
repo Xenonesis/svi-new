@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
+import { toast } from 'sonner';
 
 export interface Advisor {
   full_name: string;
@@ -135,26 +136,36 @@ export function useAllotmentLetterData(token: string | null) {
       }
     }
     loadAdvisors();
-
-    async function loadSavedAllotments() {
-      setLoadingRecords(true);
-      try {
-        const res = await fetch('/api/admin/documents?type=allotment_letter&limit=500', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        if (!res.ok) throw new Error('Failed to fetch records');
-        const json = await res.json();
-        const docs = json.documents || [];
-        const valid = docs.filter((d: any) => d.form_data?.clientName);
-        setSavedAllotments(valid);
-      } catch (err) {
-        console.error('Error loading allotment records:', err);
-      } finally {
-        setLoadingRecords(false);
-      }
-    }
-    loadSavedAllotments();
   }, [token]);
+  const loadSavedAllotments = useCallback(async () => {
+    if (!token) return;
+    setLoadingRecords(true);
+    try {
+      const res = await fetch('/api/admin/documents?type=allotment_letter&limit=500', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch records');
+      const json = await res.json();
+      const docs = json.documents || [];
+      const valid = docs.filter(
+        (d: any) =>
+          d.form_data?.clientName ||
+          d.form_data?.name ||
+          d.form_data?.client_name ||
+          d.form_data?.ticketId ||
+          d.id
+      );
+      setSavedAllotments(valid);
+    } catch (err) {
+      console.error('Error loading allotment records:', err);
+    } finally {
+      setLoadingRecords(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadSavedAllotments();
+  }, [loadSavedAllotments]);
 
   // Load Company Info
   useEffect(() => {
@@ -220,60 +231,97 @@ export function useAllotmentLetterData(token: string | null) {
     }
   }, [advisors, isDraftLoaded, formData.advisorName]);
 
-  const loadFromRecord = (id: string) => {
-    if (!id) return;
-    const record = savedAllotments.find((r) => r.id === id);
-    if (!record?.form_data) return;
-    const fd = record.form_data;
+  const loadFromRecord = useCallback(
+    async (idOrRecord: string | any) => {
+      if (!idOrRecord) {
+        setSelectedRecordId('');
+        return;
+      }
 
-    const isCustAdv = fd.advisorName && !advisors.some((adv) => adv.full_name === fd.advisorName);
-    setIsCustomAdvisor(!!isCustAdv);
+      let record: any = null;
+      let targetId = '';
 
-    const isCustomDays =
-      fd.secondPaymentDays && fd.secondPaymentDays !== '15' && fd.secondPaymentDays !== '28';
-    setIsCustomSecondPaymentDays(!!isCustomDays);
+      if (typeof idOrRecord === 'string') {
+        targetId = idOrRecord;
+        record = savedAllotments.find((r) => r.id === targetId);
 
-    setFormData({
-      clientName: fd.clientName || '',
-      salutation: fd.salutation || 'Mr.',
-      address: fd.address || '',
-      ticketId: fd.ticketId || '',
-      projectName: fd.projectName || 'Shyam Aangan',
-      unitNumber: fd.unitNumber || '',
-      area: fd.area || '',
-      bsp: fd.bsp || '',
-      plc: fd.plc || '',
-      edc: fd.edc || '',
-      edcInEmi: fd.edcInEmi || 'false',
-      paymentPlan: fd.paymentPlan || '12',
-      bookingDate: fd.bookingDate || '',
-      secondPaymentDays: fd.secondPaymentDays || '15',
-      advisorName: fd.advisorName || '',
-      advisorNumber: fd.advisorNumber || '',
-      advisorEmail: fd.advisorEmail || '',
-      aadharNumber: fd.aadharNumber || '',
-      fatherName: fd.fatherName || '',
-      onBookingPaymentRef: fd.onBookingPaymentRef || '',
-      within15DaysPaymentRef: fd.within15DaysPaymentRef || '',
-      emiCount: fd.emiCount || '12',
-      emiPercentage: fd.emiPercentage || '',
-      emiStartDate: fd.emiStartDate || '',
-      zeroPercentEmi: fd.zeroPercentEmi || 'false',
-      bookingPaymentPercent: fd.bookingPaymentPercent || '10',
-      showSecondInstalment: fd.showSecondInstalment || 'true',
-    });
-    setSelectedRecordId(id);
-  };
+        // If not in local cache, fetch directly from API
+        if (!record && token) {
+          try {
+            const res = await fetch(`/api/admin/documents/${targetId}`, {
+              headers: { Authorization: `Bearer ${token}` },
+            });
+            if (res.ok) {
+              const json = await res.json();
+              record = json.document;
+            }
+          } catch (err) {
+            console.error('Failed to fetch document by ID:', err);
+          }
+        }
+      } else if (idOrRecord && typeof idOrRecord === 'object') {
+        record = idOrRecord;
+        targetId = record.id;
+      }
+
+      if (!record?.form_data) {
+        toast.error('Unable to load record details');
+        return;
+      }
+
+      const fd = record.form_data;
+      const clientName = fd.clientName || fd.name || fd.client_name || 'Client';
+
+      const isCustAdv = fd.advisorName && !advisors.some((adv) => adv.full_name === fd.advisorName);
+      setIsCustomAdvisor(!!isCustAdv);
+
+      const isCustomDays =
+        fd.secondPaymentDays && fd.secondPaymentDays !== '15' && fd.secondPaymentDays !== '28';
+      setIsCustomSecondPaymentDays(!!isCustomDays);
+
+      setFormData({
+        clientName: fd.clientName || fd.name || '',
+        salutation: fd.salutation || 'Mr.',
+        address: fd.address || '',
+        ticketId: fd.ticketId || '',
+        projectName: fd.projectName || 'Shyam Aangan',
+        unitNumber: fd.unitNumber || '',
+        area: fd.area || '',
+        bsp: fd.bsp || '',
+        plc: fd.plc || '',
+        edc: fd.edc || '',
+        edcInEmi: fd.edcInEmi ? String(fd.edcInEmi) : 'false',
+        paymentPlan: fd.paymentPlan || '12',
+        bookingDate: fd.bookingDate || '',
+        secondPaymentDays: fd.secondPaymentDays || '15',
+        advisorName: fd.advisorName || '',
+        advisorNumber: fd.advisorNumber || '',
+        advisorEmail: fd.advisorEmail || '',
+        aadharNumber: fd.aadharNumber || '',
+        fatherName: fd.fatherName || '',
+        onBookingPaymentRef: fd.onBookingPaymentRef || '',
+        within15DaysPaymentRef: fd.within15DaysPaymentRef || '',
+        emiCount: fd.emiCount || '12',
+        emiPercentage: fd.emiPercentage || '',
+        emiStartDate: fd.emiStartDate || '',
+        zeroPercentEmi: fd.zeroPercentEmi ? String(fd.zeroPercentEmi) : 'false',
+        bookingPaymentPercent: fd.bookingPaymentPercent || '10',
+        showSecondInstalment: fd.showSecondInstalment ? String(fd.showSecondInstalment) : 'true',
+      });
+
+      setSelectedRecordId(targetId);
+      setDocumentId(targetId);
+      toast.success(`Loaded allotment record for "${clientName}"`);
+    },
+    [savedAllotments, advisors, token]
+  );
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
-
-      if (savedAllotments.length > 0) {
-        const templateId = searchParams.get('templateId');
-        if (templateId && !selectedRecordId) {
-          loadFromRecord(templateId);
-        }
+      const templateId = searchParams.get('templateId');
+      if (templateId && !selectedRecordId) {
+        loadFromRecord(templateId);
       }
 
       const prefillRegistration = searchParams.get('prefillRegistration');
@@ -427,6 +475,7 @@ export function useAllotmentLetterData(token: string | null) {
     savedAllotments,
     setSavedAllotments,
     loadingRecords,
+    refreshRecords: loadSavedAllotments,
     selectedRecordId,
     setSelectedRecordId,
     loadFromRecord,

@@ -8,13 +8,18 @@ interface QuotationSummaryProps {
   calculation: QuotationCalculationResult | null;
   tierCalculations?: PricingTierCalculation[];
   area: string;
+  paymentMonths?: string;
 }
 
 export default function QuotationSummary({
   calculation,
   tierCalculations = [],
   area,
+  paymentMonths,
 }: QuotationSummaryProps) {
+  const months = paymentMonths ? parseInt(paymentMonths, 10) : 0;
+  const monthlyAmount =
+    months > 1 && calculation ? Math.ceil(calculation.grandTotal / months) : null;
   const hasMultipleTiers = tierCalculations && tierCalculations.length > 1;
 
   if (!calculation && !hasMultipleTiers) {
@@ -177,6 +182,21 @@ export default function QuotationSummary({
           </p>
         </div>
       </div>
+
+      {/* Monthly Installment */}
+      {monthlyAmount && (
+        <div className="mt-3 rounded-lg border border-emerald-200/60 bg-emerald-50/80 px-4 py-3 dark:border-emerald-500/20 dark:bg-emerald-500/8">
+          <p className="mb-1 text-[10px] font-bold tracking-wider text-emerald-800 uppercase dark:text-emerald-400">
+            {months}-Month Plan · Monthly Installment
+          </p>
+          <p className="text-lg font-extrabold text-emerald-700 tabular-nums dark:text-emerald-300">
+            {formatINR(monthlyAmount)} <span className="text-xs font-semibold">/ month</span>
+          </p>
+          <p className="mt-0.5 text-[10px] text-emerald-600 dark:text-emerald-500">
+            {formatINR(calculation.grandTotal)} ÷ {months} months
+          </p>
+        </div>
+      )}
     </div>
   );
 }

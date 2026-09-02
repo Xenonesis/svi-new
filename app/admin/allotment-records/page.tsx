@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { useAuthStore } from '@/src/stores/authStore';
 import { supabase } from '@/src/lib/supabase/client';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
+import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { SavedAllotment, CompanyInfo } from '@/src/components/admin/allotment-records/types';
 import { AllotmentStats } from '@/src/components/admin/allotment-records/AllotmentStats';
 import { AllotmentFilters } from '@/src/components/admin/allotment-records/AllotmentFilters';
@@ -122,7 +123,7 @@ export default function AllotmentRecordsPage() {
         toast.success('Allotment record deleted successfully.');
       } else {
         const errData = await response.json().catch(() => ({}));
-        toast.error(errData.error || 'Failed to delete allotment record.');
+        toast.error(extractApiErrorMessage(errData, 'Failed to delete allotment record.'));
       }
     } catch (err: unknown) {
       console.error(err);

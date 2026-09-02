@@ -130,10 +130,10 @@ export function CompanyTab({
         <div className="md:col-span-2">
           <label className={labelClass}>Corporate Website Address</label>
           <input
-            type="url"
+            type="text"
             value={company.company_website}
             onChange={(e) => setCompany({ ...company, company_website: e.target.value })}
-            placeholder="https://sviinfra.com"
+            placeholder="www.sviinfrasolutions.com"
             className={inputClass}
           />
         </div>

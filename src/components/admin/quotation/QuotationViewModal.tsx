@@ -211,10 +211,10 @@ export default function QuotationViewModal({
           )}
 
           {/* Notes */}
-          {fd?.notes && (
+          {fd?.notes && fd.notes.trim().replace(/^[\/\-\s]+$/, '').length > 0 && (
             <div className="mt-5 rounded-lg border border-gray-100 p-4 dark:border-white/8">
               <p className="mb-2 text-[10px] font-bold tracking-widest text-amber-600 uppercase">
-                Notes
+                Notes &amp; Remarks
               </p>
               <p className="text-sm whitespace-pre-wrap text-gray-600 dark:text-gray-400">
                 {fd.notes}
