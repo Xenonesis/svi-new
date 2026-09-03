@@ -39,6 +39,7 @@ export interface OfferLetterFormData {
   includeSalesPolicyBox?: boolean;
   includeDocumentationBox?: boolean;
   includeCandidateParticularsBox?: boolean;
+  language?: 'en' | 'hi';
 }
 
 export interface CompanyInfo {
@@ -66,4 +67,5 @@ export interface OfferLetterCommonProps {
   isSalesDepartment: boolean;
   formatINR: (val?: string | number) => string;
   annualCTC: number;
+  language: 'en' | 'hi';
 }

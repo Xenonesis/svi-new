@@ -37,6 +37,7 @@ export interface OfferLetterFormData {
   includeSalesPolicyBox?: boolean;
   includeDocumentationBox?: boolean;
   includeCandidateParticularsBox?: boolean;
+  language?: 'en' | 'hi';
 }
 export interface SavedOffer {
   id: string;

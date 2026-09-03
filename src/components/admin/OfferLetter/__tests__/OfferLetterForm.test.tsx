@@ -106,4 +106,21 @@ describe('OfferLetterForm duplicate prevention & edit mode', () => {
 
     expect(defaultProps.loadDuplicateRecord).toHaveBeenCalled();
   });
+
+  it('renders language toggle and switches between English and Hindi', () => {
+    const setFormDataMock = vi.fn();
+    render(
+      <OfferLetterForm
+        {...defaultProps}
+        formData={{ ...defaultProps.formData, language: 'en' }}
+        setFormData={setFormDataMock}
+      />
+    );
+
+    const hindiBtn = screen.getByRole('button', { name: /हिंदी \(Hindi\)/i });
+    expect(hindiBtn).toBeInTheDocument();
+
+    fireEvent.click(hindiBtn);
+    expect(setFormDataMock).toHaveBeenCalled();
+  });
 });

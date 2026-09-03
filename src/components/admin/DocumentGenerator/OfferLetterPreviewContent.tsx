@@ -23,6 +23,7 @@ export default function OfferLetterPreviewContent({
   const isSalesDepartment = formData.department === 'Sales';
   const targetUnit = formData.targetUnit || 'Sq. Yd.';
 
+  const language: 'en' | 'hi' = formData.language === 'hi' ? 'hi' : 'en';
   const matchedSlab = resolveMatchedSlab(initialMatchedSlab, formData);
   const currentDateFormatted = formatDate(formData.date);
   const appointmentDateFormatted = formatDate(formData.appointmentDate);
@@ -30,7 +31,6 @@ export default function OfferLetterPreviewContent({
 
   const monthlyCTC = parseFloat(formData.salaryCtc || '0');
   const annualCTC = monthlyCTC * 12;
-
   const commonProps = {
     formData,
     companyInfo,
@@ -42,6 +42,7 @@ export default function OfferLetterPreviewContent({
     isSalesDepartment,
     formatINR,
     annualCTC,
+    language,
   };
 
   return (

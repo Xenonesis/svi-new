@@ -79,11 +79,37 @@ export function OfferLetterForm({
           <FileSignature className="text-brand-gold h-4 w-4" />
           <h2 className="text-sm font-semibold text-gray-900 dark:text-white">Candidate Details</h2>
         </div>
-        {documentId && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold text-blue-800 dark:bg-blue-500/20 dark:text-blue-300">
-            <CheckCircle2 className="h-3 w-3" /> Edit Mode
-          </span>
-        )}
+        <div className="flex items-center gap-3">
+          <div className="inline-flex rounded-lg border border-gray-200 bg-gray-50 p-0.5 dark:border-white/10 dark:bg-black/20">
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, language: 'en' }))}
+              className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                (formData.language || 'en') === 'en'
+                  ? 'bg-white text-gray-900 shadow-xs dark:bg-gray-800 dark:text-white'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+              }`}
+            >
+              English
+            </button>
+            <button
+              type="button"
+              onClick={() => setFormData((prev) => ({ ...prev, language: 'hi' }))}
+              className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors ${
+                formData.language === 'hi'
+                  ? 'bg-brand-gold text-white shadow-xs'
+                  : 'text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200'
+              }`}
+            >
+              हिंदी (Hindi)
+            </button>
+          </div>
+          {documentId && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2.5 py-0.5 text-[11px] font-bold text-blue-800 dark:bg-blue-500/20 dark:text-blue-300">
+              <CheckCircle2 className="h-3 w-3" /> Edit Mode
+            </span>
+          )}
+        </div>
       </div>
 
       {/* ── Active Edit Mode Alert Banner ── */}

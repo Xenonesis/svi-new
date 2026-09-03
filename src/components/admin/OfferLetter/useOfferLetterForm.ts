@@ -46,6 +46,7 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   includeSalesPolicyBox: true,
   includeDocumentationBox: true,
   includeCandidateParticularsBox: true,
+  language: 'en',
 };
 
 const SALES_DESIGNATIONS = ['Telecaller', 'BDM', 'BDE', 'Sales Manager', 'Team Leader'];

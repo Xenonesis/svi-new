@@ -281,4 +281,125 @@ describe('OfferLetterPreviewContent', () => {
 
     expect(screen.queryByText(/Candidate Recipient Particulars:/i)).not.toBeInTheDocument();
   });
+
+  it('renders complete Hindi legal text, clauses, and metadata across all 3 pages when language is hi', () => {
+    const hindiFormData = {
+      ...baseFormData,
+      language: 'hi' as const,
+    };
+
+    render(<OfferLetterPreviewContent formData={hindiFormData} companyInfo={mockCompanyInfo} />);
+
+    // Page 1: Header, Metadata, Particulars
+    expect(
+      screen.getByText(/आधिकारिक कॉर्पोरेट नियुक्ति अभिलेख • पूर्णतः निजी एवं गोपनीय/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/अभ्यर्थी का विवरण एवं पहचान:/i)).toBeInTheDocument();
+    expect(screen.getByText(/अभ्यर्थी का नाम:/i)).toBeInTheDocument();
+    expect(screen.getAllByText('Rajesh Kumar Sharma').length).toBeGreaterThan(0);
+    expect(screen.getByText(/प्राथमिक संपर्क:/i)).toBeInTheDocument();
+    expect(screen.getByText(/स्थायी निवास पता:/i)).toBeInTheDocument();
+    expect(screen.getByText(/ईमेल पता:/i)).toBeInTheDocument();
+
+    // Page 1: Subject, Preamble, Clauses 1 to 4
+    expect(screen.getByText(/औपचारिक नियुक्ति प्रस्ताव पत्र/i)).toBeInTheDocument();
+    expect(screen.getByText(/प्रिय/i)).toBeInTheDocument();
+    expect(screen.getByText(/1\. पद, पदनाम एवं संगठनात्मक पदानुक्रम/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(/2\. कार्यभार ग्रहण तिथि, पदस्थापन स्थान एवं गतिशीलता/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/3\. पारिश्रमिक संरचना, वेतन स्लैब एवं वैधानिक कटौतियां/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/4\. अनिवार्य पूर्व-रोजगार दस्तावेज एवं सत्यापन प्रक्रिया/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/खंड २: परिचालन नियम, प्रतिबंधात्मक शर्तें एवं कॉर्पोरेट आचार संहिता/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/5\. परिवीक्षा अवधि, कार्य-मूल्यांकन एवं सेवा पुष्टिकरण प्रक्रिया/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/6\. कार्य समय, ग्राहक स्थल भ्रमण एवं उपस्थिति अनुसूची/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/7\. व्यापक गैर-प्रकटीकरण, व्यापारिक रहस्य एवं डेटा संरक्षण \(DPDPA 2023\)/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/8\. बौद्धिक संपदा \(IP\) स्वामित्व, आविष्कार एवं कार्य-अधिकार सौंपना/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/9\. प्रतिबंधात्मक शर्तें: गैर-याचना, लीड सुरक्षा एवं रिश्वत-रोधी नियम/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/10\. कार्य निष्पादन प्रबंधन एवं प्रदर्शन सुधार योजना \(PIP Framework\)/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/11\. स्थानांतरण, व्यावसायिक अनिवार्यता एवं परिचालन अधिकार/i)
+    ).toBeInTheDocument();
+
+    // Page 3: Section III Banner, Clauses 12 to 15, Dual Signatures
+    expect(
+      screen.getByText(/खंड ३: सेवा समाप्ति, विधिक नियम एवं औपचारिक स्वीकृति/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /12\. सेवा समाप्ति, नकद लेन-देन नियम एवं त्वरित बर्खास्तगी \(Termination Rules\)/i
+      )
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/13\. क्षतिपूर्ति एवं दायित्व \(Indemnification\)/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/14\. शासी कानून एवं विवाद समाधान \(Governing Law & Dispute Resolution\)/i)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText(/15\. संपूर्ण समझौता, पृथक्करणीयता एवं प्रस्ताव की वैधता अवधि/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/संस्थान की ओर से एवं उनके निमित्त:/i)).toBeInTheDocument();
+    expect(screen.getByText(/निदेशक एवं अधिकृत हस्ताक्षरकर्ता/i)).toBeInTheDocument();
+    expect(screen.getByText(/अभ्यर्थी द्वारा औपचारिक स्वीकृति एवं शपथ:/i)).toBeInTheDocument();
+    expect(screen.getByText(/अभ्यर्थी के हस्ताक्षर:/i)).toBeInTheDocument();
+  });
+
+  it('renders sales compensation terms accurately in Hindi when configured', () => {
+    // Test No Sale No Salary in Hindi
+    const noSaleHindiData = {
+      ...baseFormData,
+      language: 'hi' as const,
+      salesCompensationType: 'no_sale_no_salary',
+      subsistenceAllowance: '8000',
+    };
+
+    const { unmount } = render(
+      <OfferLetterPreviewContent formData={noSaleHindiData} companyInfo={mockCompanyInfo} />
+    );
+
+    expect(
+      screen.getByText(/खंड ३\.१ — कार्य-प्रदर्शन आधारित पारिश्रमिक शर्त \(“No Sale No Salary”\):/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/₹ 8,000\.00 प्रति माह/i)).toBeInTheDocument();
+    unmount();
+
+    // Test Gestation Window in Hindi
+    const gestationHindiData = {
+      ...baseFormData,
+      language: 'hi' as const,
+      salesCompensationType: 'grace_period_reduced_percent',
+      gracePeriodMonths: '3',
+      reducedSalaryPercent: '0',
+    };
+
+    render(
+      <OfferLetterPreviewContent formData={gestationHindiData} companyInfo={mockCompanyInfo} />
+    );
+
+    expect(
+      screen.getByText(
+        /खंड ३\.१ — संरचित ऑनबोर्डिंग जेस्टेशन विंडो एवं कार्य-प्रदर्शन आधारित पारिश्रमिक:/i
+      )
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Gestation Window/i)).toBeInTheDocument();
+  });
 });

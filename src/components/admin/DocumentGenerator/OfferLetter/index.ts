@@ -1,5 +1,6 @@
 export * from './types';
 export * from './utils';
+export * from './translations';
 export { default as OfferLetterPage1 } from './OfferLetterPage1';
 export { default as OfferLetterPage2 } from './OfferLetterPage2';
 export { default as OfferLetterPage3 } from './OfferLetterPage3';

@@ -1,13 +1,22 @@
 import React from 'react';
 import { SALARY_SLABS, SalarySlabType } from '@/src/components/admin/OfferLetter/SlabSelector';
 import { OfferLetterFormData } from './types';
+import { translations, OfferLetterTranslation } from './translations';
 
-export const pageFontStyles: React.CSSProperties = {
+export const getPageFontStyles = (language?: 'en' | 'hi'): React.CSSProperties => ({
   fontFamily:
-    'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
-  WebkitFontSmoothing: 'antialiased',
+    language === 'hi'
+      ? 'var(--font-hindi), "Noto Sans Devanagari", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif'
+      : 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif',
   MozOsxFontSmoothing: 'grayscale',
   textRendering: 'optimizeLegibility',
+  lineHeight: language === 'hi' ? 1.45 : 1.35,
+});
+
+export const pageFontStyles: React.CSSProperties = getPageFontStyles('en');
+
+export const getTranslation = (language?: 'en' | 'hi'): OfferLetterTranslation => {
+  return translations[language === 'hi' ? 'hi' : 'en'];
 };
 
 export const formatDate = (dateStr?: string) => {
