@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import { DownloadOptions, PreviewContainer } from '@/src/components/admin/DocumentGenerator/Shared';
 import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
 import { OfferLetterForm } from '@/src/components/admin/OfferLetter/OfferLetterForm';
