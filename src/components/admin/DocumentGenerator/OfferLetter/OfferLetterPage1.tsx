@@ -197,52 +197,79 @@ export default function OfferLetterPage1({
           <div>
             <p className="text-[12px] font-bold text-[#1e3a8a] uppercase">{t.clauses.c3Title}</p>
             <p className="mt-0.5 text-gray-800">
-              {language === 'hi' ? (
-                <>
-                  संतोषजनक कार्य प्रदर्शन एवं कंपनी नीतियों के पालन के अधीन, आप प्रतिमाह कुल{' '}
-                  <span className="font-bold text-[#1e3a8a]">
-                    ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '0.00'}/-
-                  </span>{' '}
-                  ({formData.salaryType || 'CTC'}) के पारिश्रमिक के पात्र होंगे
-                  {formData.salaryCtc && (
-                    <span className="font-bold text-gray-800">
-                      {' '}
-                      (वार्षिक सीटीसी ₹ {formatINR(annualCTC)}/-)
-                    </span>
-                  )}
-                  । वेतन का भुगतान प्रत्येक आगामी अंग्रेजी कैलेंडर माह की 7 तारीख तक सीधे बैंक खाते
-                  में किया जाएगा, जिसमें टीडीएस एवं अन्य आवश्यक वैधानिक कटौतियां शामिल होंगी।
-                </>
-              ) : formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand' ? (
-                <>
-                  The Company shall compensate you with a fixed Net In-Hand Salary of{' '}
-                  <span className="font-bold text-[#1e3a8a]">
-                    ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
-                  </span>
-                  , payable monthly in arrears directly into your designated bank account, subject
-                  to applicable statutory compliances and regulatory withholdings under prevailing
-                  tax and labor statutes.
-                </>
-              ) : (
-                <>
-                  The Company shall compensate you with a Gross Total Cost to Company (CTC) of{' '}
-                  <span className="font-bold text-[#1e3a8a]">
-                    ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
-                  </span>{' '}
-                  {formData.salaryCtc && (
-                    <span className="font-bold text-gray-800">
-                      (equivalent to an annualized CTC of ₹ {formatINR(annualCTC)})
-                    </span>
-                  )}
-                  , payable monthly in arrears subject to applicable statutory deductions, including
-                  Tax Deducted at Source (TDS) under the Income Tax Act, 1961, Employees&rsquo;
-                  Provident Fund (EPF) contributions under the Employees&rsquo; Provident Funds and
-                  Miscellaneous Provisions Act, 1952, Professional Tax, and ESIC where statutorily
-                  mandated.
-                </>
-              )}
-            </p>
+              {(() => {
+                const isInHand =
+                  formData.salaryType === 'in_hand' || formData.salaryType === 'In-Hand';
 
+                if (language === 'hi') {
+                  if (isInHand) {
+                    return (
+                      <>
+                        संतोषजनक कार्य प्रदर्शन एवं कंपनी नीतियों के पालन के अधीन, आप प्रतिमाह कुल{' '}
+                        <span className="font-bold text-[#1e3a8a]">
+                          ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '0.00'}/-
+                        </span>{' '}
+                        नियत इन-हैंड (Net In-Hand) वेतन के पात्र होंगे। वेतन का भुगतान प्रत्येक
+                        आगामी अंग्रेजी कैलेंडर माह की 7 तारीख तक सीधे बैंक खाते में किया जाएगा,
+                        जिसमें लागू वैधानिक कटौतियां शामिल होंगी।
+                      </>
+                    );
+                  }
+                  return (
+                    <>
+                      संतोषजनक कार्य प्रदर्शन एवं कंपनी नीतियों के पालन के अधीन, आप प्रतिमाह कुल{' '}
+                      <span className="font-bold text-[#1e3a8a]">
+                        ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '0.00'}/-
+                      </span>{' '}
+                      सकल पारिश्रमिक (Gross CTC) के पात्र होंगे
+                      {formData.salaryCtc && (
+                        <span className="font-bold text-gray-800">
+                          {' '}
+                          (वार्षिक सीटीसी ₹ {formatINR(annualCTC)}/- के समतुल्य)
+                        </span>
+                      )}
+                      । वेतन का भुगतान प्रत्येक आगामी अंग्रेजी कैलेंडर माह की 7 तारीख तक सीधे बैंक
+                      खाते में किया जाएगा, जिसमें टीडीएस (TDS) एवं अन्य आवश्यक वैधानिक कटौतियां
+                      शामिल होंगी।
+                    </>
+                  );
+                }
+
+                if (isInHand) {
+                  return (
+                    <>
+                      The Company shall compensate you with a fixed Net In-Hand Salary of{' '}
+                      <span className="font-bold text-[#1e3a8a]">
+                        ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per
+                        month
+                      </span>
+                      , payable monthly in arrears directly into your designated bank account,
+                      subject to applicable statutory compliances and regulatory withholdings under
+                      prevailing tax and labor statutes.
+                    </>
+                  );
+                }
+
+                return (
+                  <>
+                    The Company shall compensate you with a Gross Total Cost to Company (CTC) of{' '}
+                    <span className="font-bold text-[#1e3a8a]">
+                      ₹ {formData.salaryCtc ? formatINR(formData.salaryCtc) : '[Amount]'} per month
+                    </span>{' '}
+                    {formData.salaryCtc && (
+                      <span className="font-bold text-gray-800">
+                        (equivalent to an annualized CTC of ₹ {formatINR(annualCTC)})
+                      </span>
+                    )}
+                    , payable monthly in arrears subject to applicable statutory deductions,
+                    including Tax Deducted at Source (TDS) under the Income Tax Act, 1961,
+                    Employees&rsquo; Provident Fund (EPF) contributions under the Employees&rsquo;
+                    Provident Funds and Miscellaneous Provisions Act, 1952, Professional Tax, and
+                    ESIC where statutorily mandated.
+                  </>
+                );
+              })()}
+            </p>
             {/* Master Sales Compensation & Terms Box */}
             <SalesCompensationTermsBox
               formData={formData}

@@ -402,4 +402,19 @@ describe('OfferLetterPreviewContent', () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/Gestation Window/i)).toBeInTheDocument();
   });
+
+  it('correctly formats in-hand salary in Hindi without raw in_hand or invalid annual CTC', () => {
+    const inHandHindiData = {
+      ...baseFormData,
+      language: 'hi' as const,
+      salaryCtc: '36000',
+      salaryType: 'in_hand',
+    };
+
+    render(<OfferLetterPreviewContent formData={inHandHindiData} companyInfo={mockCompanyInfo} />);
+
+    expect(screen.getByText(/नियत इन-हैंड \(Net In-Hand\) वेतन/i)).toBeInTheDocument();
+    expect(screen.queryByText(/\(in_hand\)/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/वार्षिक सीटीसी/i)).not.toBeInTheDocument();
+  });
 });
