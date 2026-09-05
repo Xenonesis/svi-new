@@ -39,6 +39,18 @@ export interface OfferLetterFormData {
   includeCandidateParticularsBox?: boolean;
   language?: 'en' | 'hi';
 }
+
+export const SALES_DESIGNATIONS = [
+  'Telecaller',
+  'BDM',
+  'BDE',
+  'Sales Manager',
+  'Senior Sales Manager',
+  'Team Leader',
+] as const;
+
+export type SalesDesignation = (typeof SALES_DESIGNATIONS)[number];
+
 export interface SavedOffer {
   id: string;
   form_data: Partial<OfferLetterFormData>;

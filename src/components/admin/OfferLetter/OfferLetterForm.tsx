@@ -12,10 +12,9 @@ import {
 } from 'lucide-react';
 import { SlabSelector, SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
 import { SalesCompensationSection } from '@/src/components/admin/OfferLetter/SalesCompensationSection';
-import { OfferLetterFormData, SavedOffer } from './types';
+import { OfferLetterFormData, SavedOffer, SALES_DESIGNATIONS } from './types';
 
 const DEPARTMENTS = ['Sales', 'IT', 'Management'];
-const SALES_DESIGNATIONS = ['Telecaller', 'BDM', 'BDE', 'Sales Manager', 'Team Leader'];
 
 interface OfferLetterFormProps {
   formData: OfferLetterFormData;

@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import { useAuthStore } from '@/src/stores/authStore';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
+import { SALES_DESIGNATIONS } from '@/src/components/admin/OfferLetter/types';
 import type { OfferLetterFormData, SavedOffer } from '@/src/components/admin/OfferLetter/types';
 
 export const INITIAL_FORM_DATA: OfferLetterFormData = {
@@ -48,8 +49,6 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   includeCandidateParticularsBox: true,
   language: 'en',
 };
-
-const SALES_DESIGNATIONS = ['Telecaller', 'BDM', 'BDE', 'Sales Manager', 'Team Leader'];
 
 export function useOfferLetterForm() {
   const { token } = useAuthStore();
@@ -198,7 +197,10 @@ export function useOfferLetterForm() {
 
         if (data.department === 'Sales') {
           setShowSalesOptions(true);
-          if (data.designation && !SALES_DESIGNATIONS.includes(data.designation)) {
+          if (
+            data.designation &&
+            !(SALES_DESIGNATIONS as readonly string[]).includes(data.designation)
+          ) {
             setShowCustomDesignation(true);
             setSalesCustomDesignation(data.designation);
           } else {

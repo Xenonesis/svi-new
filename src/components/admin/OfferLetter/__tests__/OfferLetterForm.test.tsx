@@ -123,4 +123,19 @@ describe('OfferLetterForm duplicate prevention & edit mode', () => {
     fireEvent.click(hindiBtn);
     expect(setFormDataMock).toHaveBeenCalled();
   });
+
+  it('renders Senior Sales Manager in designation options for Sales department', () => {
+    const { container } = render(<OfferLetterForm {...defaultProps} />);
+
+    const select = container.querySelector<HTMLSelectElement>('select[name="designation"]');
+    expect(select).toBeInTheDocument();
+
+    const options = Array.from(select?.options || []).map((o) => o.text);
+    expect(options).toContain('Senior Sales Manager');
+    expect(options).toContain('Sales Manager');
+    expect(options).toContain('Telecaller');
+    expect(options).toContain('BDM');
+    expect(options).toContain('BDE');
+    expect(options).toContain('Team Leader');
+  });
 });

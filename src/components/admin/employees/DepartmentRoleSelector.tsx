@@ -36,6 +36,11 @@ export const OFFER_LETTER_ROLES: RoleGroup[] = [
         description: 'Sales Strategy & Target Execution',
       },
       {
+        label: 'Senior Sales Manager',
+        value: 'Senior Sales Manager',
+        description: 'Key Account Closures & Team Oversight',
+      },
+      {
         label: 'Team Leader (Sales)',
         value: 'Team Leader',
         description: 'Floor Leadership & Mentorship',
@@ -92,6 +97,7 @@ export const QUICK_ROLE_PILLS = [
   'BDE',
   'BDM',
   'Sales Manager',
+  'Senior Sales Manager',
   'Team Leader',
   'Software Engineer',
   'Operations Executive',
