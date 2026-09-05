@@ -13,6 +13,8 @@ import {
   Check,
   Calendar,
   CreditCard,
+  MessageSquare,
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -25,8 +27,8 @@ export function TableSkeleton() {
       {[...Array(6)].map((_, i) => (
         <div key={i} className="flex items-center gap-4 px-6 py-4">
           <SkeletonBlock className="h-4 w-20 rounded-lg" />
+          <SkeletonBlock className="h-4 w-20 rounded-lg" />
           <SkeletonBlock className="h-4 w-32" />
-          <SkeletonBlock className="h-4 w-24" />
           <SkeletonBlock className="h-4 w-24" />
           <SkeletonBlock className="h-4 w-16 rounded-full" />
           <SkeletonBlock className="h-4 w-36" />
@@ -50,6 +52,8 @@ interface ReceiptsTableProps {
   fetchReceipts: () => void;
   setSelectedReceipt: (receipt: SavedReceipt) => void;
   setDeleteTarget: (receipt: SavedReceipt) => void;
+  onShareWhatsApp?: (receipt: SavedReceipt) => void;
+  onOpenLedger?: (refId: string) => void;
 }
 
 export function ReceiptsTable({
@@ -60,15 +64,25 @@ export function ReceiptsTable({
   fetchReceipts,
   setSelectedReceipt,
   setDeleteTarget,
+  onShareWhatsApp,
+  onOpenLedger,
 }: ReceiptsTableProps) {
-  const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
-  const handleCopyReceiptNo = (receiptNo: string, e: React.MouseEvent) => {
+  const handleCopyReceiptNo = (receiptNo: string, id: string, e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(receiptNo);
-    setCopiedId(receiptNo);
+    setCopiedKey(`${id}-receipt`);
     toast.success(`Copied ${receiptNo}`);
-    setTimeout(() => setCopiedId(null), 2000);
+    setTimeout(() => setCopiedKey(null), 2000);
+  };
+
+  const handleCopyRefId = (refId: string, id: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigator.clipboard.writeText(refId);
+    setCopiedKey(`${id}-ref`);
+    toast.success(`Copied Ref ID: ${refId}`);
+    setTimeout(() => setCopiedKey(null), 2000);
   };
 
   const getMethodBadgeStyle = (method?: string) => {
@@ -113,7 +127,7 @@ export function ReceiptsTable({
           <>
             <div className="border-b border-gray-200/80 bg-gray-50/80 px-6 py-4 dark:border-white/10 dark:bg-white/5">
               <div className="flex items-center gap-4">
-                {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+                {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
                   <SkeletonBlock key={i} className="h-3 w-20" />
                 ))}
               </div>
@@ -151,11 +165,12 @@ export function ReceiptsTable({
             )}
           </div>
         ) : (
-          <table className="w-full min-w-[960px] font-sans text-xs">
+          <table className="w-full min-w-[1040px] font-sans text-xs">
             <thead>
               <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
                 {[
                   { label: 'RECEIPT NO', align: 'text-left' },
+                  { label: 'REF ID', align: 'text-left' },
                   { label: 'CLIENT NAME', align: 'text-left' },
                   { label: 'DATE', align: 'text-left' },
                   { label: 'AMOUNT', align: 'text-right' },
@@ -181,7 +196,9 @@ export function ReceiptsTable({
                   maximumFractionDigits: amountVal % 1 === 0 ? 0 : 2,
                 });
                 const receiptNo = receipt.form_data?.receiptNo;
-                const isCopied = receiptNo && copiedId === receiptNo;
+                const refId = receipt.form_data?.refId;
+                const isCopiedReceipt = receiptNo && copiedKey === `${receipt.id}-receipt`;
+                const isCopiedRef = refId && copiedKey === `${receipt.id}-ref`;
 
                 return (
                   <motion.tr
@@ -196,17 +213,47 @@ export function ReceiptsTable({
                       {receiptNo ? (
                         <button
                           type="button"
-                          onClick={(e) => handleCopyReceiptNo(receiptNo, e)}
+                          onClick={(e) => handleCopyReceiptNo(receiptNo, receipt.id, e)}
                           className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 hover:border-brand-gold/50 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
                           title="Click to copy receipt number"
                         >
                           <span>{receiptNo}</span>
-                          {isCopied ? (
+                          {isCopiedReceipt ? (
                             <Check className="h-3 w-3 text-emerald-500" />
                           ) : (
                             <Copy className="h-3 w-3 opacity-40 transition-opacity group-hover/copy:opacity-100" />
                           )}
                         </button>
+                      ) : (
+                        <span className="font-mono text-gray-400">—</span>
+                      )}
+                    </td>
+
+                    {/* Ref ID */}
+                    <td className="px-5 py-3.5 align-middle">
+                      {refId ? (
+                        <div className="inline-flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => onOpenLedger?.(refId)}
+                            className="inline-flex items-center rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] font-bold text-sky-600 transition-all hover:border-sky-500/50 hover:bg-sky-500/20 hover:underline dark:text-sky-400"
+                            title="Open Customer Ledger"
+                          >
+                            <span>{refId}</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={(e) => handleCopyRefId(refId, receipt.id, e)}
+                            className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-sky-500 dark:hover:bg-white/5"
+                            title="Click to copy Ref ID"
+                          >
+                            {isCopiedRef ? (
+                              <Check className="h-3 w-3 text-emerald-500" />
+                            ) : (
+                              <Copy className="h-3 w-3 opacity-40 transition-opacity hover:opacity-100" />
+                            )}
+                          </button>
+                        </div>
                       ) : (
                         <span className="font-mono text-gray-400">—</span>
                       )}
@@ -301,6 +348,26 @@ export function ReceiptsTable({
                         >
                           <Mail className="h-3.5 w-3.5" />
                         </button>
+                        {onShareWhatsApp && (
+                          <button
+                            onClick={() => onShareWhatsApp(receipt)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
+                            title="Share via WhatsApp"
+                            aria-label="Share via WhatsApp"
+                          >
+                            <MessageSquare className="h-3.5 w-3.5" />
+                          </button>
+                        )}
+                        {onOpenLedger && receipt.form_data?.refId && (
+                          <button
+                            onClick={() => onOpenLedger(receipt.form_data.refId)}
+                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-sky-500/30 hover:bg-sky-500/10 hover:text-sky-500 active:scale-95"
+                            title="Customer Ledger"
+                            aria-label="Customer Ledger"
+                          >
+                            <BookOpen className="h-3.5 w-3.5" />
+                          </button>
+                        )}
                         <button
                           onClick={() => setDeleteTarget(receipt)}
                           className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"

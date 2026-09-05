@@ -13,7 +13,11 @@ import { ReceiptToolbar } from '@/src/components/admin/payment-receipts/ReceiptT
 import { ReceiptsTable } from '@/src/components/admin/payment-receipts/ReceiptsTable';
 import { ReceiptDeleteModal } from '@/src/components/admin/payment-receipts/ReceiptDeleteModal';
 import { ReceiptViewModal } from '@/src/components/admin/payment-receipts/ReceiptViewModal';
-
+import { ReceiptWhatsAppModal } from '@/src/components/admin/payment-receipts/ReceiptWhatsAppModal';
+import { ReceiptLedgerDrawer } from '@/src/components/admin/payment-receipts/ReceiptLedgerDrawer';
+import { ReceiptLedgersModal } from '@/src/components/admin/payment-receipts/ReceiptLedgersModal';
+import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
+import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
 const GRID_STYLE = {
   backgroundImage:
     'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
@@ -37,7 +41,10 @@ export default function ReceiptRecordsPage() {
   const [pdfLoading, setPdfLoading] = useState(false);
   const [imageLoading, setImageLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-
+  const [whatsAppReceipt, setWhatsAppReceipt] = useState<SavedReceipt | null>(null);
+  const [ledgerRefId, setLedgerRefId] = useState<string | null>(null);
+  const [isLedgersModalOpen, setIsLedgersModalOpen] = useState(false);
+  const [dealValuesMap, setDealValuesMap] = useState<Record<string, number>>({});
   const fetchReceipts = useCallback(() => {
     if (!token) return;
     setLoading(true);
@@ -60,10 +67,61 @@ export default function ReceiptRecordsPage() {
       })
       .finally(() => setLoading(false));
   }, [token]);
+  const fetchDealValues = useCallback(() => {
+    if (!token) return;
+    fetch('/api/admin/settings?key=receipt_deal_values', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) return null;
+        return res.json();
+      })
+      .then((json) => {
+        if (json?.value && typeof json.value === 'object') {
+          const mapped: Record<string, number> = {};
+          Object.entries(json.value).forEach(([k, v]) => {
+            const norm = normalizeRefId(k);
+            if (typeof v === 'number') {
+              mapped[norm] = v;
+            } else if (v && typeof v === 'object' && 'dealValue' in v) {
+              const val = v.dealValue;
+              mapped[norm] = typeof val === 'number' ? val : Number(val) || 0;
+            }
+          });
+          setDealValuesMap(mapped);
+        }
+      })
+      .catch((err) => console.error('Error fetching deal values:', err));
+  }, [token]);
+
+  const handleSaveDealValue = async (normalizedRefId: string, newDealValue: number) => {
+    if (!token) return;
+    const updated = {
+      ...dealValuesMap,
+      [normalizedRefId]: newDealValue,
+    };
+    setDealValuesMap(updated);
+
+    const res = await fetch('/api/admin/settings', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        key: 'receipt_deal_values',
+        value: updated,
+      }),
+    });
+    if (!res.ok) {
+      throw new Error('Failed to persist deal value');
+    }
+  };
 
   useEffect(() => {
     fetchReceipts();
-  }, [fetchReceipts]);
+    fetchDealValues();
+  }, [fetchReceipts, fetchDealValues]);
 
   // Statistics calculation
   const totalCount = receipts.length;
@@ -164,7 +222,8 @@ export default function ReceiptRecordsPage() {
         const query = searchQuery.toLowerCase();
         const name = (r.form_data?.name || '').toLowerCase();
         const no = (r.form_data?.receiptNo || '').toLowerCase();
-        const matchesSearch = name.includes(query) || no.includes(query);
+        const ref = (r.form_data?.refId || '').toLowerCase();
+        const matchesSearch = name.includes(query) || no.includes(query) || ref.includes(query);
         const matchesMethod = methodFilter ? r.form_data?.paymentMethod === methodFilter : true;
 
         let matchesDate = true;
@@ -198,6 +257,11 @@ export default function ReceiptRecordsPage() {
           const costA = parseFloat(a.form_data?.amount || '0');
           const costB = parseFloat(b.form_data?.amount || '0');
           return (costA - costB) * dir;
+        }
+        if (sortConfig.key === 'refId') {
+          const refA = (a.form_data?.refId || '').toLowerCase();
+          const refB = (b.form_data?.refId || '').toLowerCase();
+          return refA.localeCompare(refB) * dir;
         }
         return 0;
       });
@@ -251,6 +315,15 @@ export default function ReceiptRecordsPage() {
         dateRange={dateRange}
         setDateRange={setDateRange}
         handleClearFilters={handleClearFilters}
+        onExportCsv={() => {
+          if (filteredReceipts.length === 0) {
+            toast.error('No receipts available to export');
+            return;
+          }
+          downloadReceiptsCsv(filteredReceipts);
+          toast.success(`Exported ${filteredReceipts.length} receipts to CSV`);
+        }}
+        onOpenLedgers={() => setIsLedgersModalOpen(true)}
       />
 
       <ReceiptsTable
@@ -261,6 +334,8 @@ export default function ReceiptRecordsPage() {
         fetchReceipts={fetchReceipts}
         setSelectedReceipt={setSelectedReceipt}
         setDeleteTarget={setDeleteTarget}
+        onShareWhatsApp={(r) => setWhatsAppReceipt(r)}
+        onOpenLedger={(ref) => setLedgerRefId(ref)}
       />
 
       <ReceiptDeleteModal
@@ -278,6 +353,28 @@ export default function ReceiptRecordsPage() {
         handleDownloadPDF={handleDownloadPDF}
         handleDownloadImage={handleDownloadImage}
       />
+      <ReceiptWhatsAppModal receipt={whatsAppReceipt} onClose={() => setWhatsAppReceipt(null)} />
+
+      <ReceiptLedgerDrawer
+        refId={ledgerRefId}
+        allReceipts={receipts}
+        dealValue={ledgerRefId ? dealValuesMap[normalizeRefId(ledgerRefId)] || 0 : 0}
+        onSaveDealValue={handleSaveDealValue}
+        onClose={() => setLedgerRefId(null)}
+        onSelectReceipt={(r) => setSelectedReceipt(r)}
+      />
+
+      {isLedgersModalOpen && (
+        <ReceiptLedgersModal
+          receipts={receipts}
+          dealValuesMap={dealValuesMap}
+          onSelectLedger={(ref) => {
+            setIsLedgersModalOpen(false);
+            setLedgerRefId(ref);
+          }}
+          onClose={() => setIsLedgersModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -96,3 +96,6 @@ build-apks/
 *.apk
 android/app/svi-release-key.jks
 out/
+
+# Superpowers scratch directory
+.superpowers/

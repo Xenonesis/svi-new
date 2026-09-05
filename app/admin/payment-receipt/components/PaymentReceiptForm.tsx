@@ -17,6 +17,7 @@ interface PaymentReceiptFormProps {
     plotSize: string;
     account: string;
     paymentMethod: string;
+    clientPhone?: string;
   };
   handleChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
@@ -90,6 +91,14 @@ export default function PaymentReceiptForm({
             value={formData.refId}
             onChange={handleChange}
             required
+          />
+          <FormField
+            label="Client Mobile / WhatsApp"
+            name="clientPhone"
+            type="tel"
+            placeholder="10-digit mobile number"
+            value={formData.clientPhone || ''}
+            onChange={handleChange}
           />
           <FormField
             label="Amount (in digits)"

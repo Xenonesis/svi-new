@@ -25,6 +25,7 @@ const getInitialFormData = () => ({
   plotSize: '',
   account: '',
   paymentMethod: 'UPI',
+  clientPhone: '',
 });
 
 export default function PaymentReceiptPage() {
@@ -86,6 +87,7 @@ export default function PaymentReceiptPage() {
         plotSize: (fd.plotSize as string) || '',
         account: (fd.account as string) || '',
         paymentMethod: (fd.paymentMethod as string) || 'UPI',
+        clientPhone: (fd.clientPhone as string) || '',
       });
       setDocumentId(null);
       setPreview(false);

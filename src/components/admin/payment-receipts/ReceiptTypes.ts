@@ -17,5 +17,6 @@ export interface SavedReceipt {
     plotSize: string;
     account: string;
     paymentMethod: string;
+    clientPhone?: string;
   };
 }
