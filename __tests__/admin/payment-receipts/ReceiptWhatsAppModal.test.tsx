@@ -72,6 +72,29 @@ describe('ReceiptWhatsAppModal', () => {
     openSpy.mockRestore();
   });
 
+  it('renders WhatsApp GUI preview with SVI logo by default and allows switching to raw text', () => {
+    const { container } = render(<ReceiptWhatsAppModal receipt={mockReceipt} onClose={vi.fn()} />);
+
+    // Checks for GUI mode active by default
+    const logos = screen.getAllByAltText('SVI Infra Solutions');
+    expect(logos.length).toBeGreaterThan(0);
+    expect(screen.getAllByText('SVI Infra Solutions').length).toBeGreaterThan(0);
+    expect(screen.getByText('Receipt Details')).toBeDefined();
+
+    // Switch to Raw / Edit Text tab
+    const rawTabBtn = screen.getByRole('button', { name: /Edit Text|Raw Text/i });
+    fireEvent.click(rawTabBtn);
+
+    const textarea = container.querySelector('textarea') as HTMLTextAreaElement;
+    expect(textarea).toBeDefined();
+    expect(textarea.value).toContain('Rani Bhatnagar');
+
+    // Switch back to GUI Preview
+    const guiTabBtn = screen.getByRole('button', { name: /Chat Preview|GUI Preview/i });
+    fireEvent.click(guiTabBtn);
+    expect(screen.getAllByAltText('SVI Infra Solutions').length).toBeGreaterThan(0);
+  });
+
   it('returns null when receipt is null', () => {
     const { container } = render(<ReceiptWhatsAppModal receipt={null} onClose={vi.fn()} />);
     expect(container.firstChild).toBeNull();
