@@ -18,6 +18,8 @@ import {
   Pencil,
   Trash2,
   Calendar,
+  ToggleLeft,
+  ToggleRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { UserProfile } from '@/src/lib/supabase/types';
@@ -38,6 +40,8 @@ interface DashboardUsersTableProps {
   onEditUser: (user: UserProfile) => void;
   onDeleteUser: (user: UserProfile) => void;
   onRoleChange: (user: UserProfile, newRole: string) => void;
+  onToggleActive: (user: UserProfile) => void;
+  activeLoading?: Record<string, boolean>;
 }
 
 export function DashboardUsersTable({
@@ -55,6 +59,8 @@ export function DashboardUsersTable({
   onEditUser,
   onDeleteUser,
   onRoleChange,
+  onToggleActive,
+  activeLoading = {},
 }: DashboardUsersTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -217,7 +223,9 @@ export function DashboardUsersTable({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.02, duration: 0.25 }}
-                    className="flex flex-col gap-3 rounded-2xl bg-white/50 p-4 transition-all active:bg-gray-50/80 dark:bg-white/[0.02] dark:active:bg-white/[0.05]"
+                    className={`flex flex-col gap-3 rounded-2xl bg-white/50 p-4 transition-all active:bg-gray-50/80 dark:bg-white/[0.02] dark:active:bg-white/[0.05] ${
+                      u.is_active === false ? 'opacity-70' : ''
+                    }`}
                   >
                     {/* Card Header: Avatar, Name & Role */}
                     <div className="flex items-start justify-between gap-3">
@@ -226,9 +234,16 @@ export function DashboardUsersTable({
                           {u.full_name?.charAt(0).toUpperCase() || 'U'}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-base font-bold text-gray-900 dark:text-white">
-                            {u.full_name}
-                          </span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-base font-bold text-gray-900 dark:text-white">
+                              {u.full_name}
+                            </span>
+                            {u.is_active === false && (
+                              <span className="rounded-md border border-red-500/20 bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
+                                Inactive
+                              </span>
+                            )}
+                          </div>
                           <span className="text-xs text-gray-500 dark:text-gray-400">
                             {u.email}
                           </span>
@@ -349,6 +364,31 @@ export function DashboardUsersTable({
 
                       <div className="flex items-center gap-2">
                         <button
+                          onClick={() => onToggleActive(u)}
+                          disabled={u.id === currentAdminId || activeLoading[u.id]}
+                          className={`touch-target flex h-9 items-center gap-1.5 rounded-xl border px-2.5 text-xs font-semibold transition-all active:scale-95 disabled:opacity-40 ${
+                            (u.is_active ?? true)
+                              ? 'border-emerald-500/20 bg-emerald-500/10 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300'
+                              : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
+                          }`}
+                          title={
+                            u.id === currentAdminId
+                              ? 'You cannot deactivate your own account'
+                              : (u.is_active ?? true)
+                                ? 'Deactivate Account'
+                                : 'Activate Account'
+                          }
+                        >
+                          {activeLoading[u.id] ? (
+                            <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                          ) : (u.is_active ?? true) ? (
+                            <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                          ) : (
+                            <ToggleLeft className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                          )}
+                          <span>{(u.is_active ?? true) ? 'Active' : 'Inactive'}</span>
+                        </button>
+                        <button
                           onClick={() => onEditUser(u)}
                           className="touch-target flex h-9 w-9 items-center justify-center rounded-xl border border-gray-200 bg-gray-50 text-gray-600 transition-all hover:bg-gray-100 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
                           title="Edit User Profile"
@@ -403,7 +443,11 @@ export function DashboardUsersTable({
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.02, duration: 0.3, ease: 'easeOut' }}
-                        className="group transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5"
+                        className={`group transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5 ${
+                          u.is_active === false
+                            ? 'bg-gray-50/30 opacity-70 dark:bg-white/[0.01]'
+                            : ''
+                        }`}
                       >
                         {/* User Profile */}
                         <td className="px-6 py-4">
@@ -424,6 +468,11 @@ export function DashboardUsersTable({
                                     onRoleChange={(newRole) => onRoleChange(u, newRole)}
                                     disabled={u.id === currentAdminId}
                                   />
+                                )}
+                                {u.is_active === false && (
+                                  <span className="rounded-md border border-red-500/20 bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
+                                    Inactive
+                                  </span>
                                 )}
                               </div>
                               <div className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
@@ -534,6 +583,32 @@ export function DashboardUsersTable({
                         {/* Actions */}
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-2">
+                            <button
+                              onClick={() => onToggleActive(u)}
+                              disabled={u.id === currentAdminId || activeLoading[u.id]}
+                              className={`inline-flex h-8 items-center gap-1.5 rounded-lg px-2 text-xs font-semibold transition-all disabled:opacity-40 ${
+                                (u.is_active ?? true)
+                                  ? 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300'
+                                  : 'border border-gray-200 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+                              }`}
+                              title={
+                                u.id === currentAdminId
+                                  ? 'You cannot deactivate your own account'
+                                  : (u.is_active ?? true)
+                                    ? 'Deactivate Account'
+                                    : 'Activate Account'
+                              }
+                            >
+                              {activeLoading[u.id] ? (
+                                <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-current border-t-transparent" />
+                              ) : (u.is_active ?? true) ? (
+                                <ToggleRight className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                              ) : (
+                                <ToggleLeft className="h-4 w-4 text-gray-400 dark:text-gray-500" />
+                              )}
+                              <span>{(u.is_active ?? true) ? 'Active' : 'Inactive'}</span>
+                            </button>
+
                             <button
                               onClick={() => onEditUser(u)}
                               className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-gray-300"

@@ -147,7 +147,12 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     }
     if (department !== undefined) updateData.department = department?.trim() || null;
     if (notes !== undefined) updateData.notes = notes?.trim() || null;
-
+    if (body.is_active !== undefined) {
+      if (body.is_active === false && id === admin.id) {
+        throw AppError.badRequest('Cannot deactivate your own account.');
+      }
+      updateData.is_active = Boolean(body.is_active);
+    }
     if (Object.keys(updateData).length > 0) {
       let { error: profileError } = await supabaseAdmin
         .from('profiles')

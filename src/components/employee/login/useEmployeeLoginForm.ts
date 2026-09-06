@@ -91,12 +91,17 @@ export function useEmployeeLoginForm() {
 
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('role, full_name, department')
+        .select('*')
         .eq('id', data.user.id)
         .maybeSingle();
 
       if (profileError) {
         console.warn('Profile fetch warning on login:', profileError);
+      }
+
+      if (profile?.is_active === false) {
+        await supabase.auth.signOut();
+        throw new Error('Your account has been deactivated. Please contact the administrator.');
       }
 
       if (profile?.role === 'client') {

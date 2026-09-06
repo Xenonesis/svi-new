@@ -70,11 +70,22 @@ export default function AdminLogin() {
       }
 
       // Verify admin role server-side via profile lookup
-      const { data: profile } = await supabase
+      const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('role, full_name, email')
+        .select('*')
         .eq('id', data.user.id)
-        .single();
+        .maybeSingle();
+
+      if (profileError) {
+        console.error('Admin login profile query error:', profileError);
+      }
+      if (profile?.is_active === false) {
+        await supabase.auth.signOut();
+        setError('Your account has been deactivated. Please contact the administrator.');
+        setShake(true);
+        setLoading(false);
+        return;
+      }
 
       if (profile?.role !== 'admin') {
         await supabase.auth.signOut();

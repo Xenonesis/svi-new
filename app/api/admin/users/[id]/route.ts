@@ -115,6 +115,11 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     } catch {
       throw AppError.badRequest('Invalid JSON body');
     }
+
+    if (body.is_active === false && id === admin.id) {
+      throw AppError.badRequest('Cannot deactivate your own account.');
+    }
+
     const allowedFields = [
       'full_name',
       'phone',
@@ -122,14 +127,19 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       'notes',
       'real_email',
       'role',
+      'is_active',
     ];
-    const updates: Record<string, string> = {};
+    const updates: Record<string, any> = {};
     for (const key of allowedFields) {
       if (body[key] !== undefined) {
-        if (key !== 'role' && !body[key]) {
+        if (key !== 'role' && key !== 'is_active' && !body[key]) {
           throw AppError.badRequest(`${key.replace('_', ' ')} cannot be empty`);
         }
-        updates[key] = body[key];
+        if (key === 'is_active') {
+          updates[key] = Boolean(body[key]);
+        } else {
+          updates[key] = body[key];
+        }
       }
     }
     if (updates.real_email) {
@@ -171,13 +181,72 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       }
     }
 
-    const { data: updated, error: updateErr } = await supabaseAdmin
+    let { data: updated, error: updateErr } = await supabaseAdmin
       .from('profiles')
       .update(updates)
       .eq('id', id)
       .select()
       .single();
+
+    // Graceful fallback if is_active column does not exist on profiles yet
+    if (updateErr && /is_active.*schema cache|does not exist/i.test(updateErr.message)) {
+      const { is_active: _omitted, ...fallbackUpdates } = updates;
+      if (Object.keys(fallbackUpdates).length > 0) {
+        const retryRes = await supabaseAdmin
+          .from('profiles')
+          .update(fallbackUpdates)
+          .eq('id', id)
+          .select()
+          .single();
+        updated = retryRes.data;
+        updateErr = retryRes.error;
+      } else {
+        const fetchRes = await supabaseAdmin.from('profiles').select('*').eq('id', id).single();
+        updated = fetchRes.data;
+        updateErr = fetchRes.error;
+      }
+    }
+
     if (updateErr) throw AppError.internal(updateErr.message);
+
+    // Sync active/deactivated state with Supabase Auth ban and portal_settings
+    if (body.is_active !== undefined) {
+      const isActive = Boolean(body.is_active);
+      try {
+        await supabaseAdmin.auth.admin.updateUserById(id, {
+          ban_duration: isActive ? 'none' : '876000h',
+          user_metadata: { is_active: isActive },
+        });
+
+        const { data: currentSetting } = await supabaseAdmin
+          .from('portal_settings')
+          .select('value')
+          .eq('key', 'deactivated_user_ids')
+          .maybeSingle();
+
+        const currentIds = new Set<string>(
+          Array.isArray(currentSetting?.value?.ids) ? currentSetting.value.ids : []
+        );
+
+        if (isActive) {
+          currentIds.delete(id);
+        } else {
+          currentIds.add(id);
+        }
+
+        await supabaseAdmin.from('portal_settings').upsert({
+          key: 'deactivated_user_ids',
+          value: { ids: Array.from(currentIds) },
+          updated_at: new Date().toISOString(),
+        });
+      } catch (syncErr) {
+        console.warn('Failed to sync auth ban or portal_settings for user active state:', syncErr);
+      }
+
+      if (updated) {
+        updated.is_active = isActive;
+      }
+    }
 
     return NextResponse.json({ user: updated });
   } catch (err) {

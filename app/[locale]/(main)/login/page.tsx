@@ -66,9 +66,15 @@ export default function Login() {
       if (user) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('role')
+          .select('*')
           .eq('id', user.id)
-          .single();
+          .maybeSingle();
+
+        if (profile?.is_active === false) {
+          await supabase.auth.signOut();
+          throw new Error('Your account has been deactivated. Please contact the administrator.');
+        }
+
         const isAdmin = profile?.role === 'admin';
         setSuccess(true);
         setTimeout(() => {

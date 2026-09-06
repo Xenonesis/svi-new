@@ -48,12 +48,15 @@ export async function verifyAdmin(request: NextRequest): Promise<User | null> {
 
   const { data: profile, error: profileError } = await supabaseAdmin
     .from('profiles')
-    .select('role')
+    .select('*')
     .eq('id', user.id)
     .single();
-
   if (profileError) {
     console.error('verifyAdmin DB error:', profileError);
+    return null;
+  }
+
+  if (profile?.is_active === false) {
     return null;
   }
 

@@ -11,6 +11,7 @@ export interface UserProfile {
   created_by: string | null;
   notes: string | null;
   real_email?: string | null;
+  is_active?: boolean;
 }
 
 export interface CreateUserPayload {
@@ -21,6 +22,7 @@ export interface CreateUserPayload {
   property_interest?: string;
   notes?: string;
   real_email?: string;
+  is_active?: boolean;
 }
 
 // ── Attendance System ────────────────────────────────────────

@@ -106,4 +106,21 @@ describe('verifyAdmin', () => {
     const result = await verifyAdmin(request);
     expect(result).toBeNull();
   });
+
+  it('should return null when admin is_active is false', async () => {
+    const mockUser = { id: 'admin-123', email: 'admin@example.com' };
+    mockGetUser.mockResolvedValue({
+      data: { user: mockUser },
+      error: null,
+    });
+    mockSingle.mockResolvedValue({
+      data: { role: 'admin', is_active: false },
+    });
+
+    const request = new NextRequest('http://localhost/api/test', {
+      headers: { Authorization: 'Bearer valid-admin-token' },
+    });
+    const result = await verifyAdmin(request);
+    expect(result).toBeNull();
+  });
 });

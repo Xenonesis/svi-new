@@ -49,6 +49,7 @@ export default function AdminDashboard() {
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [roleLoading, setRoleLoading] = useState<Record<string, boolean>>({});
+  const [activeLoading, setActiveLoading] = useState<Record<string, boolean>>({});
   const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
 
   // React Query hooks — data fetching with caching
@@ -156,6 +157,39 @@ export default function AdminDashboard() {
       setRoleLoading((prev) => ({ ...prev, [user.id]: false }));
     }
   };
+  const handleToggleActive = async (user: UserProfile) => {
+    if (user.id === currentAdminId && (user.is_active ?? true)) {
+      showToast('error', 'You cannot deactivate your own account.');
+      return;
+    }
+
+    const nextStatus = !(user.is_active ?? true);
+    setActiveLoading((prev) => ({ ...prev, [user.id]: true }));
+
+    try {
+      const res = await fetch(`/api/admin/users/${user.id}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ is_active: nextStatus }),
+      });
+      if (!res.ok) {
+        const j = await res.json();
+        throw new Error(j.error || `Failed to ${nextStatus ? 'activate' : 'deactivate'} account`);
+      }
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
+      showToast(
+        'success',
+        `${user.full_name}'s account has been ${nextStatus ? 'activated' : 'deactivated'}.`
+      );
+    } catch (err: unknown) {
+      showToast('error', err instanceof Error ? err.message : 'Status update failed');
+    } finally {
+      setActiveLoading((prev) => ({ ...prev, [user.id]: false }));
+    }
+  };
 
   const clientCount = users.filter((u) => u.role === 'client').length;
   const employeeCount = users.filter((u) => u.role === 'employee').length;
@@ -243,6 +277,8 @@ export default function AdminDashboard() {
           onEditUser={setEditTarget}
           onDeleteUser={setDeleteTarget}
           onRoleChange={handleRoleChange}
+          onToggleActive={handleToggleActive}
+          activeLoading={activeLoading}
         />
       </div>
 

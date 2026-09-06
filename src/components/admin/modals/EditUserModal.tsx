@@ -35,6 +35,7 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
     property_interest: user.property_interest || '',
     notes: user.notes || '',
     role: user.role || 'client',
+    is_active: user.is_active ?? true,
   });
 
   const displayProperties = getDisplayProperties(properties);
@@ -111,6 +112,8 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
           phone,
           property_interest: propertyInterest,
           notes,
+          role: form.role,
+          is_active: form.is_active,
         }),
       });
       const json = await res.json().catch(() => ({}));
@@ -269,6 +272,30 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
                     Admin
                   </option>
                 </select>
+              </div>
+            </div>
+            <div className="col-span-2 sm:col-span-1">
+              <label className={labelCls}>Account Status</label>
+              <div className="relative flex h-[42px] items-center">
+                <button
+                  type="button"
+                  onClick={() => setForm((p) => ({ ...p, is_active: !p.is_active }))}
+                  className={`flex w-full cursor-pointer items-center justify-between rounded-lg border px-3 py-2 text-xs font-semibold transition-all ${
+                    form.is_active
+                      ? 'border-emerald-500/30 bg-emerald-50 text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300'
+                      : 'border-gray-300 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
+                  }`}
+                >
+                  <span className="flex items-center gap-2">
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        form.is_active ? 'bg-emerald-500' : 'bg-gray-400'
+                      }`}
+                    />
+                    {form.is_active ? 'Active Account' : 'Inactive Account'}
+                  </span>
+                  <span className="text-[10px] text-gray-400 uppercase">Click to toggle</span>
+                </button>
               </div>
             </div>
 

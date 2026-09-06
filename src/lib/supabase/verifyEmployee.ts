@@ -58,7 +58,7 @@ export async function verifyEmployee(request: NextRequest): Promise<VerifiedEmpl
     .select('*')
     .eq('id', user.id)
     .single();
-  if (profileError || !profile) {
+  if (profileError || !profile || profile.is_active === false) {
     return null;
   }
 

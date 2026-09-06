@@ -37,8 +37,28 @@ export async function GET(request: NextRequest) {
 
     if (error) throw AppError.internal(error.message);
 
+    // Check portal_settings for deactivated accounts fallback
+    let deactivatedIds = new Set<string>();
+    try {
+      const { data: deactivatedSetting } = await supabaseAdmin
+        .from('portal_settings')
+        .select('value')
+        .eq('key', 'deactivated_user_ids')
+        .maybeSingle();
+      if (Array.isArray(deactivatedSetting?.value?.ids)) {
+        deactivatedIds = new Set(deactivatedSetting.value.ids as string[]);
+      }
+    } catch {
+      // Fallback gracefully if portal_settings not present or in test mock
+    }
+
+    const enrichedUsers = (data || []).map((u: Record<string, unknown>) => ({
+      ...u,
+      is_active: u.is_active !== undefined ? u.is_active : !deactivatedIds.has(String(u.id)),
+    }));
+
     return NextResponse.json({
-      users: data,
+      users: enrichedUsers,
       total: count || 0,
       page,
       limit,
@@ -183,19 +203,21 @@ export async function POST(request: NextRequest) {
     const newUserId = authData.user.id;
 
     // 2. Insert profile row
+    const insertPayload = {
+      id: newUserId,
+      email,
+      full_name: fullName,
+      phone: phone || null,
+      property_interest: propertyInterest || null,
+      notes: notes || null,
+      role: 'client' as const,
+      created_by: admin.id,
+      real_email: realEmail || null,
+    };
+
     const { data: profile, error: profileError } = await supabaseAdmin
       .from('profiles')
-      .insert({
-        id: newUserId,
-        email,
-        full_name: fullName,
-        phone: phone || null,
-        property_interest: propertyInterest || null,
-        notes: notes || null,
-        role: 'client',
-        created_by: admin.id,
-        real_email: realEmail || null,
-      })
+      .insert(insertPayload)
       .select()
       .single();
 
