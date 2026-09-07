@@ -942,8 +942,13 @@ export function useEmailPrefill({
                   : 0;
 
             const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'quotation_document');
-            const projectName = fd.projectName || 'SVI Project';
+            const toTitleCase = (val: string) =>
+              val ? val.trim().replace(/\b\w/g, (c) => c.toUpperCase()) : '';
+
+            const projectName = toTitleCase(fd.projectName || 'SVI Project');
             const quotationNo = fd.quotationNo || 'N/A';
+            const customerName = toTitleCase(fd.customerName || 'Valued Client');
+            const propertyType = toTitleCase(fd.propertyType || 'Plot');
 
             if (tpl) {
               let processedSubject = tpl.subject;
@@ -954,12 +959,8 @@ export function useEmailPrefill({
               setTemplateHtml(tpl.html);
               setSelectedTemplate('quotation_document');
 
-              const notesSection = fd.notes
-                ? `<div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 18px;margin:20px 0;"><p style="margin:0 0 6px;color:#0f172a;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:0.5px;">Terms &amp; Remarks:</p><p style="margin:0;color:#475569;font-size:13px;line-height:1.6;">${String(fd.notes).replace(/\n/g, '<br/>')}</p></div>`
-                : '';
-
               const vars: Record<string, string> = {
-                customerName: fd.customerName || 'Valued Client',
+                customerName,
                 quotationNo,
                 quotationDate: fd.quotationDate
                   ? new Date(fd.quotationDate).toLocaleDateString('en-GB')
@@ -969,7 +970,7 @@ export function useEmailPrefill({
                   : 'N/A',
                 projectName,
                 plotNo: fd.plotNo || '—',
-                propertyType: fd.propertyType || 'Plot',
+                propertyType,
                 area: areaNum.toLocaleString('en-IN'),
                 basicRate: basicRateNum.toLocaleString('en-IN'),
                 basicPrice: basicPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
@@ -979,8 +980,8 @@ export function useEmailPrefill({
                 plcAmount: plcAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
                 grandTotal: grandTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
                 effectiveRate: effectiveRate.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
-                notesSection,
-                portal_url: 'https://www.sviinfrasolutions.in',
+                notes: fd.notes ? String(fd.notes).replace(/\n/g, '<br/>') : '',
+                portal_url: 'https://www.sviinfrasolutions.com',
                 helpdeskName: 'SVI Helpdesk:',
                 helpdeskPhone: '+91-73000-07643',
                 helpdeskEmail: 'info@sviinfrasolutions.com',

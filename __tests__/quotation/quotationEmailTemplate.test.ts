@@ -30,8 +30,19 @@ describe('Quotation Email Template', () => {
     expect(tpl?.html).toContain('{{effectiveRate}}');
     expect(tpl?.html).toContain('{{validUntil}}');
     expect(tpl?.html).toContain('{{portal_url}}');
+    expect(tpl?.html).toContain('{{#notes}}');
+    expect(tpl?.html).toContain('{{/notes}}');
+    expect(tpl?.html).not.toContain('{{notesSection}}');
   });
 
+  it('should comply with brand guidelines: official logo and no emojis', () => {
+    const tpl = rawTemplates.find((t) => t.id === 'quotation_document');
+    expect(tpl?.html).toContain('https://www.sviinfrasolutions.com/logo.png');
+    // No cartoon/3D emojis
+    expect(tpl?.html).not.toMatch(
+      /[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u
+    );
+  });
   it('should be mapped into EMAIL_TEMPLATES in constants.ts', () => {
     const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'quotation_document');
     expect(tpl).toBeDefined();
