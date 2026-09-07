@@ -1,161 +1,51 @@
 'use client';
 
-import { motion } from 'motion/react';
-import { UserCircle2, ArrowRight, AlertCircle } from 'lucide-react';
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { motion } from 'motion/react';
+import { UserCircle2, AlertCircle } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import { supabase } from '@/src/lib/supabase/client';
+import {
+  useLoginForm,
+  LoginMethodTabs,
+  LoginFormPassword,
+  LoginFormOtp,
+  LoginSuccessCard,
+} from '@/src/components/auth';
 
 export default function Login() {
   const t = useTranslations('pages.login');
-  const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<'password' | 'otp'>('password');
-  const [identifier, setIdentifier] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
-  const [otpSent, setOtpSent] = useState(false);
-  const [otp, setOtp] = useState('');
-  const [success, setSuccess] = useState(false);
-
-  // Validation & touched states
-  const [identifierTouched, setIdentifierTouched] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
-  const [otpTouched, setOtpTouched] = useState(false);
-  const [shake, setShake] = useState(false);
-
-  const identifierIsValid = identifier ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) : true;
-  const passwordIsValid = password ? password.length >= 6 : true;
-  const otpIsValid = otp ? /^\d{6}$/.test(otp) : true;
-
-  const showIdentifierError = identifierTouched && !identifierIsValid;
-  const showPasswordError = passwordTouched && !passwordIsValid;
-  const showOtpError = otpTouched && !otpIsValid;
-
-  const handlePasswordLogin = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setIdentifierTouched(true);
-    setPasswordTouched(true);
-
-    if (!identifier || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
-      setError(t('validation.emailRequired'));
-      setShake(true);
-      return;
-    }
-
-    if (!password || password.length < 6) {
-      setError(t('validation.passwordRequired'));
-      setShake(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const {
-        data: { user },
-        error: authError,
-      } = await supabase.auth.signInWithPassword({
-        email: identifier,
-        password,
-      });
-      if (authError) throw authError;
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', user.id)
-          .maybeSingle();
-
-        if (profile?.is_active === false) {
-          await supabase.auth.signOut();
-          throw new Error('Your account has been deactivated. Please contact the administrator.');
-        }
-
-        const isAdmin = profile?.role === 'admin';
-        setSuccess(true);
-        setTimeout(() => {
-          router.push(isAdmin ? '/admin/dashboard' : '/portal/dashboard');
-        }, 1800);
-      }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('validation.loginFailed'));
-      setShake(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleSendOtp = async () => {
-    setError('');
-    setIdentifierTouched(true);
-
-    if (!identifier || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier)) {
-      setError(t('validation.emailRequired'));
-      setShake(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: identifier,
-      });
-      if (otpError) throw otpError;
-      setOtpSent(true);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('validation.sendOtpFailed'));
-      setShake(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  const handleOtpVerify = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError('');
-    setOtpTouched(true);
-
-    if (!otp || !/^\d{6}$/.test(otp)) {
-      setError(t('validation.otpRequired'));
-      setShake(true);
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const {
-        data: { user },
-        error: verifyError,
-      } = await supabase.auth.verifyOtp({
-        email: identifier,
-        token: otp,
-        type: 'email',
-      });
-      if (verifyError) throw verifyError;
-
-      if (user) {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', user.id)
-          .single();
-        const isAdmin = profile?.role === 'admin';
-        setSuccess(true);
-        setTimeout(() => {
-          router.push(isAdmin ? '/admin/dashboard' : '/portal/dashboard');
-        }, 1800);
-      }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : t('validation.otpFailed'));
-      setShake(true);
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  const {
+    isSubmitting,
+    loginMethod,
+    switchMethod,
+    identifier,
+    setIdentifier,
+    password,
+    setPassword,
+    showPassword,
+    setShowPassword,
+    error,
+    otpSent,
+    otp,
+    setOtp,
+    resetOtp,
+    success,
+    identifierTouched,
+    setIdentifierTouched,
+    passwordTouched,
+    setPasswordTouched,
+    otpTouched,
+    setOtpTouched,
+    shake,
+    setShake,
+    showIdentifierError,
+    showPasswordError,
+    showOtpError,
+    handlePasswordLogin,
+    handleSendOtp,
+    handleOtpVerify,
+  } = useLoginForm();
 
   return (
     <div className="bg-brand-navy relative flex min-h-screen items-center justify-center pt-24 pb-20 dark:bg-gray-950">
@@ -166,7 +56,7 @@ export default function Login() {
             'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
           backgroundSize: '40px 40px',
         }}
-      ></div>
+      />
 
       <div className="relative z-10 container mx-auto flex justify-center px-4">
         <motion.div
@@ -177,41 +67,9 @@ export default function Login() {
           className="relative w-full max-w-md overflow-hidden border bg-white p-8 shadow-2xl md:p-12 dark:border-gray-700 dark:bg-gray-900"
         >
           {/* Success Stage Glassmorphism Overlay */}
-          {success && (
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-white/95 p-8 text-center backdrop-blur-xl dark:bg-gray-900/95"
-            >
-              <motion.div
-                initial={{ scale: 0, rotate: -45 }}
-                animate={{ scale: 1, rotate: 0 }}
-                transition={{ type: 'spring', stiffness: 200, damping: 15 }}
-                className="bg-brand-gold/10 border-brand-gold/30 glow-gold dark:border-brand-gold/40 mb-6 flex h-20 w-20 items-center justify-center rounded-full border"
-              >
-                <UserCircle2 className="text-brand-navy dark:text-brand-gold h-10 w-10 animate-pulse" />
-              </motion.div>
+          {success && <LoginSuccessCard />}
 
-              <h2 className="text-brand-navy mb-3 font-serif text-2xl font-semibold tracking-wide dark:text-white">
-                {t('welcomeBack')}
-              </h2>
-
-              <p className="mb-8 text-xs leading-relaxed text-gray-500 dark:text-gray-400">
-                {t('authSuccess')}
-              </p>
-
-              {/* Luxury progress tracking bar */}
-              <div className="relative h-1 w-48 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-                <motion.div
-                  initial={{ left: '-100%' }}
-                  animate={{ left: '100%' }}
-                  transition={{ repeat: Infinity, duration: 1.2, ease: 'easeInOut' }}
-                  className="via-brand-gold absolute top-0 bottom-0 w-1/2 bg-gradient-to-r from-transparent to-transparent"
-                />
-              </div>
-            </motion.div>
-          )}
-
+          {/* Header */}
           <div className="mb-8 text-center">
             <div className="text-brand-navy dark:text-brand-gold mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800">
               <UserCircle2 size={32} />
@@ -223,34 +81,7 @@ export default function Login() {
           </div>
 
           {/* Tab switcher */}
-          <div className="mb-8 flex border-b border-gray-200 dark:border-gray-700">
-            <button
-              onClick={() => {
-                setLoginMethod('password');
-                setError('');
-                setOtpSent(false);
-                setIdentifierTouched(false);
-                setPasswordTouched(false);
-                setOtpTouched(false);
-              }}
-              className={`flex-1 pb-3 text-xs font-bold tracking-widest uppercase transition-colors ${loginMethod === 'password' ? 'text-brand-navy dark:text-brand-gold border-brand-navy dark:border-brand-gold border-b-2' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              {t('passwordTab')}
-            </button>
-            <button
-              onClick={() => {
-                setLoginMethod('otp');
-                setError('');
-                setOtpSent(false);
-                setIdentifierTouched(false);
-                setPasswordTouched(false);
-                setOtpTouched(false);
-              }}
-              className={`flex-1 pb-3 text-xs font-bold tracking-widest uppercase transition-colors ${loginMethod === 'otp' ? 'text-brand-navy dark:text-brand-gold border-brand-navy dark:border-brand-gold border-b-2' : 'text-gray-400 hover:text-gray-600 dark:hover:text-gray-300'}`}
-            >
-              {t('otpTab')}
-            </button>
-          </div>
+          <LoginMethodTabs loginMethod={loginMethod} onSelectMethod={switchMethod} />
 
           {/* Error Banner */}
           {error && (
@@ -264,204 +95,46 @@ export default function Login() {
             </motion.div>
           )}
 
+          {/* Active Form */}
           {loginMethod === 'password' ? (
-            <form onSubmit={handlePasswordLogin} className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-brand-navy text-[10px] font-bold tracking-widest uppercase dark:text-gray-300">
-                    {t('emailLabel')}
-                  </label>
-                  {showIdentifierError && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[10px] font-semibold text-red-500 dark:text-red-400"
-                    >
-                      {t('validation.emailInvalid')}
-                    </motion.span>
-                  )}
-                </div>
-                <input
-                  type="email"
-                  value={identifier}
-                  onChange={(e) => {
-                    setIdentifier(e.target.value);
-                    if (identifierTouched) setIdentifierTouched(false);
-                  }}
-                  onBlur={() => setIdentifierTouched(true)}
-                  required
-                  placeholder={t('emailPlaceholder')}
-                  className={`focus:border-brand-gold w-full border px-4 py-3 text-gray-900 transition-colors focus:outline-none ${
-                    showIdentifierError
-                      ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
-                      : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-                  }`}
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-brand-navy text-[10px] font-bold tracking-widest uppercase dark:text-gray-300">
-                    {t('passwordLabel')}
-                  </label>
-                  {showPasswordError && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[10px] font-semibold text-red-500 dark:text-red-400"
-                    >
-                      {t('validation.passwordMin')}
-                    </motion.span>
-                  )}
-                </div>
-                <input
-                  type="password"
-                  value={password}
-                  onChange={(e) => {
-                    setPassword(e.target.value);
-                    if (passwordTouched) setPasswordTouched(false);
-                  }}
-                  onBlur={() => setPasswordTouched(true)}
-                  required
-                  placeholder={t('passwordPlaceholder')}
-                  className={`focus:border-brand-gold w-full border px-4 py-3 text-gray-900 transition-colors focus:outline-none [&::-ms-clear]:hidden [&::-ms-reveal]:hidden ${
-                    showPasswordError
-                      ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
-                      : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-                  }`}
-                />
-              </div>
-
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy hover:bg-brand-gold hover:text-brand-navy flex w-full cursor-pointer items-center justify-center gap-2 py-4 text-sm font-bold tracking-widest text-white uppercase transition-colors disabled:opacity-50 dark:hover:bg-white"
-              >
-                {isSubmitting ? (
-                  <span className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                ) : (
-                  <>
-                    {t('loginButton')} <ArrowRight size={16} />
-                  </>
-                )}
-              </button>
-            </form>
+            <LoginFormPassword
+              identifier={identifier}
+              setIdentifier={setIdentifier}
+              identifierTouched={identifierTouched}
+              setIdentifierTouched={setIdentifierTouched}
+              showIdentifierError={showIdentifierError}
+              password={password}
+              setPassword={setPassword}
+              passwordTouched={passwordTouched}
+              setPasswordTouched={setPasswordTouched}
+              showPasswordError={showPasswordError}
+              showPassword={showPassword}
+              setShowPassword={setShowPassword}
+              isSubmitting={isSubmitting}
+              onSubmit={handlePasswordLogin}
+              onForgotPassword={() => switchMethod('otp')}
+            />
           ) : (
-            <div className="space-y-6">
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <label className="text-brand-navy text-[10px] font-bold tracking-widest uppercase dark:text-gray-300">
-                    {t('emailLabel')}
-                  </label>
-                  {showIdentifierError && (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="text-[10px] font-semibold text-red-500 dark:text-red-400"
-                    >
-                      {t('validation.emailInvalid')}
-                    </motion.span>
-                  )}
-                </div>
-                <input
-                  type="email"
-                  value={identifier}
-                  onChange={(e) => {
-                    setIdentifier(e.target.value);
-                    if (identifierTouched) setIdentifierTouched(false);
-                  }}
-                  onBlur={() => setIdentifierTouched(true)}
-                  placeholder={t('emailPlaceholder')}
-                  disabled={otpSent}
-                  className={`focus:border-brand-gold w-full border px-4 py-3 text-gray-900 transition-colors focus:outline-none disabled:opacity-60 ${
-                    showIdentifierError
-                      ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
-                      : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-                  }`}
-                />
-              </div>
-
-              {!otpSent ? (
-                <>
-                  <button
-                    type="button"
-                    onClick={handleSendOtp}
-                    disabled={isSubmitting}
-                    className="text-brand-gold border-brand-gold hover:bg-brand-gold hover:text-brand-navy flex w-full cursor-pointer items-center justify-center gap-2 border px-4 py-3 text-xs font-bold tracking-widest uppercase transition-colors disabled:opacity-50"
-                  >
-                    {isSubmitting ? (
-                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    ) : (
-                      t('sendOtpButton')
-                    )}
-                  </button>
-                </>
-              ) : (
-                <form onSubmit={handleOtpVerify} className="space-y-4">
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-brand-navy text-[10px] font-bold tracking-widest uppercase dark:text-gray-300">
-                        {t('otpLabel')}
-                      </label>
-                      {showOtpError && (
-                        <motion.span
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          className="text-[10px] font-semibold text-red-500 dark:text-red-400"
-                        >
-                          {t('validation.otpDigits')}
-                        </motion.span>
-                      )}
-                    </div>
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={6}
-                      value={otp}
-                      onChange={(e) => {
-                        setOtp(e.target.value.replace(/\D/g, ''));
-                        if (otpTouched) setOtpTouched(false);
-                      }}
-                      onBlur={() => setOtpTouched(true)}
-                      placeholder={t('otpPlaceholder')}
-                      className={`focus:border-brand-gold w-full border px-4 py-3 text-center text-2xl tracking-[0.5em] text-gray-900 transition-colors focus:outline-none ${
-                        showOtpError
-                          ? 'border-red-500 bg-red-500/5 focus:ring-1 focus:ring-red-500/20 dark:border-red-500/40 dark:bg-red-500/5 dark:text-white'
-                          : 'border-gray-200 bg-gray-50 dark:border-gray-600 dark:bg-gray-800 dark:text-white'
-                      }`}
-                    />
-                    <p className="text-center text-xs text-gray-500">
-                      {t('checkInbox', { email: identifier })}
-                    </p>
-                  </div>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || otp.length < 6}
-                    className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy hover:bg-brand-gold hover:text-brand-navy flex w-full cursor-pointer items-center justify-center gap-2 py-4 text-sm font-bold tracking-widest text-white uppercase transition-colors disabled:opacity-60 dark:hover:bg-white"
-                  >
-                    {isSubmitting ? (
-                      <span className="h-5 w-5 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                    ) : (
-                      <>
-                        {t('verifyButton')} <ArrowRight size={16} />
-                      </>
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setOtpSent(false);
-                      setOtp('');
-                      setOtpTouched(false);
-                    }}
-                    className="w-full cursor-pointer text-xs text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
-                  >
-                    {t('changeEmail')}
-                  </button>
-                </form>
-              )}
-            </div>
+            <LoginFormOtp
+              identifier={identifier}
+              setIdentifier={setIdentifier}
+              identifierTouched={identifierTouched}
+              setIdentifierTouched={setIdentifierTouched}
+              showIdentifierError={showIdentifierError}
+              otpSent={otpSent}
+              otp={otp}
+              setOtp={setOtp}
+              otpTouched={otpTouched}
+              setOtpTouched={setOtpTouched}
+              showOtpError={showOtpError}
+              isSubmitting={isSubmitting}
+              onSendOtp={handleSendOtp}
+              onVerifyOtp={handleOtpVerify}
+              onResetOtp={resetOtp}
+            />
           )}
 
+          {/* Footer */}
           <div className="mt-8 text-center text-sm text-gray-500 dark:text-gray-400">
             {t('noAccount')}{' '}
             <Link
