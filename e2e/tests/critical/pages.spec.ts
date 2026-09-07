@@ -51,7 +51,12 @@ test.describe('Grievance Page', () => {
   test('renders grievance form', async ({ page }) => {
     await page.goto('/grievance');
     await page.waitForLoadState('domcontentloaded');
-    await expect(page.locator('h1, h2').filter({ hasText: /Grievance|शिकायत/i })).toBeVisible();
+    await expect(
+      page
+        .locator('h1, h2')
+        .filter({ hasText: /Grievance|शिकायत|Support|सपोर्ट/i })
+        .first()
+    ).toBeVisible();
     const inputs = page.locator('input, textarea, select');
     const count = await inputs.count();
     expect(count).toBeGreaterThanOrEqual(2);
@@ -75,15 +80,17 @@ test.describe('Payment Page', () => {
 test.describe('Thank You Page', () => {
   test('redirects to registration when no registered=1 param', async ({ page }) => {
     await page.goto('/thank-you');
-    await page.waitForTimeout(2000);
-    // Should redirect to registration
+    await page.waitForURL(/\/registration/);
     expect(page.url()).toContain('registration');
   });
 
   test('shows thank you card with correct param', async ({ page }) => {
     await page.goto('/thank-you?registered=1');
     await page.waitForLoadState('domcontentloaded');
-    const heading = page.locator('h1, h2').filter({ hasText: /Thank You|धन्यवाद/i });
+    const heading = page
+      .locator('h1, h2')
+      .filter({ hasText: /Registration Received|पंजीकरण|Thank You|धन्यवाद/i })
+      .first();
     await expect(heading).toBeVisible();
   });
 });

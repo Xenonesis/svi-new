@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { PhoneCall, AlertCircle, Volume2 } from 'lucide-react';
+import { AlertCircle, Loader2, PhoneCall, Volume2 } from 'lucide-react';
 
 interface IvrDialerProps {
   token: string | null;
@@ -107,7 +107,7 @@ export function IvrDialer({ token }: IvrDialerProps) {
           >
             {dialing ? (
               <>
-                <div className="border-brand-navy/30 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
+                <Loader2 className="text-brand-navy h-4 w-4 shrink-0 animate-spin" />
                 Initiating Bridge...
               </>
             ) : (

@@ -1,6 +1,6 @@
 import { setRequestLocale, getTranslations } from 'next-intl/server';
 import type { Metadata } from 'next';
-import { redirect } from 'next/navigation';
+import { redirect } from '@/src/i18n/navigation';
 import ThankYouCard from './ThankYouCard';
 
 const GRADIENT_STYLE = {
@@ -24,7 +24,7 @@ export default async function ThankYou({
 
   // Only show thank-you if user actually submitted the registration form
   if (!registered) {
-    redirect('/registration?needRegistration=1');
+    redirect({ href: '/registration?needRegistration=1', locale });
   }
 
   return (

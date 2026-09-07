@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { FileText, RefreshCw } from 'lucide-react';
 
 import QuotationViewModal from '@/src/components/admin/quotation/QuotationViewModal';
-import QuotationPreview from '@/src/components/admin/quotation/QuotationPreview';
 import {
   QuotationStatsGrid,
   QuotationFilterBar,
@@ -256,28 +255,15 @@ export default function QuotationRecordsPage() {
 
       {/* View Details Modal & Export Container */}
       {selectedQuotation && (
-        <>
-          <QuotationViewModal
-            quotation={selectedQuotation}
-            onClose={() => setSelectedQuotation(null)}
-            onDownloadPDF={handleModalDownloadPDF}
-            onDownloadPNG={handleModalDownloadPNG}
-            pdfLoading={pdfLoading}
-            imageLoading={imageLoading}
-          />
-          {/* Hidden preview element for PDF/PNG export from modal */}
-          <div style={{ position: 'absolute', left: '-9999px', top: 0, visibility: 'hidden' }}>
-            <div id="modalQuotationPreview">
-              {selectedQuotation.form_data?.calculation && (
-                <QuotationPreview
-                  formData={selectedQuotation.form_data}
-                  calculation={selectedQuotation.form_data.calculation}
-                  companyInfo={companyInfo}
-                />
-              )}
-            </div>
-          </div>
-        </>
+        <QuotationViewModal
+          quotation={selectedQuotation}
+          companyInfo={companyInfo}
+          onClose={() => setSelectedQuotation(null)}
+          onDownloadPDF={handleModalDownloadPDF}
+          onDownloadPNG={handleModalDownloadPNG}
+          pdfLoading={pdfLoading}
+          imageLoading={imageLoading}
+        />
       )}
     </div>
   );

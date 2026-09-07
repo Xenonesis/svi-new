@@ -1,7 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Save, Clock, AlertCircle, ShieldAlert, CheckCircle2, Palmtree } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Palmtree,
+  Save,
+  ShieldAlert,
+} from 'lucide-react';
 import type { AttendanceSettingsMap } from '@/src/lib/supabase/types';
 
 interface AttendanceSettingsProps {
@@ -338,7 +346,7 @@ export default function AttendanceSettings({ token, showToast }: AttendanceSetti
           className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light flex cursor-pointer items-center gap-2 rounded-lg px-6 py-2.5 text-xs font-bold tracking-widest uppercase transition-all disabled:opacity-50"
         >
           {saving ? (
-            <span className="border-brand-navy h-4 w-4 animate-spin rounded-full border-2 border-t-transparent" />
+            <Loader2 className="text-brand-navy h-4 w-4 shrink-0 animate-spin" />
           ) : (
             <Save size={16} />
           )}

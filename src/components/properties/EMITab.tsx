@@ -107,7 +107,7 @@ export default function EMITab({
             step={1}
             value={tenureYears}
             onChange={(e) => onTenureYearsChange(Number(e.target.value))}
-            aria-label="Tenure Years"
+            aria-label="Tenure"
             className={`${inputCls} mt-3`}
           />
           <div className="mt-1 flex justify-between text-xs text-gray-400">

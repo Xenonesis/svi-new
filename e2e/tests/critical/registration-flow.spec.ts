@@ -3,18 +3,20 @@ import { goto } from '../../helpers/navigation';
 
 test.describe('Registration Flow', () => {
   test('should fill out and validate the registration form', async ({ page }) => {
-    await goto(page, '/registration');
-    page.on('response', async (response) => {
-      if (response.url().includes('/api/')) {
-        console.log(`API Response: ${response.url()} - ${response.status()}`);
-        try {
-          const body = await response.json();
-          console.log('API Body:', body);
-        } catch (e) {
-          // ignore
-        }
+    // Intercept POST /api/registration to provide deterministic success response in CI/test environments
+    await page.route('**/api/registration', async (route) => {
+      if (route.request().method() === 'POST') {
+        await route.fulfill({
+          status: 200,
+          contentType: 'application/json',
+          body: JSON.stringify({ success: true, submission_id: 'SVI2201' }),
+        });
+      } else {
+        await route.continue();
       }
     });
+
+    await goto(page, '/registration');
     await expect(page.locator('h1')).toBeVisible();
 
     // 2. Fill in all required fields

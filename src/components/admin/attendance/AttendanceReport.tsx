@@ -1,6 +1,6 @@
 'use client';
 
-import { BarChart3, Search } from 'lucide-react';
+import { BarChart3, Loader2, Search } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 
@@ -110,7 +110,9 @@ export default function AttendanceReport({ token, showToast, teams }: Attendance
           className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center gap-2 rounded-lg px-6 py-2.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-60"
         >
           {loading ? (
-            <span className="border-brand-navy/45 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
+            <>
+              <Loader2 className="text-brand-navy h-4 w-4 shrink-0 animate-spin" /> Generating...
+            </>
           ) : (
             <>
               <Search className="h-4 w-4" /> Generate

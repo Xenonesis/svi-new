@@ -657,7 +657,10 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
               className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
             >
               {loading ? (
-                <span className="border-brand-navy/45 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
+                <>
+                  <Loader2 className="text-brand-navy h-4 w-4 shrink-0 animate-spin" />
+                  <span>Creating...</span>
+                </>
               ) : (
                 <>
                   <Plus className="h-4 w-4" /> Create User

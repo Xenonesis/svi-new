@@ -1,6 +1,6 @@
 'use client';
 
-import { Calendar, CheckCircle2, Save, UserCheck, XCircle, Clock } from 'lucide-react';
+import { Calendar, CheckCircle2, Clock, Loader2, Save, UserCheck, XCircle } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
@@ -277,7 +277,9 @@ export default function MarkAttendance({
               className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center gap-2 rounded-lg px-8 py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:opacity-60"
             >
               {saving ? (
-                <span className="border-brand-navy/45 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
+                <>
+                  <Loader2 className="text-brand-navy h-4 w-4 shrink-0 animate-spin" /> Saving...
+                </>
               ) : (
                 <>
                   <Save className="h-4 w-4" /> Save Attendance

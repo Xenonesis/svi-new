@@ -105,7 +105,7 @@
 
   /* Respect user's motion preferences while exempting essential functional spinners */
   @media (prefers-reduced-motion: reduce) {
-    *:not(.animate-spin):not(.animate-spin *):not([role='status']):not([role='status'] *):not([aria-busy='true']):not([aria-busy='true'] *) {
+    *:not(.animate-spin):not(.animate-spin *) {
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
@@ -913,17 +913,14 @@ input::-ms-clear {
    Three.js HeroCanvas is handled separately in JS (HeroCanvas.tsx).
    ============================================================ */
 @media (prefers-reduced-motion: reduce) {
-  *:not(.animate-spin):not(.animate-spin *):not([role='status']):not([role='status'] *):not([aria-busy='true']):not([aria-busy='true'] *) {
+  *:not(.animate-spin):not(.animate-spin *) {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
 
-  .animate-spin,
-  .animate-spin *,
-  [role='status'],
-  [aria-busy='true'] {
+  .animate-spin {
     animation: spin 1s linear infinite !important;
   }
 

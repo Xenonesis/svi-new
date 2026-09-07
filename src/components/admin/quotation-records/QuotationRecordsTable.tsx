@@ -299,8 +299,8 @@ export function QuotationRecordsTable({
                           type="button"
                           onClick={() => onSelect(record)}
                           className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95 dark:text-gray-500"
-                          title="View Quotation Details"
-                          aria-label="View quotation"
+                          title="Preview & Download Quotation"
+                          aria-label="Preview and download quotation"
                         >
                           <Eye className="h-4 w-4" />
                         </button>

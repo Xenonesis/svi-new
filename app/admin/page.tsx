@@ -1,6 +1,6 @@
 'use client';
 
-import { AlertCircle, Eye, EyeOff, ShieldCheck } from 'lucide-react';
+import { AlertCircle, Eye, EyeOff, Loader2, ShieldCheck } from 'lucide-react';
 import React, { useState, useEffect } from 'react';
 
 import { motion } from 'motion/react';
@@ -302,7 +302,10 @@ export default function AdminLogin() {
               className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-4 text-xs font-bold tracking-widest uppercase shadow-xl transition-all duration-300 disabled:cursor-not-allowed disabled:opacity-60"
             >
               {loading ? (
-                <span className="border-brand-navy/40 border-t-brand-navy h-4 w-4 animate-spin rounded-full border-2" />
+                <>
+                  <Loader2 className="text-brand-navy h-4 w-4 shrink-0 animate-spin" />
+                  <span>Signing In...</span>
+                </>
               ) : (
                 'Sign In'
               )}
