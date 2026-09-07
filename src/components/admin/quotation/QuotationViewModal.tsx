@@ -2,7 +2,15 @@
 
 import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
-import { X, Download, Image as ImageIcon, RefreshCw, FileText, LayoutList } from 'lucide-react';
+import {
+  X,
+  Download,
+  Image as ImageIcon,
+  RefreshCw,
+  FileText,
+  LayoutList,
+  Mail,
+} from 'lucide-react';
 import type {
   SavedQuotation,
   CompanyInfo,
@@ -179,6 +187,18 @@ export default function QuotationViewModal({
                   <ImageIcon className="h-3.5 w-3.5" />
                 )}
                 <span>PNG</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  sessionStorage.setItem('emailPrefillRecord', JSON.stringify(quotation));
+                  window.location.href = '/admin/email?tab=compose&prefillQuotation=true';
+                }}
+                className="flex items-center justify-center gap-1.5 rounded-lg border border-purple-200 bg-purple-50 px-3 py-1.5 text-[11px] font-bold text-purple-700 uppercase shadow-sm transition-all hover:bg-purple-100 sm:px-3.5 sm:py-2 sm:text-xs dark:border-purple-500/30 dark:bg-purple-500/10 dark:text-purple-300 dark:hover:bg-purple-500/20"
+                title="Email Quotation to Client"
+              >
+                <Mail className="h-3.5 w-3.5" />
+                <span>Email</span>
               </button>
               <button
                 type="button"

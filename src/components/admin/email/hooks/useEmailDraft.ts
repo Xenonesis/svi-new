@@ -86,8 +86,8 @@ export function useEmailDraft({
         params.get('prefillAllotment') === 'true' ||
         params.get('prefillBba') === 'true' ||
         params.get('prefillReceipt') === 'true' ||
-        params.get('prefillRegistration') === 'true';
-
+        params.get('prefillRegistration') === 'true' ||
+        params.get('prefillQuotation') === 'true';
       if (isPrefillUrl) {
         return;
       }

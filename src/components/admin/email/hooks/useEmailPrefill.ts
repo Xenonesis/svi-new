@@ -906,4 +906,160 @@ export function useEmailPrefill({
     setEditorKey,
     setTo,
   ]);
+
+  // Handle prefill from Quotation Records
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('prefillQuotation') === 'true') {
+        const stored = sessionStorage.getItem('emailPrefillRecord');
+        if (stored) {
+          try {
+            const record = JSON.parse(stored);
+            const fd = record.form_data || {};
+            const calc = fd.calculation || {};
+
+            const areaNum = parseFloat(fd.area) || 0;
+            const basicRateNum = parseFloat(fd.basicRate) || 0;
+            const edcRateNum = parseFloat(fd.edcRate) || 0;
+            const plcPercentNum = parseFloat(fd.plcPercent) || 0;
+
+            const basicPrice =
+              calc.basicPrice != null ? Number(calc.basicPrice) : areaNum * basicRateNum;
+            const edcAmount =
+              calc.edcAmount != null ? Number(calc.edcAmount) : areaNum * edcRateNum;
+            const plcAmount =
+              calc.plcAmount != null ? Number(calc.plcAmount) : (basicPrice * plcPercentNum) / 100;
+            const grandTotal =
+              calc.grandTotal != null
+                ? Number(calc.grandTotal)
+                : basicPrice + edcAmount + plcAmount;
+            const effectiveRate =
+              calc.effectiveRate != null
+                ? Number(calc.effectiveRate)
+                : areaNum > 0
+                  ? grandTotal / areaNum
+                  : 0;
+
+            const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'quotation_document');
+            const projectName = fd.projectName || 'SVI Project';
+            const quotationNo = fd.quotationNo || 'N/A';
+
+            if (tpl) {
+              let processedSubject = tpl.subject;
+              processedSubject = processedSubject.replace('{{projectName}}', projectName);
+              processedSubject = processedSubject.replace('{{quotationNo}}', quotationNo);
+
+              setSubjectTemplate(processedSubject);
+              setTemplateHtml(tpl.html);
+              setSelectedTemplate('quotation_document');
+
+              const notesSection = fd.notes
+                ? `<div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:14px 18px;margin:20px 0;"><p style="margin:0 0 6px;color:#0f172a;font-weight:700;font-size:12.5px;text-transform:uppercase;letter-spacing:0.5px;">Terms &amp; Remarks:</p><p style="margin:0;color:#475569;font-size:13px;line-height:1.6;">${String(fd.notes).replace(/\n/g, '<br/>')}</p></div>`
+                : '';
+
+              const vars: Record<string, string> = {
+                customerName: fd.customerName || 'Valued Client',
+                quotationNo,
+                quotationDate: fd.quotationDate
+                  ? new Date(fd.quotationDate).toLocaleDateString('en-GB')
+                  : new Date().toLocaleDateString('en-GB'),
+                validUntil: fd.validUntil
+                  ? new Date(fd.validUntil).toLocaleDateString('en-GB')
+                  : 'N/A',
+                projectName,
+                plotNo: fd.plotNo || '—',
+                propertyType: fd.propertyType || 'Plot',
+                area: areaNum.toLocaleString('en-IN'),
+                basicRate: basicRateNum.toLocaleString('en-IN'),
+                basicPrice: basicPrice.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                edcRate: edcRateNum.toLocaleString('en-IN'),
+                edcAmount: edcAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                plcPercent: plcPercentNum.toString(),
+                plcAmount: plcAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                grandTotal: grandTotal.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                effectiveRate: effectiveRate.toLocaleString('en-IN', { maximumFractionDigits: 0 }),
+                notesSection,
+                portal_url: 'https://www.sviinfrasolutions.in',
+                helpdeskName: 'SVI Helpdesk:',
+                helpdeskPhone: '+91-73000-07643',
+                helpdeskEmail: 'info@sviinfrasolutions.com',
+              };
+
+              setTemplateVars(vars);
+              setHtml('');
+              setPreviewMode(true);
+              setEditorKey((prev: number) => prev + 1);
+
+              if (fd.customerEmail) {
+                setTo(fd.customerEmail);
+              }
+
+              try {
+                localStorage.setItem(
+                  'svi-email-active-draft',
+                  JSON.stringify({
+                    to: fd.customerEmail || '',
+                    cc: '',
+                    bcc: '',
+                    subject: processedSubject,
+                    subjectTemplate: processedSubject,
+                    html: '',
+                    templateHtml: tpl.html,
+                    selectedTemplate: 'quotation_document',
+                    templateVars: vars,
+                    previewMode: true,
+                    replyTo: replyTo || '',
+                    fromName: 'SVI Infra',
+                    savedAt: Date.now(),
+                  })
+                );
+              } catch {
+                // ignore
+              }
+            } else {
+              const subj = `Quotation – ${projectName} | ${quotationNo}`;
+              setSubjectTemplate(subj);
+              const fallbackHtml = `
+<div style="font-family:Arial,sans-serif;padding:20px;max-width:600px;margin:0 auto;">
+  <h2 style="color:#111827;">Official Property Quotation</h2>
+  <p><strong>Quotation No:</strong> ${quotationNo}</p>
+  <p><strong>Customer:</strong> ${fd.customerName || 'Valued Client'}</p>
+  <p><strong>Project:</strong> ${projectName}</p>
+  <p><strong>Plot / Unit No:</strong> ${fd.plotNo || 'N/A'}</p>
+  <p><strong>Area:</strong> ${areaNum.toLocaleString('en-IN')} Sq. Yds.</p>
+  <p><strong>Grand Total:</strong> ₹${grandTotal.toLocaleString('en-IN')}</p>
+</div>`.trim();
+              setHtml(fallbackHtml);
+              setSelectedTemplate(null);
+              setTemplateHtml(null);
+              setTemplateVars({});
+              setPreviewMode(false);
+              setEditorKey((prev: number) => prev + 1);
+
+              if (fd.customerEmail) {
+                setTo(fd.customerEmail);
+              }
+            }
+
+            sessionStorage.removeItem('emailPrefillRecord');
+            const newUrl = window.location.pathname + '?tab=compose';
+            window.history.replaceState({}, '', newUrl);
+          } catch (e) {
+            console.error('Error prefilling quotation email:', e);
+          }
+        }
+      }
+    }
+  }, [
+    replyTo,
+    setEditorKey,
+    setHtml,
+    setPreviewMode,
+    setSelectedTemplate,
+    setSubjectTemplate,
+    setTemplateHtml,
+    setTemplateVars,
+    setTo,
+  ]);
 }

@@ -14,6 +14,7 @@ import {
   Calendar,
   Plus,
   Layers,
+  Mail,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
@@ -303,6 +304,20 @@ export function QuotationRecordsTable({
                           aria-label="Preview and download quotation"
                         >
                           <Eye className="h-4 w-4" />
+                        </button>
+
+                        {/* Email Quotation */}
+                        <button
+                          type="button"
+                          onClick={() => {
+                            sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
+                            window.location.href = '/admin/email?tab=compose&prefillQuotation=true';
+                          }}
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95 dark:text-gray-500 dark:hover:text-purple-400"
+                          title="Email Quotation to Client"
+                          aria-label="Email quotation"
+                        >
+                          <Mail className="h-4 w-4" />
                         </button>
 
                         {/* Use as Template */}
