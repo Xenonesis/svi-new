@@ -8,7 +8,9 @@ export default defineConfig({
   workers: 3,
   reporter: [['html', { outputFolder: '../playwright-report' }], ['list']],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL:
+      process.env.BASE_URL ||
+      (process.env.PORT ? `http://localhost:${process.env.PORT}` : 'http://localhost:3001'),
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },

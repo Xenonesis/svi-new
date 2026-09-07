@@ -43,6 +43,7 @@ export default function PortalAllotmentsAdmin() {
         </div>
         <button
           onClick={openCreateModal}
+          aria-label="Create Allotment"
           className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold shadow-md transition-all"
         >
           <Plus className="h-4 w-4" />

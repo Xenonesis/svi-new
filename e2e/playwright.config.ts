@@ -8,7 +8,9 @@ export default defineConfig({
   workers: process.env.CI ? 1 : 1,
   reporter: [['html', { outputFolder: '../playwright-report' }], ['list']],
   use: {
-    baseURL: 'http://localhost:3000',
+    baseURL:
+      process.env.BASE_URL ||
+      (process.env.PORT ? `http://localhost:${process.env.PORT}` : 'http://localhost:3001'),
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
   },
@@ -23,9 +25,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm build && pnpm start',
-    port: 3000,
-    reuseExistingServer: !process.env.CI,
+    command: 'pnpm dev',
+    port: process.env.PORT ? Number(process.env.PORT) : 3001,
+    reuseExistingServer: true,
     timeout: 180000,
     env: {
       SKIP_IMAGE_OPTIMIZE: 'true',
