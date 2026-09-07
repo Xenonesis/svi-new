@@ -210,11 +210,12 @@ export default function QuotationForm({
                   type="text"
                   name="quotationNo"
                   value={formData.quotationNo}
-                  onChange={onChange}
+                  readOnly
                   required
                   placeholder={loadingQuotationNo ? 'Generating...' : 'SVI-QTN-...'}
                   disabled={loadingQuotationNo}
-                  className="border-brand-navy/20 focus:border-brand-gold focus:ring-brand-gold/20 dark:border-brand-gold/20 dark:bg-brand-gold/5 dark:focus:border-brand-gold w-full rounded-xl border bg-white/50 py-2.5 pr-11 pl-10 font-mono text-sm font-semibold tracking-wider text-gray-900 shadow-sm backdrop-blur-sm transition-all outline-none disabled:cursor-not-allowed disabled:opacity-60 dark:text-white"
+                  title="Quotation number is auto-generated and non-editable"
+                  className="border-brand-navy/20 dark:border-brand-gold/20 w-full cursor-not-allowed rounded-xl border bg-gray-50/80 py-2.5 pr-11 pl-10 font-mono text-sm font-semibold tracking-wider text-gray-800 shadow-sm backdrop-blur-sm transition-all outline-none select-all disabled:opacity-60 dark:bg-white/5 dark:text-gray-200"
                 />
                 {formData.quotationNo && (
                   <button
