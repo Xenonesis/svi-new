@@ -22,8 +22,8 @@ export default function Icon() {
       <img
         src="https://www.sviinfrasolutions.com/logo.png"
         alt="SVI Infra Solutions Logo"
-        width="160" // Give a little padding for Apple icons
-        height="160"
+        width={160} // Give a little padding for Apple icons
+        height={160}
         style={{
           objectFit: 'contain',
         }}

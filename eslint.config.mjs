@@ -29,6 +29,8 @@ export default tseslint.config(
       '.impeccable/**',
       '.claude/**',
       '.agents/**',
+      '.gitnexus/**',
+      '**/*.cjs',
     ],
   },
   js.configs.recommended,
