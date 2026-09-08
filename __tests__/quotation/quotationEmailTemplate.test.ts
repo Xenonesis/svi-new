@@ -43,6 +43,16 @@ describe('Quotation Email Template', () => {
       /[\u{1F300}-\u{1F6FF}\u{1F900}-\u{1F9FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}]/u
     );
   });
+  it('should contain standard payment milestones and No-Cost EMI terms in HTML', () => {
+    const tpl = rawTemplates.find((t) => t.id === 'quotation_document');
+    expect(tpl?.html).toContain('Payment Milestones &amp; Terms');
+    expect(tpl?.html).toContain('1. Draw Token (10%)');
+    expect(tpl?.html).toContain('2–3 days after draw');
+    expect(tpl?.html).toContain('2. Allotment (20%)');
+    expect(tpl?.html).toContain('15–30 days');
+    expect(tpl?.html).toContain('3. Balance (70%)');
+    expect(tpl?.html).toContain('No-Cost EMI');
+  });
   it('should be mapped into EMAIL_TEMPLATES in constants.ts', () => {
     const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'quotation_document');
     expect(tpl).toBeDefined();

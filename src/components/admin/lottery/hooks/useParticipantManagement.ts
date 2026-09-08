@@ -3,7 +3,7 @@
 import { useState, useCallback, useRef } from 'react';
 import type { Participant } from '../types';
 
-interface UseParticipantManagementReturn {
+export interface UseParticipantManagementReturn {
   participants: Participant[];
   dragOver: boolean;
   searchTerm: string;

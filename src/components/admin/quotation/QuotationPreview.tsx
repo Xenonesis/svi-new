@@ -8,6 +8,7 @@ import type {
 } from '@/src/lib/quotation/types';
 import { formatINR, formatDateDisplay } from '@/src/lib/quotation/format';
 import { numberToIndianWords } from '@/src/lib/quotation/numberToIndianWords';
+import { calculateQuotationMilestones } from '@/src/lib/quotation/calculateQuotation';
 import Image from 'next/image';
 
 interface QuotationPreviewProps {
@@ -42,6 +43,7 @@ export default function QuotationPreview({
   const areaSqYds = Number(formData.area) || 0;
   const areaSqFt = Math.round(areaSqYds * 9);
   const showCustomNotes = hasValidNotes(formData.notes);
+  const milestones = calculateQuotationMilestones(calculation.grandTotal, formData.paymentMonths);
 
   return (
     <div
@@ -947,8 +949,9 @@ export default function QuotationPreview({
                         color: '#15803d',
                       }}
                     >
-                      {t.paymentMonths}-Month Plan: ≈{' '}
-                      {formatINR(Math.ceil(t.grandTotal / parseInt(t.paymentMonths, 10)))} / month
+                      {t.paymentMonths}-Month No-Cost EMI (70% Bal.): ≈{' '}
+                      {formatINR(Math.ceil((t.grandTotal * 0.7) / parseInt(t.paymentMonths, 10)))} /
+                      month
                     </p>
                   )}
                 </div>
@@ -1193,7 +1196,8 @@ export default function QuotationPreview({
               parseInt(formData.paymentMonths, 10) > 1 &&
               (() => {
                 const months = parseInt(formData.paymentMonths, 10);
-                const monthly = Math.ceil(calculation.grandTotal / months);
+                const emiBalance = milestones.remainingAmount;
+                const monthly = Math.ceil(emiBalance / months);
                 return (
                   <div style={{ marginTop: 10 }}>
                     <div
@@ -1215,10 +1219,10 @@ export default function QuotationPreview({
                           textTransform: 'uppercase',
                         }}
                       >
-                        {months}-Month Installment Plan
+                        {months}-Month No-Cost Installment Plan (Remaining 70% Balance)
                       </span>
                       <span style={{ fontSize: '10px', color: '#F5D68A', fontWeight: 700 }}>
-                        ≈ {formatINR(monthly)} / month
+                        ≈ {formatINR(monthly)} / month (0% Interest)
                       </span>
                     </div>
                     <table
@@ -1293,10 +1297,8 @@ export default function QuotationPreview({
                       <tbody>
                         {Array.from({ length: months }, (_, i) => {
                           const isLast = i === months - 1;
-                          const amt = isLast
-                            ? calculation.grandTotal - monthly * (months - 1)
-                            : monthly;
-                          const cumulative = isLast ? calculation.grandTotal : monthly * (i + 1);
+                          const amt = isLast ? emiBalance - monthly * (months - 1) : monthly;
+                          const cumulative = isLast ? emiBalance : monthly * (i + 1);
                           return (
                             <tr
                               key={i}
@@ -1357,7 +1359,7 @@ export default function QuotationPreview({
                               fontSize: '11px',
                             }}
                           >
-                            Total Payable ({months} Installments)
+                            Total Remaining EMI Balance ({months} Installments)
                           </td>
                           <td
                             colSpan={2}
@@ -1370,7 +1372,7 @@ export default function QuotationPreview({
                               fontFamily: 'monospace',
                             }}
                           >
-                            {formatINR(calculation.grandTotal)}
+                            {formatINR(emiBalance)}
                           </td>
                         </tr>
                       </tfoot>
@@ -1380,6 +1382,149 @@ export default function QuotationPreview({
               })()}
           </div>
         )}
+
+        {/* ── PAYMENT MILESTONES & SCHEDULE CARD ──────────────────────────── */}
+        <div
+          style={{
+            border: '1px solid #e2e8f0',
+            borderRadius: '6px',
+            overflow: 'hidden',
+            background: '#ffffff',
+            marginBottom: 8,
+          }}
+        >
+          <div
+            style={{
+              background: '#0a1628',
+              color: '#ffffff',
+              padding: '6px 12px',
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <span
+              style={{
+                fontSize: '10px',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}
+            >
+              Payment Milestones &amp; Schedule
+            </span>
+            <span
+              style={{
+                background: '#16a34a',
+                color: '#ffffff',
+                fontSize: '9px',
+                fontWeight: 700,
+                padding: '2px 8px',
+                borderRadius: '10px',
+                letterSpacing: '0.04em',
+                textTransform: 'uppercase',
+              }}
+            >
+              ✓ 100% No-Cost EMI (0% Interest)
+            </span>
+          </div>
+
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr 1fr 1.2fr',
+              background: '#f8fafc',
+            }}
+          >
+            <div style={{ padding: '8px 12px', borderRight: '1px solid #e2e8f0' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 2,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    color: '#0a1628',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Stage 1: 10% Draw Token
+                </span>
+                <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#b45309' }}>
+                  {formatINR(milestones.tokenAmount)}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '9.5px', color: '#64748b', lineHeight: 1.35 }}>
+                Payable within <strong>2–3 days after draw</strong>.
+              </p>
+            </div>
+
+            <div style={{ padding: '8px 12px', borderRight: '1px solid #e2e8f0' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 2,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    color: '#0a1628',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Stage 2: 20% Confirmation
+                </span>
+                <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#b45309' }}>
+                  {formatINR(milestones.allotmentAmount)}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '9.5px', color: '#64748b', lineHeight: 1.35 }}>
+                Payable within <strong>15–30 days</strong>.
+              </p>
+            </div>
+
+            <div style={{ padding: '8px 12px' }}>
+              <div
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 2,
+                }}
+              >
+                <span
+                  style={{
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    color: '#0a1628',
+                    textTransform: 'uppercase',
+                  }}
+                >
+                  Stage 3: 70% Remaining
+                </span>
+                <span style={{ fontSize: '10.5px', fontWeight: 800, color: '#15803d' }}>
+                  {formatINR(milestones.remainingAmount)}
+                </span>
+              </div>
+              <p style={{ margin: 0, fontSize: '9.5px', color: '#64748b', lineHeight: 1.35 }}>
+                Structured on agreed EMI plan as per rate/sq. yd
+                {milestones.monthlyEmiOnRemaining
+                  ? ` (≈ ${formatINR(milestones.monthlyEmiOnRemaining)} / mo)`
+                  : ' (No-Cost EMI)'}
+                .
+              </p>
+            </div>
+          </div>
+        </div>
 
         {/* ── HIGH-CONVERTING VALUE ADDS (AMENITIES + BANKING + PROCESS) ─ */}
         <div
@@ -1593,7 +1738,7 @@ export default function QuotationPreview({
             4-Step Booking:
           </span>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569' }}>
-            <span style={{ fontWeight: 600 }}>1. Plan Selection</span>
+            <span style={{ fontWeight: 600 }}>1. Draw / Selection</span>
             <svg
               width="9"
               height="9"
@@ -1606,7 +1751,9 @@ export default function QuotationPreview({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-            <span style={{ fontWeight: 600 }}>2. KYC &amp; Token (10%)</span>
+            <span style={{ fontWeight: 600, color: '#b45309' }}>
+              2. 10% Token (2–3 Days Post-Draw)
+            </span>
             <svg
               width="9"
               height="9"
@@ -1619,7 +1766,7 @@ export default function QuotationPreview({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-            <span style={{ fontWeight: 600 }}>3. Allotment Letter</span>
+            <span style={{ fontWeight: 600, color: '#b45309' }}>3. 20% Allotment (15–30 Days)</span>
             <svg
               width="9"
               height="9"
@@ -1632,7 +1779,7 @@ export default function QuotationPreview({
             >
               <polyline points="9 18 15 12 9 6" />
             </svg>
-            <span style={{ fontWeight: 600, color: '#0a1628' }}>4. Registry / Possession</span>
+            <span style={{ fontWeight: 600, color: '#15803d' }}>4. 70% Balance (No-Cost EMI)</span>
           </div>
         </div>
 
@@ -1669,17 +1816,30 @@ export default function QuotationPreview({
           )}
 
           <div style={{ fontSize: '10.5px', color: '#64748b', lineHeight: '1.45' }}>
-            <p style={{ margin: '0 0 1px' }}>
+            <p style={{ margin: '0 0 2px' }}>
+              • <strong>Payment Schedule (10%):</strong> 10% of total payment should be payable
+              within 2–3 days after draw.
+            </p>
+            <p style={{ margin: '0 0 2px' }}>
+              • <strong>Allotment Milestone (20%):</strong> Next 20% of payment should be payable
+              within 15–30 days.
+            </p>
+            <p style={{ margin: '0 0 2px' }}>
+              • <strong>Remaining Balance (70%):</strong> Next remaining amount will be counted on
+              agreed EMI plan as per its rate/square yard.
+            </p>
+            <p style={{ margin: '0 0 2px' }}>
+              • <strong>No-Cost EMI Guarantee:</strong> EMI will be 100% No-Cost EMI (0% interest,
+              zero hidden finance charges).
+            </p>
+            <p style={{ margin: '0 0 2px' }}>
               • <strong>Quotation Validity:</strong> Rates are valid until the specified date.
               Allotments are subject to unit availability.
             </p>
-            <p style={{ margin: '0 0 1px' }}>
-              • <strong>Statutory Charges:</strong> Government stamp duty, registration charges, and
-              legal document fees are payable at the time of registry as per applicable state norms.
-            </p>
             <p style={{ margin: 0 }}>
-              • <strong>Agreement:</strong> Final terms and possession milestones are governed by
-              the Builder-Buyer Agreement (BBA).
+              • <strong>Statutory Charges &amp; Agreement:</strong> Government stamp duty,
+              registration charges, and legal document fees are payable at the time of registry as
+              per applicable state norms. Final terms governed by Builder-Buyer Agreement (BBA).
             </p>
           </div>
         </div>

@@ -64,6 +64,21 @@ export interface QuotationCalculationResult {
   effectiveRate: number;
 }
 
+export interface QuotationMilestones {
+  tokenPercent: number; // 10%
+  tokenAmount: number;
+  tokenTimeline: string;
+  allotmentPercent: number; // 20%
+  allotmentAmount: number;
+  allotmentTimeline: string;
+  remainingPercent: number; // 70%
+  remainingAmount: number;
+  remainingTimeline: string;
+  isNoCostEmi: boolean;
+  paymentMonths?: number;
+  monthlyEmiOnRemaining: number | null;
+}
+
 export interface SavedQuotation {
   id: string;
   document_type: string;

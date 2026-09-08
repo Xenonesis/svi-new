@@ -156,6 +156,22 @@ export default function QuotationForm({
       } as unknown as React.ChangeEvent<HTMLInputElement>);
     }
   };
+  const handleInsertPaymentPoints = () => {
+    const pointsText = [
+      '• 10% of total payment should be payable within 2–3 days after draw.',
+      '• Next 20% of payment should be payable within 15–30 days.',
+      '• Next remaining amount will be counted on agreed EMI plan as per its rate/square yard.',
+      '• EMI will be 100% No-Cost EMI (0% interest, zero hidden finance charges).',
+    ].join('\n');
+
+    const updatedNotes = formData.notes?.trim()
+      ? `${formData.notes.trim()}\n\n${pointsText}`
+      : pointsText;
+
+    onChange({
+      target: { name: 'notes', value: updatedNotes },
+    } as unknown as React.ChangeEvent<HTMLTextAreaElement>);
+  };
 
   return (
     <div className="dark:bg-brand-dark-surface/65 relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
@@ -721,11 +737,60 @@ export default function QuotationForm({
           </div>
         )}
 
+        {/* ── Standard Payment Milestones Card ─────────────────────────── */}
+        <div className="rounded-xl border border-amber-200/70 bg-gradient-to-br from-amber-50/80 to-amber-100/40 p-4 dark:border-amber-500/20 dark:from-amber-500/10 dark:to-amber-500/5">
+          <div className="mb-2 flex items-center justify-between">
+            <span className="text-[10px] font-extrabold tracking-wider text-amber-900 uppercase dark:text-amber-300">
+              Standard Payment Milestones
+            </span>
+            <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">
+              ✓ No-Cost EMI (0% Interest)
+            </span>
+          </div>
+          <div className="space-y-1.5 text-xs text-amber-950/90 dark:text-amber-100/90">
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-amber-800 dark:text-amber-400">1.</span>
+              <span>
+                <strong>10% of total payment</strong> payable within 2–3 days after draw.
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-amber-800 dark:text-amber-400">2.</span>
+              <span>
+                <strong>Next 20% of payment</strong> payable within 15–30 days.
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-amber-800 dark:text-amber-400">3.</span>
+              <span>
+                <strong>Remaining 70% amount</strong> structured on agreed EMI plan as per its
+                rate/square yard.
+              </span>
+            </div>
+            <div className="flex items-start gap-2">
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">4.</span>
+              <span className="text-emerald-800 dark:text-emerald-300">
+                <strong>0% Interest / No-Cost EMI:</strong> Zero hidden finance charges on all
+                monthly installment plans.
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* ── Notes ──────────────────────────────────────────────────────── */}
         <div>
-          <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-            Notes / Special Terms
-          </label>
+          <div className="mb-1.5 flex items-center justify-between">
+            <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+              Notes / Special Terms
+            </label>
+            <button
+              type="button"
+              onClick={handleInsertPaymentPoints}
+              className="text-[10px] font-semibold text-amber-600 transition-colors hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300"
+            >
+              + Insert Payment Points
+            </button>
+          </div>
           <textarea
             name="notes"
             value={formData.notes}

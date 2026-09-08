@@ -19,7 +19,11 @@ import type {
 } from '@/src/lib/quotation/types';
 import { formatINR, formatDateDisplay } from '@/src/lib/quotation/format';
 import { numberToIndianWords } from '@/src/lib/quotation/numberToIndianWords';
-import { calculateQuotation, calculatePricingTiers } from '@/src/lib/quotation/calculateQuotation';
+import {
+  calculateQuotation,
+  calculatePricingTiers,
+  calculateQuotationMilestones,
+} from '@/src/lib/quotation/calculateQuotation';
 import QuotationPreview from '@/src/components/admin/quotation/QuotationPreview';
 
 interface QuotationViewModalProps {
@@ -69,6 +73,10 @@ export default function QuotationViewModal({
       return [];
     }
   }, [fd]);
+  const milestones = useMemo(() => {
+    if (!calc) return null;
+    return calculateQuotationMilestones(calc.grandTotal, fd?.paymentMonths);
+  }, [calc, fd?.paymentMonths]);
 
   const handleDownloadPDFClick = async () => {
     if (activeTab !== 'preview') {
@@ -353,10 +361,60 @@ export default function QuotationViewModal({
                       {formatINR(calc.grandTotal)}
                     </span>
                   </div>
-
                   <p className="mt-2 text-xs text-gray-500 italic dark:text-gray-400">
                     {numberToIndianWords(calc.grandTotal)}
                   </p>
+
+                  {/* Payment Milestones */}
+                  {milestones && (
+                    <div className="mt-4 rounded-lg border border-amber-200/60 bg-amber-50/70 p-4 dark:border-amber-500/20 dark:bg-amber-500/10">
+                      <div className="mb-2 flex items-center justify-between">
+                        <p className="text-[10px] font-bold tracking-widest text-amber-900 uppercase dark:text-amber-300">
+                          Payment Milestones &amp; Terms
+                        </p>
+                        <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">
+                          ✓ No-Cost EMI (0% Interest)
+                        </span>
+                      </div>
+                      <div className="grid gap-2 text-xs sm:grid-cols-3">
+                        <div className="rounded bg-white/70 p-2.5 dark:bg-black/20">
+                          <span className="block font-bold text-gray-700 dark:text-gray-300">
+                            1. Draw Token (10%)
+                          </span>
+                          <span className="text-sm font-extrabold text-amber-700 dark:text-amber-400">
+                            {formatINR(milestones.tokenAmount)}
+                          </span>
+                          <span className="block text-[10px] text-gray-500 dark:text-gray-400">
+                            Within 2–3 days after draw
+                          </span>
+                        </div>
+                        <div className="rounded bg-white/70 p-2.5 dark:bg-black/20">
+                          <span className="block font-bold text-gray-700 dark:text-gray-300">
+                            2. Allotment (20%)
+                          </span>
+                          <span className="text-sm font-extrabold text-amber-700 dark:text-amber-400">
+                            {formatINR(milestones.allotmentAmount)}
+                          </span>
+                          <span className="block text-[10px] text-gray-500 dark:text-gray-400">
+                            Within 15–30 days
+                          </span>
+                        </div>
+                        <div className="rounded bg-white/70 p-2.5 dark:bg-black/20">
+                          <span className="block font-bold text-gray-700 dark:text-gray-300">
+                            3. Balance (70%)
+                          </span>
+                          <span className="text-sm font-extrabold text-emerald-700 dark:text-emerald-400">
+                            {formatINR(milestones.remainingAmount)}
+                          </span>
+                          <span className="block text-[10px] text-gray-500 dark:text-gray-400">
+                            {milestones.monthlyEmiOnRemaining
+                              ? `≈ ${formatINR(milestones.monthlyEmiOnRemaining)}/mo (${fd?.paymentMonths} mos)`
+                              : 'On agreed No-Cost EMI'}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )}
 

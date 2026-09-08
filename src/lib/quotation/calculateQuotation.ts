@@ -3,6 +3,7 @@ import type {
   QuotationCalculationResult,
   PricingTier,
   PricingTierCalculation,
+  QuotationMilestones,
 } from './types';
 import { parseNumber } from './format';
 
@@ -104,4 +105,46 @@ export function calculatePricingTiers(
       }
     })
     .filter((item): item is PricingTierCalculation => item !== null);
+}
+
+export const STANDARD_QUOTATION_PAYMENT_POINTS = [
+  '10% of total payment should be payable within 2–3 days after draw.',
+  'Next 20% of payment should be payable within 15–30 days.',
+  'Next remaining amount will be counted on agreed EMI plan as per its rate/square yard.',
+  'EMI will be 100% No-Cost EMI (0% interest, zero hidden finance charges).',
+] as const;
+
+/**
+ * Calculates standard payment milestones:
+ * 1. 10% Draw Token (payable within 2–3 days after draw)
+ * 2. 20% Booking Milestone (payable within 15–30 days)
+ * 3. 70% Remaining Balance (structured on agreed EMI plan as per rate/sq. yd)
+ * 4. 100% No-Cost EMI (0% interest)
+ */
+export function calculateQuotationMilestones(
+  grandTotal: number,
+  paymentMonths?: string | number
+): QuotationMilestones {
+  const safeTotal = isFinite(grandTotal) && grandTotal > 0 ? grandTotal : 0;
+  const tokenAmount = roundMoney(safeTotal * 0.1);
+  const allotmentAmount = roundMoney(safeTotal * 0.2);
+  const remainingAmount = roundMoney(safeTotal - tokenAmount - allotmentAmount);
+  const months = paymentMonths ? parseInt(String(paymentMonths), 10) : 0;
+  const validMonths = isFinite(months) && months > 1 ? months : 0;
+  const monthlyEmiOnRemaining = validMonths > 0 ? Math.ceil(remainingAmount / validMonths) : null;
+
+  return {
+    tokenPercent: 10,
+    tokenAmount,
+    tokenTimeline: 'Within 2–3 days after draw',
+    allotmentPercent: 20,
+    allotmentAmount,
+    allotmentTimeline: 'Within 15–30 days',
+    remainingPercent: 70,
+    remainingAmount,
+    remainingTimeline: 'Structured on agreed EMI plan as per rate/sq. yd',
+    isNoCostEmi: true,
+    paymentMonths: validMonths > 0 ? validMonths : undefined,
+    monthlyEmiOnRemaining,
+  };
 }

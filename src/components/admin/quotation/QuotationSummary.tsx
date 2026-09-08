@@ -2,6 +2,7 @@
 
 import type { QuotationCalculationResult, PricingTierCalculation } from '@/src/lib/quotation/types';
 import { formatINR } from '@/src/lib/quotation/format';
+import { calculateQuotationMilestones } from '@/src/lib/quotation/calculateQuotation';
 import { Layers } from 'lucide-react';
 
 interface QuotationSummaryProps {
@@ -18,8 +19,10 @@ export default function QuotationSummary({
   paymentMonths,
 }: QuotationSummaryProps) {
   const months = paymentMonths ? parseInt(paymentMonths, 10) : 0;
-  const monthlyAmount =
-    months > 1 && calculation ? Math.ceil(calculation.grandTotal / months) : null;
+  const milestones = calculation
+    ? calculateQuotationMilestones(calculation.grandTotal, paymentMonths)
+    : null;
+  const monthlyAmount = milestones?.monthlyEmiOnRemaining || null;
   const hasMultipleTiers = tierCalculations && tierCalculations.length > 1;
 
   if (!calculation && !hasMultipleTiers) {
@@ -199,17 +202,61 @@ export default function QuotationSummary({
         </div>
       </div>
 
+      {/* Standard Payment Milestones */}
+      {milestones && (
+        <div className="mt-3 rounded-lg border border-amber-200/60 bg-amber-50/70 p-3.5 dark:border-amber-500/20 dark:bg-amber-500/10">
+          <div className="mb-2 flex items-center justify-between">
+            <p className="text-[10px] font-bold tracking-wider text-amber-900 uppercase dark:text-amber-300">
+              Payment Milestones &amp; Terms
+            </p>
+            <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold text-emerald-800 dark:bg-emerald-500/20 dark:text-emerald-300">
+              0% Interest
+            </span>
+          </div>
+          <div className="space-y-1.5 text-xs text-amber-950/90 dark:text-amber-200/90">
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-400">• 10% Draw Token (2–3 days):</span>
+              <span className="font-bold text-amber-900 dark:text-amber-300">
+                {formatINR(milestones.tokenAmount)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-400">• Next 20% (15–30 days):</span>
+              <span className="font-bold text-amber-900 dark:text-amber-300">
+                {formatINR(milestones.allotmentAmount)}
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-gray-600 dark:text-gray-400">
+                • Remaining 70% (on agreed EMI):
+              </span>
+              <span className="font-bold text-emerald-700 dark:text-emerald-400">
+                {formatINR(milestones.remainingAmount)}
+              </span>
+            </div>
+            <div className="mt-1 border-t border-amber-200/60 pt-1.5 text-[10px] font-semibold text-emerald-700 dark:border-amber-500/20 dark:text-emerald-400">
+              ✓ Rate/Sq. Yd. basis • 100% No-Cost EMI
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Monthly Installment */}
-      {monthlyAmount && (
+      {monthlyAmount && months > 1 && (
         <div className="mt-3 rounded-lg border border-emerald-200/60 bg-emerald-50/80 px-4 py-3 dark:border-emerald-500/20 dark:bg-emerald-500/8">
-          <p className="mb-1 text-[10px] font-bold tracking-wider text-emerald-800 uppercase dark:text-emerald-400">
-            {months}-Month Plan · Monthly Installment
-          </p>
+          <div className="mb-1 flex items-center justify-between">
+            <p className="text-[10px] font-bold tracking-wider text-emerald-800 uppercase dark:text-emerald-400">
+              {months}-Month No-Cost EMI (70% Balance)
+            </p>
+            <span className="rounded bg-emerald-600 px-1.5 py-0.5 text-[9px] font-bold text-white">
+              0% Interest
+            </span>
+          </div>
           <p className="text-lg font-extrabold text-emerald-700 tabular-nums dark:text-emerald-300">
             {formatINR(monthlyAmount)} <span className="text-xs font-semibold">/ month</span>
           </p>
           <p className="mt-0.5 text-[10px] text-emerald-600 dark:text-emerald-500">
-            {formatINR(calculation.grandTotal)} ÷ {months} months
+            {formatINR(milestones?.remainingAmount || 0)} ÷ {months} months
           </p>
         </div>
       )}

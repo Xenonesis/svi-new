@@ -5,7 +5,7 @@ import { supabase } from '@/src/lib/supabase/client';
 import { createLotteryCampaign } from '@/src/lib/lottery/campaignHelpers';
 import type { Lottery, DbParticipant } from '../types';
 
-interface UseLotteryDataReturn {
+export interface UseLotteryDataReturn {
   lotteries: Lottery[];
   activeLottery: Lottery | null;
   activeParticipantsCount: number;
