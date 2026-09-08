@@ -12,4 +12,4 @@ export interface Notification {
 
 export type FilterType = 'all' | 'info' | 'success' | 'warning' | 'error';
 export type ReadFilter = 'all' | 'read' | 'unread';
-export type SortOption = 'newest' | 'oldest' | 'unread-first';
+export type SortOption = 'newest' | 'oldest' | 'unread-first' | 'unread_first';
