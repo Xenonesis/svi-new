@@ -182,7 +182,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                   className={`flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-bold transition-all ${
                     temperature === 'hot'
                       ? 'border-red-500 bg-red-500/15 text-red-600 dark:border-red-500/60 dark:text-red-400'
-                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Flame className="h-3.5 w-3.5 text-red-500" /> Hot (Ready)
@@ -193,7 +193,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                   className={`flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-bold transition-all ${
                     temperature === 'warm'
                       ? 'border-amber-500 bg-amber-500/15 text-amber-600 dark:border-amber-500/60 dark:text-amber-400'
-                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Zap className="h-3.5 w-3.5 text-amber-500" /> Warm
@@ -204,7 +204,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                   className={`flex items-center justify-center gap-1.5 rounded-xl border py-2 text-xs font-bold transition-all ${
                     temperature === 'cold'
                       ? 'border-blue-500 bg-blue-500/15 text-blue-600 dark:border-blue-500/60 dark:text-blue-400'
-                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-800 dark:bg-slate-800/40 dark:text-slate-400'
+                      : 'border-slate-200 bg-slate-50 text-slate-600 hover:bg-slate-100 dark:border-slate-700/80 dark:bg-slate-800/60 dark:text-slate-300 dark:hover:bg-slate-800'
                   }`}
                 >
                   <Snowflake className="h-3.5 w-3.5 text-blue-500" /> Cold
@@ -226,7 +226,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                     placeholder="e.g. Ramesh Sharma"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -243,7 +243,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="e.g. 9876543210"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -260,11 +260,20 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                   <select
                     value={projectInterest}
                     onChange={(e) => setProjectInterest(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                   >
-                    <option value="">Select Project / Property</option>
+                    <option
+                      value=""
+                      className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                    >
+                      Select Project / Property
+                    </option>
                     {PROJECTS.map((proj) => (
-                      <option key={proj} value={proj}>
+                      <option
+                        key={proj}
+                        value={proj}
+                        className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                      >
                         {proj}
                       </option>
                     ))}
@@ -281,7 +290,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
                   placeholder="e.g. 40L - 60L / 200 sq.yd"
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -295,12 +304,32 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                 <select
                   value={lifecycleStatus}
                   onChange={(e) => setLifecycleStatus(e.target.value)}
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                 >
-                  <option value="new">New Lead</option>
-                  <option value="contacted">Contacted</option>
-                  <option value="qualified">Qualified</option>
-                  <option value="visit_requested">Site Visit Scheduled</option>
+                  <option
+                    value="new"
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                  >
+                    New Lead
+                  </option>
+                  <option
+                    value="contacted"
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                  >
+                    Contacted
+                  </option>
+                  <option
+                    value="qualified"
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                  >
+                    Qualified
+                  </option>
+                  <option
+                    value="visit_requested"
+                    className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                  >
+                    Site Visit Scheduled
+                  </option>
                 </select>
               </div>
 
@@ -315,7 +344,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="client@gmail.com"
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                   />
                 </div>
               </div>
@@ -335,21 +364,21 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                 <button
                   type="button"
                   onClick={() => setQuickFollowUp(0, 17)}
-                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:border-blue-500/60 dark:hover:bg-slate-700/80"
                 >
                   Today 5:00 PM
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuickFollowUp(1, 11)}
-                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:border-blue-500/60 dark:hover:bg-slate-700/80"
                 >
                   Tomorrow 11:00 AM
                 </button>
                 <button
                   type="button"
                   onClick={() => setQuickFollowUp(3, 11)}
-                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                  className="rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-800/90 dark:text-slate-200 dark:hover:border-blue-500/60 dark:hover:bg-slate-700/80"
                 >
                   In 3 Days
                 </button>
@@ -361,7 +390,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                     type="date"
                     value={followUpDate}
                     onChange={(e) => setFollowUpDate(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                    className="w-full rounded-xl border border-slate-200 bg-white px-2.5 py-1.5 text-xs text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:[color-scheme:dark]"
                   />
                 </div>
                 <div>
@@ -371,7 +400,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                       type="time"
                       value={followUpTime}
                       onChange={(e) => setFollowUpTime(e.target.value)}
-                      className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pr-2.5 pl-8 text-xs text-slate-900 focus:border-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white"
+                      className="w-full rounded-xl border border-slate-200 bg-white py-1.5 pr-2.5 pl-8 text-xs text-slate-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:[color-scheme:dark]"
                     />
                   </div>
                 </div>
@@ -390,7 +419,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
                   placeholder="e.g. Client inquired about payment plan and possession date. Will confirm site visit."
-                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-slate-800 dark:bg-slate-800/50 dark:text-white"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:placeholder:text-slate-500 dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                 />
               </div>
             </div>
@@ -400,7 +429,7 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-400 dark:hover:bg-slate-800"
+                className="rounded-xl px-4 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
               >
                 Cancel
               </button>

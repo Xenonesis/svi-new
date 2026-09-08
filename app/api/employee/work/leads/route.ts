@@ -27,7 +27,23 @@ export async function GET(request: NextRequest) {
       query = query.eq('lifecycle_status', status);
     }
 
-    const { data: leads, error } = await query.order('created_at', { ascending: false });
+    let { data: leads, error } = await query.order('created_at', { ascending: false });
+
+    // Graceful fallback if lead_created_by column is not yet present in database
+    if (error && (error.code === '42703' || error.message?.includes('lead_created_by'))) {
+      let fallbackQuery = supabaseAdmin
+        .from('chat_leads')
+        .select('*')
+        .eq('assigned_to', verified.user.id);
+
+      if (status && status !== 'all') {
+        fallbackQuery = fallbackQuery.eq('lifecycle_status', status);
+      }
+
+      const fallbackRes = await fallbackQuery.order('created_at', { ascending: false });
+      leads = fallbackRes.data;
+      error = fallbackRes.error;
+    }
 
     if (error) {
       console.error('Error fetching leads:', error);

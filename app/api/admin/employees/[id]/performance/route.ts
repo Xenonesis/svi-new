@@ -58,11 +58,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const todayRecord = records.find((r) => r.date === todayStr);
 
     // 3. Fetch Leads for this employee
-    const { data: rawLeads } = await supabaseAdmin
+    const initialFetch = await supabaseAdmin
       .from('chat_leads')
       .select('*')
       .or(`assigned_to.eq.${employeeId},lead_created_by.eq.${employeeId}`)
       .order('created_at', { ascending: false });
+    let rawLeads = initialFetch.data;
+    const leadsError = initialFetch.error;
+
+    if (
+      leadsError &&
+      (leadsError.code === '42703' || leadsError.message?.includes('lead_created_by'))
+    ) {
+      const fallback = await supabaseAdmin
+        .from('chat_leads')
+        .select('*')
+        .eq('assigned_to', employeeId)
+        .order('created_at', { ascending: false });
+      rawLeads = fallback.data;
+    }
 
     const leads = rawLeads || [];
     const totalLeads = leads.length;

@@ -36,7 +36,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       query = query.eq('temperature', temperature);
     }
 
-    const { data: rawLeads, error } = await query;
+    let { data: rawLeads, error } = await query;
+
+    if (error && (error.code === '42703' || error.message?.includes('lead_created_by'))) {
+      let fallbackQuery = supabaseAdmin
+        .from('chat_leads')
+        .select('*')
+        .eq('assigned_to', employeeId)
+        .order('created_at', { ascending: false });
+
+      if (status && status !== 'all') {
+        fallbackQuery = fallbackQuery.eq('lifecycle_status', status);
+      }
+      if (temperature && temperature !== 'all') {
+        fallbackQuery = fallbackQuery.eq('temperature', temperature);
+      }
+      const fallbackRes = await fallbackQuery;
+      rawLeads = fallbackRes.data;
+      error = fallbackRes.error;
+    }
 
     if (error) {
       console.error('Error fetching employee leads for admin:', error);
