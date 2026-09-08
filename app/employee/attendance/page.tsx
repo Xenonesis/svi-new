@@ -39,13 +39,36 @@ export default function EmployeeAttendancePunchPage() {
     requestLocation,
     fetchStatus,
     executePunch,
+    verificationSteps,
+    verificationStatus,
+    retryVerification,
+    enableOfflineMode,
   } = useEmployeeAttendanceTerminal();
 
   if (loading) {
+    const isTimeout = verificationStatus === 'timeout';
+    const isSuccess = verificationStatus === 'success';
+
     return (
       <BrandedLoadingState
-        message="Checking Attendance Status & Geofence..."
-        subMessage="Syncing shift timing rules and active office zones"
+        status={verificationStatus}
+        steps={verificationSteps}
+        message={
+          isSuccess
+            ? 'Attendance Verified & Ready'
+            : isTimeout
+              ? 'Verification Delayed'
+              : 'Verifying Attendance Clearance...'
+        }
+        subMessage={
+          isSuccess
+            ? 'Geofence locked and shift policies synchronized'
+            : isTimeout
+              ? 'Satellite or network lock is taking longer than usual'
+              : 'Syncing shift timing rules and active office zones'
+        }
+        onRetry={retryVerification}
+        onOfflineFallback={enableOfflineMode}
       />
     );
   }

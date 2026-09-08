@@ -10,6 +10,7 @@ import {
   LocationResult,
 } from '@/src/lib/location/geolocationService';
 import type { FeedbackNotice } from '@/src/components/employee/attendance/PunchFeedbackBanner';
+import type { VerificationStep } from '@/src/components/employee/BrandedLoadingState';
 import type { AttendanceStatusResponse, AttendanceSettings, GeofenceLocation } from './types';
 
 export function useEmployeeAttendanceTerminal() {
@@ -42,6 +43,22 @@ export function useEmployeeAttendanceTerminal() {
   );
   const [coords, setCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [accuracy, setAccuracy] = useState<number | null>(null);
+  // Progressive Verification Lifecycle State
+  const [statusLoaded, setStatusLoaded] = useState(false);
+  const [verificationStatus, setVerificationStatus] = useState<
+    'loading' | 'success' | 'timeout' | 'error'
+  >('loading');
+
+  // 6-second Timeout Safeguard for Loading State
+  useEffect(() => {
+    if (!loading) return;
+    const timer = setTimeout(() => {
+      if (loading) {
+        setVerificationStatus('timeout');
+      }
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, [loading]);
 
   // Work Log Modal on Punch-out
   const [showWorkLogModal, setShowWorkLogModal] = useState(false);
@@ -76,10 +93,17 @@ export function useEmployeeAttendanceTerminal() {
         if (json.locations) {
           setLocations(json.locations);
         }
+        setStatusLoaded(true);
+        // Smooth morphing to emerald success ring before dismissing
+        setVerificationStatus('success');
+        setTimeout(() => {
+          setLoading(false);
+        }, 450);
+      } else {
+        setLoading(false);
       }
     } catch {
       toast.error('Could not load live attendance status');
-    } finally {
       setLoading(false);
     }
   }, []);
@@ -151,6 +175,44 @@ export function useEmployeeAttendanceTerminal() {
       cleanupWatcher();
     };
   }, [requestLocation]);
+  const retryVerification = useCallback(() => {
+    setLoading(true);
+    setVerificationStatus('loading');
+    fetchStatus();
+    requestLocation();
+  }, [fetchStatus, requestLocation]);
+
+  const enableOfflineMode = useCallback(() => {
+    setLoading(false);
+    toast.info('Switched to Offline Mode', {
+      description: 'You can punch attendance now. Records will auto-sync when online.',
+    });
+  }, []);
+
+  const verificationSteps: VerificationStep[] = [
+    {
+      id: 'gps',
+      label: 'GPS Lock',
+      status: coords ? 'completed' : locationStatus === 'error' ? 'failed' : 'in_progress',
+    },
+    {
+      id: 'geofence',
+      label: 'Geofence Check',
+      status:
+        coords && locations.length > 0
+          ? 'completed'
+          : locationStatus === 'error'
+            ? 'failed'
+            : coords
+              ? 'in_progress'
+              : 'pending',
+    },
+    {
+      id: 'rules',
+      label: 'Shift Rules',
+      status: statusLoaded ? 'completed' : 'in_progress',
+    },
+  ];
 
   // Live Timer ticker for Active Shift
   useEffect(() => {
@@ -423,5 +485,9 @@ export function useEmployeeAttendanceTerminal() {
     requestLocation,
     fetchStatus,
     executePunch,
+    verificationSteps,
+    verificationStatus,
+    retryVerification,
+    enableOfflineMode,
   };
 }
