@@ -51,7 +51,7 @@ export function WorkforceHeader({
           <button
             type="button"
             onClick={onAddEmployee}
-            className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider uppercase shadow-lg transition-all"
+            className="btn-tactile shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider uppercase shadow-lg transition-all"
           >
             <Plus size={16} /> Add Employee
           </button>
@@ -60,7 +60,7 @@ export function WorkforceHeader({
           <button
             type="button"
             onClick={onLogAttendance}
-            className="flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 hover:from-emerald-400 hover:to-emerald-500"
+            className="btn-tactile flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 px-5 py-2.5 text-xs font-bold tracking-wider text-white uppercase shadow-lg shadow-emerald-500/20 transition-all hover:scale-105 hover:from-emerald-400 hover:to-emerald-500"
           >
             <CalendarCheck className="h-4 w-4" />
             Log Attendance
@@ -70,7 +70,7 @@ export function WorkforceHeader({
           <button
             type="button"
             onClick={onSetupSalary}
-            className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider uppercase shadow-lg transition-all"
+            className="btn-tactile shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider uppercase shadow-lg transition-all"
           >
             <Plus size={16} /> Setup Salary Structure
           </button>

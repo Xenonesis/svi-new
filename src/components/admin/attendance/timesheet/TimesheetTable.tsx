@@ -175,10 +175,7 @@ export function TimesheetTable({
           </thead>
           <tbody className="divide-y divide-gray-100 dark:divide-white/5">
             {records.map((rec) => (
-              <tr
-                key={rec.id}
-                className="transition-colors hover:bg-gray-50/60 dark:hover:bg-white/2"
-              >
+              <tr key={rec.id} className="table-row-hover transition-colors">
                 {/* Employee & Team */}
                 <td className="px-4 py-3.5">
                   <div className="flex items-center gap-3">
@@ -317,19 +314,19 @@ export function TimesheetTable({
                 {/* Work Log & Field Activity */}
                 <td className="px-4 py-3.5">
                   <div className="flex flex-wrap items-center gap-1.5">
-                    {rec.work_log.client_calls > 0 && (
+                    {rec.work_log && rec.work_log.client_calls > 0 && (
                       <span className="inline-flex items-center gap-1 rounded-md bg-purple-500/10 px-1.5 py-0.5 text-[10px] font-bold text-purple-600 dark:text-purple-400">
                         <PhoneCall className="h-2.5 w-2.5" />
                         {rec.work_log.client_calls} calls
                       </span>
                     )}
-                    {rec.work_log.site_visits > 0 && (
+                    {rec.work_log && rec.work_log.site_visits > 0 && (
                       <span className="inline-flex items-center gap-1 rounded-md bg-rose-500/10 px-1.5 py-0.5 text-[10px] font-bold text-rose-600 dark:text-rose-400">
                         <Navigation className="h-2.5 w-2.5" />
                         {rec.work_log.site_visits} visits
                       </span>
                     )}
-                    {rec.work_log.summary && (
+                    {rec.work_log?.summary && (
                       <button
                         type="button"
                         onClick={() => onViewWorkLog(rec)}
@@ -340,11 +337,12 @@ export function TimesheetTable({
                         Summary
                       </button>
                     )}
-                    {!rec.work_log.summary &&
-                      rec.work_log.client_calls === 0 &&
-                      rec.work_log.site_visits === 0 && (
-                        <span className="text-[11px] text-gray-400">No shift log</span>
-                      )}
+                    {(!rec.work_log ||
+                      (!rec.work_log.summary &&
+                        rec.work_log.client_calls === 0 &&
+                        rec.work_log.site_visits === 0)) && (
+                      <span className="text-[11px] text-gray-400">No shift log</span>
+                    )}
                   </div>
                 </td>
 

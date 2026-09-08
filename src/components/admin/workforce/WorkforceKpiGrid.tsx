@@ -4,24 +4,37 @@ import React from 'react';
 import { Users, Clock, CheckCircle2, Banknote } from 'lucide-react';
 
 interface WorkforceKpiGridProps {
-  loadingEmployees: boolean;
-  totalEmployees: number;
-  punchedInCount: number | null;
-  pendingApprovalsCount: number;
-  currentMonthName: string;
+  loadingEmployees?: boolean;
+  totalEmployees?: number;
+  punchedInCount?: number | null;
+  pendingApprovalsCount?: number;
+  currentMonthName?: string;
+  presentToday?: number;
+  onLeaveToday?: number;
+  pendingApprovals?: number;
+  monthlyPayrollTotal?: number;
+  loading?: boolean;
 }
 
 export function WorkforceKpiGrid({
-  loadingEmployees,
-  totalEmployees,
-  punchedInCount,
-  pendingApprovalsCount,
-  currentMonthName,
+  loadingEmployees = false,
+  totalEmployees = 0,
+  punchedInCount = null,
+  pendingApprovalsCount = 0,
+  currentMonthName = 'Current Month',
+  presentToday,
+  onLeaveToday: _onLeaveToday,
+  pendingApprovals,
+  monthlyPayrollTotal,
+  loading = false,
 }: WorkforceKpiGridProps) {
+  const isLoading = loadingEmployees || loading;
+  const effectivePunchedIn = punchedInCount ?? presentToday ?? null;
+  const effectivePending = pendingApprovalsCount || pendingApprovals || 0;
   return (
     <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
       {/* Card 1: Total Personnel */}
-      <div className="hover:border-brand-gold/40 relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all dark:border-white/10 dark:bg-[#111118]/80">
+      <div className="hover-lift-sm hover:border-brand-gold/40 relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all dark:border-white/10 dark:bg-[#111118]/80">
         <div className="via-brand-gold/30 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
@@ -33,7 +46,7 @@ export function WorkforceKpiGrid({
         </div>
         <div className="mt-3">
           <div className="text-brand-navy font-serif text-2xl font-bold sm:text-3xl dark:text-white">
-            {loadingEmployees ? '—' : totalEmployees}
+            {isLoading ? '—' : totalEmployees}
           </div>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
@@ -43,7 +56,7 @@ export function WorkforceKpiGrid({
       </div>
 
       {/* Card 2: Punched In Today */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all hover:border-emerald-500/40 dark:border-white/10 dark:bg-[#111118]/80">
+      <div className="hover-lift-sm relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all hover:border-emerald-500/40 dark:border-white/10 dark:bg-[#111118]/80">
         <div className="absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent" />
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
@@ -55,7 +68,7 @@ export function WorkforceKpiGrid({
         </div>
         <div className="mt-3">
           <div className="text-brand-navy font-serif text-2xl font-bold sm:text-3xl dark:text-white">
-            {punchedInCount !== null ? punchedInCount : '—'}
+            {effectivePunchedIn !== null ? effectivePunchedIn : '—'}
           </div>
           <p className="mt-1 flex items-center gap-1.5 text-[11px] text-emerald-600 dark:text-emerald-400">
             <span className="relative flex h-2 w-2">
@@ -68,7 +81,7 @@ export function WorkforceKpiGrid({
       </div>
 
       {/* Card 3: Pending Approvals */}
-      <div className="relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all hover:border-amber-500/40 dark:border-white/10 dark:bg-[#111118]/80">
+      <div className="hover-lift-sm relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all hover:border-amber-500/40 dark:border-white/10 dark:bg-[#111118]/80">
         <div className="absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-amber-500/30 to-transparent" />
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
@@ -80,7 +93,7 @@ export function WorkforceKpiGrid({
         </div>
         <div className="mt-3">
           <div className="text-brand-navy font-serif text-2xl font-bold sm:text-3xl dark:text-white">
-            {pendingApprovalsCount}
+            {effectivePending}
           </div>
           <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">
             Leaves &amp; regularizations
@@ -89,7 +102,7 @@ export function WorkforceKpiGrid({
       </div>
 
       {/* Card 4: Payroll Cycle */}
-      <div className="hover:border-brand-gold/40 relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all dark:border-white/10 dark:bg-[#111118]/80">
+      <div className="hover-lift-sm hover:border-brand-gold/40 relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/80 p-5 shadow-sm backdrop-blur-md transition-all dark:border-white/10 dark:bg-[#111118]/80">
         <div className="via-brand-gold/30 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
         <div className="flex items-center justify-between">
           <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
@@ -101,7 +114,9 @@ export function WorkforceKpiGrid({
         </div>
         <div className="mt-3">
           <div className="text-brand-navy truncate font-serif text-xl font-bold sm:text-2xl dark:text-white">
-            {currentMonthName}
+            {monthlyPayrollTotal !== undefined
+              ? `₹${monthlyPayrollTotal.toLocaleString('en-IN')}`
+              : currentMonthName}
           </div>
           <p className="mt-1 text-[11px] text-gray-500 dark:text-gray-400">Auto-calculated LOP</p>
         </div>
