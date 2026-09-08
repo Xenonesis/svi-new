@@ -51,7 +51,7 @@ export async function GET(request: NextRequest) {
     const { data: siteVisits } = await supabaseAdmin
       .from('whatsapp_site_visit_requests')
       .select(
-        '*, contact:whatsapp_contacts(name, phone), conversation:whatsapp_conversations(project_id)'
+        '*, contact:whatsapp_contacts(name:display_name, phone:phone_e164), conversation:whatsapp_conversations(project_id)'
       )
       .eq('assigned_to', verified.user.id)
       .order('created_at', { ascending: false })
