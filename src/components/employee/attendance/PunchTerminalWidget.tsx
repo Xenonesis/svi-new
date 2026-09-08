@@ -7,6 +7,7 @@ import { clsx } from 'clsx';
 import { toast } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
 import { biometricAuth } from '@/src/lib/auth/biometricAuth';
+import { triggerHaptic } from '@/src/lib/haptics';
 
 interface StatusState {
   user_id?: string;
@@ -354,7 +355,7 @@ export function PunchTerminalWidget({
           onClick={handleBiometricPunch}
           disabled={punching || verifyingBiometric}
           className={clsx(
-            'mb-3 flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border py-3 text-xs font-bold tracking-wide shadow-xs transition-all disabled:opacity-50',
+            'btn-tactile mb-3 flex w-full cursor-pointer items-center justify-center gap-2.5 rounded-2xl border py-3 text-xs font-bold tracking-wide shadow-xs transition-all disabled:opacity-50',
             isPunchedIn
               ? 'border-rose-200/80 bg-rose-50/60 text-rose-700 hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:bg-rose-900/40'
               : 'border-emerald-200/80 bg-emerald-50/60 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/30 dark:text-emerald-300 dark:hover:bg-emerald-900/40'
@@ -382,17 +383,11 @@ export function PunchTerminalWidget({
       {!isPunchedIn ? (
         <button
           onClick={() => {
-            if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-              try {
-                navigator.vibrate(30);
-              } catch (_err) {
-                void _err;
-              }
-            }
+            triggerHaptic('medium');
             onPunchIn();
           }}
           disabled={punching}
-          className="touch-target flex w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-emerald-600/30 transition-all hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-50"
+          className="btn-tactile touch-target flex w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-2xl bg-emerald-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-emerald-600/30 transition-all hover:bg-emerald-500 active:scale-[0.98] disabled:opacity-50"
         >
           {punching ? (
             <div className="flex items-center gap-2">
@@ -409,17 +404,11 @@ export function PunchTerminalWidget({
       ) : (
         <button
           onClick={() => {
-            if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-              try {
-                navigator.vibrate(30);
-              } catch (_err) {
-                void _err;
-              }
-            }
+            triggerHaptic('medium');
             onPunchOutClick();
           }}
           disabled={punching}
-          className="touch-target flex w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-2xl bg-rose-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-rose-600/30 transition-all hover:bg-rose-500 active:scale-[0.98] disabled:opacity-50"
+          className="btn-tactile touch-target flex w-full cursor-pointer touch-manipulation items-center justify-center gap-2 rounded-2xl bg-rose-600 py-4 text-sm font-bold tracking-wide text-white shadow-lg shadow-rose-600/30 transition-all hover:bg-rose-500 active:scale-[0.98] disabled:opacity-50"
         >
           {punching ? (
             <div className="flex items-center gap-2">

@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { CalendarDays, FileText, Plus, Zap, ArrowUpRight } from 'lucide-react';
+import { triggerHaptic } from '@/src/lib/haptics';
 
 interface DashboardQuickShortcutsProps {
   onOpenLeaveModal?: () => void;
@@ -15,16 +16,6 @@ export function DashboardQuickShortcuts({
   onOpenLogModal,
   onOpenTaskModal,
 }: DashboardQuickShortcutsProps) {
-  const triggerHaptic = () => {
-    if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-      try {
-        navigator.vibrate(10);
-      } catch {
-        // ignore
-      }
-    }
-  };
-
   return (
     <div className="rounded-3xl border border-slate-200/90 bg-white/95 p-5 shadow-sm backdrop-blur-xl transition-all sm:p-6 dark:border-white/10 dark:bg-slate-900/80">
       <div className="mb-3.5 flex items-center justify-between">
@@ -44,10 +35,10 @@ export function DashboardQuickShortcuts({
           <button
             type="button"
             onClick={() => {
-              triggerHaptic();
+              triggerHaptic('light');
               onOpenLeaveModal();
             }}
-            className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-blue-500/40 hover:bg-blue-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-blue-500/40 dark:hover:bg-blue-950/20"
+            className="btn-tactile group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-blue-500/40 hover:bg-blue-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-blue-500/40 dark:hover:bg-blue-950/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 transition-transform group-hover:scale-110 dark:text-blue-400">
               <CalendarDays className="h-4 w-4" />
@@ -57,8 +48,8 @@ export function DashboardQuickShortcuts({
         ) : (
           <Link
             href="/employee/attendance/history"
-            onClick={triggerHaptic}
-            className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-blue-500/40 hover:bg-blue-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-blue-500/40 dark:hover:bg-blue-950/20"
+            onClick={() => triggerHaptic('light')}
+            className="btn-tactile group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-blue-500/40 hover:bg-blue-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-blue-500/40 dark:hover:bg-blue-950/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 transition-transform group-hover:scale-110 dark:text-blue-400">
               <CalendarDays className="h-4 w-4" />
@@ -72,10 +63,10 @@ export function DashboardQuickShortcuts({
           <button
             type="button"
             onClick={() => {
-              triggerHaptic();
+              triggerHaptic('light');
               onOpenLogModal();
             }}
-            className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-emerald-500/40 hover:bg-emerald-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-950/20"
+            className="btn-tactile group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-emerald-500/40 hover:bg-emerald-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-950/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 transition-transform group-hover:scale-110 dark:text-emerald-400">
               <FileText className="h-4 w-4" />
@@ -85,8 +76,8 @@ export function DashboardQuickShortcuts({
         ) : (
           <Link
             href="/employee/work?tab=logs"
-            onClick={triggerHaptic}
-            className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-emerald-500/40 hover:bg-emerald-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-950/20"
+            onClick={() => triggerHaptic('light')}
+            className="btn-tactile group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-emerald-500/40 hover:bg-emerald-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-950/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 transition-transform group-hover:scale-110 dark:text-emerald-400">
               <FileText className="h-4 w-4" />
@@ -100,10 +91,10 @@ export function DashboardQuickShortcuts({
           <button
             type="button"
             onClick={() => {
-              triggerHaptic();
+              triggerHaptic('light');
               onOpenTaskModal();
             }}
-            className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-purple-500/40 hover:bg-purple-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-purple-500/40 dark:hover:bg-purple-950/20"
+            className="btn-tactile group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-purple-500/40 hover:bg-purple-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-purple-500/40 dark:hover:bg-purple-950/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 transition-transform group-hover:scale-110 dark:text-purple-400">
               <Plus className="h-4 w-4" />
@@ -113,8 +104,8 @@ export function DashboardQuickShortcuts({
         ) : (
           <Link
             href="/employee/work?tab=tasks"
-            onClick={triggerHaptic}
-            className="group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-purple-500/40 hover:bg-purple-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-purple-500/40 dark:hover:bg-purple-950/20"
+            onClick={() => triggerHaptic('light')}
+            className="btn-tactile group flex flex-col items-center gap-2 rounded-2xl border border-slate-100 bg-slate-50/80 p-3 text-slate-700 transition-all hover:border-purple-500/40 hover:bg-purple-50/40 active:scale-95 dark:border-white/5 dark:bg-slate-950/40 dark:text-slate-200 dark:hover:border-purple-500/40 dark:hover:bg-purple-950/20"
           >
             <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-purple-500/10 text-purple-600 transition-transform group-hover:scale-110 dark:text-purple-400">
               <Plus className="h-4 w-4" />

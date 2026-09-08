@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Clock, CheckSquare, CalendarDays, User, Banknote } from 'lucide-react';
 import { clsx } from 'clsx';
+import { triggerHaptic } from '@/src/lib/haptics';
 
 const navItems = [
   {
@@ -61,6 +62,7 @@ export default function EmployeeBottomNav() {
             <Link
               key={item.name}
               href={item.href}
+              onClick={() => triggerHaptic('light')}
               className={clsx(
                 'touch-target relative flex flex-1 flex-col items-center justify-center py-1 transition-all duration-150 active:scale-95',
                 isActive
@@ -70,7 +72,7 @@ export default function EmployeeBottomNav() {
             >
               <div
                 className={clsx(
-                  'flex h-9 w-9 items-center justify-center rounded-xl transition-all',
+                  'flex h-9 w-9 items-center justify-center rounded-xl transition-all duration-200',
                   isActive &&
                     'bg-blue-50 text-blue-600 shadow-sm dark:bg-blue-950/60 dark:text-blue-400'
                 )}
@@ -79,7 +81,7 @@ export default function EmployeeBottomNav() {
               </div>
               <span className="mt-0.5 text-[11px] tracking-tight">{item.name}</span>
               {isActive && (
-                <span className="absolute bottom-1 h-1 w-4 rounded-full bg-blue-600 dark:bg-blue-400" />
+                <span className="absolute bottom-1 h-1 w-4 rounded-full bg-blue-600 transition-all duration-200 dark:bg-blue-400" />
               )}
             </Link>
           );
