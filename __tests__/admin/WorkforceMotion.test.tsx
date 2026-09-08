@@ -33,6 +33,14 @@ describe('Admin Workforce Motion & Table Hover Styling', () => {
       employee_id: 'EMP-001',
       shift_start: '09:00',
       shift_end: '17:00',
+      team_id: 'team-1',
+      team_name: 'Civil',
+      punch_out_geofence_verified: true,
+      work_log: {
+        summary: null,
+        client_calls: 0,
+        site_visits: 0,
+      },
     };
 
     const { container } = render(
