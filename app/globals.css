@@ -960,4 +960,77 @@ main > .page-transition > section {
 }
 
 
+/* ─────────────────────────────────────────────────────────────
+   GLOBAL MOTION & INTERACTION SYSTEM
+   ───────────────────────────────────────────────────────────── */
+
+/* Universal tactile button press (Desktop & Mobile) */
+.btn-tactile {
+  transition: transform 120ms cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 120ms ease,
+              background-color 150ms ease,
+              border-color 150ms ease;
+  touch-action: manipulation;
+  user-select: none;
+}
+.btn-tactile:active {
+  transform: scale(0.975);
+}
+
+/* Desktop-only hover elevation & illumination */
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+                border-color 200ms ease;
+    will-change: transform;
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -8px rgba(0, 0, 0, 0.08),
+                0 4px 8px -4px rgba(0, 0, 0, 0.04);
+  }
+  .dark .hover-lift:hover {
+    box-shadow: 0 14px 28px -8px rgba(0, 0, 0, 0.5),
+                0 0 1px 1px rgba(255, 255, 255, 0.08);
+  }
+
+  .hover-lift-sm {
+    transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+                box-shadow 180ms ease,
+                border-color 150ms ease;
+  }
+  .hover-lift-sm:hover {
+    transform: translateY(-1.5px);
+    box-shadow: 0 6px 16px -4px rgba(0, 0, 0, 0.06);
+  }
+  .dark .hover-lift-sm:hover {
+    box-shadow: 0 8px 18px -4px rgba(0, 0, 0, 0.4);
+  }
+
+  .hover-gold-glow:hover {
+    border-color: rgba(212, 175, 55, 0.45);
+    box-shadow: 0 0 20px -4px rgba(212, 175, 55, 0.2);
+  }
+
+  .table-row-hover {
+    transition: background-color 120ms ease;
+  }
+  .table-row-hover:hover {
+    background-color: rgba(248, 250, 252, 0.85);
+  }
+  .dark .table-row-hover:hover {
+    background-color: rgba(30, 41, 59, 0.4);
+  }
+
+  .group:hover .group-hover-nudge-x {
+    transform: translateX(3px);
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .group:hover .group-hover-nudge-y {
+    transform: translateY(-2px);
+    transition: transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+}
+
 
