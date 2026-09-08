@@ -472,14 +472,14 @@ export function RegistrationTable({
               ))}
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-              {table.getRowModel().rows.map((row, i) => (
+              {table.getRowModel().rows.map((row) => (
                 <motion.tr
                   key={row.id}
                   onClick={() => onView(row.original)}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.015, duration: 0.3 }}
-                  className="group cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.2 }}
+                  className="group table-row-hover cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td key={cell.id} className="px-6 py-4 align-middle">
@@ -503,19 +503,23 @@ export function RegistrationTable({
           </p>
           <div className="flex items-center gap-2">
             <button
+              type="button"
               onClick={() => onPageChange(page - 1)}
               disabled={page <= 1}
-              className="hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
+              aria-label="Previous page"
+              className="btn-tactile hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
-            <div className="flex h-9 min-w-[2.5rem] items-center justify-center rounded-lg bg-gray-100 px-3 text-xs font-bold text-gray-900 dark:bg-white/10 dark:text-white">
+            <div className="flex h-10 min-w-[2.5rem] items-center justify-center rounded-lg bg-gray-100 px-3 text-xs font-bold text-gray-900 dark:bg-white/10 dark:text-white">
               {page}
             </div>
             <button
+              type="button"
               onClick={() => onPageChange(page + 1)}
               disabled={!hasMore}
-              className="hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
+              aria-label="Next page"
+              className="btn-tactile hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 shadow-sm transition-all disabled:cursor-not-allowed disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
             >
               <ChevronRight className="h-4 w-4" />
             </button>

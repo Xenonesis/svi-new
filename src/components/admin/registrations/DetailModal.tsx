@@ -203,6 +203,22 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
             </div>
           )}
 
+          <div className="flex flex-col gap-2.5 sm:flex-row">
+            <button
+              type="button"
+              onClick={() => onStatusChange(reg.id, 'Approved')}
+              className="btn-tactile flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold tracking-wider text-white uppercase shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
+            >
+              Approve
+            </button>
+            <button
+              type="button"
+              onClick={() => onStatusChange(reg.id, 'Rejected')}
+              className="btn-tactile flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold tracking-wider text-rose-700 uppercase transition-all hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:bg-rose-900/40"
+            >
+              Reject
+            </button>
+          </div>
           <p className="text-center text-[10px] font-medium tracking-widest text-gray-400 uppercase">
             Submitted on{' '}
             {new Date(reg.created_at).toLocaleString('en-IN', {

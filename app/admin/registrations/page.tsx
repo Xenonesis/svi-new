@@ -101,7 +101,16 @@ export default function AdminRegistrations() {
           </div>
 
           {/* Pending */}
-          <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-amber-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-amber-500/20">
+          <div
+            role="button"
+            tabIndex={0}
+            title="Show pending registrations"
+            onClick={() => h.updateFilter('status', 'Pending')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') h.updateFilter('status', 'Pending');
+            }}
+            className="hover-lift-sm btn-tactile dark:bg-brand-dark-surface/65 relative cursor-pointer overflow-hidden rounded-xl border border-amber-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-amber-500/20"
+          >
             <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
             <div className="mb-3 flex items-center justify-between">
               <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-amber-200/60 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-900/20">
@@ -121,7 +130,16 @@ export default function AdminRegistrations() {
           </div>
 
           {/* Approved */}
-          <div className="dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-emerald-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-emerald-500/20">
+          <div
+            role="button"
+            tabIndex={0}
+            title="Show approved registrations"
+            onClick={() => h.updateFilter('status', 'Approved')}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') h.updateFilter('status', 'Approved');
+            }}
+            className="hover-lift-sm btn-tactile dark:bg-brand-dark-surface/65 relative cursor-pointer overflow-hidden rounded-xl border border-emerald-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-emerald-500/20"
+          >
             <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
             <div className="mb-3 flex items-center justify-between">
               <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-900/20">
