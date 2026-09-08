@@ -1,6 +1,6 @@
 import React from 'react';
 import BbaLegalPagesHindi from '../../../../app/admin/bba/BbaLegalPagesHindi';
-import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
+import { BbaPageFooterHindi } from '../bba/legal-hindi/BbaPageFooterHindi';
 
 export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
   const getProjectLocation = (projectName: string) => {
@@ -151,7 +151,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
             </tbody>
           </table>
         </div>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
       {/* Legal Pages (2-17) */}
       <BbaLegalPagesHindi formData={formData} companyInfo={companyInfo} totalCost={totalCost} />
