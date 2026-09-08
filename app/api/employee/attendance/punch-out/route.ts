@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
-import { createClient } from '@/src/lib/supabase/server';
+import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
 // Haversine formula
@@ -21,15 +21,11 @@ function calculateDistance(lat1: number, lon1: number, lat2: number, lon2: numbe
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    const verified = await verifyEmployee(request);
+    if (!verified) {
       throw AppError.unauthorized('Please log in to punch out');
     }
+    const { user, profile } = verified;
 
     let body;
     try {

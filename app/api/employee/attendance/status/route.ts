@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
-import { createClient } from '@/src/lib/supabase/server';
+import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
 
@@ -8,25 +8,11 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
-
-    if (authError || !user) {
+    const verified = await verifyEmployee(request);
+    if (!verified) {
       throw AppError.unauthorized('Please log in');
     }
-
-    const { data: profile } = await supabaseAdmin
-      .from('profiles')
-      .select('role, full_name, email')
-      .eq('id', user.id)
-      .single();
-
-    if (profile?.role !== 'employee') {
-      throw AppError.unauthorized('Access denied');
-    }
+    const { user, profile } = verified;
     const now = new Date();
     const today = now.toISOString().split('T')[0];
     const istOffset = 5.5 * 60 * 60 * 1000;
