@@ -53,7 +53,14 @@ export default function EmployeeGuard({ children }: EmployeeGuardProps) {
           return;
         }
 
-        if (profile.role === 'employee' || profile.role === 'admin') {
+        if (profile.role === 'admin') {
+          if (isMounted) {
+            router.replace('/admin/dashboard');
+          }
+          return;
+        }
+
+        if (profile.role === 'employee') {
           if (isMounted) {
             setAuthorized(true);
             setLoading(false);

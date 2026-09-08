@@ -32,7 +32,9 @@ export function useEmployeeLoginForm() {
             .eq('id', session.user.id)
             .maybeSingle();
 
-          if (profile?.role === 'employee' || profile?.role === 'admin') {
+          if (profile?.role === 'admin') {
+            router.replace('/admin/dashboard');
+          } else if (profile?.role === 'employee') {
             router.replace('/employee/dashboard');
           }
         }
@@ -109,6 +111,17 @@ export function useEmployeeLoginForm() {
         throw new Error(
           'This portal is strictly reserved for SVI Infra Employees & Staff. Client accounts must log in via the Client Portal.'
         );
+      }
+
+      if (profile?.role === 'admin') {
+        setSuccess(true);
+        toast.success(
+          `Welcome Admin, ${profile?.full_name || ''}! Redirecting to Admin Console...`
+        );
+        setTimeout(() => {
+          router.replace('/admin/dashboard');
+        }, 1000);
+        return;
       }
 
       setSuccess(true);
