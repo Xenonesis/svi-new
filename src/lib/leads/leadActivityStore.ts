@@ -190,7 +190,7 @@ export const leadActivityStore = {
         message: `Employee ${data.employeeName} added a new lead for ${data.projectInterest || 'general enquiry'}. Phone: ${data.phone}${formattedFollowUp ? ` | Follow-up: ${formattedFollowUp}` : ''}`,
         type: 'info',
         is_read: false,
-        action_url: `/admin/employees?employee=${data.employeeId}&tab=leads`,
+        action_url: `/admin/workforce?employee=${data.employeeId}&tab=leads`,
         metadata: {
           event: 'new_employee_lead',
           lead_id: data.leadId,
@@ -239,7 +239,7 @@ export const leadActivityStore = {
         message: `${data.employeeName} scheduled client follow-up for ${formattedFollowUp}.${data.notes ? ` Notes: "${data.notes}"` : ''}`,
         type: 'alert',
         is_read: false,
-        action_url: `/admin/employees?employee=${data.employeeId}&tab=leads`,
+        action_url: `/admin/workforce?employee=${data.employeeId}&tab=leads`,
         metadata: {
           event: 'lead_followup_scheduled',
           lead_id: data.leadId,

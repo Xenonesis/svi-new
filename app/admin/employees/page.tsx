@@ -10,7 +10,9 @@ function EmployeesRedirectContent() {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set('tab', 'directory');
+    if (!params.has('tab')) {
+      params.set('tab', 'directory');
+    }
     router.replace(`/admin/workforce?${params.toString()}`);
   }, [router, searchParams]);
 

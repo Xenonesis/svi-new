@@ -48,8 +48,8 @@ interface EmployeePerformanceModalProps {
   isOpen: boolean;
   onClose: () => void;
   token: string;
+  initialTab?: 'kpi' | 'leads';
 }
-
 interface PerformanceData {
   profile?: {
     id: string;
@@ -106,14 +106,21 @@ export function EmployeePerformanceModal({
   isOpen,
   onClose,
   token,
+  initialTab = 'kpi',
 }: EmployeePerformanceModalProps) {
   const [loading, setLoading] = useState(true);
   const [performanceData, setPerformanceData] = useState<PerformanceData | null>(null);
   const [leads, setLeads] = useState<LeadItem[]>([]);
-  const [activeTab, setActiveTab] = useState<'kpi' | 'leads'>('kpi');
+  const [activeTab, setActiveTab] = useState<'kpi' | 'leads'>(initialTab);
   const [selectedLeadTemperature, setSelectedLeadTemperature] = useState<
     'all' | 'hot' | 'warm' | 'cold'
   >('all');
+
+  useEffect(() => {
+    if (isOpen && initialTab) {
+      setActiveTab(initialTab);
+    }
+  }, [isOpen, initialTab]);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
   const fetchPerformance = useCallback(async () => {

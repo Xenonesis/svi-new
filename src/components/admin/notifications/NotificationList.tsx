@@ -1,6 +1,8 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import {
+  ArrowUpRight,
   Bell,
   BellOff,
   Check,
@@ -17,7 +19,7 @@ import {
   AlertTriangle,
 } from 'lucide-react';
 import { Notification, FilterType, ReadFilter } from './types';
-
+import { resolveNotificationUrl } from '@/src/lib/notifications/notificationNavigation';
 interface NotificationListProps {
   notifications: Notification[];
   loading: boolean;
@@ -109,6 +111,8 @@ export function NotificationList({
   setSearchQuery,
   setCurrentPage,
 }: NotificationListProps) {
+  const router = useRouter();
+
   if (loading) {
     return (
       <div className="flex flex-col items-center justify-center py-24">
@@ -205,6 +209,7 @@ export function NotificationList({
         <AnimatePresence mode="popLayout">
           {notifications.map((notification, index) => {
             const isEmail = notification.metadata?.subType === 'email';
+            const targetUrl = resolveNotificationUrl(notification);
 
             const config = isEmail
               ? {
@@ -250,7 +255,21 @@ export function NotificationList({
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0 flex-1">
+                    <div
+                      className="min-w-0 flex-1 cursor-pointer"
+                      onClick={() => {
+                        if (!notification.is_read) {
+                          markAsRead(notification.id);
+                        }
+                        if (targetUrl) {
+                          if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
+                            window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                          } else {
+                            router.push(targetUrl);
+                          }
+                        }
+                      }}
+                    >
                       <h4
                         className={`flex items-center gap-2 text-sm font-semibold ${
                           notification.is_read
@@ -324,15 +343,22 @@ export function NotificationList({
                       </button>
                     )}
 
-                    {notification.action_url && (
-                      <a
-                        href={notification.action_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold tracking-widest text-blue-600 uppercase transition-colors hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-500/20"
+                    {targetUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!notification.is_read) markAsRead(notification.id);
+                          if (targetUrl.startsWith('http://') || targetUrl.startsWith('https://')) {
+                            window.open(targetUrl, '_blank', 'noopener,noreferrer');
+                          } else {
+                            router.push(targetUrl);
+                          }
+                        }}
+                        className="text-brand-gold hover:bg-brand-gold/10 flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-bold tracking-widest uppercase transition-colors"
                       >
-                        View Details
-                      </a>
+                        <span>View Origin</span>
+                        <ArrowUpRight size={11} />
+                      </button>
                     )}
 
                     <button

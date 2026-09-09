@@ -27,6 +27,7 @@ interface WorkforceModalsContainerProps {
   setResetTarget: (emp: Employee | null) => void;
   performanceTarget: Employee | null;
   setPerformanceTarget: (emp: Employee | null) => void;
+  initialPerformanceTab?: 'kpi' | 'leads';
   isMarkModalOpen: boolean;
   setIsMarkModalOpen: (open: boolean) => void;
   isDrawerOpen: boolean;
@@ -57,6 +58,7 @@ export function WorkforceModalsContainer({
   setResetTarget,
   performanceTarget,
   setPerformanceTarget,
+  initialPerformanceTab,
   isMarkModalOpen,
   setIsMarkModalOpen,
   isDrawerOpen,
@@ -139,6 +141,7 @@ export function WorkforceModalsContainer({
             isOpen={!!performanceTarget}
             onClose={() => setPerformanceTarget(null)}
             token={token || ''}
+            initialTab={initialPerformanceTab}
           />
         )}
       </AnimatePresence>

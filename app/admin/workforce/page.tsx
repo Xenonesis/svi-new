@@ -82,6 +82,17 @@ function WorkforceContent() {
     fetchMetrics,
   } = useWorkforceData(token);
 
+  // Deep link support: auto-open performance/leads modal when employee query param is present
+  useEffect(() => {
+    const employeeParam = searchParams.get('employee');
+    if (employeeParam && employees.length > 0 && !performanceTarget) {
+      const target = employees.find((e) => e.id === employeeParam);
+      if (target) {
+        setPerformanceTarget(target);
+      }
+    }
+  }, [searchParams, employees, performanceTarget]);
+
   // Toast Helper
   const showToast = (type: 'success' | 'error', text: string) => {
     if (type === 'success') toast.success(text);
@@ -277,6 +288,7 @@ function WorkforceContent() {
         setResetTarget={setResetTarget}
         performanceTarget={performanceTarget}
         setPerformanceTarget={setPerformanceTarget}
+        initialPerformanceTab={searchParams.get('tab') === 'leads' ? 'leads' : 'kpi'}
         isMarkModalOpen={isMarkModalOpen}
         setIsMarkModalOpen={setIsMarkModalOpen}
         isDrawerOpen={isDrawerOpen}

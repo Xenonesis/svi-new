@@ -85,7 +85,7 @@ export const NotificationHelper = {
       title: 'New User Registered',
       message: `${userName} has registered as a new user.`,
       type: 'info',
-      action_url: `/admin/dashboard?userId=${userId}`,
+      action_url: `/admin/registrations`,
       metadata: { event: 'user_registered', userId },
     });
   },
@@ -140,6 +140,7 @@ export const NotificationHelper = {
       title: 'User Deleted',
       message: `User account "${userName}" has been deleted.`,
       type: 'warning',
+      action_url: `/admin/registrations`,
       metadata: { event: 'user_deleted' },
     });
   },
@@ -149,6 +150,7 @@ export const NotificationHelper = {
       title: 'Settings Updated',
       message: `${adminName} updated ${settingName} settings.`,
       type: 'info',
+      action_url: `/admin/settings`,
       metadata: { event: 'settings_updated', settingName },
     });
   },
@@ -158,6 +160,7 @@ export const NotificationHelper = {
       title: 'System Error',
       message: errorMessage,
       type: 'error',
+      action_url: `/admin/notifications`,
       metadata: { event: 'system_error' },
     });
   },
