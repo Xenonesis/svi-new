@@ -69,15 +69,15 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         </p>
         <p className="my-2 text-center text-lg font-bold">BY AND BETWEEN</p>
         <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
-          <strong>M/s. SVI INFRA SOLUTIONS PVT LTD,</strong> firm presently having its Registered
-          office at <strong>{companyInfo.company_address}</strong> and Corporate Office at{' '}
-          <strong>{companyInfo.company_address}</strong> represented by its Authorized Signatory Mr.
-          Vineet Narnawat, Director, aged about 43 years, S/o Sh. Ramesh Chand Narnawat, R/o H. No.
-          162, VPO-Badhal, Th.-Chomu, Dist. Jaipur, Rajasthan (hereinafter referred to as the &apos;
-          <strong>Firm / Builder / First Party</strong>&apos; which expression shall unless
-          repugnant to the context, include its successors, executors, administrators,
+          <strong>M/s. SVI INFRA SOLUTIONS PVT. LTD.,</strong> a company presently having its
+          Registered and Corporate Office at <strong>{companyInfo.company_address}</strong>,
+          represented by its Authorized Signatory Mr. Vineet Narnawat, Director, aged about 43
+          years, S/o Sh. Ramesh Chand Narnawat, R/o H. No. 162, VPO-Badhal, Th.-Chomu, Dist. Jaipur,
+          Rajasthan (hereinafter referred to as the &apos;
+          <strong>Company / Firm / Builder / First Party</strong>&apos; which expression shall
+          unless repugnant to the context, include its successors, executors, administrators,
           representatives, nominees, assigns, heirs, legal representatives, etc.) of the{' '}
-          <strong>FIRST PART</strong>;
+          <strong>FIRST PART;</strong>
         </p>
         <p className="my-3 text-center text-[14.5px] font-bold">AND</p>
         <p className="mb-0 text-[14.5px]">(FOR INDIVIDUALS)</p>

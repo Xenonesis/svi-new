@@ -303,6 +303,17 @@ export function OperativeClausesAndSignaturesPageHindi({
           फर्म को देना आवंटी(यों) का कर्तव्य होगा, अन्यथा उपरोक्त पते पर भेजे गए सभी पत्र-व्यवहार और
           पत्र आवंटी(यों) द्वारा प्राप्त माने जाएंगे।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           28. आवंटी(यां) सहमत हैं कि इस करार के किसी भी नियम और शर्त के सभी उल्लंघन, भंग और/या
           अनुपालन न करने को चूक की घटनाएँ माना जाएगा। चूक की कुछ संकेतक घटनाएँ नीचे उल्लिखित हैं जो
@@ -331,17 +342,6 @@ export function OperativeClausesAndSignaturesPageHindi({
           vii) कोई भी अन्य कार्य, विलेख या बातें जो आवंटी(यों) कर सकते हैं, छोड़ सकते हैं या करने
           में विफल हो सकते हैं और जो फर्म की राय में चूक की घटना के रूप में मानी जाती हैं।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           जब तक इस करार में अन्यथा प्रदान नहीं किया गया है, इस करार के तहत चूक की एक या अधिक घटनाओं
           की स्थिति में, फर्म अपने एकल विवेक से, आवंटी(यों) को 30 दिनों का नोटिस देकर इस करार को
@@ -369,7 +369,18 @@ export function OperativeClausesAndSignaturesPageHindi({
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           32. यह अनंतिम करार भूखंड/भूखंडों के अंतिम पंजीकरण के बाद शून्य और अमान्य हो जाएगा।
         </p>
-        <p className="mt-6 mb-4 text-justify text-[15px] leading-relaxed">
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mt-2 mb-4 text-justify text-[15px] leading-relaxed">
           इसकी साक्ष्य में पक्षों ने उनके संबंधित हस्ताक्षरों के नीचे उल्लिखित स्थानों और तारीख, माह
           और वर्ष पर इस करार और उसकी डुप्लीकेट प्रति पर अपने संबंधित हाथ और हस्ताक्षर लगाए हैं:
         </p>
@@ -430,6 +441,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           <br />
           पता
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
     </>
   );

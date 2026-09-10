@@ -39,6 +39,12 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await page.goto('/admin/bba');
     await page.waitForLoadState('domcontentloaded');
 
+    // Completely hide PwaPushPrompt from overlaying test screenshots
+    await page.addStyleTag({
+      content:
+        '.pwa-push-prompt, [class*="pwa-push"], div[class*="fixed"][class*="bottom"] { display: none !important; }',
+    });
+
     // Dismiss notification prompt if present
     const dismissBtn = page
       .locator('button')
@@ -167,6 +173,14 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     // Check Hindi text readability - must contain Hindi characters
     const hindiText = await hindiParagraph.innerText();
     expect(hindiText.length).toBeGreaterThan(10);
+    await page.evaluate(() => {
+      document
+        .querySelectorAll('[class*="fixed"], [class*="toast"], [role="alert"]')
+        .forEach((el) => {
+          if (el.closest('.preview-container') || el.closest('#bbaPreview')) return;
+          (el as HTMLElement).style.display = 'none';
+        });
+    });
     const firstHindiPage = hindiLegalContainer.locator('> div').nth(0);
     await firstHindiPage.scrollIntoViewIfNeeded();
     await firstHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-page1.png' });
@@ -181,6 +195,34 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await thirdHindiPage.scrollIntoViewIfNeeded();
     await thirdHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-parties-p2.png' });
     await expect(thirdHindiPage).toContainText('तृतीय आवंटी');
+    // Capture Allottee Representations page (user reported missing sign at end of this page)
+    const fourthHindiPage = hindiLegalContainer.locator('> div').nth(3);
+    await fourthHindiPage.scrollIntoViewIfNeeded();
+    await fourthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-representations.png' });
+    await expect(fourthHindiPage).toContainText('आवंटी(यों) के प्रतिनिधित्व');
+    await expect(fourthHindiPage).toContainText('अभिकल्पित कब्जा');
+    await expect(fourthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(fourthHindiPage).toContainText('निदेशक');
+
+    // Capture Definitions Page 2 (Earnest Money to Maintenance Agency)
+    const fifthHindiPage = hindiLegalContainer.locator('> div').nth(4);
+    await fifthHindiPage.scrollIntoViewIfNeeded();
+    await fifthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-definitions-p2.png' });
+    await expect(fifthHindiPage).toContainText('बयाना राशि');
+    await expect(fifthHindiPage).toContainText('रखरखाव एजेंसी');
+    await expect(fifthHindiPage).not.toContainText('प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)');
+    await expect(fifthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(fifthHindiPage).toContainText('निदेशक');
+
+    // Capture Definitions Page 3 (Maintenance Charges to Interpretation)
+    const sixthHindiPage = hindiLegalContainer.locator('> div').nth(5);
+    await sixthHindiPage.scrollIntoViewIfNeeded();
+    await sixthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-definitions-p3.png' });
+    await expect(sixthHindiPage).toContainText('रखरखाव शुल्क');
+    await expect(sixthHindiPage).toContainText('प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)');
+    await expect(sixthHindiPage).toContainText('व्याख्या');
+    await expect(sixthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(sixthHindiPage).toContainText('निदेशक');
     // 8. Verify Page 1 height spans full A4 page (>= 1000px)
     const hindiCoverHeight = await hindiCoverPage.evaluate(
       (el) => el.getBoundingClientRect().height

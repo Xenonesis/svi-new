@@ -467,6 +467,17 @@ export function OperativeClausesAndSignaturesPage({
           communications and letters posted at the above address shall be deemed to have been
           received by the Allottee(s).
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           28. The Allottee(s) agrees that all defaults, breaches and/or non-compliance of any of the
           terms and conditions of this Agreement shall be deemed to be events of defaults liable for
@@ -507,17 +518,6 @@ export function OperativeClausesAndSignaturesPage({
           confirms that the decision of the Firm in this regard shall be final and binding on the
           Allottee(s).
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           Unless otherwise provided in this Agreement, upon the occurrence of any one or more of
           event(s) of default under this Agreement including but not limited to those specified
@@ -564,7 +564,18 @@ export function OperativeClausesAndSignaturesPage({
           32. This provisional agreement shall be null and void after final registration of
           plot/plots.
         </p>
-        <p className="mt-6 mb-4 text-justify text-[14.5px] leading-relaxed">
+        <BbaPageFooter companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mt-2 mb-4 text-justify text-[14.5px] leading-relaxed">
           IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
           subscribed their respective hands at the places and on the day, month and year mentioned
           under their respective signatures:
@@ -626,6 +637,7 @@ export function OperativeClausesAndSignaturesPage({
           <br />
           Address
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
       </div>
     </>
   );

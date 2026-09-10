@@ -120,6 +120,17 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           आवंटी द्वारा कब्जा नहीं लिया जाता है तो कब्जे की सूचना की समाप्ति तिथि के अगले दिन कब्जा
           सुपुर्द किया हुआ माना जाएगा।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;बयाना राशि&quot;</strong> का अर्थ उक्त भूखंड/दुकान के कुल मूल्य का 50% है जो
           आवंटी(यों) द्वारा देय है और जो भुगतान अनुसूची, अनुबंध-ए में अधिक स्पष्ट रूप से दर्शाया गया
@@ -161,17 +172,6 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           प्रमुख अवसंरचना परियोजनाओं के विकास की लागत हेतु लगाए/लगाए जाने योग्य अवसंरचना विकास
           शुल्कों से होगा (चाहे वर्तमान में या भविष्य में जिस भी नाम से पुकारा जाए)।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;सरकारी प्राधिकरण&quot;</strong> या{' '}
           <strong>&quot;सरकारी प्राधिकरणगण&quot;</strong> का अर्थ किसी भी सरकारी प्राधिकरण, वैधानिक
@@ -186,6 +186,17 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           भूखंड/दुकान आवंटितियों के संघ या ऐसी अन्य एजेंसी/निकाय/फर्म/कॉन्डोमिनियम के संघ से है जिसे
           फर्म रखरखाव सौंप सकती है और जो उक्त परिसर/उक्त भवन का रखरखाव करने के लिए उत्तरदायी होगा।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;रखरखाव शुल्क&quot;</strong> का अर्थ आवंटी(यों) द्वारा उक्त भवन/उक्त परिसर की
           रखरखाव सेवाओं के लिए रखरखाव एजेंसी को देय शुल्कों से होगा, जिसमें सामान्य क्षेत्र और

@@ -65,15 +65,15 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         </p>
         <p className="my-2 text-center text-lg font-bold">पक्षों के बीच</p>
         <p className="mb-2 text-justify text-[15px] leading-relaxed">
-          <strong>मे./SVI INFRA SOLUTIONS PVT LTD,</strong> फर्म, जिसका पंजीकृत कार्यालय वर्तमान में{' '}
-          <strong>{companyInfo.company_address}</strong> पर है तथा कॉर्पोरेट कार्यालय भी{' '}
-          <strong>{companyInfo.company_address}</strong> पर है, जिसका प्रतिनिधित्व इसके अधिकृत
-          हस्ताक्षरकर्ता श्री विनीत नारनावत, निदेशक, आयु लगभग 43 वर्ष, पुत्र श्री रमेश चंद नारनावत,
-          निवासी मकान नं. 162, वीपीओ-बढाल, थाना-चोमू, जिला जयपुर, राजस्थान द्वारा किया जा रहा है
-          (जिसे आगे &apos;<strong>फर्म / बिल्डर / प्रथम पक्ष</strong>&apos; के रूप में संदर्भित किया
-          जाएगा, जिस अभिव्यक्ति में जब तक संदर्भ के प्रतिकूल न हो, इसके उत्तराधिकारियों, निष्पादकों,
+          <strong>मैसर्स SVI INFRA SOLUTIONS PVT. LTD.,</strong> एक कंपनी जिसका पंजीकृत एवं
+          कॉर्पोरेट कार्यालय वर्तमान में <strong>{companyInfo.company_address}</strong> पर स्थित है,
+          जिसका प्रतिनिधित्व इसके अधिकृत हस्ताक्षरकर्ता श्री विनीत नारनावत, निदेशक, आयु लगभग 43
+          वर्ष, पुत्र श्री रमेश चंद नारनावत, निवासी मकान नं. 162, वीपीओ-बढाल, थाना-चोमू, जिला जयपुर,
+          राजस्थान द्वारा किया जा रहा है (जिसे आगे &apos;
+          <strong>कंपनी / फर्म / बिल्डर / प्रथम पक्ष</strong>&apos; के रूप में संदर्भित किया जाएगा,
+          जिस अभिव्यक्ति में जब तक संदर्भ के प्रतिकूल न हो, इसके उत्तराधिकारियों, निष्पादकों,
           प्रशासकों, प्रतिनिधियों, नामांकितों, समनुदेशितियों, वारिसों, विधिक प्रतिनिधियों आदि को
-          शामिल माना जाएगा) <strong>प्रथम भाग</strong> का;
+          शामिल माना जाएगा) <strong>प्रथम पक्षकार;</strong>
         </p>
         <p className="my-3 text-center text-[15px] font-bold">तथा</p>
         <p className="mb-0 text-[15px]">(व्यक्तियों के लिए)</p>
@@ -136,7 +136,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-2 text-[15px] font-bold">अथवा</p>
         <p className="mb-1 text-[15px] font-bold">(फर्मों के लिए)</p>
         <p className="mb-1 text-[15px]">
-          <strong>मे.:</strong> ______________________
+          <strong>मैसर्स:</strong> ______________________
         </p>
         <p className="mb-1 text-[15px]">
           <strong>प्रोपराइटर/पार्टनर के माध्यम से:</strong> ______________________
@@ -147,7 +147,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-2 text-[15px] font-bold">अथवा</p>
         <p className="mb-1 text-[15px] font-bold">(कंपनियों के लिए)</p>
         <p className="mb-1 text-[15px]">
-          <strong>मे.:</strong> ______________________
+          <strong>मैसर्स:</strong> ______________________
         </p>
         <p className="mb-1 text-[15px]">
           <strong>निदेशक/अधिकृत हस्ताक्षरकर्ता के माध्यम से:</strong> ______________________

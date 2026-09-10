@@ -122,6 +122,17 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           if not taken, by the Allottee possession be deemed to be delivered on the next succeeding
           day after the expiry date of the notice of possession.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Earnest Money&quot;</strong> means 50% of the Total Price, of the Said
           Plot/shop payable by the Allottee(s) and more clearly setout in schedule of payments,
@@ -168,17 +179,6 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           future) by the Governmental Authority towards the cost of development of major
           infrastructure projects.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Governmental Authority&quot;</strong> or{' '}
           <strong>&quot;Governmental Authorities&quot;</strong> shall mean any government authority,
@@ -195,6 +195,17 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           condominium to whom the Firm may handover the maintenance and who shall be responsible for
           carrying out the maintenance of the Said Complex/ Said Building.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Maintenance Charges&quot;</strong> shall mean the charges payable by the
           Allottee(s) to the Maintenance Agency for the maintenance services of the Said
