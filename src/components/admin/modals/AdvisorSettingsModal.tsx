@@ -44,6 +44,7 @@ export function AdvisorSettingsModal({ onClose, token, showToast }: AdvisorSetti
         const { data: profilesData, error: profilesError } = await supabase
           .from('profiles')
           .select('id, full_name, email, role')
+          .in('role', ['employee', 'admin'])
           .order('full_name', { ascending: true });
 
         if (profilesError) throw profilesError;

@@ -92,7 +92,7 @@ vi.mock('@/src/lib/api/rateLimit', () => {
   };
 });
 
-import { POST } from '@/app/api/registration/route';
+import { POST, GET } from '@/app/api/registration/route';
 
 const CSRF_TOKEN = 'test-csrf-token';
 
@@ -501,6 +501,72 @@ describe('POST /api/registration - Automatic Submission ID Generation', () => {
 
       // Restore bypass
       process.env.NEXT_PUBLIC_DISABLE_CAPTCHA = 'true';
+    });
+  });
+
+  describe('Advisor Selection and Direct Registrations', () => {
+    it('should provide Direct / SVI Official as first advisor in GET /api/registration', async () => {
+      const req = new NextRequest('http://localhost/api/registration', { method: 'GET' });
+      const res = await GET(req);
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.advisors).toBeDefined();
+      expect(Array.isArray(body.advisors)).toBe(true);
+      expect(body.advisors[0]).toBe('Direct / SVI Official');
+    });
+
+    it('should successfully accept registration with advisorName = "Direct / SVI Official"', async () => {
+      mockLimit.mockResolvedValueOnce({ data: [], error: null });
+      mockInsertSingle.mockResolvedValueOnce({
+        data: {
+          id: 'mock-reg-id-direct',
+          submission_id: 'SVI2200',
+          email: 'direct.user@example.com',
+          advisor_name: 'Direct / SVI Official',
+        },
+        error: null,
+      });
+
+      const formData = createMockRegistrationFormData({
+        advisorName: 'Direct / SVI Official',
+      });
+      const req = new NextRequest('http://localhost/api/registration', {
+        method: 'POST',
+        body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.submissionId).toBe('SVI2200');
+    });
+
+    it('should successfully accept registration with case-insensitive "direct"', async () => {
+      mockLimit.mockResolvedValueOnce({ data: [], error: null });
+      mockInsertSingle.mockResolvedValueOnce({
+        data: {
+          id: 'mock-reg-id-direct-lowercase',
+          submission_id: 'SVI2201',
+          email: 'direct2.user@example.com',
+          advisor_name: 'direct',
+        },
+        error: null,
+      });
+
+      const formData = createMockRegistrationFormData({
+        advisorName: 'direct',
+      });
+      const req = new NextRequest('http://localhost/api/registration', {
+        method: 'POST',
+        body: formData,
+        headers: { Cookie: 'csrf=' + CSRF_TOKEN },
+      });
+
+      const res = await POST(req);
+      expect(res.status).toBe(200);
+      const body = await res.json();
+      expect(body.submissionId).toBe('SVI2201');
     });
   });
 });

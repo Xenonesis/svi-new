@@ -153,21 +153,43 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Advisor must be one of the currently active advisors (fail-open if list unavailable)
-    const activeAdvisors = await getActiveAdvisorNames();
-    if (
-      activeAdvisors.length > 0 &&
-      !activeAdvisors.some(
-        (name) => name.trim().toLowerCase() === parsed.data.advisorName.trim().toLowerCase()
-      )
-    ) {
-      return NextResponse.json(
-        {
-          error: 'Invalid form data',
-          issues: { advisorName: ['Selected advisor is not active. Please choose another.'] },
-        },
-        { status: 400 }
-      );
+    // Advisor must be one of the currently active advisors or direct (fail-open if list unavailable)
+    const isDirect =
+      parsed.data.advisorName.trim().toLowerCase() === 'direct / svi official' ||
+      parsed.data.advisorName.trim().toLowerCase() === 'direct';
+
+    if (!isDirect) {
+      const activeAdvisors = await getActiveAdvisorNames();
+      if (activeAdvisors.length > 0) {
+        const matchesAdvisor = activeAdvisors.some(
+          (name) => name.trim().toLowerCase() === parsed.data.advisorName.trim().toLowerCase()
+        );
+
+        if (!matchesAdvisor) {
+          // Fallback: check if the name matches an active staff profile in DB
+          const { data: activeProfiles } = await supabaseAdmin
+            .from('profiles')
+            .select('id, role, is_active')
+            .eq('full_name', parsed.data.advisorName.trim())
+            .limit(1);
+
+          const isStaff =
+            activeProfiles &&
+            activeProfiles.length > 0 &&
+            (activeProfiles[0].role === 'employee' || activeProfiles[0].role === 'admin') &&
+            activeProfiles[0].is_active !== false;
+
+          if (!isStaff) {
+            return NextResponse.json(
+              {
+                error: 'Invalid form data',
+                issues: { advisorName: ['Selected advisor is not active. Please choose another.'] },
+              },
+              { status: 400 }
+            );
+          }
+        }
+      }
     }
 
     const {
@@ -483,8 +505,10 @@ export async function POST(request: NextRequest) {
   }
 }
 
+const DIRECT_ADVISOR = 'Direct / SVI Official';
+
 const DEFAULT_ADVISORS = [
-  'Direct / SVI Official',
+  DIRECT_ADVISOR,
   'Ajeet Kumar',
   'Sanjay Sharma',
   'Pooja Singh',
@@ -521,10 +545,13 @@ async function getActiveAdvisorNames(): Promise<string[]> {
       return [];
     }
 
-    return profiles
-      .map((p) => p.full_name)
-      .filter(Boolean)
-      .sort((a: string, b: string) => a.localeCompare(b));
+    return Array.from(
+      new Set(
+        profiles
+          .map((p) => p.full_name?.trim())
+          .filter((name): name is string => Boolean(name && name.length > 0))
+      )
+    ).sort((a: string, b: string) => a.localeCompare(b));
   } catch {
     return [];
   }
@@ -534,9 +561,12 @@ async function getActiveAdvisorNames(): Promise<string[]> {
 export async function GET(request: NextRequest) {
   try {
     const advisorNames = await getActiveAdvisorNames();
-    return NextResponse.json({
-      advisors: advisorNames.length > 0 ? advisorNames : DEFAULT_ADVISORS,
-    });
+    const rawList = advisorNames.length > 0 ? advisorNames : DEFAULT_ADVISORS;
+    const finalAdvisors = [
+      DIRECT_ADVISOR,
+      ...rawList.filter((n) => n.toLowerCase() !== DIRECT_ADVISOR.toLowerCase()),
+    ];
+    return NextResponse.json({ advisors: Array.from(new Set(finalAdvisors)) });
   } catch {
     return NextResponse.json({ advisors: DEFAULT_ADVISORS });
   }
