@@ -447,6 +447,12 @@ export async function GET(request: NextRequest) {
         if (attachments) {
           emailData.attachments = attachments;
         }
+
+        if (Array.isArray(emailData.tags)) {
+          emailData.tags = emailData.tags
+            .map((t: any) => (typeof t === 'string' ? t : t?.value || t?.name || ''))
+            .filter(Boolean);
+        }
       }
 
       return NextResponse.json({ email: emailData });

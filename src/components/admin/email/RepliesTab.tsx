@@ -1294,14 +1294,21 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
                             </span>
                           )}
 
-                          {(reply.tags || []).map((tag) => {
-                            const style = getTagStyle(tag);
+                          {(reply.tags || []).map((tag, idx) => {
+                            const tagLabel =
+                              typeof tag === 'string'
+                                ? tag
+                                : typeof tag === 'object' && tag !== null
+                                  ? (tag as any).value || (tag as any).name || ''
+                                  : String(tag ?? '');
+                            if (!tagLabel) return null;
+                            const style = getTagStyle(tagLabel);
                             return (
                               <span
-                                key={tag}
+                                key={`${tagLabel}-${idx}`}
                                 className={`py-0.2 inline-flex items-center rounded-sm border px-1.5 text-[10px] font-semibold ${style.bg} ${style.color} ${style.border}`}
                               >
-                                {tag}
+                                {tagLabel}
                               </span>
                             );
                           })}

@@ -373,21 +373,28 @@ export function EmailDetailPanel({
 
                 {/* Tags List */}
                 <div className="flex flex-wrap items-center gap-1.5">
-                  {(selected.tags || []).map((tag) => {
-                    const style = getTagStyle(tag);
+                  {(selected.tags || []).map((tag, idx) => {
+                    const tagLabel =
+                      typeof tag === 'string'
+                        ? tag
+                        : typeof tag === 'object' && tag !== null
+                          ? (tag as any).value || (tag as any).name || ''
+                          : String(tag ?? '');
+                    if (!tagLabel) return null;
+                    const style = getTagStyle(tagLabel);
                     return (
                       <span
-                        key={tag}
+                        key={`${tagLabel}-${idx}`}
                         className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold ${style.bg} ${style.color} ${style.border}`}
                       >
                         <Tag className="h-2.5 w-2.5" />
-                        {tag}
+                        {tagLabel}
                         {onRemoveTag && (
                           <button
                             type="button"
-                            onClick={() => onRemoveTag(selected.id, tag)}
+                            onClick={() => onRemoveTag(selected.id, tagLabel)}
                             className="ml-0.5 text-gray-400 hover:text-red-500"
-                            title={`Remove ${tag}`}
+                            title={`Remove ${tagLabel}`}
                           >
                             <X className="h-2.5 w-2.5" />
                           </button>
@@ -421,7 +428,15 @@ export function EmailDetailPanel({
                             </p>
                             <div className="mb-2.5 flex flex-wrap gap-1.5">
                               {COMMON_TAGS.map((t) => {
-                                const isApplied = (selected.tags || []).includes(t.name);
+                                const isApplied = (selected.tags || []).some(
+                                  (tag) =>
+                                    (typeof tag === 'string'
+                                      ? tag
+                                      : typeof tag === 'object' && tag !== null
+                                        ? (tag as any).value || (tag as any).name
+                                        : String(tag ?? '')
+                                    )?.toLowerCase() === t.name.toLowerCase()
+                                );
                                 return (
                                   <button
                                     key={t.name}

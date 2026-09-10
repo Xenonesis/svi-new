@@ -91,11 +91,18 @@ export const COMMON_TAGS: TagDef[] = [
   },
 ];
 
-export function getTagStyle(tagName: string): TagDef {
-  const found = COMMON_TAGS.find((t) => t.name.toLowerCase() === tagName.toLowerCase());
+export function getTagStyle(tagName: unknown): TagDef {
+  const nameStr =
+    typeof tagName === 'string'
+      ? tagName
+      : typeof tagName === 'object' && tagName !== null
+        ? (tagName as any).value || (tagName as any).name || ''
+        : String(tagName ?? '');
+
+  const found = COMMON_TAGS.find((t) => t.name.toLowerCase() === nameStr.toLowerCase());
   if (found) return found;
   return {
-    name: tagName,
+    name: nameStr,
     color: 'text-gray-700 dark:text-gray-300',
     bg: 'bg-gray-100 dark:bg-gray-800',
     border: 'border-gray-200 dark:border-gray-700',
