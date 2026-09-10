@@ -26,8 +26,8 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-[13px] font-bold">आवंटी(यों) के प्रतिनिधित्व</p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-[15px] font-bold">आवंटी(यों) के प्रतिनिधित्व</p>
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी(यों) ने दिनांक{' '}
           <strong>
             {new Date(formData.bookingDate || Date.now()).toLocaleDateString('hi-IN', {
@@ -39,13 +39,13 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           के आवेदन के माध्यम से इस करार के नियमों और शर्तों को पढ़ने और समझने के पश्चात् उक्त परिसर
           में उक्त भूखंड/दुकान (जो आगे परिभाषित है) के आवंटन के लिए आवेदन किया है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी ने कथित तथ्यों से पूरी तरह संतुष्ट होने के पश्चात् फर्म
           में आवेदन किया है जो उक्त भूमि पर आवासीय कॉलोनी विकसित करने की प्रक्रिया में है, और
           तदनुसार, यह आवंटी द्वारा समझा और सहमति व्यक्त की जाती है कि भूखंड का क्षेत्र और स्थान जिसे
           आवंटी खरीदने का इरादा रखते हैं, अनुमानित है और परिवर्तन के अधीन है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी ने उक्त भूमि/परिसर में फर्म के अधिकार, स्वामित्व, हित और
           सीमा के बारे में पूरी तरह संतुष्ट होने के पश्चात् परिसर में रुचि दिखाई है और दिनांक{' '}
           <strong>
@@ -58,13 +58,13 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           के आवेदन पत्र के माध्यम से <strong>{formData.area} वर्ग गज</strong> का भूखंड/दुकान आवंटन
           के लिए फर्म से संपर्क किया है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी ने SVI INFRA SOLUTIONS PVT LTD द्वारा प्रस्तावित अग्रिम
           भुगतान योजनाओं को पढ़ और समझ लिया है, और एतद्द्वारा इसमें उल्लिखित शर्तों का पालन करने के
           लिए सहमत हैं, और आवंटी ने अनुबंध-ए में विस्तृत भूखंड(ओं)/दुकान(ों) के संभावित आवंटन के
           विरुद्ध अनंतिम पंजीकरण हेतु शेष अग्रिम/अभिदान करार का भुगतान करने का विकल्प चुना है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटन के लिए उक्त आवेदन के अनुसरण में, फर्म ने आवंटी के आवेदन को
           स्वीकार किया और दिनांक{' '}
           <strong>
@@ -79,59 +79,59 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           अभिलेखों की जाँच की और उनसे संतुष्ट हुए हैं जो फर्म को यह करार निष्पादित करने का अधिकार
           देते हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी एतद्द्वारा वचन देते हैं कि वे राजस्थान सरकार के सभी
           कानूनों, नियमों, विनियमों, अधिसूचनाओं और नियमों व शर्तों का पालन करेंगे, जैसा कि कानून के
           अनुसार और किसी भी परिवर्तन/संशोधन के अनुसार होगा, और समय-समय पर उक्त भूमि/परिसर पर लागू
           होने वाली किसी भी शर्त, नियम या विनियमन के उल्लंघन और/या अनुपालन न करने के लिए उत्तरदायी
           होंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी ने फर्म के साथ यह प्रतिनिधित्व किया और वारंटी दी है कि
           आवंटी के पास इस करार में प्रवेश करने और इसे निष्पादित करने की शक्ति, योग्यता और प्राधिकार
           है और उन्होंने करार के तहत अपने अधिकारों, कर्तव्यों, जिम्मेदारियों और दायित्वों को स्पष्ट
           रूप से समझ लिया है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> फर्म ने आवंटी(यों) की पुष्टि, प्रतिनिधित्व और आश्वासनों पर भरोसा
           करते हुए कि वे इस करार में निहित सभी नियमों, शर्तों और उपबंधों का ईमानदारी से पालन करेंगे,
           उक्त भूखंड/दुकान के आवंटन के लिए सद्भावना में आवेदन स्वीकार कर लिया है और अब आगे उल्लिखित
           नियमों और शर्तों पर इस करार में प्रवेश करने के लिए तैयार है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed font-bold">
           अब, इसलिए, यह विलेख साक्ष्य देता है और एतद्द्वारा पक्षों के बीच निम्नानुसार सहमति और घोषणा
           की जाती है:
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&apos;करार&apos;</strong> का अर्थ बिल्डर बायर का करार है, जो फर्म और आवंटी के बीच
           उपयोग में लाया जाता है;
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&apos;आवंटी&apos;</strong> का अर्थ उस व्यक्ति/व्यक्तियों से है जिनका नाम पक्ष के
           रूप में उल्लिखित है और जिन्हें उक्त भूखंड/दुकान आवंटित किया जा रहा है और जिन्होंने करार पर
           हस्ताक्षर और निष्पादन किया है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&apos;कब्जे की तिथि&apos;</strong> का अर्थ उस तिथि से होगा जिस पर आवंटी द्वारा
           वास्तविक भौतिक कब्जा लिया जाता है या लिया हुआ माना जाता है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&apos;अभिकल्पित कब्जा&apos;</strong> का अर्थ भूखंड/दुकान के कब्जे से होगा, यदि
           आवंटी द्वारा कब्जा नहीं लिया जाता है तो कब्जे की सूचना की समाप्ति तिथि के अगले दिन कब्जा
           सुपुर्द किया हुआ माना जाएगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;बयाना राशि&quot;</strong> का अर्थ उक्त भूखंड/दुकान के कुल मूल्य का 50% है जो
           आवंटी(यों) द्वारा देय है और जो भुगतान अनुसूची, अनुबंध-ए में अधिक स्पष्ट रूप से दर्शाया गया
           है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&apos;बाह्य विकास शुल्क (ईडीसी)&apos;</strong> का अर्थ राजस्थान सरकार या किसी अन्य
           सरकारी प्राधिकरण द्वारा उक्त परिसर/उक्त भूमि पर लगाए गए या लगाए जाने योग्य शुल्कों से है
           (चाहे जिस भी नाम से पुकारा जाए) और इसमें ऐसे शुल्कों में किसी भी वृद्धि को भी शामिल किया
           गया है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;अप्रत्याशित घटना (Force Majeure)&quot;</strong> का अर्थ ऐसी कोई घटना या
           घटनाओं का संयोजन या परिस्थितियाँ हैं जो फर्म के नियंत्रण से परे हों और जिन्हें (क) उचित
           परिश्रम के प्रयोग से, या (ख) उचित सावधानियों और/या वैकल्पिक उपायों को अपनाने के बावजूद,
@@ -151,12 +151,12 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           सक्षम न्यायालय के समक्ष किसी मुकदमे/रिट का विषय बन जाता है; या किसी भी कारण से; (ज)
           उपरोक्त के सादृश्य कोई भी घटना या परिस्थिति।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed font-bold">
           <strong>&quot;आईबीएमएस&quot;</strong> का अर्थ ब्याज वहन रखरखाव सुरक्षा राशि से है जो
           आवंटी(यों) द्वारा उक्त परिसर/उक्त भवन के रखरखाव और उपयोग के लिए भुगतान अनुसूची के अनुसार
           (इस करार के अनुबंध-बी के रूप में संलग्न) फर्म को दी जानी है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed font-bold">
           <strong>&apos;अवसंरचना विकास शुल्क (आईडीसी)&apos;</strong> का अर्थ सरकारी प्राधिकरण द्वारा
           प्रमुख अवसंरचना परियोजनाओं के विकास की लागत हेतु लगाए/लगाए जाने योग्य अवसंरचना विकास
           शुल्कों से होगा (चाहे वर्तमान में या भविष्य में जिस भी नाम से पुकारा जाए)।
@@ -172,7 +172,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;सरकारी प्राधिकरण&quot;</strong> या{' '}
           <strong>&quot;सरकारी प्राधिकरणगण&quot;</strong> का अर्थ किसी भी सरकारी प्राधिकरण, वैधानिक
           प्राधिकरण, सक्षम प्राधिकरण, सरकारी विभाग, एजेंसी, आयोग, बोर्ड, न्यायाधिकरण या न्यायालय या
@@ -181,12 +181,12 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           बनाने वाली संस्था, और उक्त परिसर/उक्त भवन जिस भूमि पर स्थित है उस पर क्षेत्राधिकार रखने
           वाले किसी भी अन्य नगरपालिका/स्थानीय प्राधिकरण से है;
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;रखरखाव एजेंसी&quot;</strong> का अर्थ फर्म, उसके नामांकित व्यक्ति(यों) या
           भूखंड/दुकान आवंटितियों के संघ या ऐसी अन्य एजेंसी/निकाय/फर्म/कॉन्डोमिनियम के संघ से है जिसे
           फर्म रखरखाव सौंप सकती है और जो उक्त परिसर/उक्त भवन का रखरखाव करने के लिए उत्तरदायी होगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;रखरखाव शुल्क&quot;</strong> का अर्थ आवंटी(यों) द्वारा उक्त भवन/उक्त परिसर की
           रखरखाव सेवाओं के लिए रखरखाव एजेंसी को देय शुल्कों से होगा, जिसमें सामान्य क्षेत्र और
           सुविधाएँ शामिल हैं, लेकिन इसमें शामिल नहीं हैं: (क) बिजली, पानी सहित उक्त भूखंड/दुकान में
@@ -194,30 +194,30 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           जाएंगे, और (ख) उक्त भूखंड/दुकान/उक्त भवन/उक्त परिसर के संबंध में कोई भी वैधानिक भुगतान,
           कर। रखरखाव शुल्क के विवरण का रखरखाव करार में अधिक विस्तार से वर्णन किया जाएगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;गैर-वापसी योग्य राशियाँ&quot;</strong> का अर्थ विलंबित भुगतानों पर दिए गए या
           देय ब्याज, फर्म द्वारा दिए/देय दलाली आदि से है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)&quot;</strong> का अर्थ उक्त भूखंड/दुकान
           के अधिमान्य स्थान विशेषता(ओं) के लिए देय/लागू शुल्क से है, जिसकी गणना उक्त भूखंड/दुकान के
           सुपर एरिया के आधार पर प्रति वर्ग गज/वर्ग फुट के आधार पर की जाएगी, जैसा कि इस करार में
           उल्लिखित है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;उक्त भूखंड/दुकान&quot;</strong> का अर्थ आवंटी/यों को आवंटित भूखंड/दुकान से
           है, जिसका विवरण इस करार के खंड 1 में दिया गया है, अनुबंध-ए में दिया गया अनुमानित
           भूखंड/दुकान योजना और उसके अनुमानित विशिष्टताओं सहित, और इसमें उक्त भूखंड/दुकान के स्थान पर
           आवंटित कोई वैकल्पिक भूखंड/दुकान भी शामिल है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;उक्त परिसर&quot;</strong> का अर्थ &quot;
           {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
           {getProjectLocationName(formData?.projectName)} से है, जिसमें आवासीय भूखंड/दुकान भवन,
           दुकानें, क्लब हाउस स्विमिंग पूल, जिम आदि, सामुदायिक खरीदारी, नर्सरी स्कूल और सरकारी
           प्राधिकरण द्वारा अनुमोदित अन्य भवन सुविधाएँ और सुविधाएँ शामिल हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;कुल मूल्य&quot;</strong> का अर्थ उक्त भूखंड/दुकान के लिए अन्य के साथ देय सभी
           प्रकार की राशि से है जिसमें मूल बिक्री मूल्य, पीएलसी (यदि उक्त भूखंड/दुकान अधिमान्य रूप से
           स्थित है), उक्त भूखंड/दुकान के क्षेत्र के आधार पर प्रति वर्ग गज/वर्ग फुट के आधार पर गणना
@@ -231,29 +231,29 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           viii) वृद्धि शुल्क। ix) कोई भी अन्य शुल्क जो करार की अन्य शर्तों के अनुसार आवंटी(यों)
           द्वारा देय हो सकते हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>व्याख्या</strong>
           <br />
           जब तक इस करार में संदर्भ अन्यथा न हो:
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           क. एकवचन शब्दों का उपयोग बहुवचन को शामिल करेगा और पुल्लिंग में स्त्रीलिंग शामिल होगा और
           इसके विपरीत भी;
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           ख. किसी भी कानून का संदर्भ ऐसे कानून को शामिल करेगा जो समय-समय पर अधिनियमित, संशोधित, पूरक
           या पुनः अधिनियमित हो;
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           ग. &quot;शामिल&quot; या &quot;शामिल करना&quot; शब्दों का संदर्भ बिना किसी सीमा के समझा
           जाएगा;
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           घ. इस करार या किसी अन्य करार, विलेख या अन्य लिखत या दस्तावेज़ का संदर्भ इस करार या ऐसे
           करार, विलेख या अन्य लिखत या दस्तावेज़ के संदर्भ के रूप में समझा जाएगा जैसा समय-समय पर
           संशोधित, परिवर्तित, पूरक या नवीकृत किया जा सकता है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           आवंटी(यां) सहमत हैं कि जहाँ कहीं भी इस करार में यह स्पष्ट रूप से उल्लेख किया गया है कि
           आवंटी(यों) ने आवंटी(यों) के दायित्वों या फर्म के अधिकारों को समझा या स्वीकार किया है,
           आवंटी(यों) ने फर्म के कार्यों के लिए सहमति दी है या आवंटी(यों) ने स्वीकार किया है कि

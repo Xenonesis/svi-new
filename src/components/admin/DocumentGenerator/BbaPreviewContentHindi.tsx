@@ -37,7 +37,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
   };
 
   return (
-    <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
+    <div className="bg-white p-8 font-sans text-[15px] leading-relaxed text-black">
       {/* Cover Page */}
       <div
         style={{

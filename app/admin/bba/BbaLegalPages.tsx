@@ -28,7 +28,7 @@ export default function BbaLegalPages({ formData, companyInfo, totalCost }: BbaL
   const ctx = { formData, companyInfo, totalCost };
 
   return (
-    <div className="legal-pages text-[11px] leading-relaxed">
+    <div className="legal-pages text-[14.5px] leading-relaxed">
       <InstructionsPage {...ctx} />
       <PartiesAndRecitalsPage {...ctx} />
       <AllotteeRecitalsAndDefinitionsPage {...ctx} />

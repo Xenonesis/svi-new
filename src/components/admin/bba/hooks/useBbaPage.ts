@@ -158,8 +158,10 @@ export function useBbaPage(tokenOverride?: string | null) {
     async (e?: React.FormEvent) => {
       if (e) e.preventDefault();
 
-      if (!token) return;
-
+      if (!token) {
+        data.setPreview(true);
+        return;
+      }
       setIsSubmitting(true);
       try {
         const saveBody = {
@@ -213,8 +215,10 @@ export function useBbaPage(tokenOverride?: string | null) {
     async (e?: React.FormEvent) => {
       if (e) e.preventDefault();
 
-      if (!token) return;
-
+      if (!token) {
+        data.setPreview(true);
+        return;
+      }
       if (!data.documentId) {
         return handleCreateNew(e);
       }

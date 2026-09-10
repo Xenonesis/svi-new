@@ -32,7 +32,7 @@ export default function BbaLegalPagesHindi({
   const ctx = { formData, companyInfo, totalCost };
 
   return (
-    <div className="legal-hindi-pages text-[11px] leading-relaxed">
+    <div className="legal-hindi-pages text-[15px] leading-relaxed">
       <InstructionsPageHindi {...ctx} />
       <PartiesAndRecitalsPageHindi {...ctx} />
       <AllotteeRecitalsAndDefinitionsPageHindi {...ctx} />

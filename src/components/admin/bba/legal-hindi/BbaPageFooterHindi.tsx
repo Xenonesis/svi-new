@@ -6,7 +6,7 @@ export function BbaPageFooterHindi({ companyInfo }: { companyInfo?: BBALegalComp
   return (
     <div
       style={{ marginTop: 'auto' }}
-      className="mt-4 flex items-end justify-between border-t border-gray-300 pt-3 pb-4 text-[10px] select-none"
+      className="mt-4 flex items-end justify-between border-t border-gray-300 pt-3 pb-4 text-[12px] select-none"
     >
       <div className="flex flex-col">
         <span className="font-semibold text-gray-500">Allottee Signature(s):</span>

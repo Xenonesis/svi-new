@@ -28,12 +28,12 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           1. फर्म एतद्द्वारा आवंटी के पक्ष में {getProjectLocation(formData?.projectName)} पर स्थित
           दुकान/भूखंड सं. {formData.unitNumber} क्षेत्रफल {formData.area} वर्ग गज को
           बेचने/हस्तांतरित/स्थानांतरित करने के लिए सहमत होती है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           2. आवंटी(यों) ने आवेदन के समय कुल मूल्य की ओर भाग भुगतान के रूप में रु.{' '}
           {((totalCost * parseFloat(formData.bookingPaymentPercent || '10')) / 100).toLocaleString(
             'en-IN'
@@ -43,7 +43,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           फर्म द्वारा निर्धारित समय में और निर्धारित तरीके से सभी अन्य शुल्कों, करों, उपकरों,
           प्रतिभूतियों आदि का भुगतान करने के लिए सहमत हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           3. आवंटी(यां) सहमत हैं और पुष्टि करते हैं कि उक्त भूखंड/दुकान के लिए आवंटी(यों) द्वारा
           भुगतान की गई/देय कुल राशि में से, उक्त भूखंड/दुकान के कुल मूल्य का 30% बयाना राशि के रूप
           में माना जाएगा। यदि आवंटी(यां) किसी भी दायित्व को पूरा करने में विफल रहते हैं या आवेदन
@@ -52,7 +52,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           द्वारा भुगतान की गई राशि यदि जब्त करने योग्य राशि से कम है तो आवंटी(यां) कमी को पूरा करने
           का वचन देते हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           3क. यदि आवंटी(यां) किसी भी कारणवश अपने सौदे/आवंटन को रद्द करते हैं, तो वे फर्म को उनके
           द्वारा भुगतान की गई कुल राशि का केवल 60% (साठ प्रतिशत) रिफंड पाने के हकदार होंगे। यह
           स्पष्ट किया जाता है कि 60% रिफंड की गणना हेतु &apos;कुल राशि&apos; में केवल इस बिल्डर बायर
@@ -62,7 +62,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           औपचारिक रद्दीकरण अनुरोध प्राप्त एवं स्वीकृत होने की तिथि से 90 (नब्बे) कार्य दिवसों के
           भीतर फर्म द्वारा वापस की जाएगी।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           4. आवंटी समझते हैं कि उनके द्वारा दिया गया आंशिक अग्रिम चल रही परियोजना में
           भूखंड(ओं)/दुकान(ों) के संभावित आवंटन के विरुद्ध अनंतिम पंजीकरण की ओर है। आवंटी आगे समझते
           हैं कि संभावित आवंटन के विरुद्ध अनंतिम पंजीकरण निम्नलिखित शर्तों के अधीन है:
@@ -82,12 +82,12 @@ export function OperativeClausesAndSignaturesPageHindi({
           पंजीकरण शुल्क, स्टाम्प शुल्क और सेवा कर लागू दर के अनुसार अतिरिक्त होंगे।
         </p>
         <div className="my-6">
-          <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
+          <p className="mb-4 text-justify text-[15px] leading-relaxed font-bold">
             आवंटी(यां) इस करार के साथ संलग्न भुगतान अनुसूची (अनुबंध-ए) में उल्लिखित निर्धारित समय के
             भीतर, फर्म की किसी भी याद दिलाने के बिना, सभी भुगतान &apos;SVI INFRA SOLUTIONS PVT
             LTD&apos; के पक्ष में A/c payee चेक/डिमांड ड्राफ्ट या ऑनलाइन स्थानांतरण द्वारा करेंगे:
           </p>
-          <div className="ml-8 text-[13px] leading-relaxed font-bold">
+          <div className="ml-8 text-[15px] leading-relaxed font-bold">
             <div className="grid grid-cols-[150px_1fr] gap-1">
               <span>खाता नाम:</span>
               <span>{companyInfo.bank_account_name ?? 'SVI INFRA SOLUTIONS PVT LTD'}</span>
@@ -100,12 +100,12 @@ export function OperativeClausesAndSignaturesPageHindi({
             </div>
           </div>
         </div>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           5. आवंटी समझते हैं कि परियोजना अभी भी संकल्पना स्तर पर है और निर्णय और विकास काफी हद तक इस
           और इसी प्रकार के अनुरोध से उत्पन्न आवंटी प्रतिक्रिया के साथ-साथ भूमि अधिग्रहण, रूपांतरण और
           योजनाओं के अनुमोदन की पूर्णता पर निर्भर करेंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           6. आवंटी आगे समझते हैं कि अनंतिम पंजीकरण के विरुद्ध यहाँ और संभावित आवंटन के माध्यम से
           किया गया भुगतान केवल तभी आवंटन में परिवर्तित होगा जब फर्म द्वारा योजनाओं की मंजूरी के बाद
           सूचना दी जाए, बशर्ते सभी देय भुगतान समय पर किए गए हों।
@@ -121,19 +121,19 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           7. आवंटी समझते हैं कि आवंटन फर्म के मानक प्रारूप में करार के उचित निष्पादन के अधीन होगा
           जिसमें अनुबंध-बी के अनुसार रखरखाव करार आईबीएमएस और फर्म की सभी नियमों और शर्तों की उनके
           द्वारा/उनके द्वारा स्वीकृति शामिल है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           8. क. आवंटी समझते हैं कि पहली आंशिक अग्रिम भुगतान की प्राप्ति की तारीख से 12 महीने की
           लॉक-इन अवधि है और भुगतान की गई राशि पर कब्जे में देरी के लिए 18% ब्याज का दावा करने के लिए
           6 महीने की छूट अवधि है, जब तक कि अप्रत्याशित घटना की स्थितियों के कारण देरी या विफलता न
           हो। इस अवधि के दौरान आवंटी समझते हैं कि वे फर्म से किसी भी धनराशि की वापसी के हकदार नहीं
           होंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           ख. 12 महीने की लॉक-इन अवधि के साथ 6 महीने की छूट अवधि के भीतर कब्जा दिया जाएगा। यदि
           अप्रत्याशित घटना की स्थितियों के कारण उक्त भूखंड/दुकान के कब्जे में देरी होती है, तो फर्म
           उक्त भूखंड/दुकान के कब्जे की सुपुर्दगी के लिए समय विस्तार की हकदार होगी। यदि अप्रत्याशित
@@ -141,47 +141,47 @@ export function OperativeClausesAndSignaturesPageHindi({
           समाप्त कर सकती है और ऐसे मामले में फर्म की एकमात्र देनदारी बिना किसी ब्याज या मुआवजे के
           राशियाँ वापस करना होगी।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           ग. बिल्डर आंतरिक सड़कें, पार्क, बाहरी सीमा दीवारें/बाड़, स्ट्रीट लाइटें, सुरक्षा प्रणाली
           आदि जैसी बुनियादी सुविधाएँ प्रदान करेगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           घ. यदि फर्म अप्रत्याशित घटना की स्थितियों या किसी सरकारी/नियामक प्राधिकरण की कार्रवाई,
           निष्क्रियता या चूक के कारण उक्त भवन/उक्त परिसर का निर्माण/जारी रखने या पूरा करने में
           असमर्थ है, तो फर्म उचित न्यायालयों, न्यायाधिकरणों और/या प्राधिकरण में आवेदन करके इसे
           चुनौती दे सकती है। ऐसी स्थिति में, आवंटी(यों) द्वारा भुगतान की गई राशियाँ फर्म के पास बनी
           रहेंगी और यह करार न्यायालयों/न्यायाधिकरणों/प्राधिकरणों के अंतिम निर्णय तक स्थगित रहेगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           9. आवंटी(यां) फर्म को अधिकृत करते हैं कि वह आवंटी(यों) के नाम पर बकाया मदों के विरुद्ध
           आवंटी(यों) द्वारा किसी भी शीर्ष के तहत किए गए सभी भुगतानों को समायोजित/नियत करे और
           आवंटी(यों) को फर्म द्वारा तय तरीके के अलावा किसी अन्य तरीके से भुगतान समायोजित करने की
           मांग/आपत्ति/निर्देश देने का अधिकार नहीं होगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           10. आवंटी(यां) सहमत हैं कि इस करार के अनुसार और/या समय-समय पर फर्म द्वारा मांगे गए कुल
           मूल्य और अन्य शुल्कों, जमाओं और राशियों के भुगतान के संबंध में समय का बहुत महत्व है। फर्म
           भुगतान अनुसूची के अनुसार आवंटी(यों) द्वारा किए जाने वाले भुगतानों के लिए कोई भी अनुस्मारक
           भेजने के लिए बाध्य नहीं है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           11. यदि देय भुगतान में कोई देरी होती है, तो फर्म प्रो-राता आधार पर 18% प्रति वर्ष की दर से
           ब्याज लेगी और यदि ऐसी देरी 90 दिनों तक जारी रहती है तो आवंटन स्वतः बाजार भुगतान योजना में
           स्थानांतरित हो जाएगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           11क. यदि आवंटी(यों) द्वारा कोई भी ईएमआई (EMI) किश्त स्किप (छोड़ी) या विलंबित की जाती है,
           तो आवंटी(यों) को उस बकाया स्किप की गई ईएमआई राशि के साथ उस ईएमआई राशि का 10% (दस प्रतिशत)
           लेट फीस (विलंब शुल्क) के रूप में अनिवार्य रूप से भुगतान करना होगा। इसके अतिरिक्त, यदि
           आवंटी(यों) की तरफ से लगातार 6 (छह) महीने तक ईएमआई स्किप होती है अथवा उनकी 6वीं ईएमआई स्किप
           होती है, तो यह सौदा/आवंटन स्वतः रद्द (cancel) माना जाएगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           12. आवंटी(यों) ने भुगतान अनुसूची (अनुबंध-ए) को देखा और स्वीकार किया है। फर्म अपने एकल
           विवेक से या किसी सरकारी प्राधिकरण के निर्देश पर या अप्रत्याशित घटना की स्थितियों के कारण
           भूखंड/दुकान की मंजिल योजनाओं, विशिष्टताओं आदि में परिवर्तन कर सकती है।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           13. किसी भी परिवर्तन/संशोधन के परिणामस्वरूप उक्त भूखंड/दुकान के भूखंड क्षेत्र में (+)(-)
           10% परिवर्तन की स्थिति में, फर्म आवंटी(यों) को लिखित में परिवर्तनों की सूचना देगी और यदि
           आवंटी(यों) फर्म को 30 दिनों के भीतर लिखित सहमति या आपत्ति नहीं भेजते हैं, तो आवंटी(यों) को
@@ -198,56 +198,56 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           14. फर्म, सरकारी प्राधिकरण से आवश्यक अनुमोदन प्राप्त करने पर, आवंटी(यों) को लिखित में उक्त
           भूखंड/दुकान का कब्जा देने की पेशकश करेगी। ऐसी नोटिस जारी होने की तारीख से 30 दिनों के भीतर
           फर्म उक्त भूखंड/दुकान का कब्जा आवंटी(यों) को देगी, बशर्ते आवंटी(यां) इस करार के किसी भी
           नियम और शर्त के उल्लंघन में न हों।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           15. उपरोक्त खंड 13 के तहत फर्म से लिखित सूचना प्राप्त होने पर, आवंटी(यां) फर्म द्वारा
           निर्धारित समय के भीतर, आवश्यक क्षतिपूर्ति, वचनपत्र और ऐसे अन्य दस्तावेजों को निष्पादित
           करके और सभी शुल्कों/देय राशियों का भुगतान करके उक्त भूखंड/दुकान का कब्जा लेंगे। यदि
           आवंटी(यां) फर्म की नोटिस में निर्धारित समय सीमा के भीतर उक्त भूखंड/दुकान का कब्जा लेने में
           विफल रहते हैं, तो उक्त भूखंड/दुकान आवंटी(यों) के जोखिम और लागत पर होगी।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           16. यदि खंड 8(ब), 8(स) और खंड 28 में दिए गए कारणों के अलावा किसी अन्य कारण से फर्म आवेदन
           की तारीख से 24 (चौबीस) महीने की अवधि के भीतर 6 महीने की छूट अवधि के साथ उक्त भूखंड/दुकान
           का कब्जा आवंटी(यों) को देने में असमर्थ है या विफल रहती है, तो ऐसे मामले में आवंटी(यां)
           उक्त 12 (बारह) महीने की अवधि की समाप्ति से 90 (नब्बे) दिनों के भीतर फर्म को इस करार को
           समाप्त करने की नोटिस देने के हकदार होंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           17. इस करार की शर्तों के अधीन, खंड 28 और खंड 8(ब) और 8(स) में उल्लिखित शर्तों के अलावा,
           उक्त भूखंड/दुकान का कब्जा सुपुर्द करने में फर्म की ओर से किसी भी देरी की स्थिति में, फर्म
           केवल प्रथम नाम के आवंटी(यों) को उक्त भूखंड/दुकान के सुपर एरिया के प्रति वर्ग गज/फुट प्रति
           माह ₹20 की दर से मुआवजा देगी।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           18. फर्म, उसके सहयोगी/सहायक उक्त भूखंड/दुकान का स्वामित्व आवंटी(यों) के पक्ष में
           हस्तांतरित करने के लिए विक्रय-पत्र निष्पादित करेगी, बशर्ते आवंटी(यों) ने इस करार के अनुसार
           कुल मूल्य और अन्य शुल्कों का भुगतान किया हो।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           19. आवश्यक रखरखाव सेवाएँ प्रदान करने के लिए, उक्त भवन/उक्त परिसर के पूरा होने पर उक्त
           भवन/उक्त परिसर का रखरखाव रखरखाव एजेंसी को सौंपा जा सकता है। आवंटी(यां) रखरखाव एजेंसी या
           फर्म द्वारा नियुक्त किसी अन्य नामांकित व्यक्ति/एजेंसी या अन्य निकाय/भूखंड/दुकान मालिकों के
           संघ के साथ रखरखाव करार (अनुबंध-बी में मसौदा दिया गया) निष्पादित करने के लिए सहमत हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           20. कुल रखरखाव शुल्कों का अधिक विस्तार से रखरखाव करार (अनुबंध-बी में मसौदा दिया गया) में
           वर्णन किया जाएगा। आवंटी(यां) समय पर उनका भुगतान करने का वचन देते हैं। यह आवंटी(यों) द्वारा
           सहमत है कि रखरखाव शुल्क का भुगतान चाहे आवंटी(यों) ने उक्त भूखंड/दुकान का कब्जा लिया हो या
           नहीं, लागू होगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           21. आवंटी(यां) उक्त भूखंड/दुकान का उपयोग निर्धारित आवासीय प्रयोजन या वाणिज्यिक उपयोग के
           अलावा किसी अन्य उद्देश्य के लिए नहीं करेंगे; या इस तरह से उपयोग नहीं करेंगे जिससे उक्त
           परिसर के अन्य भूखंड/दुकान मालिकों या निवासियों को उपद्रव या असुविधा हो; या किसी वाणिज्यिक
           या अवैध या अनैतिक उद्देश्य के लिए नहीं करेंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           22. (क). आवंटी(यां) सहमत हैं और समझते हैं कि करार के नियमों और शर्तों को किसी भी न्यायालय
           के निर्देश/आदेश, सरकारी प्राधिकरण के अनुसार, लागू कानून के अनुपालन में फर्म द्वारा
           संशोधित/परिवर्तित किया जा सकता है और ऐसा संशोधन आवंटी(यों) पर बाध्यकारी होगा। (ख).
@@ -266,68 +266,68 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           23. आवंटी(यां) सहमत हैं कि इस करार, रखरखाव करार और अन्य अनुबंधों में शामिल प्रावधान उक्त
           परिसर में बिक्री के लिए प्रस्तावित भूखंड/दुकानों के लिए विशिष्ट और लागू हैं और इन
           प्रावधानों को फर्म/उसके सहयोगियों/सहायकों के किसी अन्य भूखंड/दुकान/भवन/परियोजना से संबंधित
           किसी भी न्यायालय/आयोग/उपभोक्ता फोरम में किसी भी प्रकार से पढ़ा या व्याख्यायित नहीं किया जा
           सकता।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           24. आवंटी(यां) सहमत हैं और समझते हैं कि यदि इस करार के किसी भी प्रावधान को लागू कानून के
           तहत शून्य या अप्रवर्तनीय माना जाता है, तो ऐसे प्रावधान को इस करार के उद्देश्य के साथ
           यथासंभव असंगतता की सीमा तक और लागू कानून के अनुरूप होने के लिए आवश्यक सीमा तक संशोधित या
           हटाया हुआ माना जाएगा और इस करार के शेष प्रावधान करार निष्पादन के समय यथा लागू वैध और
           प्रवर्तनीय रहेंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           25. फर्म इस करार में प्रदान किए गए अपने किसी भी दायित्व या वचनों को पूरा न करने के लिए
           जिम्मेदार या उत्तरदायी नहीं होगी यदि ऐसा निष्पादन अप्रत्याशित घटना की स्थितियों के कारण
           बाधित हो।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           26. इस करार का निष्पादन तभी पूर्ण होगा जब आवंटी(यों) द्वारा इसकी प्रतियों पर विधिवत
           हस्ताक्षर करके फर्म को प्राप्त होने के बाद फर्म के अधिकृत हस्ताक्षरकर्ता द्वारा ब्लॉक
           E-220, दूसरी मंजिल, सेक्टर 63, नोएडा, उत्तर प्रदेश 201309 में फर्म के प्रधान कार्यालय में
           निष्पादित किया जाए।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           27. इस करार में परिकल्पित सभी नोटिस आवंटी(यों) को उनके नीचे निर्दिष्ट पते पर पंजीकृत डाक
           से भेजी जाने पर विधिवत सेवित मानी जाएंगी।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed font-bold">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed font-bold">
           {formData.address}
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           इस करार के निष्पादन के बाद उपरोक्त पते में किसी भी परिवर्तन की सूचना पंजीकृत डाक द्वारा
           फर्म को देना आवंटी(यों) का कर्तव्य होगा, अन्यथा उपरोक्त पते पर भेजे गए सभी पत्र-व्यवहार और
           पत्र आवंटी(यों) द्वारा प्राप्त माने जाएंगे।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           28. आवंटी(यां) सहमत हैं कि इस करार के किसी भी नियम और शर्त के सभी उल्लंघन, भंग और/या
           अनुपालन न करने को चूक की घटनाएँ माना जाएगा। चूक की कुछ संकेतक घटनाएँ नीचे उल्लिखित हैं जो
           केवल दृष्टांत हैं और संपूर्ण नहीं हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           i) अनुबंध-ए में दी गई भुगतान अनुसूची में निर्धारित समय के भीतर भुगतान न करना और स्टाम्प
           शुल्क, कानूनी, पंजीकरण, आनुषंगिक शुल्क, IBMS सहित किसी भी सुरक्षा में वृद्धि का भुगतान न
           करना।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           ii) फर्म द्वारा निर्धारित समय के भीतर उक्त भूखंड/दुकान का कब्जा न लेना।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           iii) रखरखाव करार निष्पादित करने में विफलता और/या निर्धारित तिथि पर रखरखाव शुल्क, रखरखाव
           सुरक्षा जमा आदि का भुगतान न करना।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           iv) फर्म की पूर्व लिखित सहमति के बिना इस करार या आवंटी(यों) के किसी हित का समनुदेशन।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           v) किसी भी कारण से आवंटी(यों) द्वारा दिए गए किसी भी चेक का अनादरण।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">vi) वृद्धि शुल्क।</p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">vi) वृद्धि शुल्क।</p>
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           vii) कोई भी अन्य कार्य, विलेख या बातें जो आवंटी(यों) कर सकते हैं, छोड़ सकते हैं या करने
           में विफल हो सकते हैं और जो फर्म की राय में चूक की घटना के रूप में मानी जाती हैं।
         </p>
@@ -342,14 +342,14 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           जब तक इस करार में अन्यथा प्रदान नहीं किया गया है, इस करार के तहत चूक की एक या अधिक घटनाओं
           की स्थिति में, फर्म अपने एकल विवेक से, आवंटी(यों) को 30 दिनों का नोटिस देकर इस करार को
           रद्द कर सकती है। यदि उक्त 30 दिनों के भीतर चूक को सुधारा नहीं जाता है, तो यह करार बिना
           किसी आगे की नोटिस के रद्द माना जाएगा और फर्म को बयाना राशि के साथ विलंबित भुगतानों पर
           ब्याज और गैर-वापसी योग्य प्रकृति की किसी भी अन्य राशि को रखने का अधिकार होगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           29. इस बिल्डर-बायर करार के नियमों से उत्पन्न या उससे संबंधित या उसकी व्याख्या और वैधता और
           पक्षों के संबंधित अधिकारों और दायित्वों से संबंधित सभी या कोई भी विवाद, जिन्हें
           सौहार्दपूर्ण ढंग से नहीं सुलझाया जा सकता, मध्यस्थता के माध्यम से सुलझाए जाएंगे। मध्यस्थता
@@ -357,29 +357,29 @@ export function OperativeClausesAndSignaturesPageHindi({
           नियंत्रित होगी। मध्यस्थता कार्यवाही फर्म के प्रबंध निदेशक द्वारा नियुक्त एकल मध्यस्थ
           द्वारा आयोजित की जाएगी। क्षेत्रीय अधिकारिता राजस्थान के सक्षम न्यायालयों में होगी।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           30. कोई भी आवंटी मध्यस्थता का उपाय अपनाए बिना सीधे दीवानी न्यायालय के क्षेत्राधिकार को
           लागू करने का अधिकार नहीं रखेगा।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           31. आपसे अनुरोध है कि इस करार की एक प्रति अपने पास रखें और दूसरी प्रति 7 दिनों के भीतर
           विधिवत हस्ताक्षरित करके हमें वापस करें, अन्यथा हम मान लेंगे कि इस करार के दिए गए नियम और
           शर्तें आपको स्वीकार्य हैं।
         </p>
-        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
           32. यह अनंतिम करार भूखंड/भूखंडों के अंतिम पंजीकरण के बाद शून्य और अमान्य हो जाएगा।
         </p>
-        <p className="mt-6 mb-4 text-justify text-[13px] leading-relaxed">
+        <p className="mt-6 mb-4 text-justify text-[15px] leading-relaxed">
           इसकी साक्ष्य में पक्षों ने उनके संबंधित हस्ताक्षरों के नीचे उल्लिखित स्थानों और तारीख, माह
           और वर्ष पर इस करार और उसकी डुप्लीकेट प्रति पर अपने संबंधित हाथ और हस्ताक्षर लगाए हैं:
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">
+        <p className="mb-4 text-[15px] leading-relaxed">
           <strong>उक्त नाम के आवंटी(यों) द्वारा हस्ताक्षरित और सुपुर्द:</strong> (संयुक्त आवंटितियों
           सहित) (1) (2) पर
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">की उपस्थिति में:</p>
-        <p className="mb-4 text-[13px] leading-relaxed">दिनांक</p>
-        <p className="mb-4 text-[13px] leading-relaxed">
+        <p className="mb-4 text-[15px] leading-relaxed">की उपस्थिति में:</p>
+        <p className="mb-4 text-[15px] leading-relaxed">दिनांक</p>
+        <p className="mb-4 text-[15px] leading-relaxed">
           <strong>साक्षी:</strong>
           <br />
           1. हस्ताक्षर
@@ -390,18 +390,18 @@ export function OperativeClausesAndSignaturesPageHindi({
           <br />
           (आवंटी(यों) द्वारा पूर्ण किया जाना है)
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">
+        <p className="mb-4 text-[15px] leading-relaxed">
           2. हस्ताक्षर
           <br />
           नाम
           <br />
           पता
         </p>
-        <p className="mt-8 mb-4 text-[13px] leading-relaxed">
+        <p className="mt-8 mb-4 text-[15px] leading-relaxed">
           <strong>उक्त नाम की फर्म द्वारा हस्ताक्षरित और सुपुर्द</strong>
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">दिनांक</p>
-        <p className="mb-4 text-[13px] leading-relaxed">की उपस्थिति में:</p>
+        <p className="mb-4 text-[15px] leading-relaxed">दिनांक</p>
+        <p className="mb-4 text-[15px] leading-relaxed">की उपस्थिति में:</p>
         <div className="my-1 h-8 w-24">
           <img
             src="/signature.png"
@@ -409,10 +409,10 @@ export function OperativeClausesAndSignaturesPageHindi({
             className="h-full w-full object-contain"
           />
         </div>
-        <p className="mb-4 text-[13px] leading-relaxed">
+        <p className="mb-4 text-[15px] leading-relaxed">
           <strong>(अधिकृत हस्ताक्षरकर्ता)</strong>
         </p>
-        <p className="mt-8 mb-4 text-[13px] leading-relaxed">
+        <p className="mt-8 mb-4 text-[15px] leading-relaxed">
           <strong>साक्षी:</strong>
           <br />
           1. हस्ताक्षर
@@ -421,7 +421,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           <br />
           पता
         </p>
-        <p className="mb-4 text-[13px] leading-relaxed">
+        <p className="mb-4 text-[15px] leading-relaxed">
           की ओर से और उसकी ओर से
           <br />
           2. हस्ताक्षर

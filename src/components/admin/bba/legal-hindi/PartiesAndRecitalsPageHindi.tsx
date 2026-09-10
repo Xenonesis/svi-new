@@ -27,20 +27,20 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
           minHeight: '257mm',
         }}
       >
-        <p className="mb-2 text-left text-[13px] font-bold underline">
+        <p className="mb-2 text-left text-[15px] font-bold underline">
           नोट: कृपया बीबीए फॉर्म को पूरी तरह से बड़े अक्षरों (CAPITAL LETTERS) में भरें।
         </p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           आवंटी(यां) एतद्द्वारा सहमत होते हैं और पुष्टि करते हैं कि उन्होंने इस करार के सभी नियमों
           और शर्तों को, जिसमें इससे जुड़े अनुबंध भी शामिल हैं, पढ़, समझ और स्वीकार कर लिया है, और
           आवंटी(यां) एतद्द्वारा सहमत होते हैं और पुष्टि करते हैं कि आवंटी(यों) ने पूर्ण ज्ञान और
           सहमति से फर्म के साथ यह करार किया है।
         </p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           आवंटी(यां) स्वीकार करते हैं कि इस करार को आवंटी(यों) द्वारा समझी जाने वाली भाषा में समझाया
           गया है और आवंटी(यों) ने इस करार की विषयवस्तु को पूरी तरह से समझ लिया है।
         </p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           आवंटी(यां) एतद्द्वारा सहमत होते हैं और पुष्टि करते हैं कि आवंटी(यों) ने उक्त भूमि और उक्त
           परिसर के संबंध में फर्म के स्वामित्व की जाँच कर ली है और वे इससे संतुष्ट हैं।
         </p>
@@ -51,7 +51,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
           {getProjectCity(formData?.projectName)}
         </p>
         <p className="mb-2 text-center text-xl font-bold underline">बिल्डर-बायर करार</p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           यह बिल्डर-बायर करार (जिसे आगे &apos;<strong>करार</strong>&apos; के रूप में संदर्भित किया
           जाएगा) इस{' '}
           <strong>
@@ -64,7 +64,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
           को निष्पादित किया गया है।
         </p>
         <p className="my-2 text-center text-lg font-bold">पक्षों के बीच</p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           <strong>मे./SVI INFRA SOLUTIONS PVT LTD,</strong> फर्म, जिसका पंजीकृत कार्यालय वर्तमान में{' '}
           <strong>{companyInfo.company_address}</strong> पर है तथा कॉर्पोरेट कार्यालय भी{' '}
           <strong>{companyInfo.company_address}</strong> पर है, जिसका प्रतिनिधित्व इसके अधिकृत
@@ -75,91 +75,91 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
           प्रशासकों, प्रतिनिधियों, नामांकितों, समनुदेशितियों, वारिसों, विधिक प्रतिनिधियों आदि को
           शामिल माना जाएगा) <strong>प्रथम भाग</strong> का;
         </p>
-        <p className="my-3 text-center text-[13px] font-bold">तथा</p>
-        <p className="mb-0 text-[13px]">(व्यक्तियों के लिए)</p>
-        <p className="mb-2 text-[13px]">प्रथम आवंटी</p>
-        <p className="mb-1 text-[13px]">
+        <p className="my-3 text-center text-[15px] font-bold">तथा</p>
+        <p className="mb-0 text-[15px]">(व्यक्तियों के लिए)</p>
+        <p className="mb-2 text-[15px]">प्रथम आवंटी</p>
+        <p className="mb-1 text-[15px]">
           <strong>नाम:</strong> {formData.salutation ? `${formData.salutation}. ` : ''}
           {formData.clientName}
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>पुत्र/पुत्री/पत्नी:</strong> {formData.fatherName || '______________________'}
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>आयु:</strong> {formData.age ? `${formData.age} वर्ष` : '_______ वर्ष'}
         </p>
-        <p className="mb-1 text-[13px] font-bold">स्थायी पता:</p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px] font-bold">स्थायी पता:</p>
+        <p className="mb-1 text-[15px]">
           {formData.addressLine1 || formData.address}
           {formData.addressLine2 ? `, ${formData.addressLine2}` : ''}
         </p>
-        <p className="mb-1 text-[13px] font-bold">
+        <p className="mb-1 text-[15px] font-bold">
           {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
         </p>
-        <p className="my-3 text-center text-[13px] font-bold">तथा</p>
+        <p className="my-3 text-center text-[15px] font-bold">तथा</p>
 
-        <p className="mb-1 text-[13px] font-bold">द्वितीय आवंटी</p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px] font-bold">द्वितीय आवंटी</p>
+        <p className="mb-1 text-[15px]">
           <strong>नाम:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>पुत्र/पुत्री/पत्नी:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>आयु:</strong> _______ वर्ष
         </p>
-        <p className="mb-2 text-[13px]">
+        <p className="mb-2 text-[15px]">
           <strong>पता:</strong> ______________________
         </p>
-        <p className="my-3 text-center text-[13px] font-bold">तथा</p>
-        <p className="mb-1 text-[13px] font-bold">तृतीय आवंटी</p>
-        <p className="mb-1 text-[13px]">
+        <p className="my-3 text-center text-[15px] font-bold">तथा</p>
+        <p className="mb-1 text-[15px] font-bold">तृतीय आवंटी</p>
+        <p className="mb-1 text-[15px]">
           <strong>नाम:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>पुत्र/पुत्री/पत्नी:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>आयु:</strong> _______ वर्ष
         </p>
-        <p className="mb-2 text-[13px] font-bold">अथवा</p>
-        <p className="mb-1 text-[13px] font-bold">(फर्मों के लिए)</p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-2 text-[15px] font-bold">अथवा</p>
+        <p className="mb-1 text-[15px] font-bold">(फर्मों के लिए)</p>
+        <p className="mb-1 text-[15px]">
           <strong>मे.:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>प्रोपराइटर/पार्टनर के माध्यम से:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>पता:</strong> ______________________
         </p>
-        <p className="mb-2 text-[13px] font-bold">अथवा</p>
-        <p className="mb-1 text-[13px] font-bold">(कंपनियों के लिए)</p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-2 text-[15px] font-bold">अथवा</p>
+        <p className="mb-1 text-[15px] font-bold">(कंपनियों के लिए)</p>
+        <p className="mb-1 text-[15px]">
           <strong>मे.:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>निदेशक/अधिकृत हस्ताक्षरकर्ता के माध्यम से:</strong> ______________________
         </p>
-        <p className="mb-1 text-[13px]">
+        <p className="mb-1 text-[15px]">
           <strong>पता:</strong> ______________________
         </p>
-        <p className="mb-2 text-[13px]">
+        <p className="mb-2 text-[15px]">
           (जिसे आगे &apos;आवंटी(यां)&apos; के रूप में संदर्भित किया जाएगा)
         </p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           प्रथम भाग का पक्ष और द्वितीय भाग का पक्ष को व्यक्तिगत रूप से &apos;
           <strong>पक्ष</strong>&apos; और सामूहिक रूप से &apos;<strong>पक्षगण</strong>&apos; कहा
           जाएगा।
         </p>
-        <p className="mb-2 text-[13px] font-bold">फर्म का प्रतिनिधित्व</p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-[15px] font-bold">फर्म का प्रतिनिधित्व</p>
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           <strong>चूँकि</strong> फर्म &quot;
           {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
           {getProjectLocation(formData?.projectName)} नामक भूमि की वास्तविक क्रेता है (जिसे आगे
           &apos;<strong>उक्त भूमि</strong>&apos; के रूप में संदर्भित किया जाएगा)।
         </p>
-        <p className="mb-2 text-justify text-[13px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> यह स्पष्ट किया जाता है कि फर्म का उक्त भवन/उक्त परिसर/उक्त भूमि
           के बाहर पड़ने वाली किसी भी भूमि में कोई अधिकार या हित हस्तांतरित करने का इरादा नहीं है और
           उक्त भूमि के बाहर की भूमि पर होने वाले निर्माण के संबंध में किसी भी प्रकार का कोई प्रभाव

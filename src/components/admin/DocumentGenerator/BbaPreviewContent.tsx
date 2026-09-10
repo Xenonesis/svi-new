@@ -37,7 +37,7 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
   };
 
   return (
-    <div className="bg-white p-8 font-sans text-[13px] leading-relaxed text-black">
+    <div className="bg-white p-8 font-sans text-[14.5px] leading-relaxed text-black">
       {/* Cover Page */}
       <div
         style={{

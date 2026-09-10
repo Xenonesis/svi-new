@@ -20,13 +20,13 @@ export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
         "{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}"
       </p>
       <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
-      <p className="mb-4 text-left text-[10px] font-semibold italic">
+      <p className="mb-4 text-left text-[11.5px] font-semibold italic">
         Please read carefully..........
       </p>
-      <p className="mb-6 text-left text-[11px] font-bold underline">
+      <p className="mb-6 text-left text-[14.5px] font-bold underline">
         Important Instructions to the Allottee(s)
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
         The Allottee(s) states and confirms that the firm has made the Allottee(s) aware of the
         availability of the Builder Buyers' Agreement (hereinafter defined) at the head office of
         the firm. The Allottee(s) confirms that the Allottee(s) has read and perused the Agreement,
@@ -35,7 +35,7 @@ export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
         Firms limitations) and the Allottee(s) is agreeable to perform his obligations as per the
         conditions stipulated in the Agreement.
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
         Thereafter the Allottee(s) has applied for allotment of a plot/shop in the Said Complex and
         has requested the firm to allot a plot/shop. The Allottee(s) agrees and confirms to sign the
         Agreement in entirety and to abide by the terms and conditions of the Agreement and the
@@ -50,11 +50,11 @@ export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
         Refundable Amounts. Thereafter the Allottee(s) shall be left with no right, title or
         interest whatsoever in the Said Plot/shop.
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
         The Allottee(s) further agrees and understands that the firm is not obliged to send any
         notice/reminders in this regard.
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
         The Agreement shall not be binding on the firm until executed by the firm through it's
         authorized signatory. The firm reserves the right to request information as it may so desire
         concerning the Allottee(s). The firm will not execute any Agreement wherein the Allottee(s)
@@ -63,18 +63,18 @@ export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
         or without assigning any reasons thereof and the decision of the firm shall be final and
         binding on the Allottee(s).
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
         <strong>
           Now, therefore, the Allottee(s) has read and perused the entire Agreement, including
           Annexures and is signing the same with full knowledge and consent.
         </strong>
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
         In witness whereof, the parties hereto have signed this Agreement on the date first
         mentioned above.
       </p>
-      <p className="mt-8 text-[11px] font-bold">{formData.clientName}</p>
-      <p className="mb-3 text-[10px]">(Allottee(s))</p>
+      <p className="mt-8 text-[14.5px] font-bold">{formData.clientName}</p>
+      <p className="mb-3 text-[11.5px]">(Allottee(s))</p>
       <BbaPageFooter companyInfo={companyInfo} />
     </div>
   );

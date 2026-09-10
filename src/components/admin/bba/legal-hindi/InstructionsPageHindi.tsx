@@ -19,13 +19,13 @@ export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext
         &quot;{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;
       </p>
       <p className="mb-4 text-center text-sm font-bold uppercase">जयपुर, राजस्थान</p>
-      <p className="mb-4 text-left text-[10px] font-semibold italic">
+      <p className="mb-4 text-left text-[12px] font-semibold italic">
         कृपया ध्यानपूर्वक पढ़ें..........
       </p>
-      <p className="mb-6 text-left text-[11px] font-bold underline">
+      <p className="mb-6 text-left text-[15px] font-bold underline">
         आवंटी(यों) को महत्वपूर्ण निर्देश
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[15px] leading-relaxed">
         आवंटी(यां) यह कथन करते हैं और पुष्टि करते हैं कि फर्म ने आवंटी(यों) को फर्म के प्रधान
         कार्यालय में बिल्डर-बायर्स करार (जो आगे परिभाषित है) की उपलब्धता के बारे में अवगत कराया है।
         आवंटी(यां) पुष्टि करते हैं कि आवंटी(यों) ने इस करार को पढ़ा और परखा है, जिसमें विस्तृत नियम
@@ -33,7 +33,7 @@ export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext
         सीमाओं सहित) को पूरी तरह से समझ लिया है और आवंटी(यां) करार में निर्धारित शर्तों के अनुसार
         अपने दायित्वों को पूरा करने के लिए सहमत हैं।
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[15px] leading-relaxed">
         तत्पश्चात् आवंटी(यों) ने उक्त परिसर में एक भूखंड/दुकान के आवंटन के लिए आवेदन किया है और फर्म
         से एक भूखंड/दुकान आवंटित करने का अनुरोध किया है। आवंटी(यां) सहमत हैं और पुष्टि करते हैं कि
         वे करार पर संपूर्ण रूप से हस्ताक्षर करेंगे और करार के नियमों और शर्तों का पालन करेंगे।
@@ -46,11 +46,11 @@ export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext
         के लिए सहमति देते हैं और प्राधिकृत करते हैं। इसके बाद आवंटी(यों) का उक्त भूखंड/दुकान में
         किसी भी प्रकार का कोई अधिकार, स्वामित्व या हित नहीं रहेगा।
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[15px] leading-relaxed">
         आवंटी(यां) आगे सहमत हैं और समझते हैं कि फर्म इस संबंध में कोई भी सूचना/अनुस्मारक भेजने के
         लिए बाध्य नहीं है।
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[15px] leading-relaxed">
         यह करार फर्म पर तब तक बाध्यकारी नहीं होगा जब तक कि इसे फर्म के अधिकृत हस्ताक्षरकर्ता द्वारा
         निष्पादित नहीं किया जाता। फर्म आवंटी(यों) के बारे में जैसी भी जानकारी चाहे, उसकी मांग करने
         का अधिकार सुरक्षित रखती है। फर्म ऐसा कोई करार निष्पादित नहीं करेगी जिसमें आवंटी(यों) ने कोई
@@ -58,18 +58,18 @@ export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext
         करार को बिना किसी कारण या स्पष्टीकरण के अस्वीकार करने का भी अधिकार है और फर्म का निर्णय
         आवंटी(यों) पर अंतिम और बाध्यकारी होगा।
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[15px] leading-relaxed">
         <strong>
           अतः, आवंटी(यों) ने अनुबंधों सहित सम्पूर्ण करार को पढ़ और परख लिया है और पूर्ण ज्ञान एवं
           सहमति से इस पर हस्ताक्षर कर रहे हैं।
         </strong>
       </p>
-      <p className="mb-3 text-justify text-[13px] leading-relaxed">
+      <p className="mb-3 text-justify text-[15px] leading-relaxed">
         इसकी साक्ष्य में, इस करार के पक्षों ने उपरोक्त उल्लिखित तिथि पर इस करार पर हस्ताक्षर किए
         हैं।
       </p>
-      <p className="mt-8 text-[11px] font-bold">{formData.clientName}</p>
-      <p className="mb-3 text-[10px]">(आवंटी(यां))</p>
+      <p className="mt-8 text-[15px] font-bold">{formData.clientName}</p>
+      <p className="mb-3 text-[12px]">(आवंटी(यां))</p>
       <BbaPageFooterHindi companyInfo={companyInfo} />
     </div>
   );
