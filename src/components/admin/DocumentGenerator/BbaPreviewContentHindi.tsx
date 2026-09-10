@@ -46,18 +46,18 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
           minHeight: '257mm',
         }}
       >
-        <div className="mb-8 flex items-start justify-between">
+        <div className="mb-3.5 flex items-start justify-between border-b border-gray-200 pb-3">
           <div>
-            <h1 className="mb-2 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
+            <h1 className="mb-1 text-xl font-bold tracking-wide text-[#1e3a8a] uppercase">
               {companyInfo?.company_name}
             </h1>
-            <p className="text-gray-700">
-              Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email}
+            <p className="text-[12.5px] text-gray-700">
+              Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email} | Web:{' '}
+              {companyInfo?.company_website}
             </p>
-            <p className="text-gray-700">Website: {companyInfo?.company_website}</p>
-            <p className="text-gray-700">Office Address : {companyInfo?.company_address}</p>
+            <p className="text-[12.5px] text-gray-700">Office: {companyInfo?.company_address}</p>
           </div>
-          <div className="w-48">
+          <div className="w-36">
             <img
               src="/logo.png"
               alt={companyInfo?.company_name}
@@ -68,88 +68,160 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
         </div>
 
         {/* Date & To */}
-        <div className="mb-6">
-          <p className="mb-4 font-bold">
+        <div className="mb-3 text-[14.5px] leading-snug">
+          <p className="mb-1 font-bold">
             दिनांक:{' '}
             {formData?.bookingDate ||
               new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
           </p>
           <p className="font-bold">सेवा में,</p>
-          <p className="font-bold">{formData?.clientName || '[ग्राहक का नाम]'}</p>
-          {formData?.addressLine1 && <p className="font-bold">{formData?.addressLine1}</p>}
-          {formData?.addressLine2 && <p className="font-bold">{formData?.addressLine2}</p>}
+          <p className="font-bold text-[#1e3a8a]">{formData?.clientName || '[ग्राहक का नाम]'}</p>
+          {formData?.addressLine1 && (
+            <p className="font-medium text-gray-800">{formData?.addressLine1}</p>
+          )}
+          {formData?.addressLine2 && (
+            <p className="font-medium text-gray-800">{formData?.addressLine2}</p>
+          )}
           {(formData?.city || formData?.state || formData?.pincode) && (
-            <p className="font-bold">
+            <p className="font-medium text-gray-800">
               {[formData?.city, formData?.state, formData?.pincode].filter(Boolean).join(', ')}
             </p>
           )}
-          {!formData?.addressLine1 && <p className="font-bold">[पता]</p>}
+          {!formData?.addressLine1 && <p className="font-medium text-gray-800">[पता]</p>}
         </div>
 
         {/* Body */}
-        <div className="mb-6">
-          <p className="mb-2">
+        <div className="mb-3 text-[14px] leading-relaxed">
+          <p className="mb-1.5">
             आदरणीय {formData?.salutation || 'श्री/श्रीमती/सुश्री'}{' '}
-            <span className="font-bold">{formData?.clientName || '[ग्राहक का नाम]'}</span>
+            <span className="font-bold text-black">
+              {formData?.clientName || '[ग्राहक का नाम]'}
+            </span>
+            ,
           </p>
-          <p className="mb-1 text-justify">
-            {formData?.projectName} {projectLocation} में आपके नए निवेश पर{' '}
-            {companyInfo?.company_name} की ओर से हार्दिक बधाई। यह एक उत्तम विकल्प है और आप उन कुछ
-            भाग्यशाली लोगों में से एक हैं जिन्हें इतनी उचित दरों पर यूनिट मिली है।
+          <p className="mb-2 text-justify">
+            {formData?.projectName} {projectLocation} में आपके नए निवेश एवं भूखंड/यूनिट आवंटन पर{' '}
+            <strong>{companyInfo?.company_name}</strong> परिवार की ओर से हार्दिक बधाई। हम आपके इस
+            निवेश का हिस्सा बनकर अत्यंत गौरवान्वित एवं सौभाग्यशाली अनुभव करते हैं तथा हमारे साथ
+            जुड़ने के लिए आपका सहृदय धन्यवाद करते हैं।
           </p>
-          <p className="mb-4 text-justify">
-            हम {companyInfo?.company_name} में आपके महान निवेश का हिस्सा बनकर सौभाग्यशाली अनुभव करते
-            हैं। हम आपको इस निवेश में सहायता करने का अवसर देने के लिए आपका धन्यवाद करते हैं। हम
-            हार्दिक आशा करते हैं कि आप हमारी सेवाओं से संतुष्ट हैं और हमें अपने परिचितों में
-            संदर्भित करेंगे।
-          </p>
-
-          <p className="mb-2 font-bold">आपका आवंटन निम्नानुसार है:</p>
-          <p>
-            टिकट आईडी : <span className="font-bold">{formData?.ticketId}</span>
-          </p>
-          <p>
-            परियोजना का नाम : <span className="font-bold">{formData?.projectName}</span>
-          </p>
-          <p>
-            यूनिट संख्या : <span className="font-bold">{formData?.unitNumber}</span>
+          <p className="text-justify">
+            यह पत्र आपकी पसंदीदा आवासीय/व्यावसायिक इकाई के अनंतिम आवंटन की पुष्टि करता है। हमारी
+            प्रतिबद्धता आपको पारदर्शी, सुरक्षित एवं गुणवत्तापूर्ण विकास प्रदान करने की है। आपके
+            आवंटित भूखंड एवं लागत योजना का विवरण निम्नानुसार है:
           </p>
 
-          <p className="mt-4 mb-2">
-            यूनिट की कुल लागत और भुगतान योजना के बारे में संक्षिप्त विवरण निम्नानुसार है:
-          </p>
+          {/* Allotment Summary Card (2x3 Grid) */}
+          <div className="my-2.5 rounded-lg border border-gray-300 bg-gray-50/90 p-2.5 shadow-xs">
+            <p className="mb-1.5 text-[13.5px] font-bold text-[#1e3a8a]">
+              आवंटन विवरण संक्षेप (Allotment Summary):
+            </p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[13px]">
+              <div>
+                <span className="text-gray-600">टिकट / संदर्भ सं.:</span>{' '}
+                <strong className="text-black">{formData?.ticketId || '—'}</strong>
+              </div>
+              <div>
+                <span className="text-gray-600">परियोजना का नाम:</span>{' '}
+                <strong className="text-black">{formData?.projectName || '—'}</strong>
+              </div>
+              <div>
+                <span className="text-gray-600">आवंटित यूनिट सं.:</span>{' '}
+                <strong className="whitespace-nowrap text-black">
+                  {formData?.unitNumber || '—'}
+                </strong>
+              </div>
+              <div>
+                <span className="text-gray-600">भूखंड क्षेत्रफल:</span>{' '}
+                <strong className="whitespace-nowrap text-black">
+                  {formData?.area ? `${formData.area} वर्ग गज` : '—'}
+                </strong>
+              </div>
+              <div>
+                <span className="text-gray-600">आवंटन / बुकिंग तिथि:</span>{' '}
+                <strong className="text-black">
+                  {formData?.bookingDate ||
+                    new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
+                </strong>
+              </div>
+              <div>
+                <span className="text-gray-600">चयनित भुगतान योजना:</span>{' '}
+                <strong className="text-black">
+                  {formData?.paymentPlan ? `${formData.paymentPlan} माह किश्त योजना` : '—'}
+                </strong>
+              </div>
+            </div>
+          </div>
+
+          <p className="mt-2.5 mb-1 text-[13.5px] font-bold">लागत एवं भुगतान योजना विवरण:</p>
         </div>
 
         {/* Details Table */}
-        <div className="mb-6 overflow-hidden border border-gray-400">
+        <div className="mb-3 overflow-hidden rounded-lg border border-gray-400 text-[13px]">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-[#00b0f0] text-black">
-                <th className="border border-gray-400 p-2 font-bold">ग्राहक का नाम</th>
-                <th className="border border-gray-400 p-2 font-bold">आवंटित यूनिट</th>
-                <th className="border border-gray-400 p-2 font-bold">क्षेत्रफल (वर्ग गज)</th>
-                <th className="border border-gray-400 p-2 font-bold">भुगतान योजना</th>
-                <th className="border border-gray-400 p-2 font-bold">बीएसपी (प्रति वर्ग गज)</th>
-                <th className="border border-gray-400 p-2 font-bold">पीएलसी (%)</th>
-                <th className="border border-gray-400 p-2 font-bold">कुल लागत</th>
+                <th className="border border-gray-400 p-1.5 font-bold">ग्राहक का नाम</th>
+                <th className="border border-gray-400 p-1.5 font-bold">आवंटित यूनिट</th>
+                <th className="border border-gray-400 p-1.5 font-bold">क्षेत्रफल (वर्ग गज)</th>
+                <th className="border border-gray-400 p-1.5 font-bold">भुगतान योजना</th>
+                <th className="border border-gray-400 p-1.5 font-bold">बीएसपी (प्रति वर्ग गज)</th>
+                <th className="border border-gray-400 p-1.5 font-bold">पीएलसी (%)</th>
+                <th className="border border-gray-400 p-1.5 font-bold">कुल लागत</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.clientName}</td>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.unitNumber}</td>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.area}</td>
-                <td className="border border-gray-400 p-2 font-bold">
+                <td className="border border-gray-400 p-1.5 font-bold">{formData?.clientName}</td>
+                <td className="border border-gray-400 p-1.5 font-bold">{formData?.unitNumber}</td>
+                <td className="border border-gray-400 p-1.5 font-bold">{formData?.area}</td>
+                <td className="border border-gray-400 p-1.5 font-bold">
                   {formData?.paymentPlan} माह
                 </td>
-                <td className="border border-gray-400 p-2 font-bold">
+                <td className="border border-gray-400 p-1.5 font-bold">
                   {`\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
                 </td>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.plc || ''}</td>
-                <td className="border border-gray-400 p-2 font-bold">{fmtInr(totalCost)}</td>
+                <td className="border border-gray-400 p-1.5 font-bold">{formData?.plc || ''}</td>
+                <td className="border border-gray-400 p-1.5 font-bold">{fmtInr(totalCost)}</td>
               </tr>
             </tbody>
           </table>
+        </div>
+
+        {/* Important Instructions Box (4 Points) */}
+        <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50/60 p-2.5 text-[12.5px] leading-relaxed">
+          <p className="mb-1 font-bold text-[#1e3a8a]">महत्वपूर्ण निर्देश एवं आवंटन शर्तें:</p>
+          <ul className="list-disc space-y-0.5 pl-5 text-gray-800">
+            <li>
+              यह आवंटन बिल्डर-बायर्स एग्रीमेंट (BBA) में उल्लेखित सभी नियमों, उप-नियमों एवं शर्तों
+              के पूर्णतः अधीन है।
+            </li>
+            <li>
+              संलग्न भुगतान अनुसूची (अनुबंध-ए) के अनुसार निर्धारित समय पर किश्तों का भुगतान अनुबंध
+              का अनिवार्य तत्व है।
+            </li>
+            <li>
+              कृपया इस एग्रीमेंट की एक प्रति विधिवत हस्ताक्षरित कर 7 कार्य दिवसों के भीतर कंपनी को
+              वापस प्रेषित करें।
+            </li>
+            <li>
+              पंजीकरण शुल्क, स्टाम्प ड्यूटी, विकास शुल्क एवं अन्य सांविधिक कर नियमानुसार
+              रजिस्ट्री/कब्जे के समय अतिरिक्त देय होंगे।
+            </li>
+          </ul>
+        </div>
+
+        {/* Customer Helpdesk Banner */}
+        <div className="mb-3 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-2 text-[12px] text-gray-700">
+          <div>
+            <span className="font-semibold text-gray-900">सहायता डेस्क: </span>
+            <span>
+              ईमेल: {companyInfo?.company_email} | हेल्पलाइन: {companyInfo?.company_phone}
+            </span>
+          </div>
+          <div className="text-right font-medium text-gray-500">
+            समय: 10:00 AM - 6:30 PM (सोमवार - शनिवार)
+          </div>
         </div>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>

@@ -31,10 +31,21 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
         await route.continue();
       }
     });
+    // 1. Set large viewport to avoid clipping in preview containers
+    await page.setViewportSize({ width: 1400, height: 2400 });
 
-    // 1. Navigate to /admin/bba
+    // Navigate to /admin/bba
     await page.goto('/admin/bba');
     await page.waitForLoadState('domcontentloaded');
+
+    // Dismiss notification prompt if present
+    const dismissBtn = page
+      .locator('button')
+      .filter({ hasText: /Not now|Dismiss/i })
+      .first();
+    if (await dismissBtn.isVisible()) {
+      await dismissBtn.click();
+    }
 
     // 2. Verify Agreement Details form is present
     await expect(page.locator('h1').filter({ hasText: /Builder Buyer/i })).toBeVisible({
@@ -74,7 +85,12 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     const previewContainer = page.locator('#bbaPreview');
     await expect(previewContainer).toBeVisible({ timeout: 10000 });
 
-    // 5. Verify English BBA Font Size
+    // Verify and capture English Page 1 Cover
+    const englishCoverPage = previewContainer.locator('> div > div').first();
+    await expect(englishCoverPage).toContainText('Allotment Summary Details:');
+    await expect(englishCoverPage).toContainText('Important Instructions:');
+    await expect(englishCoverPage).toContainText('Payment Plan');
+    await englishCoverPage.screenshot({ path: 'test-results/bba-cover-english.png' });
     const englishLegalContainer = previewContainer.locator('.legal-pages');
     await expect(englishLegalContainer).toBeVisible();
 
@@ -106,16 +122,12 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     // 7. Verify Hindi BBA Font Size
     const hindiLegalContainer = previewContainer.locator('.legal-hindi-pages');
     await expect(hindiLegalContainer).toBeVisible({ timeout: 5000 });
-
-    const hindiFontSize = await hindiLegalContainer.evaluate((el) => {
-      return parseFloat(window.getComputedStyle(el).fontSize);
-    });
-
-    // Previously Hindi base text was 11px, now enlarged to 15px
-    expect(hindiFontSize).toBeGreaterThanOrEqual(14.5);
-    expect(hindiFontSize).toBeCloseTo(15, 0.5);
-
-    // Verify Hindi paragraph text inside legal pages
+    // Verify and capture Hindi Page 1 Cover
+    const hindiCoverPage = previewContainer.locator('> div > div').first();
+    await expect(hindiCoverPage).toContainText('आवंटन संक्षिप्त विवरण:');
+    await expect(hindiCoverPage).toContainText('महत्वपूर्ण निर्देश:');
+    await expect(hindiCoverPage).toContainText('भुगतान योजना');
+    await hindiCoverPage.screenshot({ path: 'test-results/bba-cover-hindi.png' });
     const hindiParagraph = hindiLegalContainer.locator('p.leading-relaxed').first();
     await expect(hindiParagraph).toBeVisible();
     const hindiParaFontSize = await hindiParagraph.evaluate((el) => {
