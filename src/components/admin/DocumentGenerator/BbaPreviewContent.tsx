@@ -238,16 +238,11 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
         </div>
 
         {/* Customer Helpdesk Grounding Banner (Bottom of Page) */}
-        <div className="flex items-center justify-between rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-2 text-[12px] text-gray-700">
-          <div>
-            <span className="font-semibold text-[#1e3a8a]">Customer Support Helpdesk: </span>
-            <span>
-              {companyInfo?.company_email} | Helpline: {companyInfo?.company_phone}
-            </span>
-          </div>
-          <div className="text-right font-medium text-gray-600">
-            Office Hours: 10:00 AM - 6:30 PM (Mon - Sat)
-          </div>
+        <div className="rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-2 text-center text-[12px] text-gray-700">
+          <span className="font-semibold text-[#1e3a8a]">Customer Support Helpdesk: </span>
+          <span>
+            {companyInfo?.company_email} | Helpline: {companyInfo?.company_phone}
+          </span>
         </div>
       </div>
       {/* Legal Pages (2-17) */}

@@ -155,6 +155,16 @@ export async function exportToPDF({
 
     const sortedBreaks = Array.from(breakYs).sort((a, b) => a - b);
 
+    // Collect block element tops as fallback break candidates to prevent slicing across lines
+    const blockEls = clone.querySelectorAll<HTMLElement>(
+      'p, tr, h1, h2, h3, h4, h5, h6, table, .border-t, [style*="border-top"]'
+    );
+    const candidateTops: number[] = [];
+    blockEls.forEach((el) => {
+      const top = Math.floor((el.getBoundingClientRect().top - cloneRect.top) * scale);
+      if (top > 0 && top < canvasH) candidateTops.push(top);
+    });
+    candidateTops.sort((a, b) => a - b);
     // ── Group break sections into A4-sized pages ─────────────────────────────
     const slices: { start: number; end: number }[] = [];
     let pageStart = 0;
@@ -179,8 +189,18 @@ export async function exportToPDF({
         if (nextBreak - pageStart <= pxPerPage * 1.12) {
           break;
         }
-        slices.push({ start: pageStart, end: pageStart + pxPerPage });
-        pageStart += pxPerPage;
+        const idealEnd = pageStart + pxPerPage;
+        let chosenEnd = idealEnd;
+        // Snap to the nearest block boundary within the lower 20% of the page
+        for (let j = candidateTops.length - 1; j >= 0; j--) {
+          const top = candidateTops[j];
+          if (top <= idealEnd && top >= pageStart + Math.floor(pxPerPage * 0.8)) {
+            chosenEnd = top;
+            break;
+          }
+        }
+        slices.push({ start: pageStart, end: chosenEnd });
+        pageStart = chosenEnd;
       }
 
       // Flush remainder

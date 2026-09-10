@@ -111,7 +111,18 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-2 text-[15px]">
           <strong>पता:</strong> ______________________
         </p>
-        <p className="my-3 text-center text-[15px] font-bold">तथा</p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mb-3 text-center text-[15px] font-bold">तथा</p>
         <p className="mb-1 text-[15px] font-bold">तृतीय आवंटी</p>
         <p className="mb-1 text-[15px]">
           <strong>नाम:</strong> ______________________

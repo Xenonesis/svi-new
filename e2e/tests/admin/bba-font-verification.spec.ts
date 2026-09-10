@@ -167,10 +167,20 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     // Check Hindi text readability - must contain Hindi characters
     const hindiText = await hindiParagraph.innerText();
     expect(hindiText.length).toBeGreaterThan(10);
-    const firstHindiPage = hindiLegalContainer.locator('> div').first();
+    const firstHindiPage = hindiLegalContainer.locator('> div').nth(0);
     await firstHindiPage.scrollIntoViewIfNeeded();
     await firstHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-page1.png' });
 
+    // Capture Parties and Recitals Page 1 (2nd Allottee) and Page 2 (3rd Allottee)
+    const secondHindiPage = hindiLegalContainer.locator('> div').nth(1);
+    await secondHindiPage.scrollIntoViewIfNeeded();
+    await secondHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-parties-p1.png' });
+    await expect(secondHindiPage).toContainText('द्वितीय आवंटी');
+
+    const thirdHindiPage = hindiLegalContainer.locator('> div').nth(2);
+    await thirdHindiPage.scrollIntoViewIfNeeded();
+    await thirdHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-parties-p2.png' });
+    await expect(thirdHindiPage).toContainText('तृतीय आवंटी');
     // 8. Verify Page 1 height spans full A4 page (>= 1000px)
     const hindiCoverHeight = await hindiCoverPage.evaluate(
       (el) => el.getBoundingClientRect().height

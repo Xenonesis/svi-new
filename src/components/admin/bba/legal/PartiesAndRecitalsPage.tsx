@@ -115,7 +115,18 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-2 text-[14.5px]">
           <strong>Address:</strong> ______________________
         </p>
-        <p className="my-3 text-center text-[14.5px] font-bold">AND</p>
+        <BbaPageFooter companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mb-3 text-center text-[14.5px] font-bold">AND</p>
         <p className="mb-1 text-[14.5px] font-bold">3rd ALLOTTEE</p>
         <p className="mb-1 text-[14.5px]">
           <strong>Name:</strong> ______________________
