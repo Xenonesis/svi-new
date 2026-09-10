@@ -324,8 +324,8 @@ export default async function BlogPost({ params }: Props) {
                   </h4>
                   <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
                     {isHindi
-                      ? 'जयपुर, नोएडा और DMIC कॉरिडोर में 15+ साल के एक्सपीरियंस वाला रियल एस्टेट एक्सपर्ट।'
-                      : 'Real estate expert with 15+ years of experience in Jaipur, Noida, and DMIC Corridor.'}
+                      ? 'जयपुर, नोएडा और DMIC कॉरिडोर में 17+ साल के एक्सपीरियंस वाला रियल एस्टेट एक्सपर्ट।'
+                      : 'Real estate expert with 17+ years of experience in Jaipur, Noida, and DMIC Corridor.'}
                   </p>
                 </div>
               </div>

@@ -82,7 +82,7 @@ export default function AboutSection() {
               transition={{ delay: 0.1, duration: 0.3 }}
               suppressHydrationWarning
             >
-              <div className="font-serif text-4xl leading-none font-bold">15+</div>
+              <div className="font-serif text-4xl leading-none font-bold">17+</div>
               <div className="mt-1 text-[10px] font-semibold tracking-wider uppercase">
                 {t('yearsLabel')}
               </div>

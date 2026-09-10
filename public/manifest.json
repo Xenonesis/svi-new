@@ -1,7 +1,7 @@
 {
   "name": "SVI Infra Solutions — Premium Real Estate Developer",
   "short_name": "SVI Infra",
-  "description": "Trusted real estate developer with 15+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.",
+  "description": "Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.",
   "start_url": "/",
   "display": "standalone",
   "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],

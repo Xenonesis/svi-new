@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     template: '%s | SVI Infra Solutions',
   },
   description:
-    'Premium real estate developer with 15+ years in Jaipur, Noida, and DMIC corridors. Specializing in residential flats and commercial properties across Rajasthan and UP.',
+    'Premium real estate developer with 17+ years in Jaipur, Noida, and DMIC corridors. Specializing in residential flats and commercial properties across Rajasthan and UP.',
   keywords: [
     'Real Estate',
     'Infra Solutions',
@@ -99,7 +99,7 @@ export const metadata: Metadata = {
     url: SITE_URL,
     title: 'SVI Infra Solutions - Premium Real Estate Developer',
     description:
-      'Trusted real estate developer with 15+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
+      'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
     siteName: SITE_NAME,
     locale: 'en_IN',
     images: [
@@ -115,7 +115,7 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     title: 'SVI Infra Solutions - Premium Real Estate Developer',
     description:
-      'Trusted real estate developer with 15+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
+      'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
     images: [absoluteUrl('/opengraph-image')],
   },
 };
@@ -154,7 +154,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               '@id': 'https://www.sviinfrasolutions.com/#organization',
               name: 'SVI Infra Solutions Pvt. Ltd.',
               description:
-                'Premium residential and commercial real estate developer with 15+ years of experience in Jaipur, Noida, and DMIC/DFC corridors.',
+                'Premium residential and commercial real estate developer with 17+ years of experience in Jaipur, Noida, and DMIC/DFC corridors.',
               url: 'https://www.sviinfrasolutions.com/',
               logo: 'https://www.sviinfrasolutions.com/logo.png',
               image: 'https://www.sviinfrasolutions.com/logo.png',

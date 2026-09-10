@@ -5,7 +5,7 @@ import { BreadcrumbSchema } from '@/src/components/common/Schema';
 export const metadata: Metadata = createMetadata({
   title: 'About Us - Our Story & Values',
   description:
-    'Learn about SVI Infra Solutions Pvt. Ltd., our core values, mission, and our 15+ years of legacy in building premium real estate in Jaipur and Noida.',
+    'Learn about SVI Infra Solutions Pvt. Ltd., our core values, mission, and our 17+ years of legacy in building premium real estate in Jaipur and Noida.',
   path: '/about',
 });
 
@@ -15,7 +15,7 @@ const aboutSchema = {
   '@id': 'https://www.sviinfrasolutions.com/about#page',
   name: 'About SVI Infra Solutions',
   description:
-    'Learn about SVI Infra Solutions Pvt. Ltd., our core values, mission, and our 15+ years of legacy in building premium real estate in Jaipur and Noida.',
+    'Learn about SVI Infra Solutions Pvt. Ltd., our core values, mission, and our 17+ years of legacy in building premium real estate in Jaipur and Noida.',
   url: 'https://www.sviinfrasolutions.com/about',
   mainEntity: {
     '@id': 'https://www.sviinfrasolutions.com/#organization',

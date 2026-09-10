@@ -9,7 +9,7 @@ const ORG_SCHEMA = {
   url: SITE_URL,
   logo: `${SITE_URL}/logo.png`,
   description:
-    'Trusted real estate developer with 15+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
+    'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Block E-220, 2nd Floor, Sector 63',

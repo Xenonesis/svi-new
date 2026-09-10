@@ -39,7 +39,7 @@ export async function POST(req: NextRequest) {
   const systemPrompt = `You are a friendly and knowledgeable real estate assistant for SVI Infra Solutions Pvt. Ltd.
 
 ABOUT THE COMPANY:
-- Premium real estate developer with 15+ years of experience
+- Premium real estate developer with 17+ years of experience
 - Headquarters: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309
 - Phone: +91-73000-07643 | Email: info@sviinfrasolutions.com
 - Website: https://www.sviinfrasolutions.com 

@@ -18,8 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   const isHindi = locale === 'hi';
   const title = isHindi
-    ? 'हमारे बारे में - 15+ वर्षों का विश्वास और विरासत'
-    : 'About Us - Our 15+ Years Legacy & Vision';
+    ? 'हमारे बारे में - 17+ वर्षों का विश्वास और विरासत'
+    : 'About Us - Our 17+ Years Legacy & Vision';
   const description = isHindi
     ? '2009 से रियल एस्टेट में अग्रणी। SVI Infra Solutions जयपुर, नोएडा और फुलेरा में 15+ प्रोजेक्ट्स और 5000+ संतुष्ट ग्राहकों के साथ प्रीमियम टाउनशिप विकसित करता है।'
     : 'Building legacies since 2009. SVI Infra Solutions is a premium real estate developer with 15+ projects and 5000+ happy clients across Jaipur, Noida, and Phulera Smart City.';

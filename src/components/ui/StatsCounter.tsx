@@ -19,7 +19,7 @@ export default function StatsCounter() {
   const stats: StatConfig[] = [
     { end: 5000, suffix: '+', label: t('propertiesSold') },
     { end: 5000, suffix: '+', label: t('happyClients') },
-    { end: 15, suffix: '+', label: t('yearsExperience') },
+    { end: 17, suffix: '+', label: t('yearsExperience') },
     { end: 100, suffix: '%', label: t('successRate') },
   ];
 
