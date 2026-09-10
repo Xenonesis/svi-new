@@ -412,7 +412,20 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
             </tbody>
           </table>
         </div>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
 
+      {/* Payment Terms & Bank Details Page */}
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <h3 className="mb-4 text-lg font-bold text-gray-800">भुगतान नियम एवं विवरण</h3>
         {/* Terms Box */}
         <div className="mb-8 rounded-lg border-l-4 border-[#00b0f0] bg-[#f0f8ff] p-4 text-gray-800 italic">
           {(() => {

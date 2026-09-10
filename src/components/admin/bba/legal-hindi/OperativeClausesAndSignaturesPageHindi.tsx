@@ -100,16 +100,6 @@ export function OperativeClausesAndSignaturesPageHindi({
             </div>
           </div>
         </div>
-        <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          5. आवंटी समझते हैं कि परियोजना अभी भी संकल्पना स्तर पर है और निर्णय और विकास काफी हद तक इस
-          और इसी प्रकार के अनुरोध से उत्पन्न आवंटी प्रतिक्रिया के साथ-साथ भूमि अधिग्रहण, रूपांतरण और
-          योजनाओं के अनुमोदन की पूर्णता पर निर्भर करेंगे।
-        </p>
-        <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          6. आवंटी आगे समझते हैं कि अनंतिम पंजीकरण के विरुद्ध यहाँ और संभावित आवंटन के माध्यम से
-          किया गया भुगतान केवल तभी आवंटन में परिवर्तित होगा जब फर्म द्वारा योजनाओं की मंजूरी के बाद
-          सूचना दी जाए, बशर्ते सभी देय भुगतान समय पर किए गए हों।
-        </p>
         <BbaPageFooterHindi companyInfo={companyInfo} />
       </div>
       <div
@@ -121,6 +111,16 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
+          5. आवंटी समझते हैं कि परियोजना अभी भी संकल्पना स्तर पर है और निर्णय और विकास काफी हद तक इस
+          और इसी प्रकार के अनुरोध से उत्पन्न आवंटी प्रतिक्रिया के साथ-साथ भूमि अधिग्रहण, रूपांतरण और
+          योजनाओं के अनुमोदन की पूर्णता पर निर्भर करेंगे।
+        </p>
+        <p className="mb-4 text-justify text-[15px] leading-relaxed">
+          6. आवंटी आगे समझते हैं कि अनंतिम पंजीकरण के विरुद्ध यहाँ और संभावित आवंटन के माध्यम से
+          किया गया भुगतान केवल तभी आवंटन में परिवर्तित होगा जब फर्म द्वारा योजनाओं की मंजूरी के बाद
+          सूचना दी जाए, बशर्ते सभी देय भुगतान समय पर किए गए हों।
+        </p>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           7. आवंटी समझते हैं कि आवंटन फर्म के मानक प्रारूप में करार के उचित निष्पादन के अधीन होगा
           जिसमें अनुबंध-बी के अनुसार रखरखाव करार आईबीएमएस और फर्म की सभी नियमों और शर्तों की उनके
@@ -176,6 +176,17 @@ export function OperativeClausesAndSignaturesPageHindi({
           आवंटी(यों) की तरफ से लगातार 6 (छह) महीने तक ईएमआई स्किप होती है अथवा उनकी 6वीं ईएमआई स्किप
           होती है, तो यह सौदा/आवंटन स्वतः रद्द (cancel) माना जाएगा।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           12. आवंटी(यों) ने भुगतान अनुसूची (अनुबंध-ए) को देखा और स्वीकार किया है। फर्म अपने एकल
           विवेक से या किसी सरकारी प्राधिकरण के निर्देश पर या अप्रत्याशित घटना की स्थितियों के कारण

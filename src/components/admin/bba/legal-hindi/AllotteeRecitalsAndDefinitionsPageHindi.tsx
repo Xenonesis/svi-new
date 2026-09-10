@@ -242,6 +242,17 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           viii) वृद्धि शुल्क। ix) कोई भी अन्य शुल्क जो करार की अन्य शर्तों के अनुसार आवंटी(यों)
           द्वारा देय हो सकते हैं।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>व्याख्या</strong>
           <br />

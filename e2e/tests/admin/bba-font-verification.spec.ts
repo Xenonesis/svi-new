@@ -214,18 +214,25 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await expect(fifthHindiPage).toContainText('Allottee Signature(s):');
     await expect(fifthHindiPage).toContainText('निदेशक');
 
-    // Capture Definitions Page 3 (Maintenance Charges to Interpretation)
+    // Capture Definitions Page 3 (Maintenance Charges & Definitions)
     const sixthHindiPage = hindiLegalContainer.locator('> div').nth(5);
     await sixthHindiPage.scrollIntoViewIfNeeded();
     await sixthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-definitions-p3.png' });
     await expect(sixthHindiPage).toContainText('रखरखाव शुल्क');
     await expect(sixthHindiPage).toContainText('प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)');
-    await expect(sixthHindiPage).toContainText('व्याख्या');
     await expect(sixthHindiPage).toContainText('Allottee Signature(s):');
     await expect(sixthHindiPage).toContainText('निदेशक');
 
-    // Capture Operative Clauses Page 5 (Clauses 28-32)
-    const seventhHindiPage = hindiLegalContainer.locator('> div').nth(10);
+    // Capture Definitions Page 4 (Interpretation: व्याख्या) - now on its own page!
+    const interpPage = hindiLegalContainer.locator('> div').nth(6);
+    await interpPage.scrollIntoViewIfNeeded();
+    await expect(interpPage).toContainText('व्याख्या');
+    await expect(interpPage).toContainText('Allottee Signature(s):');
+    await expect(interpPage).toContainText('निदेशक');
+
+    // Capture Operative Clauses Page 6 (Clauses 28-32) - shifted by 2 new pages (interp + clause 12 split)
+    // Previously at nth(10), now at nth(12)
+    const seventhHindiPage = hindiLegalContainer.locator('> div').nth(12);
     await seventhHindiPage.scrollIntoViewIfNeeded();
     await seventhHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-clauses-p5.png' });
     await expect(seventhHindiPage).toContainText('28.');
@@ -233,8 +240,8 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await expect(seventhHindiPage).not.toContainText('हस्ताक्षरित और सुपुर्द');
     await expect(seventhHindiPage).toContainText('Allottee Signature(s):');
 
-    // Capture Execution & Signatures Page 6 (dedicated signature page)
-    const eighthHindiPage = hindiLegalContainer.locator('> div').nth(11);
+    // Capture Execution & Signatures Page 7 (dedicated signature page) - now at nth(13)
+    const eighthHindiPage = hindiLegalContainer.locator('> div').nth(13);
     await eighthHindiPage.scrollIntoViewIfNeeded();
     await eighthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-signatures.png' });
     await expect(eighthHindiPage).toContainText('हस्ताक्षरित और सुपुर्द');
@@ -243,11 +250,73 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await expect(eighthHindiPage).toContainText('Allottee Signature(s):');
     await expect(eighthHindiPage).toContainText('निदेशक');
 
-    // 8. Verify Page 1 height spans full A4 page (>= 1000px)
-    const hindiCoverHeight = await hindiCoverPage.evaluate(
-      (el) => el.getBoundingClientRect().height
+    // Verify Operative Clauses Page 1 ends at bank details (no Clause 5)
+    // Prior divs: Instructions=1, Parties=2, AllotteeRecitals=4 -> OperativeClauses starts at index 7
+    const opPage1 = hindiLegalContainer.locator('> div').nth(7);
+    await opPage1.scrollIntoViewIfNeeded();
+    await opPage1.screenshot({ path: 'test-results/bba-hindi-op-clauses-p1.png' });
+    await expect(opPage1).toContainText('खाता संख्या');
+    await expect(opPage1).not.toContainText('5. आवंटी समझते हैं');
+    await expect(opPage1).toContainText('Allottee Signature(s):');
+
+    // Verify Operative Clauses Page 2 starts with Clause 5
+    const opPage2 = hindiLegalContainer.locator('> div').nth(8);
+    await opPage2.scrollIntoViewIfNeeded();
+    await opPage2.screenshot({ path: 'test-results/bba-hindi-op-clauses-p2.png' });
+    await expect(opPage2).toContainText('5. आवंटी समझते हैं');
+
+    // ── AUDIT ALL LOGICAL PAGES IN HINDI PREVIEW ─────────────────────────────
+    const pageAudit = await hindiLegalContainer.evaluate((container) => {
+      // Get all child page divs
+      const pageDivs = Array.from(container.children) as HTMLElement[];
+      return pageDivs.map((div, idx) => {
+        const rect = div.getBoundingClientRect();
+        const pTags = Array.from(div.querySelectorAll('p'));
+        const firstText = pTags[0]?.textContent?.substring(0, 70).replace(/\s+/g, ' ').trim() || '';
+        const lastText =
+          pTags[pTags.length - 1]?.textContent?.substring(0, 70).replace(/\s+/g, ' ').trim() || '';
+        const hasFooter = !!div.querySelector(
+          '[class*="BbaPageFooter"], .border-t, img[alt*="Director"], img[alt*="Sign"]'
+        );
+        return {
+          idx,
+          height: Math.round(rect.height),
+          // A4 at 800px width with 2rem padding: 800 * (297/210) ≈ 1131px.
+          // In documentExporter with width=800px: pxPerPage ≈ 1131px.
+          // With 12% tolerance: 1131 * 1.12 ≈ 1267px max.
+          overflowRisk: rect.height > 1250,
+          firstText,
+          lastText,
+        };
+      });
+    });
+
+    console.log('=== HINDI BBA LOGICAL PAGES AUDIT ===');
+    console.log(JSON.stringify(pageAudit, null, 2));
+
+    // Also check the Cover page and Payment Schedule page heights
+    const coverH = await hindiCoverPage.evaluate((el) =>
+      Math.round(el.getBoundingClientRect().height)
     );
-    expect(hindiCoverHeight).toBeGreaterThanOrEqual(800);
+    const paymentSchedDiv = await page.evaluate(() => {
+      // The outer BbaPreviewContentHindi container is #bbaPreview > div
+      const outer = document.querySelector('#bbaPreview > div') as HTMLElement;
+      if (!outer) return null;
+      // Its children are: [0] Cover page, [1] BbaLegalPagesHindi container, [2] Payment Schedule page
+      const sched = outer.children[2] as HTMLElement;
+      if (!sched) return { error: 'outer.children[2] missing', childCount: outer.children.length };
+      return {
+        height: Math.round(sched.getBoundingClientRect().height),
+        firstP: sched.querySelector('h3, p')?.textContent?.substring(0, 50),
+        hasTable: !!sched.querySelector('table'),
+        tableRows: sched.querySelectorAll('tr').length,
+      };
+    });
+
+    console.log(`Cover Page Height: ${coverH}px (overflowRisk: ${coverH > 1250})`);
+    console.log(`Payment Schedule Page:`, JSON.stringify(paymentSchedDiv));
+    console.log('======================================');
+    expect(coverH).toBeGreaterThanOrEqual(800);
 
     // 9. Verify actual PDF Download action
     const downloadBtn = page
