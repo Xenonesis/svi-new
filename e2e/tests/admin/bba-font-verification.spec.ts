@@ -223,6 +223,26 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await expect(sixthHindiPage).toContainText('व्याख्या');
     await expect(sixthHindiPage).toContainText('Allottee Signature(s):');
     await expect(sixthHindiPage).toContainText('निदेशक');
+
+    // Capture Operative Clauses Page 5 (Clauses 28-32)
+    const seventhHindiPage = hindiLegalContainer.locator('> div').nth(10);
+    await seventhHindiPage.scrollIntoViewIfNeeded();
+    await seventhHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-clauses-p5.png' });
+    await expect(seventhHindiPage).toContainText('28.');
+    await expect(seventhHindiPage).toContainText('32.');
+    await expect(seventhHindiPage).not.toContainText('हस्ताक्षरित और सुपुर्द');
+    await expect(seventhHindiPage).toContainText('Allottee Signature(s):');
+
+    // Capture Execution & Signatures Page 6 (dedicated signature page)
+    const eighthHindiPage = hindiLegalContainer.locator('> div').nth(11);
+    await eighthHindiPage.scrollIntoViewIfNeeded();
+    await eighthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-signatures.png' });
+    await expect(eighthHindiPage).toContainText('हस्ताक्षरित और सुपुर्द');
+    await expect(eighthHindiPage).toContainText('अधिकृत हस्ताक्षरकर्ता');
+    await expect(eighthHindiPage).toContainText('साक्षी');
+    await expect(eighthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(eighthHindiPage).toContainText('निदेशक');
+
     // 8. Verify Page 1 height spans full A4 page (>= 1000px)
     const hindiCoverHeight = await hindiCoverPage.evaluate(
       (el) => el.getBoundingClientRect().height
