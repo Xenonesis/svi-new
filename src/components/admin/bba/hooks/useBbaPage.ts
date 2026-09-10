@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { toast } from 'sonner';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useBBAData } from '@/src/hooks/admin/useBBAData';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
@@ -134,7 +135,7 @@ export function useBbaPage(tokenOverride?: string | null) {
   const data = useBBAData(token);
 
   const [activeLanguage, setActiveLanguageState] = useState<'en' | 'hi'>('en');
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
   // Synchronize activeLanguage when formData.language changes externally
   useEffect(() => {
     const lang = data.formData?.language;
@@ -153,85 +154,129 @@ export function useBbaPage(tokenOverride?: string | null) {
 
   const { totalCost, initialPayment } = calculateFinancialValues(data.formData);
 
-  const handleSubmit = useCallback(
+  const handleCreateNew = useCallback(
     async (e?: React.FormEvent) => {
       if (e) e.preventDefault();
 
-      if (token) {
+      if (!token) return;
+
+      setIsSubmitting(true);
+      try {
         const saveBody = {
           document_type: 'bba',
           form_data: data.formData,
           status: 'draft',
         };
 
-        const doPost = async () => {
-          const res = await fetch('/api/admin/documents', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(saveBody),
-          });
-          if (!res.ok) {
-            const errBody = await res.text();
-            throw new Error(`Failed to create document: ${errBody}`);
-          }
-          return res.json();
-        };
+        const res = await fetch('/api/admin/documents', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(saveBody),
+        });
 
-        try {
-          let savedDoc: SavedBbaDocument | null = null;
-          if (data.documentId) {
-            const patchRes = await fetch(`/api/admin/documents/${data.documentId}`, {
-              method: 'PATCH',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${token}`,
-              },
-              body: JSON.stringify({ form_data: data.formData, status: 'draft' }),
-            });
-
-            if (patchRes.status === 404) {
-              console.warn('[BBA] Document not found, creating new record instead.');
-              data.setDocumentId(null);
-              const postData = await doPost();
-              savedDoc = postData.document;
-            } else if (!patchRes.ok) {
-              const errBody = await patchRes.text();
-              throw new Error(`Failed to update document: ${errBody}`);
-            } else {
-              const patchData = await patchRes.json();
-              savedDoc = patchData.document;
-            }
-          } else {
-            const postData = await doPost();
-            savedDoc = postData.document;
-          }
-
-          if (savedDoc?.id) {
-            data.setDocumentId(savedDoc.id);
-            // Optimistic update to savedBbas
-            data.setSavedBbas((prev: SavedBbaDocument[]) => {
-              const index = prev.findIndex((b) => b.id === savedDoc?.id);
-              if (index !== -1) {
-                const updated = [...prev];
-                if (savedDoc) updated[index] = savedDoc;
-                return updated;
-              }
-              return savedDoc ? [savedDoc, ...prev] : prev;
-            });
-          }
-        } catch (error) {
-          console.error('Failed to save document:', error);
+        if (!res.ok) {
+          const errBody = await res.text();
+          throw new Error(`Failed to create document: ${errBody}`);
         }
-      }
 
-      data.setPreview(true);
+        const postData = await res.json();
+        const savedDoc: SavedBbaDocument = postData.document;
+
+        if (savedDoc?.id) {
+          data.setDocumentId(savedDoc.id);
+          data.setSavedBbas((prev: SavedBbaDocument[]) => {
+            const index = prev.findIndex((b) => b.id === savedDoc.id);
+            if (index !== -1) {
+              const updated = [...prev];
+              updated[index] = savedDoc;
+              return updated;
+            }
+            return [savedDoc, ...prev];
+          });
+        }
+        toast.success('New BBA created successfully!');
+      } catch (error) {
+        console.error('Failed to create document:', error);
+        toast.error(error instanceof Error ? error.message : 'Failed to create BBA');
+      } finally {
+        setIsSubmitting(false);
+        data.setPreview(true);
+      }
     },
     [token, data]
   );
 
+  const handleUpdateExisting = useCallback(
+    async (e?: React.FormEvent) => {
+      if (e) e.preventDefault();
+
+      if (!token) return;
+
+      if (!data.documentId) {
+        return handleCreateNew(e);
+      }
+
+      setIsSubmitting(true);
+      try {
+        const patchRes = await fetch(`/api/admin/documents/${data.documentId}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ form_data: data.formData, status: 'draft' }),
+        });
+
+        if (patchRes.status === 404) {
+          console.warn('[BBA] Document not found, creating new record instead.');
+          data.setDocumentId(null);
+          return await handleCreateNew(e);
+        }
+
+        if (!patchRes.ok) {
+          const errBody = await patchRes.text();
+          throw new Error(`Failed to update document: ${errBody}`);
+        }
+
+        const patchData = await patchRes.json();
+        const savedDoc: SavedBbaDocument = patchData.document;
+
+        if (savedDoc?.id) {
+          data.setDocumentId(savedDoc.id);
+          data.setSavedBbas((prev: SavedBbaDocument[]) => {
+            const index = prev.findIndex((b) => b.id === savedDoc.id);
+            if (index !== -1) {
+              const updated = [...prev];
+              updated[index] = savedDoc;
+              return updated;
+            }
+            return [savedDoc, ...prev];
+          });
+        }
+        toast.success('BBA updated successfully!');
+      } catch (error) {
+        console.error('Failed to update document:', error);
+        toast.error(error instanceof Error ? error.message : 'Failed to update BBA');
+      } finally {
+        setIsSubmitting(false);
+        data.setPreview(true);
+      }
+    },
+    [token, data, handleCreateNew]
+  );
+
+  const handleSubmit = useCallback(
+    async (e?: React.FormEvent) => {
+      if (data.documentId) {
+        return handleUpdateExisting(e);
+      }
+      return handleCreateNew(e);
+    },
+    [data.documentId, handleUpdateExisting, handleCreateNew]
+  );
   const handleDownloadPDF = useCallback(async () => {
     try {
       await exportToPDF({
@@ -310,6 +355,9 @@ export function useBbaPage(tokenOverride?: string | null) {
     totalCost,
     initialPayment,
     calculateTotalCost: () => totalCost,
+    isSubmitting,
+    handleUpdateExisting,
+    handleCreateNew,
     handleSubmit,
     handleDownloadPDF,
     handleDownloadImage,

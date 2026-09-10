@@ -1,8 +1,7 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Plus, Loader2 } from 'lucide-react';
 import Link from 'next/link';
-
 interface BBAFormProps {
   formData: any;
   setFormData: React.Dispatch<React.SetStateAction<any>>;
@@ -20,6 +19,10 @@ interface BBAFormProps {
   handleSecondPaymentDaysChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleAdvisorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   handleSubmit: (e: React.FormEvent) => Promise<void>;
+  handleUpdateExisting?: (e?: React.FormEvent) => Promise<void>;
+  handleCreateNew?: (e?: React.FormEvent) => Promise<void>;
+  documentId?: string | null;
+  isSubmitting?: boolean;
   totalCost: number;
   initialPayment: number;
 }
@@ -39,6 +42,10 @@ export function BBAForm({
   handleSecondPaymentDaysChange,
   handleAdvisorChange,
   handleSubmit,
+  handleUpdateExisting,
+  handleCreateNew,
+  documentId,
+  isSubmitting,
   totalCost,
   initialPayment,
 }: BBAFormProps) {
@@ -422,12 +429,49 @@ export function BBAForm({
         </div>
       </div>
 
-      <button
-        type="submit"
-        className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all"
-      >
-        <RefreshCw className="h-4 w-4" /> Generate BBA
-      </button>
+      {documentId ? (
+        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          <button
+            type="button"
+            onClick={handleUpdateExisting || handleSubmit}
+            disabled={isSubmitting}
+            className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4" />
+            )}
+            Update Existing BBA
+          </button>
+          <button
+            type="button"
+            onClick={handleCreateNew || handleSubmit}
+            disabled={isSubmitting}
+            className="border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10 hover:border-brand-gold dark:border-brand-gold/40 dark:text-brand-gold dark:hover:bg-brand-gold/10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {isSubmitting ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <Plus className="h-4 w-4" />
+            )}
+            Create New BBA
+          </button>
+        </div>
+      ) : (
+        <button
+          type="submit"
+          disabled={isSubmitting}
+          className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold mt-4 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
+        >
+          {isSubmitting ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <RefreshCw className="h-4 w-4" />
+          )}
+          Generate BBA
+        </button>
+      )}
     </form>
   );
 }

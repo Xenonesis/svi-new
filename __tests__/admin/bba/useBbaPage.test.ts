@@ -19,6 +19,14 @@ vi.mock('@/src/stores/authStore', () => ({
   useAuthStore: () => ({ token: 'test-admin-token' }),
 }));
 
+vi.mock('sonner', () => ({
+  toast: {
+    success: vi.fn(),
+    error: vi.fn(),
+    info: vi.fn(),
+  },
+}));
+
 vi.mock('next/navigation', () => ({
   useSearchParams: () => ({
     get: vi.fn().mockReturnValue(null),
@@ -308,6 +316,86 @@ describe('useBbaPage', () => {
 
       // Still sets preview to true to allow user inspection
       expect(result.current.preview).toBe(true);
+    });
+    it('explicitly creates a new BBA via handleCreateNew even when documentId is set', async () => {
+      const { result } = renderHook(() => useBbaPage());
+
+      act(() => {
+        result.current.setDocumentId('doc-original-1');
+      });
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          document: {
+            id: 'doc-brand-new-2',
+            document_type: 'bba',
+            status: 'draft',
+            form_data: { clientName: 'Cloned Client' },
+          },
+        }),
+      } as unknown as Response);
+
+      await act(async () => {
+        await result.current.handleCreateNew();
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/admin/documents',
+        expect.objectContaining({
+          method: 'POST',
+          body: expect.stringContaining('"document_type":"bba"'),
+        })
+      );
+
+      expect(result.current.documentId).toBe('doc-brand-new-2');
+      expect(result.current.preview).toBe(true);
+    });
+
+    it('explicitly updates existing BBA via handleUpdateExisting without creating new record', async () => {
+      const { result } = renderHook(() => useBbaPage());
+
+      act(() => {
+        result.current.setDocumentId('doc-existing-99');
+        result.current.setSavedBbas([
+          {
+            id: 'doc-existing-99',
+            document_type: 'bba',
+            status: 'draft',
+            created_at: new Date().toISOString(),
+            form_data: { clientName: 'Prior Name' },
+          },
+        ]);
+      });
+
+      global.fetch = vi.fn().mockResolvedValue({
+        ok: true,
+        status: 200,
+        json: async () => ({
+          document: {
+            id: 'doc-existing-99',
+            document_type: 'bba',
+            status: 'draft',
+            created_at: new Date().toISOString(),
+            form_data: { clientName: 'Updated In Place' },
+          },
+        }),
+      } as unknown as Response);
+
+      await act(async () => {
+        await result.current.handleUpdateExisting();
+      });
+
+      expect(global.fetch).toHaveBeenCalledWith(
+        '/api/admin/documents/doc-existing-99',
+        expect.objectContaining({
+          method: 'PATCH',
+        })
+      );
+
+      expect(result.current.documentId).toBe('doc-existing-99');
+      expect(result.current.savedBbas[0].form_data?.clientName).toBe('Updated In Place');
     });
   });
 
