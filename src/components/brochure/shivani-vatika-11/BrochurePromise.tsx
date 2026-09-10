@@ -67,7 +67,7 @@ export function BrochurePromise() {
               </span>
             </div>
             <div className="luxury-card flex aspect-square flex-col items-center justify-center text-center">
-              <span className="font-stats text-5xl text-[#0F1A2E] lg:text-7xl">15+</span>
+              <span className="font-stats text-5xl text-[#0F1A2E] lg:text-7xl">17+</span>
               <span className="font-subheading mt-4 text-sm font-semibold tracking-widest text-[#111111]/70 uppercase">
                 Years Leadership
               </span>

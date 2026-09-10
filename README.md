@@ -50,7 +50,7 @@ A premium real estate development platform — modern public website, full-featu
 
 ## 🌟 Overview
 
-**SVI Infra Solutions Pvt. Ltd.** is a 15+ year old real estate developer with **15+ delivered projects** and **5,000+ happy families** across **Noida, Jaipur, and Phulera Smart City** (DMIC/DFC corridors).
+**SVI Infra Solutions Pvt. Ltd.** is a 17+ year old real estate developer with **15+ delivered projects** and **5,000+ happy families** across **Noida, Jaipur, and Phulera Smart City** (DMIC/DFC corridors).
 
 This repository hosts the company's full digital platform — a **public marketing website** combined with a **role-based admin portal**, **employee workspace**, and **client portal**, built on Next.js 16 with React Server Components, Supabase authentication, an AI chatbot, and Sentry error monitoring.
 
@@ -172,7 +172,7 @@ import { AnimatedSection } from '@/src/components/common/ui/AnimatedSection';
 
 export const metadata = createMetadata({
   title: 'About Us',
-  description: "Learn about SVI Infra Solutions' 15+ year legacy",
+  description: "Learn about SVI Infra Solutions' 17+ year legacy",
 });
 
 export default async function AboutPage() {

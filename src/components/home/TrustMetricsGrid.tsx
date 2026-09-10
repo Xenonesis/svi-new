@@ -18,7 +18,7 @@ const TRUST_METRICS = [
     title: 'ISO 9001:2015',
     desc: 'Certified quality construction & township planning',
   },
-  { icon: Building2, title: '15+ Years Legacy', desc: '5,000+ satisfied family home buyers' },
+  { icon: Building2, title: '17+ Years Legacy', desc: '5,000+ satisfied family home buyers' },
 ];
 
 export default function TrustMetricsGrid() {

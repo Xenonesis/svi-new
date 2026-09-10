@@ -16,7 +16,7 @@ export default function HeroStatCard() {
       >
         <div className="group hover:border-brand-gold/50 relative max-w-[320px] border border-white/20 bg-white/10 p-8 shadow-2xl backdrop-blur-md transition-all hover:bg-white/20 dark:bg-[#0b0c10]/80">
           <h3 className="text-brand-gold mb-3 font-serif text-5xl leading-none drop-shadow-md">
-            15<span className="text-3xl">+</span>
+            17<span className="text-3xl">+</span>
           </h3>
           <p className="text-sm leading-relaxed font-light text-white/90 drop-shadow">
             {t('statDescription')}

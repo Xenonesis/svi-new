@@ -36,7 +36,7 @@ export function BrochureTrust() {
             </p>
           </div>
           <div>
-            <p className="font-stats mb-4 text-4xl text-[#D4AF37] md:text-5xl lg:text-6xl">15+</p>
+            <p className="font-stats mb-4 text-4xl text-[#D4AF37] md:text-5xl lg:text-6xl">17+</p>
             <p className="font-subheading text-xs font-semibold tracking-widest text-white/70 uppercase md:text-sm">
               Years Legacy
             </p>
