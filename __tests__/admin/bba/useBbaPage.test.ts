@@ -487,6 +487,7 @@ describe('useBbaPage', () => {
       expect(mockExportToPDF).toHaveBeenCalledWith({
         elementId: 'bbaPreview',
         filename: 'BBA_Document.pdf',
+        width: '800px',
       });
 
       expect(global.fetch).toHaveBeenCalledWith(

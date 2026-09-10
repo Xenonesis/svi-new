@@ -1,12 +1,20 @@
 import React from 'react';
 import type { BBALegalCompanyInfo } from './types';
 
-export function BbaPageFooterHindi({ companyInfo }: { companyInfo?: BBALegalCompanyInfo }) {
+export function BbaPageFooterHindi({
+  companyInfo,
+  style,
+  className,
+}: {
+  companyInfo?: BBALegalCompanyInfo;
+  style?: React.CSSProperties;
+  className?: string;
+}) {
   const companyName = companyInfo?.company_name || 'SVI INFRA SOLUTIONS PVT LTD';
   return (
     <div
-      style={{ marginTop: 'auto' }}
-      className="mt-4 flex items-end justify-between border-t border-gray-300 pt-3 pb-4 text-[12px] select-none"
+      style={{ marginTop: 'auto', ...style }}
+      className={`mt-4 flex items-end justify-between border-t border-gray-300 pt-3 pb-4 text-[12px] select-none ${className || ''}`}
     >
       <div className="flex flex-col">
         <span className="font-semibold text-gray-500">Allottee Signature(s):</span>

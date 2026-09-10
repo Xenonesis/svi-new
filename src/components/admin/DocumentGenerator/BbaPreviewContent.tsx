@@ -43,21 +43,20 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
         style={{
           display: 'flex',
           flexDirection: 'column',
-          minHeight: '257mm',
         }}
       >
-        <div className="mb-3.5 flex items-start justify-between border-b border-gray-200 pb-3">
+        <div className="mb-4 flex items-start justify-between border-b border-gray-200 pb-3">
           <div>
-            <h1 className="mb-1 text-xl font-bold tracking-wide text-[#1e3a8a] uppercase">
+            <h1 className="mb-1 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
               {companyInfo?.company_name}
             </h1>
-            <p className="text-[12.5px] text-gray-700">
+            <p className="text-[13px] text-gray-700">
               Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email} | Web:{' '}
               {companyInfo?.company_website}
             </p>
-            <p className="text-[12.5px] text-gray-700">Office: {companyInfo?.company_address}</p>
+            <p className="text-[13px] text-gray-700">Office: {companyInfo?.company_address}</p>
           </div>
-          <div className="w-36">
+          <div className="w-40">
             <img
               src="/logo.png"
               alt={companyInfo?.company_name}
@@ -68,14 +67,16 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
         </div>
 
         {/* Date & To */}
-        <div className="mb-3 text-[14.5px] leading-snug">
-          <p className="mb-1 font-bold">
+        <div className="mb-3.5 text-[15px] leading-normal">
+          <p className="mb-1.5 font-bold">
             Dated:{' '}
             {formData?.bookingDate ||
               new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
           </p>
           <p className="font-bold">To,</p>
-          <p className="font-bold text-[#1e3a8a]">{formData?.clientName || '[Client Name]'}</p>
+          <p className="text-[16px] font-bold text-[#1e3a8a]">
+            {formData?.clientName || '[Client Name]'}
+          </p>
           {formData?.addressLine1 && (
             <p className="font-medium text-gray-800">{formData?.addressLine1}</p>
           )}
@@ -89,20 +90,19 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           )}
           {!formData?.addressLine1 && <p className="font-medium text-gray-800">[Address]</p>}
         </div>
-
         {/* Body */}
-        <div className="mb-3 text-[14px] leading-relaxed">
-          <p className="mb-1.5">
+        <div className="mb-3.5 text-[14.5px] leading-[1.7]">
+          <p className="mb-2">
             Dear {formData?.salutation || 'Mr./Mrs./Ms.'}{' '}
             <span className="font-bold text-black">{formData?.clientName || '[Client Name]'}</span>,
           </p>
-          <p className="mb-2 text-justify">
+          <p className="mb-2.5 text-justify">
             Congratulations from <strong>{companyInfo?.company_name}</strong> on the provisional
             allotment of your residential/commercial plot in {formData?.projectName}{' '}
             {projectLocation}. We feel privileged to partner with you in your property investment
             journey and sincerely thank you for placing your trust in us.
           </p>
-          <p className="text-justify">
+          <p className="mb-2 text-justify">
             This letter confirms the provisional allotment of your selected unit in accordance with
             your application. Our team is committed to delivering high development standards,
             statutory transparency, and timely possession. Summary of your allotted unit and cost
@@ -110,11 +110,9 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           </p>
 
           {/* Allotment Summary Card (2x3 Grid) */}
-          <div className="my-2.5 rounded-lg border border-gray-300 bg-gray-50/90 p-2.5 shadow-xs">
-            <p className="mb-1.5 text-[13.5px] font-bold text-[#1e3a8a]">
-              Allotment Summary Details:
-            </p>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 text-[13px]">
+          <div className="mt-4 mb-4 rounded-lg border border-gray-300 bg-gray-50/90 p-3.5 shadow-xs">
+            <p className="mb-2 text-[14px] font-bold text-[#1e3a8a]">Allotment Summary Details:</p>
+            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[13.5px]">
               <div>
                 <span className="text-gray-600">Ticket / Ref ID:</span>{' '}
                 <strong className="text-black">{formData?.ticketId || '—'}</strong>
@@ -150,48 +148,49 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
               </div>
             </div>
           </div>
-
-          <p className="mt-2.5 mb-1 text-[13.5px] font-bold">Cost &amp; Payment Plan Summary:</p>
+          <p className="mt-3 mb-1.5 text-[14px] font-bold">Cost &amp; Payment Plan Summary:</p>
         </div>
 
         {/* Details Table */}
-        <div className="mb-3 overflow-hidden rounded-lg border border-gray-400 text-[13px]">
+        <div className="mb-4 overflow-hidden rounded-lg border border-gray-400 text-[13.5px]">
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-[#00b0f0] text-black">
-                <th className="border border-gray-400 p-1.5 font-bold">Client Name</th>
-                <th className="border border-gray-400 p-1.5 font-bold">Alloted Unit</th>
-                <th className="border border-gray-400 p-1.5 font-bold">Area (Sq-Yds.)</th>
-                <th className="border border-gray-400 p-1.5 font-bold">Payment Plan</th>
-                <th className="border border-gray-400 p-1.5 font-bold">BSP (PSq.Yd)</th>
-                <th className="border border-gray-400 p-1.5 font-bold">PLC (%)</th>
-                <th className="border border-gray-400 p-1.5 font-bold">Total Cost</th>
+                <th className="border border-gray-400 p-2 font-bold">Client Name</th>
+                <th className="border border-gray-400 p-2 font-bold">Alloted Unit</th>
+                <th className="border border-gray-400 p-2 font-bold">Area (Sq-Yds.)</th>
+                <th className="border border-gray-400 p-2 font-bold">Payment Plan</th>
+                <th className="border border-gray-400 p-2 font-bold">BSP (PSq.Yd)</th>
+                <th className="border border-gray-400 p-2 font-bold">PLC (%)</th>
+                <th className="border border-gray-400 p-2 font-bold">Total Cost</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                <td className="border border-gray-400 p-1.5 font-bold">{formData?.clientName}</td>
-                <td className="border border-gray-400 p-1.5 font-bold">{formData?.unitNumber}</td>
-                <td className="border border-gray-400 p-1.5 font-bold">{formData?.area}</td>
-                <td className="border border-gray-400 p-1.5 font-bold">
+                <td className="border border-gray-400 p-2 font-bold">{formData?.clientName}</td>
+                <td className="border border-gray-400 p-2 font-bold">{formData?.unitNumber}</td>
+                <td className="border border-gray-400 p-2 font-bold">{formData?.area}</td>
+                <td className="border border-gray-400 p-2 font-bold">
                   {formData?.paymentPlan} Months
                 </td>
-                <td className="border border-gray-400 p-1.5 font-bold">
+                <td className="border border-gray-400 p-2 font-bold">
                   {`\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
                 </td>
-                <td className="border border-gray-400 p-1.5 font-bold">{formData?.plc || ''}</td>
-                <td className="border border-gray-400 p-1.5 font-bold">{fmtInr(totalCost)}</td>
+                <td className="border border-gray-400 p-2 font-bold">
+                  {formData?.plc ? `${formData.plc}%` : '0%'}
+                </td>
+                <td className="border border-gray-400 p-2 font-bold">{fmtInr(totalCost)}</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         {/* Important Notes & Instructions Box (4 Points) */}
-        <div className="mb-3 rounded-lg border border-blue-200 bg-blue-50/60 p-2.5 text-[12.5px] leading-relaxed">
-          <p className="mb-1 font-bold text-[#1e3a8a]">
+        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50/60 p-3.5 text-[13px] leading-relaxed">
+          <p className="mb-1.5 font-bold text-[#1e3a8a]">
             Important Instructions &amp; Allotment Terms:
           </p>
-          <ul className="list-disc space-y-0.5 pl-5 text-gray-800">
+          <ul className="list-disc space-y-1 pl-5 text-gray-800">
             <li>
               This provisional allotment is subject to all terms and conditions stipulated in the
               Builder-Buyer Agreement (BBA).
@@ -211,20 +210,45 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           </ul>
         </div>
 
-        {/* Customer Helpdesk Banner */}
-        <div className="mb-3 flex items-center justify-between rounded-lg border border-gray-200 bg-gray-50/80 px-3 py-2 text-[12px] text-gray-700">
-          <div>
-            <span className="font-semibold text-gray-900">Support Helpdesk: </span>
-            <span>
-              Email: {companyInfo?.company_email} | Helpline: {companyInfo?.company_phone}
+        {/* Dual Signatures Section */}
+        <div className="mt-6 mb-3 flex items-end justify-between border-t border-gray-300 pt-3 pb-1 text-[12px] select-none">
+          <div className="flex flex-col">
+            <span className="font-semibold text-gray-700">Allottee Signature(s):</span>
+            <span className="mt-8 w-44 border-b border-dashed border-gray-500"></span>
+            <span className="mt-1 text-[11px] text-gray-500">
+              {formData?.clientName || 'Allottee'}
             </span>
           </div>
-          <div className="text-right font-medium text-gray-500">
-            Office Hours: 10:00 AM - 6:30 PM (Mon - Sat)
+          <div className="flex flex-col items-end">
+            <span className="text-right font-semibold text-[#1e3a8a]">
+              {companyInfo?.company_name || 'SVI INFRA SOLUTIONS PVT LTD'}
+            </span>
+            <div className="my-1.5 h-9 w-28">
+              <img
+                src="/signature.png"
+                alt="Director Signature"
+                className="h-full w-full object-contain"
+                onError={(e) => (e.currentTarget.style.display = 'none')}
+              />
+            </div>
+            <span className="text-[11.5px] font-bold text-gray-700">
+              Authorized Signatory / Director
+            </span>
           </div>
         </div>
 
-        <BbaPageFooter companyInfo={companyInfo} />
+        {/* Customer Helpdesk Grounding Banner (Bottom of Page) */}
+        <div className="flex items-center justify-between rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-2 text-[12px] text-gray-700">
+          <div>
+            <span className="font-semibold text-[#1e3a8a]">Customer Support Helpdesk: </span>
+            <span>
+              {companyInfo?.company_email} | Helpline: {companyInfo?.company_phone}
+            </span>
+          </div>
+          <div className="text-right font-medium text-gray-600">
+            Office Hours: 10:00 AM - 6:30 PM (Mon - Sat)
+          </div>
+        </div>
       </div>
       {/* Legal Pages (2-17) */}
       <BbaLegalPages formData={formData} companyInfo={companyInfo} totalCost={totalCost} />

@@ -286,6 +286,7 @@ export function useBbaPage(tokenOverride?: string | null) {
       await exportToPDF({
         elementId: 'bbaPreview',
         filename: 'BBA_Document.pdf',
+        width: '800px',
       });
 
       if (data.documentId && token) {

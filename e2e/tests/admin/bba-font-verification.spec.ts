@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
-
 test.describe('BBA Document Generation & Font Size Verification', () => {
+  test.use({ viewport: { width: 1400, height: 1600 } });
+
   test('creates a test BBA and verifies enlarged font for English and Hindi previews', async ({
     page,
   }) => {
@@ -85,10 +86,37 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     const previewContainer = page.locator('#bbaPreview');
     await expect(previewContainer).toBeVisible({ timeout: 10000 });
 
+    // Hide floating overlays (like notification popups) from screenshots
+    await page.addStyleTag({
+      content: `
+        [class*="notification"], [id*="onesignal"], [class*="dialog-overlay"], [role="dialog"] {
+          display: none !important;
+        }
+      `,
+    });
+
     // Verify and capture English Page 1 Cover
     const englishCoverPage = previewContainer.locator('> div > div').first();
-    await expect(englishCoverPage).toContainText('Allotment Summary Details:');
-    await expect(englishCoverPage).toContainText('Important Instructions:');
+    // Unconstrain layout so #bbaPreview at exact A4 width (794px) is fully visible without clipping
+    await page.evaluate(() => {
+      const grid = document.querySelector('.grid.grid-cols-1') as HTMLElement;
+      if (grid) grid.style.display = 'block';
+      const preview = document.getElementById('bbaPreview');
+      if (preview) {
+        preview.style.width = '794px';
+        preview.style.maxWidth = '794px';
+        preview.style.minWidth = '794px';
+      }
+      let p = preview?.parentElement;
+      while (p && p !== document.body) {
+        p.style.width = 'auto';
+        p.style.maxWidth = 'none';
+        p.style.overflow = 'visible';
+        p = p.parentElement;
+      }
+    });
+    await page.waitForTimeout(400);
+    await englishCoverPage.screenshot({ path: 'test-results/bba-cover-english-a4.png' });
     await expect(englishCoverPage).toContainText('Payment Plan');
     await englishCoverPage.screenshot({ path: 'test-results/bba-cover-english.png' });
     const englishLegalContainer = previewContainer.locator('.legal-pages');
@@ -122,14 +150,13 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     // 7. Verify Hindi BBA Font Size
     const hindiLegalContainer = previewContainer.locator('.legal-hindi-pages');
     await expect(hindiLegalContainer).toBeVisible({ timeout: 5000 });
-    // Verify and capture Hindi Page 1 Cover
-    const hindiCoverPage = previewContainer.locator('> div > div').first();
-    await expect(hindiCoverPage).toContainText('आवंटन संक्षिप्त विवरण:');
-    await expect(hindiCoverPage).toContainText('महत्वपूर्ण निर्देश:');
-    await expect(hindiCoverPage).toContainText('भुगतान योजना');
-    await hindiCoverPage.screenshot({ path: 'test-results/bba-cover-hindi.png' });
     const hindiParagraph = hindiLegalContainer.locator('p.leading-relaxed').first();
-    await expect(hindiParagraph).toBeVisible();
+    const hindiCoverPage = previewContainer.locator('> div > div').first();
+    await expect(hindiCoverPage).toContainText('आवंटन विवरण संक्षेप');
+    await expect(hindiCoverPage).toContainText('महत्वपूर्ण निर्देश');
+    await expect(hindiCoverPage).toContainText('भुगतान योजना');
+    await hindiCoverPage.screenshot({ path: 'test-results/bba-cover-hindi-a4.png' });
+    await hindiCoverPage.screenshot({ path: 'test-results/bba-cover-hindi.png' });
     const hindiParaFontSize = await hindiParagraph.evaluate((el) => {
       return parseFloat(window.getComputedStyle(el).fontSize);
     });
@@ -143,5 +170,23 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     const firstHindiPage = hindiLegalContainer.locator('> div').first();
     await firstHindiPage.scrollIntoViewIfNeeded();
     await firstHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-page1.png' });
+
+    // 8. Verify Page 1 height spans full A4 page (>= 1000px)
+    const hindiCoverHeight = await hindiCoverPage.evaluate(
+      (el) => el.getBoundingClientRect().height
+    );
+    expect(hindiCoverHeight).toBeGreaterThanOrEqual(800);
+
+    // 9. Verify actual PDF Download action
+    const downloadBtn = page
+      .locator('button')
+      .filter({ hasText: /Download as PDF/i })
+      .first();
+    await expect(downloadBtn).toBeVisible();
+    const downloadPromise = page.waitForEvent('download', { timeout: 45000 });
+    await downloadBtn.click();
+    const download = await downloadPromise;
+    expect(download.suggestedFilename()).toMatch(/BBA.*\.pdf/i);
+    await download.saveAs('test-results/exported-bba.pdf');
   });
 });

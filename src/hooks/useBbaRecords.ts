@@ -148,6 +148,7 @@ export function useBbaRecords(token: string | null) {
       await exportToPDF({
         elementId: 'modalBbaPreview',
         filename,
+        width: '800px',
       });
 
       if (selectedBba && token) {
