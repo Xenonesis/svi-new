@@ -14,7 +14,8 @@ export interface CreateTaskInput {
 }
 
 export interface CreateLogInput {
-  summary_text: string;
+  summary?: string;
+  summary_text?: string;
   client_interactions_count: number;
   site_visits_conducted_count: number;
 }
@@ -241,7 +242,11 @@ export function useEmployeeWorkTracker(): UseEmployeeWorkTrackerReturn {
       const res = await fetch('/api/employee/work/logs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(logData),
+        body: JSON.stringify({
+          ...logData,
+          summary: logData.summary || logData.summary_text,
+          summary_text: logData.summary_text || logData.summary,
+        }),
       });
       if (res.ok) {
         toast.success('Work log submitted');

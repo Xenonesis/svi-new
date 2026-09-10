@@ -26,19 +26,46 @@ interface AddLeadModalProps {
   onLeadAdded: () => void;
 }
 
-const PROJECTS = [
-  'SVI Township 1',
-  'SVI Township 2',
-  'SVI Royal Enclave',
-  'SVI Green City',
-  'Commercial Plaza',
-  'Farmhouse Plots',
+const FALLBACK_PROJECTS = [
+  'Shivani Vatika',
+  'Shayam Angan',
+  'SVI Emerald Enclave',
   'Residential Plots',
-  'Luxury Villas',
+  'Commercial Plots',
+  'Farmhouse Land',
 ];
 
 export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps) {
   const [loading, setLoading] = useState(false);
+  const [projectOptions, setProjectOptions] = useState<string[]>([]);
+
+  React.useEffect(() => {
+    let mounted = true;
+    async function fetchProperties() {
+      try {
+        const res = await fetch('/api/properties');
+        if (res.ok) {
+          const json = (await res.json()) as { properties?: Array<{ name?: string }> };
+          if (mounted && json.properties && json.properties.length > 0) {
+            const names = json.properties.map((p) => p.name).filter((n): n is string => Boolean(n));
+            if (names.length > 0) {
+              setProjectOptions(names);
+              return;
+            }
+          }
+        }
+      } catch {
+        // ignore
+      }
+      if (mounted) {
+        setProjectOptions(FALLBACK_PROJECTS);
+      }
+    }
+    void fetchProperties();
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
@@ -262,21 +289,18 @@ export function AddLeadModal({ isOpen, onClose, onLeadAdded }: AddLeadModalProps
                     onChange={(e) => setProjectInterest(e.target.value)}
                     className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pr-3 pl-9 text-xs text-slate-900 focus:border-blue-500 focus:bg-white focus:ring-1 focus:ring-blue-500 focus:outline-none dark:border-slate-700 dark:bg-slate-800/80 dark:text-white dark:focus:border-blue-500 dark:focus:bg-slate-800 dark:focus:ring-blue-500"
                   >
-                    <option
-                      value=""
-                      className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
-                    >
-                      Select Project / Property
-                    </option>
-                    {PROJECTS.map((proj) => (
-                      <option
-                        key={proj}
-                        value={proj}
-                        className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
-                      >
-                        {proj}
-                      </option>
-                    ))}
+                    <option value="">Select Project</option>
+                    {(projectOptions.length > 0 ? projectOptions : FALLBACK_PROJECTS).map(
+                      (proj) => (
+                        <option
+                          key={proj}
+                          value={proj}
+                          className="bg-white text-slate-900 dark:bg-slate-900 dark:text-white"
+                        >
+                          {proj}
+                        </option>
+                      )
+                    )}
                   </select>
                 </div>
               </div>

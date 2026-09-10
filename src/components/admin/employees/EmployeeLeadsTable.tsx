@@ -19,9 +19,12 @@ import {
   ChevronDown,
   Sparkles,
   ExternalLink,
+  UserCheck,
+  X,
+  Loader2,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { LeadActivityTimelineModal } from './LeadActivityTimelineModal';
-
 export interface LeadItem {
   id: string;
   name: string;
@@ -48,6 +51,8 @@ interface EmployeeLeadsTableProps {
   token?: string;
   initialTemperature?: 'all' | 'hot' | 'warm' | 'cold';
   initialStatus?: string;
+  employeeId?: string;
+  onLeadReassigned?: () => void;
 }
 
 export function EmployeeLeadsTable({
@@ -56,11 +61,77 @@ export function EmployeeLeadsTable({
   token,
   initialTemperature = 'all',
   initialStatus = 'all',
+  employeeId,
+  onLeadReassigned,
 }: EmployeeLeadsTableProps) {
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<string>(initialStatus);
   const [temperatureFilter, setTemperatureFilter] = useState<string>(initialTemperature);
   const [selectedLeadForTimeline, setSelectedLeadForTimeline] = useState<LeadItem | null>(null);
+
+  const [selectedLeadForReassign, setSelectedLeadForReassign] = useState<LeadItem | null>(null);
+  const [allEmployees, setAllEmployees] = useState<
+    Array<{ id: string; full_name: string; email?: string }>
+  >([]);
+  const [selectedTargetEmployee, setSelectedTargetEmployee] = useState('');
+  const [reassignReason, setReassignReason] = useState('');
+  const [reassigning, setReassigning] = useState(false);
+
+  const openReassignModal = async (lead: LeadItem) => {
+    setSelectedLeadForReassign(lead);
+    setSelectedTargetEmployee('');
+    setReassignReason('');
+    try {
+      const res = await fetch('/api/admin/employees', {
+        headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+      });
+      if (res.ok) {
+        const json = (await res.json()) as {
+          employees?: Array<{ id: string; full_name: string; email?: string }>;
+        };
+        setAllEmployees((json.employees || []).filter((e) => e.id !== employeeId));
+      }
+    } catch {
+      // silent
+    }
+  };
+
+  const handleExecuteReassign = async (e: React.SyntheticEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!selectedLeadForReassign || !selectedTargetEmployee || !employeeId) return;
+
+    try {
+      setReassigning(true);
+      const res = await fetch(`/api/admin/employees/${employeeId}/leads`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          lead_id: selectedLeadForReassign.id,
+          new_employee_id: selectedTargetEmployee,
+          reason: reassignReason || 'Reassigned by Admin',
+        }),
+      });
+
+      if (res.ok) {
+        toast.success('Lead reassigned successfully!');
+        setSelectedLeadForReassign(null);
+        onLeadReassigned?.();
+      } else {
+        const data = (await res.json().catch(() => null)) as {
+          message?: string;
+          error?: string;
+        } | null;
+        toast.error(data?.message || data?.error || 'Failed to reassign lead');
+      }
+    } catch {
+      toast.error('Error reassigning lead');
+    } finally {
+      setReassigning(false);
+    }
+  };
 
   useEffect(() => {
     if (initialTemperature) setTemperatureFilter(initialTemperature);
@@ -428,6 +499,17 @@ export function EmployeeLeadsTable({
                               Updates {lead.activities_count ? `(${lead.activities_count})` : ''}
                             </span>
                           </button>
+                          {employeeId && (
+                            <button
+                              type="button"
+                              onClick={() => void openReassignModal(lead)}
+                              className="inline-flex items-center gap-1 rounded-lg border border-blue-500/30 bg-blue-500/10 px-2 py-1.5 text-xs font-bold text-blue-700 transition-all hover:bg-blue-500/20 active:scale-95 dark:border-blue-500/20 dark:text-blue-300"
+                              title="Reassign lead to another staff member"
+                            >
+                              <UserCheck className="h-3.5 w-3.5" />
+                              <span>Transfer</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -446,6 +528,86 @@ export function EmployeeLeadsTable({
         onClose={() => setSelectedLeadForTimeline(null)}
         token={token}
       />
+
+      {/* Reassign Lead Modal */}
+      {selectedLeadForReassign && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl border border-gray-200 bg-white p-5 shadow-2xl dark:border-white/10 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-gray-100 pb-3 dark:border-white/5">
+              <div>
+                <h4 className="text-sm font-bold text-gray-900 dark:text-white">Reassign Lead</h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Transfer {selectedLeadForReassign.name} to another employee
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setSelectedLeadForReassign(null)}
+                className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 dark:hover:bg-white/5"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleExecuteReassign} className="mt-4 space-y-3.5">
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Select Target Employee *
+                </label>
+                <select
+                  required
+                  value={selectedTargetEmployee}
+                  onChange={(e) => setSelectedTargetEmployee(e.target.value)}
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 p-2.5 text-xs text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-white/10 dark:bg-slate-800 dark:text-white"
+                >
+                  <option value="">-- Choose Staff Member --</option>
+                  {allEmployees.map((emp) => (
+                    <option key={emp.id} value={emp.id}>
+                      {emp.full_name} {emp.email ? `(${emp.email})` : ''}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="mb-1 block text-xs font-semibold text-gray-700 dark:text-gray-300">
+                  Transfer Reason / Handoff Notes (Optional)
+                </label>
+                <textarea
+                  rows={2}
+                  value={reassignReason}
+                  onChange={(e) => setReassignReason(e.target.value)}
+                  placeholder="e.g. Territory reassignment / Lead requested senior sales rep..."
+                  className="w-full rounded-xl border border-gray-200 bg-gray-50 p-2.5 text-xs text-gray-900 focus:border-blue-500 focus:bg-white focus:outline-none dark:border-white/10 dark:bg-slate-800 dark:text-white"
+                />
+              </div>
+
+              <div className="flex justify-end gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedLeadForReassign(null)}
+                  className="rounded-xl border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:text-gray-300"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={reassigning || !selectedTargetEmployee}
+                  className="flex items-center gap-1 rounded-xl bg-blue-600 px-4 py-1.5 text-xs font-bold text-white shadow-sm hover:bg-blue-500 disabled:opacity-50"
+                >
+                  {reassigning ? (
+                    <>
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" /> Transferring...
+                    </>
+                  ) : (
+                    'Confirm Reassignment'
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

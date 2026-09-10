@@ -14,6 +14,8 @@ export interface SiteVisitItem {
   id: string;
   status: 'requested' | 'confirmed' | 'completed' | 'cancelled';
   preferred_date?: string | null;
+  requested_date?: string | null;
+  requested_time?: string | null;
   confirmed_date?: string | null;
   notes?: string | null;
   contact?: {
@@ -44,7 +46,8 @@ export interface LeadItem {
 export interface WorkLogItem {
   id: string;
   date: string;
-  summary_text: string;
+  summary?: string;
+  summary_text?: string;
   client_interactions_count: number;
   site_visits_conducted_count: number;
   created_at: string;

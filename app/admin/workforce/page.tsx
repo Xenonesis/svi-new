@@ -144,6 +144,42 @@ function WorkforceContent() {
     }
   };
 
+  // Toggle Employee Enable / Disable (Active Status)
+  const handleToggleEmployeeActive = async (employee: Employee) => {
+    const currentActive = employee.is_active ?? true;
+    const nextStatus = !currentActive;
+    const actionLabel = nextStatus ? 'enable' : 'disable';
+
+    if (!confirm(`Are you sure you want to ${actionLabel} ${employee.full_name}?`)) {
+      return;
+    }
+
+    try {
+      const activeToken = tokenRef.current;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (activeToken) headers['Authorization'] = `Bearer ${activeToken}`;
+
+      const res = await fetch(`/api/admin/employees/${employee.id}`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ is_active: nextStatus }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(extractApiErrorMessage(data, `Failed to ${actionLabel} employee`));
+      }
+
+      setEmployees((prev) =>
+        prev.map((e) => (e.id === employee.id ? { ...e, is_active: nextStatus } : e))
+      );
+      showToast('success', `${employee.full_name} has been ${nextStatus ? 'enabled' : 'disabled'}`);
+    } catch (err: unknown) {
+      showToast('error', extractApiErrorMessage(err, `Failed to ${actionLabel} employee`));
+    }
+  };
+
   const handleTabChange = (tabId: WorkforceTab) => {
     setActiveTab(tabId);
     router.replace(`/admin/workforce?tab=${tabId}`, { scroll: false });
@@ -225,6 +261,7 @@ function WorkforceContent() {
               onDeleteEmployee={handleDeleteEmployee}
               onResetPassword={(emp) => setResetTarget(emp)}
               onViewPerformance={(emp) => setPerformanceTarget(emp)}
+              onToggleActiveEmployee={handleToggleEmployeeActive}
             />
           )}
 

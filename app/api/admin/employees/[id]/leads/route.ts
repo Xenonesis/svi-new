@@ -93,3 +93,69 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     return handleApiError(err);
   }
 }
+
+export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  try {
+    const admin = await verifyAdmin(request);
+    if (!admin) {
+      throw AppError.unauthorized('Admin authorization required');
+    }
+
+    const { id: employeeId } = await params;
+    const body = (await request.json().catch(() => null)) as Record<string, unknown> | null;
+
+    if (!body?.lead_id) {
+      throw AppError.badRequest('lead_id is required');
+    }
+
+    const leadId = String(body.lead_id);
+    const newEmployeeId = typeof body.new_employee_id === 'string' ? body.new_employee_id : null;
+    const reason = typeof body.reason === 'string' ? body.reason : 'Reassigned by Admin';
+
+    if (!newEmployeeId) {
+      throw AppError.badRequest('new_employee_id is required');
+    }
+
+    // Get new employee name
+    const { data: newEmp } = await supabaseAdmin
+      .from('profiles')
+      .select('full_name')
+      .eq('id', newEmployeeId)
+      .single();
+
+    const newEmpName = newEmp?.full_name || 'Staff Member';
+
+    // Update lead in chat_leads
+    const { data: updated, error } = await supabaseAdmin
+      .from('chat_leads')
+      .update({
+        assigned_to: newEmployeeId,
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', leadId)
+      .select()
+      .single();
+
+    if (error) {
+      throw AppError.internal(error.message || 'Failed to reassign lead');
+    }
+
+    // Record activity in leadActivityStore
+    await leadActivityStore.recordActivity({
+      lead_id: leadId,
+      employee_id: newEmployeeId,
+      employee_name: newEmpName,
+      activity_type: 'lead_reassigned',
+      title: `Lead reassigned to ${newEmpName}`,
+      notes: reason,
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: `Lead successfully reassigned to ${newEmpName}`,
+      lead: updated,
+    });
+  } catch (err) {
+    return handleApiError(err);
+  }
+}

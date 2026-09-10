@@ -34,6 +34,7 @@ interface WorkforceDirectoryTabProps {
   onDeleteEmployee: (id: string) => void;
   onResetPassword: (emp: Employee) => void;
   onViewPerformance: (emp: Employee) => void;
+  onToggleActiveEmployee?: (emp: Employee) => void;
 }
 
 export function WorkforceDirectoryTab({
@@ -46,10 +47,11 @@ export function WorkforceDirectoryTab({
   onDeleteEmployee,
   onResetPassword,
   onViewPerformance,
+  onToggleActiveEmployee,
 }: WorkforceDirectoryTabProps) {
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<
-    'all' | 'punched_in' | 'punched_out' | 'not_punched'
+    'all' | 'punched_in' | 'punched_out' | 'not_punched' | 'disabled'
   >('all');
   const [directorySort, setDirectorySort] = useState<'recent' | 'name' | 'status'>('recent');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
@@ -60,7 +62,9 @@ export function WorkforceDirectoryTab({
     let inCount = 0;
     let outCount = 0;
     let notCount = 0;
+    let disabledCount = 0;
     for (const emp of employees) {
+      if (emp.is_active === false) disabledCount++;
       const status = liveStatusMap.get(emp.id)?.status;
       if (status === 'punched_in') inCount++;
       else if (status === 'punched_out') outCount++;
@@ -71,6 +75,7 @@ export function WorkforceDirectoryTab({
       punched_in: inCount,
       punched_out: outCount,
       not_punched: notCount,
+      disabled: disabledCount,
     };
   }, [employees, liveStatusMap]);
 
@@ -91,8 +96,10 @@ export function WorkforceDirectoryTab({
       );
     }
 
-    // 2. Attendance Status Filter
-    if (statusFilter !== 'all') {
+    // 2. Attendance / Active Status Filter
+    if (statusFilter === 'disabled') {
+      list = list.filter((e) => e.is_active === false);
+    } else if (statusFilter !== 'all') {
       list = list.filter((e) => {
         const s = liveStatusMap.get(e.id)?.status || 'not_punched';
         return s === statusFilter;
@@ -297,6 +304,24 @@ export function WorkforceDirectoryTab({
               {statusCounts.not_punched}
             </span>
           </button>
+
+          {statusCounts.disabled > 0 && (
+            <button
+              type="button"
+              onClick={() => setStatusFilter('disabled')}
+              className={`inline-flex cursor-pointer items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-semibold transition-all ${
+                statusFilter === 'disabled'
+                  ? 'border border-red-500/40 bg-red-500/15 text-red-600 shadow-xs dark:text-red-400'
+                  : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10'
+              }`}
+            >
+              <span className="h-2 w-2 rounded-full bg-red-500" />
+              <span>Disabled</span>
+              <span className="py-0.2 ml-0.5 rounded-full bg-red-500/15 px-1.5 text-[10px] text-red-700 dark:text-red-300">
+                {statusCounts.disabled}
+              </span>
+            </button>
+          )}
         </div>
 
         {/* Sort Dropdown */}
@@ -355,6 +380,7 @@ export function WorkforceDirectoryTab({
           onDelete={onDeleteEmployee}
           onResetPassword={onResetPassword}
           onViewPerformance={onViewPerformance}
+          onToggleActive={onToggleActiveEmployee}
         />
       ) : filteredEmployees.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-300 py-16 text-center dark:border-gray-700">
@@ -379,6 +405,7 @@ export function WorkforceDirectoryTab({
               onDelete={() => onDeleteEmployee(emp.id)}
               onResetPassword={() => onResetPassword(emp)}
               onViewPerformance={() => onViewPerformance(emp)}
+              onToggleActive={() => onToggleActiveEmployee?.(emp)}
             />
           ))}
         </div>

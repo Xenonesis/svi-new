@@ -125,9 +125,25 @@ export function SiteVisitsView({ siteVisits, onUpdateStatus }: SiteVisitsViewPro
                   </span>
                   <p className="mt-0.5 flex items-center gap-1 text-[11px] text-slate-500">
                     <Calendar className="h-3 w-3" />
-                    {visit.preferred_date
-                      ? format(parseISO(visit.preferred_date), 'EEEE, MMM dd • hh:mm a')
-                      : 'Date pending'}
+                    {(() => {
+                      const dateStr = visit.preferred_date || visit.requested_date;
+                      if (!dateStr) return 'Date pending';
+                      try {
+                        const parsed = parseISO(dateStr);
+                        if (!isNaN(parsed.getTime())) {
+                          if (dateStr.includes('T')) {
+                            return format(parsed, 'EEEE, MMM dd • hh:mm a');
+                          }
+                          const timeStr = visit.requested_time
+                            ? ` • ${visit.requested_time.slice(0, 5)}`
+                            : '';
+                          return `${format(parsed, 'EEEE, MMM dd')}${timeStr}`;
+                        }
+                      } catch {
+                        // ignore
+                      }
+                      return dateStr;
+                    })()}
                   </p>
                 </div>
                 <span

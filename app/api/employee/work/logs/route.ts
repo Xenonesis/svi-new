@@ -31,7 +31,16 @@ export async function GET(request: NextRequest) {
       throw AppError.internal('Failed to fetch work logs');
     }
 
-    return NextResponse.json({ logs: logs || [] });
+    const normalizedLogs = (logs || []).map((l: Record<string, unknown>) => ({
+      ...l,
+      summary_text:
+        (typeof l.summary_text === 'string' ? l.summary_text : '') ||
+        (typeof l.summary === 'string' ? l.summary : ''),
+      summary:
+        (typeof l.summary === 'string' ? l.summary : '') ||
+        (typeof l.summary_text === 'string' ? l.summary_text : ''),
+    }));
+    return NextResponse.json({ logs: normalizedLogs });
   } catch (err) {
     return handleApiError(err);
   }
@@ -45,12 +54,12 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json().catch(() => null);
-    if (!body?.summary) {
+    const summary = (body?.summary || body?.summary_text)?.trim();
+    if (!summary) {
       throw AppError.badRequest('Work summary is required');
     }
 
     const {
-      summary,
       tasks_completed = [],
       client_interactions_count = 0,
       site_visits_conducted_count = 0,

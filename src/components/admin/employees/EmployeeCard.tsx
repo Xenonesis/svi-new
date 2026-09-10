@@ -21,6 +21,9 @@ import {
   Briefcase,
   Target,
   TrendingUp,
+  ToggleRight,
+  ToggleLeft,
+  ShieldAlert,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
@@ -43,6 +46,7 @@ export interface Employee {
   department?: string | null;
   notes: string | null;
   created_at: string;
+  is_active?: boolean | null;
   stats?: EmployeeStats;
 }
 /**
@@ -94,6 +98,7 @@ interface EmployeeCardProps {
   onDelete: () => void;
   onResetPassword: () => void;
   onViewPerformance: () => void;
+  onToggleActive?: () => void;
 }
 
 export function EmployeeCard({
@@ -103,6 +108,7 @@ export function EmployeeCard({
   onDelete,
   onResetPassword,
   onViewPerformance,
+  onToggleActive,
 }: EmployeeCardProps) {
   const [copiedId, setCopiedId] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -132,7 +138,11 @@ export function EmployeeCard({
     <motion.div
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="dark:bg-brand-dark-surface relative flex flex-col justify-between overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 shadow-xl dark:border-white/10"
+      className={`dark:bg-brand-dark-surface relative flex flex-col justify-between overflow-hidden rounded-2xl border bg-white p-6 shadow-xl transition-all ${
+        employee.is_active === false
+          ? 'border-red-200/80 bg-red-50/20 opacity-90 dark:border-red-500/20 dark:bg-red-950/10'
+          : 'border-gray-200 dark:border-white/10'
+      }`}
     >
       <div className="via-brand-gold/30 absolute top-0 right-0 left-0 h-1 bg-gradient-to-r from-transparent to-transparent" />
 
@@ -172,6 +182,14 @@ export function EmployeeCard({
                   <span>{employee.department || 'Sales & Operations'}</span>
                 </span>
               </div>
+              {employee.is_active === false && (
+                <div className="mt-1 flex items-center gap-1">
+                  <span className="inline-flex items-center gap-1 rounded-md border border-red-500/30 bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-400/30 dark:bg-red-500/15 dark:text-red-400">
+                    <ShieldAlert size={10} />
+                    <span>Disabled</span>
+                  </span>
+                </div>
+              )}
             </div>
           </div>
           <div className="absolute top-4 right-4 flex items-center gap-1">
@@ -404,18 +422,43 @@ export function EmployeeCard({
         </button>
 
         {/* Secondary Actions Row */}
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
           <div className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500">
             <Calendar size={12} />
             <span>Joined {new Date(employee.created_at).toLocaleDateString()}</span>
           </div>
-          <button
-            onClick={onResetPassword}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-2 py-1 text-[11px] font-semibold text-gray-600 transition-all hover:bg-gray-100 active:scale-95 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5"
-          >
-            <KeyRound size={11} />
-            <span>Reset Password</span>
-          </button>
+          <div className="flex items-center gap-1.5">
+            {onToggleActive && (
+              <button
+                type="button"
+                onClick={onToggleActive}
+                className={`inline-flex cursor-pointer items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
+                  (employee.is_active ?? true)
+                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400'
+                    : 'border-red-500/30 bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-400'
+                }`}
+                title={
+                  (employee.is_active ?? true)
+                    ? 'Click to Disable Employee'
+                    : 'Click to Enable Employee'
+                }
+              >
+                {(employee.is_active ?? true) ? (
+                  <ToggleRight size={13} className="text-emerald-600 dark:text-emerald-400" />
+                ) : (
+                  <ToggleLeft size={13} className="text-red-500 dark:text-red-400" />
+                )}
+                <span>{(employee.is_active ?? true) ? 'Active' : 'Disabled'}</span>
+              </button>
+            )}
+            <button
+              onClick={onResetPassword}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-2 py-1 text-[11px] font-semibold text-gray-600 transition-all hover:bg-gray-100 active:scale-95 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5"
+            >
+              <KeyRound size={11} />
+              <span>Reset Password</span>
+            </button>
+          </div>
         </div>
       </div>
     </motion.div>

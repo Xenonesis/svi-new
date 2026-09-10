@@ -8,8 +8,10 @@ interface DirectoryStatsCardsProps {
   punchedInCount: number;
   punchedOutCount: number;
   notPunchedCount: number;
-  activeFilter: 'all' | 'punched_in' | 'punched_out' | 'not_punched';
-  onSelectFilter: (filter: 'all' | 'punched_in' | 'punched_out' | 'not_punched') => void;
+  activeFilter: 'all' | 'punched_in' | 'punched_out' | 'not_punched' | 'disabled';
+  onSelectFilter: (
+    filter: 'all' | 'punched_in' | 'punched_out' | 'not_punched' | 'disabled'
+  ) => void;
 }
 
 export function DirectoryStatsCards({

@@ -11,7 +11,8 @@ export interface LeadActivity {
     | 'note_added'
     | 'call_logged'
     | 'followup_scheduled'
-    | 'temperature_change';
+    | 'temperature_change'
+    | 'lead_reassigned';
   title: string;
   notes?: string | null;
   follow_up_at?: string | null;

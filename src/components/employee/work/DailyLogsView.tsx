@@ -37,7 +37,9 @@ export function DailyLogsView({ workLogs, onOpenSubmitModal }: DailyLogsViewProp
                 </span>
               </div>
 
-              <p className="mt-2 text-xs text-slate-800 dark:text-slate-200">{log.summary_text}</p>
+              <p className="mt-2 text-xs text-slate-800 dark:text-slate-200">
+                {log.summary || log.summary_text}
+              </p>
 
               <div className="mt-3 flex gap-3 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500 dark:border-slate-800">
                 <span>📞 {log.client_interactions_count} Client Calls</span>

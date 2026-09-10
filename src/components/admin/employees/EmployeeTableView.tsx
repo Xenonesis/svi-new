@@ -19,6 +19,9 @@ import {
   Briefcase,
   Target,
   TrendingUp,
+  ToggleRight,
+  ToggleLeft,
+  ShieldAlert,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { Employee } from './EmployeeCard';
@@ -32,6 +35,7 @@ interface EmployeeTableViewProps {
   onDelete: (id: string) => void;
   onResetPassword: (emp: Employee) => void;
   onViewPerformance: (emp: Employee) => void;
+  onToggleActive?: (emp: Employee) => void;
 }
 
 export function EmployeeTableView({
@@ -41,6 +45,7 @@ export function EmployeeTableView({
   onDelete,
   onResetPassword,
   onViewPerformance,
+  onToggleActive,
 }: EmployeeTableViewProps) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -104,7 +109,9 @@ export function EmployeeTableView({
               return (
                 <tr
                   key={emp.id}
-                  className="group transition-colors hover:bg-gray-50/80 dark:hover:bg-white/[0.02]"
+                  className={`group border-b border-gray-100 transition-colors hover:bg-gray-50/50 dark:border-white/5 dark:hover:bg-white/5 ${
+                    emp.is_active === false ? 'bg-red-50/15 opacity-90 dark:bg-red-950/10' : ''
+                  }`}
                 >
                   {/* Column 1: Employee Name & Emails */}
                   <td className="px-5 py-3.5">
@@ -121,6 +128,12 @@ export function EmployeeTableView({
                             <Briefcase size={9} />
                             <span>{emp.department || 'Sales & Operations'}</span>
                           </span>
+                          {emp.is_active === false && (
+                            <span className="inline-flex items-center gap-1 rounded border border-red-500/30 bg-red-50 px-1.5 py-0.5 text-[9px] font-semibold text-red-600 dark:border-red-400/30 dark:bg-red-500/15 dark:text-red-400">
+                              <ShieldAlert size={9} />
+                              <span>Disabled</span>
+                            </span>
+                          )}
                         </div>
                         <div className="mt-0.5 flex items-center gap-1.5 text-[11px]">
                           <span
@@ -303,6 +316,32 @@ export function EmployeeTableView({
                   {/* Column 6: Actions */}
                   <td className="px-4 py-3.5 text-right whitespace-nowrap">
                     <div className="inline-flex items-center gap-1.5">
+                      {onToggleActive && (
+                        <button
+                          type="button"
+                          onClick={() => onToggleActive(emp)}
+                          className={`inline-flex cursor-pointer items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-all active:scale-95 ${
+                            (emp.is_active ?? true)
+                              ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:border-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400'
+                              : 'border-red-500/30 bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-400'
+                          }`}
+                          title={
+                            (emp.is_active ?? true)
+                              ? 'Click to Disable Employee'
+                              : 'Click to Enable Employee'
+                          }
+                        >
+                          {(emp.is_active ?? true) ? (
+                            <ToggleRight
+                              size={13}
+                              className="text-emerald-600 dark:text-emerald-400"
+                            />
+                          ) : (
+                            <ToggleLeft size={13} className="text-red-500 dark:text-red-400" />
+                          )}
+                          <span>{(emp.is_active ?? true) ? 'Active' : 'Disabled'}</span>
+                        </button>
+                      )}
                       <button
                         onClick={() => onViewPerformance(emp)}
                         className="inline-flex items-center gap-1 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2 py-1 text-[11px] font-semibold text-amber-700 transition-colors hover:bg-amber-500/20 active:scale-95 dark:text-amber-300"

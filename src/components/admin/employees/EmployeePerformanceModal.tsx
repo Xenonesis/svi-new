@@ -33,7 +33,8 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { EmployeeLeadsTable, LeadItem } from './EmployeeLeadsTable';
-
+import { AdminEmployeeTasksView } from './AdminEmployeeTasksView';
+import { AdminEmployeeLogsView } from './AdminEmployeeLogsView';
 interface EmployeePerformanceModalProps {
   employee: {
     id: string;
@@ -48,7 +49,7 @@ interface EmployeePerformanceModalProps {
   isOpen: boolean;
   onClose: () => void;
   token: string;
-  initialTab?: 'kpi' | 'leads';
+  initialTab?: 'kpi' | 'leads' | 'tasks' | 'logs';
 }
 interface PerformanceData {
   profile?: {
@@ -111,7 +112,7 @@ export function EmployeePerformanceModal({
   const [loading, setLoading] = useState(true);
   const [performanceData, setPerformanceData] = useState<PerformanceData | null>(null);
   const [leads, setLeads] = useState<LeadItem[]>([]);
-  const [activeTab, setActiveTab] = useState<'kpi' | 'leads'>(initialTab);
+  const [activeTab, setActiveTab] = useState<'kpi' | 'leads' | 'tasks' | 'logs'>(initialTab);
   const [selectedLeadTemperature, setSelectedLeadTemperature] = useState<
     'all' | 'hot' | 'warm' | 'cold'
   >('all');
@@ -359,6 +360,30 @@ export function EmployeePerformanceModal({
                   <span className="py-0.2 rounded-full bg-amber-500/15 px-1.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
                     {leads.length}
                   </span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('tasks')}
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase transition-all ${
+                    activeTab === 'tasks'
+                      ? 'border-brand-gold/40 bg-white text-amber-600 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-amber-400'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  }`}
+                >
+                  <CheckCircle2 className="h-3.5 w-3.5" />
+                  <span>Tasks & Targets</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('logs')}
+                  className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold uppercase transition-all ${
+                    activeTab === 'logs'
+                      ? 'border-brand-gold/40 bg-white text-amber-600 shadow-sm dark:border-white/10 dark:bg-white/10 dark:text-amber-400'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  }`}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  <span>Daily Shift Logs</span>
                 </button>
               </div>
             </div>
@@ -754,15 +779,29 @@ export function EmployeePerformanceModal({
                   </div>
                 </div>
               </div>
-            ) : (
+            ) : activeTab === 'leads' ? (
               /* Leads Table View */
               <EmployeeLeadsTable
                 leads={leads}
                 loading={loading}
                 token={token}
                 initialTemperature={selectedLeadTemperature}
+                employeeId={employee?.id}
+                onLeadReassigned={fetchPerformance}
               />
-            )}
+            ) : activeTab === 'tasks' && employee ? (
+              <AdminEmployeeTasksView
+                employeeId={employee.id}
+                employeeName={employee.full_name}
+                token={token}
+              />
+            ) : activeTab === 'logs' && employee ? (
+              <AdminEmployeeLogsView
+                employeeId={employee.id}
+                employeeName={employee.full_name}
+                token={token}
+              />
+            ) : null}
           </div>
         </motion.div>
       </div>
