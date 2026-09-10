@@ -153,45 +153,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Advisor must be one of the currently active advisors or direct (fail-open if list unavailable)
-    const isDirect =
-      parsed.data.advisorName.trim().toLowerCase() === 'direct / svi official' ||
-      parsed.data.advisorName.trim().toLowerCase() === 'direct';
-
-    if (!isDirect) {
-      const activeAdvisors = await getActiveAdvisorNames();
-      if (activeAdvisors.length > 0) {
-        const matchesAdvisor = activeAdvisors.some(
-          (name) => name.trim().toLowerCase() === parsed.data.advisorName.trim().toLowerCase()
-        );
-
-        if (!matchesAdvisor) {
-          // Fallback: check if the name matches an active staff profile in DB
-          const { data: activeProfiles } = await supabaseAdmin
-            .from('profiles')
-            .select('id, role, is_active')
-            .eq('full_name', parsed.data.advisorName.trim())
-            .limit(1);
-
-          const isStaff =
-            activeProfiles &&
-            activeProfiles.length > 0 &&
-            (activeProfiles[0].role === 'employee' || activeProfiles[0].role === 'admin') &&
-            activeProfiles[0].is_active !== false;
-
-          if (!isStaff) {
-            return NextResponse.json(
-              {
-                error: 'Invalid form data',
-                issues: { advisorName: ['Selected advisor is not active. Please choose another.'] },
-              },
-              { status: 400 }
-            );
-          }
-        }
-      }
-    }
-
     const {
       firstName,
       lastName,
