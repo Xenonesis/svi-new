@@ -66,6 +66,17 @@ export function OperativeClausesAndSignaturesPage({
           forfeitable amounts.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          3A. In the event the Allottee(s) cancels the deal/allotment for any reason whatsoever, the
+          Allottee(s) shall be entitled to receive a refund of only 60% (sixty percent) of the total
+          amount actually paid by the Allottee(s) to the Firm under this Agreement. It is clarified
+          that for calculation of the 60% refund, the &apos;total amount&apos; shall strictly
+          include only the amounts paid towards the agreed amount decided in this Builder Buyer
+          Agreement, and shall not include any other amounts outside the decided BBA terms. The
+          balance 40% (forty percent) of the total amount paid shall stand forfeited by the Firm as
+          cancellation charges. The admissible refundable amount will be refunded within 90 (ninety)
+          working days from the date of receipt and acceptance of the formal cancellation request.
+        </p>
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
           4. The Allottee understands that the part advance given by him/them is towards provisional
           registration against to probable&apos;s allotments of plot(s)/shop(s)/in the ongoing
           project. That further Understand the Allotee at the provisional registration against a
@@ -214,6 +225,13 @@ export function OperativeClausesAndSignaturesPage({
           11. If any delay in due payment, then the firm will charge 18% p.a interest on pro-rata
           basis and if such delay continue for 90 days then allotment will automatically get
           transfer to Market Payment Plan.
+        </p>
+        <p className="mb-4 text-justify text-[13px] leading-relaxed">
+          11A. In the event any EMI installment is skipped or delayed by the Allottee(s), the
+          Allottee(s) shall be liable to pay the overdue skipped EMI amount along with an additional
+          late fee of 10% (ten percent) of that particular EMI amount. Furthermore, if the
+          Allottee(s) skips EMI installments continuously for 6 (six) consecutive months or skips
+          their 6th (sixth) EMI installment, the deal/allotment shall automatically stand cancelled.
         </p>
         <p className="mb-4 text-justify text-[13px] leading-relaxed">
           12. The Allottee(s) has seen and accepted the schedule of payments, (as given in
