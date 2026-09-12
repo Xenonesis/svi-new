@@ -202,9 +202,12 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-2 text-[15px] font-bold">फर्म का प्रतिनिधित्व</p>
         <p className="mb-2 text-justify text-[15px] leading-relaxed">
           <strong>चूँकि</strong> फर्म, परियोजना &quot;
-          {formData?.projectName?.toUpperCase() || ''}&quot;,{' '}
-          {getProjectLocation(formData?.projectName)} स्थित भूमि (जिसे आगे &apos;
-          <strong>उक्त भूमि</strong>&apos; के रूप में संदर्भित किया जाएगा) की वास्तविक क्रेता है।
+          {formData?.projectName?.toUpperCase() || ''}&quot;
+          {getProjectLocation(formData?.projectName)
+            ? `, ${getProjectLocation(formData?.projectName)} स्थित भूमि (जिसे आगे `
+            : ` स्थित भूमि (जिसे आगे `}
+          &apos;<strong>उक्त भूमि</strong>&apos; के रूप में संदर्भित किया जाएगा) की वास्तविक क्रेता
+          है।
         </p>
         <p className="mb-2 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> यह स्पष्ट किया जाता है कि फर्म का उक्त भवन/उक्त परिसर/उक्त भूमि

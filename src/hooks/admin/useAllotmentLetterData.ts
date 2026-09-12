@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import { toast } from 'sonner';
+import { registerDynamicProjectLocations } from '@/src/lib/utils/projectLocations';
 
 export interface Advisor {
   full_name: string;
@@ -78,7 +79,7 @@ export function useAllotmentLetterData(token: string | null) {
       try {
         const { data, error } = await supabase
           .from('properties')
-          .select('name')
+          .select('name, slug, location')
           .eq('active', true)
           .order('name', { ascending: true });
 
@@ -90,6 +91,7 @@ export function useAllotmentLetterData(token: string | null) {
               label: p.name,
             }))
           );
+          registerDynamicProjectLocations(data);
         }
       } catch (err) {
         console.error('Error loading projects:', err);

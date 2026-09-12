@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import { useSearchParams } from 'next/navigation';
+import { registerDynamicProjectLocations } from '@/src/lib/utils/projectLocations';
 
 export interface Advisor {
   full_name: string;
@@ -101,12 +102,13 @@ export function useBBAData(token: string | null) {
       try {
         const { data, error } = await supabase
           .from('properties')
-          .select('name')
+          .select('name, slug, location')
           .eq('active', true)
           .order('name', { ascending: true });
         if (error) throw error;
         if (data && data.length > 0) {
           setProjects(data.map((p) => ({ value: p.name, label: p.name })));
+          registerDynamicProjectLocations(data);
         }
       } catch (err) {
         console.error('Error loading projects:', err);

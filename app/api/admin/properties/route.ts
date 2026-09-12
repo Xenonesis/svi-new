@@ -13,7 +13,28 @@ export async function GET(request: NextRequest) {
 
     const { data: properties, error } = await propertyRepository.listAll();
     if (error) throw AppError.internal('Failed to fetch properties');
-    return NextResponse.json({ properties: properties || [] });
+
+    const mappedProperties = (properties || []).map((p) => {
+      let legalHi = (p as any).legal_location_hi || '';
+      let legalEn = (p as any).legal_location_en || '';
+      if (!legalHi && !legalEn && p.location) {
+        try {
+          const parsed = JSON.parse(p.location);
+          legalHi = parsed.legalHi || parsed.legal_location_hi || '';
+          legalEn = parsed.legalEn || parsed.legal_location_en || '';
+        } catch {
+          legalHi = p.location;
+          legalEn = p.location;
+        }
+      }
+      return {
+        ...p,
+        legal_location_hi: legalHi,
+        legal_location_en: legalEn,
+      };
+    });
+
+    return NextResponse.json({ properties: mappedProperties });
   } catch (err) {
     return handleApiError(err);
   }
@@ -32,30 +53,47 @@ export async function POST(request: NextRequest) {
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { id, name, slug, active } = body;
+    const { id, name, slug, active, legal_location_hi, legal_location_en } = body;
     if (!name || !slug) throw AppError.badRequest('Name and slug are required');
 
     const adminName = await userRepository.getAdminName(admin.id);
 
+    let locationPayload: string | undefined = undefined;
+    if (legal_location_hi !== undefined || legal_location_en !== undefined) {
+      locationPayload = JSON.stringify({
+        legalHi: legal_location_hi?.trim() || '',
+        legalEn: legal_location_en?.trim() || '',
+      });
+    }
+
     let result: any;
     let actionType = 'property_created';
 
+    const updatePayload: any = {
+      name,
+      slug,
+      updated_at: new Date().toISOString(),
+      active: active !== undefined ? active : true,
+    };
+    if (locationPayload !== undefined) {
+      updatePayload.location = locationPayload;
+    }
+
     if (id) {
       actionType = 'property_updated';
-      const { data, error } = await propertyRepository.update(id, {
-        name,
-        slug,
-        updated_at: new Date().toISOString(),
-        active: active !== undefined ? active : true,
-      } as any);
+      const { data, error } = await propertyRepository.update(id, updatePayload);
       if (error) throw error;
       result = data;
     } else {
-      const { data, error } = await propertyRepository.create({
+      const createPayload: any = {
         name,
         slug,
         active: active !== undefined ? active : true,
-      });
+      };
+      if (locationPayload !== undefined) {
+        createPayload.location = locationPayload;
+      }
+      const { data, error } = await propertyRepository.create(createPayload);
       if (error) throw error;
       result = data;
     }

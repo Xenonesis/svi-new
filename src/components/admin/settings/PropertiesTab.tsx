@@ -21,6 +21,9 @@ interface Property {
   name: string;
   slug: string;
   active: boolean;
+  location?: string | null;
+  legal_location_hi?: string | null;
+  legal_location_en?: string | null;
   created_at: string;
 }
 
@@ -39,6 +42,8 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
   // Form states for new/editing property
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [legalLocationHi, setLegalLocationHi] = useState('');
+  const [legalLocationEn, setLegalLocationEn] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -102,6 +107,8 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
           id: editingId || undefined,
           name: name.trim(),
           slug: slug.trim(),
+          legal_location_hi: legalLocationHi.trim(),
+          legal_location_en: legalLocationEn.trim(),
         }),
       });
 
@@ -116,6 +123,8 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
       // Reset form
       setName('');
       setSlug('');
+      setLegalLocationHi('');
+      setLegalLocationEn('');
       setEditingId(null);
       setShowAddForm(false);
 
@@ -198,6 +207,8 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
     setEditingId(property.id);
     setName(property.name);
     setSlug(property.slug);
+    setLegalLocationHi(property.legal_location_hi || '');
+    setLegalLocationEn(property.legal_location_en || '');
     setShowAddForm(true);
     // Scroll to form smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -208,6 +219,8 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
     setEditingId(null);
     setName('');
     setSlug('');
+    setLegalLocationHi('');
+    setLegalLocationEn('');
     setShowAddForm(false);
   };
 
@@ -297,6 +310,39 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
                 />
                 <p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
                   Unique, lowercase string identifier. Replaces spaces with hyphens.
+                </p>
+              </div>
+            </div>
+
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className={labelClass}>
+                  विधिक स्थान - हिंदी (Hindi Legal Location for BBA/Allotment)
+                </label>
+                <input
+                  type="text"
+                  value={legalLocationHi}
+                  onChange={(e) => setLegalLocationHi(e.target.value)}
+                  placeholder="उदा: ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान"
+                  className={inputClass}
+                />
+                <p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
+                  बीबीए एग्रीमेंट एवं आवंटन पत्र में छपने वाला आधिकारिक हिंदी विधिक स्थान।
+                </p>
+              </div>
+              <div>
+                <label className={labelClass}>
+                  Legal Location - English (English Legal Location for BBA/Allotment)
+                </label>
+                <input
+                  type="text"
+                  value={legalLocationEn}
+                  onChange={(e) => setLegalLocationEn(e.target.value)}
+                  placeholder="e.g. Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan"
+                  className={inputClass}
+                />
+                <p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
+                  Official English legal land location printed in English BBA and Allotment Letters.
                 </p>
               </div>
             </div>
@@ -436,6 +482,22 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
                       <span className="font-bold text-gray-900 dark:text-white">
                         {property.name}
                       </span>
+                      <div className="mt-1 flex flex-col gap-0.5">
+                        {property.legal_location_hi ? (
+                          <span className="text-[11px] text-gray-600 dark:text-gray-300">
+                            📍 {property.legal_location_hi}
+                          </span>
+                        ) : (
+                          <span className="text-[11px] text-amber-600 italic dark:text-amber-400">
+                            ⚠️ विधिक स्थान सेट नहीं है (Legal location not set)
+                          </span>
+                        )}
+                        {property.legal_location_en && (
+                          <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                            {property.legal_location_en}
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4">
                       <code className="rounded bg-gray-100 px-1.5 py-0.5 text-xs text-gray-600 dark:bg-white/5 dark:text-gray-400">

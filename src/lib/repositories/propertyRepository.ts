@@ -16,6 +16,8 @@ export type Property = {
   image_url?: string | null;
   gallery?: string[] | null;
   amenities?: string[] | null;
+  legal_location_hi?: string | null;
+  legal_location_en?: string | null;
   created_at?: string;
   updated_at?: string;
 };

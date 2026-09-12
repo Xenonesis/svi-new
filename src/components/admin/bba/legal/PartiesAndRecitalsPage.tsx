@@ -206,8 +206,10 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-2 text-[14.5px] font-bold">Firms Representation</p>
         <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
           <strong>WHEREAS</strong> the firm is bona fide purchaser of the land bearing &quot;
-          {formData?.projectName?.toUpperCase() || ''}&quot;,{' '}
-          {getProjectLocation(formData?.projectName)}
+          {formData?.projectName?.toUpperCase() || ''}&quot;
+          {getProjectLocation(formData?.projectName)
+            ? `, ${getProjectLocation(formData?.projectName)} `
+            : ' '}
           (hereinafter referred to as the &apos;<strong>Said Land</strong>&apos;).
         </p>
         <p className="mb-2 text-justify text-[14.5px] leading-relaxed">

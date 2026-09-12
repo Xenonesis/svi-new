@@ -4,7 +4,7 @@ import {
   getProjectShortLocation,
   getProjectCoverLocation,
   getProjectCity,
-  getProjectLocationDetail,
+  registerDynamicProjectLocations,
 } from '@/src/lib/utils/projectLocations';
 
 describe('projectLocations utility', () => {
@@ -71,22 +71,43 @@ describe('projectLocations utility', () => {
     });
   });
 
-  describe('Unknown / Custom Project', () => {
-    const testCases = ['Royal City', 'Green Valley', ''];
+  describe('Dynamic Project Registration from /admin/properties', () => {
+    it('resolves dynamically registered project legal locations correctly', () => {
+      registerDynamicProjectLocations([
+        {
+          name: 'Green City Enclave',
+          slug: 'green-city-enclave',
+          location: JSON.stringify({
+            legalHi: 'ग्राम बगरू, तहसील सांगानेर, जिला जयपुर, राज्य – राजस्थान',
+            legalEn: 'Village Bagru, Tehsil Sanganer, District Jaipur, State – Rajasthan',
+          }),
+        },
+      ]);
+
+      expect(getProjectLegalLocation('Green City Enclave', 'hi')).toBe(
+        'ग्राम बगरू, तहसील सांगानेर, जिला जयपुर, राज्य – राजस्थान'
+      );
+      expect(getProjectLegalLocation('green-city-enclave', 'en')).toBe(
+        'Village Bagru, Tehsil Sanganer, District Jaipur, State – Rajasthan'
+      );
+      expect(getProjectCoverLocation('Green City Enclave', 'hi')).toBe(
+        '(ग्राम बगरू, तहसील सांगानेर, जिला जयपुर, राज्य – राजस्थान)'
+      );
+    });
+  });
+
+  describe('Unknown / Custom Project with NO fallback', () => {
+    const testCases = ['Unknown Enclave', 'Unconfigured Heights', ''];
 
     it.each(testCases)(
-      'does not default to another project village like Basadi or Harsoli',
+      'returns empty string and does not fallback to any other project or generic city for %s',
       (name) => {
-        const legalHi = getProjectLegalLocation(name, 'hi');
-        const legalEn = getProjectLegalLocation(name, 'en');
-
-        expect(legalHi).not.toContain('बसादी');
-        expect(legalHi).not.toContain('हरसोली');
-        expect(legalEn).not.toContain('Basadi');
-        expect(legalEn).not.toContain('Harsoli');
-
-        expect(legalHi).toContain('जयपुर');
-        expect(legalEn).toContain('Jaipur');
+        expect(getProjectLegalLocation(name, 'hi')).toBe('');
+        expect(getProjectLegalLocation(name, 'en')).toBe('');
+        expect(getProjectShortLocation(name, 'hi')).toBe('');
+        expect(getProjectShortLocation(name, 'en')).toBe('');
+        expect(getProjectCoverLocation(name, 'hi')).toBe('');
+        expect(getProjectCoverLocation(name, 'en')).toBe('');
       }
     );
   });
