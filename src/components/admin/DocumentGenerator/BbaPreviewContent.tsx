@@ -312,7 +312,7 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
             </span>
           </div>
           <div className="mt-2 flex items-center justify-between text-[11px] text-slate-400 select-none">
-            <span className="font-mono text-[9.5px] tracking-wider">DOC: SVI-BBA-ALLOTMENT</span>
+            <span />
             <span className="rounded-full bg-slate-100 px-3 py-0.5 font-semibold text-slate-600">
               Page 1 of 16
             </span>
@@ -595,7 +595,7 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
           </div>
         </div>
         <div className="mt-auto flex items-center justify-between border-t border-slate-300 pt-3 text-[10.5px] text-slate-400 select-none">
-          <span className="font-mono text-[9px] tracking-wider">DOC: SVI-BBA-ANNEXURE-A</span>
+          <span />
           <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-semibold text-slate-600">
             Page 16 of 16
           </span>
