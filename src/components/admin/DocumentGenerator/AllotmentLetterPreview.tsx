@@ -13,13 +13,10 @@ const formatDate = (date: Date) => {
   return dd + '-' + mm + '-' + yyyy;
 };
 
+import { getProjectCoverLocation } from '@/src/lib/utils/projectLocations';
+
 export function AllotmentLetterPreview({ formData, companyInfo, id, className }: any) {
-  const getProjectLocation = (projectName: string) => {
-    if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return '(Village Harsoli, Tehsil Renwal, District Jaipur, Rajasthan)';
-    }
-    return '(Kishan Garh Renwal, Jaipur, Rajasthan)';
-  };
+  const getProjectLocation = (projectName: string) => getProjectCoverLocation(projectName, 'en');
   const projectLocation = getProjectLocation(formData?.projectName);
   const calculateTotalCost = () => {
     const area = parseFloat(formData.area) || 0;

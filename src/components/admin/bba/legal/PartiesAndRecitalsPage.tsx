@@ -1,16 +1,12 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
+import {
+  getProjectLegalLocation,
+  getProjectCity as getProjectCityUtil,
+} from '@/src/lib/utils/projectLocations';
 
-const getProjectLocation = (projectName: string) => {
-  if (projectName?.toLowerCase().includes('shivani vatika')) {
-    return 'Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan';
-  }
-  return 'Village Basadi Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan';
-};
-
-const getProjectCity = (projectName: string) => {
-  return 'JAIPUR, RAJASTHAN';
-};
+const getProjectLocation = (projectName: string) => getProjectLegalLocation(projectName, 'en');
+const getProjectCity = (projectName: string) => getProjectCityUtil(projectName, 'en');
 
 /**
  * Second page block of the BBA legal preview: title + party identification
@@ -48,7 +44,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
           the firm in respect of the Said Land and the Said Complex and is satisfied with the same.
         </p>
         <p className="mb-2 text-center text-lg font-bold uppercase">
-          "{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}"
+          "{formData?.projectName?.toUpperCase() || ''}"
         </p>
         <p className="mb-2 text-center text-sm font-bold uppercase">
           {getProjectCity(formData?.projectName)}
@@ -210,7 +206,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-2 text-[14.5px] font-bold">Firms Representation</p>
         <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
           <strong>WHEREAS</strong> the firm is bona fide purchaser of the land bearing &quot;
-          {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
+          {formData?.projectName?.toUpperCase() || ''}&quot;,{' '}
           {getProjectLocation(formData?.projectName)}
           (hereinafter referred to as the &apos;<strong>Said Land</strong>&apos;).
         </p>

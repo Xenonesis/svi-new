@@ -1,16 +1,12 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import {
+  getProjectLegalLocation,
+  getProjectCity as getProjectCityUtil,
+} from '@/src/lib/utils/projectLocations';
 
-const getProjectLocation = (projectName: string) => {
-  if (projectName?.toLowerCase().includes('shivani vatika')) {
-    return 'ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान';
-  }
-  return 'ग्राम बसादी तहसील किशन गढ़ रेनवाल, जिला जयपुर, राज्य – राजस्थान';
-};
-
-const getProjectCity = (_projectName: string) => {
-  return 'जयपुर, राजस्थान';
-};
+const getProjectLocation = (projectName: string) => getProjectLegalLocation(projectName, 'hi');
+const getProjectCity = (projectName: string) => getProjectCityUtil(projectName, 'hi');
 
 /**
  * Second page block of the BBA legal preview (Hindi): title + party identification
@@ -45,7 +41,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
           परिसर के संबंध में फर्म के स्वामित्व की जाँच कर ली है और वे इससे संतुष्ट हैं।
         </p>
         <p className="mb-2 text-center text-lg font-bold uppercase">
-          &quot;{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;
+          &quot;{formData?.projectName?.toUpperCase() || ''}&quot;
         </p>
         <p className="mb-2 text-center text-sm font-bold uppercase">
           {getProjectCity(formData?.projectName)}
@@ -205,10 +201,10 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         </p>
         <p className="mb-2 text-[15px] font-bold">फर्म का प्रतिनिधित्व</p>
         <p className="mb-2 text-justify text-[15px] leading-relaxed">
-          <strong>चूँकि</strong> फर्म &quot;
-          {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
-          {getProjectLocation(formData?.projectName)} नामक भूमि की वास्तविक क्रेता है (जिसे आगे
-          &apos;<strong>उक्त भूमि</strong>&apos; के रूप में संदर्भित किया जाएगा)।
+          <strong>चूँकि</strong> फर्म, परियोजना &quot;
+          {formData?.projectName?.toUpperCase() || ''}&quot;,{' '}
+          {getProjectLocation(formData?.projectName)} स्थित भूमि (जिसे आगे &apos;
+          <strong>उक्त भूमि</strong>&apos; के रूप में संदर्भित किया जाएगा) की वास्तविक क्रेता है।
         </p>
         <p className="mb-2 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> यह स्पष्ट किया जाता है कि फर्म का उक्त भवन/उक्त परिसर/उक्त भूमि

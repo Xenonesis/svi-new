@@ -1,17 +1,14 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
+import { getProjectShortLocation } from '@/src/lib/utils/projectLocations';
 
 /**
  * Pages 3-5 of the BBA: Allottee representations, the "WHEREAS" chain, and
  * the definitions + interpretation section.
  */
 export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BBALegalContext) {
-  const getProjectLocationName = (projectName: string) => {
-    if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return 'HARSOLI, TEHSIL RENWAL, DISTRICT JAIPUR, RAJASTHAN';
-    }
-    return 'BASADI, KISHAN GARH RENWAL, JAIPUR, RAJASTHAN';
-  };
+  const getProjectLocationName = (projectName: string) =>
+    getProjectShortLocation(projectName, 'en');
 
   return (
     <>
@@ -69,7 +66,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           <strong>AND WHEREAS</strong> in pursuance to the aforesaid application for allotment the
           firm accepted the application of the Allottee and allotted{' '}
           <strong>Plot No – {formData.unitNumber}</strong> in{' '}
-          <strong>{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}</strong> on dated{' '}
+          <strong>{formData?.projectName?.toUpperCase() || ''}</strong> on dated{' '}
           <strong>
             {new Date(formData.bookingDate || Date.now()).toLocaleDateString('en-GB', {
               day: 'numeric',
@@ -234,7 +231,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Said Complex&quot;</strong> means the &quot;
-          {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
+          {formData?.projectName?.toUpperCase() || ''}&quot;,{' '}
           {getProjectLocationName(formData?.projectName)}, wherein the Residential Plots/shop
           Building, shops, club house swimming pool, Gym etc., Community Shopping, nursery school
           and any other building facilities &amp; amenities approved by the governmental authority

@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import { getProjectShortLocation } from '@/src/lib/utils/projectLocations';
 
 /**
  * Pages 3-5 of the BBA (Hindi): Allottee representations, WHEREAS chain, definitions & interpretation.
@@ -8,12 +9,8 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
   formData,
   companyInfo,
 }: BBALegalContext) {
-  const getProjectLocationName = (projectName: string) => {
-    if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return 'हरसोली, तहसील रेनवाल, जिला जयपुर, राजस्थान';
-    }
-    return 'बसादी, किशन गढ़ रेनवाल, जयपुर, राजस्थान';
-  };
+  const getProjectLocationName = (projectName: string) =>
+    getProjectShortLocation(projectName, 'hi');
 
   return (
     <>
@@ -74,7 +71,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
               year: 'numeric',
             })}
           </strong>{' '}
-          को <strong>{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}</strong> में{' '}
+          को <strong>{formData?.projectName?.toUpperCase() || ''}</strong> में{' '}
           <strong>भूखंड सं. – {formData.unitNumber}</strong> आवंटी को आवंटित किया, और आवंटी ने उन
           अभिलेखों की जाँच की और उनसे संतुष्ट हुए हैं जो फर्म को यह करार निष्पादित करने का अधिकार
           देते हैं।
@@ -223,7 +220,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
         </p>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;उक्त परिसर&quot;</strong> का अर्थ &quot;
-          {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
+          {formData?.projectName?.toUpperCase() || ''}&quot;,{' '}
           {getProjectLocationName(formData?.projectName)} से है, जिसमें आवासीय भूखंड/दुकान भवन,
           दुकानें, क्लब हाउस स्विमिंग पूल, जिम आदि, सामुदायिक खरीदारी, नर्सरी स्कूल और सरकारी
           प्राधिकरण द्वारा अनुमोदित अन्य भवन सुविधाएँ और सुविधाएँ शामिल हैं।

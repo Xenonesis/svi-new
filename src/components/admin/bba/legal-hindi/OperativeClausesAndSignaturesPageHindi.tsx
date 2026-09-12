@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import { getProjectLegalLocation } from '@/src/lib/utils/projectLocations';
 
 /**
  * Final pages of the BBA legal preview (Hindi): numbered clauses 1-32,
@@ -10,12 +11,7 @@ export function OperativeClausesAndSignaturesPageHindi({
   companyInfo,
   totalCost,
 }: BBALegalContext) {
-  const getProjectLocation = (projectName: string) => {
-    if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return 'ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान';
-    }
-    return 'ग्राम बसादी, तहसील किशन गढ़ रेनवाल, जिला जयपुर, राज्य – राजस्थान';
-  };
+  const getProjectLocation = (projectName: string) => getProjectLegalLocation(projectName, 'hi');
 
   return (
     <>

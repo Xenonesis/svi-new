@@ -185,7 +185,26 @@ export function useBBAData(token: string | null) {
       const selected = savedBbas.find((b) => b.id === templateId);
       if (selected && selected.form_data) {
         const fd = selected.form_data;
-        setFormData((prev) => ({ ...prev, ...fd }));
+        const projectMap: Record<string, string> = {
+          'shyam-aangan': 'Shyam Aangan',
+          'shyam-aangan-phase-1': 'Shyam Aangan Phase 1',
+          'shyam-aangan-farm-house': 'Shyam Aangan Farm House',
+          'shivani-vatika': 'Shivani Vatika',
+          'shivani-vatika-11th': 'Shivani Vatika 11th',
+          'shivani-vatika-11': 'Shivani Vatika 11th',
+          'shivani vatika 11th': 'Shivani Vatika 11th',
+          'shivani vatika': 'Shivani Vatika',
+          'phulera-smartcity': 'Phulera SmartCity',
+          'phulera-smart-city': 'Phulera SmartCity',
+        };
+        const normalizedProj = fd.projectName
+          ? projectMap[fd.projectName.toLowerCase().trim()] || fd.projectName
+          : fd.projectName;
+        setFormData((prev) => ({
+          ...prev,
+          ...fd,
+          ...(normalizedProj ? { projectName: normalizedProj } : {}),
+        }));
         if (fd.secondPaymentDays) {
           const isCustomDays = fd.secondPaymentDays !== '15' && fd.secondPaymentDays !== '28';
           setIsCustomSecondPaymentDays(isCustomDays);
@@ -208,6 +227,22 @@ export function useBBAData(token: string | null) {
           const allotment = data.document;
           if (allotment && allotment.form_data) {
             const allotmentData = allotment.form_data;
+            const projectMap: Record<string, string> = {
+              'shyam-aangan': 'Shyam Aangan',
+              'shyam-aangan-phase-1': 'Shyam Aangan Phase 1',
+              'shyam-aangan-farm-house': 'Shyam Aangan Farm House',
+              'shivani-vatika': 'Shivani Vatika',
+              'shivani-vatika-11th': 'Shivani Vatika 11th',
+              'shivani-vatika-11': 'Shivani Vatika 11th',
+              'shivani vatika 11th': 'Shivani Vatika 11th',
+              'shivani vatika': 'Shivani Vatika',
+              'phulera-smartcity': 'Phulera SmartCity',
+              'phulera-smart-city': 'Phulera SmartCity',
+            };
+            const normalizedProject = allotmentData.projectName
+              ? projectMap[allotmentData.projectName.toLowerCase().trim()] ||
+                allotmentData.projectName
+              : 'Shyam Aangan';
             const cleanSalutation = allotmentData.salutation
               ? allotmentData.salutation.replace(/\.$/, '')
               : '';
@@ -324,7 +359,7 @@ export function useBBAData(token: string | null) {
               state: parsedAddr.state,
               pincode: parsedAddr.pincode,
               ticketId: ticketId,
-              projectName: allotmentData.projectName || 'Shyam Aangan',
+              projectName: normalizedProject,
               unitNumber: allotmentData.unitNumber || '',
               area: allotmentData.area || '',
               bsp: allotmentData.bsp || '',

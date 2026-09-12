@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
+import { getProjectLegalLocation } from '@/src/lib/utils/projectLocations';
 
 /**
  * Final pages of the BBA legal preview: numbered clauses 1-32,
@@ -14,12 +15,7 @@ export function OperativeClausesAndSignaturesPage({
   companyInfo,
   totalCost,
 }: BBALegalContext) {
-  const getProjectLocation = (projectName: string) => {
-    if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return 'Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan';
-    }
-    return 'Village Basadi, Tehsil Kishan Garh Renwal, Dist. Jaipur, State – Rajasthan';
-  };
+  const getProjectLocation = (projectName: string) => getProjectLegalLocation(projectName, 'en');
 
   return (
     <>

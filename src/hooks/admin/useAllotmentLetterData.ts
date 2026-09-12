@@ -338,7 +338,12 @@ export function useAllotmentLetterData(token: string | null) {
                   'shyam-aangan-phase-1': 'Shyam Aangan Phase 1',
                   'shyam-aangan-farm-house': 'Shyam Aangan Farm House',
                   'shivani-vatika': 'Shivani Vatika',
+                  'shivani-vatika-11th': 'Shivani Vatika 11th',
+                  'shivani-vatika-11': 'Shivani Vatika 11th',
+                  'shivani vatika 11th': 'Shivani Vatika 11th',
+                  'shivani vatika': 'Shivani Vatika',
                   'phulera-smartcity': 'Phulera SmartCity',
+                  'phulera-smart-city': 'Phulera SmartCity',
                 };
                 proj = projectMap[proj.toLowerCase().trim()] || proj;
               } else {

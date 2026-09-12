@@ -17,7 +17,7 @@ export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
       }}
     >
       <p className="mb-2 text-center text-lg font-bold uppercase">
-        "{formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}"
+        "{formData?.projectName?.toUpperCase() || ''}"
       </p>
       <p className="mb-4 text-center text-sm font-bold uppercase">JAIPUR, RAJASTHAN</p>
       <p className="mb-4 text-left text-[11.5px] font-semibold italic">

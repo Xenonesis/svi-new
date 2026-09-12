@@ -1,15 +1,10 @@
 import React from 'react';
 import BbaLegalPages from '../../../../app/admin/bba/BbaLegalPages';
 import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
+import { getProjectCoverLocation } from '@/src/lib/utils/projectLocations';
 
 export default function BbaPreviewContent({ formData, companyInfo }: any) {
-  const getProjectLocation = (projectName: string) => {
-    if (projectName?.toLowerCase().includes('shivani vatika')) {
-      return '(Village Harsoli, Tehsil Renwal, District Jaipur, Rajasthan)';
-    }
-    // Default location for Shyam Aangan and others
-    return '(Kishan Garh Renwal, Jaipur, Rajasthan)';
-  };
+  const getProjectLocation = (projectName: string) => getProjectCoverLocation(projectName, 'en');
 
   const projectLocation = getProjectLocation(formData?.projectName);
 
