@@ -110,28 +110,32 @@ export function BBAForm({
           value={formData.age}
           onChange={handleChange}
           placeholder="e.g. 45"
+          required
         />
         <FormField
-          label="PAN Number (Optional)"
+          label="PAN Number"
           name="panNumber"
           value={formData.panNumber || ''}
           onChange={handleChange}
           placeholder="e.g. ABCDE1234F"
+          required
         />
         <FormField
-          label="Mobile Number (Optional)"
+          label="Mobile Number"
           name="mobileNumber"
           value={formData.mobileNumber || ''}
           onChange={handleChange}
           placeholder="e.g. 9876543210"
+          required
         />
         <FormField
-          label="Email Address (Optional)"
+          label="Email Address"
           name="email"
           type="email"
           value={formData.email || ''}
           onChange={handleChange}
           placeholder="e.g. client@example.com"
+          required
         />
       </div>
 
@@ -503,7 +507,15 @@ export function BBAForm({
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <button
             type="button"
-            onClick={handleUpdateExisting || handleSubmit}
+            onClick={(e) => {
+              const form = e.currentTarget.form;
+              if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+              }
+              if (handleUpdateExisting) handleUpdateExisting(e);
+              else if (handleSubmit) handleSubmit(e);
+            }}
             disabled={isSubmitting}
             className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
           >
@@ -516,7 +528,15 @@ export function BBAForm({
           </button>
           <button
             type="button"
-            onClick={handleCreateNew || handleSubmit}
+            onClick={(e) => {
+              const form = e.currentTarget.form;
+              if (form && !form.checkValidity()) {
+                form.reportValidity();
+                return;
+              }
+              if (handleCreateNew) handleCreateNew(e);
+              else if (handleSubmit) handleSubmit(e);
+            }}
             disabled={isSubmitting}
             className="border-brand-gold/40 text-brand-gold hover:bg-brand-gold/10 hover:border-brand-gold dark:border-brand-gold/40 dark:text-brand-gold dark:hover:bg-brand-gold/10 flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg border py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
           >

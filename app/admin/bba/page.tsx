@@ -58,8 +58,9 @@ function BbaPageContent() {
                     value={b.id}
                     className="bg-white text-gray-900 dark:bg-gray-900 dark:text-white"
                   >
-                    {b.form_data?.clientName || 'Unknown'} - {b.form_data?.ticketId || 'No Ticket'}{' '}
-                    ({new Date(b.created_at).toLocaleDateString()})
+                    {b.form_data?.clientName || 'Unknown'} —{' '}
+                    {b.form_data?.projectName || 'No Project'} (
+                    {b.form_data?.ticketId || 'No Ticket'})
                   </option>
                 ))}
               </select>
