@@ -4,6 +4,7 @@ import {
   getPreviewHtml,
   safeReplaceHtmlContent,
   cleanEmptyTags,
+  sanitizeEmailHtml,
 } from '@/src/lib/utils/templateParser';
 describe('templateParser', () => {
   describe('extractTemplateVars', () => {
@@ -149,6 +150,44 @@ describe('templateParser', () => {
       const result = safeReplaceHtmlContent(html, selected, '');
       expect(result).not.toContain('Next Steps to Finalize Your Onboarding');
       expect(result).not.toContain('Review the formal appointment letter');
+    });
+  });
+
+  describe('sanitizeEmailHtml', () => {
+    it('should unescape escaped quotes and remove literal backslash-n sequences', () => {
+      const brokenHtml =
+        '<!DOCTYPE html>\\n \\n\\n<table class=\\"email-card\\">\\n<tr><td>\\nSITE VISIT CONFIRMATION\\n</td></tr></table>';
+      const result = sanitizeEmailHtml(brokenHtml);
+
+      expect(result).not.toContain('\\n');
+      expect(result).not.toContain('\\"');
+      expect(result).toContain('<table class="email-card">');
+      expect(result).toContain('SITE VISIT CONFIRMATION');
+    });
+
+    it('should fix broken image tags with leading backslashes in attributes', () => {
+      const brokenHtml =
+        '<img src=\\"https://www.sviinfrasolutions.com/logo.png\\" alt=\\"SVI Infra Solutions\\" />';
+      const result = sanitizeEmailHtml(brokenHtml);
+
+      expect(result).toContain('src="https://www.sviinfrasolutions.com/logo.png"');
+      expect(result).toContain('alt="SVI Infra Solutions"');
+      expect(result).not.toContain('\\"');
+    });
+
+    it('should handle null, undefined, or empty string gracefully', () => {
+      expect(sanitizeEmailHtml(null)).toBe('');
+      expect(sanitizeEmailHtml(undefined)).toBe('');
+      expect(sanitizeEmailHtml('')).toBe('');
+    });
+
+    it('should be automatically applied in getPreviewHtml', () => {
+      const brokenHtml = '<p class=\\"text\\">Dear {{name}},\\nwelcome to SVI.</p>';
+      const result = getPreviewHtml(brokenHtml, { name: 'John' });
+
+      expect(result).not.toContain('\\n');
+      expect(result).not.toContain('\\"');
+      expect(result).toContain('<p class="text">Dear John,');
     });
   });
 });

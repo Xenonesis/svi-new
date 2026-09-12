@@ -18,6 +18,40 @@ export const extractTemplateVars = (html: string): string[] => {
 };
 
 /**
+ * Sanitize and normalize email HTML strings.
+ * Cleans escaped quotes (\"), literal backslash-n sequences (\\n),
+ * and corrupted attribute values so that browsers never display raw \n text or broken images.
+ */
+export const sanitizeEmailHtml = (html: string | null | undefined): string => {
+  if (!html || typeof html !== 'string') return '';
+  let result = html;
+
+  // 1. Unescape double backslashes before quotes: \\" -> "
+  result = result.replace(/\\\\"/g, '"');
+  result = result.replace(/\\\\'/g, "'");
+
+  // 2. Unescape single backslash before quotes: \" -> " and \' -> '
+  result = result.replace(/\\"/g, '"');
+  result = result.replace(/\\'/g, "'");
+
+  // 3. Convert literal string "\r\n", "\n", "\r" (backslash + n) to real newline whitespace
+  // This prevents browsers from rendering visible "\n \n" text between tags or in text nodes
+  result = result.replace(/\\r\\n/g, '\n');
+  result = result.replace(/\\n/g, '\n');
+  result = result.replace(/\\r/g, '\n');
+  result = result.replace(/\\t/g, ' ');
+
+  // 4. Clean up corrupted src/alt/href attributes with leading backslashes or stray escaped quotes
+  result = result.replace(/(src|alt|href)=["']\\+["']?([^"']+)["']/gi, '$1="$2"');
+  result = result.replace(/(src|alt|href)=["']\\+([^"']+)["']/gi, '$1="$2"');
+
+  // 5. Clean up any literal "\n" remaining between tags or at start of document
+  result = result.replace(/(>|^)(\s*\\n\s*)+(<|$)/g, '$1\n$3');
+
+  return result.trim();
+};
+
+/**
  * Replace variables and evaluate conditional blocks (e.g. {{#key}}...{{/key}})
  * in an HTML template string based on provided template variables.
  */
@@ -26,7 +60,7 @@ export const getPreviewHtml = (
   templateVars: Record<string, string>
 ): string => {
   if (!sourceHtml) return '';
-  let result = sourceHtml;
+  let result = sanitizeEmailHtml(sourceHtml);
 
   // 1. Process conditional blocks first: {{#key}}...{{/key}}
   const conditionalRegex = /\{\{#([a-zA-Z0-9_]+)\}\}([\s\S]*?)\{\{\/\1\}\}/g;

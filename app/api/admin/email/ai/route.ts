@@ -6,6 +6,7 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { streamText, generateText } from 'ai';
 import { groq } from '@ai-sdk/groq';
 import emailTemplates from '@/src/data/email-templates.json';
+import { sanitizeEmailHtml } from '@/src/lib/utils/templateParser';
 
 export const maxDuration = 30;
 
@@ -290,7 +291,11 @@ ${subject || 'General Correspondence'}
 USER INSTRUCTIONS / PROMPT:
 ${userPrompt || 'Draft an appropriate professional email response based on the subject and recipient context.'}
 
-IMPORTANT: Respond with ONLY a valid JSON object matching the schema above. No markdown code blocks, no explanation text.`;
+CRITICAL JSON & ATTRIBUTE SYNTAX RULES:
+- Respond with ONLY a valid, parseable JSON object matching the schema above.
+- Inside the "html" field, write clean HTML. Use single quotes (') for all HTML tag attributes (e.g. <table class='email-card'>, <img src='https://www.sviinfrasolutions.com/logo.png' alt='SVI Infra Solutions' />) to prevent quote escaping conflicts.
+- Never output double-escaped sequences (do NOT write \\" or \\n).
+- No markdown code blocks, no explanation text outside the JSON.`;
 
       const { text } = await generateText({
         model: groq(AI_MODEL),
@@ -298,75 +303,39 @@ IMPORTANT: Respond with ONLY a valid JSON object matching the schema above. No m
         prompt,
       });
 
-      try {
-        let cleaned = text.trim();
-        if (cleaned.startsWith('```')) {
-          cleaned = cleaned
-            .replace(/^```(?:json)?\s*/i, '')
-            .replace(/```\s*$/, '')
-            .trim();
-        }
+      const parsed = parseAutoComposeOutput(text, subject || '');
 
-        let parsed: any;
-        try {
-          parsed = JSON.parse(cleaned);
-        } catch {
-          const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-          if (jsonMatch) {
-            parsed = JSON.parse(jsonMatch[0]);
-          } else {
-            throw new Error('Failed to parse AI response JSON');
-          }
-        }
-        let matchedTpl: any = null;
-        if (parsed.action === 'template_match' && parsed.templateId) {
-          matchedTpl = (emailTemplates as Array<any>).find(
-            (t) =>
-              t.id === parsed.templateId ||
-              t.name.toLowerCase() === (parsed.templateName || '').toLowerCase()
-          );
-          if (matchedTpl) {
-            parsed.templateId = matchedTpl.id;
-            parsed.templateName = matchedTpl.name;
-            if (!parsed.html) parsed.html = matchedTpl.html;
-          } else {
-            parsed.action = 'ai_template';
-            parsed.templateId = '_ai_generated';
-          }
-        }
-
-        let finalSubject = parsed.subject || '';
-        if (!finalSubject && parsed.action === 'template_match' && matchedTpl?.subject) {
-          finalSubject = matchedTpl.subject;
-        }
-        return NextResponse.json({
-          success: true,
-          action: parsed.action || 'ai_template',
-          templateId: parsed.templateId || '_ai_generated',
-          templateName: parsed.templateName || 'AI Generated',
-          subject: finalSubject,
-          variables: parsed.variables || {},
-          html: parsed.html || '',
-        });
-      } catch (parseErr: any) {
-        console.error('[AI] Auto compose parsing failed:', parseErr, text);
-        const htmlMatch =
-          text.match(/<!DOCTYPE[\s\S]*<\/html>/i) || text.match(/<table[\s\S]*<\/table>/i);
-        if (htmlMatch) {
-          return NextResponse.json({
-            success: true,
-            action: 'ai_template',
-            templateId: '_ai_generated',
-            templateName: 'AI Generated',
-            variables: {},
-            html: htmlMatch[0],
-          });
-        }
-        return NextResponse.json(
-          { error: 'Failed to generate auto compose template' },
-          { status: 500 }
+      let matchedTpl: any = null;
+      if (parsed.action === 'template_match' && parsed.templateId) {
+        matchedTpl = (emailTemplates as Array<any>).find(
+          (t) =>
+            t.id === parsed.templateId ||
+            t.name.toLowerCase() === (parsed.templateName || '').toLowerCase()
         );
+        if (matchedTpl) {
+          parsed.templateId = matchedTpl.id;
+          parsed.templateName = matchedTpl.name;
+          if (!parsed.html) parsed.html = sanitizeEmailHtml(matchedTpl.html);
+        } else {
+          parsed.action = 'ai_template';
+          parsed.templateId = '_ai_generated';
+        }
       }
+
+      let finalSubject = parsed.subject || '';
+      if (!finalSubject && parsed.action === 'template_match' && matchedTpl?.subject) {
+        finalSubject = matchedTpl.subject;
+      }
+
+      return NextResponse.json({
+        success: true,
+        action: parsed.action || 'ai_template',
+        templateId: parsed.templateId || '_ai_generated',
+        templateName: parsed.templateName || 'AI Generated',
+        subject: finalSubject,
+        variables: parsed.variables || {},
+        html: sanitizeEmailHtml(parsed.html || ''),
+      });
     }
 
     // ─── Feature 1: Generate email content (streaming) ─────
@@ -630,6 +599,124 @@ ${stripHtml(html)}`,
 }
 
 // ─── Helpers ─────────────────────────────────────────────────
+
+/**
+ * Safely parse AI auto-compose responses with error resilience against
+ * unescaped newlines, markdown codeblock wraps, and escaped quotes.
+ */
+function parseAutoComposeOutput(
+  rawText: string,
+  fallbackSubject = ''
+): {
+  action: 'template_match' | 'ai_template';
+  subject: string;
+  templateId: string;
+  templateName: string;
+  variables: Record<string, string>;
+  html: string;
+} {
+  let cleaned = (rawText || '').trim();
+
+  // Strip markdown code fences
+  cleaned = cleaned
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+
+  // 1. Direct JSON parse attempt on outermost object
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const jsonCandidate = cleaned.slice(firstBrace, lastBrace + 1);
+    try {
+      const parsed = JSON.parse(jsonCandidate);
+      if (parsed && typeof parsed === 'object') {
+        return {
+          action: parsed.action || 'ai_template',
+          subject: (parsed.subject || fallbackSubject || '').trim(),
+          templateId: parsed.templateId || '_ai_generated',
+          templateName: (parsed.templateName || 'AI Generated').trim(),
+          variables:
+            typeof parsed.variables === 'object' && parsed.variables !== null
+              ? parsed.variables
+              : {},
+          html: sanitizeEmailHtml(parsed.html || ''),
+        };
+      }
+    } catch {
+      // Direct JSON parse failed, proceed to resilient extraction
+    }
+  }
+
+  // 2. Resilient regex extraction of individual fields
+  let action: 'template_match' | 'ai_template' = 'ai_template';
+  const actionMatch = cleaned.match(/"action"\s*:\s*"(template_match|ai_template)"/i);
+  if (actionMatch) action = actionMatch[1] as any;
+
+  let templateId = '_ai_generated';
+  const idMatch = cleaned.match(/"templateId"\s*:\s*"([^"]+)"/i);
+  if (idMatch) templateId = idMatch[1].trim();
+
+  let templateName = 'AI Generated';
+  const nameMatch = cleaned.match(/"templateName"\s*:\s*"((?:[^"\\]|\\.)*)"/i);
+  if (nameMatch) {
+    try {
+      templateName = JSON.parse('"' + nameMatch[1] + '"').trim();
+    } catch {
+      templateName = nameMatch[1].replace(/\\"/g, '"').trim();
+    }
+  }
+
+  let subject = fallbackSubject;
+  const subjMatch = cleaned.match(/"subject"\s*:\s*"((?:[^"\\]|\\.)*)"/i);
+  if (subjMatch) {
+    try {
+      subject = JSON.parse('"' + subjMatch[1] + '"').trim();
+    } catch {
+      subject = subjMatch[1].replace(/\\"/g, '"').trim();
+    }
+  }
+
+  let variables: Record<string, string> = {};
+  const varsMatch = cleaned.match(/"variables"\s*:\s*(\{[\s\S]*?\})/);
+  if (varsMatch) {
+    try {
+      variables = JSON.parse(varsMatch[1]);
+    } catch {
+      const pairRegex = /"([^"]+)"\s*:\s*"([^"]*)"/g;
+      let m: RegExpExecArray | null;
+      while ((m = pairRegex.exec(varsMatch[1])) !== null) {
+        variables[m[1]] = m[2];
+      }
+    }
+  }
+
+  // Extract HTML
+  let rawHtml = '';
+  const htmlPropMatch = cleaned.match(/"html"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+  if (htmlPropMatch) {
+    try {
+      rawHtml = JSON.parse('"' + htmlPropMatch[1] + '"');
+    } catch {
+      rawHtml = htmlPropMatch[1];
+    }
+  } else {
+    const docMatch =
+      cleaned.match(/<!DOCTYPE[\s\S]*<\/html>/i) || cleaned.match(/<table[\s\S]*<\/table>/i);
+    if (docMatch) {
+      rawHtml = docMatch[0];
+    }
+  }
+
+  return {
+    action,
+    subject: subject || fallbackSubject,
+    templateId,
+    templateName,
+    variables,
+    html: sanitizeEmailHtml(rawHtml),
+  };
+}
 
 /** Build a summary of email templates for AI to match against */
 function getTemplatesSummary(): string {
