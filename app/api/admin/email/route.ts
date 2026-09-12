@@ -731,8 +731,17 @@ export async function GET(request: NextRequest) {
     }
 
     // ─── For Sent tab — fetch from Resend API ───
-    const emails = await resend.emails.list({ limit, after });
-    const responseData = emails.data as any;
+    let responseData: any = null;
+    try {
+      const emails = await resend.emails.list(after ? { limit, after } : { limit });
+      if (emails.error) {
+        console.error('[EMAIL] Resend list error:', emails.error);
+      } else {
+        responseData = emails.data;
+      }
+    } catch (resendErr) {
+      console.error('[EMAIL] Exception fetching emails from Resend:', resendErr);
+    }
 
     // Fetch deleted email IDs for this admin
     const { data: deletedData } = await supabaseAdmin

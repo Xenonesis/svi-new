@@ -211,9 +211,20 @@ export function useSentEmails(): UseSentEmailsReturn {
       const res = await fetch(`/api/admin/email?${params.toString()}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to fetch');
-      const newEmails = data.emails || [];
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        // Handle non-JSON or truncated responses gracefully
+      }
+      if (!res.ok) {
+        const errorMsg =
+          typeof data?.error === 'string'
+            ? data.error
+            : data?.error?.message || data?.message || `Failed to fetch emails (${res.status})`;
+        throw new Error(errorMsg);
+      }
+      const newEmails = data?.emails || [];
       if (isInitial) {
         setEmails(newEmails);
       } else {
@@ -223,7 +234,7 @@ export function useSentEmails(): UseSentEmailsReturn {
       if (newEmails.length > 0) {
         setAfterCursor(newEmails[newEmails.length - 1].id);
       }
-      setHasMore(data.hasMore && newEmails.length > 0);
+      setHasMore(data?.hasMore && newEmails.length > 0);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -253,9 +264,20 @@ export function useSentEmails(): UseSentEmailsReturn {
       const res = await fetch(`/api/admin/email?action=email&id=${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Failed to load email');
-      setSelected(data.email);
+      let data: any = null;
+      try {
+        data = await res.json();
+      } catch {
+        // Non-JSON response
+      }
+      if (!res.ok) {
+        const errorMsg =
+          typeof data?.error === 'string'
+            ? data.error
+            : data?.error?.message || data?.message || `Failed to load email (${res.status})`;
+        throw new Error(errorMsg);
+      }
+      setSelected(data?.email || null);
     } catch (e) {
       toast.error((e as Error).message);
     } finally {
