@@ -48,6 +48,17 @@ export const sanitizeEmailHtml = (html: string | null | undefined): string => {
   // 5. Clean up any literal "\n" remaining between tags or at start of document
   result = result.replace(/(>|^)(\s*\\n\s*)+(<|$)/g, '$1\n$3');
 
+  // 6. Normalize SVI official corporate logo URL
+  // Fix non-www domain (which causes TLS cert mismatch) and relative paths
+  result = result.replace(
+    /https?:\/\/sviinfrasolutions\.com\/logo\.png/gi,
+    'https://www.sviinfrasolutions.com/logo.png'
+  );
+  result = result.replace(
+    /src=["']\/?logo\.png["']/gi,
+    'src="https://www.sviinfrasolutions.com/logo.png"'
+  );
+
   return result.trim();
 };
 

@@ -96,7 +96,7 @@ const nextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com${__impeccableLiveDev}; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://*.openstreetmap.org https://api.qrserver.com; media-src 'self' https://*.supabase.co; connect-src 'self' https://*.sentry.io https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://*.openstreetmap.org; frame-src 'self' https://www.google.com https://*.google.com; frame-ancestors 'none';`,
+            value: `default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://vercel.live https://*.vercel-scripts.com https://www.googletagmanager.com${__impeccableLiveDev}; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: blob: https://www.sviinfrasolutions.com https://sviinfrasolutions.com https://*.supabase.co https://maps.googleapis.com https://maps.gstatic.com https://images.unsplash.com https://*.openstreetmap.org https://api.qrserver.com; media-src 'self' https://*.supabase.co; connect-src 'self' https://*.sentry.io https://*.supabase.co wss://*.supabase.co https://api.groq.com https://api.resend.com https://*.openstreetmap.org; frame-src 'self' https://www.google.com https://*.google.com; frame-ancestors 'none';`,
           },
         ],
       },
