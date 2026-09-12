@@ -4,7 +4,7 @@ import { BbaPageFooterHindi } from '../bba/legal-hindi/BbaPageFooterHindi';
 import { getProjectCoverLocation } from '@/src/lib/utils/projectLocations';
 import { BBA_A4_PAGE_STYLE, BBA_A4_COVER_STYLE, BBA_A4_PAGE_CLASS } from '../bba/legal/bbaA4Styles';
 
-export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
+function BbaPreviewContentHindi({ formData, companyInfo }: any) {
   const getProjectLocation = (projectName: string) => getProjectCoverLocation(projectName, 'hi');
 
   const projectLocation = getProjectLocation(formData?.projectName);
@@ -586,3 +586,5 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
     </div>
   );
 }
+
+export default React.memo(BbaPreviewContentHindi);

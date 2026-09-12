@@ -177,7 +177,7 @@ export function PreviewContainer({
           style={style}
           className={
             className ||
-            'mx-auto h-full w-full max-w-3xl origin-top transform overflow-auto rounded-lg border border-gray-200 bg-white p-8 text-gray-800 shadow-sm [:fullscreen]:h-full [:fullscreen]:max-w-none [:fullscreen]:overflow-auto [:fullscreen]:rounded-none [:fullscreen]:border-none'
+            'mx-auto h-full w-full max-w-3xl origin-top transform overflow-auto rounded-lg border border-gray-200 bg-white p-8 text-gray-800 shadow-sm [:fullscreen]:h-full [:fullscreen]:max-w-none [:fullscreen]:overflow-auto [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:bg-slate-900 [:fullscreen]:text-slate-100'
           }
         >
           {children}

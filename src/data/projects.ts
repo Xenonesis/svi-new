@@ -64,7 +64,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     title: 'Shyam Aangan',
     titleHi: 'श्याम आंगन',
     location: 'Basri Khurd, Jaipur',
-    locationHi: 'बांसड़ी खुर्द, जयपुर',
+    locationHi: 'बासंडी खुर्द, जयपुर',
     status: 'Ready to Move',
     type: 'Integrated Township',
     typeHi: 'इंटीग्रेटेड टाउनशिप',

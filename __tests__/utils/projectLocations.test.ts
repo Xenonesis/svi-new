@@ -55,20 +55,25 @@ describe('projectLocations utility', () => {
       'Shyam Aangan Phase 1',
     ];
 
-    it.each(testCases)('resolves Basadi, Kishangarh Renwal location for %s', (name) => {
-      expect(getProjectLegalLocation(name, 'hi')).toContain('ग्राम बसादी, तहसील किशनगढ़ रेनवाल');
-      expect(getProjectLegalLocation(name, 'en')).toContain(
-        'Village Basadi, Tehsil Kishan Garh Renwal'
-      );
-      expect(getProjectCoverLocation(name, 'hi')).toBe(
-        '(ग्राम बसादी, तहसील किशनगढ़ रेनवाल, जिला जयपुर, राजस्थान)'
-      );
-      expect(getProjectCoverLocation(name, 'en')).toBe(
-        '(Village Basadi, Tehsil Kishangarh Renwal, District Jaipur, Rajasthan)'
-      );
-      expect(getProjectShortLocation(name, 'hi')).toContain('बसादी');
-      expect(getProjectShortLocation(name, 'en')).toContain('BASADI');
-    });
+    it.each(testCases)(
+      'resolves Basri Khurd / बासंडी खुर्द, Kishangarh Renwal location for %s',
+      (name) => {
+        expect(getProjectLegalLocation(name, 'hi')).toContain(
+          'ग्राम बासंडी खुर्द, तहसील किशनगढ़ रेनवाल'
+        );
+        expect(getProjectLegalLocation(name, 'en')).toContain(
+          'Village Basri Khurd, Tehsil Kishan Garh Renwal'
+        );
+        expect(getProjectCoverLocation(name, 'hi')).toBe(
+          '(ग्राम बासंडी खुर्द, तहसील किशनगढ़ रेनवाल, जिला जयपुर, राजस्थान)'
+        );
+        expect(getProjectCoverLocation(name, 'en')).toBe(
+          '(Village Basri Khurd, Tehsil Kishangarh Renwal, District Jaipur, Rajasthan)'
+        );
+        expect(getProjectShortLocation(name, 'hi')).toContain('बासंडी खुर्द');
+        expect(getProjectShortLocation(name, 'en')).toContain('BASRI KHURD');
+      }
+    );
   });
 
   describe('Dynamic Project Registration from /admin/properties', () => {

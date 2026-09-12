@@ -31,7 +31,7 @@ export function BbaPageFooter({
               Page {pageNumber} of 16
             </span>
             <span className="mt-0.5 font-mono text-[8.5px] tracking-tight text-slate-400">
-              Sviinfrasolutions Pvt. Ltd. / BBA LEGAL
+              Sviinfrasolutions Pvt. Ltd. / BBA
             </span>
           </div>
         )}

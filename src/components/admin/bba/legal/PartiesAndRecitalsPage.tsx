@@ -18,32 +18,39 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
   return (
     <>
       <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
-        <p className="mb-2 text-left text-[14.5px] font-bold underline">
+        <p className="mb-1 text-left text-[11.5px] font-bold text-slate-800 underline">
           Note: Please fill the BBA form completely in capital letters.
         </p>
-        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
-          The Allottee(s) hereby agrees and confirms to have read, understood and accepted all the
-          terms and conditions of this Agreement including the Annexures appended hereto and the
-          Allottee(s) hereby agrees and confirms that the Allottee(s) has entered into this
-          Agreement with the firm with full knowledge and consent.
-        </p>
-        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
-          The Allottee(s) acknowledges that this Agreement has been explained to the Allottee(s) in
-          the language understood by the Allottee(s) and the Allottee(s) has fully understood the
-          contents of this Agreement.
-        </p>
-        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
-          The Allottee(s) hereby agrees and confirms that the Allottee(s) has verified the title of
-          the firm in respect of the Said Land and the Said Complex and is satisfied with the same.
-        </p>
-        <p className="mb-2 text-center text-lg font-bold uppercase">
-          "{formData?.projectName?.toUpperCase() || ''}"
-        </p>
-        <p className="mb-2 text-center text-sm font-bold uppercase">
-          {getProjectCity(formData?.projectName)}
-        </p>
-        <p className="mb-2 text-center text-xl font-bold underline">BUILDER-BUYER AGREEMENT</p>
-        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
+        <div className="mb-2 space-y-1 text-justify text-[11.5px] leading-snug text-slate-700">
+          <p>
+            The Allottee(s) hereby agrees and confirms to have read, understood and accepted all the
+            terms and conditions of this Agreement including the Annexures appended hereto and the
+            Allottee(s) hereby agrees and confirms that the Allottee(s) has entered into this
+            Agreement with the firm with full knowledge and consent.
+          </p>
+          <p>
+            The Allottee(s) acknowledges that this Agreement has been explained to the Allottee(s)
+            in the language understood by the Allottee(s) and the Allottee(s) has fully understood
+            the contents of this Agreement.
+          </p>
+          <p>
+            The Allottee(s) hereby agrees and confirms that the Allottee(s) has verified the title
+            of the firm in respect of the Said Land and the Said Complex and is satisfied with the
+            same.
+          </p>
+        </div>
+        <div className="mb-2 text-center">
+          <p className="text-sm font-bold text-[#0f2942] uppercase">
+            &quot;{formData?.projectName?.toUpperCase() || ''}&quot;
+          </p>
+          <p className="text-[11px] font-bold text-slate-600 uppercase">
+            {getProjectCity(formData?.projectName)}
+          </p>
+          <p className="mt-0.5 text-sm font-bold text-[#0f2942] underline">
+            BUILDER-BUYER AGREEMENT
+          </p>
+        </div>
+        <p className="mb-1 text-justify text-[12px] leading-snug text-slate-800">
           This Builder Buyer Agreement (hereinafter referred to as the &apos;
           <strong>Agreement</strong>
           &apos;) is executed on this{' '}
@@ -56,54 +63,82 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
           </strong>
           .
         </p>
-        <p className="my-2 text-center text-lg font-bold">BY AND BETWEEN</p>
-        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
+        <p className="my-1 text-center text-[12.5px] font-bold text-[#0f2942]">BY AND BETWEEN</p>
+        <p className="mb-1 text-justify text-[11.5px] leading-snug text-slate-700">
           <strong>M/s. SVI INFRA SOLUTIONS PVT. LTD.,</strong> a company presently having its
           Registered and Corporate Office at <strong>{companyInfo.company_address}</strong>,
-          represented by its Authorized Signatory Mr. Vineet Narnawat, Director, aged about 43
-          years, S/o Sh. Ramesh Chand Narnawat, R/o H. No. 162, VPO-Badhal, Th.-Chomu, Dist. Jaipur,
-          Rajasthan (hereinafter referred to as the &apos;
+          represented by its Authorized Signatory Mr. Iliyas Ali, Director, aged about 41 years
+          (hereinafter referred to as the &apos;
           <strong>Company / Firm / Builder / First Party</strong>&apos; which expression shall
           unless repugnant to the context, include its successors, executors, administrators,
           representatives, nominees, assigns, heirs, legal representatives, etc.) of the{' '}
           <strong>FIRST PART;</strong>
         </p>
-        <p className="my-3 text-center text-[14.5px] font-bold">AND</p>
-        <p className="mb-0 text-[14.5px]">(FOR INDIVIDUALS)</p>
-        <p className="mb-2 text-[14.5px]">1st ALLOTTEE</p>
-        <p className="mb-1 text-[14.5px]">
-          <strong>Name:</strong> {formData.salutation ? `${formData.salutation}. ` : ''}
-          {formData.clientName}
-        </p>
-        <p className="mb-1 text-[14.5px]">
-          <strong>S/o, D/o, W/o:</strong> {formData.fatherName || '______________________'}
-        </p>
-        <p className="mb-1 text-[14.5px]">
-          <strong>Age:</strong> {formData.age ? `${formData.age} years` : '_______ years'}
-        </p>
-        <p className="mb-1 text-[14.5px]">
-          <strong>PAN:</strong> {formData.panNumber || '______________________'}
-        </p>
-        <p className="mb-1 text-[14.5px]">
-          <strong>Contact:</strong> {formData.mobileNumber || '______________________'}
-          {formData.email ? ` | Email: ${formData.email}` : ' | Email: ______________________'}
-        </p>
-        <p className="mb-1 text-[14.5px] font-bold">Permanent Address:</p>
-        <p className="mb-1 text-[14.5px]">
-          {formData.addressLine1 || formData.address}
-          {formData.addressLine2 ? `, ${formData.addressLine2}` : ''}
-        </p>
-        <p className="mb-2 text-[14.5px] font-bold">
-          {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
-        </p>
-        <div className="mt-3 mb-2 rounded-lg border border-l-4 border-slate-200 border-l-[#0f2942] bg-slate-50/70 p-3">
-          <p className="mb-2 text-[13px] font-bold tracking-wider text-[#0f2942] uppercase">
+        <p className="my-1 text-center text-[11.5px] font-bold text-slate-800">AND</p>
+        <div className="rounded-md border border-slate-200 bg-slate-50/60 p-2 text-[11.5px]">
+          <div className="mb-1 flex items-center justify-between border-b border-slate-200 pb-1">
+            <span className="font-bold text-[#0f2942]">1st ALLOTTEE (FOR INDIVIDUALS)</span>
+            <span className="text-[10px] font-semibold text-slate-500">SECOND PARTY</span>
+          </div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[11px]">
+            <div>
+              <span className="font-medium text-slate-600">Name:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.salutation ? `${formData.salutation}. ` : ''}
+                {formData.clientName}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">S/o, D/o, W/o:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.fatherName || '______________________'}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">Age:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.age ? `${formData.age} years` : '_______ years'}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">PAN:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.panNumber || '______________________'}
+              </strong>
+            </div>
+            <div className="col-span-2">
+              <span className="font-medium text-slate-600">Contact:</span>{' '}
+              <strong className="text-slate-900">{formData.mobileNumber || '—'}</strong>
+              {formData.email && (
+                <span className="ml-2">
+                  | Email: <strong className="text-slate-900">{formData.email}</strong>
+                </span>
+              )}
+            </div>
+            <div className="col-span-2">
+              <span className="font-medium text-slate-600">Permanent Address:</span>{' '}
+              <strong className="text-slate-900">
+                {[
+                  formData.addressLine1 || formData.address,
+                  formData.addressLine2,
+                  formData.city,
+                  formData.state,
+                  formData.pincode,
+                ]
+                  .filter(Boolean)
+                  .join(', ')}
+              </strong>
+            </div>
+          </div>
+        </div>
+        <div className="mt-1.5 mb-1 rounded-md border border-l-4 border-slate-200 border-l-[#0f2942] bg-slate-50/70 p-2 text-[11px]">
+          <p className="mb-1 text-[11px] font-bold tracking-wider text-[#0f2942] uppercase">
             Nominee Details{' '}
-            <span className="text-[11.5px] font-normal text-slate-600">
+            <span className="text-[10px] font-normal text-slate-500">
               (in the event of demise of the Allottee)
             </span>
           </p>
-          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13.5px]">
+          <div className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-[10.5px]">
             <div>
               <span className="font-medium text-slate-600">Nominee Name:</span>{' '}
               <strong className="text-slate-900">

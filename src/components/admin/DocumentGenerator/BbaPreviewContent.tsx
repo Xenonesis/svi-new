@@ -4,7 +4,7 @@ import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
 import { getProjectCoverLocation } from '@/src/lib/utils/projectLocations';
 import { BBA_A4_PAGE_STYLE, BBA_A4_COVER_STYLE, BBA_A4_PAGE_CLASS } from '../bba/legal/bbaA4Styles';
 
-export default function BbaPreviewContent({ formData, companyInfo }: any) {
+function BbaPreviewContent({ formData, companyInfo }: any) {
   const getProjectLocation = (projectName: string) => getProjectCoverLocation(projectName, 'en');
 
   const projectLocation = getProjectLocation(formData?.projectName);
@@ -605,3 +605,5 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
     </div>
   );
 }
+
+export default React.memo(BbaPreviewContent);
