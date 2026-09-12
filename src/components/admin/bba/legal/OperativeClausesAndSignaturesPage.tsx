@@ -100,13 +100,13 @@ export function OperativeClausesAndSignaturesPage({
             The Allottee(s) shall make all payments within the stipulated time as mentioned in the
             schedule of payments as given in Annexure-A annexed to this Agreement and other charges
             and amounts, as may be demanded by the Firm from time to time, without any reminders
-            from the Firm, through A/c payee cheque(s)/ demand draft(s) in favour of &apos;SVI INFRA
-            SOLUTIONS PVT LTD&apos; or transfer online to:
+            from the Firm, through A/c payee cheque(s)/ demand draft(s) in favour of &apos;Svi Infra
+            Solutions Pvt. Ltd.&apos; or transfer online to:
           </p>
           <div className="ml-8 text-[14.5px] leading-relaxed font-bold">
             <div className="grid grid-cols-[150px_1fr] gap-1">
               <span>Account Name:</span>
-              <span>{companyInfo.bank_account_name ?? 'SVI INFRA SOLUTIONS PVT LTD'}</span>
+              <span>{companyInfo.bank_account_name ?? 'Svi Infra Solutions Pvt. Ltd.'}</span>
               <span>Account Number:</span>
               <span>{companyInfo.bank_account_no ?? '0894102000013837'}</span>
               <span>Bank:</span>

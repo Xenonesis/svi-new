@@ -31,12 +31,12 @@ export function useBbaRecords(token: string | null) {
   const [imageLoading, setImageLoading] = useState(false);
   const [projects, setProjects] = useState<string[]>(['Shyam Aangan', 'Shyam Aangan Farm House']);
   const [companyInfo, setCompanyInfo] = useState({
-    company_name: 'SVI Infra Solutions Pvt. Ltd.',
+    company_name: 'Svi Infra Solutions Pvt. Ltd.',
     company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
     company_email: 'info@sviinfrasolutions.com',
     company_phone: '+91 9216014579',
     company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
-    bank_account_name: 'Svi Infra Solutions Pvt. Ltd',
+    bank_account_name: 'Svi Infra Solutions Pvt. Ltd.',
     bank_account_no: '0894102000013837',
     bank_name: 'IDBI BANK',
     bank_ifsc: 'IBKL0000894',

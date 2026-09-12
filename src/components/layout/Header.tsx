@@ -39,11 +39,11 @@ export default function Header() {
             className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:hidden ${
               h.isMobileMenuOpen ? 'pointer-events-none opacity-0' : ''
             }`}
-            aria-label="SVI Infra Solutions Pvt. Ltd."
+            aria-label="Svi Infra Solutions Pvt. Ltd."
           >
             <Image
               src="/logo.png"
-              alt="SVI Infra Solutions Pvt. Ltd."
+              alt="Svi Infra Solutions Pvt. Ltd."
               width={282}
               height={83}
               quality={100}
@@ -67,11 +67,11 @@ export default function Header() {
                   className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
                     h.isHomeTransparent ? 'bg-white/90' : ''
                   }`}
-                  aria-label="SVI Infra Solutions Pvt. Ltd."
+                  aria-label="Svi Infra Solutions Pvt. Ltd."
                 >
                   <Image
                     src="/logo.png"
-                    alt="SVI Infra Solutions Pvt. Ltd."
+                    alt="Svi Infra Solutions Pvt. Ltd."
                     width={282}
                     height={83}
                     quality={100}

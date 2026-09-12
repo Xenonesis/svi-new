@@ -58,7 +58,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         </p>
         <p className="my-1 text-center text-[12.5px] font-bold text-[#0f2942]">पक्षों के बीच</p>
         <p className="mb-1 text-justify text-[11.5px] leading-snug text-slate-700">
-          <strong>मैसर्स SVI INFRA SOLUTIONS PVT. LTD.,</strong> एक कंपनी जिसका पंजीकृत एवं
+          <strong>मैसर्स Svi Infra Solutions Pvt. Ltd.,</strong> एक कंपनी जिसका पंजीकृत एवं
           कॉर्पोरेट कार्यालय वर्तमान में <strong>{companyInfo.company_address}</strong> पर स्थित है,
           जिसका प्रतिनिधित्व इसके अधिकृत हस्ताक्षरकर्ता श्री इलियास अली, निदेशक, आयु लगभग 41 वर्ष
           द्वारा किया जा रहा है (जिसे आगे &apos;

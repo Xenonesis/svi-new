@@ -27,11 +27,11 @@ export function MobileDrawerHeader({
         href="/"
         onClick={onClose}
         className="inline-flex items-center rounded-xl transition-all duration-300 outline-none dark:bg-white dark:px-2.5 dark:py-1 dark:shadow-sm"
-        aria-label="SVI Infra Solutions Pvt. Ltd."
+        aria-label="Svi Infra Solutions Pvt. Ltd."
       >
         <Image
           src="/logo.png"
-          alt="SVI Infra Solutions Pvt. Ltd."
+          alt="Svi Infra Solutions Pvt. Ltd."
           width={282}
           height={83}
           quality={100}

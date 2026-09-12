@@ -116,7 +116,7 @@ export default function EmployeeHeader() {
           <div className="relative inline-flex shrink-0 items-center rounded-[20px] bg-white px-3.5 py-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 group-hover:scale-[1.02] group-hover:shadow-md active:scale-[0.98] dark:ring-white/15">
             <Image
               src="/logo.png"
-              alt="SVI Infra Solutions Pvt. Ltd."
+              alt="Svi Infra Solutions Pvt. Ltd."
               width={282}
               height={83}
               quality={100}

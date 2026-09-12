@@ -12,7 +12,7 @@ export function BbaPageFooterHindi({
   className?: string;
   pageNumber?: number | string;
 }) {
-  const companyName = companyInfo?.company_name || 'SVI INFRA SOLUTIONS PVT LTD';
+  const companyName = companyInfo?.company_name || 'Svi Infra Solutions Pvt. Ltd.';
   return (
     <div
       style={{ marginTop: 'auto', ...style }}
@@ -31,7 +31,7 @@ export function BbaPageFooterHindi({
               Page {pageNumber} of 16
             </span>
             <span className="mt-0.5 font-mono text-[8.5px] tracking-tight text-slate-400">
-              Sviinfrasolutions Pvt. Ltd. / BBA
+              Svi Infra Solutions Pvt. Ltd. / BBA
             </span>
           </div>
         )}

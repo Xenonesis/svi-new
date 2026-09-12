@@ -73,13 +73,13 @@ export function OperativeClausesAndSignaturesPageHindi({
         <div className="my-6">
           <p className="mb-4 text-justify text-[15px] leading-relaxed font-bold">
             आवंटी(यां) इस करार के साथ संलग्न भुगतान अनुसूची (अनुबंध-ए) में उल्लिखित निर्धारित समय के
-            भीतर, फर्म की किसी भी याद दिलाने के बिना, सभी भुगतान &apos;SVI INFRA SOLUTIONS PVT
-            LTD&apos; के पक्ष में A/c payee चेक/डिमांड ड्राफ्ट या ऑनलाइन स्थानांतरण द्वारा करेंगे:
+            भीतर, फर्म की किसी भी याद दिलाने के बिना, सभी भुगतान &apos;Svi Infra Solutions Pvt.
+            Ltd.&apos; के पक्ष में A/c payee चेक/डिमांड ड्राफ्ट या ऑनलाइन स्थानांतरण द्वारा करेंगे:
           </p>
           <div className="ml-8 text-[15px] leading-relaxed font-bold">
             <div className="grid grid-cols-[150px_1fr] gap-1">
               <span>खाता नाम:</span>
-              <span>{companyInfo.bank_account_name ?? 'SVI INFRA SOLUTIONS PVT LTD'}</span>
+              <span>{companyInfo.bank_account_name ?? 'Svi Infra Solutions Pvt. Ltd.'}</span>
               <span>खाता संख्या:</span>
               <span>{companyInfo.bank_account_no ?? '0894102000013837'}</span>
               <span>बैंक:</span>

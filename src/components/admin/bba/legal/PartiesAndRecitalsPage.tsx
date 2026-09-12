@@ -65,7 +65,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         </p>
         <p className="my-1 text-center text-[12.5px] font-bold text-[#0f2942]">BY AND BETWEEN</p>
         <p className="mb-1 text-justify text-[11.5px] leading-snug text-slate-700">
-          <strong>M/s. SVI INFRA SOLUTIONS PVT. LTD.,</strong> a company presently having its
+          <strong>M/s. Svi Infra Solutions Pvt. Ltd.,</strong> a company presently having its
           Registered and Corporate Office at <strong>{companyInfo.company_address}</strong>,
           represented by its Authorized Signatory Mr. Iliyas Ali, Director, aged about 41 years
           (hereinafter referred to as the &apos;

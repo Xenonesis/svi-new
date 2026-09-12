@@ -50,10 +50,10 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>AND WHEREAS</strong> the Allottee has read and understood the advance payment
-          plans offered by SVI INFRA SOLUTIONS PVT LTD, and hereby agree to abide by the conditions
-          mentioned in it and the Allottee has/have chosen to pay the balance advance/subscription
-          Agreement towards the provisional registration against a probable allotment of
-          plot(s)/shops as per detailed in Annexure- A.
+          plans offered by Svi Infra Solutions Pvt. Ltd., and hereby agree to abide by the
+          conditions mentioned in it and the Allottee has/have chosen to pay the balance
+          advance/subscription Agreement towards the provisional registration against a probable
+          allotment of plot(s)/shops as per detailed in Annexure- A.
         </p>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>AND WHEREAS</strong> in pursuance to the aforesaid application for allotment the

@@ -39,7 +39,7 @@ const Footer = memo(function Footer() {
             >
               <Image
                 src="/logo.png"
-                alt="SVI Infra Solutions Pvt. Ltd."
+                alt="Svi Infra Solutions Pvt. Ltd."
                 width={282}
                 height={83}
                 quality={100}

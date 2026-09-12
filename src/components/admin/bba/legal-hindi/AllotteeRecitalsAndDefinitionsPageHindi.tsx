@@ -49,7 +49,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           के लिए फर्म से संपर्क किया है।
         </p>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          <strong>और चूँकि</strong> आवंटी ने SVI INFRA SOLUTIONS PVT LTD द्वारा प्रस्तावित अग्रिम
+          <strong>और चूँकि</strong> आवंटी ने Svi Infra Solutions Pvt. Ltd. द्वारा प्रस्तावित अग्रिम
           भुगतान योजनाओं को पढ़ और समझ लिया है, और एतद्द्वारा इसमें उल्लिखित शर्तों का पालन करने के
           लिए सहमत हैं, और आवंटी ने अनुबंध-ए में विस्तृत भूखंड(ओं)/दुकान(ों) के संभावित आवंटन के
           विरुद्ध अनंतिम पंजीकरण हेतु शेष अग्रिम/अभिदान करार का भुगतान करने का विकल्प चुना है।
