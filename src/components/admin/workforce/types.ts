@@ -1,9 +1,17 @@
 import React from 'react';
-import { Users, Clock, CheckCircle2, Banknote, BarChart3, Sliders } from 'lucide-react';
+import {
+  Users,
+  Clock,
+  CheckCircle2,
+  Banknote,
+  BarChart3,
+  Sliders,
+  MessageSquare,
+} from 'lucide-react';
 import type { Team } from '@/src/lib/supabase/types';
 
 export type WorkforceTab =
-  'directory' | 'attendance' | 'approvals' | 'payroll' | 'reports' | 'settings';
+  'directory' | 'attendance' | 'approvals' | 'payroll' | 'leads' | 'reports' | 'settings';
 
 export type WorkforceTeam = Team & { member_count: number };
 
@@ -16,6 +24,7 @@ export interface TabItem {
 
 export const TABS: TabItem[] = [
   { id: 'directory', label: 'Directory', icon: Users },
+  { id: 'leads', label: 'Chat Leads', icon: MessageSquare },
   { id: 'attendance', label: 'Attendance', icon: Clock },
   { id: 'approvals', label: 'Approvals', icon: CheckCircle2, badge: true },
   { id: 'payroll', label: 'Payroll & Salary', icon: Banknote },
@@ -25,6 +34,7 @@ export const TABS: TabItem[] = [
 
 export const VALID_TABS: WorkforceTab[] = [
   'directory',
+  'leads',
   'attendance',
   'approvals',
   'payroll',

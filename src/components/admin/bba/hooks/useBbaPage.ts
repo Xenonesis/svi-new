@@ -49,6 +49,13 @@ export interface BbaFormData {
   emiCount: string;
   emiStartDate: string;
   language: string;
+  panNumber?: string;
+  mobileNumber?: string;
+  email?: string;
+  nomineeName?: string;
+  nomineeRelation?: string;
+  nomineeAge?: string;
+  nomineeAddress?: string;
 }
 
 export interface BbaCompanyInfo {
@@ -126,6 +133,13 @@ export const INITIAL_BBA_FORM_DATA: BbaFormData = {
   emiCount: '12',
   emiStartDate: '',
   language: 'en',
+  panNumber: '',
+  mobileNumber: '',
+  email: '',
+  nomineeName: '',
+  nomineeRelation: '',
+  nomineeAge: '',
+  nomineeAddress: '',
 };
 
 export function useBbaPage(tokenOverride?: string | null) {

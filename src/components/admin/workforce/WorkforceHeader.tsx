@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Sparkles, Plus, CalendarCheck } from 'lucide-react';
+import { Sparkles, Plus, CalendarCheck, MessageSquare } from 'lucide-react';
 import type { WorkforceTab } from './types';
 
 interface WorkforceHeaderProps {
@@ -74,6 +74,11 @@ export function WorkforceHeader({
           >
             <Plus size={16} /> Setup Salary Structure
           </button>
+        )}
+        {activeTab === 'leads' && (
+          <div className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hidden items-center gap-2 rounded-xl border px-4 py-2.5 text-xs font-bold tracking-wider uppercase sm:inline-flex">
+            <MessageSquare className="h-4 w-4" /> Live Inbound Pipeline
+          </div>
         )}
       </div>
     </div>

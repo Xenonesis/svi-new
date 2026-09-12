@@ -45,36 +45,42 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
           flexDirection: 'column',
         }}
       >
-        <div className="mb-4 flex items-start justify-between border-b border-gray-200 pb-3">
+        {/* Executive Letterhead Header */}
+        <div className="mb-2 flex items-start justify-between border-b-2 border-[#0f2942] pb-2">
           <div>
-            <h1 className="mb-1 text-2xl font-bold tracking-wide text-[#1e3a8a] uppercase">
-              {companyInfo?.company_name}
-            </h1>
-            <p className="text-[13px] text-gray-700">
+            <div className="flex items-center gap-2">
+              <span className="h-4 w-1 rounded-full bg-amber-500"></span>
+              <h1 className="text-lg font-black tracking-wide text-[#0f2942] uppercase">
+                {companyInfo?.company_name}
+              </h1>
+            </div>
+            <p className="mt-0.5 text-[11px] leading-tight text-slate-600">
               Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email} | Web:{' '}
               {companyInfo?.company_website}
             </p>
-            <p className="text-[13px] text-gray-700">Office: {companyInfo?.company_address}</p>
+            <p className="text-[11px] leading-tight text-slate-600">
+              Office: {companyInfo?.company_address}
+            </p>
           </div>
-          <div className="w-40">
+          <div className="w-28">
             <img
               src="/logo.png"
               alt={companyInfo?.company_name}
-              className="h-auto w-full object-contain"
+              className="h-auto max-h-12 w-full object-contain"
               onError={(e) => (e.currentTarget.style.display = 'none')}
             />
           </div>
         </div>
 
         {/* Date & To */}
-        <div className="mb-3.5 text-[15px] leading-normal">
-          <p className="mb-1.5 font-bold">
+        <div className="mb-2 text-[12.5px] leading-tight">
+          <p className="mb-1 font-bold">
             दिनांक:{' '}
             {formData?.bookingDate ||
               new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
           </p>
           <p className="font-bold">सेवा में,</p>
-          <p className="text-[16px] font-bold text-[#1e3a8a]">
+          <p className="text-[13.5px] font-bold text-[#1e3a8a]">
             {formData?.clientName || '[ग्राहक का नाम]'}
           </p>
           {formData?.addressLine1 && (
@@ -91,107 +97,142 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
           {!formData?.addressLine1 && <p className="font-medium text-gray-800">[पता]</p>}
         </div>
         {/* Body */}
-        <div className="mb-3.5 text-[14.5px] leading-[1.7]">
-          <p className="mb-2">
+        <div className="mb-2 text-[12px] leading-normal">
+          <p className="mb-1">
             आदरणीय {formData?.salutation || 'श्री/श्रीमती/सुश्री'}{' '}
             <span className="font-bold text-black">
               {formData?.clientName || '[ग्राहक का नाम]'}
             </span>
             ,
           </p>
-          <p className="mb-2.5 text-justify">
+          <p className="mb-1.5 text-justify">
             {formData?.projectName} {projectLocation} में आपके नए निवेश एवं भूखंड/यूनिट आवंटन पर{' '}
             <strong>{companyInfo?.company_name}</strong> परिवार की ओर से हार्दिक बधाई। हम आपके इस
             निवेश का हिस्सा बनकर अत्यंत गौरवान्वित एवं सौभाग्यशाली अनुभव करते हैं तथा हमारे साथ
             जुड़ने के लिए आपका सहृदय धन्यवाद करते हैं।
           </p>
-          <p className="mb-2 text-justify">
+          <p className="mb-1.5 text-justify">
             यह पत्र आपकी पसंदीदा आवासीय/व्यावसायिक इकाई के अनंतिम आवंटन की पुष्टि करता है। हमारी
             प्रतिबद्धता आपको पारदर्शी, सुरक्षित एवं गुणवत्तापूर्ण विकास प्रदान करने की है। आपके
             आवंटित भूखंड एवं लागत योजना का विवरण निम्नानुसार है:
           </p>
 
-          {/* Allotment Summary Card (2x3 Grid) */}
-          <div className="mt-4 mb-4 rounded-lg border border-gray-300 bg-gray-50/90 p-3.5 shadow-xs">
-            <p className="mb-2 text-[14px] font-bold text-[#1e3a8a]">
-              आवंटन विवरण संक्षेप (Allotment Summary):
-            </p>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-[13.5px]">
+          {/* Allotment Summary Card (2x3 Grid with Executive Accent) */}
+          <div className="mt-2 mb-2 rounded-lg border border-l-4 border-slate-200 border-l-[#0f2942] bg-slate-50/80 p-2.5 shadow-xs">
+            <div className="mb-1.5 flex items-center justify-between border-b border-slate-200 pb-1">
+              <span className="text-[11.5px] font-bold tracking-wider text-[#0f2942] uppercase">
+                आवंटन विवरण संक्षेप (Allotment Summary)
+              </span>
+              <span className="rounded bg-amber-100 px-2 py-0.5 text-[10px] font-bold text-amber-900">
+                पुष्टीकृत आवंटन / CONFIRMED
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[11.5px] leading-tight">
               <div>
-                <span className="text-gray-600">टिकट / संदर्भ सं.:</span>{' '}
-                <strong className="text-black">{formData?.ticketId || '—'}</strong>
+                <span className="text-slate-500">टिकट / संदर्भ सं.:</span>{' '}
+                <strong className="font-semibold text-slate-900">
+                  {formData?.ticketId || '—'}
+                </strong>
               </div>
               <div>
-                <span className="text-gray-600">परियोजना का नाम:</span>{' '}
-                <strong className="text-black">{formData?.projectName || '—'}</strong>
+                <span className="text-slate-500">परियोजना का नाम:</span>{' '}
+                <strong className="font-semibold text-slate-900">
+                  {formData?.projectName || '—'}
+                </strong>
               </div>
               <div>
-                <span className="text-gray-600">आवंटित यूनिट सं.:</span>{' '}
-                <strong className="whitespace-nowrap text-black">
+                <span className="text-slate-500">आवंटित यूनिट सं.:</span>{' '}
+                <strong className="font-bold whitespace-nowrap text-[#0f2942]">
                   {formData?.unitNumber || '—'}
                 </strong>
               </div>
               <div>
-                <span className="text-gray-600">भूखंड क्षेत्रफल:</span>{' '}
-                <strong className="whitespace-nowrap text-black">
+                <span className="text-slate-500">भूखंड क्षेत्रफल:</span>{' '}
+                <strong className="font-bold whitespace-nowrap text-slate-900">
                   {formData?.area ? `${formData.area} वर्ग गज` : '—'}
                 </strong>
               </div>
               <div>
-                <span className="text-gray-600">आवंटन / बुकिंग तिथि:</span>{' '}
-                <strong className="text-black">
+                <span className="text-slate-500">आवंटन / बुकिंग तिथि:</span>{' '}
+                <strong className="font-semibold text-slate-900">
                   {formData?.bookingDate ||
                     new Date().toISOString().split('T')[0].split('-').reverse().join('-')}
                 </strong>
               </div>
               <div>
-                <span className="text-gray-600">चयनित भुगतान योजना:</span>{' '}
-                <strong className="text-black">
+                <span className="text-slate-500">चयनित भुगतान योजना:</span>{' '}
+                <strong className="font-semibold text-slate-900">
                   {formData?.paymentPlan ? `${formData.paymentPlan} माह किश्त योजना` : '—'}
                 </strong>
               </div>
             </div>
           </div>
-          <p className="mt-3 mb-1.5 text-[14px] font-bold">लागत एवं भुगतान योजना विवरण:</p>
+          <p className="mt-2 mb-1 text-[11.5px] font-bold tracking-wide text-slate-700 uppercase">
+            लागत एवं भुगतान योजना विवरण:
+          </p>
         </div>
 
-        {/* Details Table */}
-        <div className="mb-4 overflow-hidden rounded-lg border border-gray-400 text-[13.5px]">
+        {/* Details Table with Executive Navy Header */}
+        <div className="mb-2 overflow-hidden rounded-lg border border-slate-300 text-[11px] shadow-xs">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="bg-[#00b0f0] text-black">
-                <th className="border border-gray-400 p-2 font-bold">ग्राहक का नाम</th>
-                <th className="border border-gray-400 p-2 font-bold">आवंटित यूनिट</th>
-                <th className="border border-gray-400 p-2 font-bold">क्षेत्रफल (वर्ग गज)</th>
-                <th className="border border-gray-400 p-2 font-bold">भुगतान योजना</th>
-                <th className="border border-gray-400 p-2 font-bold">बीएसपी (प्रति वर्ग गज)</th>
-                <th className="border border-gray-400 p-2 font-bold">पीएलसी (%)</th>
-                <th className="border border-gray-400 p-2 font-bold">कुल लागत</th>
+              <tr className="bg-[#0f2942] text-white">
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-[10px] font-bold tracking-wider uppercase">
+                  ग्राहक का नाम
+                </th>
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-[10px] font-bold tracking-wider uppercase">
+                  आवंटित यूनिट
+                </th>
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-[10px] font-bold tracking-wider uppercase">
+                  क्षेत्रफल (वर्ग गज)
+                </th>
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-[10px] font-bold tracking-wider uppercase">
+                  भुगतान योजना
+                </th>
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-right text-[10px] font-bold tracking-wider uppercase">
+                  बीएसपी (प्रति वर्ग गज)
+                </th>
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-right text-[10px] font-bold tracking-wider uppercase">
+                  पीएलसी (%)
+                </th>
+                <th className="border border-[#1b3d60] px-2 py-1.5 text-right text-[10px] font-bold tracking-wider uppercase">
+                  कुल लागत
+                </th>
               </tr>
             </thead>
-            <tbody>
-              <tr>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.clientName}</td>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.unitNumber}</td>
-                <td className="border border-gray-400 p-2 font-bold">{formData?.area}</td>
-                <td className="border border-gray-400 p-2 font-bold">
+            <tbody className="divide-y divide-slate-200">
+              <tr className="bg-white hover:bg-slate-50">
+                <td className="border border-slate-200 px-2 py-1.5 font-semibold text-slate-900">
+                  {formData?.clientName}
+                </td>
+                <td className="border border-slate-200 px-2 py-1.5 font-bold text-[#0f2942]">
+                  {formData?.unitNumber}
+                </td>
+                <td className="border border-slate-200 px-2 py-1.5 font-semibold text-slate-800">
+                  {formData?.area}
+                </td>
+                <td className="border border-slate-200 px-2 py-1.5 font-semibold text-slate-800">
                   {formData?.paymentPlan} माह
                 </td>
-                <td className="border border-gray-400 p-2 font-bold">
+                <td className="border border-slate-200 px-2 py-1.5 text-right font-bold text-slate-900">
                   {`\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
                 </td>
-                <td className="border border-gray-400 p-2 font-bold">
+                <td className="border border-slate-200 px-2 py-1.5 text-right font-bold text-slate-900">
                   {formData?.plc ? `${formData.plc}%` : '0%'}
                 </td>
-                <td className="border border-gray-400 p-2 font-bold">{fmtInr(totalCost)}</td>
+                <td className="border border-slate-200 bg-slate-50/80 px-2 py-1.5 text-right text-[11.5px] font-bold text-[#0f2942]">
+                  {fmtInr(totalCost)}
+                </td>
               </tr>
             </tbody>
           </table>
         </div>
         {/* Important Instructions Box (4 Points) */}
-        <div className="mb-6 rounded-lg border border-blue-200 bg-blue-50/60 p-3.5 text-[13px] leading-relaxed">
-          <p className="mb-1.5 font-bold text-[#1e3a8a]">महत्वपूर्ण निर्देश एवं आवंटन शर्तें:</p>
-          <ul className="list-disc space-y-1 pl-5 text-gray-800">
+        <div className="mb-2 rounded-lg border border-l-4 border-slate-200 border-l-amber-500 bg-slate-50/90 p-2.5 text-[10.5px] leading-tight">
+          <p className="mb-1 text-[11px] font-bold tracking-wider text-[#0f2942] uppercase">
+            महत्वपूर्ण निर्देश एवं आवंटन शर्तें:
+          </p>
+          <ul className="list-disc space-y-0.5 pl-4 text-slate-700">
             <li>
               यह आवंटन बिल्डर-बायर्स एग्रीमेंट (BBA) में उल्लेखित सभी नियमों, उप-नियमों एवं शर्तों
               के पूर्णतः अधीन है।
@@ -211,22 +252,21 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
           </ul>
         </div>
 
-        {/* Dual Signatures Section */}
-        <div className="mt-6 mb-3 flex items-end justify-between border-t border-gray-300 pt-3 pb-1 text-[12px] select-none">
+        <div className="mt-2 mb-2 flex items-end justify-between border-t border-gray-300 pt-2 pb-1 text-[11px] select-none">
           <div className="flex flex-col">
             <span className="font-semibold text-gray-700">
               आवंटी के हस्ताक्षर (Allottee Signature):
             </span>
-            <span className="mt-8 w-44 border-b border-dashed border-gray-500"></span>
-            <span className="mt-1 text-[11px] text-gray-500">
+            <span className="mt-5 w-36 border-b border-dashed border-gray-500"></span>
+            <span className="mt-0.5 text-[10px] text-gray-500">
               {formData?.clientName || 'Allottee'}
             </span>
           </div>
           <div className="flex flex-col items-end">
-            <span className="text-right font-semibold text-[#1e3a8a]">
+            <span className="text-right text-[11px] font-bold tracking-wide text-[#0f2942]">
               {companyInfo?.company_name || 'SVI INFRA SOLUTIONS PVT LTD'}
             </span>
-            <div className="my-1.5 h-9 w-28">
+            <div className="my-1 h-7 w-24">
               <img
                 src="/signature.png"
                 alt="Director Signature"
@@ -234,18 +274,25 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
                 onError={(e) => (e.currentTarget.style.display = 'none')}
               />
             </div>
-            <span className="text-[11.5px] font-bold text-gray-700">
+            <span className="text-[9.5px] font-bold tracking-wider text-slate-600 uppercase">
               अधिकृत हस्ताक्षरकर्ता / Authorized Signatory
             </span>
           </div>
         </div>
 
         {/* Customer Helpdesk Grounding Banner (Bottom of Page) */}
-        <div className="rounded-lg border border-gray-300 bg-gray-50 px-3.5 py-2 text-center text-[12px] text-gray-700">
-          <span className="font-semibold text-[#1e3a8a]">ग्राहक सहायता डेस्क: </span>
+        <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-center text-[11px] text-slate-600">
+          <span className="font-semibold text-[#0f2942]">ग्राहक सहायता डेस्क: </span>
           <span>
             {companyInfo?.company_email} | फोन: {companyInfo?.company_phone}
           </span>
+        </div>
+        <div className="mt-1.5 flex items-center justify-between text-[10.5px] text-slate-400 select-none">
+          <span className="font-mono text-[9px] tracking-wider">DOC: SVI-BBA-ALLOTMENT-HI</span>
+          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-semibold text-slate-600">
+            Page 1 of 16
+          </span>
+          <span className="font-mono text-[9px] tracking-wider">OFFICIAL COPY</span>
         </div>
       </div>
       {/* Legal Pages (2-17) */}
@@ -265,13 +312,25 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
         <div className="mb-6 overflow-hidden border border-gray-400">
           <table className="w-full border-collapse text-left">
             <thead>
-              <tr className="bg-[#00b0f0] text-black">
-                <th className="border border-gray-400 p-2 font-bold">क्र.सं.</th>
-                <th className="border border-gray-400 p-2 font-bold">तारीख</th>
-                <th className="border border-gray-400 p-2 font-bold">विवरण</th>
-                <th className="border border-gray-400 p-2 font-bold">%</th>
-                <th className="border border-gray-400 p-2 font-bold">राशि</th>
-                <th className="border border-gray-400 p-2 font-bold">भुगतान संदर्भ सं.</th>
+              <tr className="bg-[#0f2942] text-white">
+                <th className="border border-[#1b3d60] p-2 text-[10px] font-bold tracking-wider uppercase">
+                  क्र.सं.
+                </th>
+                <th className="border border-[#1b3d60] p-2 text-[10px] font-bold tracking-wider uppercase">
+                  तारीख
+                </th>
+                <th className="border border-[#1b3d60] p-2 text-[10px] font-bold tracking-wider uppercase">
+                  विवरण
+                </th>
+                <th className="border border-[#1b3d60] p-2 text-right text-[10px] font-bold tracking-wider uppercase">
+                  %
+                </th>
+                <th className="border border-[#1b3d60] p-2 text-right text-[10px] font-bold tracking-wider uppercase">
+                  राशि
+                </th>
+                <th className="border border-[#1b3d60] p-2 text-[10px] font-bold tracking-wider uppercase">
+                  भुगतान संदर्भ सं.
+                </th>
               </tr>
             </thead>
             <tbody>
@@ -386,10 +445,10 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
                   }
 
                   const emiLabel = zeroCost
-                    ? `${i + 1} ईएमआई (0% ब्याज)`
+                    ? `${i + 1} EMI (0% ब्याज)`
                     : edcInEmi
-                      ? `${i + 1} ईएमआई (ईडीसी सहित)`
-                      : `${i + 1} ईएमआई`;
+                      ? `${i + 1} EMI (ईडीसी सहित)`
+                      : `${i + 1} EMI`;
 
                   rows.push(
                     <tr key={`emi-${i}`}>
@@ -412,7 +471,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
             </tbody>
           </table>
         </div>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={15} />
       </div>
 
       {/* Payment Terms & Bank Details Page */}
@@ -427,7 +486,7 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
       >
         <h3 className="mb-4 text-lg font-bold text-gray-800">भुगतान नियम एवं विवरण</h3>
         {/* Terms Box */}
-        <div className="mb-8 rounded-lg border-l-4 border-[#00b0f0] bg-[#f0f8ff] p-4 text-gray-800 italic">
+        <div className="mb-6 rounded-lg border-l-4 border-amber-500 bg-slate-50 p-4 text-[12px] leading-relaxed text-slate-700">
           {(() => {
             const bookingPercent = parseFloat(formData?.bookingPaymentPercent) || 10;
             const edcInEmi = String(formData?.edcInEmi) === 'true';
@@ -524,6 +583,13 @@ export default function BbaPreviewContentHindi({ formData, companyInfo }: any) {
               <p>निदेशक</p>
             </div>
           </div>
+        </div>
+        <div className="mt-auto flex items-center justify-between border-t border-slate-300 pt-3 text-[10.5px] text-slate-400 select-none">
+          <span className="font-mono text-[9px] tracking-wider">DOC: SVI-BBA-ANNEXURE-A-HI</span>
+          <span className="rounded-full bg-slate-100 px-2.5 py-0.5 font-semibold text-slate-600">
+            Page 16 of 16
+          </span>
+          <span className="font-mono text-[9px] tracking-wider">PAYMENT SCHEDULE</span>
         </div>
       </div>
     </div>

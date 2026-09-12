@@ -6,6 +6,8 @@ import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
 import type { SalaryStructure } from '@/src/lib/payroll/types';
 import type { WorkforceTeam } from './types';
 
+const CACHE_TTL_MS = 60_000; // 60 seconds client cache for smooth tab navigation
+
 export function useWorkforceData(token: string) {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loadingEmployees, setLoadingEmployees] = useState(true);
@@ -19,7 +21,36 @@ export function useWorkforceData(token: string) {
   const tokenRef = useRef(token);
   tokenRef.current = token;
 
-  const fetchEmployees = useCallback(async () => {
+  const cacheRef = useRef<{
+    employees: Employee[];
+    lastEmployeesFetch: number;
+    teams: WorkforceTeam[];
+    lastTeamsFetch: number;
+    salaryStructures: SalaryStructure[];
+    lastStructuresFetch: number;
+    lastMetricsFetch: number;
+  }>({
+    employees: [],
+    lastEmployeesFetch: 0,
+    teams: [],
+    lastTeamsFetch: 0,
+    salaryStructures: [],
+    lastStructuresFetch: 0,
+    lastMetricsFetch: 0,
+  });
+
+  const fetchEmployees = useCallback(async (force = false) => {
+    const now = Date.now();
+    if (
+      !force &&
+      cacheRef.current.employees.length > 0 &&
+      now - cacheRef.current.lastEmployeesFetch < CACHE_TTL_MS
+    ) {
+      setEmployees(cacheRef.current.employees);
+      setLoadingEmployees(false);
+      return;
+    }
+
     try {
       setLoadingEmployees(true);
       const activeToken = tokenRef.current;
@@ -29,7 +60,10 @@ export function useWorkforceData(token: string) {
       const res = await fetch('/api/admin/employees', { headers });
       const data = await res.json();
       if (res.ok) {
-        setEmployees(data.employees || []);
+        const empList = data.employees || [];
+        cacheRef.current.employees = empList;
+        cacheRef.current.lastEmployeesFetch = Date.now();
+        setEmployees(empList);
       } else {
         toast.error('Failed to load employees', {
           description: extractApiErrorMessage(data, 'Please refresh the page.'),
@@ -42,7 +76,17 @@ export function useWorkforceData(token: string) {
     }
   }, []);
 
-  const fetchTeams = useCallback(async () => {
+  const fetchTeams = useCallback(async (force = false) => {
+    const now = Date.now();
+    if (
+      !force &&
+      cacheRef.current.teams.length > 0 &&
+      now - cacheRef.current.lastTeamsFetch < CACHE_TTL_MS
+    ) {
+      setTeams(cacheRef.current.teams);
+      return;
+    }
+
     try {
       const activeToken = tokenRef.current;
       const headers: Record<string, string> = {};
@@ -51,14 +95,27 @@ export function useWorkforceData(token: string) {
       const res = await fetch('/api/admin/teams', { headers });
       const data = await res.json();
       if (res.ok) {
-        setTeams(data.teams || []);
+        const teamList = data.teams || [];
+        cacheRef.current.teams = teamList;
+        cacheRef.current.lastTeamsFetch = Date.now();
+        setTeams(teamList);
       }
     } catch {
       // ignore
     }
   }, []);
 
-  const fetchSalaryStructures = useCallback(async () => {
+  const fetchSalaryStructures = useCallback(async (force = false) => {
+    const now = Date.now();
+    if (
+      !force &&
+      cacheRef.current.salaryStructures.length > 0 &&
+      now - cacheRef.current.lastStructuresFetch < CACHE_TTL_MS
+    ) {
+      setSalaryStructures(cacheRef.current.salaryStructures);
+      return;
+    }
+
     try {
       const activeToken = tokenRef.current;
       const headers: Record<string, string> = {};
@@ -67,14 +124,22 @@ export function useWorkforceData(token: string) {
       const res = await fetch('/api/admin/payroll/structures', { headers });
       const data = await res.json();
       if (res.ok) {
-        setSalaryStructures(data.structures || []);
+        const structList = data.structures || [];
+        cacheRef.current.salaryStructures = structList;
+        cacheRef.current.lastStructuresFetch = Date.now();
+        setSalaryStructures(structList);
       }
     } catch {
       // ignore
     }
   }, []);
 
-  const fetchMetrics = useCallback(async () => {
+  const fetchMetrics = useCallback(async (force = false) => {
+    const now = Date.now();
+    if (!force && now - cacheRef.current.lastMetricsFetch < CACHE_TTL_MS) {
+      return;
+    }
+
     try {
       const activeToken = tokenRef.current;
       if (!activeToken) return;
@@ -106,6 +171,7 @@ export function useWorkforceData(token: string) {
       if (liveRes?.statuses) {
         setLiveStatuses(liveRes.statuses);
       }
+      cacheRef.current.lastMetricsFetch = Date.now();
     } catch {
       // ignore
     }
@@ -113,7 +179,12 @@ export function useWorkforceData(token: string) {
 
   const refetchAll = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([fetchEmployees(), fetchTeams(), fetchSalaryStructures(), fetchMetrics()]);
+    await Promise.all([
+      fetchEmployees(true),
+      fetchTeams(true),
+      fetchSalaryStructures(true),
+      fetchMetrics(true),
+    ]);
     setRefreshing(false);
   }, [fetchEmployees, fetchTeams, fetchSalaryStructures, fetchMetrics]);
 
@@ -144,10 +215,10 @@ export function useWorkforceData(token: string) {
     liveStatuses,
     liveStatusMap,
     refreshing,
+    fetchEmployees: () => fetchEmployees(true),
+    fetchTeams: () => fetchTeams(true),
+    fetchSalaryStructures: () => fetchSalaryStructures(true),
+    fetchMetrics: () => fetchMetrics(true),
     refetchAll,
-    fetchEmployees,
-    fetchTeams,
-    fetchSalaryStructures,
-    fetchMetrics,
   };
 }

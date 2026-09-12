@@ -1,6 +1,6 @@
 # Database Schema (Supabase / PostgreSQL)
 
-The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 65 migrations.
+The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 66 migrations, including non-destructive composite performance indexes on high-traffic tables (`chat_leads`, `attendance_records`, `documents`, `notifications`, and `profiles`).
 
 ## Core Tables
 
@@ -84,3 +84,44 @@ The WhatsApp channel uses server-only, RLS-protected tables. Browser roles have 
 | `employee_salary_structures` | Base salary packages, Basic/HRA/Allowances, statutory deductions (PT, TDS, PF, ESI), and bank details |
 | `monthly_payrolls`           | Monthly payroll run batches, total expenses, approval status, and master payslip release toggle       |
 | `payroll_items`              | Per-employee itemized monthly payslip, attendance LOP deductions, incentives, and download permission |
+
+## Performance & Search Indexes
+
+To maintain sub-50ms query execution across growing datasets without destructive schema changes:
+
+| Index Name                                      | Table & Columns                                         | Purpose                                                  |
+| ----------------------------------------------- | ------------------------------------------------------- | -------------------------------------------------------- |
+| `idx_chat_leads_assigned_created`               | `chat_leads(assigned_to, created_at DESC)`              | Fast employee lead pipeline queries                      |
+| `idx_chat_leads_source_created`                 | `chat_leads(source, created_at DESC)`                   | Fast lead source filtering                               |
+| `idx_chat_leads_temp_created`                   | `chat_leads(temperature, created_at DESC)`              | Hot / Warm / Cold triage speedup                         |
+| `idx_chat_leads_name_trgm`                      | `chat_leads USING gin (name gin_trgm_ops)`              | Instant substring search on lead name                    |
+| `idx_chat_leads_phone_trgm`                     | `chat_leads USING gin (phone gin_trgm_ops)`             | Instant substring search on lead phone                   |
+| `idx_chat_leads_email_trgm`                     | `chat_leads USING gin (email gin_trgm_ops)`             | Instant substring search on lead email                   |
+| `idx_profiles_name_trgm`                        | `profiles USING gin (full_name gin_trgm_ops)`           | Instant employee directory substring search              |
+| `idx_profiles_phone_trgm`                       | `profiles USING gin (phone gin_trgm_ops)`               | Instant employee phone search                            |
+| `idx_notifications_unread_created`              | `notifications(created_at DESC) WHERE is_read = false`  | Instant unread admin notification count (<5% table size) |
+| `idx_attendance_user_date`                      | `attendance_records(user_id, date DESC)`                | Instant user attendance history                          |
+| `idx_lead_activities_lead_created`              | `lead_activities(lead_id, created_at DESC)`             | Instant lead activity timeline & batch lookups           |
+| `idx_registrations_status_created`              | `registrations(status, created_at DESC)`                | Fast customer status filtering                           |
+| `idx_registrations_project_created`             | `registrations(project, created_at DESC)`               | Fast customer project breakdown                          |
+| `idx_registrations_name_trgm`                   | `registrations USING gin (name gin_trgm_ops)`           | Instant customer name search                             |
+| `idx_registrations_phone_trgm`                  | `registrations USING gin (phone gin_trgm_ops)`          | Instant customer phone search                            |
+| `idx_registrations_subid_trgm`                  | `registrations USING gin (submission_id gin_trgm_ops)`  | Instant customer submission ID lookup                    |
+| `idx_whatsapp_messages_conv_created`            | `whatsapp_messages(conversation_id, created_at ASC)`    | Instant WhatsApp chat message history loading            |
+| `idx_whatsapp_followups_conv_seq`               | `whatsapp_follow_ups(conversation_id, sequence_number)` | Fast WhatsApp scheduled follow-up lookup                 |
+| `idx_chat_leads_assigned_status`                | `chat_leads(assigned_to, lifecycle_status)`             | Index-Only Scan for employee conversion stats            |
+| `idx_activity_logs_created`                     | `activity_logs(created_at DESC)`                        | Fast audit trail ordering                                |
+| `idx_activity_logs_action`                      | `activity_logs(action_type, created_at DESC)`           | Filtered audit actions                                   |
+| `idx_activity_logs_desc_trgm`                   | `activity_logs USING gin (description gin_trgm_ops)`    | Instant audit log text search                            |
+| `idx_employee_tasks_user_status`                | `employee_tasks(user_id, status)`                       | Fast employee task status filtering                      |
+| `idx_employee_tasks_user_created`               | `employee_tasks(user_id, created_at DESC)`              | Chronological employee task list                         |
+| `idx_employee_work_logs_user_date`              | `employee_work_logs(user_id, date DESC)`                | Instant user daily work summary lookup                   |
+| `idx_site_visits_assigned_status`               | `whatsapp_site_visit_requests(assigned_to, status)`     | Fast assigned active site visits lookup                  |
+| `idx_profiles_created`                          | `profiles(created_at DESC)`                             | Instant user-growth & registration timeline queries      |
+| `idx_employee_leaves_status_created`            | `employee_leaves(status, created_at DESC)`              | Instant pending leaves lookup for Approvals tab          |
+| `idx_employee_leaves_user_status`               | `employee_leaves(user_id, status)`                      | Fast user approved leave balances                        |
+| `idx_attendance_regularizations_status_created` | `attendance_regularizations(status, created_at DESC)`   | Instant pending regularization requests                  |
+| `idx_attendance_regularizations_user_status`    | `attendance_regularizations(user_id, status)`           | Fast user regularizations check                          |
+| `idx_profiles_email_trgm`                       | `profiles USING gin (email gin_trgm_ops)`               | Instant user directory substring email search            |
+| `idx_registrations_created_status`              | `registrations(created_at DESC, status)`                | Fast 30-day registration analytics donut/trend charts    |
+| `idx_lottery_participants_lottery_created`      | `lottery_participants(lottery_id, created_at DESC)`     | Fast lottery participant drawing & history               |

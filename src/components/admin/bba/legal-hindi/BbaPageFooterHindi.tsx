@@ -5,32 +5,52 @@ export function BbaPageFooterHindi({
   companyInfo,
   style,
   className,
+  pageNumber,
 }: {
   companyInfo?: BBALegalCompanyInfo;
   style?: React.CSSProperties;
   className?: string;
+  pageNumber?: number | string;
 }) {
   const companyName = companyInfo?.company_name || 'SVI INFRA SOLUTIONS PVT LTD';
   return (
     <div
       style={{ marginTop: 'auto', ...style }}
-      className={`mt-4 flex items-end justify-between border-t border-gray-300 pt-3 pb-4 text-[12px] select-none ${className || ''}`}
+      className={`mt-4 border-t border-slate-300 pt-2.5 pb-2 text-[11px] select-none ${className || ''}`}
     >
-      <div className="flex flex-col">
-        <span className="font-semibold text-gray-500">Allottee Signature(s):</span>
-        <span className="mt-4 w-24 border-b border-dashed border-gray-400"></span>
-      </div>
-      <div className="flex flex-col items-end">
-        <span className="text-right font-semibold text-[#1e3a8a]">{companyName}</span>
-        <div className="mt-1 h-8 w-24">
-          <img
-            src="/signature.png"
-            alt="Director Signature"
-            className="h-full w-full object-contain"
-            onError={(e) => (e.currentTarget.style.display = 'none')}
-          />
+      <div className="flex items-end justify-between">
+        <div className="flex flex-col">
+          <span className="text-[10.5px] font-semibold tracking-wider text-slate-500">
+            आवंटी के हस्ताक्षर (Allottee Signature)
+          </span>
+          <span className="mt-3 w-32 border-b border-dashed border-slate-400"></span>
         </div>
-        <span className="font-bold text-gray-600">निदेशक</span>
+        {pageNumber !== undefined && (
+          <div className="flex flex-col items-center">
+            <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10.5px] font-semibold text-slate-600">
+              Page {pageNumber} of 16
+            </span>
+            <span className="mt-0.5 font-mono text-[8.5px] tracking-tight text-slate-400">
+              Sviinfrasolutions Pvt. Ltd. / BBA LEGAL
+            </span>
+          </div>
+        )}
+        <div className="flex flex-col items-end">
+          <span className="text-right text-[11px] font-bold tracking-wide text-[#0f2942]">
+            {companyName}
+          </span>
+          <div className="my-0.5 h-7 w-24">
+            <img
+              src="/signature.png"
+              alt="Director Signature"
+              className="ml-auto h-full w-full object-contain"
+              onError={(e) => (e.currentTarget.style.display = 'none')}
+            />
+          </div>
+          <span className="text-[9.5px] font-bold text-slate-600">
+            अधिकृत हस्ताक्षरकर्ता / निदेशक
+          </span>
+        </div>
       </div>
     </div>
   );

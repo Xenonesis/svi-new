@@ -15,14 +15,66 @@ import { type WorkforceTab, VALID_TABS, GRID_STYLE } from '@/src/components/admi
 import { useWorkforceData } from '@/src/components/admin/workforce/useWorkforceData';
 import { WorkforceHeader } from '@/src/components/admin/workforce/WorkforceHeader';
 import { WorkforceKpiGrid } from '@/src/components/admin/workforce/WorkforceKpiGrid';
+import dynamic from 'next/dynamic';
 import { WorkforceTabNav } from '@/src/components/admin/workforce/WorkforceTabNav';
-import { WorkforceDirectoryTab } from '@/src/components/admin/workforce/tabs/WorkforceDirectoryTab';
-import { WorkforceAttendanceTab } from '@/src/components/admin/workforce/tabs/WorkforceAttendanceTab';
-import { WorkforceApprovalsTab } from '@/src/components/admin/workforce/tabs/WorkforceApprovalsTab';
-import { WorkforcePayrollTab } from '@/src/components/admin/workforce/tabs/WorkforcePayrollTab';
-import { WorkforceReportsTab } from '@/src/components/admin/workforce/tabs/WorkforceReportsTab';
-import { WorkforceSettingsTab } from '@/src/components/admin/workforce/tabs/WorkforceSettingsTab';
+
+const TabLoadingFallback = () => (
+  <div className="flex min-h-[300px] items-center justify-center">
+    <RefreshCw className="text-brand-gold h-6 w-6 animate-spin" />
+  </div>
+);
+
+const WorkforceDirectoryTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforceDirectoryTab').then(
+      (m) => m.WorkforceDirectoryTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
+const WorkforceAttendanceTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforceAttendanceTab').then(
+      (m) => m.WorkforceAttendanceTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
+const WorkforceApprovalsTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforceApprovalsTab').then(
+      (m) => m.WorkforceApprovalsTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
+const WorkforcePayrollTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforcePayrollTab').then(
+      (m) => m.WorkforcePayrollTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
+const WorkforceLeadsTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforceLeadsTab').then(
+      (m) => m.WorkforceLeadsTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
+const WorkforceReportsTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforceReportsTab').then(
+      (m) => m.WorkforceReportsTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
+const WorkforceSettingsTab = dynamic(
+  () =>
+    import('@/src/components/admin/workforce/tabs/WorkforceSettingsTab').then(
+      (m) => m.WorkforceSettingsTab
+    ),
+  { ssr: false, loading: TabLoadingFallback }
+);
 import { WorkforceModalsContainer } from '@/src/components/admin/workforce/WorkforceModalsContainer';
+import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 
 export type { WorkforceTab };
 
@@ -58,6 +110,12 @@ function WorkforceContent() {
   const [resetTarget, setResetTarget] = useState<Employee | null>(null);
   const [performanceTarget, setPerformanceTarget] = useState<Employee | null>(null);
   const [isMarkModalOpen, setIsMarkModalOpen] = useState(false);
+
+  // UI Confirmation Modal targets
+  const [employeeToDelete, setEmployeeToDelete] = useState<Employee | null>(null);
+  const [deletingEmployee, setDeletingEmployee] = useState(false);
+  const [toggleActiveTarget, setToggleActiveTarget] = useState<Employee | null>(null);
+  const [togglingActive, setTogglingActive] = useState(false);
 
   // Payroll sub-tab & drawer state
   const [payrollSubTab, setPayrollSubTab] = useState<'monthly' | 'structures'>('monthly');
@@ -121,15 +179,16 @@ function WorkforceContent() {
     initAuth();
   }, [authStoreToken]);
 
-  // Delete Employee Handler
-  const handleDeleteEmployee = async (id: string) => {
-    if (!confirm('Are you sure you want to remove this employee?')) return;
+  // Delete Employee Handler (triggered from UI modal)
+  const handleConfirmDeleteEmployee = async () => {
+    if (!employeeToDelete) return;
     try {
+      setDeletingEmployee(true);
       const activeToken = tokenRef.current;
       const headers: Record<string, string> = {};
       if (activeToken) headers['Authorization'] = `Bearer ${activeToken}`;
 
-      const res = await fetch(`/api/admin/employees/${id}`, {
+      const res = await fetch(`/api/admin/employees/${employeeToDelete.id}`, {
         method: 'DELETE',
         headers,
       });
@@ -137,46 +196,55 @@ function WorkforceContent() {
       if (!res.ok) {
         throw new Error(extractApiErrorMessage(data, 'Failed to delete employee'));
       }
-      setEmployees((prev) => prev.filter((e) => e.id !== id));
+      setEmployees((prev) => prev.filter((e) => e.id !== employeeToDelete.id));
       showToast('success', 'Employee removed successfully');
+      setEmployeeToDelete(null);
     } catch (err: unknown) {
       showToast('error', extractApiErrorMessage(err, 'Failed to delete employee'));
+    } finally {
+      setDeletingEmployee(false);
     }
   };
 
-  // Toggle Employee Enable / Disable (Active Status)
-  const handleToggleEmployeeActive = async (employee: Employee) => {
-    const currentActive = employee.is_active ?? true;
+  // Toggle Employee Enable / Disable (triggered from UI modal)
+  const handleConfirmToggleActive = async () => {
+    if (!toggleActiveTarget) return;
+    const currentActive = toggleActiveTarget.is_active ?? true;
     const nextStatus = !currentActive;
-    const actionLabel = nextStatus ? 'enable' : 'disable';
-
-    if (!confirm(`Are you sure you want to ${actionLabel} ${employee.full_name}?`)) {
-      return;
-    }
+    const actionLabel = nextStatus ? 'enabled' : 'disabled';
 
     try {
+      setTogglingActive(true);
       const activeToken = tokenRef.current;
       const headers: Record<string, string> = {
         'Content-Type': 'application/json',
       };
       if (activeToken) headers['Authorization'] = `Bearer ${activeToken}`;
 
-      const res = await fetch(`/api/admin/employees/${employee.id}`, {
+      const res = await fetch(`/api/admin/employees/${toggleActiveTarget.id}`, {
         method: 'PATCH',
         headers,
         body: JSON.stringify({ is_active: nextStatus }),
       });
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(extractApiErrorMessage(data, `Failed to ${actionLabel} employee`));
+        throw new Error(
+          extractApiErrorMessage(data, `Failed to ${nextStatus ? 'enable' : 'disable'} employee`)
+        );
       }
 
       setEmployees((prev) =>
-        prev.map((e) => (e.id === employee.id ? { ...e, is_active: nextStatus } : e))
+        prev.map((e) => (e.id === toggleActiveTarget.id ? { ...e, is_active: nextStatus } : e))
       );
-      showToast('success', `${employee.full_name} has been ${nextStatus ? 'enabled' : 'disabled'}`);
+      showToast('success', `${toggleActiveTarget.full_name} has been ${actionLabel}`);
+      setToggleActiveTarget(null);
     } catch (err: unknown) {
-      showToast('error', extractApiErrorMessage(err, `Failed to ${actionLabel} employee`));
+      showToast(
+        'error',
+        extractApiErrorMessage(err, `Failed to ${nextStatus ? 'enable' : 'disable'} employee`)
+      );
+    } finally {
+      setTogglingActive(false);
     }
   };
 
@@ -258,11 +326,18 @@ function WorkforceContent() {
               }}
               onBulkImport={() => setShowBulkImportModal(true)}
               onEditEmployee={(emp) => setEditingEmployee(emp)}
-              onDeleteEmployee={handleDeleteEmployee}
+              onDeleteEmployee={(id) => {
+                const emp = employees.find((e) => e.id === id);
+                if (emp) setEmployeeToDelete(emp);
+              }}
               onResetPassword={(emp) => setResetTarget(emp)}
               onViewPerformance={(emp) => setPerformanceTarget(emp)}
-              onToggleActiveEmployee={handleToggleEmployeeActive}
+              onToggleActiveEmployee={(emp) => setToggleActiveTarget(emp)}
             />
+          )}
+
+          {activeTab === 'leads' && token && (
+            <WorkforceLeadsTab token={token} employees={employees} />
           )}
 
           {activeTab === 'attendance' && token && (
@@ -343,6 +418,36 @@ function WorkforceContent() {
         onRefreshSalaryStructures={fetchSalaryStructures}
         showToast={showToast}
       />
+
+      {/* UI Confirmation: Delete Employee Modal */}
+      {employeeToDelete && (
+        <DeleteConfirm
+          title="Remove Employee?"
+          itemName={employeeToDelete.full_name}
+          itemType="employee"
+          description={`Are you sure you want to remove ${employeeToDelete.full_name}? They will lose access to the workforce portal.`}
+          confirmLabel="Remove"
+          loading={deletingEmployee}
+          onConfirm={handleConfirmDeleteEmployee}
+          onClose={() => setEmployeeToDelete(null)}
+        />
+      )}
+
+      {/* UI Confirmation: Toggle Active Status Modal */}
+      {toggleActiveTarget && (
+        <DeleteConfirm
+          title={
+            toggleActiveTarget.is_active ? 'Disable Employee Account?' : 'Enable Employee Account?'
+          }
+          itemName={toggleActiveTarget.full_name}
+          itemType="employee"
+          description={`Are you sure you want to ${toggleActiveTarget.is_active ? 'disable' : 'enable'} ${toggleActiveTarget.full_name}'s account?`}
+          confirmLabel={toggleActiveTarget.is_active ? 'Disable' : 'Enable'}
+          loading={togglingActive}
+          onConfirm={handleConfirmToggleActive}
+          onClose={() => setToggleActiveTarget(null)}
+        />
+      )}
     </div>
   );
 }

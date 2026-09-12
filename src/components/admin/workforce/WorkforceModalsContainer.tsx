@@ -3,14 +3,50 @@
 import React from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertCircle, X } from 'lucide-react';
-import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
-import { BulkImportEmployeesModal } from '@/src/components/admin/employees/BulkImportEmployeesModal';
-import { EditEmployeeModal } from '@/src/components/admin/employees/EditEmployeeModal';
-import { ResetPasswordModal } from '@/src/components/admin/employees/ResetPasswordModal';
-import { EmployeePerformanceModal } from '@/src/components/admin/employees/EmployeePerformanceModal';
-import MarkAttendance from '@/src/components/admin/attendance/MarkAttendance';
-import { EmployeeSalarySetupDrawer } from '@/src/components/admin/payroll/EmployeeSalarySetupDrawer';
-import { PayslipDocument } from '@/src/components/admin/payroll/PayslipDocument';
+import dynamic from 'next/dynamic';
+
+const AddEmployeeModal = dynamic(
+  () => import('@/src/components/admin/modals/AddEmployeeModal').then((m) => m.AddEmployeeModal),
+  { ssr: false }
+);
+const BulkImportEmployeesModal = dynamic(
+  () =>
+    import('@/src/components/admin/employees/BulkImportEmployeesModal').then(
+      (m) => m.BulkImportEmployeesModal
+    ),
+  { ssr: false }
+);
+const EditEmployeeModal = dynamic(
+  () =>
+    import('@/src/components/admin/employees/EditEmployeeModal').then((m) => m.EditEmployeeModal),
+  { ssr: false }
+);
+const ResetPasswordModal = dynamic(
+  () =>
+    import('@/src/components/admin/employees/ResetPasswordModal').then((m) => m.ResetPasswordModal),
+  { ssr: false }
+);
+const EmployeePerformanceModal = dynamic(
+  () =>
+    import('@/src/components/admin/employees/EmployeePerformanceModal').then(
+      (m) => m.EmployeePerformanceModal
+    ),
+  { ssr: false }
+);
+const MarkAttendance = dynamic(() => import('@/src/components/admin/attendance/MarkAttendance'), {
+  ssr: false,
+});
+const EmployeeSalarySetupDrawer = dynamic(
+  () =>
+    import('@/src/components/admin/payroll/EmployeeSalarySetupDrawer').then(
+      (m) => m.EmployeeSalarySetupDrawer
+    ),
+  { ssr: false }
+);
+const PayslipDocument = dynamic(
+  () => import('@/src/components/admin/payroll/PayslipDocument').then((m) => m.PayslipDocument),
+  { ssr: false }
+);
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import type { SalaryStructure, PayrollItem } from '@/src/lib/payroll/types';
 import type { WorkforceTeam } from './types';

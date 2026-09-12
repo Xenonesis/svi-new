@@ -40,10 +40,17 @@ export async function GET() {
     const shivaniImages = getCleanImageList(shivaniDir, 'Shivani Vatika');
     const shyamImages = getCleanImageList(shyamDir, 'Shayam angan');
 
-    return NextResponse.json({
-      'shivani-vatika': shivaniImages,
-      'shyam-aangan': shyamImages,
-    });
+    return NextResponse.json(
+      {
+        'shivani-vatika': shivaniImages,
+        'shyam-aangan': shyamImages,
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600',
+        },
+      }
+    );
   } catch (err) {
     return handleApiError(err);
   }

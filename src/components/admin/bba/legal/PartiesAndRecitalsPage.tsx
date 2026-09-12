@@ -92,16 +92,67 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-1 text-[14.5px]">
           <strong>Age:</strong> {formData.age ? `${formData.age} years` : '_______ years'}
         </p>
+        <p className="mb-1 text-[14.5px]">
+          <strong>PAN:</strong> {formData.panNumber || '______________________'}
+        </p>
+        <p className="mb-1 text-[14.5px]">
+          <strong>Contact:</strong> {formData.mobileNumber || '______________________'}
+          {formData.email ? ` | Email: ${formData.email}` : ' | Email: ______________________'}
+        </p>
         <p className="mb-1 text-[14.5px] font-bold">Permanent Address:</p>
         <p className="mb-1 text-[14.5px]">
           {formData.addressLine1 || formData.address}
           {formData.addressLine2 ? `, ${formData.addressLine2}` : ''}
         </p>
-        <p className="mb-1 text-[14.5px] font-bold">
+        <p className="mb-2 text-[14.5px] font-bold">
           {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
         </p>
-        <p className="my-3 text-center text-[14.5px] font-bold">AND</p>
-
+        <div className="mt-3 mb-2 rounded-lg border border-l-4 border-slate-200 border-l-[#0f2942] bg-slate-50/70 p-3">
+          <p className="mb-2 text-[13px] font-bold tracking-wider text-[#0f2942] uppercase">
+            Nominee Details{' '}
+            <span className="text-[11.5px] font-normal text-slate-600">
+              (in the event of demise of the Allottee)
+            </span>
+          </p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[13.5px]">
+            <div>
+              <span className="font-medium text-slate-600">Nominee Name:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeName || '______________________'}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">Relationship:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeRelation || '______________________'}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">Age:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeAge ? `${formData.nomineeAge} years` : '_______ years'}
+              </strong>
+            </div>
+            <div className="col-span-2">
+              <span className="font-medium text-slate-600">Nominee Address:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeAddress || '____________________________________________'}
+              </strong>
+            </div>
+          </div>
+        </div>
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={3} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mb-3 text-center text-[14.5px] font-bold">AND</p>
         <p className="mb-1 text-[14.5px] font-bold">2nd ALLOTTEE</p>
         <p className="mb-1 text-[14.5px]">
           <strong>Name:</strong> ______________________
@@ -115,17 +166,6 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         <p className="mb-2 text-[14.5px]">
           <strong>Address:</strong> ______________________
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-3 text-center text-[14.5px] font-bold">AND</p>
         <p className="mb-1 text-[14.5px] font-bold">3rd ALLOTTEE</p>
         <p className="mb-1 text-[14.5px]">
@@ -180,7 +220,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
           Said Land and no impression of any kind has been given with regard to the constructions
           that may take place on the land outside the Said Land.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={4} />
       </div>
     </>
   );

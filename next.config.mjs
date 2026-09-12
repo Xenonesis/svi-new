@@ -34,6 +34,7 @@ const nextConfig = {
       'recharts',
       'date-fns',
       'motion',
+      'motion/react',
       '@tiptap/react',
       '@tiptap/starter-kit',
     ],

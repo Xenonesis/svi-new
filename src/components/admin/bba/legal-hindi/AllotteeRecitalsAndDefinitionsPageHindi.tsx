@@ -120,7 +120,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           आवंटी द्वारा कब्जा नहीं लिया जाता है तो कब्जे की सूचना की समाप्ति तिथि के अगले दिन कब्जा
           सुपुर्द किया हुआ माना जाएगा।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={5} />
       </div>
       <div
         style={{
@@ -186,7 +186,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           भूखंड/दुकान आवंटितियों के संघ या ऐसी अन्य एजेंसी/निकाय/फर्म/कॉन्डोमिनियम के संघ से है जिसे
           फर्म रखरखाव सौंप सकती है और जो उक्त परिसर/उक्त भवन का रखरखाव करने के लिए उत्तरदायी होगा।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={6} />
       </div>
       <div
         style={{
@@ -228,6 +228,17 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           दुकानें, क्लब हाउस स्विमिंग पूल, जिम आदि, सामुदायिक खरीदारी, नर्सरी स्कूल और सरकारी
           प्राधिकरण द्वारा अनुमोदित अन्य भवन सुविधाएँ और सुविधाएँ शामिल हैं।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={7} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;कुल मूल्य&quot;</strong> का अर्थ उक्त भूखंड/दुकान के लिए अन्य के साथ देय सभी
           प्रकार की राशि से है जिसमें मूल बिक्री मूल्य, पीएलसी (यदि उक्त भूखंड/दुकान अधिमान्य रूप से
@@ -242,17 +253,6 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
           viii) वृद्धि शुल्क। ix) कोई भी अन्य शुल्क जो करार की अन्य शर्तों के अनुसार आवंटी(यों)
           द्वारा देय हो सकते हैं।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>व्याख्या</strong>
           <br />
@@ -277,13 +277,13 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
         </p>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           आवंटी(यां) सहमत हैं कि जहाँ कहीं भी इस करार में यह स्पष्ट रूप से उल्लेख किया गया है कि
-          आवंटी(यों) ने आवंटी(यों) के दायित्वों या फर्म के अधिकारों को समझा या स्वीकार किया है,
-          आवंटी(यों) ने फर्म के कार्यों के लिए सहमति दी है या आवंटी(यों) ने स्वीकार किया है कि
-          आवंटी(यों) का किसी भी प्रकृति का कोई अधिकार नहीं है, आवंटी(यां) इसके अनुसरण में, फर्म के
-          पहले अनुरोध पर बिना किसी विरोध या आपत्ति के फर्म के पक्ष में सभी ऐसे कार्य, विलेख या बातें
-          करेंगे जो फर्म आवश्यक समझे और/या ऐसे दस्तावेजों/विलेखों को निष्पादित करेंगे।
+          आवंटी(यों) ने आवंटी(यों) के दायित्वों या कंपनी के अधिकारों को समझा या स्वीकार किया है,
+          आवंटी(यों) ने कंपनी के कार्यों के लिए सहमति दी है या आवंटी(यों) ने स्वीकार किया है कि
+          आवंटी(यों) का किसी भी प्रकृति का कोई अधिकार नहीं है, आवंटी(यां) इसके अनुसरण में, कंपनी के
+          पहले अनुरोध पर बिना किसी विरोध या आपत्ति के कंपनी के पक्ष में सभी ऐसे कार्य, विलेख या
+          बातें करेंगे जो कंपनी आवश्यक समझे और/या ऐसे दस्तावेजों/विलेखों को निष्पादित करेंगे।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={8} />
       </div>
     </>
   );

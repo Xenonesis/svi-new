@@ -21,7 +21,7 @@ svi-infra/
 │  │  ├─ lottery/                    # Admin lottery management
 │  │  ├─ registrations/
 │  │  ├─ settings/                   # Settings panel
-│  │  ├─ workforce/                  # Unified Workforce & HR Hub (Employees, Attendance, Approvals, Payroll)
+│  │  ├─ workforce/                  # Unified Workforce & HR Hub (Directory, Chat Leads, Attendance, Approvals, Payroll)
 │  │  ├─ payroll/                    # Payroll & Salary Management (redirects to /admin/workforce?tab=payroll)
 │  │  ├─ updates/                    # System updates & non-technical changelog
 │  │  └─ page.tsx                    # Admin overview
@@ -39,8 +39,8 @@ svi-infra/
 │  │  ├─ profile/                     # Employee badge, team info, settings & logout
 │  │  └─ layout.tsx                   # Mobile app shell with bottom navigation bar
 │  │
-│  ├─ api/                           # 75+ REST API routes
-│  │  ├─ admin/                      # Admin APIs (secured via verifyAdmin guard)
+│  ├─ api/                           # 76+ REST API routes
+│  │  ├─ admin/                      # Admin APIs (leads, employees, attendance, etc. secured via verifyAdmin guard)
 │  │  ├─ employee/                   # Employee APIs (attendance, work, tasks, leaves)
 │  │  ├─ chat/                       # Chatbot APIs
 │  │  ├─ cron/                       # Scheduled tasks (lottery, campaigns, emails)

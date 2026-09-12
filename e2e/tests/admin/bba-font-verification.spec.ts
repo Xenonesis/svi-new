@@ -181,19 +181,24 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
           (el as HTMLElement).style.display = 'none';
         });
     });
+    await hindiCoverPage.scrollIntoViewIfNeeded();
+    await hindiCoverPage.screenshot({ path: 'test-results/cover-page-verified.png' });
+
     const firstHindiPage = hindiLegalContainer.locator('> div').nth(0);
     await firstHindiPage.scrollIntoViewIfNeeded();
     await firstHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-page1.png' });
 
-    // Capture Parties and Recitals Page 1 (2nd Allottee) and Page 2 (3rd Allottee)
+    // Capture Parties and Recitals Page 1 (1st Allottee + Nominee) and Page 2 (2nd & 3rd Allottee)
     const secondHindiPage = hindiLegalContainer.locator('> div').nth(1);
     await secondHindiPage.scrollIntoViewIfNeeded();
     await secondHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-parties-p1.png' });
-    await expect(secondHindiPage).toContainText('द्वितीय आवंटी');
+    await expect(secondHindiPage).toContainText('प्रथम आवंटी');
+    await expect(secondHindiPage).toContainText('नॉमिनी');
 
     const thirdHindiPage = hindiLegalContainer.locator('> div').nth(2);
     await thirdHindiPage.scrollIntoViewIfNeeded();
     await thirdHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-parties-p2.png' });
+    await expect(thirdHindiPage).toContainText('द्वितीय आवंटी');
     await expect(thirdHindiPage).toContainText('तृतीय आवंटी');
     // Capture Allottee Representations page (user reported missing sign at end of this page)
     const fourthHindiPage = hindiLegalContainer.locator('> div').nth(3);
@@ -201,7 +206,7 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await fourthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-representations.png' });
     await expect(fourthHindiPage).toContainText('आवंटी(यों) के प्रतिनिधित्व');
     await expect(fourthHindiPage).toContainText('अभिकल्पित कब्जा');
-    await expect(fourthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(fourthHindiPage).toContainText('Allottee Signature');
     await expect(fourthHindiPage).toContainText('निदेशक');
 
     // Capture Definitions Page 2 (Earnest Money to Maintenance Agency)
@@ -211,45 +216,37 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await expect(fifthHindiPage).toContainText('बयाना राशि');
     await expect(fifthHindiPage).toContainText('रखरखाव एजेंसी');
     await expect(fifthHindiPage).not.toContainText('प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)');
-    await expect(fifthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(fifthHindiPage).toContainText('Allottee Signature');
     await expect(fifthHindiPage).toContainText('निदेशक');
-
-    // Capture Definitions Page 3 (Maintenance Charges & Definitions)
+    // Capture Definitions Page 3 (nth(5)) - now contains Said Complex
     const sixthHindiPage = hindiLegalContainer.locator('> div').nth(5);
     await sixthHindiPage.scrollIntoViewIfNeeded();
     await sixthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-definitions-p3.png' });
-    await expect(sixthHindiPage).toContainText('रखरखाव शुल्क');
-    await expect(sixthHindiPage).toContainText('प्रेफरेंशियल लोकेशन शुल्क (पीएलसी)');
-    await expect(sixthHindiPage).toContainText('Allottee Signature(s):');
+    await expect(sixthHindiPage).toContainText('उक्त परिसर');
+    await expect(sixthHindiPage).not.toContainText('कुल मूल्य');
+    await expect(sixthHindiPage).toContainText('Allottee Signature');
     await expect(sixthHindiPage).toContainText('निदेशक');
 
-    // Capture Definitions Page 4 (Interpretation: व्याख्या) - now on its own page!
+    // Capture Definitions Page 4 (Total Price, Interpretation: व्याख्या) - at nth(6)
     const interpPage = hindiLegalContainer.locator('> div').nth(6);
     await interpPage.scrollIntoViewIfNeeded();
+    await interpPage.screenshot({ path: 'test-results/bba-legal-hindi-definitions-p4.png' });
+    await expect(interpPage).toContainText('कुल मूल्य');
     await expect(interpPage).toContainText('व्याख्या');
-    await expect(interpPage).toContainText('Allottee Signature(s):');
+    await expect(interpPage).toContainText('Allottee Signature');
     await expect(interpPage).toContainText('निदेशक');
-
-    // Capture Operative Clauses Page 6 (Clauses 28-32) - shifted by 2 new pages (interp + clause 12 split)
-    // Previously at nth(10), now at nth(12)
-    const seventhHindiPage = hindiLegalContainer.locator('> div').nth(12);
-    await seventhHindiPage.scrollIntoViewIfNeeded();
-    await seventhHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-clauses-p5.png' });
-    await expect(seventhHindiPage).toContainText('28.');
-    await expect(seventhHindiPage).toContainText('32.');
-    await expect(seventhHindiPage).not.toContainText('हस्ताक्षरित और सुपुर्द');
-    await expect(seventhHindiPage).toContainText('Allottee Signature(s):');
-
-    // Capture Execution & Signatures Page 7 (dedicated signature page) - now at nth(13)
-    const eighthHindiPage = hindiLegalContainer.locator('> div').nth(13);
-    await eighthHindiPage.scrollIntoViewIfNeeded();
-    await eighthHindiPage.screenshot({ path: 'test-results/bba-legal-hindi-signatures.png' });
-    await expect(eighthHindiPage).toContainText('हस्ताक्षरित और सुपुर्द');
-    await expect(eighthHindiPage).toContainText('अधिकृत हस्ताक्षरकर्ता');
-    await expect(eighthHindiPage).toContainText('साक्षी');
-    await expect(eighthHindiPage).toContainText('Allottee Signature(s):');
-    await expect(eighthHindiPage).toContainText('निदेशक');
-
+    // Capture Operative Clauses Page 6 + Signatures (Clauses 29-32 + Execution) - at nth(12)
+    const clausesPage6 = hindiLegalContainer.locator('> div').nth(12);
+    await clausesPage6.scrollIntoViewIfNeeded();
+    await clausesPage6.screenshot({ path: 'test-results/bba-legal-hindi-clauses-p6.png' });
+    await expect(clausesPage6).toContainText('29.');
+    await expect(clausesPage6).toContainText('32.');
+    await expect(clausesPage6).toContainText('हस्ताक्षरित और सुपुर्द');
+    await expect(clausesPage6).toContainText('अधिकृत हस्ताक्षरकर्ता');
+    await expect(clausesPage6).toContainText('साक्षी');
+    await expect(clausesPage6).toContainText('Allottee Signature');
+    await expect(clausesPage6).toContainText('निदेशक');
+    await expect(clausesPage6).toContainText('Page 14');
     // Verify Operative Clauses Page 1 ends at bank details (no Clause 5)
     // Prior divs: Instructions=1, Parties=2, AllotteeRecitals=4 -> OperativeClauses starts at index 7
     const opPage1 = hindiLegalContainer.locator('> div').nth(7);
@@ -257,7 +254,7 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
     await opPage1.screenshot({ path: 'test-results/bba-hindi-op-clauses-p1.png' });
     await expect(opPage1).toContainText('खाता संख्या');
     await expect(opPage1).not.toContainText('5. आवंटी समझते हैं');
-    await expect(opPage1).toContainText('Allottee Signature(s):');
+    await expect(opPage1).toContainText('Allottee Signature');
 
     // Verify Operative Clauses Page 2 starts with Clause 5
     const opPage2 = hindiLegalContainer.locator('> div').nth(8);
@@ -313,10 +310,11 @@ test.describe('BBA Document Generation & Font Size Verification', () => {
       };
     });
 
-    console.log(`Cover Page Height: ${coverH}px (overflowRisk: ${coverH > 1250})`);
+    console.log(`Cover Page Height: ${coverH}px (overflowRisk: ${coverH > 1123})`);
     console.log(`Payment Schedule Page:`, JSON.stringify(paymentSchedDiv));
     console.log('======================================');
-    expect(coverH).toBeGreaterThanOrEqual(800);
+    expect(coverH).toBeGreaterThanOrEqual(700);
+    expect(coverH).toBeLessThanOrEqual(1123);
 
     // 9. Verify actual PDF Download action
     const downloadBtn = page

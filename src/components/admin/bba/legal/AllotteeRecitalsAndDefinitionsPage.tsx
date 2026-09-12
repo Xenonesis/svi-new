@@ -122,7 +122,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           if not taken, by the Allottee possession be deemed to be delivered on the next succeeding
           day after the expiry date of the notice of possession.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={5} />
       </div>
       <div
         style={{
@@ -195,7 +195,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           condominium to whom the Firm may handover the maintenance and who shall be responsible for
           carrying out the maintenance of the Said Complex/ Said Building.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={6} />
       </div>
       <div
         style={{
@@ -235,11 +235,22 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Said Complex&quot;</strong> means the &quot;
           {formData?.projectName?.toUpperCase() || 'SHYAM AANGAN'}&quot;,{' '}
-          {getProjectLocationName(formData?.projectName)} comprising of residential plot/shop
-          buildings, shops, club house swimming pool, gym etc., community shopping, nursery school,
-          and any other building Amenities and Facilities as may be approved by the Governmental
-          Authority.
+          {getProjectLocationName(formData?.projectName)}, wherein the Residential Plots/shop
+          Building, shops, club house swimming pool, Gym etc., Community Shopping, nursery school
+          and any other building facilities &amp; amenities approved by the governmental authority
+          are to be comprised.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={7} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Total Price&quot;</strong> means any and all kind of the amount amongst
           others, payable for the Said Plot/shop which includes basic sale price, PLC (if the Said
@@ -254,21 +265,10 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
           well as charges for water and electricity connection and consumption. vii) Club membership
           fees and club charges, as applicable. viii) Escalation charges. ix) Any other charges that
           may be payable by the Allottee(s) as per the other terms of the Agreement and such other
-          charges as may be demanded by the Firm which amounts shall be payable by the Allottee(s)
-          in addition to the Total Price in accordance with the terms and conditions of the
-          Agreement and as per the demand raised by the Firm from time to time.
+          charges as may be demanded by the Company which amounts shall be payable by the
+          Allottee(s) in addition to the Total Price in accordance with the terms and conditions of
+          the Agreement and as per the demand raised by the Company from time to time.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>Interpretation</strong>
           <br />
@@ -295,13 +295,13 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           The Allottee(s) agrees that wherever in this Agreement, it is explicitly mentioned that
           the Allottee(s) has understood or acknowledged obligations of the Allottee(s) or the
-          rights of the Firm, the Allottee(s) has given consent to the actions of the Firm or the
-          Allottee(s) has acknowledged that the Allottee(s) has no right of whatsoever nature, the
-          Allottee(s) in furtherance of the same, shall do all such acts, deeds or things, as the
-          Firm may deem necessary and/or execute such documents/deeds in favour of the Firm at the
-          first request without any protest or demur.
+          rights of the Company, the Allottee(s) has given consent to the actions of the Company or
+          the Allottee(s) has acknowledged that the Allottee(s) has no right of whatsoever nature,
+          the Allottee(s) in furtherance of the same, shall do all such acts, deeds or things, as
+          the Company may deem necessary and/or execute such documents/deeds in favour of the
+          Company at the first request without any protest or demur.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={8} />
       </div>
     </>
   );

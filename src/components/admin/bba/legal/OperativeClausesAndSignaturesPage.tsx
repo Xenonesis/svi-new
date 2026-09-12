@@ -127,7 +127,7 @@ export function OperativeClausesAndSignaturesPage({
             </div>
           </div>
         </div>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={9} />
       </div>
       <div
         style={{
@@ -233,7 +233,7 @@ export function OperativeClausesAndSignaturesPage({
           Allottee(s) skips EMI installments continuously for 6 (six) consecutive months or skips
           their 6th (sixth) EMI installment, the deal/allotment shall automatically stand cancelled.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={10} />
       </div>
       <div
         style={{
@@ -274,17 +274,6 @@ export function OperativeClausesAndSignaturesPage({
           Allottee(s) shall have no right, interest or claim of any nature whatsoever on the Said
           Plot/shop.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           14. The Firm, upon obtaining necessary approvals from the Govt authority shall offer in
           writing possession of the Said Plot/shop to the Allottee(s). Within 30 days from the date
@@ -365,6 +354,17 @@ export function OperativeClausesAndSignaturesPage({
           whatsoever. The adjustment of such compensation shall be done only at the time of
           execution of conveyance deed of the Said Plot/shop to the Allottee(s) first named.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={11} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           18. The Firm, its associates/subsidiaries shall execute a Conveyance Deed to convey the
           title, of the Said Plot/shop in favor of the Allottee(s), provided the Allottee(s) has
@@ -425,17 +425,6 @@ export function OperativeClausesAndSignaturesPage({
           reserves the right to correct, modify, amend or change all the annexures attached to this
           Agreement and also annexures which are indicated to be tentative at any time prior to the
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           23. The Allottee(s) agrees that the provisions of this Agreement, Maintenance Agreement,
           and those contained in other annexures are specific and applicable to plot//shops offered
@@ -453,6 +442,17 @@ export function OperativeClausesAndSignaturesPage({
           provisions of this Agreement shall remain valid and enforceable as applicable at the time
           of execution of this Agreement.
         </p>
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={12} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           25. The Firm shall not be responsible or liable for not performing any of its obligations
           or undertakings provided for in this Agreement if such performance is prevented due to
@@ -478,17 +478,6 @@ export function OperativeClausesAndSignaturesPage({
           communications and letters posted at the above address shall be deemed to have been
           received by the Allottee(s).
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           28. The Allottee(s) agrees that all defaults, breaches and/or non-compliance of any of the
           terms and conditions of this Agreement shall be deemed to be events of defaults liable for
@@ -550,7 +539,18 @@ export function OperativeClausesAndSignaturesPage({
           liquidated damages which the Firm might have suffered due to such breach committed by the
           Allottee(s).
         </p>
-        <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={13} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
           29. All or any disputes arising out or touching upon or in relation to the terms this
           Builder Buyer Agreement including the interpretation and validity of the terms thereof and
           the respective rights and obligations of the parties, which cannot be amicably settled,
@@ -562,93 +562,88 @@ export function OperativeClausesAndSignaturesPage({
           proceeding, reference etc. touching upon the arbitration subject including any award, the
           territorial jurisdiction shall lie with the competent courts of Rajasthan.
         </p>
-        <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
+        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
           30. That no Allottee shall have any rights to invoke jurisdiction of Civil Court directly
           without availing remedy of Arbitration.
         </p>
-        <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
+        <p className="mb-2 text-justify text-[14.5px] leading-relaxed">
           31. You are requested to keep one copy of this Agreement with you and return the second
           copy to us duly signed within 7 days failing of which we will presume that the given terms
           &amp; conditions of this Agreement are acceptable to you.
         </p>
-        <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
+        <p className="mb-3 text-justify text-[14.5px] leading-relaxed">
           32. This provisional agreement shall be null and void after final registration of
           plot/plots.
         </p>
-        <BbaPageFooter companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
-        <p className="mt-2 mb-4 text-justify text-[14.5px] leading-relaxed">
+        <p className="mt-1 mb-2 text-justify text-[14.5px] leading-relaxed">
           IN WITNESS WHEREOF the parties hereto have hereunto and to a duplicate copy hereof set and
           subscribed their respective hands at the places and on the day, month and year mentioned
           under their respective signatures:
         </p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">
-          <strong>SIGNED AND DELIVERED BY THE WITHIN NAMED Allottee:</strong> (including joint
-          Allottees) (1) (2) at
-        </p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">in the presence of:</p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">on</p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">
-          <strong>WITNESSES:</strong>
-          <br />
-          1. Signature
-          <br />
-          Name
-          <br />
-          Address
-          <br />
-          (to be completed by the Allottee(s)
-        </p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">
-          2. Signature
-          <br />
-          Name
-          <br />
-          Address
-        </p>
-        <p className="mt-8 mb-4 text-[14.5px] leading-relaxed">
-          <strong>SIGNED AND DELIVERED by the within named Firm at</strong>
-        </p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">on</p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">in the presence of:</p>
-        <div className="my-1 h-8 w-24">
-          <img
-            src="/signature.png"
-            alt="Director Signature"
-            className="h-full w-full object-contain"
-          />
+        <div className="my-2 grid grid-cols-2 gap-8">
+          <div>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">
+              <strong>SIGNED AND DELIVERED BY THE WITHIN NAMED Allottee:</strong> (including joint
+              Allottees) (1) (2) at
+            </p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">in the presence of:</p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">on</p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">
+              <strong>WITNESSES:</strong>
+              <br />
+              1. Signature
+              <br />
+              Name
+              <br />
+              Address
+              <br />
+              (to be completed by the Allottee(s)
+            </p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">
+              2. Signature
+              <br />
+              Name
+              <br />
+              Address
+            </p>
+          </div>
+          <div>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">
+              <strong>SIGNED AND DELIVERED by the within named Firm at</strong>
+            </p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">on</p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">in the presence of:</p>
+            <div className="my-1 h-8 w-24">
+              <img
+                src="/signature.png"
+                alt="Director Signature"
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">
+              <strong>(AUTHORISED SIGNATORY)</strong>
+            </p>
+            <p className="mt-3 mb-1.5 text-[14.5px] leading-relaxed">
+              <strong>WITNESSES:</strong>
+              <br />
+              1. Signature
+              <br />
+              Name
+              <br />
+              Address
+            </p>
+            <p className="mb-1.5 text-[14.5px] leading-relaxed">
+              FOR AND ON BEHALF
+              <br />
+              2. Signature
+              <br />
+              Name
+              <br />
+              Address
+            </p>
+          </div>
         </div>
-        <p className="mb-4 text-[14.5px] leading-relaxed">
-          <strong>(AUTHORISED SIGNATORY)</strong>
-        </p>
-        <p className="mt-8 mb-4 text-[14.5px] leading-relaxed">
-          <strong>WITNESSES:</strong>
-          <br />
-          1. Signature
-          <br />
-          Name
-          <br />
-          Address
-        </p>
-        <p className="mb-4 text-[14.5px] leading-relaxed">
-          FOR AND ON BEHALF
-          <br />
-          2. Signature
-          <br />
-          Name
-          <br />
-          Address
-        </p>
-        <BbaPageFooter companyInfo={companyInfo} />
+        <BbaPageFooter companyInfo={companyInfo} pageNumber={14} />
       </div>
     </>
   );

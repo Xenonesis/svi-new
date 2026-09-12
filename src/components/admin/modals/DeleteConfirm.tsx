@@ -1,5 +1,5 @@
-'use client';
-
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'motion/react';
 import { Trash2, Loader2 } from 'lucide-react';
 import type { UserProfile } from '@/src/lib/supabase/types';
@@ -27,14 +27,21 @@ export function DeleteConfirm({
   onClose,
   loading,
 }: DeleteConfirmProps) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const displayName = itemName || user?.full_name || 'this item';
   const modalTitle =
     title ||
     (user ? 'Delete User?' : `Delete ${itemType.charAt(0).toUpperCase() + itemType.slice(1)}?`);
 
-  return (
+  if (!mounted || typeof document === 'undefined') return null;
+
+  return createPortal(
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85"
+      className="fixed inset-0 z-[9999] flex items-center justify-center bg-gray-900/60 p-4 backdrop-blur-sm dark:bg-black/85"
       onClick={(e) => {
         if (e.target === e.currentTarget && !loading) onClose();
       }}
@@ -80,6 +87,7 @@ export function DeleteConfirm({
           </button>
         </div>
       </motion.div>
-    </div>
+    </div>,
+    document.body
   );
 }

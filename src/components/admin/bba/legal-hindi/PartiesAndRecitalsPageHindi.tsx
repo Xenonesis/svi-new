@@ -88,16 +88,67 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-1 text-[15px]">
           <strong>आयु:</strong> {formData.age ? `${formData.age} वर्ष` : '_______ वर्ष'}
         </p>
+        <p className="mb-1 text-[15px]">
+          <strong>पैन (PAN):</strong> {formData.panNumber || '______________________'}
+        </p>
+        <p className="mb-1 text-[15px]">
+          <strong>संपर्क सूत्र:</strong> {formData.mobileNumber || '______________________'}
+          {formData.email ? ` | ईमेल: ${formData.email}` : ' | ईमेल: ______________________'}
+        </p>
         <p className="mb-1 text-[15px] font-bold">स्थायी पता:</p>
         <p className="mb-1 text-[15px]">
           {formData.addressLine1 || formData.address}
           {formData.addressLine2 ? `, ${formData.addressLine2}` : ''}
         </p>
-        <p className="mb-1 text-[15px] font-bold">
+        <p className="mb-2 text-[15px] font-bold">
           {[formData.city, formData.state, formData.pincode].filter(Boolean).join(', ')}
         </p>
-        <p className="my-3 text-center text-[15px] font-bold">तथा</p>
-
+        <div className="mt-3 mb-2 rounded-lg border border-l-4 border-slate-200 border-l-[#0f2942] bg-slate-50/70 p-3">
+          <p className="mb-2 text-[13.5px] font-bold tracking-wider text-[#0f2942] uppercase">
+            नामांकित व्यक्ति (नॉमिनी) विवरण{' '}
+            <span className="text-[12px] font-normal text-slate-600">
+              (आवंटी के देहांत की स्थिति में)
+            </span>
+          </p>
+          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5 text-[14px]">
+            <div>
+              <span className="font-medium text-slate-600">नॉमिनी का नाम:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeName || '______________________'}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">आवंटी से संबंध:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeRelation || '______________________'}
+              </strong>
+            </div>
+            <div>
+              <span className="font-medium text-slate-600">आयु:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeAge ? `${formData.nomineeAge} वर्ष` : '_______ वर्ष'}
+              </strong>
+            </div>
+            <div className="col-span-2">
+              <span className="font-medium text-slate-600">नॉमिनी का पता:</span>{' '}
+              <strong className="text-slate-900">
+                {formData.nomineeAddress || '____________________________________________'}
+              </strong>
+            </div>
+          </div>
+        </div>
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={3} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
+        <p className="mb-3 text-center text-[15px] font-bold">तथा</p>
         <p className="mb-1 text-[15px] font-bold">द्वितीय आवंटी</p>
         <p className="mb-1 text-[15px]">
           <strong>नाम:</strong> ______________________
@@ -111,18 +162,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         <p className="mb-2 text-[15px]">
           <strong>पता:</strong> ______________________
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
-        <p className="mb-3 text-center text-[15px] font-bold">तथा</p>
+        <p className="my-3 text-center text-[15px] font-bold">तथा</p>
         <p className="mb-1 text-[15px] font-bold">तृतीय आवंटी</p>
         <p className="mb-1 text-[15px]">
           <strong>नाम:</strong> ______________________
@@ -176,7 +216,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
           उक्त भूमि के बाहर की भूमि पर होने वाले निर्माण के संबंध में किसी भी प्रकार का कोई प्रभाव
           नहीं दिया गया है।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={4} />
       </div>
     </>
   );

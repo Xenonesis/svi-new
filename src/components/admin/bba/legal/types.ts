@@ -32,6 +32,13 @@ export interface BBALegalFormData {
   edcInEmi?: string;
   emiCount?: string;
   emiStartDate?: string;
+  panNumber?: string;
+  mobileNumber?: string;
+  email?: string;
+  nomineeName?: string;
+  nomineeRelation?: string;
+  nomineeAge?: string | number;
+  nomineeAddress?: string;
 }
 
 export interface BBALegalCompanyInfo {

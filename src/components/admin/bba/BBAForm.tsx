@@ -111,6 +111,64 @@ export function BBAForm({
           onChange={handleChange}
           placeholder="e.g. 45"
         />
+        <FormField
+          label="PAN Number (Optional)"
+          name="panNumber"
+          value={formData.panNumber || ''}
+          onChange={handleChange}
+          placeholder="e.g. ABCDE1234F"
+        />
+        <FormField
+          label="Mobile Number (Optional)"
+          name="mobileNumber"
+          value={formData.mobileNumber || ''}
+          onChange={handleChange}
+          placeholder="e.g. 9876543210"
+        />
+        <FormField
+          label="Email Address (Optional)"
+          name="email"
+          type="email"
+          value={formData.email || ''}
+          onChange={handleChange}
+          placeholder="e.g. client@example.com"
+        />
+      </div>
+
+      <div className="border-brand-navy/10 bg-brand-navy/5 col-span-full rounded-xl border p-4 dark:border-white/10 dark:bg-white/5">
+        <p className="mb-3 text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+          Nominee Details (Optional - In case of demise of Allottee)
+        </p>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <FormField
+            label="Nominee Name"
+            name="nomineeName"
+            value={formData.nomineeName || ''}
+            onChange={handleChange}
+            placeholder="e.g. Sunita Sharma"
+          />
+          <FormField
+            label="Relationship with Allottee"
+            name="nomineeRelation"
+            value={formData.nomineeRelation || ''}
+            onChange={handleChange}
+            placeholder="e.g. Wife / Son / Daughter"
+          />
+          <FormField
+            label="Nominee Age (Years)"
+            name="nomineeAge"
+            value={formData.nomineeAge || ''}
+            onChange={handleChange}
+            placeholder="e.g. 42"
+          />
+          <FormField
+            label="Nominee Address"
+            name="nomineeAddress"
+            value={formData.nomineeAddress || ''}
+            onChange={handleChange}
+            placeholder="Leave blank if same as client address"
+          />
+        </div>
       </div>
 
       <div className="col-span-full">

@@ -3,6 +3,10 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 
+const CACHE_HEADERS = {
+  'Cache-Control': 'private, max-age=120, stale-while-revalidate=300',
+};
+
 // GET /api/admin/registrations/filters — returns distinct values for filter dropdowns
 // Fast: uses database-side RPC (get_distinct_registration_filters) with parallel fallback
 export async function GET(request: NextRequest) {
@@ -16,7 +20,7 @@ export async function GET(request: NextRequest) {
     );
 
     if (!rpcError && rpcData) {
-      return NextResponse.json(rpcData);
+      return NextResponse.json(rpcData, { headers: CACHE_HEADERS });
     }
 
     // 2. Fallback: If migration hasn't been run yet, run parallel queries in JS
@@ -67,27 +71,30 @@ export async function GET(request: NextRequest) {
     // Deduplicate in JS after DB returns sorted values
     const unique = (arr: (string | null)[]) => [...new Set(arr)].filter(Boolean) as string[];
 
-    return NextResponse.json({
-      projects: unique((projects.data || []).map((r: { project: string | null }) => r.project)),
-      advisors: unique(
-        (advisors.data || []).map((r: { advisor_name: string | null }) => r.advisor_name)
-      ),
-      propertyTypes: unique(
-        (propTypes.data || []).map((r: { property_type: string | null }) => r.property_type)
-      ),
-      propertySizes: unique(
-        (propSizes.data || []).map((r: { property_size: string | null }) => r.property_size)
-      ),
-      plotPreferences: unique(
-        (plotPrefs.data || []).map((r: { plot_preference: string | null }) => r.plot_preference)
-      ),
-      paymentPlans: unique(
-        (payPlans.data || []).map((r: { payment_plan: string | null }) => r.payment_plan)
-      ),
-      paymentModes: unique(
-        (payModes.data || []).map((r: { payment_mode: string | null }) => r.payment_mode)
-      ),
-    });
+    return NextResponse.json(
+      {
+        projects: unique((projects.data || []).map((r: { project: string | null }) => r.project)),
+        advisors: unique(
+          (advisors.data || []).map((r: { advisor_name: string | null }) => r.advisor_name)
+        ),
+        propertyTypes: unique(
+          (propTypes.data || []).map((r: { property_type: string | null }) => r.property_type)
+        ),
+        propertySizes: unique(
+          (propSizes.data || []).map((r: { property_size: string | null }) => r.property_size)
+        ),
+        plotPreferences: unique(
+          (plotPrefs.data || []).map((r: { plot_preference: string | null }) => r.plot_preference)
+        ),
+        paymentPlans: unique(
+          (payPlans.data || []).map((r: { payment_plan: string | null }) => r.payment_plan)
+        ),
+        paymentModes: unique(
+          (payModes.data || []).map((r: { payment_mode: string | null }) => r.payment_mode)
+        ),
+      },
+      { headers: CACHE_HEADERS }
+    );
   } catch (error) {
     return handleApiError(error);
   }

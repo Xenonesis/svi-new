@@ -70,7 +70,7 @@ export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext
       </p>
       <p className="mt-8 text-[15px] font-bold">{formData.clientName}</p>
       <p className="mb-3 text-[12px]">(आवंटी(यां))</p>
-      <BbaPageFooterHindi companyInfo={companyInfo} />
+      <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={2} />
     </div>
   );
 }

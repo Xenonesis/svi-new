@@ -100,7 +100,7 @@ export function OperativeClausesAndSignaturesPageHindi({
             </div>
           </div>
         </div>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={9} />
       </div>
       <div
         style={{
@@ -176,7 +176,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           आवंटी(यों) की तरफ से लगातार 6 (छह) महीने तक ईएमआई स्किप होती है अथवा उनकी 6वीं ईएमआई स्किप
           होती है, तो यह सौदा/आवंटन स्वतः रद्द (cancel) माना जाएगा।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={10} />
       </div>
       <div
         style={{
@@ -198,17 +198,6 @@ export function OperativeClausesAndSignaturesPageHindi({
           आवंटी(यों) फर्म को 30 दिनों के भीतर लिखित सहमति या आपत्ति नहीं भेजते हैं, तो आवंटी(यों) को
           सभी परिवर्तनों के लिए बिना शर्त सहमति दी गई मानी जाएगी।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           14. फर्म, सरकारी प्राधिकरण से आवश्यक अनुमोदन प्राप्त करने पर, आवंटी(यों) को लिखित में उक्त
           भूखंड/दुकान का कब्जा देने की पेशकश करेगी। ऐसी नोटिस जारी होने की तारीख से 30 दिनों के भीतर
@@ -235,6 +224,17 @@ export function OperativeClausesAndSignaturesPageHindi({
           केवल प्रथम नाम के आवंटी(यों) को उक्त भूखंड/दुकान के सुपर एरिया के प्रति वर्ग गज/फुट प्रति
           माह ₹20 की दर से मुआवजा देगी।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={11} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           18. फर्म, उसके सहयोगी/सहायक उक्त भूखंड/दुकान का स्वामित्व आवंटी(यों) के पक्ष में
           हस्तांतरित करने के लिए विक्रय-पत्र निष्पादित करेगी, बशर्ते आवंटी(यों) ने इस करार के अनुसार
@@ -266,17 +266,6 @@ export function OperativeClausesAndSignaturesPageHindi({
           उन नियमों और शर्तों से परिचित कराने के लिए जोड़ी गई है जो उचित समय पर अंतिम रूप दिए जाने
           पर लागू हो सकती हैं।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           23. आवंटी(यां) सहमत हैं कि इस करार, रखरखाव करार और अन्य अनुबंधों में शामिल प्रावधान उक्त
           परिसर में बिक्री के लिए प्रस्तावित भूखंड/दुकानों के लिए विशिष्ट और लागू हैं और इन
@@ -291,6 +280,17 @@ export function OperativeClausesAndSignaturesPageHindi({
           हटाया हुआ माना जाएगा और इस करार के शेष प्रावधान करार निष्पादन के समय यथा लागू वैध और
           प्रवर्तनीय रहेंगे।
         </p>
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={12} />
+      </div>
+      <div
+        style={{
+          pageBreakBefore: 'always',
+          paddingTop: '2rem',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: '257mm',
+        }}
+      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           25. फर्म इस करार में प्रदान किए गए अपने किसी भी दायित्व या वचनों को पूरा न करने के लिए
           जिम्मेदार या उत्तरदायी नहीं होगी यदि ऐसा निष्पादन अप्रत्याशित घटना की स्थितियों के कारण
@@ -314,17 +314,6 @@ export function OperativeClausesAndSignaturesPageHindi({
           फर्म को देना आवंटी(यों) का कर्तव्य होगा, अन्यथा उपरोक्त पते पर भेजे गए सभी पत्र-व्यवहार और
           पत्र आवंटी(यों) द्वारा प्राप्त माने जाएंगे।
         </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
-      </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           28. आवंटी(यां) सहमत हैं कि इस करार के किसी भी नियम और शर्त के सभी उल्लंघन, भंग और/या
           अनुपालन न करने को चूक की घटनाएँ माना जाएगा। चूक की कुछ संकेतक घटनाएँ नीचे उल्लिखित हैं जो
@@ -360,27 +349,7 @@ export function OperativeClausesAndSignaturesPageHindi({
           किसी आगे की नोटिस के रद्द माना जाएगा और फर्म को बयाना राशि के साथ विलंबित भुगतानों पर
           ब्याज और गैर-वापसी योग्य प्रकृति की किसी भी अन्य राशि को रखने का अधिकार होगा।
         </p>
-        <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          29. इस बिल्डर-बायर करार के नियमों से उत्पन्न या उससे संबंधित या उसकी व्याख्या और वैधता और
-          पक्षों के संबंधित अधिकारों और दायित्वों से संबंधित सभी या कोई भी विवाद, जिन्हें
-          सौहार्दपूर्ण ढंग से नहीं सुलझाया जा सकता, मध्यस्थता के माध्यम से सुलझाए जाएंगे। मध्यस्थता
-          कार्यवाही मध्यस्थता और सुलह अधिनियम, 1996 या उसके वैधानिक संशोधनों/परिवर्तनों द्वारा
-          नियंत्रित होगी। मध्यस्थता कार्यवाही फर्म के प्रबंध निदेशक द्वारा नियुक्त एकल मध्यस्थ
-          द्वारा आयोजित की जाएगी। क्षेत्रीय अधिकारिता राजस्थान के सक्षम न्यायालयों में होगी।
-        </p>
-        <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          30. कोई भी आवंटी मध्यस्थता का उपाय अपनाए बिना सीधे दीवानी न्यायालय के क्षेत्राधिकार को
-          लागू करने का अधिकार नहीं रखेगा।
-        </p>
-        <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          31. आपसे अनुरोध है कि इस करार की एक प्रति अपने पास रखें और दूसरी प्रति 7 दिनों के भीतर
-          विधिवत हस्ताक्षरित करके हमें वापस करें, अन्यथा हम मान लेंगे कि इस करार के दिए गए नियम और
-          शर्तें आपको स्वीकार्य हैं।
-        </p>
-        <p className="mb-4 text-justify text-[15px] leading-relaxed">
-          32. यह अनंतिम करार भूखंड/भूखंडों के अंतिम पंजीकरण के बाद शून्य और अमान्य हो जाएगा।
-        </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={13} />
       </div>
       <div
         style={{
@@ -391,68 +360,94 @@ export function OperativeClausesAndSignaturesPageHindi({
           minHeight: '257mm',
         }}
       >
-        <p className="mt-2 mb-4 text-justify text-[15px] leading-relaxed">
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
+          29. इस बिल्डर-बायर करार के नियमों से उत्पन्न या उससे संबंधित या उसकी व्याख्या और वैधता और
+          पक्षों के संबंधित अधिकारों और दायित्वों से संबंधित सभी या कोई भी विवाद, जिन्हें
+          सौहार्दपूर्ण ढंग से नहीं सुलझाया जा सकता, मध्यस्थता के माध्यम से सुलझाए जाएंगे। मध्यस्थता
+          कार्यवाही मध्यस्थता और सुलह अधिनियम, 1996 या उसके वैधानिक संशोधनों/परिवर्तनों द्वारा
+          नियंत्रित होगी। मध्यस्थता कार्यवाही फर्म के प्रबंध निदेशक द्वारा नियुक्त एकल मध्यस्थ
+          द्वारा आयोजित की जाएगी। क्षेत्रीय अधिकारिता राजस्थान के सक्षम न्यायालयों में होगी।
+        </p>
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
+          30. कोई भी आवंटी मध्यस्थता का उपाय अपनाए बिना सीधे दीवानी न्यायालय के क्षेत्राधिकार को
+          लागू करने का अधिकार नहीं रखेगा।
+        </p>
+        <p className="mb-2 text-justify text-[15px] leading-relaxed">
+          31. आपसे अनुरोध है कि इस करार की एक प्रति अपने पास रखें और दूसरी प्रति 7 दिनों के भीतर
+          विधिवत हस्ताक्षरित करके हमें वापस करें, अन्यथा हम मान लेंगे कि इस करार के दिए गए नियम और
+          शर्तें आपको स्वीकार्य हैं।
+        </p>
+        <p className="mb-3 text-justify text-[15px] leading-relaxed">
+          32. यह अनंतिम करार भूखंड/भूखंडों के अंतिम पंजीकरण के बाद शून्य और अमान्य हो जाएगा।
+        </p>
+        <p className="mt-1 mb-2 text-justify text-[15px] leading-relaxed">
           इसकी साक्ष्य में पक्षों ने उनके संबंधित हस्ताक्षरों के नीचे उल्लिखित स्थानों और तारीख, माह
           और वर्ष पर इस करार और उसकी डुप्लीकेट प्रति पर अपने संबंधित हाथ और हस्ताक्षर लगाए हैं:
         </p>
-        <p className="mb-4 text-[15px] leading-relaxed">
-          <strong>उक्त नाम के आवंटी(यों) द्वारा हस्ताक्षरित और सुपुर्द:</strong> (संयुक्त आवंटितियों
-          सहित) (1) (2) पर
-        </p>
-        <p className="mb-4 text-[15px] leading-relaxed">की उपस्थिति में:</p>
-        <p className="mb-4 text-[15px] leading-relaxed">दिनांक</p>
-        <p className="mb-4 text-[15px] leading-relaxed">
-          <strong>साक्षी:</strong>
-          <br />
-          1. हस्ताक्षर
-          <br />
-          नाम
-          <br />
-          पता
-          <br />
-          (आवंटी(यों) द्वारा पूर्ण किया जाना है)
-        </p>
-        <p className="mb-4 text-[15px] leading-relaxed">
-          2. हस्ताक्षर
-          <br />
-          नाम
-          <br />
-          पता
-        </p>
-        <p className="mt-8 mb-4 text-[15px] leading-relaxed">
-          <strong>उक्त नाम की फर्म द्वारा हस्ताक्षरित और सुपुर्द</strong>
-        </p>
-        <p className="mb-4 text-[15px] leading-relaxed">दिनांक</p>
-        <p className="mb-4 text-[15px] leading-relaxed">की उपस्थिति में:</p>
-        <div className="my-1 h-8 w-24">
-          <img
-            src="/signature.png"
-            alt="निदेशक हस्ताक्षर"
-            className="h-full w-full object-contain"
-          />
+        <div className="my-2 grid grid-cols-2 gap-8">
+          <div>
+            <p className="mb-1.5 text-[15px] leading-relaxed">
+              <strong>उक्त नाम के आवंटी(यों) द्वारा हस्ताक्षरित और सुपुर्द:</strong> (संयुक्त
+              आवंटितियों सहित) (1) (2) पर
+            </p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">की उपस्थिति में:</p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">दिनांक</p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">
+              <strong>साक्षी:</strong>
+              <br />
+              1. हस्ताक्षर
+              <br />
+              नाम
+              <br />
+              पता
+              <br />
+              (आवंटी(यों) द्वारा पूर्ण किया जाना है)
+            </p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">
+              2. हस्ताक्षर
+              <br />
+              नाम
+              <br />
+              पता
+            </p>
+          </div>
+          <div>
+            <p className="mb-1.5 text-[15px] leading-relaxed">
+              <strong>उक्त नाम की फर्म द्वारा हस्ताक्षरित और सुपुर्द</strong>
+            </p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">दिनांक</p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">की उपस्थिति में:</p>
+            <div className="my-1 h-8 w-24">
+              <img
+                src="/signature.png"
+                alt="निदेशक हस्ताक्षर"
+                className="h-full w-full object-contain"
+              />
+            </div>
+            <p className="mb-1.5 text-[15px] leading-relaxed">
+              <strong>(अधिकृत हस्ताक्षरकर्ता)</strong>
+            </p>
+            <p className="mt-3 mb-1.5 text-[15px] leading-relaxed">
+              <strong>साक्षी:</strong>
+              <br />
+              1. हस्ताक्षर
+              <br />
+              नाम
+              <br />
+              पता
+            </p>
+            <p className="mb-1.5 text-[15px] leading-relaxed">
+              की ओर से और उसकी ओर से
+              <br />
+              2. हस्ताक्षर
+              <br />
+              नाम
+              <br />
+              पता
+            </p>
+          </div>
         </div>
-        <p className="mb-4 text-[15px] leading-relaxed">
-          <strong>(अधिकृत हस्ताक्षरकर्ता)</strong>
-        </p>
-        <p className="mt-8 mb-4 text-[15px] leading-relaxed">
-          <strong>साक्षी:</strong>
-          <br />
-          1. हस्ताक्षर
-          <br />
-          नाम
-          <br />
-          पता
-        </p>
-        <p className="mb-4 text-[15px] leading-relaxed">
-          की ओर से और उसकी ओर से
-          <br />
-          2. हस्ताक्षर
-          <br />
-          नाम
-          <br />
-          पता
-        </p>
-        <BbaPageFooterHindi companyInfo={companyInfo} />
+        <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={14} />
       </div>
     </>
   );

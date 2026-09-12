@@ -16,7 +16,10 @@ export async function GET(request: NextRequest) {
 
     let query = supabaseAdmin
       .from('profiles')
-      .select('*', { count: 'exact' })
+      .select(
+        'id, full_name, email, real_email, phone, role, department, notes, is_active, created_at, updated_at',
+        { count: 'exact' }
+      )
       .eq('role', 'employee')
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
@@ -47,6 +50,11 @@ export async function GET(request: NextRequest) {
     > = {};
 
     if (employeeIds.length > 0) {
+      // Bound attendance calculation to the last 60 days to prevent unbounded memory transfer
+      const sixtyDaysAgo = new Date();
+      sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
+      const sixtyDaysStr = sixtyDaysAgo.toISOString().split('T')[0];
+
       const [leadsRes, attRes] = await Promise.all([
         supabaseAdmin
           .from('chat_leads')
@@ -55,7 +63,8 @@ export async function GET(request: NextRequest) {
         supabaseAdmin
           .from('attendance_records')
           .select('user_id, status')
-          .in('user_id', employeeIds),
+          .in('user_id', employeeIds)
+          .gte('date', sixtyDaysStr),
       ]);
 
       const leads = leadsRes.data || [];

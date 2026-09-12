@@ -75,7 +75,7 @@ export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
       </p>
       <p className="mt-8 text-[14.5px] font-bold">{formData.clientName}</p>
       <p className="mb-3 text-[11.5px]">(Allottee(s))</p>
-      <BbaPageFooter companyInfo={companyInfo} />
+      <BbaPageFooter companyInfo={companyInfo} pageNumber={2} />
     </div>
   );
 }
