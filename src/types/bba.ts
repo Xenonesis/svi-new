@@ -28,5 +28,13 @@ export interface SavedBba {
     advisorEmail?: string;
     age?: string;
     language?: string;
+    ticketId?: string;
+    panNumber?: string;
+    mobileNumber?: string;
+    nomineeName?: string;
+    nomineeRelation?: string;
+    nomineeAge?: string;
+    nomineeAddress?: string;
+    [key: string]: any;
   };
 }
