@@ -69,7 +69,7 @@ export function OperativeClausesAndSignaturesPage({
           include only the amounts paid towards the agreed amount decided in this Builder Buyer
           Agreement, and shall not include any other amounts outside the decided BBA terms. The
           balance 40% (forty percent) of the total amount paid shall stand forfeited by the Firm as
-          cancellation charges. The admissible refundable amount will be refunded within 90 (ninety)
+          cancellation charges. The admissible refundable amount will be refunded after 90 (ninety)
           working days from the date of receipt and acceptance of the formal cancellation request.
         </p>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
