@@ -541,20 +541,33 @@ export function AIComposePopover({
       </style>
     `;
 
-    if (parsed.includes('<head>')) {
-      return parsed.replace('<head>', `<head>${normalizerCss}`);
-    } else if (parsed.includes('<html')) {
-      return parsed.replace(/<html[^>]*>/, `$&<head>${normalizerCss}</head>`);
+    let previewHtml = parsed;
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    if (origin) {
+      // Use local origin for iframe preview to prevent CSP blocking and TLS errors on localhost
+      previewHtml = previewHtml.replace(
+        /https?:\/\/(?:www\.)?sviinfrasolutions\.com\/logo\.png/gi,
+        `${origin}/logo.png`
+      );
+    }
+
+    const baseTag = origin ? `<base href="${origin}/">` : '';
+
+    if (previewHtml.includes('<head>')) {
+      return previewHtml.replace('<head>', `<head>${baseTag}${normalizerCss}`);
+    } else if (previewHtml.includes('<html')) {
+      return previewHtml.replace(/<html[^>]*>/, `$&<head>${baseTag}${normalizerCss}</head>`);
     } else {
       return `<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  ${baseTag}
   ${normalizerCss}
 </head>
 <body>
-  ${parsed}
+  ${previewHtml}
 </body>
 </html>`;
     }
