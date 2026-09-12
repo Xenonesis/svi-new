@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from '../legal/bbaA4Styles';
 import {
   getProjectLegalLocation,
   getProjectCity as getProjectCityUtil,
@@ -14,15 +15,7 @@ const getProjectCity = (projectName: string) => getProjectCityUtil(projectName, 
 export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalContext) {
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-2 text-left text-[15px] font-bold underline">
           नोट: कृपया बीबीए फॉर्म को पूरी तरह से बड़े अक्षरों (CAPITAL LETTERS) में भरें।
         </p>
@@ -135,15 +128,7 @@ export function PartiesAndRecitalsPageHindi({ formData, companyInfo }: BBALegalC
         </div>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={3} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-3 text-center text-[15px] font-bold">तथा</p>
         <p className="mb-1 text-[15px] font-bold">द्वितीय आवंटी</p>
         <p className="mb-1 text-[15px]">

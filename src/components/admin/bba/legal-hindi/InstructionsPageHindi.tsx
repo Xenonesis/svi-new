@@ -1,20 +1,13 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from '../legal/bbaA4Styles';
 
 /**
  * First page of the BBA (Hindi): "आवंटी(यों) को महत्वपूर्ण निर्देश"
  */
 export function InstructionsPageHindi({ formData, companyInfo }: BBALegalContext) {
   return (
-    <div
-      style={{
-        pageBreakBefore: 'always',
-        paddingTop: '2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '257mm',
-      }}
-    >
+    <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
       <p className="mb-2 text-center text-lg font-bold uppercase">
         &quot;{formData?.projectName?.toUpperCase() || ''}&quot;
       </p>

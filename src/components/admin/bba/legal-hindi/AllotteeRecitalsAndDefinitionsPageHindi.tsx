@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from '../legal/bbaA4Styles';
 import { getProjectShortLocation } from '@/src/lib/utils/projectLocations';
 
 /**
@@ -14,15 +15,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
 
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-[15px] font-bold">आवंटी(यों) के प्रतिनिधित्व</p>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>और चूँकि</strong> आवंटी(यों) ने दिनांक{' '}
@@ -119,15 +112,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={5} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;बयाना राशि&quot;</strong> का अर्थ उक्त भूखंड/दुकान के कुल मूल्य का 50% है जो
           आवंटी(यों) द्वारा देय है और जो भुगतान अनुसूची, अनुबंध-ए में अधिक स्पष्ट रूप से दर्शाया गया
@@ -185,15 +170,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={6} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;रखरखाव शुल्क&quot;</strong> का अर्थ आवंटी(यों) द्वारा उक्त भवन/उक्त परिसर की
           रखरखाव सेवाओं के लिए रखरखाव एजेंसी को देय शुल्कों से होगा, जिसमें सामान्य क्षेत्र और
@@ -227,15 +204,7 @@ export function AllotteeRecitalsAndDefinitionsPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={7} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           <strong>&quot;कुल मूल्य&quot;</strong> का अर्थ उक्त भूखंड/दुकान के लिए अन्य के साथ देय सभी
           प्रकार की राशि से है जिसमें मूल बिक्री मूल्य, पीएलसी (यदि उक्त भूखंड/दुकान अधिमान्य रूप से

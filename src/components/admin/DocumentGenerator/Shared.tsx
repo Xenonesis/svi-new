@@ -139,13 +139,24 @@ export function PreviewContainer({
   children,
   previewId,
   hasPreview,
+  className,
+  containerClassName,
+  style,
 }: {
   children: ReactNode;
   previewId: string;
   hasPreview: boolean;
+  className?: string;
+  containerClassName?: string;
+  style?: React.CSSProperties;
 }) {
   return (
-    <div className="custom-scrollbar dark:bg-brand-dark-surface/40 relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-inner sm:p-6 dark:border-white/10 [:fullscreen]:overflow-hidden [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:p-0">
+    <div
+      className={
+        containerClassName ||
+        'custom-scrollbar dark:bg-brand-dark-surface/40 relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-gray-50 p-4 shadow-inner sm:p-6 dark:border-white/10 [:fullscreen]:overflow-hidden [:fullscreen]:rounded-none [:fullscreen]:border-none [:fullscreen]:p-0'
+      }
+    >
       {!hasPreview ? (
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
           <div className="border-brand-gold/30 bg-brand-gold/10 flex h-12 w-12 items-center justify-center rounded-2xl border shadow-sm">
@@ -163,7 +174,11 @@ export function PreviewContainer({
       ) : (
         <div
           id={previewId}
-          className="mx-auto h-full w-full max-w-3xl origin-top transform overflow-auto rounded-lg border border-gray-200 bg-white p-8 text-gray-800 shadow-sm [:fullscreen]:h-full [:fullscreen]:max-w-none [:fullscreen]:overflow-auto [:fullscreen]:rounded-none [:fullscreen]:border-none"
+          style={style}
+          className={
+            className ||
+            'mx-auto h-full w-full max-w-3xl origin-top transform overflow-auto rounded-lg border border-gray-200 bg-white p-8 text-gray-800 shadow-sm [:fullscreen]:h-full [:fullscreen]:max-w-none [:fullscreen]:overflow-auto [:fullscreen]:rounded-none [:fullscreen]:border-none'
+          }
         >
           {children}
         </div>

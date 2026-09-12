@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooterHindi } from './BbaPageFooterHindi';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from '../legal/bbaA4Styles';
 import { getProjectLegalLocation } from '@/src/lib/utils/projectLocations';
 
 /**
@@ -15,15 +16,7 @@ export function OperativeClausesAndSignaturesPageHindi({
 
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           1. फर्म एतद्द्वारा आवंटी के पक्ष में {getProjectLocation(formData?.projectName)} पर स्थित
           दुकान/भूखंड सं. {formData.unitNumber} क्षेत्रफल {formData.area} वर्ग गज को
@@ -98,15 +91,7 @@ export function OperativeClausesAndSignaturesPageHindi({
         </div>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={9} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           5. आवंटी समझते हैं कि परियोजना अभी भी संकल्पना स्तर पर है और निर्णय और विकास काफी हद तक इस
           और इसी प्रकार के अनुरोध से उत्पन्न आवंटी प्रतिक्रिया के साथ-साथ भूमि अधिग्रहण, रूपांतरण और
@@ -174,15 +159,7 @@ export function OperativeClausesAndSignaturesPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={10} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           12. आवंटी(यों) ने भुगतान अनुसूची (अनुबंध-ए) को देखा और स्वीकार किया है। फर्म अपने एकल
           विवेक से या किसी सरकारी प्राधिकरण के निर्देश पर या अप्रत्याशित घटना की स्थितियों के कारण
@@ -222,15 +199,7 @@ export function OperativeClausesAndSignaturesPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={11} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           18. फर्म, उसके सहयोगी/सहायक उक्त भूखंड/दुकान का स्वामित्व आवंटी(यों) के पक्ष में
           हस्तांतरित करने के लिए विक्रय-पत्र निष्पादित करेगी, बशर्ते आवंटी(यों) ने इस करार के अनुसार
@@ -278,15 +247,7 @@ export function OperativeClausesAndSignaturesPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={12} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[15px] leading-relaxed">
           25. फर्म इस करार में प्रदान किए गए अपने किसी भी दायित्व या वचनों को पूरा न करने के लिए
           जिम्मेदार या उत्तरदायी नहीं होगी यदि ऐसा निष्पादन अप्रत्याशित घटना की स्थितियों के कारण
@@ -347,15 +308,7 @@ export function OperativeClausesAndSignaturesPageHindi({
         </p>
         <BbaPageFooterHindi companyInfo={companyInfo} pageNumber={13} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-2 text-justify text-[15px] leading-relaxed">
           29. इस बिल्डर-बायर करार के नियमों से उत्पन्न या उससे संबंधित या उसकी व्याख्या और वैधता और
           पक्षों के संबंधित अधिकारों और दायित्वों से संबंधित सभी या कोई भी विवाद, जिन्हें

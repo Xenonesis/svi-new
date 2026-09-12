@@ -129,11 +129,8 @@ export function BbaPreviewModal({
           </div>
         </div>
 
-        <div className="flex-1 overflow-y-auto bg-gray-100 p-2 sm:p-6 dark:bg-zinc-900/30">
-          <div
-            id="modalBbaPreview"
-            className="mx-auto w-full max-w-3xl rounded-xl bg-white p-4 font-sans text-xs leading-relaxed text-black shadow-sm sm:p-8 sm:text-[13px]"
-          >
+        <div className="custom-scrollbar flex-1 overflow-x-auto overflow-y-auto bg-slate-200/70 p-3 sm:p-6 dark:bg-[#0c0d14]">
+          <div id="modalBbaPreview" className="mx-auto flex w-full flex-col items-center">
             {selectedBba.form_data?.language === 'hi' ? (
               <BbaPreviewContentHindi formData={selectedBba.form_data} companyInfo={companyInfo} />
             ) : (

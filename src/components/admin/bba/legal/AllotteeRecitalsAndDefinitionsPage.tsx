@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from './bbaA4Styles';
 import { getProjectShortLocation } from '@/src/lib/utils/projectLocations';
 
 /**
@@ -12,15 +13,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
 
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-[14.5px] font-bold">Allottee(s) Representations</p>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>AND WHEREAS</strong> the Allottee(s) vide Application Dated{' '}
@@ -121,15 +114,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <BbaPageFooter companyInfo={companyInfo} pageNumber={5} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Earnest Money&quot;</strong> means 50% of the Total Price, of the Said
           Plot/shop payable by the Allottee(s) and more clearly setout in schedule of payments,
@@ -194,15 +179,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <BbaPageFooter companyInfo={companyInfo} pageNumber={6} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Maintenance Charges&quot;</strong> shall mean the charges payable by the
           Allottee(s) to the Maintenance Agency for the maintenance services of the Said
@@ -239,15 +216,7 @@ export function AllotteeRecitalsAndDefinitionsPage({ formData, companyInfo }: BB
         </p>
         <BbaPageFooter companyInfo={companyInfo} pageNumber={7} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-4 text-justify text-[14.5px] leading-relaxed">
           <strong>&quot;Total Price&quot;</strong> means any and all kind of the amount amongst
           others, payable for the Said Plot/shop which includes basic sale price, PLC (if the Said

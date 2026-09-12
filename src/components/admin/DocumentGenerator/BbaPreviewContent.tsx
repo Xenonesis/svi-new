@@ -2,6 +2,7 @@ import React from 'react';
 import BbaLegalPages from '../../../../app/admin/bba/BbaLegalPages';
 import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
 import { getProjectCoverLocation } from '@/src/lib/utils/projectLocations';
+import { BBA_A4_PAGE_STYLE, BBA_A4_COVER_STYLE, BBA_A4_PAGE_CLASS } from '../bba/legal/bbaA4Styles';
 
 export default function BbaPreviewContent({ formData, companyInfo }: any) {
   const getProjectLocation = (projectName: string) => getProjectCoverLocation(projectName, 'en');
@@ -32,14 +33,9 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
   };
 
   return (
-    <div className="bg-white p-8 font-sans text-[14.5px] leading-relaxed text-black">
+    <div className="bba-preview-pages flex flex-col items-center gap-8 px-2 py-6 font-sans text-[14.5px] leading-relaxed text-black print:gap-0 print:bg-white print:p-0">
       {/* Cover Page */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_COVER_STYLE}>
         {/* Executive Letterhead Header */}
         <div className="mb-2 flex items-start justify-between border-b-2 border-[#0f2942] pb-2">
           <div>
@@ -272,7 +268,7 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
         </div>
 
         {/* Customer Helpdesk Grounding Banner (Bottom of Page) */}
-        <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-center text-[11px] text-slate-600">
+        <div className="mt-auto rounded-lg border border-slate-200 bg-slate-50 px-3 py-1.5 text-center text-[11px] text-slate-600">
           <span className="font-semibold text-[#0f2942]">Customer Support Helpdesk: </span>
           <span>
             {companyInfo?.company_email} | Helpline: {companyInfo?.company_phone}
@@ -286,19 +282,11 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
           <span className="font-mono text-[9px] tracking-wider">OFFICIAL COPY</span>
         </div>
       </div>
-      {/* Legal Pages (2-17) */}
+      {/* Legal Pages (2-14) */}
       <BbaLegalPages formData={formData} companyInfo={companyInfo} totalCost={totalCost} />
 
-      {/* Payment Schedule Table (Page 18-19) */}
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      {/* Payment Schedule Table (Page 15 of 16) */}
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <h3 className="mb-2 text-lg font-bold text-gray-800">Payment Schedule</h3>
         <div className="mb-6 overflow-hidden border border-gray-400">
           <table className="w-full border-collapse text-left">
@@ -465,16 +453,8 @@ export default function BbaPreviewContent({ formData, companyInfo }: any) {
         <BbaPageFooter companyInfo={companyInfo} pageNumber={15} />
       </div>
 
-      {/* Payment Terms & Bank Details Page */}
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      {/* Payment Terms & Bank Details Page (Page 16 of 16) */}
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <h3 className="mb-4 text-lg font-bold text-gray-800">Payment Terms & Details</h3>
         {/* Terms Box */}
         <div className="mb-6 rounded-lg border-l-4 border-amber-500 bg-slate-50 p-4 text-[12px] leading-relaxed text-slate-700">

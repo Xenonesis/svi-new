@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from './bbaA4Styles';
 import {
   getProjectLegalLocation,
   getProjectCity as getProjectCityUtil,
@@ -16,15 +17,7 @@ const getProjectCity = (projectName: string) => getProjectCityUtil(projectName, 
 export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContext) {
   return (
     <>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-2 text-left text-[14.5px] font-bold underline">
           Note: Please fill the BBA form completely in capital letters.
         </p>
@@ -139,15 +132,7 @@ export function PartiesAndRecitalsPage({ formData, companyInfo }: BBALegalContex
         </div>
         <BbaPageFooter companyInfo={companyInfo} pageNumber={3} />
       </div>
-      <div
-        style={{
-          pageBreakBefore: 'always',
-          paddingTop: '2rem',
-          display: 'flex',
-          flexDirection: 'column',
-          minHeight: '257mm',
-        }}
-      >
+      <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <p className="mb-3 text-center text-[14.5px] font-bold">AND</p>
         <p className="mb-1 text-[14.5px] font-bold">2nd ALLOTTEE</p>
         <p className="mb-1 text-[14.5px]">

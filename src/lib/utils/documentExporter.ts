@@ -19,6 +19,8 @@ function buildClone(element: HTMLElement, width: string, padding: string): HTMLE
   clone.style.top = '0';
   clone.style.padding = padding;
   clone.style.boxSizing = 'border-box';
+  clone.style.zoom = '1';
+  clone.style.transform = 'none';
   document.body.appendChild(clone);
   return clone;
 }
@@ -70,6 +72,8 @@ export async function exportToPDF({
     if (discretePages.length > 0) {
       clone.style.padding = '0';
       clone.style.width = 'auto';
+      clone.style.zoom = '1';
+      clone.style.transform = 'none';
       const A4_W_MM = 210;
       const A4_H_MM = 297;
       const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
@@ -84,6 +88,8 @@ export async function exportToPDF({
         pageEl.style.boxShadow = 'none';
         pageEl.style.border = 'none';
         pageEl.style.margin = '0';
+        pageEl.style.zoom = '1';
+        pageEl.style.transform = 'none';
 
         const pageCanvas = await html2canvas(pageEl, {
           scale,

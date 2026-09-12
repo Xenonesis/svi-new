@@ -1,5 +1,6 @@
 import type { BBALegalContext } from './types';
 import { BbaPageFooter } from './BbaPageFooter';
+import { BBA_A4_PAGE_STYLE, BBA_A4_PAGE_CLASS } from './bbaA4Styles';
 
 /**
  * First page of the BBA: "Important Instructions to the Allottee(s)".
@@ -7,15 +8,7 @@ import { BbaPageFooter } from './BbaPageFooter';
  */
 export function InstructionsPage({ formData, companyInfo }: BBALegalContext) {
   return (
-    <div
-      style={{
-        pageBreakBefore: 'always',
-        paddingTop: '2rem',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '257mm',
-      }}
-    >
+    <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
       <p className="mb-2 text-center text-lg font-bold uppercase">
         "{formData?.projectName?.toUpperCase() || ''}"
       </p>
