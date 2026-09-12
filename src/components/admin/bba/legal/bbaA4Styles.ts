@@ -27,7 +27,7 @@ export const BBA_A4_COVER_STYLE: React.CSSProperties = {
   width: `${A4_WIDTH_PX}px`,
   minHeight: `${A4_HEIGHT_PX}px`,
   boxSizing: 'border-box',
-  padding: '32px 36px 28px 36px',
+  padding: '28px 36px 24px 36px',
   backgroundColor: '#ffffff',
   display: 'flex',
   flexDirection: 'column',

@@ -211,8 +211,8 @@ export function OperativeClausesAndSignaturesPage({
           11A. In the event any EMI installment is skipped or delayed by the Allottee(s), the
           Allottee(s) shall be liable to pay the overdue skipped EMI amount along with an additional
           late fee of 10% (ten percent) of that particular EMI amount. Furthermore, if the
-          Allottee(s) skips EMI installments continuously for 6 (six) consecutive months or skips
-          their 6th (sixth) EMI installment, the deal/allotment shall automatically stand cancelled.
+          Allottee(s) fails to pay 6 (six) EMI installments (skips 6 EMIs), the plot/allotment shall
+          automatically stand cancelled.
         </p>
         <BbaPageFooter companyInfo={companyInfo} pageNumber={10} />
       </div>

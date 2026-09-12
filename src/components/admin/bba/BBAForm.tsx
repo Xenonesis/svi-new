@@ -262,13 +262,25 @@ export function BBAForm({
           onChange={handleChange}
           required
         />
-        <FormField
-          label="PLC (%)"
-          name="plc"
-          type="number"
-          value={formData.plc}
-          onChange={handleChange}
-        />
+        <div className="space-y-1">
+          <FormField
+            label="PLC (%)"
+            name="plc"
+            type="number"
+            value={formData.plc}
+            onChange={handleChange}
+            placeholder="e.g. 5, 10 or 15"
+            min="0"
+            step="any"
+          />
+          {Number(formData.plc) > 30 && (
+            <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
+              ⚠️ Warning: PLC is entered as percentage (%). {formData.plc}% adds{' '}
+              {Number(formData.plc).toFixed(0)}% to base price. If you intended ₹/sq.yd, convert to
+              %.
+            </p>
+          )}
+        </div>
 
         <FormSelect
           label="Payment Plan"
