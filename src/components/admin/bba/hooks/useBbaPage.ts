@@ -381,6 +381,7 @@ export function useBbaPage(tokenOverride?: string | null) {
             parsed.secondPaymentDays !== '15' && parsed.secondPaymentDays !== '28';
           data.setIsCustomSecondPaymentDays(isCustomDays);
         }
+        data.setPreview(true);
       }
     },
     [data, handleClearRecord]

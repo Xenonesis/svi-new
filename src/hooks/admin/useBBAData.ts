@@ -211,6 +211,7 @@ export function useBBAData(token: string | null) {
           const isCustomDays = fd.secondPaymentDays !== '15' && fd.secondPaymentDays !== '28';
           setIsCustomSecondPaymentDays(isCustomDays);
         }
+        setPreview(true);
       }
     }
   }, [savedBbas, templateId]);
@@ -398,6 +399,7 @@ export function useBBAData(token: string | null) {
                 allotmentData.secondPaymentDays !== '28';
               setIsCustomSecondPaymentDays(isCustomDays);
             }
+            setPreview(true);
           }
         }
       } catch (err) {

@@ -329,6 +329,21 @@ export function BbaPreviewContainer({
     );
   }
 
+  const isLivePreviewActive =
+    preview ||
+    Boolean(
+      formData?.clientName?.trim() ||
+      formData?.unitNumber?.trim() ||
+      formData?.ticketId?.trim() ||
+      formData?.fatherName?.trim() ||
+      formData?.aadharNumber?.trim() ||
+      formData?.mobileNumber?.trim() ||
+      formData?.email?.trim() ||
+      formData?.panNumber?.trim() ||
+      Number(formData?.area) > 0 ||
+      formData?.projectName
+    );
+
   // ──────────────────────────────────────────────────────────────────────────
   // STANDARD IN-PAGE EMBEDDED VIEW
   // ──────────────────────────────────────────────────────────────────────────
@@ -376,7 +391,7 @@ export function BbaPreviewContainer({
           </div>
         </div>
 
-        {preview && (
+        {isLivePreviewActive && (
           <div className="flex items-center gap-2">
             {/* Zoom Controls */}
             <div className="flex items-center rounded-lg border border-gray-200 bg-gray-50 p-0.5 text-xs text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
@@ -434,7 +449,7 @@ export function BbaPreviewContainer({
 
       <PreviewContainer
         previewId="bbaPreview"
-        hasPreview={preview}
+        hasPreview={isLivePreviewActive}
         containerClassName="custom-scrollbar relative flex-1 overflow-hidden rounded-xl border border-gray-200 bg-slate-200/70 dark:bg-[#0c0d14] p-2 shadow-inner dark:border-white/10"
         className="custom-scrollbar mx-auto h-full w-full overflow-x-auto overflow-y-auto px-2 py-6 text-gray-800 will-change-transform"
         style={zoomLevel !== 100 ? { zoom: `${zoomLevel}%` } : undefined}
@@ -449,7 +464,7 @@ export function BbaPreviewContainer({
       <DownloadOptions
         onDownloadPDF={onDownloadPDF}
         onDownloadImage={onDownloadImage}
-        disabled={!preview}
+        disabled={!isLivePreviewActive}
       />
     </div>
   );
