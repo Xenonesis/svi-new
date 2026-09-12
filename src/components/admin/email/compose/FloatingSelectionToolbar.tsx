@@ -81,6 +81,7 @@ export function FloatingSelectionToolbar({
   const [editValue, setEditValue] = useState('');
   const [customPrompt, setCustomPrompt] = useState('');
   const savedRangeRef = useRef<Range | null>(null);
+  const savedTextRef = useRef('');
   const { improveContent, loading } = useAIEmail();
   const toolbarRef = useRef<HTMLDivElement>(null);
 
@@ -104,7 +105,7 @@ export function FloatingSelectionToolbar({
     }
 
     const text = selection.toString().trim();
-    if (!text || text.length < 2) {
+    if (!text) {
       setPosition(null);
       setSelectedText('');
       savedRangeRef.current = null;
@@ -122,6 +123,7 @@ export function FloatingSelectionToolbar({
     try {
       const range = selection.getRangeAt(0);
       savedRangeRef.current = range.cloneRange();
+      savedTextRef.current = text;
       const rect = range.getBoundingClientRect();
 
       if (rect.width === 0 || rect.height === 0) return;
@@ -141,8 +143,8 @@ export function FloatingSelectionToolbar({
   }, [containerRef, showAIPanel, showEditPanel]);
 
   useEffect(() => {
-    const handleMouseUp = (e: MouseEvent) => {
-      // If clicking inside toolbar, don't reset selection
+    const handleMouseUp = (e: MouseEvent | TouchEvent) => {
+      // If clicking/tapping inside toolbar, don't reset selection
       if (toolbarRef.current && toolbarRef.current.contains(e.target as Node)) {
         return;
       }
@@ -157,10 +159,12 @@ export function FloatingSelectionToolbar({
     };
 
     document.addEventListener('mouseup', handleMouseUp);
+    document.addEventListener('touchend', handleMouseUp);
     document.addEventListener('keyup', handleKeyUp);
 
     return () => {
       document.removeEventListener('mouseup', handleMouseUp);
+      document.removeEventListener('touchend', handleMouseUp);
       document.removeEventListener('keyup', handleKeyUp);
     };
   }, [handleSelectionChange]);
@@ -168,6 +172,7 @@ export function FloatingSelectionToolbar({
   const handleClose = () => {
     setPosition(null);
     setSelectedText('');
+    savedTextRef.current = '';
     setShowAIPanel(false);
     setShowEditPanel(false);
     setCustomPrompt('');
@@ -176,33 +181,36 @@ export function FloatingSelectionToolbar({
 
   // 1. Delete selected text
   const handleDelete = () => {
-    if (!selectedText) return;
-    onDeleteText(selectedText, savedRangeRef.current);
+    const targetText = selectedText || savedTextRef.current;
+    if (!targetText) return;
+    onDeleteText(targetText, savedRangeRef.current);
     toast.success('Deleted selected text');
     handleClose();
   };
 
   // 2. Direct Edit / Save
   const handleSaveEdit = () => {
-    if (!selectedText || !editValue.trim()) return;
+    const targetText = selectedText || savedTextRef.current;
+    if (!targetText || !editValue.trim()) return;
     const cleaned = cleanSnippetHtml(editValue);
-    onReplaceText(selectedText, cleaned, savedRangeRef.current);
+    onReplaceText(targetText, cleaned, savedRangeRef.current);
     toast.success('Updated text snippet');
     handleClose();
   };
 
   // 3. AI Rewrite
   const handleAIRewrite = async (instruction: string) => {
-    if (!selectedText) return;
+    const targetText = selectedText || savedTextRef.current;
+    if (!targetText) return;
     try {
       const result = await improveContent({
-        html: selectedText,
+        html: targetText,
         instruction: `${instruction} IMPORTANT: Return ONLY the snippet / list items. Do NOT return <html> or <!DOCTYPE> tags.`,
       });
 
       if (result && result.trim()) {
         const cleaned = cleanSnippetHtml(result);
-        onReplaceText(selectedText, cleaned, savedRangeRef.current);
+        onReplaceText(targetText, cleaned, savedRangeRef.current);
         toast.success('Rewrote selection with AI');
         handleClose();
       }
@@ -211,11 +219,13 @@ export function FloatingSelectionToolbar({
     }
   };
 
-  if (!mounted || !position || !selectedText) return null;
+  if (!mounted || !position || (!selectedText && !savedTextRef.current)) return null;
 
   return createPortal(
     <div
       ref={toolbarRef}
+      onPointerDown={(e) => e.stopPropagation()}
+      onTouchStart={(e) => e.stopPropagation()}
       style={{
         position: 'absolute',
         top: `${position.top}px`,
@@ -237,7 +247,10 @@ export function FloatingSelectionToolbar({
             {/* AI Rewrite Action */}
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               onClick={() => {
                 setShowAIPanel(!showAIPanel);
                 setShowEditPanel(false);
@@ -255,9 +268,18 @@ export function FloatingSelectionToolbar({
             {/* Edit Action */}
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               onClick={() => {
-                setShowEditPanel(!showEditPanel);
+                setShowEditPanel((prev) => {
+                  const next = !prev;
+                  if (next) {
+                    setEditValue(selectedText || savedTextRef.current);
+                  }
+                  return next;
+                });
                 setShowAIPanel(false);
               }}
               className={`flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
@@ -273,7 +295,10 @@ export function FloatingSelectionToolbar({
             {/* Delete Action */}
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               onClick={handleDelete}
               className="flex items-center gap-1.5 rounded-lg px-2 py-1 text-xs font-medium text-red-500 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/20"
               title="Delete selected text"
@@ -285,7 +310,10 @@ export function FloatingSelectionToolbar({
             {/* Close */}
             <button
               type="button"
-              onMouseDown={(e) => e.preventDefault()}
+              onPointerDown={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
               onClick={handleClose}
               className="rounded-lg p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
             >
@@ -363,10 +391,17 @@ export function FloatingSelectionToolbar({
                 <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
                   ✏️ Edit Selected Text
                 </span>
+                <span className="text-[10px] text-gray-400">Ctrl+Enter to save</span>
               </div>
               <textarea
                 value={editValue}
                 onChange={(e) => setEditValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                    e.preventDefault();
+                    handleSaveEdit();
+                  }
+                }}
                 rows={4}
                 className="focus-gold w-full resize-none rounded-lg border border-gray-200 bg-gray-50 p-2 text-xs text-gray-900 placeholder-gray-400 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                 autoFocus

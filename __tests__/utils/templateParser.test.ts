@@ -5,6 +5,7 @@ import {
   safeReplaceHtmlContent,
   cleanEmptyTags,
   sanitizeEmailHtml,
+  safeReplaceTemplateContent,
 } from '@/src/lib/utils/templateParser';
 describe('templateParser', () => {
   describe('extractTemplateVars', () => {
@@ -188,6 +189,88 @@ describe('templateParser', () => {
       expect(result).not.toContain('\\n');
       expect(result).not.toContain('\\"');
       expect(result).toContain('<p class="text">Dear John,');
+    });
+  });
+
+  describe('safeReplaceTemplateContent', () => {
+    it('should replace template variable value and update both vars and templateHtml', () => {
+      const templateHtml = `
+        <table class="details-table">
+          <tr><td>Proposed Visit Date</td><td>{{proposed_visit_date}}</td></tr>
+        </table>
+      `;
+      const vars = { proposed_visit_date: '1968-02-02' };
+
+      const result = safeReplaceTemplateContent(templateHtml, vars, '1968-02-02', '2026-09-15');
+
+      expect(result.changed).toBe(true);
+      expect(result.updatedVars.proposed_visit_date).toBe('2026-09-15');
+      expect(result.updatedTemplate).toContain('2026-09-15');
+
+      const preview = getPreviewHtml(result.updatedTemplate, result.updatedVars);
+      expect(preview).toContain('2026-09-15');
+      expect(preview).not.toContain('1968-02-02');
+    });
+
+    it('should handle partial replacement inside a variable value', () => {
+      const templateHtml = '<p>Date: {{date}}</p>';
+      const vars = { date: '1968-02-02' };
+
+      const result = safeReplaceTemplateContent(templateHtml, vars, '1968', '2026');
+
+      expect(result.changed).toBe(true);
+      expect(result.updatedVars.date).toBe('2026-02-02');
+      const preview = getPreviewHtml(result.updatedTemplate, result.updatedVars);
+      expect(preview).toContain('2026-02-02');
+    });
+
+    it('should remove variable placeholder when replacement is empty (delete action)', () => {
+      const templateHtml = `
+        <div>
+          <p>Advisor: {{advisor}}</p>
+        </div>
+      `;
+      const vars = { advisor: 'muskan-varshney' };
+
+      const result = safeReplaceTemplateContent(templateHtml, vars, 'muskan-varshney', '');
+
+      expect(result.changed).toBe(true);
+      expect(result.updatedVars.advisor).toBe('');
+      expect(result.updatedTemplate).not.toContain('{{advisor}}');
+      const preview = getPreviewHtml(result.updatedTemplate, result.updatedVars);
+      expect(preview).not.toContain('muskan-varshney');
+      expect(preview).not.toContain('{{advisor}}');
+    });
+
+    it('should replace static text in templateHtml when no variable is involved', () => {
+      const templateHtml = '<h1>SITE VISIT CONFIRMATION</h1>';
+      const vars = {};
+
+      const result = safeReplaceTemplateContent(
+        templateHtml,
+        vars,
+        'SITE VISIT CONFIRMATION',
+        'PROPERTY TOUR CONFIRMATION'
+      );
+
+      expect(result.changed).toBe(true);
+      expect(result.updatedTemplate).toContain('PROPERTY TOUR CONFIRMATION');
+    });
+
+    it('should replace text across variable boundaries when matched in resolved preview HTML', () => {
+      const templateHtml = '<p>Touring the <strong>{{project}}</strong> project today.</p>';
+      const vars = { project: 'shivani-vatika-11th' };
+
+      // User selects text that spans across static text and variable
+      const result = safeReplaceTemplateContent(
+        templateHtml,
+        vars,
+        'Touring the shivani-vatika-11th project today.',
+        'Visiting our luxury villa community.'
+      );
+
+      expect(result.changed).toBe(true);
+      expect(result.updatedTemplate).toContain('Visiting our luxury villa community.');
     });
   });
 });

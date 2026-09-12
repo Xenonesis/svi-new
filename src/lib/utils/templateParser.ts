@@ -212,3 +212,84 @@ export const safeReplaceHtmlContent = (
 
   return sourceHtml;
 };
+
+/**
+ * Safe targeted replacement in template HTML or template variables.
+ * If the selected original text matches a variable value in templateVars (partially or fully),
+ * or is in templateHtml (directly or in the resolved HTML), this replaces it non-destructively
+ * without breaking table/card structures.
+ */
+export const safeReplaceTemplateContent = (
+  templateHtml: string,
+  templateVars: Record<string, string>,
+  original: string,
+  replacement: string
+): { updatedTemplate: string; updatedVars: Record<string, string>; changed: boolean } => {
+  if (!original || !original.trim()) {
+    return { updatedTemplate: templateHtml, updatedVars: templateVars, changed: false };
+  }
+
+  const cleanOrig = original.trim();
+  const cleanReplacement = replacement.trim();
+  const updatedVars = { ...templateVars };
+  let updatedTemplate = templateHtml;
+  let changed = false;
+
+  const escapeRegex = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+  // 1. Check if original matches or is part of any template variable
+  const matchedVarKeys: string[] = [];
+  for (const [key, val] of Object.entries(templateVars)) {
+    if (!val) continue;
+    if (val.trim() === cleanOrig) {
+      matchedVarKeys.push(key);
+      updatedVars[key] = replacement;
+      changed = true;
+    } else if (val.includes(cleanOrig)) {
+      matchedVarKeys.push(key);
+      updatedVars[key] = val.replace(cleanOrig, replacement);
+      changed = true;
+    }
+  }
+
+  // 2. For any matched variable, update or remove placeholder in templateHtml if present
+  for (const key of matchedVarKeys) {
+    const varPattern = new RegExp(
+      '\\{\\{(?:<[^>]+>)*' + escapeRegex(key) + '(?:<[^>]+>)*\\}\\}',
+      'gi'
+    );
+    if (varPattern.test(updatedTemplate)) {
+      if (!cleanReplacement) {
+        // If deleted, remove placeholder from templateHtml so it doesn't display raw {{key}}
+        updatedTemplate = updatedTemplate.replace(varPattern, '');
+      } else {
+        // Concrete replacement in template with the fully resolved variable value
+        updatedTemplate = updatedTemplate.replace(varPattern, updatedVars[key]);
+      }
+      changed = true;
+    }
+  }
+
+  // 3. Try direct replacement in templateHtml (for static text)
+  const directReplaced = safeReplaceHtmlContent(updatedTemplate, original, replacement);
+  if (directReplaced !== updatedTemplate) {
+    updatedTemplate = directReplaced;
+    changed = true;
+  }
+
+  // 4. If still not changed and templateHtml exists, try replacement against resolved preview HTML
+  if (!changed && templateHtml) {
+    const resolved = getPreviewHtml(templateHtml, templateVars);
+    const resolvedReplaced = safeReplaceHtmlContent(resolved, original, replacement);
+    if (resolvedReplaced !== resolved) {
+      updatedTemplate = resolvedReplaced;
+      changed = true;
+    }
+  }
+
+  if (changed && !cleanReplacement) {
+    updatedTemplate = cleanEmptyTags(updatedTemplate);
+  }
+
+  return { updatedTemplate, updatedVars, changed };
+};

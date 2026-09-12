@@ -14,7 +14,11 @@ import {
   CheckCircle2,
   SlidersHorizontal,
 } from 'lucide-react';
-import { extractTemplateVars, safeReplaceHtmlContent } from '@/src/lib/utils/templateParser';
+import {
+  extractTemplateVars,
+  safeReplaceHtmlContent,
+  safeReplaceTemplateContent,
+} from '@/src/lib/utils/templateParser';
 import { FloatingSelectionToolbar, cleanSnippetHtml } from './FloatingSelectionToolbar';
 
 const RichTextEditor = dynamic(() => import('../RichTextEditor').then((m) => m.RichTextEditor), {
@@ -95,13 +99,34 @@ export function EmailBodyEditor({
     range?: Range | null
   ) => {
     const cleanReplacement = cleanSnippetHtml(replacement);
+    const targetHtml = templateHtml || html;
 
-    if (templateHtml) {
-      const updatedTemplate = safeReplaceHtmlContent(templateHtml, original, cleanReplacement);
-      if (onUpdateTemplateHtml) {
-        onUpdateTemplateHtml(updatedTemplate);
+    if (targetHtml) {
+      const { updatedTemplate, updatedVars } = safeReplaceTemplateContent(
+        targetHtml,
+        templateVars,
+        original,
+        cleanReplacement
+      );
+
+      // 1. Sync updated variables to parent state
+      if (onVariableChange) {
+        Object.entries(updatedVars).forEach(([k, v]) => {
+          if (v !== templateVars[k]) {
+            onVariableChange(k, v);
+          }
+        });
       }
-      setHtml(updatedTemplate);
+
+      // 2. Sync template HTML / direct HTML to parent state
+      if (templateHtml) {
+        if (onUpdateTemplateHtml) {
+          onUpdateTemplateHtml(updatedTemplate);
+        }
+        setHtml(updatedTemplate);
+      } else {
+        setHtml(updatedTemplate);
+      }
     } else if (html) {
       const updatedHtml = safeReplaceHtmlContent(html, original, cleanReplacement);
       setHtml(updatedHtml);
