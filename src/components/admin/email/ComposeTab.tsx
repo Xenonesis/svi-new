@@ -385,7 +385,7 @@ export function ComposeTab({
   const DEFAULT_HELPDESK_VARS: Record<string, string> = {
     helpdeskName: 'SVI Helpdesk:',
     helpdeskPhone: '+91-73000-07643',
-    helpdeskEmail: 'info@sviinfrasolutions.com',
+    helpdeskEmail: 'info@sviiinfrasolutions.com',
     helpdeskTitle: 'Need assistance?',
   };
 

@@ -389,6 +389,10 @@ export async function POST(request: NextRequest) {
       received_at: data.created_at || payload.created_at || new Date().toISOString(),
       status: 'received',
       attachments: attachments && attachments.length > 0 ? attachments : null,
+      is_read: false,
+      is_archived: false,
+      is_starred: false,
+      tags: [],
     };
 
     const { error } = await supabaseAdmin.from('email_inbox').insert(insertData);

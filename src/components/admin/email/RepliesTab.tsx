@@ -27,6 +27,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { supabase } from '@/src/lib/supabase/client';
 import { getToken } from './helpers';
 import { EmailDetailSkeleton } from './Skeletons';
 import type { EmailDetail, ForwardData, ReplyData, InboxEmailItem, EmailAttachment } from './types';
@@ -57,6 +58,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   const [starred, setStarred] = useState<Set<string>>(new Set());
   const [adminEmail, setAdminEmail] = useState<string>(propAdminEmail || '');
   const [lastFetched, setLastFetched] = useState<Date | null>(null);
+  const prevCountRef = useRef(0);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
   // Filters & Search
@@ -158,10 +160,11 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
         }
 
         // Show toast if new emails arrived during background refresh
-        if (isBackground && emailList.length > replies.length) {
-          const diff = emailList.length - replies.length;
+        if (isBackground && prevCountRef.current > 0 && emailList.length > prevCountRef.current) {
+          const diff = emailList.length - prevCountRef.current;
           toast.success(`${diff} new email${diff > 1 ? 's' : ''} received!`);
         }
+        prevCountRef.current = emailList.length;
 
         setReplies(emailList);
         setLastFetched(new Date());
@@ -173,7 +176,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
         setRefreshing(false);
       }
     },
-    [activeFilter, selectedTag, search, replies.length]
+    [activeFilter, selectedTag, search]
   );
 
   // Initial & filter change fetch
@@ -181,7 +184,27 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
     fetchReplies(false);
   }, [fetchReplies]);
 
-  // Background polling every 30s
+  // Realtime subscription on email_inbox table for instant live sync
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-email-inbox-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'email_inbox' }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          const newEmail = payload.new as Record<string, any>;
+          const sender = newEmail.from_name || newEmail.from_email || 'Sender';
+          const subj = newEmail.subject || '(No Subject)';
+          toast.info(`New email from ${sender}: ${subj}`);
+        }
+        fetchReplies(true);
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchReplies]);
+
+  // Background polling fallback every 30s
   useEffect(() => {
     const handle = setInterval(() => {
       fetchReplies(true);

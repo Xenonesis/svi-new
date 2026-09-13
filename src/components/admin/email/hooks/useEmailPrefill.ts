@@ -64,7 +64,7 @@ export function useEmailPrefill({
   // Prefill replyTo with default reply addresses
   useEffect(() => {
     if (adminEmail && !replyTo) {
-      setReplyTo(`info@sviinfrasolutions.com, ${adminEmail}`);
+      setReplyTo(`info@sviiinfrasolutions.com, ${adminEmail}`);
     }
   }, [adminEmail, replyTo, setReplyTo]);
 
@@ -281,7 +281,7 @@ export function useEmailPrefill({
                 bankIfsc: 'IBKL0000894',
                 helpdeskName: 'SVI Helpdesk:',
                 helpdeskPhone: '+91-73000-07643',
-                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskEmail: 'info@sviiinfrasolutions.com',
                 helpdeskTitle: 'Need assistance?',
               };
 
@@ -375,7 +375,7 @@ export function useEmailPrefill({
                 portal_url: 'https://www.sviinfrasolutions.in',
                 helpdeskName: 'SVI Helpdesk:',
                 helpdeskPhone: '+91-73000-07643',
-                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskEmail: 'info@sviiinfrasolutions.com',
                 helpdeskTitle: 'Need assistance?',
               };
 
@@ -525,7 +525,7 @@ export function useEmailPrefill({
                 bankIfsc: 'IBKL0000894',
                 helpdeskName: 'SVI Helpdesk:',
                 helpdeskPhone: '+91-73000-07643',
-                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskEmail: 'info@sviiinfrasolutions.com',
                 helpdeskTitle: 'Need assistance?',
               };
 
@@ -666,7 +666,7 @@ export function useEmailPrefill({
                 probationPeriod: fd.probationPeriod || '3',
                 helpdeskName: 'SVI Helpdesk:',
                 helpdeskPhone: '+91-73000-07643',
-                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskEmail: 'info@sviiinfrasolutions.com',
                 helpdeskTitle: 'Need assistance?',
               };
 
@@ -984,7 +984,7 @@ export function useEmailPrefill({
                 portal_url: 'https://www.sviinfrasolutions.com',
                 helpdeskName: 'SVI Helpdesk:',
                 helpdeskPhone: '+91-73000-07643',
-                helpdeskEmail: 'info@sviinfrasolutions.com',
+                helpdeskEmail: 'info@sviiinfrasolutions.com',
               };
 
               setTemplateVars(vars);

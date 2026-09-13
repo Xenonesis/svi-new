@@ -58,7 +58,16 @@ async function ensureAttachmentBucket() {
   }
 }
 
-async function syncInboundEmails(resend: Resend) {
+let lastInboundSyncAt = 0;
+const INBOUND_SYNC_COOLDOWN_MS = 30_000; // 30s cooldown between Resend API inbound syncs
+
+async function syncInboundEmails(resend: Resend, force = false) {
+  const now = Date.now();
+  if (!force && now - lastInboundSyncAt < INBOUND_SYNC_COOLDOWN_MS) {
+    return;
+  }
+  lastInboundSyncAt = now;
+
   try {
     await ensureAttachmentBucket();
     const resendEmails = await resend.emails.receiving.list();
@@ -165,6 +174,10 @@ async function syncInboundEmails(resend: Resend) {
           received_at: (emailData as any).created_at || new Date().toISOString(),
           status: 'received',
           attachments: normalizedAttachments,
+          is_read: false,
+          is_archived: false,
+          is_starred: false,
+          tags: [],
         };
 
         const { error: insertError } = await supabaseAdmin.from('email_inbox').insert(insertData);
@@ -295,7 +308,9 @@ export async function GET(request: NextRequest) {
         const domainsResp: any = await resend.domains.list();
         const domainData = domainsResp?.data?.data || domainsResp?.data || [];
         if (Array.isArray(domainData)) {
-          inboundDomains = domainData.filter((d: any) => d.type === 'inbound');
+          inboundDomains = domainData.filter(
+            (d: any) => d.capabilities?.receiving === 'enabled' || d.type === 'inbound'
+          );
         }
       } catch {
         // Resend API may not support filtering yet
@@ -532,7 +547,11 @@ export async function GET(request: NextRequest) {
 
     // ─── Inbox / Replies — from email_inbox table ───
     if (action === 'replies' || action === 'inbox') {
-      await syncInboundEmails(resend);
+      try {
+        await syncInboundEmails(resend);
+      } catch (syncErr) {
+        console.warn('[INBOX] Background syncInboundEmails non-fatal error:', syncErr);
+      }
 
       const filter = url.searchParams.get('filter') || 'inbox'; // inbox, unread, starred, archived, all
       const tag = url.searchParams.get('tag');
@@ -929,7 +948,7 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      let defaultReplyTo = 'info@sviinfrasolutions.com, hr.sviinfrasolutions@gmail.com';
+      let defaultReplyTo = 'info@sviiinfrasolutions.com, hr.sviinfrasolutions@gmail.com';
       try {
         const { data: settingsData } = await supabaseAdmin
           .from('portal_settings' as any)
@@ -937,7 +956,7 @@ export async function POST(request: NextRequest) {
           .eq('key', 'email_settings')
           .single();
         if (settingsData?.value?.admin_email) {
-          defaultReplyTo = `info@sviinfrasolutions.com, ${settingsData.value.admin_email}`;
+          defaultReplyTo = `info@sviiinfrasolutions.com, ${settingsData.value.admin_email}`;
         }
       } catch (err) {
         // ignore
