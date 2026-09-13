@@ -104,6 +104,7 @@ export default function ReceiptRecordsPage() {
         setDateRange={records.setDateRange}
         handleClearFilters={records.handleClearFilters}
         onExportCsv={records.handleExportCSV}
+        onExportExcel={records.handleExportExcel}
         onOpenLedgers={() => records.setIsLedgersModalOpen(true)}
         activeTab={records.activeTab}
         setActiveTab={records.setActiveTab}

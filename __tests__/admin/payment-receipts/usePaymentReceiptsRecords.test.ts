@@ -6,6 +6,7 @@ import {
 } from '@/src/components/admin/payment-receipts/usePaymentReceiptsRecords';
 import { SavedReceipt } from '@/src/components/admin/payment-receipts/ReceiptTypes';
 import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
+import { exportReceiptsToExcel } from '@/src/lib/receipt/receiptExcelExport';
 import { toast } from 'sonner';
 
 vi.mock('@/src/stores/authStore', () => ({
@@ -23,6 +24,10 @@ vi.mock('sonner', () => ({
 
 vi.mock('@/src/lib/receipt/receiptCsvExport', () => ({
   downloadReceiptsCsv: vi.fn(),
+}));
+
+vi.mock('@/src/lib/receipt/receiptExcelExport', () => ({
+  exportReceiptsToExcel: vi.fn().mockResolvedValue(undefined),
 }));
 
 vi.mock('@/src/lib/utils/documentExporter', () => ({
@@ -409,6 +414,20 @@ describe('usePaymentReceiptsRecords', () => {
 
     expect(downloadReceiptsCsv).toHaveBeenCalledWith(result.current.filteredReceipts, undefined);
     expect(toast.success).toHaveBeenCalledWith('Exported 4 receipts to CSV');
+  });
+
+  it('triggers handleExportExcel and calls exportReceiptsToExcel', async () => {
+    const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    await act(async () => {
+      await result.current.handleExportExcel();
+    });
+
+    expect(exportReceiptsToExcel).toHaveBeenCalledWith(result.current.filteredReceipts, undefined);
   });
 
   it('updates dealValuesMap and persists it via handleSaveDealValue', async () => {

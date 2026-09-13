@@ -5,6 +5,7 @@ import { SavedReceipt } from './ReceiptTypes';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
+import { exportReceiptsToExcel } from '@/src/lib/receipt/receiptExcelExport';
 import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
 
 export function parseAmount(amount: string | number | undefined | null): number {
@@ -80,6 +81,7 @@ export interface UsePaymentReceiptsRecordsReturn {
   handleDownloadPDF: (receipt?: SavedReceipt | null) => Promise<void>;
   handleDownloadImage: (receipt?: SavedReceipt | null) => Promise<void>;
   handleExportCSV: (filename?: string) => void;
+  handleExportExcel: (filename?: string) => Promise<void>;
   activeTab: 'active' | 'trash';
   setActiveTab: (tab: 'active' | 'trash') => void;
   trashedReceipts: SavedReceipt[];
@@ -542,7 +544,17 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
       downloadReceiptsCsv(filteredReceipts, filename);
       toast.success(`Exported ${filteredReceipts.length} receipts to CSV`);
     },
+    [filteredReceipts]
+  );
 
+  const handleExportExcel = useCallback(
+    async (filename?: string) => {
+      if (filteredReceipts.length === 0) {
+        toast.error('No receipts available to export');
+        return;
+      }
+      await exportReceiptsToExcel(filteredReceipts, filename);
+    },
     [filteredReceipts]
   );
 
@@ -590,6 +602,7 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     handleDownloadPDF,
     handleDownloadImage,
     handleExportCSV,
+    handleExportExcel,
     activeTab,
     setActiveTab,
     trashedReceipts,

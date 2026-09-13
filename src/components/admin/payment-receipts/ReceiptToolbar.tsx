@@ -1,4 +1,14 @@
-import { Search, Calendar, X, Download, BookOpen, Trash2 } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import {
+  Search,
+  Calendar,
+  X,
+  Download,
+  BookOpen,
+  Trash2,
+  FileSpreadsheet,
+  ChevronDown,
+} from 'lucide-react';
 interface ReceiptToolbarProps {
   searchQuery: string;
   setSearchQuery: (val: string) => void;
@@ -14,6 +24,7 @@ interface ReceiptToolbarProps {
   ) => void;
   handleClearFilters: () => void;
   onExportCsv?: () => void;
+  onExportExcel?: () => void;
   onOpenLedgers?: () => void;
   activeTab?: 'active' | 'trash';
   setActiveTab?: (tab: 'active' | 'trash') => void;
@@ -31,11 +42,29 @@ export function ReceiptToolbar({
   setDateRange,
   handleClearFilters,
   onExportCsv,
+  onExportExcel,
   onOpenLedgers,
   activeTab,
   setActiveTab,
   trashedCount,
 }: ReceiptToolbarProps) {
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setIsExportOpen(false);
+      }
+    }
+    if (isExportOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isExportOpen]);
+
   return (
     <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:gap-4">
       <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
@@ -106,16 +135,80 @@ export function ReceiptToolbar({
               <option value="refId-asc">Ref ID (A-Z)</option>
               <option value="refId-desc">Ref ID (Z-A)</option>
             </select>
-            {onExportCsv && (
-              <button
-                type="button"
-                onClick={onExportCsv}
-                className="hover:border-brand-gold/50 hover:bg-brand-gold/10 hover:text-brand-gold flex items-center justify-center gap-1.5 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-gray-700 transition-all active:scale-95 sm:px-3 sm:py-2 sm:text-xs dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-                title="Export active records to Excel/CSV"
-              >
-                <Download className="h-3.5 w-3.5" />
-                <span className="hidden sm:inline">Export CSV</span>
-              </button>
+            {(onExportCsv || onExportExcel) && (
+              <div className="relative" ref={exportMenuRef}>
+                <button
+                  type="button"
+                  onClick={() => setIsExportOpen((prev) => !prev)}
+                  className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition-all active:scale-95 sm:px-3 sm:py-2 sm:text-xs ${
+                    isExportOpen
+                      ? 'border-brand-gold bg-brand-gold/10 text-brand-gold dark:border-brand-gold/60'
+                      : 'hover:border-brand-gold/50 hover:bg-brand-gold/10 hover:text-brand-gold border-gray-200 bg-white text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-200'
+                  }`}
+                  aria-expanded={isExportOpen}
+                  title="Export options"
+                >
+                  <Download className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Export</span>
+                  <ChevronDown
+                    className={`h-3 w-3 text-gray-400 transition-transform duration-200 dark:text-gray-400 ${
+                      isExportOpen ? 'rotate-180' : ''
+                    }`}
+                  />
+                </button>
+
+                {isExportOpen && (
+                  <div className="animate-in fade-in zoom-in-95 absolute top-full right-0 z-40 mt-1.5 w-48 origin-top-right rounded-xl border border-gray-200 bg-white/95 p-1.5 shadow-xl backdrop-blur-md duration-100 dark:border-white/10 dark:bg-[#0B132B]/95 dark:shadow-black/70">
+                    <div className="px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase dark:text-gray-400">
+                      Export Format
+                    </div>
+                    {onExportCsv && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsExportOpen(false);
+                          onExportCsv();
+                        }}
+                        className="hover:bg-brand-gold/10 hover:text-brand-gold dark:hover:bg-brand-gold/15 dark:hover:text-brand-gold flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-gray-700 transition-colors dark:text-gray-200"
+                      >
+                        <div className="bg-brand-gold/10 text-brand-gold dark:bg-brand-gold/20 flex h-6 w-6 items-center justify-center rounded-md">
+                          <Download className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-gray-900 dark:text-white">
+                            Export CSV
+                          </span>
+                          <span className="text-[10px] text-gray-400 dark:text-gray-400">
+                            .csv spreadsheet
+                          </span>
+                        </div>
+                      </button>
+                    )}
+                    {onExportExcel && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsExportOpen(false);
+                          onExportExcel();
+                        }}
+                        className="flex w-full items-center gap-2.5 rounded-lg px-2.5 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:text-gray-200 dark:hover:bg-emerald-500/15 dark:hover:text-emerald-400"
+                      >
+                        <div className="flex h-6 w-6 items-center justify-center rounded-md bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+                          <FileSpreadsheet className="h-3.5 w-3.5" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="font-semibold text-gray-900 dark:text-white">
+                            Export Excel
+                          </span>
+                          <span className="text-[10px] text-gray-400 dark:text-gray-400">
+                            .xlsx workbook
+                          </span>
+                        </div>
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
             )}
             {onOpenLedgers && (
               <button
