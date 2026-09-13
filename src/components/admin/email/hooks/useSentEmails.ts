@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/src/lib/supabase/client';
 import type { SentEmail, EmailDetail } from '../types';
 import { getToken } from '../helpers';
 import {
@@ -245,6 +246,20 @@ export function useSentEmails(): UseSentEmailsReturn {
 
   useEffect(() => {
     fetchEmails();
+  }, [fetchEmails]);
+
+  // Realtime subscription on email_messages table so sent emails appear without refresh
+  useEffect(() => {
+    const channel = supabase
+      .channel('admin-email-messages-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'email_messages' }, () => {
+        fetchEmails();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [fetchEmails]);
 
   // Load more using stored cursor (last email ID)

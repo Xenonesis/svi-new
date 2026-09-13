@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/src/lib/supabase/client';
+import { playNotificationChime } from '@/src/lib/notifications/notificationSound';
 import { getToken } from './helpers';
 import { EmailDetailSkeleton } from './Skeletons';
 import type { EmailDetail, ForwardData, ReplyData, InboxEmailItem, EmailAttachment } from './types';
@@ -190,8 +191,9 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
       .channel('admin-email-inbox-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: 'email_inbox' }, (payload) => {
         if (payload.eventType === 'INSERT') {
+          playNotificationChime();
           const newEmail = payload.new as Record<string, any>;
-          const sender = newEmail.from_name || newEmail.from_email || 'Sender';
+          const sender = newEmail.from_name || newEmail.from_email || 'Customer';
           const subj = newEmail.subject || '(No Subject)';
           toast.info(`New email from ${sender}: ${subj}`);
         }

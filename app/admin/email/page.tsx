@@ -17,6 +17,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { toast } from 'sonner';
+import { playNotificationChime } from '@/src/lib/notifications/notificationSound';
 
 import {
   Tab,
@@ -62,10 +64,46 @@ export default function AdminEmailPage() {
 
   const [activeTab, setActiveTab] = useState<Tab>(initialTab);
   const [adminEmail, setAdminEmail] = useState('');
+  const [unreadCount, setUnreadCount] = useState(0);
   const [forwardData, setForwardData] = useState<ForwardData | null>(null);
   const [replyData, setReplyData] = useState<ReplyData | null>(null);
   const [templatePrefill, setTemplatePrefill] = useState<TemplatePrefill | null>(null);
   const [selectedDraft, setSelectedDraft] = useState<DraftData | null>(null);
+
+  const fetchUnreadCount = useCallback(async () => {
+    try {
+      const { count } = await supabase
+        .from('email_inbox')
+        .select('*', { count: 'exact', head: true })
+        .eq('is_archived', false)
+        .eq('is_read', false);
+      setUnreadCount(count || 0);
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUnreadCount();
+  }, [fetchUnreadCount]);
+
+  // Global Realtime listener for incoming emails across all tabs
+  useEffect(() => {
+    const channel = supabase
+      .channel('email-center-global-inbox-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'email_inbox' }, (payload) => {
+        fetchUnreadCount();
+        if (payload.eventType === 'INSERT') {
+          playNotificationChime();
+          toast.info('New incoming email received in Inbox!');
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [fetchUnreadCount]);
 
   useEffect(() => {
     supabase.auth.getUser().then(({ data }) => {
@@ -228,6 +266,17 @@ export default function AdminEmailPage() {
                   className={`h-4 w-4 ${isActive ? 'text-white dark:text-[#111111]' : 'text-gray-400'}`}
                 />
                 <span>{tab.label}</span>
+                {tab.id === 'replies' && unreadCount > 0 && (
+                  <span
+                    className={`py-0.2 ml-1 rounded-full px-1.5 font-mono text-[10px] font-bold ${
+                      isActive
+                        ? 'bg-white/20 text-white dark:bg-black/20 dark:text-[#111111]'
+                        : 'bg-amber-500/20 text-amber-700 dark:text-amber-400'
+                    }`}
+                  >
+                    {unreadCount}
+                  </span>
+                )}
               </motion.button>
             );
           })}
