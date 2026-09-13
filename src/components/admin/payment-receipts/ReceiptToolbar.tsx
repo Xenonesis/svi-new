@@ -1,5 +1,4 @@
-import React from 'react';
-import { Search, Calendar, X, Download, BookOpen } from 'lucide-react';
+import { Search, Calendar, X, Download, BookOpen, Trash2 } from 'lucide-react';
 interface ReceiptToolbarProps {
   searchQuery: string;
   setSearchQuery: (val: string) => void;
@@ -16,6 +15,9 @@ interface ReceiptToolbarProps {
   handleClearFilters: () => void;
   onExportCsv?: () => void;
   onOpenLedgers?: () => void;
+  activeTab?: 'active' | 'trash';
+  setActiveTab?: (tab: 'active' | 'trash') => void;
+  trashedCount?: number;
 }
 
 export function ReceiptToolbar({
@@ -30,6 +32,9 @@ export function ReceiptToolbar({
   handleClearFilters,
   onExportCsv,
   onOpenLedgers,
+  activeTab,
+  setActiveTab,
+  trashedCount,
 }: ReceiptToolbarProps) {
   return (
     <div className="mb-4 flex flex-col gap-3 sm:mb-6 sm:gap-4">
@@ -121,6 +126,32 @@ export function ReceiptToolbar({
               >
                 <BookOpen className="h-3.5 w-3.5" />
                 <span className="hidden sm:inline">Ledgers</span>
+              </button>
+            )}
+            {setActiveTab && (
+              <button
+                type="button"
+                onClick={() => setActiveTab(activeTab === 'trash' ? 'active' : 'trash')}
+                className={`flex items-center justify-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition-all active:scale-95 sm:px-3 sm:py-2 sm:text-xs ${
+                  activeTab === 'trash'
+                    ? 'border-rose-500 bg-rose-500/15 text-rose-600 dark:border-rose-500/60 dark:bg-rose-500/20 dark:text-rose-400'
+                    : 'border-gray-200 bg-white text-gray-700 hover:border-rose-500/40 hover:bg-rose-500/10 hover:text-rose-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:border-rose-500/40 dark:hover:text-rose-400'
+                }`}
+                title={
+                  activeTab === 'trash'
+                    ? 'Back to Active Receipts'
+                    : 'View Trash & Recover Deleted Receipts'
+                }
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">
+                  {activeTab === 'trash' ? 'Active Records' : 'Trash'}
+                </span>
+                {typeof trashedCount === 'number' && trashedCount > 0 && (
+                  <span className="py-0.2 rounded-full bg-rose-500/20 px-1.5 text-[10px] font-bold text-rose-600 dark:bg-rose-500/30 dark:text-rose-400">
+                    {trashedCount}
+                  </span>
+                )}
               </button>
             )}
           </div>

@@ -35,12 +35,13 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     } catch {
       throw AppError.badRequest('Invalid JSON body');
     }
-    const { status, pdf_url, image_url, form_data } = body;
+    const { status, pdf_url, image_url, form_data, metadata } = body;
 
     const updateData: Record<string, unknown> = {};
     if (status !== undefined) updateData.status = status;
     if (pdf_url !== undefined) updateData.pdf_url = pdf_url;
     if (image_url !== undefined) updateData.image_url = image_url;
+    if (metadata !== undefined) updateData.metadata = metadata;
     if (form_data !== undefined) {
       if (form_data && form_data.quotationNo) {
         const rawQuotationNo = String(form_data.quotationNo).trim();

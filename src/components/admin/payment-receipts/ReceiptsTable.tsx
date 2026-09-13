@@ -15,6 +15,7 @@ import {
   CreditCard,
   MessageSquare,
   BookOpen,
+  RotateCcw,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -54,6 +55,10 @@ interface ReceiptsTableProps {
   setDeleteTarget: (receipt: SavedReceipt) => void;
   onShareWhatsApp?: (receipt: SavedReceipt) => void;
   onOpenLedger?: (refId: string) => void;
+  activeTab?: 'active' | 'trash';
+  onRestore?: (receipt: SavedReceipt) => void;
+  setIsPermanentDelete?: (val: boolean) => void;
+  onEmptyTrash?: () => void;
 }
 
 export function ReceiptsTable({
@@ -66,6 +71,10 @@ export function ReceiptsTable({
   setDeleteTarget,
   onShareWhatsApp,
   onOpenLedger,
+  activeTab = 'active',
+  onRestore,
+  setIsPermanentDelete,
+  onEmptyTrash,
 }: ReceiptsTableProps) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -148,241 +157,313 @@ export function ReceiptsTable({
           </div>
         ) : filteredReceipts.length === 0 ? (
           <div className="py-24 text-center font-sans">
-            <Receipt className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-600" />
-            <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
-              {searchQuery
-                ? 'No matches found for your search.'
-                : 'No receipt records generated yet.'}
-            </p>
-            {!searchQuery && (
-              <Link
-                href="/admin/payment-receipt"
-                className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light mt-4 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold uppercase shadow-md transition-all"
-              >
-                <Plus className="h-3.5 w-3.5" />
-                Create New Receipt
-              </Link>
+            {activeTab === 'trash' ? (
+              <>
+                <Trash2 className="mx-auto mb-4 h-12 w-12 text-gray-400 opacity-60 dark:text-gray-500" />
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {searchQuery ? 'No deleted receipts matched your search.' : 'Trash bin is empty.'}
+                </p>
+                <p className="mt-1 text-xs text-gray-400 dark:text-gray-500">
+                  Deleted receipts will appear here so you can recover them if deleted by mistake.
+                </p>
+              </>
+            ) : (
+              <>
+                <Receipt className="mx-auto mb-4 h-12 w-12 text-gray-400 dark:text-gray-600" />
+                <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                  {searchQuery
+                    ? 'No matches found for your search.'
+                    : 'No receipt records generated yet.'}
+                </p>
+                {!searchQuery && (
+                  <Link
+                    href="/admin/payment-receipt"
+                    className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light mt-4 inline-flex items-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold uppercase shadow-md transition-all"
+                  >
+                    <Plus className="h-3.5 w-3.5" />
+                    Create New Receipt
+                  </Link>
+                )}
+              </>
             )}
           </div>
         ) : (
-          <table className="w-full min-w-[1040px] font-sans text-xs">
-            <thead>
-              <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
-                {[
-                  { label: 'RECEIPT NO', align: 'text-left' },
-                  { label: 'REF ID', align: 'text-left' },
-                  { label: 'CLIENT NAME', align: 'text-left' },
-                  { label: 'DATE', align: 'text-left' },
-                  { label: 'AMOUNT', align: 'text-right' },
-                  { label: 'METHOD', align: 'text-center' },
-                  { label: 'PLOT INFO', align: 'text-left' },
-                  { label: 'ACTIONS', align: 'text-right' },
-                ].map((h) => (
-                  <th
-                    key={h.label}
-                    className={`px-5 py-4 text-[10px] font-bold tracking-[0.15em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
+          <>
+            {activeTab === 'trash' && (
+              <div className="flex items-center justify-between border-b border-rose-500/20 bg-rose-500/10 px-6 py-3 text-xs text-rose-700 dark:text-rose-300">
+                <div className="flex items-center gap-2">
+                  <Trash2 className="h-4 w-4 text-rose-500" />
+                  <span>
+                    <strong>Trash Bin ({filteredReceipts.length})</strong> — Receipts deleted by
+                    mistake can be restored to active list with one click.
+                  </span>
+                </div>
+                {onEmptyTrash && (
+                  <button
+                    type="button"
+                    onClick={onEmptyTrash}
+                    className="flex items-center gap-1.5 rounded-lg border border-rose-500/30 bg-rose-500/15 px-2.5 py-1 text-[11px] font-bold text-rose-700 transition-all hover:bg-rose-500/25 active:scale-95 dark:text-rose-300"
                   >
-                    {h.label}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-              {filteredReceipts.map((receipt, i) => {
-                const amountVal = parseFloat(receipt.form_data?.amount || '0');
-                const formattedAmount = amountVal.toLocaleString('en-IN', {
-                  style: 'currency',
-                  currency: 'INR',
-                  maximumFractionDigits: amountVal % 1 === 0 ? 0 : 2,
-                });
-                const receiptNo = receipt.form_data?.receiptNo;
-                const refId = receipt.form_data?.refId;
-                const isCopiedReceipt = receiptNo && copiedKey === `${receipt.id}-receipt`;
-                const isCopiedRef = refId && copiedKey === `${receipt.id}-ref`;
+                    <Trash2 className="h-3 w-3" />
+                    Empty Trash
+                  </button>
+                )}
+              </div>
+            )}
+            <table className="w-full min-w-[1040px] font-sans text-xs">
+              <thead>
+                <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
+                  {[
+                    { label: 'RECEIPT NO', align: 'text-left' },
+                    { label: 'REF ID', align: 'text-left' },
+                    { label: 'CLIENT NAME', align: 'text-left' },
+                    { label: 'DATE', align: 'text-left' },
+                    { label: 'AMOUNT', align: 'text-right' },
+                    { label: 'METHOD', align: 'text-center' },
+                    { label: 'PLOT INFO', align: 'text-left' },
+                    { label: 'ACTIONS', align: 'text-right' },
+                  ].map((h) => (
+                    <th
+                      key={h.label}
+                      className={`px-5 py-4 text-[10px] font-bold tracking-[0.15em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
+                    >
+                      {h.label}
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                {filteredReceipts.map((receipt, i) => {
+                  const amountVal = parseFloat(receipt.form_data?.amount || '0');
+                  const formattedAmount = amountVal.toLocaleString('en-IN', {
+                    style: 'currency',
+                    currency: 'INR',
+                    maximumFractionDigits: amountVal % 1 === 0 ? 0 : 2,
+                  });
+                  const receiptNo = receipt.form_data?.receiptNo;
+                  const refId = receipt.form_data?.refId;
+                  const isCopiedReceipt = receiptNo && copiedKey === `${receipt.id}-receipt`;
+                  const isCopiedRef = refId && copiedKey === `${receipt.id}-ref`;
 
-                return (
-                  <motion.tr
-                    key={receipt.id}
-                    initial={{ opacity: 0, y: 4 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
-                    className="group transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.03]"
-                  >
-                    {/* Receipt No */}
-                    <td className="px-5 py-3.5 align-middle">
-                      {receiptNo ? (
-                        <button
-                          type="button"
-                          onClick={(e) => handleCopyReceiptNo(receiptNo, receipt.id, e)}
-                          className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 hover:border-brand-gold/50 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
-                          title="Click to copy receipt number"
-                        >
-                          <span>{receiptNo}</span>
-                          {isCopiedReceipt ? (
-                            <Check className="h-3 w-3 text-emerald-500" />
-                          ) : (
-                            <Copy className="h-3 w-3 opacity-40 transition-opacity group-hover/copy:opacity-100" />
-                          )}
-                        </button>
-                      ) : (
-                        <span className="font-mono text-gray-400">—</span>
-                      )}
-                    </td>
-
-                    {/* Ref ID */}
-                    <td className="px-5 py-3.5 align-middle">
-                      {refId ? (
-                        <div className="inline-flex items-center gap-1">
+                  return (
+                    <motion.tr
+                      key={receipt.id}
+                      initial={{ opacity: 0, y: 4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
+                      className="group transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.03]"
+                    >
+                      {/* Receipt No */}
+                      <td className="px-5 py-3.5 align-middle">
+                        {receiptNo ? (
                           <button
                             type="button"
-                            onClick={() => onOpenLedger?.(refId)}
-                            className="inline-flex items-center rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] font-bold text-sky-600 transition-all hover:border-sky-500/50 hover:bg-sky-500/20 hover:underline dark:text-sky-400"
-                            title="Open Customer Ledger"
+                            onClick={(e) => handleCopyReceiptNo(receiptNo, receipt.id, e)}
+                            className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 hover:border-brand-gold/50 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
+                            title="Click to copy receipt number"
                           >
-                            <span>{refId}</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={(e) => handleCopyRefId(refId, receipt.id, e)}
-                            className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-sky-500 dark:hover:bg-white/5"
-                            title="Click to copy Ref ID"
-                          >
-                            {isCopiedRef ? (
+                            <span>{receiptNo}</span>
+                            {isCopiedReceipt ? (
                               <Check className="h-3 w-3 text-emerald-500" />
                             ) : (
-                              <Copy className="h-3 w-3 opacity-40 transition-opacity hover:opacity-100" />
+                              <Copy className="h-3 w-3 opacity-40 transition-opacity group-hover/copy:opacity-100" />
                             )}
                           </button>
-                        </div>
-                      ) : (
-                        <span className="font-mono text-gray-400">—</span>
-                      )}
-                    </td>
-
-                    {/* Client Name */}
-                    <td className="px-5 py-3.5 align-middle">
-                      <div className="min-w-0">
-                        <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                          {receipt.form_data?.name || 'N/A'}
-                        </div>
-                        {receipt.form_data?.drawnOn && (
-                          <div className="text-[10px] text-gray-400 capitalize dark:text-gray-500">
-                            Bank: {receipt.form_data.drawnOn}
-                          </div>
+                        ) : (
+                          <span className="font-mono text-gray-400">—</span>
                         )}
-                      </div>
-                    </td>
+                      </td>
 
-                    {/* Date */}
-                    <td className="px-5 py-3.5 align-middle whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-3.5 w-3.5 text-gray-400" />
-                        <span className="font-mono text-[11px] font-medium text-gray-800 tabular-nums dark:text-gray-200">
-                          {formatDateDisplay(receipt.form_data?.date || receipt.created_at)}
-                        </span>
-                      </div>
-                    </td>
+                      {/* Ref ID */}
+                      <td className="px-5 py-3.5 align-middle">
+                        {refId ? (
+                          <div className="inline-flex items-center gap-1">
+                            <button
+                              type="button"
+                              onClick={() => onOpenLedger?.(refId)}
+                              className="inline-flex items-center rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] font-bold text-sky-600 transition-all hover:border-sky-500/50 hover:bg-sky-500/20 hover:underline dark:text-sky-400"
+                              title="Open Customer Ledger"
+                            >
+                              <span>{refId}</span>
+                            </button>
+                            <button
+                              type="button"
+                              onClick={(e) => handleCopyRefId(refId, receipt.id, e)}
+                              className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-sky-500 dark:hover:bg-white/5"
+                              title="Click to copy Ref ID"
+                            >
+                              {isCopiedRef ? (
+                                <Check className="h-3 w-3 text-emerald-500" />
+                              ) : (
+                                <Copy className="h-3 w-3 opacity-40 transition-opacity hover:opacity-100" />
+                              )}
+                            </button>
+                          </div>
+                        ) : (
+                          <span className="font-mono text-gray-400">—</span>
+                        )}
+                      </td>
 
-                    {/* Amount */}
-                    <td className="px-5 py-3.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
-                      {formattedAmount}
-                    </td>
-
-                    {/* Method */}
-                    <td className="px-5 py-3.5 text-center align-middle">
-                      <span
-                        className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap uppercase ${getMethodBadgeStyle(
-                          receipt.form_data?.paymentMethod
-                        )}`}
-                      >
-                        <CreditCard className="h-2.5 w-2.5 opacity-70" />
-                        {receipt.form_data?.paymentMethod || 'UPI'}
-                      </span>
-                    </td>
-
-                    {/* Plot Info */}
-                    <td className="px-5 py-3.5 align-middle">
-                      {receipt.form_data?.plotNo ? (
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-mono text-[10px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
-                            Plot {receipt.form_data.plotNo}
-                          </span>
-                          {receipt.form_data.plotSize && (
-                            <span className="text-[11px] whitespace-nowrap text-gray-500 dark:text-gray-400">
-                              ({receipt.form_data.plotSize} Sq. Yds.)
-                            </span>
+                      {/* Client Name */}
+                      <td className="px-5 py-3.5 align-middle">
+                        <div className="min-w-0">
+                          <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
+                            {receipt.form_data?.name || 'N/A'}
+                          </div>
+                          {receipt.form_data?.drawnOn && (
+                            <div className="text-[10px] text-gray-400 capitalize dark:text-gray-500">
+                              Bank: {receipt.form_data.drawnOn}
+                            </div>
                           )}
                         </div>
-                      ) : (
-                        <span className="text-gray-400">—</span>
-                      )}
-                    </td>
+                      </td>
 
-                    {/* Actions */}
-                    <td className="px-5 py-3.5 text-right align-middle">
-                      <div className="flex items-center justify-end gap-1">
-                        <button
-                          onClick={() => setSelectedReceipt(receipt)}
-                          className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
-                          title="View & Print Payment Receipt"
-                          aria-label="View & Print"
+                      {/* Date */}
+                      <td className="px-5 py-3.5 align-middle whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <Calendar className="h-3.5 w-3.5 text-gray-400" />
+                          <span className="font-mono text-[11px] font-medium text-gray-800 tabular-nums dark:text-gray-200">
+                            {formatDateDisplay(receipt.form_data?.date || receipt.created_at)}
+                          </span>
+                        </div>
+                      </td>
+
+                      {/* Amount */}
+                      <td className="px-5 py-3.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
+                        {formattedAmount}
+                      </td>
+
+                      {/* Method */}
+                      <td className="px-5 py-3.5 text-center align-middle">
+                        <span
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap uppercase ${getMethodBadgeStyle(
+                            receipt.form_data?.paymentMethod
+                          )}`}
                         >
-                          <Eye className="h-3.5 w-3.5" />
-                        </button>
-                        <Link
-                          href={`/admin/payment-receipt?templateId=${receipt.id}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
-                          title="Use as Template"
-                          aria-label="Use as Template"
-                        >
-                          <FileText className="h-3.5 w-3.5" />
-                        </Link>
-                        <button
-                          onClick={() => {
-                            sessionStorage.setItem('emailPrefillRecord', JSON.stringify(receipt));
-                            window.location.href = '/admin/email?tab=compose&prefillReceipt=true';
-                          }}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
-                          title="Email Receipt to Client"
-                          aria-label="Email Receipt"
-                        >
-                          <Mail className="h-3.5 w-3.5" />
-                        </button>
-                        {onShareWhatsApp && (
-                          <button
-                            onClick={() => onShareWhatsApp(receipt)}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
-                            title="Share via WhatsApp"
-                            aria-label="Share via WhatsApp"
-                          >
-                            <MessageSquare className="h-3.5 w-3.5" />
-                          </button>
+                          <CreditCard className="h-2.5 w-2.5 opacity-70" />
+                          {receipt.form_data?.paymentMethod || 'UPI'}
+                        </span>
+                      </td>
+
+                      {/* Plot Info */}
+                      <td className="px-5 py-3.5 align-middle">
+                        {receipt.form_data?.plotNo ? (
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-mono text-[10px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
+                              Plot {receipt.form_data.plotNo}
+                            </span>
+                            {receipt.form_data.plotSize && (
+                              <span className="text-[11px] whitespace-nowrap text-gray-500 dark:text-gray-400">
+                                ({receipt.form_data.plotSize} Sq. Yds.)
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-gray-400">—</span>
                         )}
-                        {onOpenLedger && receipt.form_data?.refId && (
-                          <button
-                            onClick={() => onOpenLedger(receipt.form_data.refId)}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-sky-500/30 hover:bg-sky-500/10 hover:text-sky-500 active:scale-95"
-                            title="Customer Ledger"
-                            aria-label="Customer Ledger"
-                          >
-                            <BookOpen className="h-3.5 w-3.5" />
-                          </button>
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-5 py-3.5 text-right align-middle">
+                        {activeTab === 'trash' ? (
+                          <div className="flex items-center justify-end gap-1.5">
+                            {onRestore && (
+                              <button
+                                type="button"
+                                onClick={() => onRestore(receipt)}
+                                className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-2.5 py-1 text-xs font-semibold text-emerald-600 transition-all hover:scale-105 hover:bg-emerald-500/20 active:scale-95 dark:text-emerald-400"
+                                title="Restore Receipt to Active List"
+                              >
+                                <RotateCcw className="h-3 w-3" />
+                                <span>Restore</span>
+                              </button>
+                            )}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsPermanentDelete?.(true);
+                                setDeleteTarget(receipt);
+                              }}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                              title="Delete Permanently"
+                              aria-label="Delete Permanently"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
+                        ) : (
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => setSelectedReceipt(receipt)}
+                              className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
+                              title="View & Print Payment Receipt"
+                              aria-label="View & Print"
+                            >
+                              <Eye className="h-3.5 w-3.5" />
+                            </button>
+                            <Link
+                              href={`/admin/payment-receipt?templateId=${receipt.id}`}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
+                              title="Use as Template"
+                              aria-label="Use as Template"
+                            >
+                              <FileText className="h-3.5 w-3.5" />
+                            </Link>
+                            <button
+                              onClick={() => {
+                                sessionStorage.setItem(
+                                  'emailPrefillRecord',
+                                  JSON.stringify(receipt)
+                                );
+                                window.location.href =
+                                  '/admin/email?tab=compose&prefillReceipt=true';
+                              }}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
+                              title="Email Receipt to Client"
+                              aria-label="Email Receipt"
+                            >
+                              <Mail className="h-3.5 w-3.5" />
+                            </button>
+                            {onShareWhatsApp && (
+                              <button
+                                onClick={() => onShareWhatsApp(receipt)}
+                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
+                                title="Share via WhatsApp"
+                                aria-label="Share via WhatsApp"
+                              >
+                                <MessageSquare className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                            {onOpenLedger && receipt.form_data?.refId && (
+                              <button
+                                onClick={() => onOpenLedger(receipt.form_data.refId)}
+                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-sky-500/30 hover:bg-sky-500/10 hover:text-sky-500 active:scale-95"
+                                title="Customer Ledger"
+                                aria-label="Customer Ledger"
+                              >
+                                <BookOpen className="h-3.5 w-3.5" />
+                              </button>
+                            )}
+                            <button
+                              onClick={() => {
+                                setIsPermanentDelete?.(false);
+                                setDeleteTarget(receipt);
+                              }}
+                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                              title="Delete Receipt"
+                              aria-label="Delete Receipt"
+                            >
+                              <Trash2 className="h-3.5 w-3.5" />
+                            </button>
+                          </div>
                         )}
-                        <button
-                          onClick={() => setDeleteTarget(receipt)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
-                          title="Delete Receipt"
-                          aria-label="Delete Receipt"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                        </button>
-                      </div>
-                    </td>
-                  </motion.tr>
-                );
-              })}
-            </tbody>
-          </table>
+                      </td>
+                    </motion.tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </>
         )}
       </div>
     </div>

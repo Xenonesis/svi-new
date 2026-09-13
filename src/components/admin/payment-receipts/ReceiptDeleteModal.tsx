@@ -8,6 +8,7 @@ interface ReceiptDeleteModalProps {
   setDeleteTarget: (val: SavedReceipt | null) => void;
   deleteLoading: boolean;
   handleDelete: () => void;
+  isPermanent?: boolean;
 }
 
 export function ReceiptDeleteModal({
@@ -15,6 +16,7 @@ export function ReceiptDeleteModal({
   setDeleteTarget,
   deleteLoading,
   handleDelete,
+  isPermanent = false,
 }: ReceiptDeleteModalProps) {
   return (
     <AnimatePresence>
@@ -32,18 +34,37 @@ export function ReceiptDeleteModal({
             exit={{ opacity: 0, scale: 0.95 }}
             className="dark:border-brand-gold/20 dark:bg-brand-dark-surface relative w-full max-w-sm overflow-hidden rounded-2xl border border-gray-200 bg-white p-6 text-center shadow-2xl transition-colors duration-300"
           >
-            <div className="absolute top-0 right-0 left-0 h-[2px] bg-red-500/50" />
-            <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border border-red-500/20 bg-red-500/10">
-              <Trash2 className="h-5 w-5 text-red-400" />
+            <div
+              className={`absolute top-0 right-0 left-0 h-[2px] ${isPermanent ? 'bg-red-500' : 'bg-amber-500'}`}
+            />
+            <div
+              className={`mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full border ${
+                isPermanent
+                  ? 'border-red-500/20 bg-red-500/10'
+                  : 'border-amber-500/20 bg-amber-500/10'
+              }`}
+            >
+              <Trash2 className={`h-5 w-5 ${isPermanent ? 'text-red-400' : 'text-amber-400'}`} />
             </div>
             <h3 className="text-brand-navy mb-2 font-serif text-lg tracking-tight transition-colors duration-300 dark:text-white">
-              Delete Receipt?
+              {isPermanent ? 'Delete Permanently?' : 'Move Receipt to Trash?'}
             </h3>
             <p className="mb-6 font-sans text-xs text-gray-500 transition-colors duration-300 dark:text-gray-400">
-              Are you sure you want to permanently delete receipt number{' '}
-              <strong className="text-red-500">{deleteTarget.form_data?.receiptNo}</strong>{' '}
-              generated for <strong>{deleteTarget.form_data?.name}</strong>? This action is
-              irreversible.
+              {isPermanent ? (
+                <>
+                  Are you sure you want to permanently delete receipt number{' '}
+                  <strong className="text-red-500">{deleteTarget.form_data?.receiptNo}</strong>{' '}
+                  generated for <strong>{deleteTarget.form_data?.name}</strong>? This action is
+                  irreversible.
+                </>
+              ) : (
+                <>
+                  Receipt number{' '}
+                  <strong className="text-amber-500">{deleteTarget.form_data?.receiptNo}</strong>{' '}
+                  generated for <strong>{deleteTarget.form_data?.name}</strong> will be moved to
+                  Trash. You can recover it anytime from the Trash Bin.
+                </>
+              )}
             </p>
             <div className="flex gap-3 font-sans">
               <button
@@ -56,12 +77,18 @@ export function ReceiptDeleteModal({
               <button
                 onClick={handleDelete}
                 disabled={deleteLoading}
-                className="flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-red-600 py-3 text-xs font-bold tracking-widest text-white uppercase shadow-lg transition-all hover:bg-red-500"
+                className={`flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg py-3 text-xs font-bold tracking-widest text-white uppercase shadow-lg transition-all ${
+                  isPermanent
+                    ? 'bg-red-600 hover:bg-red-500'
+                    : 'bg-amber-600 hover:bg-amber-500 dark:bg-amber-600/90 dark:hover:bg-amber-600'
+                }`}
               >
                 {deleteLoading ? (
                   <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                ) : isPermanent ? (
+                  'Delete Forever'
                 ) : (
-                  'Delete'
+                  'Move to Trash'
                 )}
               </button>
             </div>

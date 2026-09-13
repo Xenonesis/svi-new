@@ -30,6 +30,7 @@ export interface ReceiptModalsContainerProps {
   setLedgerRefId: (ref: string | null) => void;
   isLedgersModalOpen: boolean;
   setIsLedgersModalOpen: (open: boolean) => void;
+  isPermanentDelete?: boolean;
 }
 
 export function ReceiptModalsContainer({
@@ -53,6 +54,7 @@ export function ReceiptModalsContainer({
   setLedgerRefId,
   isLedgersModalOpen,
   setIsLedgersModalOpen,
+  isPermanentDelete = false,
 }: ReceiptModalsContainerProps) {
   const resolvedDelete = () => {
     if (handleDelete) {
@@ -77,6 +79,7 @@ export function ReceiptModalsContainer({
         setDeleteTarget={setDeleteTarget}
         deleteLoading={deleteLoading}
         handleDelete={resolvedDelete}
+        isPermanent={isPermanentDelete}
       />
 
       <ReceiptViewModal

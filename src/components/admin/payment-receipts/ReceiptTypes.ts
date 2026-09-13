@@ -19,4 +19,10 @@ export interface SavedReceipt {
     paymentMethod: string;
     clientPhone?: string;
   };
+  metadata?: {
+    is_trashed?: boolean;
+    trashed_at?: string | null;
+    restored_at?: string | null;
+    [key: string]: unknown;
+  };
 }

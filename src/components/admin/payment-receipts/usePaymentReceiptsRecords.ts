@@ -80,6 +80,14 @@ export interface UsePaymentReceiptsRecordsReturn {
   handleDownloadPDF: (receipt?: SavedReceipt | null) => Promise<void>;
   handleDownloadImage: (receipt?: SavedReceipt | null) => Promise<void>;
   handleExportCSV: (filename?: string) => void;
+  activeTab: 'active' | 'trash';
+  setActiveTab: (tab: 'active' | 'trash') => void;
+  trashedReceipts: SavedReceipt[];
+  setTrashedReceipts: React.Dispatch<React.SetStateAction<SavedReceipt[]>>;
+  isPermanentDelete: boolean;
+  setIsPermanentDelete: (val: boolean) => void;
+  handleRestore: (receipt: SavedReceipt) => Promise<void>;
+  handleEmptyTrash: () => Promise<void>;
 }
 
 export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
@@ -95,6 +103,10 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     direction: 'desc',
   });
   const [dateRange, setDateRange] = useState<DateRange>({ start: '', end: '' });
+
+  const [activeTab, setActiveTab] = useState<'active' | 'trash'>('active');
+  const [trashedReceipts, setTrashedReceipts] = useState<SavedReceipt[]>([]);
+  const [isPermanentDelete, setIsPermanentDelete] = useState(false);
 
   const [selectedReceipt, setSelectedReceipt] = useState<SavedReceipt | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedReceipt | null>(null);
@@ -120,7 +132,11 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
       })
       .then((json: { documents?: SavedReceipt[] }) => {
         if (json.documents) {
-          setReceipts(json.documents);
+          const allDocs = json.documents;
+          const active = allDocs.filter((r) => !r.metadata?.is_trashed);
+          const trashed = allDocs.filter((r) => !!r.metadata?.is_trashed);
+          setReceipts(active);
+          setTrashedReceipts(trashed);
         }
       })
       .catch((err: unknown) => {
@@ -246,18 +262,56 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     const timeoutId = setTimeout(() => controller.abort(), 30000);
 
     try {
-      const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-        signal: controller.signal,
-      });
-      if (response.ok) {
-        setReceipts((prev) => prev.filter((r) => r.id !== deleteTarget.id));
-        setDeleteTarget(null);
-        toast.success('Payment receipt deleted successfully.');
+      if (activeTab === 'trash' || isPermanentDelete) {
+        const response = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+          signal: controller.signal,
+        });
+        if (response.ok) {
+          setTrashedReceipts((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+          setReceipts((prev) => prev.filter((r) => r.id !== deleteTarget.id));
+          setDeleteTarget(null);
+          setIsPermanentDelete(false);
+          toast.success('Payment receipt permanently deleted.');
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          toast.error(extractApiErrorMessage(errData, 'Failed to delete receipt.'));
+        }
       } else {
-        const errData = await response.json().catch(() => ({}));
-        toast.error(extractApiErrorMessage(errData, 'Failed to delete receipt.'));
+        const targetToTrash = deleteTarget;
+        const updatedMetadata = {
+          ...(targetToTrash.metadata || {}),
+          is_trashed: true,
+          trashed_at: new Date().toISOString(),
+        };
+        const updatedTarget: SavedReceipt = {
+          ...targetToTrash,
+          metadata: updatedMetadata,
+        };
+
+        const response = await fetch(`/api/admin/documents/${targetToTrash.id}`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ metadata: updatedMetadata }),
+          signal: controller.signal,
+        });
+
+        if (response.ok) {
+          setReceipts((prev) => prev.filter((r) => r.id !== targetToTrash.id));
+          setTrashedReceipts((prev) => [
+            updatedTarget,
+            ...prev.filter((r) => r.id !== targetToTrash.id),
+          ]);
+          setDeleteTarget(null);
+          toast.success('Payment receipt deleted successfully.');
+        } else {
+          const errData = await response.json().catch(() => ({}));
+          toast.error(extractApiErrorMessage(errData, 'Failed to delete receipt.'));
+        }
       }
     } catch (err: unknown) {
       const isAbort = err instanceof Error && err.name === 'AbortError';
@@ -269,6 +323,83 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     } finally {
       clearTimeout(timeoutId);
       setDeleteLoading(false);
+    }
+  };
+
+  const handleRestore = async (targetReceipt: SavedReceipt) => {
+    if (!token) return;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 30000);
+
+    const updatedMetadata = {
+      ...(targetReceipt.metadata || {}),
+      is_trashed: false,
+      trashed_at: null,
+      restored_at: new Date().toISOString(),
+    };
+    const restoredTarget: SavedReceipt = {
+      ...targetReceipt,
+      metadata: updatedMetadata,
+    };
+
+    setTrashedReceipts((prev) => prev.filter((r) => r.id !== targetReceipt.id));
+    setReceipts((prev) => [restoredTarget, ...prev.filter((r) => r.id !== targetReceipt.id)]);
+
+    try {
+      const response = await fetch(`/api/admin/documents/${targetReceipt.id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ metadata: updatedMetadata }),
+        signal: controller.signal,
+      });
+
+      if (response.ok) {
+        toast.success(
+          `Receipt #${targetReceipt.form_data?.receiptNo || ''} restored successfully.`
+        );
+      } else {
+        setReceipts((prev) => prev.filter((r) => r.id !== targetReceipt.id));
+        setTrashedReceipts((prev) => [targetReceipt, ...prev]);
+        const errData = await response.json().catch(() => ({}));
+        toast.error(extractApiErrorMessage(errData, 'Failed to restore receipt.'));
+      }
+    } catch {
+      setReceipts((prev) => prev.filter((r) => r.id !== targetReceipt.id));
+      setTrashedReceipts((prev) => [targetReceipt, ...prev]);
+      toast.error('Network error restoring receipt.');
+    } finally {
+      clearTimeout(timeoutId);
+    }
+  };
+
+  const handleEmptyTrash = async () => {
+    if (!token || trashedReceipts.length === 0) return;
+    if (
+      typeof window !== 'undefined' &&
+      !window.confirm(
+        `Permanently delete all ${trashedReceipts.length} receipts in Trash? This action cannot be undone.`
+      )
+    ) {
+      return;
+    }
+    const currentTrashed = [...trashedReceipts];
+    setTrashedReceipts([]);
+    try {
+      await Promise.all(
+        currentTrashed.map((r) =>
+          fetch(`/api/admin/documents/${r.id}`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` },
+          })
+        )
+      );
+      toast.success('Trash emptied successfully.');
+    } catch {
+      toast.error('Some receipts could not be deleted.');
+      fetchReceipts();
     }
   };
 
@@ -336,8 +467,9 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
 
   const filteredReceipts = useMemo(() => {
     const query = searchQuery.toLowerCase().trim();
+    const sourceList = activeTab === 'trash' ? trashedReceipts : receipts;
 
-    return receipts
+    return sourceList
       .filter((r) => {
         if (query) {
           const name = (r.form_data?.name || '').toLowerCase();
@@ -400,7 +532,7 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
         }
         return 0;
       });
-  }, [receipts, searchQuery, methodFilter, sortConfig, dateRange]);
+  }, [activeTab, receipts, trashedReceipts, searchQuery, methodFilter, sortConfig, dateRange]);
   const handleExportCSV = useCallback(
     (filename?: string) => {
       if (filteredReceipts.length === 0) {
@@ -458,5 +590,13 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     handleDownloadPDF,
     handleDownloadImage,
     handleExportCSV,
+    activeTab,
+    setActiveTab,
+    trashedReceipts,
+    setTrashedReceipts,
+    isPermanentDelete,
+    setIsPermanentDelete,
+    handleRestore,
+    handleEmptyTrash,
   };
 }

@@ -429,4 +429,75 @@ describe('usePaymentReceiptsRecords', () => {
 
     expect(result.current.dealValuesMap).toHaveProperty('REF-102', 750000);
   });
+
+  it('restores a trashed receipt back to active list via handleRestore', async () => {
+    const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    // Delete receipt-1 (moves to trash)
+    act(() => {
+      result.current.setDeleteTarget(mockReceipts[0]);
+    });
+    await act(async () => {
+      await result.current.handleDeleteConfirm();
+    });
+
+    expect(result.current.receipts).toHaveLength(3);
+    expect(result.current.trashedReceipts).toHaveLength(1);
+    expect(result.current.trashedReceipts[0].id).toBe('receipt-1');
+
+    // Restore receipt-1
+    await act(async () => {
+      await result.current.handleRestore(result.current.trashedReceipts[0]);
+    });
+
+    expect(result.current.receipts).toHaveLength(4);
+    expect(result.current.trashedReceipts).toHaveLength(0);
+    expect(toast.success).toHaveBeenCalledWith('Receipt #REC-001 restored successfully.');
+  });
+
+  it('permanently deletes a receipt when in trash tab', async () => {
+    const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+    await waitFor(() => {
+      expect(result.current.loading).toBe(false);
+    });
+
+    global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve({ success: true }),
+    });
+
+    // Move to trash first
+    act(() => {
+      result.current.setDeleteTarget(mockReceipts[0]);
+    });
+    await act(async () => {
+      await result.current.handleDeleteConfirm();
+    });
+
+    // Switch to trash tab
+    act(() => {
+      result.current.setActiveTab('trash');
+      result.current.setIsPermanentDelete(true);
+      result.current.setDeleteTarget(result.current.trashedReceipts[0]);
+    });
+
+    // Permanent delete
+    await act(async () => {
+      await result.current.handleDeleteConfirm();
+    });
+
+    expect(result.current.trashedReceipts).toHaveLength(0);
+    expect(result.current.receipts).toHaveLength(3);
+    expect(toast.success).toHaveBeenCalledWith('Payment receipt permanently deleted.');
+  });
 });

@@ -88,7 +88,9 @@ export function usePortalAllotmentsAdmin() {
         fetchDocs(),
       ]);
 
-      const allReceipts = (docsResult?.data as unknown as SavedReceipt[]) || [];
+      const allReceipts = ((docsResult?.data as unknown as SavedReceipt[]) || []).filter(
+        (r) => !r.metadata?.is_trashed
+      );
       const normalizeId = (id?: string | null) =>
         (id || '').trim().toUpperCase().replace(/[-\s]/g, '');
 
