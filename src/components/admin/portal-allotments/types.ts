@@ -50,6 +50,7 @@ export interface AllotmentRecord {
   profiles?: ProfileSummary | null;
   properties?: PropertySummary | null;
   payment_schedules?: PaymentScheduleItem[];
+  receipts?: import('../payment-receipts/ReceiptTypes').SavedReceipt[];
 }
 
 export interface AllotmentFormData {

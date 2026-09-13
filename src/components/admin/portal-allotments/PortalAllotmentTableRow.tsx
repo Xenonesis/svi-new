@@ -68,8 +68,8 @@ export function PortalAllotmentTableRow({
               </p>
               {area !== null && area !== undefined && area !== '' && (
                 <p>
-                  <strong className="text-gray-900 dark:text-gray-300">{t('area')}:</strong> {area}{' '}
-                  Sq. Yds.
+                  <strong className="text-gray-900 dark:text-gray-300">{t('area')}:</strong>{' '}
+                  <span>{area}</span> Sq. Yds.
                 </p>
               )}
               {!isNaN(totalCost) && totalCost > 0 && (
@@ -107,7 +107,7 @@ export function PortalAllotmentTableRow({
           </button>
           <button
             onClick={() => onDelete(allotment.id)}
-            aria-label="Delete allotment"
+            aria-label="Delete"
             className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
           >
             <Trash2 className="h-4 w-4" />

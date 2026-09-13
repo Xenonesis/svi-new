@@ -9,6 +9,8 @@ import {
   PortalAllotmentFormModal,
   PortalAllotmentPendingCard,
 } from '@/src/components/admin/portal-allotments';
+import { ReceiptViewModal } from '@/src/components/admin/payment-receipts/ReceiptViewModal';
+import { ReceiptWhatsAppModal } from '@/src/components/admin/payment-receipts/ReceiptWhatsAppModal';
 
 export default function PortalAllotmentsAdmin() {
   const t = useTranslations('pages.adminPortalAllotments');
@@ -41,6 +43,14 @@ export default function PortalAllotmentsAdmin() {
     handleApproveAll,
     approvingTicketId,
     isApprovingAll,
+    selectedReceipt,
+    setSelectedReceipt,
+    whatsAppReceipt,
+    setWhatsAppReceipt,
+    pdfLoading,
+    imageLoading,
+    handleDownloadPDF,
+    handleDownloadImage,
   } = usePortalAllotmentsAdmin();
 
   return (
@@ -198,8 +208,12 @@ export default function PortalAllotmentsAdmin() {
                 >
                   <PortalAllotmentScheduleDrawer
                     isExpanded={expandedAllotment === allotment.id}
+                    allotment={allotment}
                     paymentSchedules={allotment.payment_schedules}
+                    receipts={allotment.receipts}
                     onToggleStatus={togglePaymentStatus}
+                    onSelectReceipt={setSelectedReceipt}
+                    onShareWhatsApp={setWhatsAppReceipt}
                   />
                 </PortalAllotmentTableRow>
               ))}
@@ -219,6 +233,19 @@ export default function PortalAllotmentsAdmin() {
         properties={properties}
         onSave={handleSave}
       />
+
+      {/* View & Print Receipt Modal */}
+      <ReceiptViewModal
+        selectedReceipt={selectedReceipt}
+        setSelectedReceipt={setSelectedReceipt}
+        pdfLoading={pdfLoading}
+        imageLoading={imageLoading}
+        handleDownloadPDF={handleDownloadPDF}
+        handleDownloadImage={handleDownloadImage}
+      />
+
+      {/* WhatsApp Share Receipt Modal */}
+      <ReceiptWhatsAppModal receipt={whatsAppReceipt} onClose={() => setWhatsAppReceipt(null)} />
     </div>
   );
 }
