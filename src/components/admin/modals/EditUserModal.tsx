@@ -258,7 +258,7 @@ export function EditUserModal({ user, onClose, onSuccess, token, properties }: E
                     value="client"
                     className="bg-white text-gray-900 dark:bg-[#111118] dark:text-white"
                   >
-                    User
+                    Client
                   </option>
                   <option
                     value="employee"

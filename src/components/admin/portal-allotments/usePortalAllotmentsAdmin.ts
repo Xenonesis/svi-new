@@ -10,8 +10,11 @@ import type {
   ProfileSummary,
   PropertySummary,
   AllotmentCandidate,
+  AllotmentFinancials,
+  SalesRevenueSummary,
 } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
+import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
 export const INITIAL_ALLOTMENT_FORM_DATA: AllotmentFormData = {
@@ -21,15 +24,60 @@ export const INITIAL_ALLOTMENT_FORM_DATA: AllotmentFormData = {
   area: '',
   total_cost: '',
   booking_date: '',
+  advisor_name: '',
 };
+
+export function getAllotmentFinancials(
+  allotment: AllotmentRecord,
+  dealValuesMap: Record<string, number> = {}
+): AllotmentFinancials {
+  const ticket =
+    allotment.metadata?.ticket_id ||
+    allotment.metadata?.ticketId ||
+    `SVI-${allotment.id.slice(0, 4)}`;
+  const normTicket = normalizeRefId(ticket);
+
+  const explicitDealVal = dealValuesMap[normTicket];
+  const totalCostVal = Number(allotment.metadata?.total_cost ?? allotment.total_cost) || 0;
+  const dealValue =
+    typeof explicitDealVal === 'number' && explicitDealVal > 0 ? explicitDealVal : totalCostVal;
+
+  const receiptsTotal = (allotment.receipts || []).reduce(
+    (sum, r) => sum + (parseFloat(r.form_data?.amount || '0') || 0),
+    0
+  );
+
+  const schedulesTotal = (allotment.payment_schedules || [])
+    .filter((p) => p.status === 'paid')
+    .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+  const totalPaid = Math.max(receiptsTotal, schedulesTotal);
+  const balanceDue = dealValue > 0 ? Math.max(0, dealValue - totalPaid) : 0;
+  const percentCompleted = dealValue > 0 ? Math.min(100, (totalPaid / dealValue) * 100) : 0;
+
+  return {
+    ticketId: ticket,
+    normalizedTicketId: normTicket,
+    dealValue,
+    totalPaid,
+    balanceDue,
+    percentCompleted: Math.round(percentCompleted * 100) / 100,
+  };
+}
 
 export function usePortalAllotmentsAdmin() {
   const t = useTranslations('pages.adminPortalAllotments');
   const [allotments, setAllotments] = useState<AllotmentRecord[]>([]);
   const [candidates, setCandidates] = useState<AllotmentCandidate[]>([]);
+  const [allReceipts, setAllReceipts] = useState<SavedReceipt[]>([]);
+  const [dealValuesMap, setDealValuesMap] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
   const [loadingCandidates, setLoadingCandidates] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Customer Ledger Modal & Drawer state
+  const [isLedgersModalOpen, setIsLedgersModalOpen] = useState(false);
+  const [activeLedgerRefId, setActiveLedgerRefId] = useState<string | null>(null);
 
   // Receipt modal & actions state
   const [selectedReceipt, setSelectedReceipt] = useState<SavedReceipt | null>(null);
@@ -52,6 +100,7 @@ export function usePortalAllotmentsAdmin() {
   // Form Data
   const [profiles, setProfiles] = useState<ProfileSummary[]>([]);
   const [properties, setProperties] = useState<PropertySummary[]>([]);
+  const [advisors, setAdvisors] = useState<string[]>([]);
   const [formData, setFormData] = useState<AllotmentFormData>(INITIAL_ALLOTMENT_FORM_DATA);
 
   // Fetch approved allotments from DB along with matched payment receipts
@@ -71,11 +120,35 @@ export function usePortalAllotmentsAdmin() {
         }
       };
 
+      const fetchAdvisorDocs = async () => {
+        try {
+          if (!supabase?.from) return { data: [] };
+          const q = supabase.from('documents').select('form_data');
+          const res = typeof q?.limit === 'function' ? await q.limit(500) : await q;
+          return res || { data: [] };
+        } catch {
+          return { data: [] };
+        }
+      };
+
+      const fetchAdvisorRegs = async () => {
+        try {
+          if (!supabase?.from) return { data: [] };
+          const q = supabase.from('registrations').select('submission_id, advisor_name');
+          const res = typeof q?.limit === 'function' ? await q.limit(500) : await q;
+          return res || { data: [] };
+        } catch {
+          return { data: [] };
+        }
+      };
+
       const [
         { data: allotmentsData, error: allotmentsError },
         { data: profilesData },
         { data: propertiesData },
         docsResult,
+        advDocsResult,
+        advRegsResult,
       ] = await Promise.all([
         supabase
           .from('allotments')
@@ -83,9 +156,11 @@ export function usePortalAllotmentsAdmin() {
             '*, profiles:user_id(id, full_name, email), properties:property_id(id, name), payment_schedules(*)'
           )
           .order('created_at', { ascending: false }),
-        supabase.from('profiles').select('id, full_name, email').order('full_name'),
+        supabase.from('profiles').select('id, full_name, email, role').order('full_name'),
         supabase.from('properties').select('id, name').eq('active', true).order('name'),
         fetchDocs(),
+        fetchAdvisorDocs(),
+        fetchAdvisorRegs(),
       ]);
 
       const allReceipts = ((docsResult?.data as unknown as SavedReceipt[]) || []).filter(
@@ -93,6 +168,45 @@ export function usePortalAllotmentsAdmin() {
       );
       const normalizeId = (id?: string | null) =>
         (id || '').trim().toUpperCase().replace(/[-\s]/g, '');
+
+      // Build ticket -> advisor lookup map and known advisors list
+      const ticketToAdvisor: Record<string, string> = {};
+      const knownAdvisorsSet = new Set<string>();
+
+      ((profilesData as Array<{ full_name?: string; role?: string }>) || []).forEach((p) => {
+        if (p?.full_name && (p.role === 'employee' || p.role === 'admin')) {
+          knownAdvisorsSet.add(p.full_name.trim());
+        }
+      });
+
+      ((advDocsResult?.data as Array<{ form_data?: Record<string, any> }>) || []).forEach((d) => {
+        const fd = d?.form_data || {};
+        const rawTicket = fd.ticketId || fd.refId || fd.ticket_id || fd.ref_id;
+        const adv = fd.advisorName || fd.advisor_name || fd.agentName || fd.agent_name;
+        if (adv && typeof adv === 'string' && adv.trim()) {
+          const cleanAdv = adv.trim();
+          knownAdvisorsSet.add(cleanAdv);
+          if (rawTicket) {
+            ticketToAdvisor[normalizeId(rawTicket)] = cleanAdv;
+          }
+        }
+      });
+
+      (
+        (advRegsResult?.data as Array<{ submission_id?: string; advisor_name?: string }>) || []
+      ).forEach((r) => {
+        const rawTicket = r?.submission_id;
+        const adv = r?.advisor_name;
+        if (adv && typeof adv === 'string' && adv.trim()) {
+          const cleanAdv = adv.trim();
+          knownAdvisorsSet.add(cleanAdv);
+          if (rawTicket && !ticketToAdvisor[normalizeId(rawTicket)]) {
+            ticketToAdvisor[normalizeId(rawTicket)] = cleanAdv;
+          }
+        }
+      });
+
+      setAdvisors(Array.from(knownAdvisorsSet).sort());
 
       let rawList: AllotmentRecord[] = [];
       if (allotmentsError) {
@@ -106,9 +220,16 @@ export function usePortalAllotmentsAdmin() {
         rawList = (allotmentsData as unknown as AllotmentRecord[]) || [];
       }
 
-      // Attach matched receipts to each allotment
+      // Attach matched receipts & auto-resolved advisor to each allotment
       const enrichedAllotments: AllotmentRecord[] = rawList.map((a) => {
         const normTicket = normalizeId(a.metadata?.ticket_id || a.metadata?.ticketId);
+        const resolvedAdvisor =
+          (a.metadata?.advisor_name as string) ||
+          (a.metadata?.advisorName as string) ||
+          (a.advisor_name as string) ||
+          ticketToAdvisor[normTicket] ||
+          null;
+
         const matchedReceipts = allReceipts.filter((r) => {
           const fd = r.form_data as Record<string, any> | undefined;
           const rRef = normalizeId(fd?.refId || fd?.ticketId);
@@ -125,11 +246,17 @@ export function usePortalAllotmentsAdmin() {
           area: a.metadata?.area ?? a.area,
           total_cost: a.metadata?.total_cost ?? a.total_cost,
           booking_date: a.allotted_date || a.booking_date,
+          advisor_name: resolvedAdvisor,
+          metadata: {
+            ...(a.metadata || {}),
+            advisor_name: resolvedAdvisor,
+          },
           receipts: matchedReceipts,
         };
       });
 
       setAllotments(enrichedAllotments);
+      setAllReceipts(allReceipts);
       setProfiles((profilesData as unknown as ProfileSummary[]) || []);
       setProperties((propertiesData as unknown as PropertySummary[]) || []);
     } catch (error: unknown) {
@@ -175,15 +302,70 @@ export function usePortalAllotmentsAdmin() {
     }
   }, []);
 
+  const fetchDealValues = useCallback(async () => {
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+    try {
+      const sessionRes = await supabase?.auth?.getSession?.();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers: Record<string, string> = {};
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      const endpoint =
+        typeof window !== 'undefined' && window.location?.origin
+          ? `${window.location.origin}/api/admin/settings?key=receipt_deal_values`
+          : '/api/admin/settings?key=receipt_deal_values';
+
+      const res = await fetch(endpoint, { headers });
+      if (!res.ok) return;
+      const json = await res.json();
+      if (json?.value && typeof json.value === 'object') {
+        const mapped: Record<string, number> = {};
+        Object.entries(json.value).forEach(([k, v]) => {
+          const norm = normalizeRefId(k);
+          if (typeof v === 'number') {
+            mapped[norm] = v;
+          } else if (v && typeof v === 'object' && 'dealValue' in v) {
+            const val = (v as { dealValue?: number | string }).dealValue;
+            mapped[norm] = typeof val === 'number' ? val : Number(val) || 0;
+          }
+        });
+        setDealValuesMap((prev) => ({ ...mapped, ...prev }));
+      }
+    } catch {
+      // ignore
+    }
+  }, []);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
-    await Promise.all([fetchAllotments(), fetchCandidates()]);
+    await Promise.all([fetchAllotments(), fetchCandidates(), fetchDealValues()]);
     setLoading(false);
-  }, [fetchAllotments, fetchCandidates]);
+  }, [fetchAllotments, fetchCandidates, fetchDealValues]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Sync default deal values from allotments into dealValuesMap
+  useEffect(() => {
+    if (allotments.length === 0) return;
+    setDealValuesMap((prev) => {
+      let changed = false;
+      const next = { ...prev };
+      allotments.forEach((a) => {
+        const ticket = a.metadata?.ticket_id || a.metadata?.ticketId || a.id;
+        const norm = normalizeRefId(ticket);
+        const cost = Number(a.metadata?.total_cost ?? a.total_cost) || 0;
+        if (norm && cost > 0 && !(norm in next)) {
+          next[norm] = cost;
+          changed = true;
+        }
+      });
+      return changed ? next : prev;
+    });
+  }, [allotments]);
 
   // Approve a single candidate client
   const handleApproveCandidate = async (candidate: AllotmentCandidate) => {
@@ -267,6 +449,9 @@ export function usePortalAllotmentsAdmin() {
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const existingAllotment = editingId ? allotments.find((a) => a.id === editingId) : null;
+      const existingMeta = (existingAllotment?.metadata as Record<string, any>) || {};
+
       const payload = {
         user_id: formData.profile_id,
         property_id: formData.property_id,
@@ -274,8 +459,10 @@ export function usePortalAllotmentsAdmin() {
         status: 'Allotted',
         allotted_date: formData.booking_date || new Date().toISOString().split('T')[0],
         metadata: {
+          ...existingMeta,
           area: formData.area ? Number(formData.area) || formData.area : null,
           total_cost: formData.total_cost ? Number(formData.total_cost) || null : null,
+          advisor_name: formData.advisor_name?.trim() || null,
         },
       };
 
@@ -336,12 +523,18 @@ export function usePortalAllotmentsAdmin() {
       area: '',
       total_cost: '',
       booking_date: new Date().toISOString().split('T')[0],
+      advisor_name: '',
     });
     setShowModal(true);
   };
 
   const openEditModal = (allotment: AllotmentRecord) => {
     setEditingId(allotment.id);
+    const existingAdvisor =
+      allotment.advisor_name ||
+      (allotment.metadata?.advisor_name as string) ||
+      (allotment.metadata?.advisorName as string) ||
+      '';
     setFormData({
       profile_id: allotment.user_id || allotment.profile_id || '',
       property_id: allotment.property_id,
@@ -349,6 +542,7 @@ export function usePortalAllotmentsAdmin() {
       area: (allotment.metadata?.area ?? allotment.area)?.toString() || '',
       total_cost: (allotment.metadata?.total_cost ?? allotment.total_cost)?.toString() || '',
       booking_date: allotment.allotted_date || allotment.booking_date || '',
+      advisor_name: existingAdvisor,
     });
     setShowModal(true);
   };
@@ -367,12 +561,14 @@ export function usePortalAllotmentsAdmin() {
       const propName = a.properties?.name?.toLowerCase() || '';
       const unit = (a.unit_no || a.unit_number || '').toLowerCase();
       const ticket = (a.metadata?.ticket_id || a.metadata?.ticketId || '').toLowerCase();
+      const advisor = (a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
       return (
         pName.includes(term) ||
         pEmail.includes(term) ||
         propName.includes(term) ||
         unit.includes(term) ||
-        ticket.includes(term)
+        ticket.includes(term) ||
+        advisor.includes(term)
       );
     });
   }, [allotments, searchTerm]);
@@ -451,6 +647,171 @@ export function usePortalAllotmentsAdmin() {
     }
   };
 
+  const handleSaveDealValue = async (normalizedRefId: string, newDealValue: number) => {
+    const norm = normalizeRefId(normalizedRefId);
+    const updated = {
+      ...dealValuesMap,
+      [normalizedRefId]: newDealValue,
+      [norm]: newDealValue,
+    };
+    setDealValuesMap(updated);
+
+    if (process.env.NODE_ENV === 'test') {
+      return;
+    }
+
+    try {
+      const sessionRes = await supabase?.auth?.getSession?.();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+      if (token) headers['Authorization'] = `Bearer ${token}`;
+
+      await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          key: 'receipt_deal_values',
+          value: updated,
+        }),
+      });
+
+      // Also update any allotment in the database that matches this normalizedRefId
+      const matchingAllotment = allotments.find((a) => {
+        const aTicket = normalizeRefId(a.metadata?.ticket_id || a.metadata?.ticketId || a.id);
+        return aTicket === norm;
+      });
+
+      if (matchingAllotment && supabase?.from) {
+        await supabase
+          .from('allotments')
+          .update({
+            metadata: {
+              ...(matchingAllotment.metadata || {}),
+              total_cost: newDealValue,
+            },
+          })
+          .eq('id', matchingAllotment.id);
+
+        setAllotments((prev) =>
+          prev.map((a) =>
+            a.id === matchingAllotment.id
+              ? {
+                  ...a,
+                  total_cost: newDealValue,
+                  metadata: { ...(a.metadata || {}), total_cost: newDealValue },
+                }
+              : a
+          )
+        );
+      }
+    } catch (err) {
+      console.error('Failed to sync deal value:', err);
+    }
+  };
+
+  const openClientLedger = useCallback((target?: AllotmentRecord | string) => {
+    if (!target) return;
+    if (typeof target === 'string') {
+      setActiveLedgerRefId(target);
+    } else {
+      const ref =
+        target.metadata?.ticket_id || target.metadata?.ticketId || `SVI-${target.id.slice(0, 4)}`;
+      setActiveLedgerRefId(ref);
+    }
+  }, []);
+
+  const getDealValueForRef = useCallback(
+    (refId: string | null) => {
+      if (!refId) return 0;
+      const norm = normalizeRefId(refId);
+      if (dealValuesMap[norm] && dealValuesMap[norm] > 0) {
+        return dealValuesMap[norm];
+      }
+      const matching = allotments.find((a) => {
+        const aRef = a.metadata?.ticket_id || a.metadata?.ticketId || a.id;
+        return normalizeRefId(aRef) === norm;
+      });
+      return Number(matching?.metadata?.total_cost ?? matching?.total_cost) || 0;
+    },
+    [allotments, dealValuesMap]
+  );
+
+  const allLedgerReceipts = useMemo(() => {
+    const result: SavedReceipt[] = [...allReceipts];
+    const existingRefs = new Set(result.map((r) => normalizeRefId(r.form_data?.refId)));
+
+    allotments.forEach((a) => {
+      const ref = a.metadata?.ticket_id || a.metadata?.ticketId || `SVI-${a.id.slice(0, 4)}`;
+      const norm = normalizeRefId(ref);
+
+      if (!existingRefs.has(norm)) {
+        const paidSchedulesTotal = (a.payment_schedules || [])
+          .filter((p) => p.status === 'paid')
+          .reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+
+        result.push({
+          id: `allot-synth-${a.id}`,
+          document_type: 'payment_receipt',
+          status: 'allotted',
+          created_at: a.allotted_date || a.booking_date || a.created_at || new Date().toISOString(),
+          form_data: {
+            receiptNo: `ALLOT-${(a.unit_no || a.unit_number || a.id.slice(0, 4)).replace(/\s+/g, '')}`,
+            date:
+              (a.allotted_date || a.booking_date || '').split('T')[0] ||
+              new Date().toISOString().split('T')[0],
+            salutation: '',
+            name: a.profiles?.full_name || (a.metadata?.client_name as string) || 'Client',
+            refId: ref,
+            amount: String(paidSchedulesTotal),
+            amountWords: '',
+            paymentRef: 'Allotment Record',
+            drawnOn: '',
+            plotNo: a.unit_no || a.unit_number || '',
+            plotSize: String(a.metadata?.area ?? a.area ?? ''),
+            account: '',
+            paymentMethod: paidSchedulesTotal > 0 ? 'Milestone' : 'Pending',
+          },
+        });
+        existingRefs.add(norm);
+      }
+    });
+
+    return result;
+  }, [allReceipts, allotments]);
+
+  const salesRevenueStats: SalesRevenueSummary = useMemo(() => {
+    let totalSalesRevenue = 0;
+    let totalRevenueCollected = 0;
+    let totalBalanceDue = 0;
+
+    allotments.forEach((a) => {
+      const fin = getAllotmentFinancials(a, dealValuesMap);
+      totalSalesRevenue += fin.dealValue;
+      totalRevenueCollected += fin.totalPaid;
+      totalBalanceDue += fin.balanceDue;
+    });
+
+    const realizationRate =
+      totalSalesRevenue > 0
+        ? Math.round((totalRevenueCollected / totalSalesRevenue) * 1000) / 10
+        : 0;
+
+    const pendingPipelineRevenue = candidates.reduce(
+      (sum, c) => sum + (Number(c.totalCost) || 0),
+      0
+    );
+
+    return {
+      totalSalesRevenue,
+      totalRevenueCollected,
+      totalBalanceDue,
+      realizationRate,
+      activeAccountsCount: allotments.length,
+      pendingPipelineRevenue,
+      pendingCandidatesCount: candidates.length,
+    };
+  }, [allotments, candidates, dealValuesMap]);
+
   return {
     activeTab,
     setActiveTab,
@@ -460,6 +821,7 @@ export function usePortalAllotmentsAdmin() {
     filteredCandidates,
     profiles,
     properties,
+    advisors,
     loading,
     loadingCandidates,
     searchTerm,
@@ -493,5 +855,20 @@ export function usePortalAllotmentsAdmin() {
     imageLoading,
     handleDownloadPDF,
     handleDownloadImage,
+    // Ledgers & Sales Revenue exports
+    allReceipts,
+    allLedgerReceipts,
+    dealValuesMap,
+    setDealValuesMap,
+    handleSaveDealValue,
+    isLedgersModalOpen,
+    setIsLedgersModalOpen,
+    activeLedgerRefId,
+    setActiveLedgerRefId,
+    openClientLedger,
+    getDealValueForRef,
+    salesRevenueStats,
+    getAllotmentFinancials: (allotment: AllotmentRecord) =>
+      getAllotmentFinancials(allotment, dealValuesMap),
   };
 }

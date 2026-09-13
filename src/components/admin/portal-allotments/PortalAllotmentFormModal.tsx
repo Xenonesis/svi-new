@@ -13,6 +13,7 @@ export interface PortalAllotmentFormModalProps {
   setFormData: React.Dispatch<React.SetStateAction<AllotmentFormData>>;
   profiles: ProfileSummary[];
   properties: PropertySummary[];
+  advisors?: string[];
   onSave: (e: React.FormEvent) => Promise<void> | void;
 }
 
@@ -25,6 +26,7 @@ export function PortalAllotmentFormModal({
   setFormData,
   profiles,
   properties,
+  advisors = [],
   onSave,
 }: PortalAllotmentFormModalProps) {
   const t = useTranslations('pages.adminPortalAllotments');
@@ -141,6 +143,29 @@ export function PortalAllotmentFormModal({
                     onChange={(e) => setFormData({ ...formData, booking_date: e.target.value })}
                     className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-gray-900 outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
                   />
+                </div>
+              </div>
+
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                  {t('advisor')}
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    list="advisor-suggestions"
+                    placeholder={t('advisorPlaceholder')}
+                    value={formData.advisor_name || ''}
+                    onChange={(e) => setFormData({ ...formData, advisor_name: e.target.value })}
+                    className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 text-gray-900 outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  />
+                  {advisors.length > 0 && (
+                    <datalist id="advisor-suggestions">
+                      {advisors.map((adv) => (
+                        <option key={adv} value={adv} />
+                      ))}
+                    </datalist>
+                  )}
                 </div>
               </div>
 

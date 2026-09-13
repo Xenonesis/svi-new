@@ -16,6 +16,7 @@
 1. **Public Site (Bilingual):** Hero, features, project listings, calculators, FAQ, chatbot, and lottery/giveaway system. Includes property pages, portals, and registration forms.
 2. **Admin Dashboard:** A robust 31-page admin panel managing all aspects of the business:
    - **Records Management:** Allotment letters, Builder-Buyer Agreements (BBA), offer letters.
+   - **Portal Allotments & Financial Ledgers:** Complete allotment tracking (`/admin/portal-allotments`) with live Sales Revenue KPI metrics (Booked Revenue, Collected Revenue, Receivables, Realization Rate), per-client financial ledgers & payment statement drawers, and master overall ledger overview (`ReceiptLedgersModal`).
    - **Email Center:** Full email client with AI compose, templates, drafts, campaigns, and contact groups.
    - **Lottery System:** Admin wizard to schedule and run property lotteries.
    - **Unified Workforce & HR Hub:** Centralized enterprise console (`/admin/workforce`) consolidating Employee Directory & Performance, Inbound Chat Leads Pipeline (`?tab=leads`), Live Attendance Radar & Master Timesheets, Leave & Regularization Approvals, Attendance-linked Monthly Payroll, and HR Settings with seamless backward-compatible redirects from legacy routes (`/admin/employees`, `/admin/attendance`, `/admin/payroll`).

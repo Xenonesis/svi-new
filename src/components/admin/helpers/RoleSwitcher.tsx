@@ -14,11 +14,11 @@ interface RoleSwitcherProps {
 const ROLES = [
   {
     id: 'client',
-    label: 'User',
+    label: 'Client',
     description: 'Standard client / customer',
     icon: Users,
-    color: 'text-gray-500 dark:text-gray-400',
-    activeBg: 'bg-gray-100 dark:bg-white/10',
+    color: 'text-blue-600 dark:text-blue-400',
+    activeBg: 'bg-blue-500/10 dark:bg-blue-500/20',
   },
   {
     id: 'employee',

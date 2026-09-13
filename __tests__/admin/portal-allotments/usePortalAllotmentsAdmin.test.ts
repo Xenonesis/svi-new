@@ -212,4 +212,49 @@ describe('usePortalAllotmentsAdmin', () => {
     expect(mockDeleteEq).toHaveBeenCalledWith('id', 'allot-1');
     confirmSpy.mockRestore();
   });
+
+  it('calculates sales revenue stats and per-client financials correctly', async () => {
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Mock allotments:
+    // allot-1: cost 6000000, 1 pending payment of 200000 -> totalPaid: 0, balance: 6000000
+    // allot-2: cost 8500000, no payments -> totalPaid: 0, balance: 8500000
+    // Total sales revenue: 6000000 + 8500000 = 14500000
+    expect(result.current.salesRevenueStats.totalSalesRevenue).toBe(14500000);
+    expect(result.current.salesRevenueStats.totalRevenueCollected).toBe(0);
+    expect(result.current.salesRevenueStats.totalBalanceDue).toBe(14500000);
+    expect(result.current.salesRevenueStats.activeAccountsCount).toBe(2);
+
+    const fin1 = result.current.getAllotmentFinancials(mockAllotments[0]);
+    expect(fin1.dealValue).toBe(6000000);
+    expect(fin1.totalPaid).toBe(0);
+    expect(fin1.balanceDue).toBe(6000000);
+  });
+
+  it('handles opening client ledger and saving deal value', async () => {
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      result.current.openClientLedger(mockAllotments[0]);
+    });
+    expect(result.current.activeLedgerRefId).toBeDefined();
+
+    act(() => {
+      result.current.setIsLedgersModalOpen(true);
+    });
+    expect(result.current.isLedgersModalOpen).toBe(true);
+
+    await act(async () => {
+      await result.current.handleSaveDealValue('ALLOT1', 6500000);
+    });
+    expect(result.current.dealValuesMap['ALLOT1']).toBe(6500000);
+  });
 });

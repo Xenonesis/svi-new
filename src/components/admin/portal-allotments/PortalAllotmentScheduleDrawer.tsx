@@ -14,6 +14,7 @@ import {
   Mail,
   MessageSquare,
   Receipt as ReceiptIcon,
+  BookOpen,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -30,6 +31,7 @@ export interface PortalAllotmentScheduleDrawerProps {
   onTogglePaymentStatus?: (paymentId: string, currentStatus: string) => Promise<void> | void;
   onSelectReceipt?: (receipt: SavedReceipt) => void;
   onShareWhatsApp?: (receipt: SavedReceipt) => void;
+  onOpenLedger?: (allotment?: AllotmentRecord | string) => void;
 }
 
 export function PortalAllotmentScheduleDrawer({
@@ -41,6 +43,7 @@ export function PortalAllotmentScheduleDrawer({
   onTogglePaymentStatus,
   onSelectReceipt,
   onShareWhatsApp,
+  onOpenLedger,
 }: PortalAllotmentScheduleDrawerProps) {
   const t = useTranslations('pages.adminPortalAllotments');
   const handleToggle = onToggleStatus || onTogglePaymentStatus;
@@ -137,9 +140,22 @@ export function PortalAllotmentScheduleDrawer({
                   {t('paymentSchedule')}
                 </h4>
               </div>
-              <span className="bg-brand-gold/10 border-brand-gold/25 text-brand-gold rounded-full border px-3 py-1 font-mono text-xs font-semibold">
-                {totalPaidCount} {t('ofLabel')} {totalItemsCount} {t('paidLabel')}
-              </span>
+              <div className="flex items-center gap-2.5">
+                {onOpenLedger && (
+                  <button
+                    type="button"
+                    onClick={() => onOpenLedger(allotment)}
+                    className="border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 font-mono text-xs font-bold text-amber-400 transition-all"
+                    title="Open Full Customer Ledger Statement"
+                  >
+                    <BookOpen className="h-3.5 w-3.5" />
+                    <span>Customer Ledger</span>
+                  </button>
+                )}
+                <span className="bg-brand-gold/10 border-brand-gold/25 text-brand-gold rounded-full border px-3 py-1 font-mono text-xs font-semibold">
+                  {totalPaidCount} {t('ofLabel')} {totalItemsCount} {t('paidLabel')}
+                </span>
+              </div>
             </div>
 
             {/* If no receipts and no schedules */}

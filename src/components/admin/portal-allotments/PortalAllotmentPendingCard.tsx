@@ -98,6 +98,15 @@ export function PortalAllotmentPendingCard({
               {candidate.totalCost ? `₹${candidate.totalCost.toLocaleString('en-IN')}` : '—'}
             </p>
           </div>
+
+          {candidate.advisorName && (
+            <div className="col-span-2 border-t border-slate-200/50 pt-1.5 dark:border-gray-700/50">
+              <span className="text-slate-500 dark:text-gray-400">Advisor / Agent:</span>
+              <p className="mt-0.5 font-semibold text-emerald-700 dark:text-emerald-400">
+                {candidate.advisorName}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Payment Milestones Summary if present */}

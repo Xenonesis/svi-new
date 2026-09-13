@@ -20,6 +20,8 @@ vi.mock('next-intl', () => ({
       area: 'Area (sq yds)',
       totalCost: 'Total Cost (₹)',
       bookingDate: 'Booking Date',
+      advisor: 'Deal Closed By / Advisor',
+      advisorPlaceholder: 'Select or enter advisor / agent name...',
       cancel: 'Cancel',
       saveAllotment: 'Save Allotment',
     };
@@ -141,5 +143,28 @@ describe('PortalAllotmentFormModal', () => {
     );
 
     expect(screen.queryByRole('heading', { level: 2 })).toBeNull();
+  });
+
+  it('renders advisor field and calls setFormData on change', () => {
+    const handleSetFormData = vi.fn();
+    render(
+      <PortalAllotmentFormModal
+        isOpen={true}
+        onClose={vi.fn()}
+        editingId="allot-1"
+        formData={{ ...defaultFormData, advisor_name: 'Muskan Varshney' }}
+        setFormData={handleSetFormData}
+        profiles={mockProfiles}
+        properties={mockProperties}
+        advisors={['Muskan Varshney', 'wasi']}
+        onSave={vi.fn()}
+      />
+    );
+
+    const advisorInput = screen.getByDisplayValue('Muskan Varshney');
+    expect(advisorInput).toBeDefined();
+
+    fireEvent.change(advisorInput, { target: { value: 'wasi' } });
+    expect(handleSetFormData).toHaveBeenCalled();
   });
 });

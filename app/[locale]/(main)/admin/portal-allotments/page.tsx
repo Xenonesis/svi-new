@@ -1,6 +1,16 @@
 'use client';
 
-import { CheckCircle2, Clock, Loader2, Plus, Search, ShieldCheck } from 'lucide-react';
+import {
+  CheckCircle2,
+  Clock,
+  Loader2,
+  Plus,
+  Search,
+  ShieldCheck,
+  BookOpen,
+  TrendingUp,
+  Wallet,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import {
   usePortalAllotmentsAdmin,
@@ -11,6 +21,8 @@ import {
 } from '@/src/components/admin/portal-allotments';
 import { ReceiptViewModal } from '@/src/components/admin/payment-receipts/ReceiptViewModal';
 import { ReceiptWhatsAppModal } from '@/src/components/admin/payment-receipts/ReceiptWhatsAppModal';
+import { ReceiptLedgerDrawer } from '@/src/components/admin/payment-receipts/ReceiptLedgerDrawer';
+import { ReceiptLedgersModal } from '@/src/components/admin/payment-receipts/ReceiptLedgersModal';
 
 export default function PortalAllotmentsAdmin() {
   const t = useTranslations('pages.adminPortalAllotments');
@@ -23,6 +35,7 @@ export default function PortalAllotmentsAdmin() {
     filteredCandidates,
     profiles,
     properties,
+    advisors,
     loading,
     loadingCandidates,
     searchTerm,
@@ -51,7 +64,26 @@ export default function PortalAllotmentsAdmin() {
     imageLoading,
     handleDownloadPDF,
     handleDownloadImage,
+    // Ledger & Sales Revenue states
+    allLedgerReceipts,
+    dealValuesMap,
+    handleSaveDealValue,
+    isLedgersModalOpen,
+    setIsLedgersModalOpen,
+    activeLedgerRefId,
+    setActiveLedgerRefId,
+    openClientLedger,
+    getDealValueForRef,
+    salesRevenueStats,
+    getAllotmentFinancials,
   } = usePortalAllotmentsAdmin();
+
+  const formatCurrency = (val: number) =>
+    val.toLocaleString('en-IN', {
+      style: 'currency',
+      currency: 'INR',
+      maximumFractionDigits: val % 1 === 0 ? 0 : 2,
+    });
 
   return (
     <div className="mx-auto w-full max-w-7xl pb-12 font-sans">
@@ -64,7 +96,19 @@ export default function PortalAllotmentsAdmin() {
           <p className="text-sm text-gray-500 dark:text-gray-400">{t('subtitle')}</p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={() => setIsLedgersModalOpen(true)}
+            aria-label="Open Overall Ledger"
+            className="flex items-center gap-2 rounded-xl border border-gray-200 bg-white px-4 py-2.5 text-sm font-bold text-gray-700 shadow-sm transition-all hover:bg-gray-50 active:scale-[0.98] dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700"
+          >
+            <BookOpen className="text-brand-gold h-4 w-4" />
+            <span>Overall Ledger</span>
+            <span className="rounded-full bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 dark:bg-gray-700 dark:text-gray-300">
+              {salesRevenueStats.activeAccountsCount}
+            </span>
+          </button>
+
           {activeTab === 'pending' && candidates.length > 0 && (
             <button
               onClick={handleApproveAll}
@@ -92,6 +136,92 @@ export default function PortalAllotmentsAdmin() {
           >
             <Plus className="h-4 w-4" />
             {t('addAllotment')}
+          </button>
+        </div>
+      </div>
+
+      {/* Overall Sales Revenue & Financial Dashboard */}
+      <div className="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {/* Total Booked Sales Revenue */}
+        <div className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs transition-all hover:shadow-md dark:border-white/10 dark:bg-gray-800">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+              Total Sales Revenue
+            </span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+              <TrendingUp className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3 font-mono text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
+            {formatCurrency(salesRevenueStats.totalSalesRevenue)}
+          </div>
+          <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+            {salesRevenueStats.activeAccountsCount} Active Plot / Villa Allotments
+          </p>
+        </div>
+
+        {/* Realized / Collected Revenue */}
+        <div className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs transition-all hover:shadow-md dark:border-white/10 dark:bg-gray-800">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+              Collected Revenue
+            </span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+              <Wallet className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3 font-mono text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
+            {formatCurrency(salesRevenueStats.totalRevenueCollected)}
+          </div>
+          <p className="mt-1 text-xs text-emerald-600/80 dark:text-emerald-400/80">
+            Verified received milestone receipts
+          </p>
+        </div>
+
+        {/* Outstanding Balance */}
+        <div className="rounded-2xl border border-gray-200/80 bg-white p-5 shadow-xs transition-all hover:shadow-md dark:border-white/10 dark:bg-gray-800">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-semibold tracking-wider text-amber-600 uppercase dark:text-amber-400">
+              Pending Receivables
+            </span>
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+              <Clock className="h-4 w-4" />
+            </div>
+          </div>
+          <div className="mt-3 font-mono text-2xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
+            {formatCurrency(salesRevenueStats.totalBalanceDue)}
+          </div>
+          <p className="mt-1 text-xs text-amber-600/80 dark:text-amber-400/80">
+            Remaining uncollected deal balances
+          </p>
+        </div>
+
+        {/* Realization Rate & Quick Master Ledger */}
+        <div className="border-brand-gold/30 from-brand-gold/10 dark:border-brand-gold/20 dark:from-brand-gold/5 flex flex-col justify-between rounded-2xl border bg-gradient-to-br via-amber-500/5 to-transparent p-5 shadow-xs">
+          <div>
+            <div className="flex items-center justify-between">
+              <span className="text-brand-gold text-xs font-bold tracking-wider uppercase">
+                Realization Rate
+              </span>
+              <span className="font-mono text-xs font-bold text-gray-700 dark:text-gray-300">
+                {salesRevenueStats.realizationRate}%
+              </span>
+            </div>
+            <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
+              <div
+                className="bg-brand-gold h-full rounded-full transition-all duration-500"
+                style={{ width: `${Math.min(100, salesRevenueStats.realizationRate)}%` }}
+              />
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => setIsLedgersModalOpen(true)}
+            className="mt-3 flex items-center justify-center gap-2 rounded-xl bg-[#0f2942] px-4 py-2 text-xs font-bold text-white shadow-sm transition-all hover:bg-[#163b5f] active:scale-[0.98] dark:bg-gray-700 dark:hover:bg-gray-600"
+          >
+            <BookOpen className="text-brand-gold h-3.5 w-3.5" />
+            <span>Master Ledger Overview</span>
           </button>
         </div>
       </div>
@@ -199,10 +329,12 @@ export default function PortalAllotmentsAdmin() {
                 <PortalAllotmentTableRow
                   key={allotment.id}
                   allotment={allotment}
+                  financials={getAllotmentFinancials(allotment)}
                   isExpanded={expandedAllotment === allotment.id}
                   onToggleExpand={() =>
                     setExpandedAllotment(expandedAllotment === allotment.id ? null : allotment.id)
                   }
+                  onOpenLedger={openClientLedger}
                   onEdit={openEditModal}
                   onDelete={handleDelete}
                 >
@@ -211,6 +343,7 @@ export default function PortalAllotmentsAdmin() {
                     allotment={allotment}
                     paymentSchedules={allotment.payment_schedules}
                     receipts={allotment.receipts}
+                    onOpenLedger={openClientLedger}
                     onToggleStatus={togglePaymentStatus}
                     onSelectReceipt={setSelectedReceipt}
                     onShareWhatsApp={setWhatsAppReceipt}
@@ -231,6 +364,7 @@ export default function PortalAllotmentsAdmin() {
         setFormData={setFormData}
         profiles={profiles}
         properties={properties}
+        advisors={advisors}
         onSave={handleSave}
       />
 
@@ -246,6 +380,29 @@ export default function PortalAllotmentsAdmin() {
 
       {/* WhatsApp Share Receipt Modal */}
       <ReceiptWhatsAppModal receipt={whatsAppReceipt} onClose={() => setWhatsAppReceipt(null)} />
+
+      {/* Master Customer Ledgers Modal (Overall Ledger) */}
+      {isLedgersModalOpen && (
+        <ReceiptLedgersModal
+          receipts={allLedgerReceipts}
+          dealValuesMap={dealValuesMap}
+          onSelectLedger={(refId) => {
+            setIsLedgersModalOpen(false);
+            openClientLedger(refId);
+          }}
+          onClose={() => setIsLedgersModalOpen(false)}
+        />
+      )}
+
+      {/* Per-Client Ledger Statement Drawer */}
+      <ReceiptLedgerDrawer
+        refId={activeLedgerRefId}
+        allReceipts={allLedgerReceipts}
+        dealValue={getDealValueForRef(activeLedgerRefId)}
+        onSaveDealValue={handleSaveDealValue}
+        onClose={() => setActiveLedgerRefId(null)}
+        onSelectReceipt={setSelectedReceipt}
+      />
     </div>
   );
 }

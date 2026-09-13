@@ -151,6 +151,7 @@ export async function POST(request: NextRequest) {
             ticket_id: cleanTicketId,
             area: c.area || null,
             total_cost: c.totalCost || null,
+            advisor_name: c.advisorName?.trim() || null,
             approved_by: admin.email,
             approved_at: new Date().toISOString(),
             source: c.sources?.join(', ') || 'Approval Queue',

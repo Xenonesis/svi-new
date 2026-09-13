@@ -19,6 +19,7 @@ svi-infra/
 │  │  ├─ bba/                        # Builder-Buyer Agreement
 │  │  ├─ email/                      # Full email center
 │  │  ├─ lottery/                    # Admin lottery management
+│  │  ├─ portal-allotments/          # Portal Allotments, Customer Ledgers & Sales Revenue
 │  │  ├─ registrations/
 │  │  ├─ settings/                   # Settings panel
 │  │  ├─ workforce/                  # Unified Workforce & HR Hub (Directory, Chat Leads, Attendance, Approvals, Payroll)

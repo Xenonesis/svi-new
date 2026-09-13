@@ -11,6 +11,7 @@ vi.mock('next-intl', () => ({
       area: 'Area (sq yds)',
       totalCostLabel: 'Total Cost',
       bookingDate: 'Booking Date',
+      advisorLabel: 'Advisor / Agent',
       viewPayments: 'View Payments',
       hidePayments: 'Hide Payments',
       editAllotment: 'Edit Allotment',
@@ -57,7 +58,7 @@ describe('PortalAllotmentTableRow', () => {
     expect(screen.getByText('Shyam Aangan')).toBeDefined();
     expect(screen.getByText('Villa-42')).toBeDefined();
     expect(screen.getByText('150')).toBeDefined();
-    expect(screen.getByText(/75,00,000/)).toBeDefined();
+    expect(screen.getAllByText(/75,00,000/).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('2026-05-15')).toBeDefined();
     expect(screen.getByText('View Payments')).toBeDefined();
   });
@@ -90,6 +91,25 @@ describe('PortalAllotmentTableRow', () => {
     expect(handleDelete).toHaveBeenCalledWith('allot-1');
   });
 
+  it('triggers onOpenLedger callback when Ledger button is clicked', () => {
+    const handleOpenLedger = vi.fn();
+    render(
+      <PortalAllotmentTableRow
+        allotment={mockAllotment}
+        isExpanded={false}
+        onToggleExpand={vi.fn()}
+        onOpenLedger={handleOpenLedger}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    const ledgerBtn = screen.getByLabelText('View Client Ledger');
+    expect(ledgerBtn).toBeDefined();
+    fireEvent.click(ledgerBtn);
+    expect(handleOpenLedger).toHaveBeenCalledWith(mockAllotment);
+  });
+
   it('renders nested child content when passed', () => {
     render(
       <PortalAllotmentTableRow
@@ -105,5 +125,25 @@ describe('PortalAllotmentTableRow', () => {
 
     expect(screen.getByTestId('nested-drawer')).toBeDefined();
     expect(screen.getByText('Drawer Content')).toBeDefined();
+  });
+
+  it('renders advisor name when present on allotment', () => {
+    const allotmentWithAdvisor: AllotmentRecord = {
+      ...mockAllotment,
+      advisor_name: 'Muskan Varshney',
+    };
+
+    render(
+      <PortalAllotmentTableRow
+        allotment={allotmentWithAdvisor}
+        isExpanded={false}
+        onToggleExpand={vi.fn()}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText('Advisor / Agent:')).toBeDefined();
+    expect(screen.getByText('Muskan Varshney')).toBeDefined();
   });
 });

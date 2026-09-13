@@ -1,14 +1,28 @@
 'use client';
 
 import React from 'react';
-import { Building2, ChevronDown, ChevronUp, Edit, Tag, Trash2 } from 'lucide-react';
+import {
+  Building2,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  Tag,
+  Trash2,
+  BookOpen,
+  TrendingUp,
+  Wallet,
+  Clock,
+  UserCheck,
+} from 'lucide-react';
 import { useTranslations } from 'next-intl';
-import type { AllotmentRecord } from './types';
+import type { AllotmentRecord, AllotmentFinancials } from './types';
 
 export interface PortalAllotmentTableRowProps {
   allotment: AllotmentRecord;
+  financials?: AllotmentFinancials;
   isExpanded: boolean;
   onToggleExpand: () => void;
+  onOpenLedger?: (allotment: AllotmentRecord) => void;
   onEdit: (allotment: AllotmentRecord) => void;
   onDelete: (id: string) => void;
   children?: React.ReactNode;
@@ -16,8 +30,10 @@ export interface PortalAllotmentTableRowProps {
 
 export function PortalAllotmentTableRow({
   allotment,
+  financials,
   isExpanded,
   onToggleExpand,
+  onOpenLedger,
   onEdit,
   onDelete,
   children,
@@ -29,6 +45,18 @@ export function PortalAllotmentTableRow({
   const area = allotment.metadata?.area ?? allotment.area;
   const totalCost = Number(allotment.metadata?.total_cost ?? allotment.total_cost);
   const bookingDate = allotment.allotted_date || allotment.booking_date;
+  const advisorName =
+    allotment.advisor_name ||
+    (allotment.metadata?.advisor_name as string) ||
+    (allotment.metadata?.advisorName as string);
+
+  const dealValue = financials?.dealValue ?? (isNaN(totalCost) ? 0 : totalCost);
+  const totalPaid = financials?.totalPaid ?? 0;
+  const balanceDue =
+    financials?.balanceDue ?? (dealValue > 0 ? Math.max(0, dealValue - totalPaid) : 0);
+  const percentCompleted =
+    financials?.percentCompleted ??
+    (dealValue > 0 ? Math.min(100, (totalPaid / dealValue) * 100) : 0);
 
   return (
     <div className="p-6 transition-colors hover:bg-slate-50/50 dark:hover:bg-gray-800/50">
@@ -86,11 +114,77 @@ export function PortalAllotmentTableRow({
                   {bookingDate}
                 </p>
               )}
+              {advisorName && (
+                <p className="flex items-center gap-1.5">
+                  <strong className="text-gray-900 dark:text-gray-300">{t('advisorLabel')}:</strong>{' '}
+                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                    <UserCheck className="h-3 w-3" />
+                    {advisorName}
+                  </span>
+                </p>
+              )}
+            </div>
+
+            {/* Per-Client Sales Revenue & Payment Realization Bar */}
+            <div className="mt-3.5 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200/70 bg-slate-50/80 p-2.5 text-xs dark:border-white/5 dark:bg-white/[0.02]">
+              <div className="flex items-center gap-1.5">
+                <TrendingUp className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
+                <span className="text-gray-500 dark:text-gray-400">Sales Value:</span>
+                <span className="font-mono font-bold text-gray-900 dark:text-white">
+                  {dealValue > 0 ? `₹${dealValue.toLocaleString('en-IN')}` : 'Not Set'}
+                </span>
+              </div>
+
+              <span className="text-gray-300 dark:text-gray-600">•</span>
+
+              <div className="flex items-center gap-1.5">
+                <Wallet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+                <span className="text-gray-500 dark:text-gray-400">Received:</span>
+                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
+                  ₹{totalPaid.toLocaleString('en-IN')}
+                </span>
+              </div>
+
+              <span className="text-gray-300 dark:text-gray-600">•</span>
+
+              <div className="flex items-center gap-1.5">
+                <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                <span className="text-gray-500 dark:text-gray-400">Balance:</span>
+                <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
+                  {dealValue > 0 ? `₹${balanceDue.toLocaleString('en-IN')}` : '—'}
+                </span>
+              </div>
+
+              {dealValue > 0 && (
+                <div className="ml-auto flex items-center gap-2">
+                  <div className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200 sm:w-20 dark:bg-white/10">
+                    <div
+                      className="h-full rounded-full bg-emerald-500 transition-all"
+                      style={{ width: `${Math.min(100, percentCompleted)}%` }}
+                    />
+                  </div>
+                  <span className="font-mono text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                    {Math.round(percentCompleted)}%
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         </div>
 
-        <div className="flex items-center gap-3 self-end md:self-auto">
+        <div className="flex items-center gap-2.5 self-end md:self-auto">
+          {onOpenLedger && (
+            <button
+              type="button"
+              onClick={() => onOpenLedger(allotment)}
+              aria-label="View Client Ledger"
+              title="Open Customer Ledger Statement"
+              className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-bold transition-all active:scale-[0.98]"
+            >
+              <BookOpen className="h-4 w-4" />
+              <span>Ledger</span>
+            </button>
+          )}
           <button
             onClick={onToggleExpand}
             className="text-brand-navy dark:text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"

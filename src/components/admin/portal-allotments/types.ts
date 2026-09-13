@@ -51,6 +51,7 @@ export interface AllotmentRecord {
   properties?: PropertySummary | null;
   payment_schedules?: PaymentScheduleItem[];
   receipts?: import('../payment-receipts/ReceiptTypes').SavedReceipt[];
+  advisor_name?: string | null;
 }
 
 export interface AllotmentFormData {
@@ -60,6 +61,7 @@ export interface AllotmentFormData {
   area: string;
   total_cost: string;
   booking_date: string;
+  advisor_name?: string;
 }
 
 export interface PaymentMilestoneDraft {
@@ -85,4 +87,24 @@ export interface AllotmentCandidate {
   documentCount: number;
   sources: string[];
   paymentMilestones: PaymentMilestoneDraft[];
+  advisorName?: string;
+}
+
+export interface AllotmentFinancials {
+  ticketId: string;
+  normalizedTicketId: string;
+  dealValue: number;
+  totalPaid: number;
+  balanceDue: number;
+  percentCompleted: number;
+}
+
+export interface SalesRevenueSummary {
+  totalSalesRevenue: number;
+  totalRevenueCollected: number;
+  totalBalanceDue: number;
+  realizationRate: number;
+  activeAccountsCount: number;
+  pendingPipelineRevenue: number;
+  pendingCandidatesCount: number;
 }

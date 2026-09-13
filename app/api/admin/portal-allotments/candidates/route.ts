@@ -26,6 +26,7 @@ export interface CandidateClient {
   documentCount: number;
   sources: string[];
   paymentMilestones: PaymentMilestoneDraft[];
+  advisorName?: string;
 }
 
 function normalizeTicketId(raw?: string | null): string {
@@ -53,7 +54,7 @@ export async function GET(request: NextRequest) {
       supabaseAdmin
         .from('registrations')
         .select(
-          'id, submission_id, name, phone, email, project, property_size, plot_preference, scheme_amount, created_at'
+          'id, submission_id, name, phone, email, project, property_size, plot_preference, scheme_amount, advisor_name, created_at'
         )
         .order('created_at', { ascending: false }),
       supabaseAdmin.from('properties').select('id, name, slug'),
@@ -115,6 +116,7 @@ export async function GET(request: NextRequest) {
           documentCount: 0,
           sources: ['Registration Form'],
           paymentMilestones: [],
+          advisorName: r.advisor_name?.trim() || '',
         });
       }
     });
@@ -134,6 +136,11 @@ export async function GET(request: NextRequest) {
       const area = fd.area || fd.plotSize || fd.plot_area || '';
       const totalCost = Number(fd.totalCost || fd.total_cost || fd.amount) || 0;
       const bookingDate = fd.allotmentDate || fd.bookingDate || fd.date || '';
+      const advisorName = (fd.advisorName ||
+        fd.advisor_name ||
+        fd.agentName ||
+        fd.agent_name ||
+        '') as string;
 
       if (!candidatesMap.has(normId)) {
         candidatesMap.set(normId, {
@@ -155,6 +162,7 @@ export async function GET(request: NextRequest) {
           documentCount: 1,
           sources: [d.document_type || 'Document'],
           paymentMilestones: [],
+          advisorName: advisorName ? advisorName.trim() : '',
         });
       } else {
         const item = candidatesMap.get(normId)!;
@@ -172,6 +180,7 @@ export async function GET(request: NextRequest) {
         if (!item.unitNo && unitNo) item.unitNo = String(unitNo);
         if (!item.area && area) item.area = area;
         if (!item.totalCost && totalCost) item.totalCost = totalCost;
+        if (!item.advisorName && advisorName) item.advisorName = advisorName.trim();
       }
 
       // If this document is a payment receipt, record it as a milestone
