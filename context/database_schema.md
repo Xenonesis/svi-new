@@ -30,15 +30,18 @@ The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RL
 
 ## Email & Communication
 
-| Table Name           | Purpose                                      |
-| -------------------- | -------------------------------------------- |
-| `email_drafts`       | Saved email drafts in the admin email center |
-| `scheduled_emails`   | Queue for emails to be sent in the future    |
-| `campaigns`          | Email marketing campaigns                    |
-| `contact_groups`     | Segments/groupings for mass emailing         |
-| `push_subscriptions` | PWA push notification subscriptions          |
-| `notifications`      | In-app notifications for admins and users    |
-| `chat_leads`         | Captured leads from the AI Chatbot           |
+| Table Name           | Purpose                                                                            |
+| -------------------- | ---------------------------------------------------------------------------------- |
+| `email_messages`     | Permanent archive of all outbound sent emails (decoupled from Resend 30-day purge) |
+| `email_inbox`        | Inbound customer replies synced from Resend                                        |
+| `email_drafts`       | Saved email drafts in the admin email center                                       |
+| `scheduled_emails`   | Queue for emails to be sent in the future                                          |
+| `email_deletions`    | Soft-delete recycle bin tracking for admin email client                            |
+| `campaigns`          | Email marketing campaigns                                                          |
+| `contact_groups`     | Segments/groupings for mass emailing                                               |
+| `push_subscriptions` | PWA push notification subscriptions                                                |
+| `notifications`      | In-app notifications for admins and users                                          |
+| `chat_leads`         | Captured leads from the AI Chatbot                                                 |
 
 ## WhatsApp sales agent MVP
 

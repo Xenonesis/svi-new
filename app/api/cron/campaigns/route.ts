@@ -109,6 +109,22 @@ export async function GET(request: NextRequest) {
               description: `Campaign "${campaign.title}" automatically sent to ${sent} recipients.`,
               metadata: { campaignId: campaign.id, recipientCount: sent },
             });
+            await supabaseAdmin.from('email_messages').insert({
+              resend_id: `camp-${campaign.id}-${now.getTime()}`,
+              subject: campaign.subject || campaign.title,
+              from_email: FROM_ADDRESS,
+              to_emails: [campaign.recipient_group || 'All Campaign Recipients'],
+              status: 'sent',
+              last_event: 'delivered',
+              sent_at: now.toISOString(),
+              created_at: now.toISOString(),
+              metadata: {
+                html: campaign.body_html,
+                title: campaign.title,
+                recipient_count: sent,
+                source: 'email_campaigns',
+              },
+            });
           } catch {
             // Activity log failure is non-blocking
           }

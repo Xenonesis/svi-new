@@ -112,13 +112,40 @@ export async function GET(request: Request) {
           })
           .eq('id', email.id);
       } else {
+        const sentNow = new Date().toISOString();
         await supabaseAdmin
           .from('scheduled_emails')
           .update({
             status: 'sent',
-            sent_at: new Date().toISOString(),
+            sent_at: sentNow,
           })
           .eq('id', email.id);
+
+        // ── Permanent Archive in email_messages ──
+        try {
+          await supabaseAdmin.from('email_messages').insert({
+            resend_id: (result as any).data?.id || `sched-${email.id}`,
+            subject: email.subject,
+            from_email: email.metadata?.from || 'SVI Infra <noreply@sviiinfrasolutions.com>',
+            to_emails: email.to_emails,
+            status: 'sent',
+            last_event: 'delivered',
+            sent_at: sentNow,
+            created_at: sentNow,
+            metadata: {
+              html: email.html_body,
+              text: email.html_body,
+              cc: email.cc_emails || [],
+              bcc: email.bcc_emails || [],
+              reply_to: email.reply_to || null,
+              attachments: resendAttachments,
+              source: 'scheduled_emails',
+            },
+          });
+        } catch (archiveErr) {
+          console.error('Failed to permanently archive scheduled email:', archiveErr);
+        }
+
         processedCount++;
       }
     }

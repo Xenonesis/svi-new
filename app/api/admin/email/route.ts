@@ -409,6 +409,50 @@ export async function GET(request: NextRequest) {
     }
 
     if (action === 'email' && emailId) {
+      // 1) Try Supabase permanent storage first
+      try {
+        const { data: dbMsg } = await supabaseAdmin
+          .from('email_messages')
+          .select('*')
+          .or(`id.eq.${emailId},resend_id.eq.${emailId}`)
+          .maybeSingle();
+
+        if (dbMsg && (dbMsg.metadata?.html || dbMsg.metadata?.text || dbMsg.metadata?.source)) {
+          let attachments: any[] = dbMsg.metadata?.attachments || [];
+          const { data: dbAttachments } = await supabaseAdmin
+            .from('email_attachments')
+            .select('*')
+            .or(`email_id.eq.${emailId},email_id.eq.${dbMsg.resend_id}`);
+
+          if (dbAttachments && dbAttachments.length > 0) {
+            attachments = dbAttachments;
+          }
+
+          const emailData = {
+            id: dbMsg.resend_id || dbMsg.id,
+            object: 'email',
+            to: dbMsg.to_emails || [],
+            from: dbMsg.from_email,
+            created_at: dbMsg.created_at || dbMsg.sent_at,
+            subject: dbMsg.subject,
+            html: dbMsg.metadata?.html || dbMsg.metadata?.text || '',
+            text: dbMsg.metadata?.text || '',
+            cc: dbMsg.metadata?.cc || [],
+            bcc: dbMsg.metadata?.bcc || [],
+            reply_to: dbMsg.metadata?.reply_to
+              ? Array.isArray(dbMsg.metadata.reply_to)
+                ? dbMsg.metadata.reply_to
+                : [dbMsg.metadata.reply_to]
+              : [],
+            last_event: dbMsg.last_event || 'delivered',
+            attachments,
+          };
+          return NextResponse.json({ email: emailData });
+        }
+      } catch (dbErr) {
+        console.warn('[EMAIL DETAIL] Supabase lookup error, falling back to Resend:', dbErr);
+      }
+
       const email = await resend.emails.get(emailId);
       const emailData = email.data as any;
 
@@ -730,19 +774,7 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    // ─── For Sent tab — fetch from Resend API ───
-    let responseData: any = null;
-    try {
-      const emails = await resend.emails.list(after ? { limit, after } : { limit });
-      if (emails.error) {
-        console.error('[EMAIL] Resend list error:', emails.error);
-      } else {
-        responseData = emails.data;
-      }
-    } catch (resendErr) {
-      console.error('[EMAIL] Exception fetching emails from Resend:', resendErr);
-    }
-
+    // ─── For Sent tab — fetch from Supabase Permanent Archive ───
     // Fetch deleted email IDs for this admin
     const { data: deletedData } = await supabaseAdmin
       .from('email_deletions')
@@ -750,22 +782,68 @@ export async function GET(request: NextRequest) {
       .eq('admin_id', admin.id);
     const deletedIds = new Set((deletedData || []).map((d: { email_id: string }) => d.email_id));
 
+    let query = supabaseAdmin
+      .from('email_messages')
+      .select(
+        'id, resend_id, subject, from_email, to_emails, status, last_event, sent_at, created_at, metadata'
+      )
+      .order('created_at', { ascending: false });
+
+    if (after) {
+      const { data: afterEmail } = await supabaseAdmin
+        .from('email_messages')
+        .select('created_at')
+        .or(`id.eq.${after},resend_id.eq.${after}`)
+        .maybeSingle();
+
+      if (afterEmail?.created_at) {
+        query = query.lt('created_at', afterEmail.created_at);
+      }
+    }
+
+    const { data: dbSentEmails, error: dbSentErr } = await query.limit(limit + 1);
+
+    if (dbSentErr) {
+      console.error('[EMAIL] Supabase email_messages fetch error:', dbSentErr);
+    }
+
+    let hasMore = false;
+    let emailRows = dbSentEmails || [];
+
+    if (emailRows.length > limit) {
+      hasMore = true;
+      emailRows = emailRows.slice(0, limit);
+    }
+
+    // Safety fallback: if database table is completely empty on initial load, try Resend
+    if (emailRows.length === 0 && !after) {
+      try {
+        const resendFallback = await resend.emails.list({ limit });
+        emailRows = (resendFallback.data as any)?.data || [];
+        hasMore = Boolean((resendFallback.data as any)?.has_more);
+      } catch {
+        // ignore
+      }
+    }
+
     // Filter out deleted emails and map to include last_event
-    const filteredEmails = (responseData?.data || [])
-      .filter((e: any) => !deletedIds.has(e.id))
+    const filteredEmails = emailRows
+      .filter((e: any) => !deletedIds.has(e.id) && !deletedIds.has(e.resend_id))
       .map((e: any) => ({
-        id: e.id,
-        object: e.object,
-        created_at: e.created_at,
-        subject: e.subject,
-        from: e.from,
-        to: e.to,
-        last_event: e.last_event || e.status || 'sent',
+        id: e.resend_id || e.id,
+        object: 'email',
+        created_at: e.created_at || e.sent_at,
+        subject: e.subject || '(no subject)',
+        from: e.from_email || e.from,
+        to: e.to_emails || (Array.isArray(e.to) ? e.to : [e.to]),
+        cc: e.metadata?.cc || e.cc || undefined,
+        last_event: e.last_event || e.status || 'delivered',
+        attachments: e.metadata?.attachments || e.attachments || undefined,
       }));
 
     return NextResponse.json({
       emails: filteredEmails,
-      hasMore: responseData?.has_more ?? false,
+      hasMore,
     });
   } catch (err) {
     return handleApiError(err);
@@ -1035,6 +1113,30 @@ export async function POST(request: NextRequest) {
             results.push({ error: batchError.message, batch: i });
           } else {
             results.push({ id: batchResult?.id, batch: i });
+            // ── PERMANENT SENT EMAIL LOG IN SUPABASE ──
+            try {
+              await supabaseAdmin.from('email_messages').insert({
+                resend_id: batchResult?.id,
+                subject,
+                from_email: fromAddress,
+                to_emails: toChunk,
+                status: 'sent',
+                last_event: 'sent',
+                sent_at: new Date().toISOString(),
+                created_at: new Date().toISOString(),
+                metadata: {
+                  html: html || undefined,
+                  text: text || undefined,
+                  cc: ccChunk,
+                  bcc: bccChunk,
+                  reply_to: normalizedReplyTo,
+                  attachments: resendAttachments,
+                  source: 'compose',
+                },
+              });
+            } catch (persistErr) {
+              console.error('[EMAIL LOG] Failed to persist sent email in Supabase:', persistErr);
+            }
           }
         } catch (sendErr: unknown) {
           const errMsg =
