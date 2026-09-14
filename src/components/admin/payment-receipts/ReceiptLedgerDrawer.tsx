@@ -2,17 +2,34 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Copy, Check, Eye, Download, IndianRupee, Save, BookOpen } from 'lucide-react';
+import {
+  X,
+  Copy,
+  Check,
+  Eye,
+  Download,
+  IndianRupee,
+  Save,
+  BookOpen,
+  ChevronDown,
+  FileSpreadsheet,
+  FileText,
+  UserCheck,
+  Loader2,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import { SavedReceipt } from './ReceiptTypes';
 import { calculateLedgerStatement, normalizeRefId } from '@/src/lib/receipt/receiptLedger';
 import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
+import { exportStatementExcel, exportStatementPdf } from '@/src/lib/receipt/statementExporter';
+import { StatementPdfTemplate } from './StatementPdfTemplate';
 
 interface ReceiptLedgerDrawerProps {
   refId: string | null;
   allReceipts: SavedReceipt[];
   dealValue: number;
   plotArea?: number | string | null;
+  advisorName?: string | null;
   onSaveDealValue: (
     normalizedRefId: string,
     newDealValue: number,
@@ -27,6 +44,7 @@ export function ReceiptLedgerDrawer({
   allReceipts,
   dealValue,
   plotArea,
+  advisorName,
   onSaveDealValue,
   onClose,
   onSelectReceipt,
@@ -51,6 +69,11 @@ export function ReceiptLedgerDrawer({
   const [savingDealValue, setSavingDealValue] = useState(false);
   const [copiedReceiptNo, setCopiedReceiptNo] = useState<string | null>(null);
 
+  // Advisor and Export Dropdown state
+  const [resolvedAdvisorName, setResolvedAdvisorName] = useState<string>(advisorName || '');
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [exportingType, setExportingType] = useState<'excel' | 'pdf' | 'csv' | null>(null);
+
   useEffect(() => {
     setAgreedValueInput(dealValue > 0 ? String(dealValue) : '');
     setAreaInput(initialArea > 0 ? String(initialArea) : '');
@@ -61,6 +84,39 @@ export function ReceiptLedgerDrawer({
       setRatePerSqYdInput('');
     }
   }, [dealValue, refId, initialArea]);
+
+  // Auto-fetch fresh advisor and allotment details from DB for this refId
+  useEffect(() => {
+    if (!refId || typeof window === 'undefined') return;
+    try {
+      const token = localStorage.getItem('token') || '';
+      const base = window.location?.origin || '';
+      const url = base
+        ? `${base}/api/admin/portal-allotments/deal-value?refId=${encodeURIComponent(refId)}`
+        : `/api/admin/portal-allotments/deal-value?refId=${encodeURIComponent(refId)}`;
+      fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data?.advisorName) {
+            setResolvedAdvisorName(data.advisorName);
+          }
+          if (data?.area && (!areaInput || areaInput === '0')) {
+            setAreaInput(String(data.area));
+          }
+          if (data?.ratePerSqYd && (!ratePerSqYdInput || ratePerSqYdInput === '0')) {
+            setRatePerSqYdInput(String(data.ratePerSqYd));
+          }
+          if (data?.dealValue && (!agreedValueInput || agreedValueInput === '0')) {
+            setAgreedValueInput(String(data.dealValue));
+          }
+        })
+        .catch(() => {});
+    } catch {
+      // Ignore in test environments without standard URL origins
+    }
+  }, [refId]);
 
   if (!refId || !ledger) return null;
 
@@ -133,14 +189,55 @@ export function ReceiptLedgerDrawer({
     }
   };
 
-  const handleExportStatement = () => {
+  const handleExportExcel = async () => {
     if (ledger.receipts.length === 0) {
       toast.error('No receipts available to export');
       return;
     }
-    const cleanRef = ledger.displayRefId.replace(/[^a-zA-Z0-9]/g, '_');
-    downloadReceiptsCsv(ledger.receipts, `Ledger_Statement_${cleanRef}.csv`);
-    toast.success(`Exported ledger statement for ${ledger.displayRefId}`);
+    setExportingType('excel');
+    try {
+      await exportStatementExcel({
+        ledger,
+        advisorName: resolvedAdvisorName || 'Direct / SVI Official',
+        area: areaInput || initialArea,
+        ratePerSqYd: ratePerSqYdInput || ledger.ratePerSqYd,
+      });
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleExportPdf = async () => {
+    if (ledger.receipts.length === 0) {
+      toast.error('No receipts available to export');
+      return;
+    }
+    setExportingType('pdf');
+    try {
+      const cleanRef = ledger.displayRefId.replace(/[^a-zA-Z0-9]/g, '_');
+      const cleanClient = ledger.clientName.replace(/[^a-zA-Z0-9]/g, '_');
+      await exportStatementPdf({
+        elementId: `statement-pdf-${normalizedKey}`,
+        filename: `Statement_${cleanClient}_${cleanRef}.pdf`,
+      });
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleExportCsv = () => {
+    if (ledger.receipts.length === 0) {
+      toast.error('No receipts available to export');
+      return;
+    }
+    setExportingType('csv');
+    try {
+      const cleanRef = ledger.displayRefId.replace(/[^a-zA-Z0-9]/g, '_');
+      downloadReceiptsCsv(ledger.receipts, `Ledger_Statement_${cleanRef}.csv`);
+      toast.success(`Exported ledger CSV for ${ledger.displayRefId}`);
+    } finally {
+      setExportingType(null);
+    }
   };
 
   const formatCurrency = (val: number) =>
@@ -180,7 +277,7 @@ export function ReceiptLedgerDrawer({
                   <BookOpen className="h-5 w-5" />
                 </div>
                 <div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2">
                     <span className="rounded-md border border-sky-500/20 bg-sky-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
                       Ref ID: {ledger.displayRefId}
                     </span>
@@ -192,6 +289,12 @@ export function ReceiptLedgerDrawer({
                     {initialArea > 0 && (
                       <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
                         {initialArea} Sq. Yds.
+                      </span>
+                    )}
+                    {resolvedAdvisorName && (
+                      <span className="flex items-center gap-1 rounded-md border border-purple-500/20 bg-purple-500/10 px-2.5 py-0.5 font-sans text-xs font-bold text-purple-700 dark:text-purple-300">
+                        <UserCheck className="h-3 w-3 text-purple-600 dark:text-purple-400" />
+                        Advisor: {resolvedAdvisorName}
                       </span>
                     )}
                   </div>
@@ -393,14 +496,91 @@ export function ReceiptLedgerDrawer({
                   <h4 className="text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
                     Payment Statement ({ledger.receipts.length})
                   </h4>
-                  <button
-                    type="button"
-                    onClick={handleExportStatement}
-                    className="text-brand-gold flex items-center gap-1 text-xs font-semibold hover:underline"
-                  >
-                    <Download className="h-3 w-3" />
-                    Export Statement
-                  </button>
+
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setExportMenuOpen((prev) => !prev)}
+                      className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold hover:text-brand-navy flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold shadow-xs transition-colors focus:outline-none"
+                    >
+                      {exportingType ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Download className="h-3.5 w-3.5" />
+                      )}
+                      <span>Export Statement</span>
+                      <ChevronDown
+                        className={`h-3 w-3 transition-transform ${exportMenuOpen ? 'rotate-180' : ''}`}
+                      />
+                    </button>
+
+                    {exportMenuOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-30"
+                          onClick={() => setExportMenuOpen(false)}
+                        />
+                        <div className="dark:bg-brand-dark-surface absolute top-full right-0 z-40 mt-1.5 w-56 rounded-xl border border-gray-200 bg-white p-1.5 shadow-2xl dark:border-white/10">
+                          {/* Option 1: Excel (.xlsx) */}
+                          <button
+                            type="button"
+                            disabled={exportingType !== null}
+                            onClick={() => {
+                              setExportMenuOpen(false);
+                              handleExportExcel();
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-50 dark:text-gray-200 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                          >
+                            <FileSpreadsheet className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+                            <div className="flex flex-col">
+                              <span className="font-bold">Export as Excel (.xlsx)</span>
+                              <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                                Exact Delhi Office Format
+                              </span>
+                            </div>
+                          </button>
+
+                          {/* Option 2: PDF (.pdf) */}
+                          <button
+                            type="button"
+                            disabled={exportingType !== null}
+                            onClick={() => {
+                              setExportMenuOpen(false);
+                              handleExportPdf();
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-700 transition-colors hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50 dark:text-gray-200 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+                          >
+                            <FileText className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400" />
+                            <div className="flex flex-col">
+                              <span className="font-bold">Export as PDF (.pdf)</span>
+                              <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                                Official Document with Logo
+                              </span>
+                            </div>
+                          </button>
+
+                          {/* Option 3: CSV (.csv) */}
+                          <button
+                            type="button"
+                            disabled={exportingType !== null}
+                            onClick={() => {
+                              setExportMenuOpen(false);
+                              handleExportCsv();
+                            }}
+                            className="flex w-full items-center gap-2.5 rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-600 transition-colors hover:bg-gray-100 disabled:opacity-50 dark:text-gray-300 dark:hover:bg-white/5"
+                          >
+                            <Download className="h-4 w-4 shrink-0 text-gray-500 dark:text-gray-400" />
+                            <div className="flex flex-col">
+                              <span className="font-semibold">Export as CSV (.csv)</span>
+                              <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                                Raw Tabular Data
+                              </span>
+                            </div>
+                          </button>
+                        </div>
+                      </>
+                    )}
+                  </div>
                 </div>
 
                 {ledger.receipts.length === 0 ? (
@@ -489,6 +669,15 @@ export function ReceiptLedgerDrawer({
                 Close Drawer
               </button>
             </div>
+
+            {/* Off-screen PDF Render Template with Official Logo and Exact Delhi Office Grid */}
+            <StatementPdfTemplate
+              id={`statement-pdf-${normalizedKey}`}
+              ledger={ledger}
+              advisorName={resolvedAdvisorName || 'Direct / SVI Official'}
+              plotArea={areaInput || initialArea}
+              ratePerSqYd={ratePerSqYdInput || ledger.ratePerSqYd}
+            />
           </motion.div>
         </div>
       </div>

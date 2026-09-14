@@ -51,7 +51,7 @@ describe('ReceiptLedgerDrawer', () => {
     );
 
     expect(screen.getByText(/Ref ID: SVI2051/i)).toBeDefined();
-    expect(screen.getByText('Piyush Sharma')).toBeDefined();
+    expect(screen.getAllByText(/Piyush Sharma/i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText('Total Received')).toBeDefined();
     expect(screen.getByText('Agreed Plot Value')).toBeDefined();
     expect(screen.getByText('Balance Due')).toBeDefined();
@@ -92,6 +92,28 @@ describe('ReceiptLedgerDrawer', () => {
     // Rate is 500000 / 1000 = 500
     expect(screen.getAllByText(/1000 Sq. Yds./i).length).toBeGreaterThanOrEqual(1);
     expect(screen.getByText(/₹500\/sq.yd./i)).toBeDefined();
+  });
+
+  it('opens export statement dropdown with Excel and PDF options', () => {
+    render(
+      <ReceiptLedgerDrawer
+        refId="SVI2051"
+        allReceipts={mockReceipts}
+        dealValue={500000}
+        advisorName="Muskan Varshney"
+        onSaveDealValue={vi.fn()}
+        onClose={vi.fn()}
+      />
+    );
+
+    expect(screen.getByText(/Advisor: Muskan Varshney/i)).toBeDefined();
+
+    const exportBtn = screen.getByRole('button', { name: /Export Statement/i });
+    fireEvent.click(exportBtn);
+
+    expect(screen.getByText(/Export as Excel \(\.xlsx\)/i)).toBeDefined();
+    expect(screen.getByText(/Export as PDF \(\.pdf\)/i)).toBeDefined();
+    expect(screen.getByText(/Exact Delhi Office Format/i)).toBeDefined();
   });
 
   it('renders null when refId is null', () => {

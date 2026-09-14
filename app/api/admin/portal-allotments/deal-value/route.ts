@@ -120,3 +120,68 @@ export async function POST(request: NextRequest) {
     return handleApiError(err);
   }
 }
+
+// GET /api/admin/portal-allotments/deal-value?refId=...
+// Retrieves persisted deal value, rate per sq. yd., area, and assigned advisor for a refId
+export async function GET(request: NextRequest) {
+  try {
+    const admin = await verifyAdmin(request);
+    if (!admin) throw AppError.unauthorized();
+
+    const { searchParams } = new URL(request.url);
+    const refId = searchParams.get('refId');
+    if (!refId) throw AppError.badRequest('refId is required');
+
+    const norm = normalizeRefId(refId);
+
+    // 1. Fetch from allotments table
+    const { data: allAllotments } = await supabaseAdmin
+      .from('allotments')
+      .select('id, metadata, unit_no');
+
+    let matchedMeta: Record<string, unknown> | null = null;
+    let unitNo: string | null = null;
+
+    if (allAllotments && allAllotments.length > 0) {
+      const match = allAllotments.find((a) => {
+        const meta = (a.metadata as Record<string, unknown>) || {};
+        const tId = meta.ticket_id || meta.ticketId || meta.refId || meta.ref_id || a.id;
+        return normalizeRefId(String(tId)) === norm;
+      });
+      if (match) {
+        matchedMeta = (match.metadata as Record<string, unknown>) || {};
+        unitNo = match.unit_no || null;
+      }
+    }
+
+    // 2. Fetch advisor from registrations table as fallback if not in allotment
+    let advisorName =
+      (matchedMeta?.advisor_name as string) || (matchedMeta?.advisor as string) || '';
+    if (!advisorName) {
+      const { data: reg } = await supabaseAdmin
+        .from('registrations')
+        .select('advisor_name')
+        .or(`submission_id.eq.${refId},submission_id.eq.${norm}`)
+        .maybeSingle();
+      if (reg?.advisor_name) {
+        advisorName = reg.advisor_name;
+      }
+    }
+
+    const dealValue = matchedMeta?.total_cost ? Number(matchedMeta.total_cost) : null;
+    const area = matchedMeta?.area ? Number(matchedMeta.area) : null;
+    const ratePerSqYd = matchedMeta?.rate_per_sq_yd ? Number(matchedMeta.rate_per_sq_yd) : null;
+
+    return NextResponse.json({
+      refId,
+      normalizedRefId: norm,
+      dealValue,
+      area,
+      ratePerSqYd,
+      advisorName: advisorName || null,
+      unitNo,
+    });
+  } catch (err: unknown) {
+    return handleApiError(err);
+  }
+}
