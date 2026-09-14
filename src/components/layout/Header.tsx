@@ -36,7 +36,7 @@ export default function Header() {
           {/* Mobile Logo Capsule Pill (Always visible on mobile) */}
           <Link
             href="/"
-            className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:hidden ${
+            className={`group relative inline-flex shrink-0 items-center rounded-full bg-white/95 px-3.5 py-1.5 shadow-sm ring-1 ring-black/5 backdrop-blur-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:hidden ${
               h.isMobileMenuOpen ? 'pointer-events-none opacity-0' : ''
             }`}
             aria-label="Svi Infra Solutions Pvt. Ltd."
