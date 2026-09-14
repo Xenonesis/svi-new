@@ -44,6 +44,9 @@
     "cap:admin:run": "cross-env CAP_APP_TARGET=admin npx cap run android",
     "cap:admin:build": "node scripts/sync-capacitor-flavors.mjs && cross-env CAP_APP_TARGET=admin npx cap sync android && node scripts/sync-capacitor-flavors.mjs && cd android && gradlew assembleAdminRelease && cd ..",
     "cap:assets": "npx @capacitor/assets generate --android",
+    "backup": "node scripts/export-supabase-backup.mjs",
+    "backup:task": "powershell -ExecutionPolicy Bypass -File scripts/setup-daily-backup-task.ps1",
+    "backup:daemon": "node scripts/backup-daemon.mjs",
     "gitnexus:analyze": "gitnexus analyze",
     "gitnexus:status": "gitnexus status",
     "gitnexus:clean": "gitnexus clean"

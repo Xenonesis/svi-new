@@ -87,20 +87,36 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
       throw AppError.badRequest('Invalid JSON body');
     }
 
-    const { password, full_name, phone, department, notes } = body;
+    const { password, full_name, phone, department, notes, email } = body;
     // If new password provided, update Supabase Auth User credentials
     if (password) {
       if (typeof password !== 'string' || password.length < 8) {
         throw AppError.badRequest('Password must be at least 8 characters long.');
       }
-      const { error: authError } = await supabaseAdmin.auth.admin.updateUserById(id, {
-        password,
-      });
+      const cleanEmail =
+        typeof email === 'string' && email.trim() ? email.trim().toLowerCase() : undefined;
+      const authPayload: { password: string; email?: string } = { password };
+      if (cleanEmail) {
+        authPayload.email = cleanEmail;
+      }
+      let { error: authError } = await supabaseAdmin.auth.admin.updateUserById(id, authPayload);
+      if (authError && cleanEmail) {
+        // Fallback to updating password without email if email update conflicts
+        const retryRes = await supabaseAdmin.auth.admin.updateUserById(id, { password });
+        authError = retryRes.error;
+      }
       if (authError) throw AppError.internal(authError.message);
     }
 
     // Update profile metadata if provided
     const updateData: Record<string, any> = {};
+    if (email !== undefined) {
+      const cleanEmail =
+        typeof email === 'string' && email.trim() ? email.trim().toLowerCase() : null;
+      if (cleanEmail) {
+        updateData.email = cleanEmail;
+      }
+    }
     if (full_name !== undefined) updateData.full_name = full_name.trim();
     if (phone !== undefined) {
       const cleanPhone = phone?.trim() || null;

@@ -23,6 +23,7 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
+import { getSviEmail } from './EmployeeCard';
 
 export interface Employee {
   id: string;
@@ -102,6 +103,38 @@ function evaluatePassword(pwd: string): {
   return { criteria, score, label, color, barColor };
 }
 
+export interface EmployeeHandoverOptions {
+  fullName: string;
+  email: string;
+  password: string;
+  origin?: string;
+}
+
+/**
+ * Builds the official handover message template for employee portal credentials.
+ * Ensures the login URL points to /employee/login and uses the employee's official SVI email.
+ */
+export function buildEmployeeHandoverMessage({
+  fullName,
+  email,
+  password,
+  origin,
+}: EmployeeHandoverOptions): string {
+  const baseOrigin =
+    origin && !origin.includes('localhost') ? origin : 'https://www.sviinfrasolutions.com';
+  const portalUrl = `${baseOrigin}/employee/login`;
+
+  return (
+    `🔐 *SVI Portal Login Credentials*\n\n` +
+    `Hello ${fullName},\n` +
+    `Your account temporary password has been reset by the Admin.\n\n` +
+    `🌐 *Portal URL:* ${portalUrl}\n` +
+    `📧 *Email ID:* ${email}\n` +
+    `🔑 *Temporary Password:* ${password}\n\n` +
+    `⚠️ *Note:* Please log in and change your password immediately from your profile settings.`
+  );
+}
+
 export function ResetPasswordModal({
   employee,
   onClose,
@@ -118,7 +151,8 @@ export function ResetPasswordModal({
 
   const inputId = useId();
   const evaluation = evaluatePassword(password);
-  const targetEmail = employee.real_email || employee.email;
+  const sviEmail = getSviEmail(employee);
+  const targetEmail = sviEmail;
 
   // Generate strong, memorable yet secure temporary password
   const generateStrongPassword = useCallback(() => {
@@ -195,16 +229,13 @@ export function ResetPasswordModal({
 
   // Construct message for clipboard or WhatsApp
   const formatHandoverMessage = () => {
-    const origin = typeof window !== 'undefined' ? window.location.origin : 'https://svi-infra.com';
-    return (
-      `🔐 *SVI Portal Login Credentials*\n\n` +
-      `Hello ${employee.full_name},\n` +
-      `Your account temporary password has been reset by the Admin.\n\n` +
-      `🌐 *Portal URL:* ${origin}/login\n` +
-      `📧 *Email ID:* ${targetEmail}\n` +
-      `🔑 *Temporary Password:* ${password}\n\n` +
-      `⚠️ *Note:* Please log in and change your password immediately from your profile settings.`
-    );
+    const origin = typeof window !== 'undefined' ? window.location.origin : undefined;
+    return buildEmployeeHandoverMessage({
+      fullName: employee.full_name,
+      email: sviEmail,
+      password,
+      origin,
+    });
   };
 
   const handleCopyFullTemplate = async () => {
@@ -258,7 +289,7 @@ export function ResetPasswordModal({
       const res = await fetch(`/api/admin/employees/${employee.id}`, {
         method: 'PATCH',
         headers,
-        body: JSON.stringify({ password }),
+        body: JSON.stringify({ password, email: sviEmail }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
@@ -355,10 +386,21 @@ export function ResetPasswordModal({
                       {employee.department || employee.role || 'Staff'}
                     </span>
                   </div>
-                  <div className="flex items-center gap-1.5 truncate text-xs text-gray-500 dark:text-gray-400">
-                    <Mail size={12} className="shrink-0 text-gray-400" />
-                    <span className="truncate">{targetEmail}</span>
+                  <div className="flex items-center gap-1.5 truncate text-xs text-gray-700 dark:text-gray-200">
+                    <Mail size={12} className="shrink-0 text-amber-500" />
+                    <span className="truncate font-medium text-gray-900 dark:text-white">
+                      {sviEmail}
+                    </span>
+                    <span className="rounded bg-amber-500/10 px-1 py-0.5 text-[9px] font-bold tracking-wider text-amber-600 uppercase dark:bg-amber-400/15 dark:text-amber-300">
+                      SVI
+                    </span>
                   </div>
+                  {employee.real_email &&
+                    employee.real_email.toLowerCase() !== sviEmail.toLowerCase() && (
+                      <p className="truncate text-[10px] text-gray-400 dark:text-gray-500">
+                        Personal: {employee.real_email}
+                      </p>
+                    )}
                 </div>
               </div>
 

@@ -99,3 +99,13 @@ out/
 
 # Superpowers scratch directory
 .superpowers/
+
+# Local DB backups
+backups/
+
+# Local data & spreadsheet files
+*.xlsx
+*.xls
+
+
+
