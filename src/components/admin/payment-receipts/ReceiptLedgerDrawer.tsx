@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Copy, Check, Eye, Download, IndianRupee, Save, BookOpen } from 'lucide-react';
 import { toast } from 'sonner';
@@ -12,7 +12,12 @@ interface ReceiptLedgerDrawerProps {
   refId: string | null;
   allReceipts: SavedReceipt[];
   dealValue: number;
-  onSaveDealValue: (normalizedRefId: string, newDealValue: number) => Promise<void> | void;
+  plotArea?: number | string | null;
+  onSaveDealValue: (
+    normalizedRefId: string,
+    newDealValue: number,
+    extra?: { area?: number; ratePerSqYd?: number }
+  ) => Promise<void> | void;
   onClose: () => void;
   onSelectReceipt?: (receipt: SavedReceipt) => void;
 }
@@ -21,22 +26,75 @@ export function ReceiptLedgerDrawer({
   refId,
   allReceipts,
   dealValue,
+  plotArea,
   onSaveDealValue,
   onClose,
   onSelectReceipt,
 }: ReceiptLedgerDrawerProps) {
+  const normalizedKey = refId ? normalizeRefId(refId) : '';
+  const ledger = refId ? calculateLedgerStatement(refId, allReceipts, dealValue, plotArea) : null;
+
+  const initialArea = useMemo(() => {
+    if (!refId) return 0;
+    const raw =
+      plotArea ||
+      ledger?.plotSize ||
+      allReceipts.find((r) => normalizeRefId(r.form_data?.refId) === normalizedKey)?.form_data
+        ?.plotSize ||
+      '';
+    return parseFloat(String(raw).replace(/[^\d.]/g, '')) || 0;
+  }, [plotArea, ledger?.plotSize, allReceipts, normalizedKey, refId]);
+
   const [agreedValueInput, setAgreedValueInput] = useState('');
+  const [ratePerSqYdInput, setRatePerSqYdInput] = useState('');
+  const [areaInput, setAreaInput] = useState('');
   const [savingDealValue, setSavingDealValue] = useState(false);
   const [copiedReceiptNo, setCopiedReceiptNo] = useState<string | null>(null);
 
   useEffect(() => {
     setAgreedValueInput(dealValue > 0 ? String(dealValue) : '');
-  }, [dealValue, refId]);
+    setAreaInput(initialArea > 0 ? String(initialArea) : '');
+    if (dealValue > 0 && initialArea > 0) {
+      const rate = Math.round((dealValue / initialArea) * 100) / 100;
+      setRatePerSqYdInput(String(rate));
+    } else {
+      setRatePerSqYdInput('');
+    }
+  }, [dealValue, refId, initialArea]);
 
-  if (!refId) return null;
+  if (!refId || !ledger) return null;
 
-  const ledger = calculateLedgerStatement(refId, allReceipts, dealValue);
-  const normalizedKey = normalizeRefId(refId);
+  const handleTotalChange = (val: string) => {
+    setAgreedValueInput(val);
+    const total = parseFloat(val.replace(/,/g, ''));
+    const area = parseFloat(areaInput.replace(/,/g, ''));
+    if (!isNaN(total) && !isNaN(area) && area > 0) {
+      const rate = Math.round((total / area) * 100) / 100;
+      setRatePerSqYdInput(String(rate));
+    } else {
+      setRatePerSqYdInput('');
+    }
+  };
+
+  const handleRateChange = (val: string) => {
+    setRatePerSqYdInput(val);
+    const rate = parseFloat(val.replace(/,/g, ''));
+    const area = parseFloat(areaInput.replace(/,/g, ''));
+    if (!isNaN(rate) && !isNaN(area) && area > 0) {
+      const total = Math.round(rate * area);
+      setAgreedValueInput(String(total));
+    }
+  };
+
+  const handleAreaChange = (val: string) => {
+    setAreaInput(val);
+    const area = parseFloat(val.replace(/,/g, ''));
+    const total = parseFloat(agreedValueInput.replace(/,/g, ''));
+    if (!isNaN(total) && !isNaN(area) && area > 0) {
+      const rate = Math.round((total / area) * 100) / 100;
+      setRatePerSqYdInput(String(rate));
+    }
+  };
 
   const handleCopy = (text: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -53,12 +111,23 @@ export function ReceiptLedgerDrawer({
       toast.error('Please enter a valid deal amount');
       return;
     }
+    const parsedArea = parseFloat(areaInput.replace(/,/g, '')) || undefined;
+    const parsedRate = parseFloat(ratePerSqYdInput.replace(/,/g, '')) || undefined;
+
     try {
       setSavingDealValue(true);
-      await onSaveDealValue(normalizedKey, num);
-      toast.success('Agreed deal value saved successfully');
+      await onSaveDealValue(
+        normalizedKey,
+        num,
+        parsedArea || parsedRate ? { area: parsedArea, ratePerSqYd: parsedRate } : undefined
+      );
+      toast.success(
+        parsedRate && parsedArea
+          ? `Agreed value saved to DB: ${formatCurrency(num)} (@ ₹${parsedRate}/sq.yd.)`
+          : 'Agreed deal value saved to database'
+      );
     } catch {
-      toast.error('Failed to save agreed deal value');
+      toast.error('Failed to save agreed deal value to database');
     } finally {
       setSavingDealValue(false);
     }
@@ -120,6 +189,11 @@ export function ReceiptLedgerDrawer({
                         Plot {ledger.plotNo}
                       </span>
                     )}
+                    {initialArea > 0 && (
+                      <span className="rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                        {initialArea} Sq. Yds.
+                      </span>
+                    )}
                   </div>
                   <h2 className="mt-1 text-lg font-bold text-gray-900 capitalize dark:text-white">
                     {ledger.clientName}
@@ -158,16 +232,27 @@ export function ReceiptLedgerDrawer({
 
                 {/* Agreed Plot Value */}
                 <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 dark:bg-blue-500/10">
-                  <span className="text-[11px] font-semibold text-blue-600 uppercase dark:text-blue-400">
-                    Agreed Plot Value
-                  </span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-[11px] font-semibold text-blue-600 uppercase dark:text-blue-400">
+                      Agreed Plot Value
+                    </span>
+                    {ledger.ratePerSqYd && ledger.ratePerSqYd > 0 ? (
+                      <span className="rounded bg-blue-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-blue-700 dark:text-blue-300">
+                        ₹{ledger.ratePerSqYd.toLocaleString('en-IN')}/sq.yd.
+                      </span>
+                    ) : null}
+                  </div>
                   <div className="mt-1 font-mono text-lg font-bold text-blue-700 dark:text-blue-300">
                     {ledger.agreedDealValue > 0
                       ? formatCurrency(ledger.agreedDealValue)
                       : 'Not Set'}
                   </div>
                   <span className="text-[10px] text-blue-600/80 dark:text-blue-400/80">
-                    {ledger.agreedDealValue > 0 ? 'Confirmed deal cost' : 'Set below to track'}
+                    {ledger.agreedDealValue > 0
+                      ? ledger.ratePerSqYd && ledger.ratePerSqYd > 0
+                        ? `Confirmed deal cost • ${ledger.plotSize || initialArea} Sq. Yds.`
+                        : 'Confirmed deal cost'
+                      : 'Set below to track'}
                   </span>
                 </div>
 
@@ -211,36 +296,94 @@ export function ReceiptLedgerDrawer({
 
               {/* Edit Agreed Deal Value Form */}
               <div className="rounded-xl border border-gray-200/80 bg-white p-4 shadow-sm dark:border-white/10 dark:bg-white/[0.03]">
-                <h4 className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
-                  <IndianRupee className="text-brand-gold h-3.5 w-3.5" />
-                  Set / Update Agreed Deal Value
-                </h4>
-                <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
-                  Save total agreed cost for this plot/ref account to calculate outstanding balance.
-                </p>
-                <form onSubmit={handleSaveDealValue} className="mt-3 flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-gray-400">
-                      ₹
-                    </span>
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      placeholder="e.g. 2500000"
-                      value={agreedValueInput}
-                      onChange={(e) => setAgreedValueInput(e.target.value)}
-                      className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pr-3 pl-7 font-mono text-xs font-semibold text-gray-900 transition-colors focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
-                    />
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div>
+                    <h4 className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                      <IndianRupee className="text-brand-gold h-3.5 w-3.5" />
+                      Set / Update Agreed Deal Value
+                    </h4>
+                    <p className="mt-0.5 text-xs text-gray-500 dark:text-gray-400">
+                      Save total agreed cost in DB. Rate per sq. yd. is calculated automatically.
+                    </p>
                   </div>
-                  <button
-                    type="submit"
-                    disabled={savingDealValue}
-                    className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90 flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-colors disabled:opacity-50"
-                  >
-                    <Save className="h-3.5 w-3.5" />
-                    {savingDealValue ? 'Saving...' : 'Save'}
-                  </button>
+                  {initialArea > 0 && (
+                    <div className="flex items-center gap-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-2 py-0.5 text-xs font-medium text-emerald-700 dark:text-emerald-300">
+                      <span>Area:</span>
+                      <strong className="font-mono font-bold">{initialArea}</strong>
+                      <span>Sq. Yds.</span>
+                    </div>
+                  )}
+                </div>
+
+                <form onSubmit={handleSaveDealValue} className="mt-3 space-y-3">
+                  <div className="grid grid-cols-1 gap-2.5 sm:grid-cols-2">
+                    {/* Total Amount Input */}
+                    <div>
+                      <label className="mb-1 block text-[11px] font-semibold text-gray-600 dark:text-gray-400">
+                        Total Deal Amount (₹)
+                      </label>
+                      <div className="relative">
+                        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-gray-400">
+                          ₹
+                        </span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="1"
+                          placeholder="e.g. 2500000"
+                          value={agreedValueInput}
+                          onChange={(e) => handleTotalChange(e.target.value)}
+                          className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pr-3 pl-7 font-mono text-xs font-semibold text-gray-900 transition-colors focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Per Sq Yard Amount Input */}
+                    <div>
+                      <label className="mb-1 block text-[11px] font-semibold text-gray-600 dark:text-gray-400">
+                        Rate per Sq. Yard (₹ / sq. yd.)
+                      </label>
+                      <div className="relative">
+                        <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-xs font-bold text-gray-400">
+                          ₹
+                        </span>
+                        <input
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          placeholder="e.g. 5500"
+                          value={ratePerSqYdInput}
+                          onChange={(e) => handleRateChange(e.target.value)}
+                          className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pr-3 pl-7 font-mono text-xs font-semibold text-gray-900 transition-colors focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-t border-gray-100 pt-2 dark:border-white/5">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400">
+                      <span>Plot Area:</span>
+                      <input
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="Area"
+                        value={areaInput}
+                        onChange={(e) => handleAreaChange(e.target.value)}
+                        className="focus:border-brand-gold w-20 rounded border border-gray-200 bg-gray-50 px-2 py-1 font-mono text-xs font-semibold text-gray-900 transition-colors focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                      />
+                      <span>Sq. Yds.</span>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={savingDealValue}
+                      className="bg-brand-gold text-brand-navy hover:bg-brand-gold/90 flex items-center gap-1.5 rounded-lg px-4 py-2 text-xs font-bold transition-colors disabled:opacity-50"
+                    >
+                      <Save className="h-3.5 w-3.5" />
+                      {savingDealValue ? 'Saving to DB...' : 'Save to DB'}
+                    </button>
+                  </div>
                 </form>
               </div>
 

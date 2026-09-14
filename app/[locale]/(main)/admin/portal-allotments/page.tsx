@@ -74,6 +74,7 @@ export default function PortalAllotmentsAdmin() {
     setActiveLedgerRefId,
     openClientLedger,
     getDealValueForRef,
+    getPlotAreaForRef,
     salesRevenueStats,
     getAllotmentFinancials,
   } = usePortalAllotmentsAdmin();
@@ -399,6 +400,7 @@ export default function PortalAllotmentsAdmin() {
         refId={activeLedgerRefId}
         allReceipts={allLedgerReceipts}
         dealValue={getDealValueForRef(activeLedgerRefId)}
+        plotArea={getPlotAreaForRef(activeLedgerRefId)}
         onSaveDealValue={handleSaveDealValue}
         onClose={() => setActiveLedgerRefId(null)}
         onSelectReceipt={setSelectedReceipt}

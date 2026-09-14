@@ -12,6 +12,7 @@ export interface CustomerLedgerSummary {
   balanceDue: number;
   percentCompleted: number;
   lastPaymentDate: string;
+  ratePerSqYd?: number;
 }
 
 export interface CustomerLedgerDetail {
@@ -25,6 +26,7 @@ export interface CustomerLedgerDetail {
   agreedDealValue: number;
   balanceDue: number;
   percentCompleted: number;
+  ratePerSqYd?: number;
 }
 
 export function normalizeRefId(refId?: string): string {
@@ -77,6 +79,9 @@ export function groupReceiptsByRefId(
     const dealVal = dealValuesMap[norm] || 0;
     const balance = dealVal > 0 ? Math.max(0, dealVal - data.totalPaid) : 0;
     const pct = dealVal > 0 ? Math.min(100, (data.totalPaid / dealVal) * 100) : 0;
+    const areaNum = parseFloat(String(data.plotSize || '').replace(/[^\d.]/g, '')) || 0;
+    const ratePerSqYd =
+      areaNum > 0 && dealVal > 0 ? Math.round((dealVal / areaNum) * 100) / 100 : 0;
 
     return {
       normalizedRefId: norm,
@@ -90,6 +95,7 @@ export function groupReceiptsByRefId(
       balanceDue: balance,
       percentCompleted: Math.round(pct * 100) / 100,
       lastPaymentDate: data.lastDate,
+      ratePerSqYd,
     };
   });
 }
@@ -97,7 +103,8 @@ export function groupReceiptsByRefId(
 export function calculateLedgerStatement(
   refId: string,
   receipts: SavedReceipt[],
-  agreedDealValue = 0
+  agreedDealValue = 0,
+  overridePlotArea?: string | number | null
 ): CustomerLedgerDetail {
   const norm = normalizeRefId(refId);
   const matched = receipts
@@ -115,17 +122,27 @@ export function calculateLedgerStatement(
   const balance = agreedDealValue > 0 ? Math.max(0, agreedDealValue - totalPaid) : 0;
   const pct = agreedDealValue > 0 ? Math.min(100, (totalPaid / agreedDealValue) * 100) : 0;
   const primary = matched[0];
+  const matchedSize = matched.find((r) => r.form_data?.plotSize)?.form_data?.plotSize;
+  const finalPlotSize =
+    (overridePlotArea ? String(overridePlotArea) : '') ||
+    matchedSize ||
+    primary?.form_data?.plotSize ||
+    '';
+  const areaNum = parseFloat(String(finalPlotSize).replace(/[^\d.]/g, '')) || 0;
+  const ratePerSqYd =
+    areaNum > 0 && agreedDealValue > 0 ? Math.round((agreedDealValue / areaNum) * 100) / 100 : 0;
 
   return {
     normalizedRefId: norm,
     displayRefId: refId,
     clientName: primary?.form_data?.name || 'N/A',
     plotNo: primary?.form_data?.plotNo || '',
-    plotSize: primary?.form_data?.plotSize || '',
+    plotSize: finalPlotSize,
     receipts: matched,
     totalPaid,
     agreedDealValue,
     balanceDue: balance,
     percentCompleted: Math.round(pct * 100) / 100,
+    ratePerSqYd,
   };
 }

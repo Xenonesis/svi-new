@@ -75,7 +75,11 @@ export interface UsePaymentReceiptsRecordsReturn {
   setIsLedgersModalOpen: (open: boolean) => void;
   dealValuesMap: Record<string, number>;
   setDealValuesMap: React.Dispatch<React.SetStateAction<Record<string, number>>>;
-  handleSaveDealValue: (normalizedRefId: string, newDealValue: number) => Promise<void>;
+  handleSaveDealValue: (
+    normalizedRefId: string,
+    newDealValue: number,
+    extra?: { area?: number; ratePerSqYd?: number }
+  ) => Promise<void>;
   pdfLoading: boolean;
   imageLoading: boolean;
   handleDownloadPDF: (receipt?: SavedReceipt | null) => Promise<void>;
@@ -176,7 +180,11 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
       .catch((err: unknown) => console.error('Error fetching deal values:', err));
   }, [token]);
 
-  const handleSaveDealValue = async (normalizedRefId: string, newDealValue: number) => {
+  const handleSaveDealValue = async (
+    normalizedRefId: string,
+    newDealValue: number,
+    extra?: { area?: number; ratePerSqYd?: number }
+  ) => {
     if (!token) return;
     const norm = normalizeRefId(normalizedRefId);
     const updated = {
@@ -186,19 +194,39 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     };
     setDealValuesMap(updated);
 
-    const res = await fetch('/api/admin/settings', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        key: 'receipt_deal_values',
-        value: updated,
-      }),
-    });
-    if (!res.ok) {
-      throw new Error('Failed to persist deal value');
+    try {
+      // 1. Try dedicated DB persistence endpoint (updates allotments table & settings)
+      const res = await fetch('/api/admin/portal-allotments/deal-value', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          refId: normalizedRefId,
+          dealValue: newDealValue,
+          area: extra?.area,
+          ratePerSqYd: extra?.ratePerSqYd,
+        }),
+      });
+
+      if (!res.ok) {
+        // 2. Fallback to settings endpoint
+        await fetch('/api/admin/settings', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            key: 'receipt_deal_values',
+            value: updated,
+          }),
+        });
+      }
+    } catch (err: unknown) {
+      console.error('Failed to persist deal value:', err);
+      throw new Error('Failed to persist deal value to database', { cause: err });
     }
   };
 

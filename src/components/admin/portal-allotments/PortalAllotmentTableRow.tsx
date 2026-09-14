@@ -106,6 +106,11 @@ export function PortalAllotmentTableRow({
                     {t('totalCostLabel')}:
                   </strong>{' '}
                   ₹{totalCost.toLocaleString('en-IN')}
+                  {Number(area) > 0 && (
+                    <span className="ml-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                      (@ ₹{Math.round(totalCost / Number(area)).toLocaleString('en-IN')}/sq.yd.)
+                    </span>
+                  )}
                 </p>
               )}
               {bookingDate && (
@@ -132,6 +137,11 @@ export function PortalAllotmentTableRow({
                 <span className="text-gray-500 dark:text-gray-400">Sales Value:</span>
                 <span className="font-mono font-bold text-gray-900 dark:text-white">
                   {dealValue > 0 ? `₹${dealValue.toLocaleString('en-IN')}` : 'Not Set'}
+                  {dealValue > 0 && Number(area) > 0 && (
+                    <span className="ml-1 text-[11px] font-normal text-sky-600 dark:text-sky-400">
+                      (₹{Math.round(dealValue / Number(area)).toLocaleString('en-IN')}/sq.yd.)
+                    </span>
+                  )}
                 </span>
               </div>
 

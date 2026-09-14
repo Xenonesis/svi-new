@@ -647,7 +647,11 @@ export function usePortalAllotmentsAdmin() {
     }
   };
 
-  const handleSaveDealValue = async (normalizedRefId: string, newDealValue: number) => {
+  const handleSaveDealValue = async (
+    normalizedRefId: string,
+    newDealValue: number,
+    extra?: { area?: number; ratePerSqYd?: number }
+  ) => {
     const norm = normalizeRefId(normalizedRefId);
     const updated = {
       ...dealValuesMap,
@@ -655,6 +659,26 @@ export function usePortalAllotmentsAdmin() {
       [norm]: newDealValue,
     };
     setDealValuesMap(updated);
+
+    // Update local state immediately
+    setAllotments((prev) =>
+      prev.map((a) => {
+        const aTicket = normalizeRefId(a.metadata?.ticket_id || a.metadata?.ticketId || a.id);
+        if (aTicket === norm) {
+          return {
+            ...a,
+            total_cost: newDealValue,
+            metadata: {
+              ...(a.metadata || {}),
+              total_cost: newDealValue,
+              ...(extra?.area ? { area: String(extra.area) } : {}),
+              ...(extra?.ratePerSqYd ? { rate_per_sq_yd: extra.ratePerSqYd } : {}),
+            },
+          };
+        }
+        return a;
+      })
+    );
 
     if (process.env.NODE_ENV === 'test') {
       return;
@@ -666,16 +690,19 @@ export function usePortalAllotmentsAdmin() {
       const headers: Record<string, string> = { 'Content-Type': 'application/json' };
       if (token) headers['Authorization'] = `Bearer ${token}`;
 
-      await fetch('/api/admin/settings', {
+      // Persist to database via dedicated server admin API
+      await fetch('/api/admin/portal-allotments/deal-value', {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          key: 'receipt_deal_values',
-          value: updated,
+          refId: normalizedRefId,
+          dealValue: newDealValue,
+          area: extra?.area,
+          ratePerSqYd: extra?.ratePerSqYd,
         }),
       });
 
-      // Also update any allotment in the database that matches this normalizedRefId
+      // Also update any allotment in the database directly as client fallback
       const matchingAllotment = allotments.find((a) => {
         const aTicket = normalizeRefId(a.metadata?.ticket_id || a.metadata?.ticketId || a.id);
         return aTicket === norm;
@@ -688,24 +715,14 @@ export function usePortalAllotmentsAdmin() {
             metadata: {
               ...(matchingAllotment.metadata || {}),
               total_cost: newDealValue,
+              ...(extra?.area ? { area: String(extra.area) } : {}),
+              ...(extra?.ratePerSqYd ? { rate_per_sq_yd: extra.ratePerSqYd } : {}),
             },
           })
           .eq('id', matchingAllotment.id);
-
-        setAllotments((prev) =>
-          prev.map((a) =>
-            a.id === matchingAllotment.id
-              ? {
-                  ...a,
-                  total_cost: newDealValue,
-                  metadata: { ...(a.metadata || {}), total_cost: newDealValue },
-                }
-              : a
-          )
-        );
       }
-    } catch (err) {
-      console.error('Failed to sync deal value:', err);
+    } catch {
+      // ignore
     }
   };
 
@@ -734,6 +751,19 @@ export function usePortalAllotmentsAdmin() {
       return Number(matching?.metadata?.total_cost ?? matching?.total_cost) || 0;
     },
     [allotments, dealValuesMap]
+  );
+
+  const getPlotAreaForRef = useCallback(
+    (refId: string | null) => {
+      if (!refId) return undefined;
+      const norm = normalizeRefId(refId);
+      const matching = allotments.find((a) => {
+        const aRef = a.metadata?.ticket_id || a.metadata?.ticketId || a.id;
+        return normalizeRefId(aRef) === norm;
+      });
+      return matching?.metadata?.area;
+    },
+    [allotments]
   );
 
   const allLedgerReceipts = useMemo(() => {
@@ -867,6 +897,7 @@ export function usePortalAllotmentsAdmin() {
     setActiveLedgerRefId,
     openClientLedger,
     getDealValueForRef,
+    getPlotAreaForRef,
     salesRevenueStats,
     getAllotmentFinancials: (allotment: AllotmentRecord) =>
       getAllotmentFinancials(allotment, dealValuesMap),

@@ -12,7 +12,11 @@ import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
 export interface ReceiptModalsContainerProps {
   receipts: SavedReceipt[];
   dealValuesMap: Record<string, number>;
-  handleSaveDealValue: (normalizedRefId: string, newDealValue: number) => Promise<void> | void;
+  handleSaveDealValue: (
+    normalizedRefId: string,
+    newDealValue: number,
+    extra?: { area?: number; ratePerSqYd?: number }
+  ) => Promise<void> | void;
   selectedReceipt: SavedReceipt | null;
   setSelectedReceipt: (r: SavedReceipt | null) => void;
   pdfLoading: boolean;

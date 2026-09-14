@@ -75,7 +75,23 @@ describe('ReceiptLedgerDrawer', () => {
     const saveBtn = screen.getByRole('button', { name: /Save/i });
     fireEvent.click(saveBtn);
 
-    expect(onSave).toHaveBeenCalledWith('SVI2051', 100000);
+    expect(onSave).toHaveBeenCalledWith('SVI2051', 100000, { area: 1000, ratePerSqYd: 100 });
+  });
+
+  it('displays rate per sq yd and plot area in the drawer', () => {
+    render(
+      <ReceiptLedgerDrawer
+        refId="SVI2051"
+        allReceipts={mockReceipts}
+        dealValue={500000}
+        onSaveDealValue={vi.fn()}
+        onClose={vi.fn()}
+      />
+    );
+
+    // Rate is 500000 / 1000 = 500
+    expect(screen.getAllByText(/1000 Sq. Yds./i).length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/₹500\/sq.yd./i)).toBeDefined();
   });
 
   it('renders null when refId is null', () => {
