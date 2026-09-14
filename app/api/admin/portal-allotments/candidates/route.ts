@@ -134,7 +134,17 @@ export async function GET(request: NextRequest) {
       const projectName = fd.projectName || fd.project || '';
       const unitNo = fd.unitNumber || fd.plotNumber || fd.unit_no || '';
       const area = fd.area || fd.plotSize || fd.plot_area || '';
-      const totalCost = Number(fd.totalCost || fd.total_cost || fd.amount) || 0;
+      let calculatedCost = Number(fd.totalCost || fd.total_cost) || 0;
+      if (!calculatedCost && fd.bsp && area) {
+        const areaNum = parseFloat(String(area)) || 0;
+        const bspNum = parseFloat(String(fd.bsp)) || 0;
+        if (areaNum > 0 && bspNum > 0) {
+          calculatedCost = Math.round(areaNum * bspNum);
+        }
+      }
+      if (!calculatedCost && d.document_type !== 'payment_receipt') {
+        calculatedCost = Number(fd.amount) || 0;
+      }
       const bookingDate = fd.allotmentDate || fd.bookingDate || fd.date || '';
       const advisorName = (fd.advisorName ||
         fd.advisor_name ||
@@ -153,7 +163,7 @@ export async function GET(request: NextRequest) {
           propertyId: resolvePropertyId(projectName),
           unitNo: String(unitNo),
           area,
-          totalCost,
+          totalCost: calculatedCost,
           bookingDate: bookingDate
             ? new Date(bookingDate).toISOString().split('T')[0]
             : d.created_at
@@ -179,7 +189,11 @@ export async function GET(request: NextRequest) {
         }
         if (!item.unitNo && unitNo) item.unitNo = String(unitNo);
         if (!item.area && area) item.area = area;
-        if (!item.totalCost && totalCost) item.totalCost = totalCost;
+        if ((!item.totalCost || item.totalCost === 0) && calculatedCost) {
+          item.totalCost = calculatedCost;
+        } else if (d.document_type === 'bba' && calculatedCost > 0) {
+          item.totalCost = calculatedCost;
+        }
         if (!item.advisorName && advisorName) item.advisorName = advisorName.trim();
       }
 
