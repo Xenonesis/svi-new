@@ -28,6 +28,9 @@ const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
+  devIndicators: {
+    position: 'bottom-right',
+  },
   experimental: {
     optimizePackageImports: [
       'lucide-react',

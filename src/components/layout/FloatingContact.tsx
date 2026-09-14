@@ -29,33 +29,38 @@ export function FloatingContact() {
   return (
     <>
       {/* Mobile Sticky Bar */}
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex h-16 w-full items-center justify-between border-t border-gray-200 bg-white/90 px-2 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] backdrop-blur-md md:hidden dark:border-gray-800 dark:bg-gray-900/90">
+      <div className="fixed right-0 bottom-0 left-0 z-50 flex h-[calc(4rem+env(safe-area-inset-bottom,0px))] w-full items-center justify-around border-t border-gray-200/80 bg-white/95 px-3 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden dark:border-white/10 dark:bg-[#0b0f19]/95">
         <a
           href={PHONE_HREF}
           onClick={handleCallClick}
-          className="hover:text-brand-gold flex flex-1 flex-col items-center justify-center gap-1 text-gray-600 transition-colors dark:text-gray-400"
+          className="hover:text-brand-gold flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 text-gray-700 transition-colors active:bg-gray-100 dark:text-gray-300 dark:active:bg-white/5"
         >
-          <Phone size={20} />
-          <span className="text-[10px] font-medium tracking-wider uppercase">{t('call')}</span>
+          <Phone size={19} />
+          <span className="text-[10px] font-semibold tracking-wider uppercase">{t('call')}</span>
         </a>
-        <div className="h-8 w-px bg-gray-300 dark:bg-gray-700" />
         <a
           href={WHATSAPP_URL}
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleWhatsAppClick}
-          className="flex flex-1 flex-col items-center justify-center gap-1 text-[#25D366] transition-colors hover:text-green-500"
+          className="group flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 text-gray-700 transition-colors hover:text-emerald-600 active:bg-green-50 dark:text-gray-300 dark:hover:text-emerald-400 dark:active:bg-green-950/20"
         >
-          <MessageCircle size={20} />
-          <span className="text-[10px] font-medium tracking-wider uppercase">{t('whatsapp')}</span>
+          <MessageCircle
+            size={19}
+            className="text-[#25D366] transition-transform group-hover:scale-110"
+          />
+          <span className="text-[10px] font-semibold tracking-wider text-[#25D366] uppercase">
+            {t('whatsapp')}
+          </span>
         </a>
-        <div className="h-8 w-px bg-gray-300 dark:bg-gray-700" />
         <button
           onClick={handleBookVisitOpen}
-          className="text-brand-navy hover:text-brand-gold flex flex-1 flex-col items-center justify-center gap-1 transition-colors dark:text-gray-100"
+          className="text-brand-navy hover:text-brand-gold active:bg-brand-gold/10 flex flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1.5 font-semibold transition-colors dark:text-gray-100"
         >
-          <Calendar size={20} />
-          <span className="text-[10px] font-medium tracking-wider uppercase">{t('bookVisit')}</span>
+          <Calendar size={19} />
+          <span className="text-[10px] font-semibold tracking-wider uppercase">
+            {t('bookVisit')}
+          </span>
         </button>
       </div>
 
