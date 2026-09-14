@@ -119,7 +119,7 @@ export default async function BlogPost({ params }: Props) {
       name: 'SVI Infra Solutions',
       logo: {
         '@type': 'ImageObject',
-        url: absoluteUrl('/logo.png'),
+        url: absoluteUrl('/logo-app-badge.png'),
       },
     },
     datePublished: new Date(post.date).toISOString(),

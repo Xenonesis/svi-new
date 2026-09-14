@@ -7,7 +7,8 @@ const ORG_SCHEMA = {
   '@type': 'Organization',
   name: 'SVI Infra Solutions Pvt. Ltd.',
   url: SITE_URL,
-  logo: `${SITE_URL}/logo.png`,
+  logo: `${SITE_URL}/logo-app-badge.png`,
+  image: `${SITE_URL}/logo-app-badge.png`,
   description:
     'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
   address: {

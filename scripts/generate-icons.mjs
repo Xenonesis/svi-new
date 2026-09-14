@@ -94,26 +94,15 @@ async function main() {
   console.log('\n5. Generating production multi-layer favicon.ico (16×16, 32×32, 48×48, 64×64)...');
   const icoData = createIco(icoPngBuffers);
   fs.writeFileSync(path.join(root, 'public', 'favicon.ico'), icoData);
-  fs.writeFileSync(path.join(appDir, 'favicon.ico'), icoData);
   console.log('✓ public/favicon.ico');
-  console.log('✓ app/favicon.ico');
 
-  console.log('\n6. Generating Apple touch icons & App Router static icons...');
+  console.log('\n6. Generating Apple touch icons & static root icons...');
   const applePng = await sharp(masterBuf)
     .resize(180, 180, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
     .png({ compressionLevel: 9 })
     .toBuffer();
   fs.writeFileSync(path.join(root, 'public', 'apple-touch-icon.png'), applePng);
-  fs.writeFileSync(path.join(appDir, 'apple-icon.png'), applePng);
   console.log('✓ public/apple-touch-icon.png (180×180)');
-  console.log('✓ app/apple-icon.png (180×180)');
-
-  const appIconPng = await sharp(masterBuf)
-    .resize(512, 512, { kernel: sharp.kernel.lanczos3, fit: 'contain', background: { r: 0, g: 0, b: 0, alpha: 0 } })
-    .png({ compressionLevel: 9 })
-    .toBuffer();
-  fs.writeFileSync(path.join(appDir, 'icon.png'), appIconPng);
-  console.log('✓ app/icon.png (512×512)');
 
   console.log('\n7. Generating PWA launcher icons (72 to 512px)...');
   const PWA_SIZES = [72, 96, 128, 144, 152, 192, 384, 512];

@@ -39,7 +39,7 @@ const contactSchema = {
     opens: '10:00',
     closes: '18:00',
   },
-  image: 'https://www.sviinfrasolutions.com/logo.png',
+  image: 'https://www.sviinfrasolutions.com/logo-app-badge.png',
   priceRange: '$$$',
 };
 

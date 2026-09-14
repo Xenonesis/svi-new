@@ -71,7 +71,7 @@ export default async function Blog({ params }: Props) {
       name: 'SVI Infra Solutions',
       logo: {
         '@type': 'ImageObject',
-        url: absoluteUrl('/logo.png'),
+        url: absoluteUrl('/logo-app-badge.png'),
       },
     },
     blogPost: BLOG_POSTS.map((post) => ({

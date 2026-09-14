@@ -83,13 +83,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: '/favicon.svg', type: 'image/svg+xml' },
       { url: '/favicon.ico', sizes: 'any' },
-      { url: '/favicons/favicon_16x16.png', sizes: '16x16', type: 'image/png' },
-      { url: '/favicons/favicon_32x32.png', sizes: '32x32', type: 'image/png' },
       { url: '/favicons/favicon_48x48.png', sizes: '48x48', type: 'image/png' },
-      { url: '/favicons/favicon_64x64.png', sizes: '64x64', type: 'image/png' },
       { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/favicon.svg', type: 'image/svg+xml' },
     ],
     shortcut: '/favicon.ico',
     apple: [{ url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }],
@@ -160,8 +157,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               description:
                 'Premium residential and commercial real estate developer with 17+ years of experience in Jaipur, Noida, and DMIC/DFC corridors.',
               url: 'https://www.sviinfrasolutions.com/',
-              logo: 'https://www.sviinfrasolutions.com/logo.png',
-              image: 'https://www.sviinfrasolutions.com/logo.png',
+              logo: 'https://www.sviinfrasolutions.com/logo-app-badge.png',
+              image: 'https://www.sviinfrasolutions.com/logo-app-badge.png',
               telephone: '+91-73000-07643',
               email: 'info@sviinfrasolutions.com',
               address: {

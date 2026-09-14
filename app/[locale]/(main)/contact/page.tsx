@@ -32,7 +32,7 @@ const localBusinessJsonLd = {
   '@context': 'https://schema.org',
   '@type': 'RealEstateAgent',
   name: 'SVI Infra Solutions Pvt. Ltd.',
-  image: `${SITE_URL}/logo.png`,
+  image: `${SITE_URL}/logo-app-badge.png`,
   url: `${SITE_URL}/contact`,
   telephone: '+91-73000-07643',
   email: 'info@sviinfrasolutions.com',
