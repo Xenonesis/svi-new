@@ -105,6 +105,7 @@ export const metadata: Metadata = {
     images: [
       {
         url: absoluteUrl('/og-image.jpg'),
+        secureUrl: absoluteUrl('/og-image.jpg'),
         width: 1200,
         height: 630,
         alt: 'SVI Infra Solutions - Premium Real Estate Developer',
@@ -135,6 +136,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head suppressHydrationWarning>
+        {/* OpenGraph & Social Image Fallback */}
+        <link rel="image_src" href="https://www.sviinfrasolutions.com/og-image.jpg" />
         {/* Favicons and Touch Icons */}
         <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
         <link rel="icon" href="/favicon.ico" sizes="any" />

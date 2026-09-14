@@ -92,9 +92,11 @@ export function createMetadata({
       images: [
         {
           url: imageUrl,
+          secureUrl: imageUrl,
           width: 1200,
           height: 630,
           alt: title,
+          type: imageUrl.endsWith('.png') ? 'image/png' : 'image/jpeg',
         },
       ],
     },
