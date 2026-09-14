@@ -1,4 +1,5 @@
-import { ImageResponse } from 'next/og';
+import fs from 'fs';
+import path from 'path';
 
 export const runtime = 'nodejs';
 
@@ -11,6 +12,19 @@ export const size = {
 export const contentType = 'image/png';
 
 export default async function Image() {
+  const filePath = path.join(process.cwd(), 'public', 'og-image.png');
+  if (fs.existsSync(filePath)) {
+    const fileBuffer = fs.readFileSync(filePath);
+    return new Response(fileBuffer, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control': 'public, max-age=86400, stale-while-revalidate=604800',
+      },
+    });
+  }
+
+  // Fallback if static image is not on disk
+  const { ImageResponse } = await import('next/og');
   return new ImageResponse(
     <div
       style={{
@@ -20,86 +34,13 @@ export default async function Image() {
         alignItems: 'center',
         width: '100%',
         height: '100%',
-        backgroundColor: '#111827',
-        backgroundImage:
-          'repeating-linear-gradient(45deg, #d4af37 0, #d4af37 1px, transparent 0, transparent 50%)',
-        backgroundSize: '40px 40px',
+        backgroundColor: '#080D18',
+        color: '#ffffff',
       }}
     >
-      {/* Logo/Brand */}
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          gap: '20px',
-        }}
-      >
-        {/* Company Name */}
-        <div
-          style={{
-            fontSize: '72px',
-            fontWeight: 'bold',
-            color: '#ffffff',
-            fontFamily: 'serif',
-            textAlign: 'center',
-            lineHeight: '1.2',
-          }}
-        >
-          SVI Infra Solutions
-        </div>
-
-        {/* Tagline */}
-        <div
-          style={{
-            fontSize: '32px',
-            color: '#d4af37',
-            fontWeight: '600',
-            letterSpacing: '0.1em',
-            textTransform: 'uppercase',
-          }}
-        >
-          Premium Real Estate Developer
-        </div>
-
-        {/* Divider */}
-        <div
-          style={{
-            width: '200px',
-            height: '4px',
-            backgroundColor: '#d4af37',
-            marginTop: '20px',
-            marginBottom: '20px',
-          }}
-        />
-
-        {/* Locations */}
-        <div
-          style={{
-            fontSize: '24px',
-            color: '#e5e7eb',
-            display: 'flex',
-            gap: '30px',
-            alignItems: 'center',
-          }}
-        >
-          <span>Jaipur</span>
-          <span style={{ color: '#d4af37' }}>•</span>
-          <span>Noida</span>
-          <span style={{ color: '#d4af37' }}>•</span>
-          <span>Phulera Smart City</span>
-        </div>
-
-        {/* Website URL */}
-        <div
-          style={{
-            fontSize: '20px',
-            color: '#9ca3af',
-            marginTop: '30px',
-          }}
-        >
-          sviinfrasolutions.com
-        </div>
+      <div style={{ fontSize: 52, fontWeight: 800, color: '#ffffff' }}>SVI INFRA SOLUTIONS</div>
+      <div style={{ fontSize: 26, color: '#D4AF37', marginTop: 16 }}>
+        Premium Real Estate &amp; Integrated Townships
       </div>
     </div>,
     {

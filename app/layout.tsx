@@ -104,10 +104,11 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     images: [
       {
-        url: absoluteUrl('/opengraph-image'),
+        url: absoluteUrl('/og-image.jpg'),
         width: 1200,
         height: 630,
-        alt: 'SVI Infra Solutions premium real estate developer',
+        alt: 'SVI Infra Solutions - Premium Real Estate Developer',
+        type: 'image/jpeg',
       },
     ],
   },
@@ -116,7 +117,7 @@ export const metadata: Metadata = {
     title: 'SVI Infra Solutions - Premium Real Estate Developer',
     description:
       'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
-    images: [absoluteUrl('/opengraph-image')],
+    images: [absoluteUrl('/og-image.jpg')],
   },
 };
 

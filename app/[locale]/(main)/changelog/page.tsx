@@ -32,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       locale: locale === 'hi' ? 'hi_IN' : 'en_IN',
       images: [
         {
-          url: absoluteUrl('/opengraph-image'),
+          url: absoluteUrl('/og-image.jpg'),
           width: 1200,
           height: 630,
           alt: title,
@@ -43,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: `${title} | SVI Infra Solutions`,
       description,
-      images: [absoluteUrl('/opengraph-image')],
+      images: [absoluteUrl('/og-image.jpg')],
     },
   };
 }

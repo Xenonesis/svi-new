@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 export const SITE_URL = 'https://www.sviinfrasolutions.com';
 export const SITE_NAME = 'SVI Infra Solutions';
 export const COMPANY_NAME = 'Svi Infra Solutions Pvt. Ltd.';
-export const DEFAULT_OG_IMAGE = '/opengraph-image';
+export const DEFAULT_OG_IMAGE = '/og-image.jpg';
 
 export function absoluteUrl(path = '/') {
   if (path.startsWith('http')) return path;
