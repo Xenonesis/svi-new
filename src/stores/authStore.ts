@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import type { Session } from '@supabase/supabase-js';
 import { supabase } from '@/src/lib/supabase/client';
 
 interface Profile {
@@ -19,6 +20,8 @@ interface AuthState {
   profile: Profile | null;
   /** Supabase Auth Session Token */
   token: string | null;
+  /** Whether listener has been attached */
+  _initialized?: boolean;
 
   /** Initialize: check session, fetch profile and set up listener */
   initialize: () => Promise<void>;
@@ -34,14 +37,15 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   isAdmin: false,
   profile: null,
   token: null,
+  _initialized: false,
 
   initialize: async () => {
-    // 1. Initial Session Check
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
+    if (get()._initialized) {
+      return;
+    }
+    set({ _initialized: true });
 
-    const handleSession = async (currentSession: typeof session) => {
+    const handleSession = async (currentSession: Session | null) => {
       if (!currentSession) {
         set({ userId: null, loading: false, isAdmin: false, profile: null, token: null });
         return;
@@ -68,9 +72,36 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       });
     };
 
+    // 1. Initial Session Check
+    let {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    // 2. Fallback: Parse URL hash if magic link / OAuth token fragment is present
+    if (
+      !session &&
+      typeof window !== 'undefined' &&
+      window.location.hash.includes('access_token')
+    ) {
+      const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ''));
+      const access_token = hashParams.get('access_token');
+      const refresh_token = hashParams.get('refresh_token');
+      if (access_token && refresh_token) {
+        try {
+          const { data: setSessionData } = await supabase.auth.setSession({
+            access_token,
+            refresh_token,
+          });
+          session = setSessionData.session;
+        } catch {
+          // Ignore parse errors
+        }
+      }
+    }
+
     await handleSession(session);
 
-    // 2. Setup Auth State Listener (Merge from AdminSessionProvider)
+    // 3. Setup Auth State Listener
     supabase.auth.onAuthStateChange((_event, currentSession) => {
       handleSession(currentSession);
     });
@@ -80,6 +111,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   signOut: async () => {
     await supabase.auth.signOut();
-    set({ userId: null, loading: false, isAdmin: false, profile: null, token: null });
+    set({
+      userId: null,
+      loading: false,
+      isAdmin: false,
+      profile: null,
+      token: null,
+      _initialized: false,
+    });
   },
 }));

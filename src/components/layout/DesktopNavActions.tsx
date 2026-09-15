@@ -1,7 +1,10 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { Link } from '@/src/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
+import { useAuthStore } from '@/src/stores/authStore';
+import { UserNavDropdown } from '@/src/components/layout/UserNavDropdown';
 
 interface DesktopNavActionsProps {
   isHomeTransparent: boolean;
@@ -11,6 +14,20 @@ export function DesktopNavActions({ isHomeTransparent }: DesktopNavActionsProps)
   const t = useTranslations('nav');
   const locale = useLocale();
   const isHi = locale === 'hi';
+
+  const [mounted, setMounted] = useState(false);
+  const userId = useAuthStore((s) => s.userId);
+  const loading = useAuthStore((s) => s.loading);
+  const initializeAuth = useAuthStore((s) => s.initialize);
+
+  useEffect(() => {
+    setMounted(true);
+    initializeAuth();
+  }, [initializeAuth]);
+
+  if (mounted && !loading && userId) {
+    return <UserNavDropdown isHomeTransparent={isHomeTransparent} />;
+  }
 
   return (
     <div
