@@ -32,9 +32,7 @@ export async function GET() {
         }
       }
 
-      return Array.from(fileMap.values()).map(
-        (file) => `/${urlPrefix}/${encodeURIComponent(file)}`
-      );
+      return Array.from(fileMap.values()).map((file) => encodeURI(`/${urlPrefix}/${file}`));
     };
 
     const shivaniImages = getCleanImageList(shivaniDir, 'Shivani Vatika');
