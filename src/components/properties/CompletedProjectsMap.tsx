@@ -224,19 +224,20 @@ function NearbyLegend({
   onClose: () => void;
 }) {
   return (
-    <div className="absolute bottom-4 left-4 z-10 max-w-[200px] rounded-lg border border-gray-200 bg-white/95 p-3 shadow-lg backdrop-blur dark:border-gray-700 dark:bg-gray-900/95">
-      <div className="mb-2 flex items-center justify-between">
-        <span className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-gray-500 uppercase">
-          <Layers size={14} /> Nearby Places
+    <div className="absolute top-3 left-3 z-10 flex max-h-[360px] w-[200px] flex-col rounded-xl border border-gray-200/80 bg-white/95 p-3 shadow-xl backdrop-blur-md sm:w-[220px] dark:border-gray-700/80 dark:bg-gray-900/95">
+      <div className="mb-2 flex items-center justify-between border-b border-gray-100 pb-1.5 dark:border-gray-800">
+        <span className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-gray-600 uppercase dark:text-gray-300">
+          <Layers size={13} className="text-amber-500" /> Nearby Places
         </span>
         <button
           onClick={onClose}
-          className="rounded p-0.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800"
+          className="flex h-6 w-6 items-center justify-center rounded-md text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 active:scale-95 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          aria-label="Close Nearby Places Legend"
         >
-          <X size={14} />
+          <X size={15} />
         </button>
       </div>
-      <div className="space-y-1">
+      <div className="-mr-1 max-h-[280px] space-y-1 overflow-y-auto overscroll-contain pr-1">
         {PLACE_CATEGORIES.map((cat) => {
           const active = visibleCategories.has(cat.id);
           const Icon = LEGEND_ICONS[cat.id];
@@ -244,14 +245,14 @@ function NearbyLegend({
             <button
               key={cat.id}
               onClick={() => onToggleCategory(cat.id)}
-              className={`flex w-full items-center gap-2 rounded px-2 py-1 text-xs transition-colors ${
+              className={`flex w-full items-center gap-2 rounded-lg px-2 py-1.5 text-xs font-medium transition-all ${
                 active
-                  ? 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-200'
-                  : 'text-gray-400 opacity-50'
+                  ? 'bg-gray-100 text-gray-900 dark:bg-gray-800 dark:text-gray-100'
+                  : 'text-gray-400 opacity-60 hover:opacity-100'
               }`}
             >
               <span
-                className="flex h-4 w-4 items-center justify-center"
+                className="flex h-4 w-4 shrink-0 items-center justify-center"
                 style={{ color: cat.color }}
               >
                 <Icon size={14} />
@@ -387,30 +388,28 @@ export default function CompletedProjectsMap({ projects, onProjectClick }: Props
       {/* Map Container */}
       <div ref={mapContainerRef} style={MAP_CONTAINER_STYLE} />
 
-      {/* Loading indicator */}
+      {/* Loading indicator (Top Center - away from zoom controls) */}
       {loadingPlaces && (
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-2 rounded-full bg-white/90 px-3 py-1.5 text-xs text-gray-500 shadow backdrop-blur dark:bg-gray-900/90 dark:text-gray-400">
+        <div className="pointer-events-none absolute top-3 left-1/2 z-10 flex -translate-x-1/2 items-center gap-2 rounded-full bg-white/95 px-3.5 py-1.5 text-xs font-medium text-gray-600 shadow-md backdrop-blur-md dark:bg-gray-900/95 dark:text-gray-300">
           <div className="h-2 w-2 animate-pulse rounded-full bg-amber-500" />
           Loading nearby places...
         </div>
       )}
 
-      {/* Nearby Places Summary */}
-      {!loadingPlaces && nearbyPlaces.length > 0 && (
-        <div className="absolute top-4 right-4 z-10 flex items-center gap-1.5 rounded-full bg-white/90 px-3 py-1.5 text-xs text-gray-500 shadow backdrop-blur dark:bg-gray-900/90 dark:text-gray-400">
-          <Layers size={12} />
-          {nearbyPlaces.length} nearby places found
-        </div>
-      )}
-
-      {/* Toggle Legend Button */}
+      {/* Toggle Legend Button (Top Left - away from bottom ChatLauncher) */}
       {!showLegend && (
         <button
           onClick={() => setShowLegend(true)}
-          className="absolute bottom-4 left-4 z-10 rounded-lg border border-gray-200 bg-white/90 px-3 py-2 text-xs font-bold text-gray-600 shadow backdrop-blur hover:bg-white dark:border-gray-700 dark:bg-gray-900/90 dark:text-gray-300"
+          className="absolute top-3 left-3 z-10 flex items-center gap-1.5 rounded-lg border border-gray-200/80 bg-white/95 px-3 py-2 text-xs font-semibold text-gray-700 shadow-md backdrop-blur-md transition-all hover:bg-white active:scale-95 dark:border-gray-700/80 dark:bg-gray-900/95 dark:text-gray-200"
+          aria-label="Show Nearby Places"
         >
-          <Layers size={14} className="mr-1 inline" />
-          Show Nearby Places
+          <Layers size={14} className="text-amber-500" />
+          <span>Nearby Places</span>
+          {!loadingPlaces && nearbyPlaces.length > 0 && (
+            <span className="ml-1 rounded-full bg-amber-100 px-1.5 py-0.5 text-[10px] font-bold text-amber-800 dark:bg-amber-900/40 dark:text-amber-300">
+              {nearbyPlaces.length}
+            </span>
+          )}
         </button>
       )}
 
