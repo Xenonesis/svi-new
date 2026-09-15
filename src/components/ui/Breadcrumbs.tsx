@@ -38,7 +38,7 @@ export default function Breadcrumbs() {
   return (
     <nav
       aria-label={t('ariaLabel')}
-      className="breadcrumbs-nav container mx-auto px-4 pt-16 pb-4 md:pt-20"
+      className="breadcrumbs-nav container mx-auto px-4 pt-20 pb-3 md:pt-24 md:pb-4"
     >
       <ol className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
         {breadcrumbs.map((item, index) => (
