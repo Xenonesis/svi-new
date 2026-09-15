@@ -178,7 +178,7 @@
   },
   "lint-staged": {
     "*.{ts,tsx,js,jsx}": [
-      "eslint --fix",
+      "eslint --fix --cache --cache-location .eslintcache",
       "prettier --write"
     ],
     "*.{json,md,yml,yaml}": [

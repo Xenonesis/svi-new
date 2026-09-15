@@ -31,6 +31,12 @@ const nextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
+  compiler: {
+    removeConsole:
+      process.env.NODE_ENV === 'production'
+        ? { exclude: ['error', 'warn'] }
+        : false,
+  },
   typescript: {
     // Type safety is strictly enforced via `tsc --noEmit` using the native TypeScript 7 compiler (2.5s)
     // in prebuild, CI, and pre-push. Skipping Next.js in-process AST checking saves ~66s per build.
@@ -178,9 +184,14 @@ const nextConfigWithPlugins = withSentryConfig(withNextIntl(withBundleAnalyzer(w
   widenClientFileUpload: true,
   // tunnelRoute: '/monitoring',
   silent: !process.env.CI,
+  telemetry: false,
 });
 
-// Disable Sentry in development to avoid blocked network requests and console noise
-const config = process.env.NODE_ENV === 'production' ? nextConfigWithPlugins : withNextIntl(withBundleAnalyzer(withSerwist(nextConfig)));
-
+// Sentry wrapper is only engaged when an auth token or Vercel environment is present.
+// This eliminates source map and telemetry overhead on local production builds without losing production tracking.
+const isProduction = process.env.NODE_ENV === 'production';
+const hasSentry = isProduction && Boolean(process.env.SENTRY_AUTH_TOKEN || process.env.VERCEL);
+const config = hasSentry
+  ? nextConfigWithPlugins
+  : withNextIntl(withBundleAnalyzer(withSerwist(nextConfig)));
 export default config;

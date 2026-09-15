@@ -241,9 +241,9 @@ async function main() {
       }
     }
   }
-
-  await writeBlurURLsManifest();
-
+  if (processedCount > 0) {
+    await writeBlurURLsManifest();
+  }
   console.log('\n' + '='.repeat(60));
   console.log(`✅  Done! Processed: ${processedCount} | Skipped: ${skippedCount}`);
   if (totalSaved > 0) {
