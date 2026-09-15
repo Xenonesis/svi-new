@@ -249,6 +249,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="dns-prefetch" href="https://api.qrserver.com" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
         <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+        {process.env.NODE_ENV === 'development' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html: `if('serviceWorker' in navigator&&(location.hostname==='localhost'||location.hostname==='127.0.0.1'||location.hostname.endsWith('.local'))){navigator.serviceWorker.getRegistrations().then(function(r){for(var i=0;i<r.length;i++)r[i].unregister();});if('caches' in window){caches.keys().then(function(k){for(var i=0;i<k.length;i++)caches.delete(k[i]);});}}`,
+            }}
+          />
+        )}
       </head>
       <body className={`${sansFontVariable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />
