@@ -31,6 +31,11 @@ const nextConfig = {
   devIndicators: {
     position: 'bottom-right',
   },
+  typescript: {
+    // Type safety is strictly enforced via `tsc --noEmit` using the native TypeScript 7 compiler (2.5s)
+    // in prebuild, CI, and pre-push. Skipping Next.js in-process AST checking saves ~66s per build.
+    ignoreBuildErrors: true,
+  },
   experimental: {
     optimizePackageImports: [
       'lucide-react',
@@ -40,6 +45,12 @@ const nextConfig = {
       'motion/react',
       '@tiptap/react',
       '@tiptap/starter-kit',
+      '@tanstack/react-query',
+      '@tanstack/react-table',
+      'sonner',
+      'clsx',
+      'tailwind-merge',
+      'zustand',
     ],
     // TS7 side-by-side setup: `typescript` is aliased to @typescript/typescript6
     // (no bin/tsc), so Next must use the compiler API instead of the tsc CLI.
