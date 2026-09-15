@@ -7,7 +7,8 @@
     "node": "22.x"
   },
   "scripts": {
-    "dev": "next dev --turbopack --port 3001",
+    "dev": "next dev --webpack --port 3001",
+    "dev:turbo": "next dev --turbopack --port 3001",
     "prebuild": "node scripts/optimize-images.mjs",
     "build": "tsc --noEmit && next build",
     "analyze": "ANALYZE=true next build --webpack",
