@@ -13,6 +13,14 @@ export interface NearbyPlace {
   type: string;
   distance?: number;
 }
+interface OsmElement {
+  type: string;
+  id: number | string;
+  lat?: number;
+  lon?: number;
+  center?: { lat: number; lon: number };
+  tags?: Record<string, string>;
+}
 
 export type PlaceCategory =
   'food' | 'health' | 'education' | 'bank' | 'shopping' | 'transport' | 'tourism' | 'leisure';
@@ -127,15 +135,22 @@ export async function fetchNearbyPlaces(
       throw new Error(`Proxy returned ${response.status}`);
     }
 
-    const data = await response.json();
-    const elements: any[] = data.elements || [];
+    const data = (await response.json()) as {
+      elements?: OsmElement[];
+      fallback?: boolean;
+    };
+    const elements = data.elements || [];
+
+    if (elements.length === 0) {
+      return getMockPlaces(lat, lng);
+    }
 
     const places: NearbyPlace[] = elements
-      .filter((el: any) => {
+      .filter((el) => {
         const tags = el.tags || {};
-        return tags.name && typeof tags.name === 'string' && tags.name.trim();
+        return Boolean(tags.name && tags.name.trim());
       })
-      .map((el: any) => {
+      .map((el) => {
         const tags = el.tags || {};
         const amenity =
           tags.amenity || tags.shop || tags.tourism || tags.leisure || tags.railway || '';
@@ -145,7 +160,7 @@ export async function fetchNearbyPlaces(
 
         return {
           id: `osm-${el.type}-${el.id}`,
-          name: tags.name.trim(),
+          name: (tags.name || '').trim(),
           lat: placeLat,
           lng: placeLng,
           category,
@@ -153,17 +168,16 @@ export async function fetchNearbyPlaces(
           distance: Math.round(haversineDistance(lat, lng, placeLat, placeLng)),
         };
       })
-      .sort((a: NearbyPlace, b: NearbyPlace) => (a.distance || 0) - (b.distance || 0))
+      .sort((a, b) => (a.distance || 0) - (b.distance || 0))
       .slice(0, 40);
 
-    return places;
-  } catch (err: any) {
+    return places.length > 0 ? places : getMockPlaces(lat, lng);
+  } catch (err: unknown) {
     if (signal?.aborted) throw err;
-    console.info(`Nearby places proxy failed: ${err.message}`);
+    const message = err instanceof Error ? err.message : String(err);
+    console.info(`Nearby places proxy fallback used: ${message}`);
   }
 
-  // All endpoints exhausted — return mock fallback places instead of empty array
-  console.info('Overpass API offline or blocked. Using mock fallback nearby places.');
   return getMockPlaces(lat, lng);
 }
 

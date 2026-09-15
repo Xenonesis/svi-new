@@ -9,6 +9,7 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
+import NextLink from 'next/link';
 import { useLocale, useTranslations } from 'next-intl';
 
 interface MoreDropdownProps {
@@ -104,10 +105,14 @@ export function MoreDropdown({
           {MORE_ITEMS.map((item) => {
             const Icon = item.icon;
             const isActive = currentPath === item.path;
+            const isUnlocalized =
+              item.path.startsWith('/employee') || item.path.startsWith('/admin');
+            const LinkComp = isUnlocalized ? NextLink : Link;
             return (
-              <Link
+              <LinkComp
                 key={item.path}
                 href={item.path}
+                prefetch={isUnlocalized ? false : undefined}
                 className={`group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 ${
                   isActive ? 'bg-amber-500/10' : 'hover:bg-gray-50 dark:hover:bg-white/10'
                 }`}
@@ -131,7 +136,7 @@ export function MoreDropdown({
                     {t(item.descKey)}
                   </div>
                 </div>
-              </Link>
+              </LinkComp>
             );
           })}
         </div>

@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { Link, useRouter } from '@/src/i18n/navigation';
+import NextLink from 'next/link';
 import { useTranslations } from 'next-intl';
 import { ShieldCheck, Briefcase, User, LogOut, Settings } from 'lucide-react';
 import { useAuthStore } from '@/src/stores/authStore';
@@ -51,6 +52,7 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
         dashboardLabel: t('adminPanel'),
         settingsPath: '/admin/settings',
         icon: ShieldCheck,
+        unlocalized: true,
         primaryButtonClass: 'bg-amber-400 text-slate-950 hover:bg-amber-300 font-bold',
       },
       employee: {
@@ -60,6 +62,7 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
         dashboardLabel: t('staffPortal'),
         settingsPath: '/employee/profile',
         icon: Briefcase,
+        unlocalized: true,
         primaryButtonClass: 'bg-indigo-600 text-white hover:bg-indigo-500 font-bold',
       },
       client: {
@@ -70,9 +73,14 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
         dashboardLabel: t('myAccount'),
         settingsPath: '/portal/settings',
         icon: User,
+        unlocalized: false,
         primaryButtonClass: 'bg-amber-400 text-slate-950 hover:bg-amber-300 font-bold',
       },
     }[role];
+
+    const isUnlocalized = roleConfig.unlocalized;
+    const DashboardLink = isUnlocalized ? NextLink : Link;
+    const SettingsLink = isUnlocalized ? NextLink : Link;
 
     const displayName = profile?.full_name?.trim() || profile?.email?.split('@')[0] || 'User';
     const displayEmail = profile?.email || '';
@@ -113,25 +121,27 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
         </div>
 
         {/* Primary Role Button */}
-        <Link
+        <DashboardLink
           href={roleConfig.dashboardPath}
+          prefetch={isUnlocalized ? false : undefined}
           onClick={onClose}
           className={`flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-center text-[clamp(12px,3.5vw,14px)] tracking-wider uppercase shadow-sm transition-all duration-200 ${roleConfig.primaryButtonClass}`}
         >
           <RoleIcon className="h-4 w-4" />
           <span>{roleConfig.dashboardLabel}</span>
-        </Link>
+        </DashboardLink>
 
         {/* Settings & Sign Out Actions */}
         <div className="grid grid-cols-2 gap-2">
-          <Link
+          <SettingsLink
             href={roleConfig.settingsPath}
+            prefetch={isUnlocalized ? false : undefined}
             onClick={onClose}
             className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 py-2 text-center text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
           >
             <Settings className="h-3.5 w-3.5" />
             <span>{t('settings')}</span>
-          </Link>
+          </SettingsLink>
 
           <button
             type="button"

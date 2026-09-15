@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { Link, useRouter } from '@/src/i18n/navigation';
+import NextLink from 'next/link';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -44,6 +45,7 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
       dashboardLabel: t('adminPanel'),
       settingsPath: '/admin/settings',
       icon: ShieldCheck,
+      unlocalized: true,
       quickButtonClass:
         'bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold shadow-amber-500/20',
     },
@@ -54,6 +56,7 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
       dashboardLabel: t('staffPortal'),
       settingsPath: '/employee/profile',
       icon: Briefcase,
+      unlocalized: true,
       quickButtonClass:
         'bg-indigo-600 hover:bg-indigo-500 text-white font-bold shadow-indigo-600/20',
     },
@@ -64,10 +67,15 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
       dashboardLabel: t('myAccount'),
       settingsPath: '/portal/settings',
       icon: User,
+      unlocalized: false,
       quickButtonClass:
         'bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold shadow-amber-500/20',
     },
   }[role];
+
+  const isUnlocalized = roleConfig.unlocalized;
+  const DashboardLink = isUnlocalized ? NextLink : Link;
+  const SettingsLink = isUnlocalized ? NextLink : Link;
 
   // Close dropdown on outside click or Escape
   useEffect(() => {
@@ -120,13 +128,14 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
       }`}
     >
       {/* Primary Quick Access Action Button */}
-      <Link
+      <DashboardLink
         href={roleConfig.dashboardPath}
+        prefetch={isUnlocalized ? false : undefined}
         className={`group inline-flex items-center gap-1.5 rounded-full px-4 py-1.5 text-[11px] font-extrabold tracking-wider uppercase shadow-sm transition-all duration-300 hover:-translate-y-0.5 active:translate-y-0 2xl:px-4.5 2xl:py-2 2xl:text-[12px] ${roleConfig.quickButtonClass}`}
       >
         <QuickIcon className="h-3.5 w-3.5 shrink-0 transition-transform duration-200 group-hover:scale-110" />
         <span className="whitespace-nowrap">{roleConfig.dashboardLabel}</span>
-      </Link>
+      </DashboardLink>
 
       {/* User Avatar & Dropdown Trigger */}
       <button
@@ -183,23 +192,25 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
 
             {/* Menu Links */}
             <div className="py-1.5">
-              <Link
+              <DashboardLink
                 href={roleConfig.dashboardPath}
+                prefetch={isUnlocalized ? false : undefined}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:text-slate-200 dark:hover:bg-amber-400/10 dark:hover:text-amber-400"
               >
                 <LayoutDashboard className="h-4 w-4 text-slate-400 group-hover:text-amber-500" />
                 <span>{roleConfig.dashboardLabel}</span>
-              </Link>
+              </DashboardLink>
 
-              <Link
+              <SettingsLink
                 href={roleConfig.settingsPath}
+                prefetch={isUnlocalized ? false : undefined}
                 onClick={() => setIsOpen(false)}
                 className="flex items-center gap-2.5 rounded-xl px-3 py-2 text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 hover:text-slate-900 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-white"
               >
                 <Settings className="h-4 w-4 text-slate-400" />
                 <span>{t('settings')}</span>
-              </Link>
+              </SettingsLink>
             </div>
 
             {/* Sign Out Button */}

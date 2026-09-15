@@ -25,6 +25,19 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
   if (!isPushSupported()) return null;
 
   try {
+    // If running in local development and no service worker is active, exit early
+    if (
+      typeof window !== 'undefined' &&
+      (window.location.hostname === 'localhost' ||
+        window.location.hostname === '127.0.0.1' ||
+        window.location.hostname.endsWith('.local'))
+    ) {
+      const registrations = await navigator.serviceWorker.getRegistrations();
+      if (registrations.length === 0) {
+        return null;
+      }
+    }
+
     // Add a 3.5 second timeout to ready to avoid hanging indefinitely if SW is not ready
     const timeout = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Service worker ready timeout')), 3500)
@@ -51,7 +64,12 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
 
     await saveSubscription(sub);
     return sub;
-  } catch (err) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message.includes('Service worker ready timeout')) {
+      // Expected when service worker registration is disabled or unregistering
+      return null;
+    }
     console.warn('Push notification subscription error:', err);
     return null;
   }

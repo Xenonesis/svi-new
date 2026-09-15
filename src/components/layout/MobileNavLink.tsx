@@ -1,6 +1,7 @@
 'use client';
 
 import { Link } from '@/src/i18n/navigation';
+import NextLink from 'next/link';
 
 interface MobileNavLinkProps {
   href: string;
@@ -9,9 +10,13 @@ interface MobileNavLinkProps {
 }
 
 export function MobileNavLink({ href, children, isActive }: MobileNavLinkProps) {
+  const isUnlocalized = href.startsWith('/employee') || href.startsWith('/admin');
+  const LinkComp = isUnlocalized ? NextLink : Link;
+
   return (
-    <Link
+    <LinkComp
       href={href}
+      prefetch={isUnlocalized ? false : undefined}
       className={`block py-2.5 text-[clamp(15px,4vw,18px)] font-semibold tracking-wide transition-colors ${
         isActive
           ? 'text-brand-gold'
@@ -19,6 +24,6 @@ export function MobileNavLink({ href, children, isActive }: MobileNavLinkProps) 
       }`}
     >
       {children}
-    </Link>
+    </LinkComp>
   );
 }

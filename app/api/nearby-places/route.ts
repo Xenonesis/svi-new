@@ -58,6 +58,8 @@ export async function POST(req: NextRequest) {
       console.warn(`[overpass-proxy] ${url} failed: ${err.message}, trying next…`);
     }
   }
-
-  return NextResponse.json({ error: 'All Overpass endpoints failed' }, { status: 502 });
+  return NextResponse.json(
+    { elements: [], fallback: true, warning: 'All Overpass endpoints failed' },
+    { status: 200 }
+  );
 }
