@@ -75,6 +75,12 @@ const nextConfig = {
         ignored: ['**/node_modules/**', '**/.next/**', '**/.git/**'],
       };
     }
+    config.ignoreWarnings = [
+      ...(config.ignoreWarnings || []),
+      { module: /node_modules\/@opentelemetry/ },
+      { module: /node_modules\/require-in-the-middle/ },
+      { message: /Critical dependency: require function is used in a way in which dependencies cannot be statically extracted/ },
+    ];
     return config;
   },
   // Log build warnings for large chunks
