@@ -6,9 +6,32 @@ import { getPendingCount, replayQueue } from '@/src/lib/pwa/backgroundSync';
 export default function PwaRegister() {
   const [synced, setSynced] = useState(0);
 
-  // Register service worker and handle auto-update
+  // Register service worker in production; unregister & clean cache in development
   useEffect(() => {
     if (!('serviceWorker' in navigator)) return;
+
+    const isDev =
+      (typeof window !== 'undefined' &&
+        (window.location.hostname === 'localhost' ||
+          window.location.hostname === '127.0.0.1' ||
+          window.location.hostname.endsWith('.local'))) ||
+      process.env.NODE_ENV === 'development';
+
+    if (isDev) {
+      navigator.serviceWorker.getRegistrations().then((registrations) => {
+        for (const reg of registrations) {
+          reg.unregister();
+        }
+      });
+      if ('caches' in window) {
+        caches.keys().then((keys) => {
+          for (const key of keys) {
+            caches.delete(key);
+          }
+        });
+      }
+      return;
+    }
 
     let refreshing = false;
     const handleControllerChange = () => {
@@ -22,7 +45,6 @@ export default function PwaRegister() {
     navigator.serviceWorker
       .register('/sw.js')
       .then((reg) => {
-        // If there's already a waiting worker, trigger activation immediately
         if (reg.waiting) {
           reg.waiting.postMessage({ type: 'SKIP_WAITING' });
         }
