@@ -90,6 +90,7 @@ export function AddEmployeeModal({
 
         const data = await res.json();
 
+        let autoAdopted = false;
         if (data.suggested_svi_email) {
           setSuggestedSviEmail(data.suggested_svi_email);
           if (!isEmailManualRef.current && fullName) {
@@ -99,17 +100,18 @@ export function AddEmployeeModal({
               }
               return prev;
             });
+            autoAdopted = true;
           }
         }
 
         setUniqueErrors({
-          email: data.email_error || null,
+          email: autoAdopted ? null : data.email_error || null,
           real_email: data.real_email_error || null,
           phone: data.phone_error || null,
         });
 
         setUniqueValid({
-          email: Boolean(email && data.email_available),
+          email: autoAdopted ? true : Boolean(email && data.email_available),
           real_email: Boolean(realEmail && data.real_email_available),
           phone: Boolean(phone && phone.replace(/\D/g, '').length >= 10 && data.phone_available),
         });
@@ -136,9 +138,10 @@ export function AddEmployeeModal({
 
   const handleFullNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newName = e.target.value;
-    if (!isEmailManualRef.current) {
+    if (!isEmailManualRef.current || !formData.email) {
       const generated = generateSviEmail(newName);
       setFormData((prev) => ({ ...prev, full_name: newName, email: generated }));
+      setUniqueErrors((prev) => ({ ...prev, email: null }));
     } else {
       setFormData((prev) => ({ ...prev, full_name: newName }));
     }
@@ -146,8 +149,9 @@ export function AddEmployeeModal({
   };
 
   const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    isEmailManualRef.current = true;
-    setIsEmailManual(true);
+    const isManual = Boolean(e.target.value.trim());
+    isEmailManualRef.current = isManual;
+    setIsEmailManual(isManual);
     setFormData((prev) => ({ ...prev, email: e.target.value }));
     if (error) setError('');
   };
@@ -296,6 +300,7 @@ export function AddEmployeeModal({
         <form
           id="add-employee-form"
           onSubmit={handleSubmit}
+          autoComplete="off"
           className="scrollbar-gold flex-1 space-y-4 overflow-y-auto overscroll-contain p-6"
         >
           {error && (
@@ -312,41 +317,44 @@ export function AddEmployeeModal({
               </label>
               <input
                 required
+                autoComplete="off"
+                autoFocus
                 value={formData.full_name}
                 onChange={handleFullNameChange}
                 className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
                 placeholder="John Doe"
               />
-            </div>
 
-            <div className="col-span-2 md:col-span-1">
-              <div className="flex items-center justify-between">
-                <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                  SVI Corporate Email *
-                </label>
-                {isEmailManual && formData.full_name && (
-                  <button
-                    type="button"
-                    onClick={handleResetSviEmail}
-                    className="text-brand-gold hover:text-brand-gold-light mb-1 flex items-center gap-1 text-[10px] font-semibold"
-                    title="Regenerate automatic email from Full Name"
-                  >
-                    <Sparkles className="h-3 w-3" /> Auto
-                  </button>
-                )}
-              </div>
-              <div className="relative">
-                <input
-                  required
-                  type="email"
-                  value={formData.email}
-                  onChange={handleEmailChange}
-                  className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
-                    uniqueErrors.email ? 'border-red-500/50 focus:border-red-500' : ''
-                  }`}
-                  placeholder="name@sviinfra.com"
-                />
-                <div className="absolute top-1/2 right-3 -translate-y-1/2">
+              <div className="col-span-2 md:col-span-1">
+                <div className="flex items-center justify-between">
+                  <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                    SVI Corporate Email *
+                  </label>
+                  {isEmailManual && formData.full_name && (
+                    <button
+                      type="button"
+                      onClick={handleResetSviEmail}
+                      className="text-brand-gold hover:text-brand-gold-light mb-1 flex items-center gap-1 text-[10px] font-semibold"
+                      title="Regenerate automatic email from Full Name"
+                    >
+                      <Sparkles className="h-3 w-3" /> Auto
+                    </button>
+                  )}
+                </div>
+                <div className="relative">
+                  <input
+                    required
+                    type="email"
+                    autoComplete="new-password"
+                    data-lpignore="true"
+                    data-1p-ignore="true"
+                    value={formData.email}
+                    onChange={handleEmailChange}
+                    className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
+                      uniqueErrors.email ? 'border-red-500/50 focus:border-red-500' : ''
+                    }`}
+                    placeholder="name@sviinfra.com"
+                  />
                   {validating.email ? (
                     <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
                   ) : uniqueErrors.email ? (

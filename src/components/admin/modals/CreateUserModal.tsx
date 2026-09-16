@@ -105,10 +105,10 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
 
         const data = await res.json();
 
+        let autoAdopted = false;
         // Update suggested SVI email if user hasn't typed a custom email
         if (data.suggested_svi_email) {
           setSuggestedSviEmail(data.suggested_svi_email);
-          // Update suggested SVI email if user hasn't typed a custom email
           if (!isEmailManualRef.current && fullName) {
             setForm((prev) => {
               if (!isEmailManualRef.current) {
@@ -116,17 +116,18 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
               }
               return prev;
             });
+            autoAdopted = true;
           }
         }
 
         setUniqueErrors({
-          email: data.email_error || null,
+          email: autoAdopted ? null : data.email_error || null,
           real_email: data.real_email_error || null,
           phone: data.phone_error || null,
         });
 
         setUniqueValid({
-          email: Boolean(email && data.email_available),
+          email: autoAdopted ? true : Boolean(email && data.email_available),
           real_email: Boolean(realEmail && data.real_email_available),
           phone: Boolean(phone && phone.replace(/\D/g, '').length >= 10 && data.phone_available),
         });
@@ -159,16 +160,18 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
 
     if (name === 'full_name') {
       const newName = value;
-      // Auto-generate SVI Email if email hasn't been manually edited by user
-      if (!isEmailManualRef.current) {
+      // Auto-generate SVI Email if email hasn't been manually edited by user, or if email is empty
+      if (!isEmailManualRef.current || !form.email) {
         const generated = generateSviEmail(newName);
         setForm((prev) => ({ ...prev, full_name: newName, email: generated }));
+        setUniqueErrors((prev) => ({ ...prev, email: null }));
       } else {
         setForm((prev) => ({ ...prev, full_name: newName }));
       }
     } else if (name === 'email') {
-      isEmailManualRef.current = true;
-      setIsEmailManual(true);
+      const isManual = Boolean(value.trim());
+      isEmailManualRef.current = isManual;
+      setIsEmailManual(isManual);
       setForm((prev) => ({ ...prev, email: value }));
     } else {
       setForm((prev) => ({ ...prev, [name]: value }));
@@ -370,7 +373,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 p-6 font-sans">
+        <form onSubmit={handleSubmit} autoComplete="off" className="space-y-4 p-6 font-sans">
           {error && (
             <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-400 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
               <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-400 dark:text-red-300" />
@@ -386,6 +389,8 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                 value={form.full_name}
                 onChange={handleChange}
                 required
+                autoComplete="off"
+                autoFocus
                 placeholder="Rajesh Kumar"
                 className={inputCls}
               />
@@ -413,6 +418,9 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   value={form.email}
                   onChange={handleChange}
                   required
+                  autoComplete="new-password"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
                   placeholder="client@sviinfra.com"
                   className={`${inputCls} pr-10 pl-9 ${
                     uniqueErrors.email ? 'border-red-500/50 focus:border-red-500' : ''
@@ -464,6 +472,9 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   value={form.real_email}
                   onChange={handleChange}
                   required
+                  autoComplete="off"
+                  data-lpignore="true"
+                  data-1p-ignore="true"
                   placeholder="client@example.com"
                   className={`${inputCls} pr-10 pl-9 ${
                     uniqueErrors.real_email ? 'border-red-500/50 focus:border-red-500' : ''
@@ -505,6 +516,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   value={form.password}
                   onChange={handleChange}
                   required
+                  autoComplete="new-password"
                   placeholder="Min 8 chars"
                   className={`${inputCls} pr-10`}
                 />

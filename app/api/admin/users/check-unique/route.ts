@@ -37,8 +37,7 @@ export async function GET(request: NextRequest) {
         let query = supabaseAdmin
           .from('profiles')
           .select('email, real_email')
-          .or(`email.ilike.${slug}%@sviinfra.com,real_email.ilike.${slug}%@sviinfra.com`);
-
+          .or(`email.ilike.${slug}%,real_email.ilike.${slug}%`);
         if (excludeId) {
           query = query.neq('id', excludeId);
         }
