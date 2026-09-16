@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
@@ -21,12 +21,17 @@ import {
   Check,
   Download,
   FileText,
-  Layers,
+  FileSpreadsheet,
   X,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  exportIvrLeadsToExcel,
+  exportIvrLeadsToPdf,
+  exportIvrLeadsToCsv,
+} from '@/src/lib/leads/exportIvrLeads';
 import { WhatsAppTemplateDropdown } from './WhatsAppTemplateDropdown';
-import { LeadDrawer, PipelineStage } from './LeadDrawer';
+import { LeadDrawer } from './LeadDrawer';
 export interface IvrFilterState {
   dial_status: 'all' | 'ANSWER' | 'NOANSWER';
   temperature: 'all' | 'hot' | 'warm' | 'cold';
@@ -370,53 +375,46 @@ export function IvrLeadsTable({
     }
   };
 
-  const exportToCsv = () => {
-    const targetRecords =
-      selectedPhones.size > 0
-        ? records.filter((r) => selectedPhones.has(r.customer_phone))
-        : records;
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [dockExportMenuOpen, setDockExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
+  const dockExportMenuRef = useRef<HTMLDivElement>(null);
 
-    if (targetRecords.length === 0) {
-      toast.error('No records to export');
-      return;
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setExportMenuOpen(false);
+      }
+      if (dockExportMenuRef.current && !dockExportMenuRef.current.contains(event.target as Node)) {
+        setDockExportMenuOpen(false);
+      }
     }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
-    const headers = [
-      'Customer Phone',
-      'Assigned Advisor',
-      'Dial Status',
-      'Call Duration (sec)',
-      'Pressed Key',
-      'Lead Intent',
-      'Dialed At',
-    ];
+  const getTargetRecords = useCallback(() => {
+    return selectedPhones.size > 0
+      ? records.filter((r) => selectedPhones.has(r.customer_phone))
+      : records;
+  }, [records, selectedPhones]);
 
-    const rows = targetRecords.map((r) => [
-      `"${r.customer_phone}"`,
-      `"${r.agent_name || ''}"`,
-      `"${r.dial_status}"`,
-      r.call_duration,
-      `"${r.pressed_key || ''}"`,
-      `"${r.temperature}"`,
-      `"${r.dial_time}"`,
-    ]);
+  const handleExportExcel = useCallback(() => {
+    const targets = getTargetRecords();
+    exportIvrLeadsToExcel(targets);
+  }, [getTargetRecords]);
 
-    const csvContent =
-      'data:text/csv;charset=utf-8,' +
-      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+  const handleExportPdf = useCallback(() => {
+    const targets = getTargetRecords();
+    exportIvrLeadsToPdf(targets);
+  }, [getTargetRecords]);
 
-    const encodedUri = encodeURI(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute(
-      'download',
-      `svi-telecalling-leads-${new Date().toISOString().slice(0, 10)}.csv`
-    );
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    toast.success(`Exported ${targetRecords.length} leads to CSV`);
-  };
+  const handleExportCsv = useCallback(() => {
+    const targets = getTargetRecords();
+    exportIvrLeadsToCsv(targets);
+  }, [getTargetRecords]);
+
+  const exportToCsv = handleExportCsv;
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -552,19 +550,103 @@ export function IvrLeadsTable({
             </button>
           </div>
 
-          {/* Quick Export CSV Button */}
-          <button
-            type="button"
-            onClick={exportToCsv}
-            className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
-            title="Export records to CSV"
-          >
-            <Download className="text-brand-gold h-3.5 w-3.5" />
-            <span>Export CSV</span>
-          </button>
+          {/* Quick Export Suite Dropdown */}
+          <div className="relative" ref={exportMenuRef}>
+            <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50 shadow-2xs dark:border-white/10 dark:bg-white/5">
+              <button
+                type="button"
+                onClick={handleExportCsv}
+                className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
+                title="Export records to CSV"
+              >
+                <Download className="text-brand-gold h-3.5 w-3.5" />
+                <span>Export CSV</span>
+              </button>
+              <div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
+              <button
+                type="button"
+                onClick={() => setExportMenuOpen(!exportMenuOpen)}
+                className="cursor-pointer px-2 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
+                title="More export formats (Excel, PDF)"
+                aria-label="Export format options"
+              >
+                <ChevronDown
+                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    exportMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
+            </div>
+
+            <AnimatePresence>
+              {exportMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 z-40 mt-1.5 w-48 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#13131c]"
+                >
+                  <div className="px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+                    Export{' '}
+                    {selectedPhones.size > 0 ? `${selectedPhones.size} Selected` : 'Page Leads'}
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportExcel();
+                      setExportMenuOpen(false);
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 dark:text-gray-200 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                  >
+                    <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="text-left">
+                      <p className="leading-tight">Excel Spreadsheet</p>
+                      <span className="text-[10px] font-normal text-gray-400">
+                        Formatted .xlsx file
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportPdf();
+                      setExportMenuOpen(false);
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-gray-200 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                  >
+                    <FileText className="h-4 w-4 text-red-500" />
+                    <div className="text-left">
+                      <p className="leading-tight">PDF Document</p>
+                      <span className="text-[10px] font-normal text-gray-400">
+                        Printable branded report
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportCsv();
+                      setExportMenuOpen(false);
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-amber-50 hover:text-amber-700 dark:text-gray-200 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                  >
+                    <Download className="h-4 w-4 text-amber-500" />
+                    <div className="text-left">
+                      <p className="leading-tight">CSV Spreadsheet</p>
+                      <span className="text-[10px] font-normal text-gray-400">
+                        Standard .csv format
+                      </span>
+                    </div>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
-
       {/* Main Table */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-colors duration-300 dark:border-white/8 dark:bg-[#0d0d14]">
         <div className="overflow-x-auto">
@@ -916,16 +998,68 @@ export function IvrLeadsTable({
               </select>
             </div>
 
-            {/* Export Selected to CSV */}
-            <button
-              type="button"
-              onClick={exportToCsv}
-              className="flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1 text-xs font-semibold transition-colors hover:bg-white/20"
-            >
-              <Download className="text-brand-gold h-3.5 w-3.5" />
-              <span>Export CSV</span>
-            </button>
+            {/* Export Selected Dropdown */}
+            <div className="relative" ref={dockExportMenuRef}>
+              <button
+                type="button"
+                onClick={() => setDockExportMenuOpen(!dockExportMenuOpen)}
+                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-white/10 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-white/20"
+                title="Export selected leads"
+              >
+                <Download className="text-brand-gold h-3.5 w-3.5" />
+                <span>Export ({selectedPhones.size})</span>
+                <ChevronDown
+                  className={`h-3 w-3 opacity-70 transition-transform ${
+                    dockExportMenuOpen ? 'rotate-180' : ''
+                  }`}
+                />
+              </button>
 
+              <AnimatePresence>
+                {dockExportMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 6 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: 6 }}
+                    className="absolute right-0 bottom-full z-50 mb-2 w-44 rounded-2xl border border-white/10 bg-[#13131c] p-1.5 shadow-2xl backdrop-blur-xl"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleExportExcel();
+                        setDockExportMenuOpen(false);
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-200 hover:bg-emerald-500/10 hover:text-emerald-400"
+                    >
+                      <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-400" />
+                      <span>Excel (.xlsx)</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleExportPdf();
+                        setDockExportMenuOpen(false);
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-200 hover:bg-red-500/10 hover:text-red-400"
+                    >
+                      <FileText className="h-3.5 w-3.5 text-red-400" />
+                      <span>PDF Document</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleExportCsv();
+                        setDockExportMenuOpen(false);
+                      }}
+                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-white"
+                    >
+                      <Download className="h-3.5 w-3.5 text-amber-400" />
+                      <span>CSV (.csv)</span>
+                    </button>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             {/* Clear Selection */}
             <button
               type="button"

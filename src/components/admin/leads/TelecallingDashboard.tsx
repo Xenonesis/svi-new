@@ -1,8 +1,8 @@
 'use client';
 
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion } from 'motion/react';
+import { motion, AnimatePresence } from 'motion/react';
 import {
   Trophy,
   PhoneCall,
@@ -18,13 +18,17 @@ import {
   RefreshCw,
   Award,
   Phone,
+  FileSpreadsheet,
+  FileText,
+  ChevronDown,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import ExcelJS from 'exceljs';
+import { jsPDF } from 'jspdf';
 import type {
   AdvisorPerformanceMetric,
   CampaignPerformanceMetric,
 } from '@/src/lib/types/telecalling';
-
 interface DashboardSummary {
   total_calls: number;
   answered_calls: number;
@@ -68,7 +72,18 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
   const [sortBy, setSortBy] = useState<SortField>('answered_calls');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string>('');
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target as Node)) {
+        setExportMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
   const fetchDashboardData = useCallback(
     async (showRefreshAnimation = false) => {
       if (showRefreshAnimation) setIsRefreshing(true);
@@ -145,6 +160,187 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
       });
   }, [leaderboard, searchQuery, sortBy]);
 
+  // Export Leaderboard to Excel (.xlsx)
+  const handleExportExcel = async () => {
+    if (filteredLeaderboard.length === 0) {
+      toast.error('No advisor performance records to export');
+      return;
+    }
+    try {
+      toast.info('Generating Excel report...');
+      const workbook = new ExcelJS.Workbook();
+      workbook.creator = 'SVI Infra Solutions Pvt. Ltd.';
+      workbook.created = new Date();
+      const ws = workbook.addWorksheet('Advisor Leaderboard', {
+        views: [{ showGridLines: true }],
+      });
+
+      ws.columns = [
+        { header: 'Rank', key: 'rank', width: 8 },
+        { header: 'Advisor Name', key: 'name', width: 22 },
+        { header: 'Phone', key: 'phone', width: 16 },
+        { header: 'Total Calls', key: 'total_calls', width: 14 },
+        { header: 'Answered Calls', key: 'answered', width: 16 },
+        { header: 'Missed Calls', key: 'missed', width: 14 },
+        { header: 'Answer Rate (%)', key: 'rate', width: 16 },
+        { header: 'Total Talk Time', key: 'talk_time', width: 18 },
+        { header: 'Avg Call Duration', key: 'avg_time', width: 18 },
+        { header: 'Hot Leads', key: 'hot', width: 14 },
+        { header: 'Key 1 Presses', key: 'key1', width: 14 },
+      ];
+
+      const headerRow = ws.getRow(1);
+      headerRow.height = 26;
+      headerRow.font = { bold: true, color: { argb: 'FFFFFFFF' }, size: 11 };
+      headerRow.fill = {
+        type: 'pattern',
+        pattern: 'solid',
+        fgColor: { argb: 'FF1A1A2E' },
+      };
+      headerRow.alignment = { vertical: 'middle', horizontal: 'center' };
+
+      filteredLeaderboard.forEach((a, idx) => {
+        const row = ws.addRow({
+          rank: idx + 1,
+          name: a.advisor_name,
+          phone: a.phone || '—',
+          total_calls: a.total_calls,
+          answered: a.answered_calls,
+          missed: a.missed_calls,
+          rate: `${a.answer_rate}%`,
+          talk_time: formatSeconds(a.total_talk_time_sec),
+          avg_time: formatSeconds(a.avg_talk_time_sec),
+          hot: a.hot_leads,
+          key1: a.key1_count,
+        });
+        row.height = 20;
+        row.alignment = { vertical: 'middle' };
+        if (idx % 2 === 1) {
+          row.fill = {
+            type: 'pattern',
+            pattern: 'solid',
+            fgColor: { argb: 'FFF9FAFB' },
+          };
+        }
+      });
+
+      const buffer = await workbook.xlsx.writeBuffer();
+      const blob = new Blob([buffer], {
+        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `svi-advisor-performance-${new Date().toISOString().slice(0, 10)}.xlsx`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+      toast.success('Advisor performance report exported to Excel!');
+    } catch {
+      toast.error('Failed to export Excel report');
+    }
+  };
+
+  // Export Leaderboard to PDF (.pdf)
+  const handleExportPdf = () => {
+    if (filteredLeaderboard.length === 0) {
+      toast.error('No advisor performance records to export');
+      return;
+    }
+    try {
+      toast.info('Generating PDF report...');
+      const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+
+      // Banner
+      doc.setFillColor(26, 26, 46);
+      doc.rect(0, 0, pageWidth, 54, 'F');
+      doc.setTextColor(255, 255, 255);
+      doc.setFontSize(14);
+      doc.setFont('helvetica', 'bold');
+      doc.text('SVI INFRA SOLUTIONS - TELECALLING ADVISOR LEADERBOARD', 30, 34);
+
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.text(
+        `Date: ${new Date().toLocaleDateString('en-IN')} | Advisors: ${filteredLeaderboard.length}`,
+        pageWidth - 30,
+        34,
+        { align: 'right' }
+      );
+
+      // Table Header
+      const thY = 76;
+      doc.setFillColor(243, 244, 246);
+      doc.rect(30, thY - 14, pageWidth - 60, 22, 'F');
+      doc.setTextColor(55, 65, 81);
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'bold');
+
+      doc.text('Rank', 40, thY);
+      doc.text('Advisor Name', 85, thY);
+      doc.text('Phone', 215, thY);
+      doc.text('Total Calls', 305, thY);
+      doc.text('Answered', 380, thY);
+      doc.text('Ans Rate', 460, thY);
+      doc.text('Talk Time', 535, thY);
+      doc.text('Avg Duration', 625, thY);
+      doc.text('Hot Leads', 720, thY);
+
+      let currentY = 100;
+      const rowHeight = 20;
+
+      filteredLeaderboard.forEach((a, idx) => {
+        if (idx % 2 === 1) {
+          doc.setFillColor(249, 250, 251);
+          doc.rect(30, currentY - 13, pageWidth - 60, rowHeight, 'F');
+        }
+
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(9);
+        doc.setTextColor(31, 41, 55);
+
+        doc.text(String(idx + 1), 40, currentY);
+        doc.text(a.advisor_name.slice(0, 20), 85, currentY);
+        doc.text(a.phone || '—', 215, currentY);
+        doc.text(String(a.total_calls), 305, currentY);
+
+        doc.setTextColor(5, 150, 105);
+        doc.setFont('helvetica', 'bold');
+        doc.text(String(a.answered_calls), 380, currentY);
+
+        doc.text(`${a.answer_rate}%`, 460, currentY);
+
+        doc.setTextColor(31, 41, 55);
+        doc.setFont('helvetica', 'normal');
+        doc.text(formatSeconds(a.total_talk_time_sec), 535, currentY);
+        doc.text(formatSeconds(a.avg_talk_time_sec), 625, currentY);
+
+        doc.setTextColor(180, 83, 9);
+        doc.setFont('helvetica', 'bold');
+        doc.text(String(a.hot_leads), 720, currentY);
+
+        currentY += rowHeight;
+      });
+
+      doc.setFontSize(8);
+      doc.setTextColor(156, 163, 175);
+      doc.text(
+        'Page 1 | Confidential - SVI Infra Solutions Pvt. Ltd.',
+        pageWidth / 2,
+        pageHeight - 15,
+        { align: 'center' }
+      );
+
+      doc.save(`svi-advisor-performance-${new Date().toISOString().slice(0, 10)}.pdf`);
+      toast.success('Advisor performance report exported to PDF!');
+    } catch {
+      toast.error('Failed to export PDF report');
+    }
+  };
+
   // Export Leaderboard to CSV
   const handleExportCsv = () => {
     if (filteredLeaderboard.length === 0) {
@@ -196,7 +392,6 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
     document.body.removeChild(link);
     toast.success('Advisor performance report exported!');
   };
-
   const handleAdvisorLeadsClick = (advisorId: string) => {
     if (onNavigateToLeads) {
       onNavigateToLeads(advisorId);
@@ -274,15 +469,85 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
           </button>
 
           {/* Export CSV */}
-          <button
-            type="button"
-            onClick={handleExportCsv}
-            className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold shadow-2xs transition-colors"
-            title="Export advisor report to CSV"
-          >
-            <Download className="h-3.5 w-3.5" />
-            <span>Export CSV</span>
-          </button>
+          {/* Export Dropdown Suite */}
+          <div className="relative" ref={exportMenuRef}>
+            <button
+              type="button"
+              onClick={() => setExportMenuOpen(!exportMenuOpen)}
+              className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold shadow-2xs transition-colors"
+              title="Export advisor report (Excel, PDF, CSV)"
+            >
+              <Download className="h-3.5 w-3.5" />
+              <span>Export Report</span>
+              <ChevronDown
+                className={`h-3 w-3 transition-transform ${exportMenuOpen ? 'rotate-180' : ''}`}
+              />
+            </button>
+
+            <AnimatePresence>
+              {exportMenuOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 6, scale: 0.95 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 6, scale: 0.95 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 z-40 mt-1.5 w-48 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#13131c]"
+                >
+                  <div className="px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
+                    Advisor Leaderboard
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportExcel();
+                      setExportMenuOpen(false);
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 dark:text-gray-200 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                  >
+                    <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                    <div className="text-left">
+                      <p className="leading-tight">Excel (.xlsx)</p>
+                      <span className="text-[10px] font-normal text-gray-400">
+                        Formatted spreadsheet
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportPdf();
+                      setExportMenuOpen(false);
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-gray-200 dark:hover:bg-red-500/10 dark:hover:text-red-400"
+                  >
+                    <FileText className="h-4 w-4 text-red-500" />
+                    <div className="text-left">
+                      <p className="leading-tight">PDF Document</p>
+                      <span className="text-[10px] font-normal text-gray-400">
+                        Printable report
+                      </span>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      handleExportCsv();
+                      setExportMenuOpen(false);
+                    }}
+                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-amber-50 hover:text-amber-700 dark:text-gray-200 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                  >
+                    <Download className="h-4 w-4 text-amber-500" />
+                    <div className="text-left">
+                      <p className="leading-tight">CSV Spreadsheet</p>
+                      <span className="text-[10px] font-normal text-gray-400">Universal .csv</span>
+                    </div>
+                  </button>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
       </div>
 
