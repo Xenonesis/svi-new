@@ -1,39 +1,29 @@
 'use client';
 
-import { toast } from 'sonner';
-import { AnimatePresence } from 'motion/react';
 import { useEffect, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 import ActivityTimeline from '@/src/components/admin/ActivityTimeline';
 import QuickActions from '@/src/components/admin/QuickActions';
-import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useUsers, useAnalytics, useActivities } from '@/src/hooks/useDashboard';
-import { CreateUserModal } from '@/src/components/admin/modals/CreateUserModal';
-import { EditUserModal } from '@/src/components/admin/modals/EditUserModal';
-import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
-import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
-import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
 
 import { DashboardStatsCards } from '@/src/components/admin/dashboard/DashboardStatsCards';
 import { DashboardChartsGrid } from '@/src/components/admin/dashboard/DashboardChartsGrid';
 import { DashboardUsersTable } from '@/src/components/admin/dashboard/DashboardUsersTable';
-
-const GRID_STYLE = {
-  backgroundImage:
-    'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
-  backgroundSize: '24px 24px',
-};
+import { DashboardBackground } from '@/src/components/admin/dashboard/DashboardBackground';
+import { DashboardHeader } from '@/src/components/admin/dashboard/DashboardHeader';
+import { DashboardModalsContainer } from '@/src/components/admin/dashboard/DashboardModalsContainer';
+import { useDashboardUserActions } from '@/src/components/admin/dashboard/useDashboardUserActions';
 
 export default function AdminDashboard() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  // Auth state (initialized once in app/admin/layout.tsx)
+  // Auth state
   const token = useAuthStore((s) => s.token);
   const userId = useAuthStore((s) => s.userId);
   const isAdmin = useAuthStore((s) => s.isAdmin);
@@ -47,9 +37,6 @@ export default function AdminDashboard() {
   const [showAdvisorSettings, setShowAdvisorSettings] = useState(false);
   const [editTarget, setEditTarget] = useState<UserProfile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [roleLoading, setRoleLoading] = useState<Record<string, boolean>>({});
-  const [activeLoading, setActiveLoading] = useState<Record<string, boolean>>({});
   const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
 
   // React Query hooks — data fetching with caching
@@ -61,13 +48,18 @@ export default function AdminDashboard() {
   const loading = authLoading || (usersLoading && !usersData);
   const isStatsLoading = authLoading || analyticsLoading || (usersLoading && !usersData);
 
-  const showToast = (type: 'success' | 'error', msg: string) => {
-    if (type === 'success') {
-      toast.success(msg);
-    } else {
-      toast.error(msg);
-    }
+  const refreshUsers = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
   };
+
+  const {
+    deleteLoading,
+    roleLoading,
+    activeLoading,
+    handleDelete,
+    handleRoleChange,
+    handleToggleActive,
+  } = useDashboardUserActions(token, refreshUsers, currentAdminId);
 
   // Redirect to login if not authenticated as admin
   useEffect(() => {
@@ -94,142 +86,16 @@ export default function AdminDashboard() {
     };
   }, [token]);
 
-  const handleDelete = async () => {
-    if (!deleteTarget) return;
-    setDeleteLoading(true);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-    try {
-      const res = await fetch(`/api/admin/users/${deleteTarget.id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-        signal: controller.signal,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
-        throw new Error(extractApiErrorMessage(data, 'Failed to delete user'));
-      }
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-      showToast('success', `${deleteTarget.full_name} has been deleted.`);
-      setDeleteTarget(null);
-    } catch (err: unknown) {
-      const isAbort = err instanceof Error && err.name === 'AbortError';
-      showToast(
-        'error',
-        isAbort
-          ? 'Request timed out while deleting user. Please check your connection and try again.'
-          : extractApiErrorMessage(err, 'Failed to delete user')
-      );
-    } finally {
-      clearTimeout(timeoutId);
-      setDeleteLoading(false);
-    }
-  };
-
-  const handleRoleChange = async (user: UserProfile, newRole: string) => {
-    if (user.role === newRole) return;
-
-    if (user.id === currentAdminId && newRole !== 'admin') {
-      showToast('error', 'You cannot remove your own admin role.');
-      return;
-    }
-
-    setRoleLoading((prev) => ({ ...prev, [user.id]: true }));
-    try {
-      const res = await fetch(`/api/admin/users/${user.id}`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ role: newRole }),
-      });
-      if (!res.ok) {
-        const j = await res.json();
-        throw new Error(j.error || 'Failed to update role');
-      }
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-      showToast('success', `${user.full_name}'s role updated to ${newRole}.`);
-    } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Update failed');
-    } finally {
-      setRoleLoading((prev) => ({ ...prev, [user.id]: false }));
-    }
-  };
-  const handleToggleActive = async (user: UserProfile) => {
-    if (user.id === currentAdminId && (user.is_active ?? true)) {
-      showToast('error', 'You cannot deactivate your own account.');
-      return;
-    }
-
-    const nextStatus = !(user.is_active ?? true);
-    setActiveLoading((prev) => ({ ...prev, [user.id]: true }));
-
-    try {
-      const res = await fetch(`/api/admin/users/${user.id}`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ is_active: nextStatus }),
-      });
-      if (!res.ok) {
-        const j = await res.json();
-        throw new Error(j.error || `Failed to ${nextStatus ? 'activate' : 'deactivate'} account`);
-      }
-      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-      showToast(
-        'success',
-        `${user.full_name}'s account has been ${nextStatus ? 'activated' : 'deactivated'}.`
-      );
-    } catch (err: unknown) {
-      showToast('error', err instanceof Error ? err.message : 'Status update failed');
-    } finally {
-      setActiveLoading((prev) => ({ ...prev, [user.id]: false }));
-    }
-  };
-
   const clientCount = users.filter((u) => u.role === 'client').length;
   const employeeCount = users.filter((u) => u.role === 'employee').length;
   const adminCount = users.filter((u) => u.role === 'admin').length;
 
-  const userGrowthData = analytics?.userGrowth || [];
-  const documentStatsData = analytics?.documentStats || [];
-  const recentActivities = activities;
-
   return (
     <div className="relative w-full font-sans">
-      {/* Background ambient lighting effects */}
-      <div className="pointer-events-none absolute inset-0 z-0">
-        <div className="bg-brand-navy-light/10 absolute top-0 right-0 h-[450px] w-[450px] rounded-full blur-[120px]" />
-        <div className="bg-brand-gold/5 absolute bottom-0 left-0 h-[400px] w-[400px] rounded-full blur-[100px]" />
-        <div className="absolute inset-0 opacity-80" style={GRID_STYLE} />
-      </div>
+      <DashboardBackground />
 
       <div className="relative z-10 mx-auto w-full max-w-7xl">
-        {/* Header section */}
-        <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-brand-navy mb-2 font-serif text-4xl tracking-tight transition-colors duration-300 dark:text-white">
-              System{' '}
-              <span
-                className="text-gradient-gold animate-bg-pan inline-block pr-2.5 italic"
-                style={{
-                  backgroundSize: '200% 200%',
-                  backgroundImage:
-                    'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
-                }}
-              >
-                Dashboard
-              </span>
-            </h1>
-            <p className="text-xs tracking-wide text-gray-600 transition-colors duration-300 dark:text-gray-400">
-              Manage authorized user accounts and monitor administrative access permissions.
-            </p>
-          </div>
-        </div>
+        <DashboardHeader />
 
         {/* Stats Row */}
         <DashboardStatsCards
@@ -243,8 +109,8 @@ export default function AdminDashboard() {
 
         {/* Charts & Analytics Section */}
         <DashboardChartsGrid
-          userGrowthData={userGrowthData}
-          documentStatsData={documentStatsData}
+          userGrowthData={analytics?.userGrowth || []}
+          documentStatsData={analytics?.documentStats || []}
           isLoading={isStatsLoading}
         />
 
@@ -255,7 +121,7 @@ export default function AdminDashboard() {
           </div>
           <div className="min-w-0 xl:col-span-2">
             <ActivityTimeline
-              activities={recentActivities}
+              activities={activities}
               isLoading={authLoading || activitiesLoading}
             />
           </div>
@@ -270,7 +136,7 @@ export default function AdminDashboard() {
           properties={properties}
           roleLoading={roleLoading}
           currentAdminId={currentAdminId}
-          onRefresh={() => queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })}
+          onRefresh={refreshUsers}
           onAddEmployee={() => setShowAddEmployee(true)}
           onManageTeam={() => setShowAdvisorSettings(true)}
           onAddUser={() => setShowCreate(true)}
@@ -283,57 +149,23 @@ export default function AdminDashboard() {
       </div>
 
       {/* Modals */}
-      <AnimatePresence>
-        {showCreate && (
-          <CreateUserModal
-            token={token ?? ''}
-            properties={properties}
-            onClose={() => setShowCreate(false)}
-            onSuccess={() => {
-              queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-              showToast('success', 'User created successfully!');
-            }}
-          />
-        )}
-        {editTarget && (
-          <EditUserModal
-            user={editTarget}
-            token={token ?? ''}
-            properties={properties}
-            onClose={() => setEditTarget(null)}
-            onSuccess={() => {
-              queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-              showToast('success', 'User updated successfully!');
-            }}
-          />
-        )}
-        {deleteTarget && (
-          <DeleteConfirm
-            user={deleteTarget}
-            onClose={() => setDeleteTarget(null)}
-            onConfirm={handleDelete}
-            loading={deleteLoading}
-          />
-        )}
-        {showAddEmployee && (
-          <AddEmployeeModal
-            token={token ?? ''}
-            onClose={() => setShowAddEmployee(false)}
-            onSuccess={() => {
-              setShowAddEmployee(false);
-              queryClient.invalidateQueries({ queryKey: ['admin', 'users'] });
-              showToast('success', 'Employee created successfully!');
-            }}
-          />
-        )}
-        {showAdvisorSettings && (
-          <AdvisorSettingsModal
-            onClose={() => setShowAdvisorSettings(false)}
-            token={token ?? ''}
-            showToast={showToast}
-          />
-        )}
-      </AnimatePresence>
+      <DashboardModalsContainer
+        token={token}
+        properties={properties}
+        showCreate={showCreate}
+        setShowCreate={setShowCreate}
+        showAddEmployee={showAddEmployee}
+        setShowAddEmployee={setShowAddEmployee}
+        showAdvisorSettings={showAdvisorSettings}
+        setShowAdvisorSettings={setShowAdvisorSettings}
+        editTarget={editTarget}
+        setEditTarget={setEditTarget}
+        deleteTarget={deleteTarget}
+        setDeleteTarget={setDeleteTarget}
+        deleteLoading={deleteLoading}
+        onDelete={() => handleDelete(deleteTarget, () => setDeleteTarget(null))}
+        onRefresh={refreshUsers}
+      />
     </div>
   );
 }
