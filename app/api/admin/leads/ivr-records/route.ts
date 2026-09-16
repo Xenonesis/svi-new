@@ -199,24 +199,70 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     // Accurate campaign-wide summary
     const rpcSummary = (perfRpcResult as { summary?: Record<string, number> } | null)?.summary;
-    const summary = rpcSummary
-      ? {
-          total_calls: rpcSummary.total_calls || count || 0,
-          answered_calls: rpcSummary.answered_calls || 0,
-          missed_calls: rpcSummary.missed_calls || 0,
-          hot_count: rpcSummary.hot_leads || 0,
-          warm_count: Math.max(0, (rpcSummary.answered_calls || 0) - (rpcSummary.hot_leads || 0)),
-          cold_count: rpcSummary.missed_calls || 0,
-        }
-      : {
-          total_calls: count || items.length,
-          answered_calls: items.filter((i) => i.dial_status === 'ANSWER').length,
-          missed_calls: items.filter((i) => i.dial_status === 'NOANSWER').length,
-          hot_count: items.filter((i) => i.temperature === 'hot').length,
-          warm_count: items.filter((i) => i.temperature === 'warm').length,
-          cold_count: items.filter((i) => i.temperature === 'cold').length,
-        };
+    let summary: {
+      total_calls: number;
+      answered_calls: number;
+      missed_calls: number;
+      hot_count: number;
+      warm_count: number;
+      cold_count: number;
+    };
 
+    if (rpcSummary && rpcSummary.total_calls !== undefined) {
+      summary = {
+        total_calls: rpcSummary.total_calls || count || 0,
+        answered_calls: rpcSummary.answered_calls || 0,
+        missed_calls: rpcSummary.missed_calls || 0,
+        hot_count: rpcSummary.hot_leads || 0,
+        warm_count: Math.max(0, (rpcSummary.answered_calls || 0) - (rpcSummary.hot_leads || 0)),
+        cold_count: rpcSummary.missed_calls || 0,
+      };
+    } else {
+      // Execute fast HEAD count queries across the whole campaign scope (not just 25 rows on page)
+      let ansQuery = supabaseAdmin
+        .from('ivr_call_records')
+        .select('*', { count: 'exact', head: true })
+        .eq('dial_status', 'ANSWER');
+      let noansQuery = supabaseAdmin
+        .from('ivr_call_records')
+        .select('*', { count: 'exact', head: true })
+        .eq('dial_status', 'NOANSWER');
+      let hotLeadQuery = supabaseAdmin
+        .from('ivr_call_records')
+        .select('*', { count: 'exact', head: true })
+        .or('call_duration.gte.60,pressed_key.eq.1');
+      let totalScopeQuery = supabaseAdmin
+        .from('ivr_call_records')
+        .select('*', { count: 'exact', head: true });
+
+      if (advisorId && advisorId !== 'all') {
+        ansQuery = ansQuery.eq('assigned_agent_id', advisorId);
+        noansQuery = noansQuery.eq('assigned_agent_id', advisorId);
+        hotLeadQuery = hotLeadQuery.eq('assigned_agent_id', advisorId);
+        totalScopeQuery = totalScopeQuery.eq('assigned_agent_id', advisorId);
+      }
+
+      const [totalScopeRes, ansRes, noansRes, hotRes] = await Promise.all([
+        totalScopeQuery,
+        ansQuery,
+        noansQuery,
+        hotLeadQuery,
+      ]);
+
+      const ansCount = ansRes.count || 0;
+      const noansCount = noansRes.count || 0;
+      const hotCount = hotRes.count || 0;
+      const scopeTotal = totalScopeRes.count || ansCount + noansCount;
+
+      summary = {
+        total_calls: scopeTotal,
+        answered_calls: ansCount,
+        missed_calls: noansCount,
+        hot_count: hotCount,
+        warm_count: Math.max(0, ansCount - hotCount),
+        cold_count: noansCount,
+      };
+    }
     return NextResponse.json({
       records: items,
       total_count: count !== null && count !== undefined ? count : items.length,

@@ -10,34 +10,45 @@ vi.mock('@/src/lib/supabase/verifyAdmin', () => ({
 const mockOrder = vi.fn();
 const mockRange = vi.fn();
 
-vi.mock('@/src/lib/supabase/admin', () => ({
-  supabaseAdmin: {
-    from: vi.fn(() => ({
-      select: vi.fn(() => ({
-        eq: vi.fn().mockReturnThis(),
-        ilike: vi.fn().mockReturnThis(),
-        order: mockOrder.mockReturnValue({
-          range: mockRange.mockResolvedValue({
-            data: [
-              {
-                id: 'rec-1',
-                customer_phone: '8744875331',
-                agent_name: 'Shivam Yadav',
-                agent_phone: '9311290543',
-                dial_status: 'NOANSWER',
-                call_duration: 103,
-                pressed_key: '2',
-                dial_time: '2026-09-15T15:55:29Z',
-              },
-            ],
-            error: null,
-            count: 1,
-          }),
+vi.mock('@/src/lib/supabase/admin', () => {
+  const createMockBuilder = () => {
+    const builder: Record<string, unknown> = {
+      eq: vi.fn().mockImplementation(() => builder),
+      ilike: vi.fn().mockImplementation(() => builder),
+      or: vi.fn().mockImplementation(() => builder),
+      order: mockOrder.mockImplementation(() => ({
+        range: mockRange.mockResolvedValue({
+          data: [
+            {
+              id: 'rec-1',
+              customer_phone: '8744875331',
+              agent_name: 'Shivam Yadav',
+              agent_phone: '9311290543',
+              dial_status: 'NOANSWER',
+              call_duration: 103,
+              pressed_key: '2',
+              dial_time: '2026-09-15T15:55:29Z',
+            },
+          ],
+          error: null,
+          count: 1,
         }),
       })),
-    })),
-  },
-}));
+      then: (resolve: (value: { data: unknown[]; error: null; count: number }) => void) =>
+        resolve({ data: [], error: null, count: 1 }),
+    };
+    return builder;
+  };
+
+  return {
+    supabaseAdmin: {
+      from: vi.fn(() => ({
+        select: vi.fn(() => createMockBuilder()),
+      })),
+      rpc: vi.fn().mockResolvedValue({ data: null, error: null }),
+    },
+  };
+});
 
 import { GET } from '@/app/api/admin/leads/ivr-records/route';
 

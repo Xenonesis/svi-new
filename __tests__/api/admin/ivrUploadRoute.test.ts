@@ -32,6 +32,9 @@ vi.mock('@/src/lib/supabase/admin', () => ({
       }
       if (table === 'ivr_call_records') {
         return {
+          select: vi.fn(() => ({
+            in: vi.fn().mockResolvedValue({ data: [], error: null }),
+          })),
           insert: mockInsert.mockResolvedValue({ data: null, error: null }),
         };
       }

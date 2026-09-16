@@ -208,24 +208,45 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       });
     }
 
-    // 5. Fallback Path: Query with PUSH-DOWN filters at the database level
-    let dbQuery = supabaseAdmin
+    // 5. Fallback Path: Query with PUSH-DOWN filters and full range pagination
+    let countQuery = supabaseAdmin
       .from('ivr_call_records')
-      .select(
-        'customer_phone, assigned_agent_id, agent_name, dial_status, call_duration, pressed_key, campaign_name, dial_time'
-      );
+      .select('*', { count: 'exact', head: true });
 
     if (timeCutoffIso) {
-      dbQuery = dbQuery.gte('dial_time', timeCutoffIso);
+      countQuery = countQuery.gte('dial_time', timeCutoffIso);
     }
     if (advisorUuid) {
-      dbQuery = dbQuery.eq('assigned_agent_id', advisorUuid);
+      countQuery = countQuery.eq('assigned_agent_id', advisorUuid);
     }
 
-    const { data: rawRecords } = await dbQuery.order('dial_time', { ascending: false }).limit(5000);
+    const { count: filteredCount } = await countQuery;
+    const totalToFetch = filteredCount || 0;
 
-    const rawCallRecords = rawRecords || [];
+    const PAGE_SIZE = 1000;
+    const pageCount = Math.max(1, Math.ceil(totalToFetch / PAGE_SIZE));
 
+    // Fetch in parallel chunks of 1000 so PostgREST 1000-row limit is never hit
+    const pagePromises = Array.from({ length: Math.min(pageCount, 50) }, (_, i) => {
+      let q = supabaseAdmin
+        .from('ivr_call_records')
+        .select(
+          'customer_phone, assigned_agent_id, agent_name, dial_status, call_duration, pressed_key, campaign_name, dial_time'
+        )
+        .order('dial_time', { ascending: false })
+        .range(i * PAGE_SIZE, (i + 1) * PAGE_SIZE - 1);
+
+      if (timeCutoffIso) {
+        q = q.gte('dial_time', timeCutoffIso);
+      }
+      if (advisorUuid) {
+        q = q.eq('assigned_agent_id', advisorUuid);
+      }
+      return q;
+    });
+
+    const pageResults = await Promise.all(pagePromises);
+    const rawCallRecords = pageResults.flatMap((r) => r.data || []);
     let totalCalls = 0;
     let answeredCalls = 0;
     let missedCalls = 0;

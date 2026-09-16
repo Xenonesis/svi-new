@@ -16,6 +16,8 @@ interface UploadResponsePayload {
   success: boolean;
   campaign_name: string;
   processed_calls: number;
+  new_calls_inserted: number;
+  duplicate_calls_skipped: number;
   unique_leads: number;
   answered_calls: number;
   missed_calls: number;
@@ -35,22 +37,21 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     const contentType = request.headers.get('content-type') || '';
     if (contentType.includes('multipart/form-data')) {
       const formData = await request.formData();
-      const file = formData.get('file');
-      const nameField = formData.get('campaign_name');
-      if (nameField && typeof nameField === 'string') {
+      const file = formData.get('file') as File | null;
+      const nameField = formData.get('campaign_name') as string | null;
+      if (nameField && nameField.trim()) {
         campaignName = nameField.trim();
       }
 
-      if (file && typeof file === 'object' && 'text' in file) {
-        csvText = await (file as Blob).text();
-      } else {
-        throw AppError.badRequest('No valid CSV file uploaded');
+      if (!file) {
+        throw AppError.badRequest('No file uploaded');
       }
+      csvText = await file.text();
     } else {
-      const body = await request.json().catch(() => ({}));
-      csvText = body.csvText || '';
-      if (body.campaignName) {
-        campaignName = String(body.campaignName).trim();
+      const body = await request.json().catch(() => null);
+      csvText = body?.csvText || body?.csvContent || body?.fileContent || '';
+      if (body?.campaignName || body?.campaign_name) {
+        campaignName = (body.campaignName || body.campaign_name).trim();
       }
     }
 
@@ -63,6 +64,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     if (parsedRecords.length === 0) {
       throw AppError.badRequest('No valid call records found in CSV file');
     }
+
+    // Deduplicate within the uploaded CSV batch itself
+    const batchKeyMap = new Map<string, ParsedIvrRecord>();
+    for (const r of parsedRecords) {
+      const key = `${r.customer_phone}_${r.dial_time}`;
+      if (!batchKeyMap.has(key)) {
+        batchKeyMap.set(key, r);
+      }
+    }
+    const deduplicatedRecords = Array.from(batchKeyMap.values());
 
     // 2. Fetch Advisors for auto-resolution
     const { data: profilesData } = await supabaseAdmin
@@ -79,7 +90,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     );
 
     // 3. Prepare IVR Call Records
-    const callRecordsToInsert = parsedRecords.map((r: ParsedIvrRecord) => {
+    const callRecordsToProcess = deduplicatedRecords.map((r: ParsedIvrRecord) => {
       const assignedId = resolveAdvisorId(r.agent_name, r.agent_number, profiles);
       return {
         customer_phone: r.customer_phone,
@@ -96,19 +107,41 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       };
     });
 
-    // 4. Batch insert into ivr_call_records in chunks of 500
-    const CHUNK_SIZE = 500;
-    for (let i = 0; i < callRecordsToInsert.length; i += CHUNK_SIZE) {
-      const chunk = callRecordsToInsert.slice(i, i + CHUNK_SIZE);
-      const { error: insertError } = await supabaseAdmin.from('ivr_call_records').insert(chunk);
+    // 4. Batch insert into ivr_call_records with idempotent duplicate check
+    const CHUNK_SIZE = 400;
+    let newCallsInserted = 0;
+    let duplicateCallsSkipped = 0;
 
-      if (insertError) {
-        // Log gracefully if table schema cache is pending or migration running
-        console.warn(
-          'ivr_call_records insert warning (continuing to chat_leads upsert):',
-          insertError.message
-        );
-        break;
+    for (let i = 0; i < callRecordsToProcess.length; i += CHUNK_SIZE) {
+      const chunk = callRecordsToProcess.slice(i, i + CHUNK_SIZE);
+      const phones = Array.from(new Set(chunk.map((c) => c.customer_phone)));
+
+      // Check which calls in this chunk already exist in ivr_call_records
+      const { data: existingInDb } = await supabaseAdmin
+        .from('ivr_call_records')
+        .select('customer_phone, dial_time')
+        .in('customer_phone', phones);
+
+      const existingSet = new Set(
+        (existingInDb || []).map((e) => `${e.customer_phone}_${e.dial_time}`)
+      );
+
+      const genuinelyNewCalls = chunk.filter(
+        (c) => !existingSet.has(`${c.customer_phone}_${c.dial_time}`)
+      );
+
+      duplicateCallsSkipped += chunk.length - genuinelyNewCalls.length;
+
+      if (genuinelyNewCalls.length > 0) {
+        const { error: insertError } = await supabaseAdmin
+          .from('ivr_call_records')
+          .insert(genuinelyNewCalls);
+
+        if (insertError) {
+          console.warn('ivr_call_records insert warning:', insertError.message);
+        } else {
+          newCallsInserted += genuinelyNewCalls.length;
+        }
       }
     }
 
@@ -117,7 +150,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     let countAnswered = 0;
     let countMissed = 0;
 
-    for (const record of parsedRecords) {
+    for (const record of deduplicatedRecords) {
       if (record.dial_status === 'ANSWER') {
         countAnswered++;
       } else {
@@ -149,12 +182,17 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       else countCold++;
 
       const assignedId = resolveAdvisorId(u.agent_name, u.agent_number, profiles);
-      const status = u.call_duration >= 20 ? 'contacted' : 'captured';
+      // Valid lifecycle_status check constraint values: 'new', 'qualified', 'contacted', 'visit_requested', 'won', 'lost', 'duplicate'
+      const status = u.call_duration >= 20 ? 'contacted' : 'new';
       const keyNote = u.pressed_key ? `Key: ${u.pressed_key}` : 'No key';
       const notes = `IVR Call: ${u.call_duration}s, Status: ${u.dial_status}, ${keyNote}, Agent: ${u.agent_name}`;
+      const normalizedPhone = u.customer_phone.startsWith('+91')
+        ? u.customer_phone
+        : `+91${u.customer_phone.replace(/\D/g, '').slice(-10)}`;
 
       return {
         phone: u.customer_phone,
+        normalized_phone: normalizedPhone,
         name: `IVR Lead - ${u.customer_phone}`,
         source: 'ivr',
         assigned_to: assignedId,
@@ -166,16 +204,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       };
     });
 
-    // 6. Batch upsert into chat_leads (on conflict: phone, source)
+    // 6. Batch upsert into chat_leads using unique constraint on normalized_phone
     for (let i = 0; i < chatLeadsToUpsert.length; i += CHUNK_SIZE) {
       const chunk = chatLeadsToUpsert.slice(i, i + CHUNK_SIZE);
-      const { error: upsertError } = await supabaseAdmin
-        .from('chat_leads')
-        .upsert(chunk, { onConflict: 'phone, source' });
+      const { error: upsertError } = await supabaseAdmin.from('chat_leads').upsert(chunk, {
+        onConflict: 'normalized_phone',
+        ignoreDuplicates: false,
+      });
 
       if (upsertError) {
-        // Fallback without composite constraint if index only on phone
-        await supabaseAdmin.from('chat_leads').upsert(chunk, { onConflict: 'phone' });
+        console.warn('Chat leads IVR upsert warning chunk', i, upsertError.message);
       }
     }
 
@@ -183,6 +221,8 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       success: true,
       campaign_name: campaignName,
       processed_calls: parsedRecords.length,
+      new_calls_inserted: newCallsInserted,
+      duplicate_calls_skipped: duplicateCallsSkipped,
       unique_leads: uniqueLeads.length,
       answered_calls: countAnswered,
       missed_calls: countMissed,
