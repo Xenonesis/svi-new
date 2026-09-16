@@ -9,7 +9,6 @@ import { IvrCsvUploadModal } from '@/src/components/admin/leads/IvrCsvUploadModa
 import { TelecallingDashboard } from '@/src/components/admin/leads/TelecallingDashboard';
 import { useIvrLeadsManagement } from '@/src/components/admin/leads/useIvrLeadsManagement';
 import { IvrStatsKpiGrid } from '@/src/components/admin/leads/IvrStatsKpiGrid';
-import { AdvisorLeaderboardGrid } from '@/src/components/admin/leads/AdvisorLeaderboardGrid';
 import { LeadsTabNav } from '@/src/components/admin/leads/LeadsTabNav';
 import type { LeadsTabType } from '@/src/components/admin/leads/LeadsTabNav';
 import dynamic from 'next/dynamic';
@@ -117,9 +116,6 @@ export default function AdminLeadsPage() {
         </div>
       </div>
 
-      {/* KPI Cards Grid */}
-      <IvrStatsKpiGrid summary={summary} />
-
       {/* Main Tabs Navigation */}
       <LeadsTabNav activeTab={activeTab} onTabChange={setActiveTab} ivrTotalCount={ivrTotalCount} />
 
@@ -139,11 +135,7 @@ export default function AdminLeadsPage() {
 
       {activeTab === 'ivr' && (
         <div className="space-y-4">
-          <AdvisorLeaderboardGrid
-            totalCalls={summary?.total_calls || ivrTotalCount}
-            answeredCalls={summary?.answered_calls || 0}
-            hotLeads={summary?.hot_count || 0}
-          />
+          <IvrStatsKpiGrid summary={summary} />
           <IvrLeadsTable
             records={ivrRecords}
             totalCount={ivrTotalCount}

@@ -16,7 +16,6 @@ import {
   ExternalLink,
   MessageCircle,
   RefreshCw,
-  Award,
   Phone,
   FileSpreadsheet,
   FileText,
@@ -159,6 +158,23 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
         return 0;
       });
   }, [leaderboard, searchQuery, sortBy]);
+  const [showBench, setShowBench] = useState(false);
+
+  const { activeAdvisors, benchAdvisors } = useMemo(() => {
+    const active: AdvisorPerformanceMetric[] = [];
+    const bench: AdvisorPerformanceMetric[] = [];
+
+    for (const a of filteredLeaderboard) {
+      if (a.total_calls > 0) {
+        active.push(a);
+      } else {
+        bench.push(a);
+      }
+    }
+    return { activeAdvisors: active, benchAdvisors: bench };
+  }, [filteredLeaderboard]);
+
+  const isSearching = searchQuery.trim().length > 0;
 
   // Export Leaderboard to Excel (.xlsx)
   const handleExportExcel = async () => {
@@ -551,242 +567,170 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
         </div>
       </div>
 
-      {/* ── Executive KPI Summary Grid ── */}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-        {/* 1. Total Calls Handled */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-            <span className="text-[11px] font-bold tracking-wider uppercase">Total Calls</span>
-            <div className="rounded-lg bg-blue-500/10 p-1.5 text-blue-500">
-              <PhoneCall className="h-4 w-4" />
+      {/* ── Unified Telemetry Cockpit Hero ── */}
+      <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0c0f18]">
+        {/* 6 High-Density Metric Columns */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
+          {/* 1. Total Calls Handled */}
+          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-3.5 transition-colors dark:border-white/5 dark:bg-white/[0.02]">
+            <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
+              <span className="text-[10px] font-bold tracking-wider uppercase">Total Calls</span>
+              <div className="rounded-lg bg-blue-500/10 p-1 text-blue-500">
+                <PhoneCall className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-gray-900 tabular-nums dark:text-white">
+              {summary?.total_calls.toLocaleString() || '0'}
+            </div>
+            <div className="mt-1 text-[10px] text-gray-500">
+              <span>Volume Handled</span>
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {summary?.total_calls.toLocaleString() || '0'}
-          </div>
-          <div className="mt-1 flex items-center gap-1.5 text-[11px] text-gray-500">
-            <span>Volume Handled</span>
-          </div>
-        </div>
 
-        {/* 2. Connected / Answered */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-            <span className="text-[11px] font-bold tracking-wider uppercase">Answered Calls</span>
-            <div className="rounded-lg bg-emerald-500/10 p-1.5 text-emerald-500">
-              <PhoneForwarded className="h-4 w-4" />
+          {/* 2. Connected / Answered */}
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.03] p-3.5 transition-colors dark:border-emerald-500/20 dark:bg-emerald-500/[0.04]">
+            <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
+              <span className="text-[10px] font-bold tracking-wider uppercase">Answered Calls</span>
+              <div className="rounded-lg bg-emerald-500/15 p-1 text-emerald-500">
+                <PhoneForwarded className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-emerald-600 tabular-nums dark:text-emerald-400">
+              {summary?.answered_calls.toLocaleString() || '0'}
+            </div>
+            <div className="mt-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+              {summary?.answer_rate || 0}% Connection Rate
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-            {summary?.answered_calls.toLocaleString() || '0'}
-          </div>
-          <div className="mt-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-            {summary?.answer_rate || 0}% Connection Rate
-          </div>
-        </div>
 
-        {/* 3. Missed Calls */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-            <span className="text-[11px] font-bold tracking-wider uppercase">Missed Calls</span>
-            <div className="rounded-lg bg-red-500/10 p-1.5 text-red-500">
-              <PhoneOff className="h-4 w-4" />
+          {/* 3. Missed Calls */}
+          <div className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.03] p-3.5 transition-colors dark:border-rose-500/20 dark:bg-rose-500/[0.04]">
+            <div className="flex items-center justify-between text-rose-500 dark:text-rose-400">
+              <span className="text-[10px] font-bold tracking-wider uppercase">Missed Calls</span>
+              <div className="rounded-lg bg-rose-500/15 p-1 text-rose-500">
+                <PhoneOff className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-rose-600 tabular-nums dark:text-rose-400">
+              {summary?.missed_calls.toLocaleString() || '0'}
+            </div>
+            <div className="mt-1 text-[10px] text-gray-500">
+              {summary && summary.total_calls > 0
+                ? Math.round((summary.missed_calls / summary.total_calls) * 100)
+                : 0}
+              % Unanswered
             </div>
           </div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {summary?.missed_calls.toLocaleString() || '0'}
-          </div>
-          <div className="mt-1 text-[11px] text-gray-500">
-            {summary && summary.total_calls > 0
-              ? Math.round((summary.missed_calls / summary.total_calls) * 100)
-              : 0}
-            % Unanswered
-          </div>
-        </div>
 
-        {/* 4. Total Talk Time */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-            <span className="text-[11px] font-bold tracking-wider uppercase">Total Talk Time</span>
-            <div className="rounded-lg bg-amber-500/10 p-1.5 text-amber-500">
-              <Clock className="h-4 w-4" />
+          {/* 4. Total Talk Time */}
+          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-3.5 transition-colors dark:border-white/5 dark:bg-white/[0.02]">
+            <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
+              <span className="text-[10px] font-bold tracking-wider uppercase">
+                Total Talk Time
+              </span>
+              <div className="rounded-lg bg-amber-500/10 p-1 text-amber-500">
+                <Clock className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="dark:text-brand-gold mt-1.5 font-mono text-2xl font-bold tracking-tight text-amber-600 tabular-nums">
+              {formatSeconds(summary?.total_talk_time_sec || 0)}
+            </div>
+            <div className="mt-1 text-[10px] text-gray-500">
+              Avg {formatSeconds(summary?.avg_talk_time_sec || 0)}/call
             </div>
           </div>
-          <div className="dark:text-brand-gold mt-2 text-2xl font-bold tracking-tight text-amber-600">
-            {formatSeconds(summary?.total_talk_time_sec || 0)}
-          </div>
-          <div className="mt-1 text-[11px] text-gray-500">
-            Avg {formatSeconds(summary?.avg_talk_time_sec || 0)}/call
-          </div>
-        </div>
 
-        {/* 5. Hot Leads Yield */}
-        <div className="border-brand-gold/30 bg-brand-gold/5 dark:border-brand-gold/20 dark:bg-brand-gold/[0.03] rounded-2xl border p-4 shadow-sm transition-colors duration-300">
-          <div className="text-brand-gold flex items-center justify-between">
-            <span className="text-[11px] font-bold tracking-wider uppercase">Hot Leads</span>
-            <div className="bg-brand-gold/20 text-brand-gold rounded-lg p-1.5">
-              <Flame className="h-4 w-4" />
+          {/* 5. Hot Leads Yield */}
+          <div className="border-brand-gold/30 bg-brand-gold/[0.04] dark:border-brand-gold/25 dark:bg-brand-gold/[0.04] rounded-2xl border p-3.5 transition-colors">
+            <div className="text-brand-gold flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-wider uppercase">Hot Leads</span>
+              <div className="bg-brand-gold/20 text-brand-gold rounded-lg p-1">
+                <Flame className="h-3.5 w-3.5" />
+              </div>
+            </div>
+            <div className="text-brand-navy dark:text-brand-gold mt-1.5 font-mono text-2xl font-bold tracking-tight tabular-nums">
+              {summary?.hot_leads.toLocaleString() || '0'}
+            </div>
+            <div className="text-brand-gold mt-1 text-[10px] font-medium">
+              {summary?.key1_count.toLocaleString() || 0} Key 1 Pressed
             </div>
           </div>
-          <div className="text-brand-navy dark:text-brand-gold mt-2 text-2xl font-bold tracking-tight">
-            {summary?.hot_leads.toLocaleString() || '0'}
-          </div>
-          <div className="text-brand-gold mt-1 text-[11px] font-medium">
-            {summary?.key1_count.toLocaleString() || 0} Key 1 Pressed
-          </div>
-        </div>
 
-        {/* 6. Active Advisors */}
-        <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-            <span className="text-[11px] font-bold tracking-wider uppercase">Active Roster</span>
-            <div className="rounded-lg bg-indigo-500/10 p-1.5 text-indigo-500">
-              <Award className="h-4 w-4" />
+          {/* 6. Active Advisors */}
+          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-3.5 transition-colors dark:border-white/5 dark:bg-white/[0.02]">
+            <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
+              <span className="text-[10px] font-bold tracking-wider uppercase">Active Roster</span>
+              <div className="rounded-lg bg-indigo-500/10 p-1 text-indigo-500">
+                <Trophy className="h-3.5 w-3.5" />
+              </div>
             </div>
-          </div>
-          <div className="mt-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-            {summary?.active_advisors || 0}
-            <span className="text-xs font-normal text-gray-400">
-              /{summary?.total_roster_count || 0}
-            </span>
-          </div>
-          <div className="mt-1 text-[11px] text-emerald-600 dark:text-emerald-400">
-            100% Tracking Active
-          </div>
-        </div>
-      </div>
-
-      {/* ── Visual Analytics & Campaign Insights ── */}
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {/* Connection Rate Progress Bar Meter */}
-        <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                Call Connection Efficiency
-              </h2>
-              <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                {summary?.answer_rate || 0}% Connected
+            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-gray-900 tabular-nums dark:text-white">
+              {summary?.active_advisors || 0}
+              <span className="text-xs font-normal text-gray-400">
+                /{summary?.total_roster_count || 0}
               </span>
             </div>
-            <div className="mt-3 h-3.5 w-full overflow-hidden rounded-full bg-gray-100 p-0.5 dark:bg-white/5">
-              <div
-                className="h-full rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 transition-all duration-700"
-                style={{ width: `${summary?.answer_rate || 0}%` }}
-              />
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-2.5 dark:border-white/5 dark:bg-white/[0.02]">
-                <span className="text-gray-500">Answered Calls</span>
-                <p className="mt-0.5 text-sm font-bold text-emerald-600 dark:text-emerald-400">
-                  {summary?.answered_calls.toLocaleString() || 0}
-                </p>
-              </div>
-              <div className="rounded-xl border border-gray-100 bg-gray-50 p-2.5 dark:border-white/5 dark:bg-white/[0.02]">
-                <span className="text-gray-500">Unanswered / Busy</span>
-                <p className="mt-0.5 text-sm font-bold text-gray-700 dark:text-gray-300">
-                  {summary?.missed_calls.toLocaleString() || 0}
-                </p>
-              </div>
+            <div className="mt-1 text-[10px] text-emerald-600 dark:text-emerald-400">
+              100% Tracking Active
             </div>
           </div>
-          <p className="mt-3 text-[11px] text-gray-400">
-            Calculated from all outbound telephony records for{' '}
-            {timeRange === 'all' ? 'all time' : timeRange}.
-          </p>
         </div>
 
-        {/* Lead Temperature & Intent Gauge */}
-        <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                Buyer Intent &amp; Temperature
-              </h2>
-              <span className="text-brand-gold text-xs font-bold">
+        {/* Integrated Dial Momentum Strip */}
+        <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-3.5 lg:flex-row lg:items-center lg:justify-between dark:border-white/5">
+          {/* Dual Segmented Progress Bar */}
+          <div className="flex flex-1 items-center gap-3">
+            <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">
+              Dial Pulse
+            </span>
+            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
+              <div className="flex h-full w-full">
+                <div
+                  className="bg-emerald-500 transition-all duration-700"
+                  style={{ width: `${summary?.answer_rate || 0}%` }}
+                  title={`${summary?.answer_rate || 0}% Connected`}
+                />
+                <div
+                  className="bg-rose-500/60 transition-all duration-700"
+                  style={{ width: `${100 - (summary?.answer_rate || 0)}%` }}
+                  title={`${100 - (summary?.answer_rate || 0)}% Missed/Unanswered`}
+                />
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+                {summary?.answer_rate || 0}% Connected
+              </span>
+              <span className="text-gray-300 dark:text-gray-600">•</span>
+              <span className="inline-flex items-center gap-1 font-bold text-amber-500">
+                <Flame className="h-3 w-3 fill-current" />
                 {summary && summary.total_calls > 0
                   ? Math.round((summary.hot_leads / summary.total_calls) * 100)
                   : 0}
                 % High Intent
               </span>
             </div>
-            <div className="mt-3 flex h-3.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
-              <div
-                className="h-full bg-gradient-to-r from-red-500 to-amber-500 transition-all duration-700"
-                style={{
-                  width: `${summary && summary.total_calls > 0 ? (summary.hot_leads / summary.total_calls) * 100 : 0}%`,
-                }}
-              />
-            </div>
-            <div className="mt-4 grid grid-cols-2 gap-2 text-xs">
-              <div className="rounded-xl border border-red-100 bg-red-50/50 p-2.5 dark:border-red-500/20 dark:bg-red-500/5">
-                <span className="font-semibold text-red-700 dark:text-red-400">
-                  Hot Leads ($&ge;$60s/Key 1)
-                </span>
-                <p className="mt-0.5 text-sm font-bold text-red-600 dark:text-red-400">
-                  {summary?.hot_leads.toLocaleString() || 0}
-                </p>
-              </div>
-              <div className="rounded-xl border border-blue-100 bg-blue-50/50 p-2.5 dark:border-blue-500/20 dark:bg-blue-500/5">
-                <span className="font-semibold text-blue-700 dark:text-blue-400">
-                  Key 1 Instant Connect
-                </span>
-                <p className="mt-0.5 text-sm font-bold text-blue-600 dark:text-blue-400">
-                  {summary?.key1_count.toLocaleString() || 0}
-                </p>
-              </div>
-            </div>
           </div>
-          <p className="mt-3 text-[11px] text-gray-400">
-            Hot leads represent customers who engaged on phone for 60s+ or explicitly pressed Key 1.
-          </p>
-        </div>
 
-        {/* Campaign Distribution Overview */}
-        <div className="flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                Dialer Campaigns
-              </h2>
-              <span className="text-xs font-bold text-gray-700 dark:text-gray-300">
-                {campaigns.length} Campaign{campaigns.length !== 1 ? 's' : ''}
-              </span>
-            </div>
-            <div className="mt-3 space-y-2">
-              {campaigns.slice(0, 3).map((camp, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/70 p-2 text-xs dark:border-white/5 dark:bg-white/[0.02]"
-                >
-                  <div className="min-w-0 pr-2">
-                    <p className="truncate font-semibold text-gray-900 dark:text-white">
-                      {camp.name}
-                    </p>
-                    <span className="text-[10px] text-gray-400">
-                      {camp.total_calls.toLocaleString()} calls &bull; {camp.hot_leads} hot
-                    </span>
-                  </div>
-                  <span className="rounded-md bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                    {camp.answer_rate}% Ans
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-          <div className="mt-3 flex items-center justify-between text-[11px] text-gray-400">
-            <span>Last Updated: {lastUpdated || 'Live'}</span>
+          {/* Active Campaign & Direct Link */}
+          <div className="flex flex-wrap items-center justify-between gap-3 text-xs lg:justify-end">
+            <span className="rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
+              {campaigns[0]?.name || 'IVR Campaign'} &bull;{' '}
+              {campaigns[0]?.total_calls.toLocaleString() || summary?.total_calls.toLocaleString()}{' '}
+              calls
+              {lastUpdated && <span className="text-gray-400"> &bull; Sync {lastUpdated}</span>}
+            </span>
             <button
               type="button"
               onClick={() => handleAdvisorLeadsClick('')}
-              className="text-brand-gold cursor-pointer font-semibold hover:underline"
+              className="text-brand-gold hover:text-brand-gold-light flex cursor-pointer items-center gap-1 font-bold"
             >
-              View All Leads &rarr;
+              <span>View All Leads &rarr;</span>
             </button>
           </div>
         </div>
       </div>
-
       {/* ── Advisor Performance Leaderboard Section ── */}
       <div className="space-y-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
         {/* Controls Bar */}
@@ -850,52 +794,358 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
             <p className="text-xs text-gray-400">Try adjusting your search query</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredLeaderboard.map((advisor, index) => {
-              const rank = index + 1;
-              const isTop3 = rank <= 3;
-              const rankBadge =
-                rank === 1 ? (
-                  <span className="text-brand-navy flex h-6 w-6 items-center justify-center rounded-full bg-amber-400 text-xs font-black shadow-sm">
-                    1
-                  </span>
-                ) : rank === 2 ? (
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-300 text-xs font-black text-slate-800 shadow-sm">
-                    2
-                  </span>
-                ) : rank === 3 ? (
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-amber-700 text-xs font-black text-white shadow-sm">
-                    3
-                  </span>
-                ) : (
-                  <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-600 dark:bg-white/10 dark:text-gray-300">
-                    {rank}
-                  </span>
-                );
+          <div className="space-y-5">
+            {/* ── Podium: Top 3 High Performers ── */}
+            {activeAdvisors.length > 0 && (
+              <div className="space-y-2.5">
+                <div className="flex items-center gap-2">
+                  <Trophy className="h-4 w-4 text-amber-500" />
+                  <h3 className="text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                    Top Performers Podium
+                  </h3>
+                </div>
 
-              return (
-                <motion.div
-                  key={advisor.advisor_id}
-                  layout
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.2, delay: Math.min(index * 0.02, 0.2) }}
-                  className={`group relative flex flex-col justify-between rounded-2xl border p-4 transition-all duration-200 hover:shadow-md ${
-                    isTop3
-                      ? 'border-brand-gold/40 dark:border-brand-gold/30 dark:to-brand-gold/[0.04] bg-gradient-to-br from-white to-amber-50/30 dark:from-[#13131c]'
-                      : 'border-gray-200 bg-white hover:border-gray-300 dark:border-white/5 dark:bg-[#13131c] dark:hover:border-white/10'
-                  }`}
-                >
-                  {/* Top: Rank, Name, Role & Quick Actions */}
-                  <div>
-                    <div className="flex items-start justify-between gap-2">
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        {rankBadge}
-                        <div className="min-w-0">
-                          <h3 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+                  {activeAdvisors.slice(0, 3).map((advisor, index) => {
+                    const rank = index + 1;
+                    const isGold = rank === 1;
+                    const isSilver = rank === 2;
+                    const isBronze = rank === 3;
+
+                    return (
+                      <motion.div
+                        key={advisor.advisor_id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, delay: index * 0.05 }}
+                        className={`group relative flex flex-col justify-between rounded-2xl border p-4.5 shadow-sm transition-all duration-200 hover:shadow-md ${
+                          isGold
+                            ? 'border-amber-400/50 bg-gradient-to-br from-amber-500/[0.08] via-amber-500/[0.02] to-transparent dark:border-amber-400/40 dark:from-amber-500/[0.08] dark:to-[#13131c]'
+                            : isSilver
+                              ? 'border-slate-300/50 bg-gradient-to-br from-slate-400/[0.07] via-slate-400/[0.02] to-transparent dark:border-slate-400/30 dark:from-slate-400/[0.06] dark:to-[#13131c]'
+                              : isBronze
+                                ? 'border-amber-700/50 bg-gradient-to-br from-amber-700/[0.07] via-amber-700/[0.02] to-transparent dark:border-amber-700/30 dark:from-amber-700/[0.06] dark:to-[#13131c]'
+                                : 'border-gray-200 bg-white dark:border-white/5 dark:bg-[#13131c]'
+                        }`}
+                      >
+                        <div>
+                          {/* Header: Rank Medal, Name, Role */}
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              {isGold ? (
+                                <span className="text-brand-navy flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-xs font-black shadow-md">
+                                  🥇 1
+                                </span>
+                              ) : isSilver ? (
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-300 to-slate-100 text-xs font-black text-slate-800 shadow-md">
+                                  🥈 2
+                                </span>
+                              ) : (
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-700 to-amber-600 text-xs font-black text-white shadow-md">
+                                  🥉 3
+                                </span>
+                              )}
+                              <div className="min-w-0">
+                                <h4 className="truncate text-sm font-bold text-gray-900 dark:text-white">
+                                  {advisor.advisor_name}
+                                </h4>
+                                <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                                  <span className="capitalize">{advisor.role || 'Advisor'}</span>
+                                  {advisor.phone && (
+                                    <>
+                                      <span>&bull;</span>
+                                      <span className="font-mono">{advisor.phone}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            {/* Answer Rate Badge */}
+                            <div className="flex flex-col items-end">
+                              <span
+                                className={`rounded-lg px-2.5 py-0.5 text-xs font-bold shadow-2xs ${
+                                  advisor.answer_rate >= 50
+                                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+                                    : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                }`}
+                              >
+                                {advisor.answer_rate}% Ans
+                              </span>
+                              <span className="mt-0.5 font-mono text-[10px] text-gray-400 tabular-nums">
+                                {advisor.answered_calls}/{advisor.total_calls} calls
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Connection Progress Bar */}
+                          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
+                            <div
+                              className="from-brand-gold h-full rounded-full bg-gradient-to-r to-emerald-500 transition-all duration-500"
+                              style={{ width: `${Math.min(advisor.answer_rate, 100)}%` }}
+                            />
+                          </div>
+
+                          {/* Key Telemetry Grid */}
+                          <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-gray-50/80 p-2.5 text-center text-xs dark:bg-white/[0.03]">
+                            <div>
+                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
+                                Talk Time
+                              </span>
+                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
+                                {formatSeconds(advisor.total_talk_time_sec)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
+                                Avg / Call
+                              </span>
+                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
+                                {formatSeconds(advisor.avg_talk_time_sec)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-brand-gold text-[10px] font-semibold uppercase">
+                                Hot Leads
+                              </span>
+                              <p className="text-brand-gold flex items-center justify-center gap-0.5 font-mono font-bold tabular-nums">
+                                <Flame className="h-3 w-3 fill-current" />
+                                {advisor.hot_leads}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Action Footer */}
+                        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/5">
+                          <button
+                            type="button"
+                            onClick={() => handleAdvisorLeadsClick(advisor.advisor_id)}
+                            className="text-brand-navy dark:text-brand-gold flex cursor-pointer items-center gap-1.5 text-xs font-bold hover:underline"
+                            title="Open filtered IVR leads table for this advisor"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" />
+                            <span>View Leads ({advisor.total_calls})</span>
+                          </button>
+
+                          <div className="flex items-center gap-1">
+                            {advisor.phone && (
+                              <>
+                                <a
+                                  href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                    `Hello ${advisor.advisor_name}, congratulations on your telecalling ranking! You have ${advisor.answered_calls} answered calls and ${advisor.hot_leads} hot leads.`
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                                  title="Message on WhatsApp"
+                                >
+                                  <MessageCircle className="h-4 w-4" />
+                                </a>
+                                <a
+                                  href={`tel:${advisor.phone}`}
+                                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                  title="Direct Call"
+                                >
+                                  <Phone className="h-4 w-4" />
+                                </a>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Active Contenders (Ranks 4+) ── */}
+            {activeAdvisors.length > 3 && (
+              <div className="space-y-2.5 pt-2">
+                <h3 className="text-xs font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                  Active Dialing Squad
+                </h3>
+
+                <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
+                  {activeAdvisors.slice(3).map((advisor, index) => {
+                    const rank = index + 4;
+
+                    return (
+                      <motion.div
+                        key={advisor.advisor_id}
+                        layout
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.2, delay: index * 0.03 }}
+                        className="group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-white/5 dark:bg-[#13131c] dark:hover:border-white/10"
+                      >
+                        <div>
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex min-w-0 items-center gap-2.5">
+                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-600 dark:bg-white/10 dark:text-gray-300">
+                                {rank}
+                              </span>
+                              <div className="min-w-0">
+                                <h4 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
+                                  {advisor.advisor_name}
+                                </h4>
+                                <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                                  <span className="capitalize">{advisor.role || 'Advisor'}</span>
+                                  {advisor.phone && (
+                                    <>
+                                      <span>&bull;</span>
+                                      <span className="font-mono">{advisor.phone}</span>
+                                    </>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="flex flex-col items-end">
+                              <span
+                                className={`rounded-lg px-2 py-0.5 text-xs font-bold ${
+                                  advisor.answer_rate >= 50
+                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                    : advisor.answer_rate >= 30
+                                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                      : 'bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400'
+                                }`}
+                              >
+                                {advisor.answer_rate}% Ans
+                              </span>
+                              <span className="mt-0.5 font-mono text-[10px] text-gray-400 tabular-nums">
+                                {advisor.answered_calls}/{advisor.total_calls} calls
+                              </span>
+                            </div>
+                          </div>
+
+                          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
+                            <div
+                              className="from-brand-gold h-full rounded-full bg-gradient-to-r to-emerald-500 transition-all duration-500"
+                              style={{ width: `${Math.min(advisor.answer_rate, 100)}%` }}
+                            />
+                          </div>
+
+                          <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-gray-50/70 p-2 text-center text-xs dark:bg-white/[0.02]">
+                            <div>
+                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
+                                Talk Time
+                              </span>
+                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
+                                {formatSeconds(advisor.total_talk_time_sec)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
+                                Avg / Call
+                              </span>
+                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
+                                {formatSeconds(advisor.avg_talk_time_sec)}
+                              </p>
+                            </div>
+                            <div>
+                              <span className="text-brand-gold text-[10px] font-semibold uppercase">
+                                Hot Leads
+                              </span>
+                              <p className="text-brand-gold flex items-center justify-center gap-0.5 font-mono font-bold tabular-nums">
+                                <Flame className="h-3 w-3 fill-current" />
+                                {advisor.hot_leads}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="mt-3.5 flex items-center justify-between border-t border-gray-100 pt-2.5 dark:border-white/5">
+                          <button
+                            type="button"
+                            onClick={() => handleAdvisorLeadsClick(advisor.advisor_id)}
+                            className="text-brand-navy dark:text-brand-gold flex cursor-pointer items-center gap-1 text-[11px] font-bold hover:underline"
+                            title="Open filtered IVR leads table for this advisor"
+                          >
+                            <ExternalLink className="h-3 w-3" />
+                            <span>View Leads ({advisor.total_calls})</span>
+                          </button>
+
+                          <div className="flex items-center gap-1">
+                            {advisor.phone && (
+                              <>
+                                <a
+                                  href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                    `Hello ${advisor.advisor_name}, reviewing your telecalling performance: ${advisor.answered_calls} answered calls and ${advisor.hot_leads} hot leads.`
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                                  title="Message on WhatsApp"
+                                >
+                                  <MessageCircle className="h-3.5 w-3.5" />
+                                </a>
+                                <a
+                                  href={`tel:${advisor.phone}`}
+                                  className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                  title="Direct Call"
+                                >
+                                  <Phone className="h-3.5 w-3.5" />
+                                </a>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
+            {/* ── Inactive Bench Drawer (0 Calls Recorded) ── */}
+            {benchAdvisors.length > 0 && (
+              <div className="mt-4 rounded-2xl border border-gray-200/70 bg-gray-50/50 p-4 transition-colors dark:border-white/5 dark:bg-white/[0.01]">
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
+                      {benchAdvisors.length}
+                    </span>
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      Inactive Telecallers On Bench (0 Calls Recorded)
+                    </span>
+                    <span className="hidden text-[11px] text-gray-400 sm:inline">
+                      &bull; Ready for next campaign assignment
+                    </span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setShowBench(!showBench)}
+                    className="text-brand-gold hover:text-brand-gold-light flex cursor-pointer items-center gap-1.5 text-xs font-bold"
+                  >
+                    <span>
+                      {showBench || isSearching
+                        ? 'Collapse Bench'
+                        : `Show Inactive Staff (${benchAdvisors.length})`}
+                    </span>
+                    <ChevronDown
+                      className={`h-3.5 w-3.5 transition-transform ${
+                        showBench || isSearching ? 'rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                </div>
+
+                {(showBench || isSearching) && (
+                  <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
+                    {benchAdvisors.map((advisor) => (
+                      <div
+                        key={advisor.advisor_id}
+                        className="flex items-center justify-between rounded-xl border border-gray-200/60 bg-white p-3 shadow-2xs transition-colors dark:border-white/5 dark:bg-[#13131c]"
+                      >
+                        <div className="min-w-0 pr-2">
+                          <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
                             {advisor.advisor_name}
-                          </h3>
-                          <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
+                          </p>
+                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
                             <span className="capitalize">{advisor.role || 'Advisor'}</span>
                             {advisor.phone && (
                               <>
@@ -905,105 +1155,37 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                             )}
                           </div>
                         </div>
-                      </div>
 
-                      {/* Answer Rate Badge */}
-                      <div className="flex flex-col items-end">
-                        <span
-                          className={`rounded-lg px-2 py-0.5 text-xs font-bold ${
-                            advisor.answer_rate >= 50
-                              ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                              : advisor.answer_rate >= 30
-                                ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                : 'bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400'
-                          }`}
-                        >
-                          {advisor.answer_rate}% Ans
-                        </span>
-                        <span className="mt-0.5 text-[10px] text-gray-400">
-                          {advisor.answered_calls}/{advisor.total_calls} calls
-                        </span>
+                        <div className="flex items-center gap-1">
+                          {advisor.phone && (
+                            <>
+                              <a
+                                href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
+                                  `Hello ${advisor.advisor_name}, checking your telecalling campaign assignment status.`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                                title="Message on WhatsApp"
+                              >
+                                <MessageCircle className="h-3.5 w-3.5" />
+                              </a>
+                              <a
+                                href={`tel:${advisor.phone}`}
+                                className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
+                                title="Direct Call"
+                              >
+                                <Phone className="h-3.5 w-3.5" />
+                              </a>
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-
-                    {/* Progress bar of connection rate */}
-                    <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
-                      <div
-                        className="from-brand-gold h-full rounded-full bg-gradient-to-r to-emerald-500 transition-all duration-500"
-                        style={{ width: `${Math.min(advisor.answer_rate, 100)}%` }}
-                      />
-                    </div>
-
-                    {/* Metrics Grid */}
-                    <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-gray-50/70 p-2.5 text-center text-xs dark:bg-white/[0.02]">
-                      <div>
-                        <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                          Talk Time
-                        </span>
-                        <p className="font-bold text-gray-800 dark:text-gray-200">
-                          {formatSeconds(advisor.total_talk_time_sec)}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                          Avg / Call
-                        </span>
-                        <p className="font-bold text-gray-800 dark:text-gray-200">
-                          {formatSeconds(advisor.avg_talk_time_sec)}
-                        </p>
-                      </div>
-                      <div>
-                        <span className="text-brand-gold text-[10px] font-semibold uppercase">
-                          Hot Leads
-                        </span>
-                        <p className="text-brand-gold flex items-center justify-center gap-0.5 font-bold">
-                          <Flame className="h-3 w-3 fill-current" />
-                          {advisor.hot_leads}
-                        </p>
-                      </div>
-                    </div>
+                    ))}
                   </div>
-
-                  {/* Bottom Action Footer */}
-                  <div className="mt-3.5 flex items-center justify-between border-t border-gray-100 pt-2.5 dark:border-white/5">
-                    <button
-                      type="button"
-                      onClick={() => handleAdvisorLeadsClick(advisor.advisor_id)}
-                      className="text-brand-navy dark:text-brand-gold flex cursor-pointer items-center gap-1 text-[11px] font-bold hover:underline"
-                      title="Open filtered IVR leads table for this advisor"
-                    >
-                      <ExternalLink className="h-3 w-3" />
-                      <span>View Leads ({advisor.total_calls})</span>
-                    </button>
-
-                    <div className="flex items-center gap-1">
-                      {advisor.phone && (
-                        <>
-                          <a
-                            href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                              `Hello ${advisor.advisor_name}, reviewing your telecalling performance: ${advisor.answered_calls} answered calls and ${advisor.hot_leads} hot leads.`
-                            )}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-                            title="Message on WhatsApp"
-                          >
-                            <MessageCircle className="h-3.5 w-3.5" />
-                          </a>
-                          <a
-                            href={`tel:${advisor.phone}`}
-                            className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
-                            title="Direct Call"
-                          >
-                            <Phone className="h-3.5 w-3.5" />
-                          </a>
-                        </>
-                      )}
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
+                )}
+              </div>
+            )}
           </div>
         )}
       </div>
