@@ -110,5 +110,7 @@ backups/
 *.xlsx
 *.xls
 report*.csv
+total data.csv
+*.csv.bak
 
 
