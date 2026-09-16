@@ -353,4 +353,27 @@ test.describe('Refactored Big Pages E2E Verification Suite', () => {
     await pendingTab.click();
     await page.waitForTimeout(300);
   });
+
+  // 7. Project Details Page (/projects/shivani-vatika-11th)
+  test('Project Details Page: renders amenities including Society Boundary, Main Gate, CCTV Camera, 24/7 Security in div.mb-10', async ({
+    page,
+  }) => {
+    await page.goto('/projects/shivani-vatika-11th');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Verify Project Title
+    await expect(page.locator('h1')).toContainText('Shivani Vatika 11th');
+
+    // Locate Amenities section
+    const amenitiesHeader = page.getByRole('heading', { name: 'Amenities' });
+    await expect(amenitiesHeader).toBeVisible();
+
+    // Verify the requested security and infrastructure amenities exist in the amenities section
+    await expect(page.getByText('Society Boundary')).toBeVisible();
+    await expect(page.getByText('Main Gate')).toBeVisible();
+    await expect(page.getByText('CCTV Camera')).toBeVisible();
+    await expect(page.getByText('24/7 Security')).toBeVisible();
+    await expect(page.getByText('Park')).toBeVisible();
+    await expect(page.getByText('Water Supply')).toBeVisible();
+  });
 });
