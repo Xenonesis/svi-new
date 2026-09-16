@@ -42,6 +42,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const advisorId = searchParams.get('advisor_id');
     const dialStatus = searchParams.get('dial_status'); // 'ANSWER', 'NOANSWER', or 'all'
     const temperature = searchParams.get('temperature'); // 'hot', 'warm', 'cold', or 'all'
+    const date = searchParams.get('date'); // 'YYYY-MM-DD' or ISO prefix
+    const startDate = searchParams.get('start_date');
+    const endDate = searchParams.get('end_date');
     const q = searchParams.get('q')?.trim();
 
     // 1. Construct database query with push-down filters
@@ -68,6 +71,24 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
     if (q) {
       query = query.or(`customer_phone.ilike.%${q}%,agent_name.ilike.%${q}%`);
+    }
+    if (date) {
+      query = query
+        .gte('dial_time', `${date}T00:00:00.000Z`)
+        .lte('dial_time', `${date}T23:59:59.999Z`);
+    } else {
+      if (startDate) {
+        query = query.gte(
+          'dial_time',
+          startDate.includes('T') ? startDate : `${startDate}T00:00:00.000Z`
+        );
+      }
+      if (endDate) {
+        query = query.lte(
+          'dial_time',
+          endDate.includes('T') ? endDate : `${endDate}T23:59:59.999Z`
+        );
+      }
     }
 
     // Push down temperature filters to PostgreSQL query so pagination is 100% accurate

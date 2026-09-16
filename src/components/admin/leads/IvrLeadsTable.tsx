@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import { ExportLeadsModal } from '@/src/components/admin/leads/ExportLeadsModal';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import {
@@ -334,6 +335,7 @@ export function IvrLeadsTable({
     advisorName?: string | null;
     temperature?: 'hot' | 'warm' | 'cold';
   } | null>(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const toggleSelectPhone = (phone: string) => {
     setSelectedPhones((prev) => {
@@ -627,12 +629,12 @@ export function IvrLeadsTable({
             <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50 shadow-2xs dark:border-white/10 dark:bg-white/5">
               <button
                 type="button"
-                onClick={handleExportCsv}
+                onClick={() => setIsExportModalOpen(true)}
                 className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
-                title="Export records to CSV"
+                title="Open Export Studio to customize advisor and date range"
               >
                 <Download className="text-brand-gold h-3.5 w-3.5" />
-                <span>Export CSV</span>
+                <span>Export</span>
               </button>
               <div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
               <button
@@ -663,6 +665,23 @@ export function IvrLeadsTable({
                     Export{' '}
                     {selectedPhones.size > 0 ? `${selectedPhones.size} Selected` : 'Page Leads'}
                   </div>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsExportModalOpen(true);
+                      setExportMenuOpen(false);
+                    }}
+                    className="bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold transition-colors"
+                  >
+                    <Download className="h-4 w-4" />
+                    <div className="text-left">
+                      <p className="leading-tight">Custom Export Studio...</p>
+                      <span className="text-[10px] font-normal opacity-80">
+                        By Advisor, Date & Status
+                      </span>
+                    </div>
+                  </button>
+                  <div className="my-1 border-t border-gray-100 dark:border-white/5" />
                   <button
                     type="button"
                     onClick={() => {
@@ -1172,6 +1191,21 @@ export function IvrLeadsTable({
           onLeadUpdated={() => onFilterChange({})}
         />
       )}
+
+      {/* Export Studio Modal */}
+      <ExportLeadsModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        token={token}
+        employees={employees}
+        currentRecords={records}
+        totalRecordsCount={totalCount}
+        currentFilters={{
+          advisor_id: activeAdvisor,
+          dial_status: activeDialStatus,
+          temperature: activeTemp,
+        }}
+      />
     </div>
   );
 }
