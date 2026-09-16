@@ -44,7 +44,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const temperature = searchParams.get('temperature'); // 'hot', 'warm', 'cold', or 'all'
     const q = searchParams.get('q')?.trim();
 
-    // 1. Try querying ivr_call_records with join on profiles
+    // 1. Construct database query with push-down filters
     let query = supabaseAdmin
       .from('ivr_call_records')
       .select('*, assigned_agent:assigned_agent_id(id, full_name, phone)', { count: 'exact' });
@@ -59,11 +59,37 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       query = query.or(`customer_phone.ilike.%${q}%,agent_name.ilike.%${q}%`);
     }
 
+    // Push down temperature filters to PostgreSQL query so pagination is 100% accurate
+    if (temperature === 'hot') {
+      query = query.or('call_duration.gte.60,pressed_key.eq.1');
+    } else if (temperature === 'warm') {
+      query = query
+        .gte('call_duration', 20)
+        .lt('call_duration', 60)
+        .neq('pressed_key', '1')
+        .eq('dial_status', 'ANSWER');
+    } else if (temperature === 'cold') {
+      query = query.or('dial_status.eq.NOANSWER,and(call_duration.lt.20,pressed_key.neq.1)');
+    }
+
     query = query.order('dial_time', { ascending: false }).range(offset, offset + limit - 1);
+
+    // Fetch records and summary concurrently
+    const advisorUuid = advisorId && advisorId !== 'all' ? advisorId : null;
+    let perfRpcResult: unknown = null;
+    try {
+      const rpcRes = await supabaseAdmin.rpc('get_telecalling_performance', {
+        p_time_cutoff: null,
+        p_advisor_id: advisorUuid,
+      });
+      perfRpcResult = rpcRes.data;
+    } catch {
+      // Fall back gracefully
+    }
 
     const { data: recordsData, error, count } = await query;
 
-    // If query failed or table not ready, try fallback from chat_leads
+    // Fallback if ivr_call_records is not yet populated
     if (error) {
       console.warn('ivr_call_records query fallback to chat_leads:', error.message);
       let fallbackQuery = supabaseAdmin
@@ -94,7 +120,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           assigned_agent?: { id: string; full_name: string; phone?: string | null } | null;
           notes?: string | null;
         }) => {
-          // Parse dial status from notes if present
           const isAnswer = fb.notes?.includes('ANSWER') && !fb.notes?.includes('NOANSWER');
           const status: 'ANSWER' | 'NOANSWER' = isAnswer ? 'ANSWER' : 'NOANSWER';
 
@@ -132,7 +157,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const rawRecords = recordsData || [];
-    let items: IvrRecordItem[] = rawRecords.map(
+    const items: IvrRecordItem[] = rawRecords.map(
       (r: {
         id: string;
         customer_phone: string;
@@ -172,23 +197,32 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     );
 
-    if (temperature && temperature !== 'all') {
-      items = items.filter((item) => item.temperature === temperature);
-    }
+    // Accurate campaign-wide summary
+    const rpcSummary = (perfRpcResult as { summary?: Record<string, number> } | null)?.summary;
+    const summary = rpcSummary
+      ? {
+          total_calls: rpcSummary.total_calls || count || 0,
+          answered_calls: rpcSummary.answered_calls || 0,
+          missed_calls: rpcSummary.missed_calls || 0,
+          hot_count: rpcSummary.hot_leads || 0,
+          warm_count: Math.max(0, (rpcSummary.answered_calls || 0) - (rpcSummary.hot_leads || 0)),
+          cold_count: rpcSummary.missed_calls || 0,
+        }
+      : {
+          total_calls: count || items.length,
+          answered_calls: items.filter((i) => i.dial_status === 'ANSWER').length,
+          missed_calls: items.filter((i) => i.dial_status === 'NOANSWER').length,
+          hot_count: items.filter((i) => i.temperature === 'hot').length,
+          warm_count: items.filter((i) => i.temperature === 'warm').length,
+          cold_count: items.filter((i) => i.temperature === 'cold').length,
+        };
 
     return NextResponse.json({
       records: items,
-      total_count: count || items.length,
+      total_count: count !== null && count !== undefined ? count : items.length,
       page,
       limit,
-      summary: {
-        total_calls: count || items.length,
-        answered_calls: items.filter((i) => i.dial_status === 'ANSWER').length,
-        missed_calls: items.filter((i) => i.dial_status === 'NOANSWER').length,
-        hot_count: items.filter((i) => i.temperature === 'hot').length,
-        warm_count: items.filter((i) => i.temperature === 'warm').length,
-        cold_count: items.filter((i) => i.temperature === 'cold').length,
-      },
+      summary,
     });
   } catch (error) {
     return handleApiError(error);
@@ -216,6 +250,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
 
     // 2. Synchronize temperature and assignment to chat_leads
     if (customer_phone) {
+      const cleanPhone = customer_phone.replace(/\D/g, '').slice(-10);
       const leadUpdate: Record<string, unknown> = { updated_at: new Date().toISOString() };
       if (temperature) leadUpdate.temperature = temperature;
       if (assigned_agent_id !== undefined) leadUpdate.assigned_to = assigned_agent_id;
@@ -223,7 +258,7 @@ export async function PATCH(request: NextRequest): Promise<NextResponse> {
       await supabaseAdmin
         .from('chat_leads')
         .update(leadUpdate)
-        .eq('phone', customer_phone)
+        .eq('phone', cleanPhone)
         .eq('source', 'ivr');
     }
 

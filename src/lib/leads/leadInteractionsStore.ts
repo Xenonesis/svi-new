@@ -142,12 +142,12 @@ export const leadInteractionsStore = {
 
     // 1. Try DB table
     try {
+      const phoneCandidates = [cleanPhone, `+91${cleanPhone}`, `91${cleanPhone}`];
       const { data, error } = await supabaseAdmin
         .from('lead_interactions')
         .select('*')
-        .or(`lead_phone.eq.${cleanPhone},lead_phone.ilike.%${cleanPhone}%`)
+        .in('lead_phone', phoneCandidates)
         .order('created_at', { ascending: false });
-
       if (!error && data && data.length > 0) {
         return data as LeadInteraction[];
       }

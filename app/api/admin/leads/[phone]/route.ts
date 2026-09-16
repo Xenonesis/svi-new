@@ -22,24 +22,24 @@ export async function GET(request: NextRequest, context: RouteContext): Promise<
     if (!phone) throw AppError.badRequest('Phone parameter is required');
 
     const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+    const phoneCandidates = [cleanPhone, `+91${cleanPhone}`, `91${cleanPhone}`];
 
-    // 1. Fetch lead from chat_leads
+    // 1. Fetch lead from chat_leads using index scan
     const { data: lead } = await supabaseAdmin
       .from('chat_leads')
       .select('*, assigned_agent:assigned_to(id, full_name, phone)')
-      .or(`phone.eq.${cleanPhone},phone.ilike.%${cleanPhone}%`)
+      .in('phone', phoneCandidates)
       .order('created_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    // 2. Fetch recent call records for this phone
+    // 2. Fetch recent call records for this phone using index scan
     const { data: callHistory } = await supabaseAdmin
       .from('ivr_call_records')
       .select('*')
-      .or(`customer_phone.eq.${cleanPhone},customer_phone.ilike.%${cleanPhone}%`)
+      .in('customer_phone', phoneCandidates)
       .order('dial_time', { ascending: false })
       .limit(10);
-
     return NextResponse.json({
       success: true,
       phone: cleanPhone,
@@ -78,11 +78,12 @@ export async function PATCH(request: NextRequest, context: RouteContext): Promis
     if (body.notes !== undefined) updates.notes = body.notes;
     if (body.assigned_to !== undefined) updates.assigned_to = body.assigned_to || null;
 
-    // Update chat_leads
+    // Update chat_leads using indexed candidate match
+    const phoneCandidates = [cleanPhone, `+91${cleanPhone}`, `91${cleanPhone}`];
     const { data: updatedLead, error } = await supabaseAdmin
       .from('chat_leads')
       .update(updates)
-      .or(`phone.eq.${cleanPhone},phone.ilike.%${cleanPhone}%`)
+      .in('phone', phoneCandidates)
       .select('*, assigned_agent:assigned_to(id, full_name, phone)')
       .maybeSingle();
 

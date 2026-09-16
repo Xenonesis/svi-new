@@ -2,16 +2,49 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
-export const runtime = 'nodejs';
-export const dynamic = 'force-dynamic';
-
 import type {
   AdvisorPerformanceMetric,
   CampaignPerformanceMetric,
 } from '@/src/lib/types/telecalling';
 
+export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
+
 export type { AdvisorPerformanceMetric, CampaignPerformanceMetric };
+
+interface RpcAdvisorStat {
+  advisor_id?: string | null;
+  agent_name?: string;
+  total_calls: number;
+  answered_calls: number;
+  missed_calls: number;
+  total_talk_time_sec: number;
+  hot_leads: number;
+  key1_count: number;
+}
+
+interface RpcPerformanceResult {
+  summary?: {
+    total_calls: number;
+    answered_calls: number;
+    missed_calls: number;
+    total_talk_time_sec: number;
+    avg_talk_time_sec: number;
+    hot_leads: number;
+    key1_count: number;
+  };
+  campaigns?: CampaignPerformanceMetric[];
+  advisors?: RpcAdvisorStat[];
+  recent_hot_calls?: Array<{
+    customer_phone: string;
+    agent_name: string;
+    call_duration: number;
+    dial_status: string;
+    pressed_key: string | null;
+    dial_time: string;
+  }>;
+}
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const admin = await verifyAdmin(request);
@@ -50,38 +83,148 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       nameToId.set(emp.full_name.toLowerCase().trim(), emp.id);
     });
 
-    // 2. Fetch call records across all pages (Supabase PostgREST 1000 limit)
-    const { count: totalCallCount } = await supabaseAdmin
-      .from('ivr_call_records')
-      .select('*', { count: 'exact', head: true });
-
-    const totalCount = totalCallCount || 0;
-    const PAGE_SIZE = 1000;
-    const pageCount = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
-
-    const pagePromises = Array.from({ length: Math.min(pageCount, 15) }, (_, i) =>
-      supabaseAdmin
-        .from('ivr_call_records')
-        .select(
-          'customer_phone, assigned_agent_id, agent_name, dial_status, call_duration, pressed_key, campaign_name, dial_time'
-        )
-        .range(i * PAGE_SIZE, (i + 1) * PAGE_SIZE - 1)
-    );
-
-    const pageResults = await Promise.all(pagePromises);
-    const rawCallRecords = pageResults.flatMap((r) => r.data || []);
-
-    // Date range filter cutoff
-    let timeCutoff: number | null = null;
+    // 2. Compute ISO cutoff timestamp for database filter push-down
+    let timeCutoffIso: string | null = null;
     const now = new Date();
     if (timeRange === 'today') {
       const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      timeCutoff = startOfDay.getTime();
+      timeCutoffIso = startOfDay.toISOString();
     } else if (timeRange === 'week') {
-      timeCutoff = now.getTime() - 7 * 24 * 60 * 60 * 1000;
+      timeCutoffIso = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
     } else if (timeRange === 'month') {
-      timeCutoff = now.getTime() - 30 * 24 * 60 * 60 * 1000;
+      timeCutoffIso = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
     }
+
+    const advisorUuid = advisorFilter !== 'all' ? advisorFilter : null;
+
+    // 3. Primary Path: Execute high-speed PostgreSQL RPC function
+    let rpcData: RpcPerformanceResult | null = null;
+    try {
+      const { data, error } = await supabaseAdmin.rpc('get_telecalling_performance', {
+        p_time_cutoff: timeCutoffIso,
+        p_advisor_id: advisorUuid,
+      });
+
+      if (!error && data && typeof data === 'object') {
+        rpcData = data as RpcPerformanceResult;
+      }
+    } catch {
+      // Fall through to direct query fallback
+    }
+
+    // 4. If RPC succeeded, build response with site visits in <50ms
+    if (rpcData && rpcData.summary) {
+      // Fetch site visits from chat_leads
+      const { data: siteVisitLeads } = await supabaseAdmin
+        .from('chat_leads')
+        .select('assigned_to')
+        .not('site_visit_at', 'is', null);
+
+      if (siteVisitLeads) {
+        for (const lead of siteVisitLeads) {
+          if (lead.assigned_to && advisorMap.has(lead.assigned_to)) {
+            const metric = advisorMap.get(lead.assigned_to)!;
+            metric.site_visits_booked++;
+          }
+        }
+      }
+
+      // Merge RPC advisor metrics into advisorMap
+      (rpcData.advisors || []).forEach((adv) => {
+        let empId = adv.advisor_id;
+        if (!empId || !advisorMap.has(empId)) {
+          const norm = (adv.agent_name || '').toLowerCase().trim();
+          if (nameToId.has(norm)) {
+            empId = nameToId.get(norm);
+          }
+        }
+
+        if (empId && advisorMap.has(empId)) {
+          const m = advisorMap.get(empId)!;
+          m.total_calls = adv.total_calls;
+          m.answered_calls = adv.answered_calls;
+          m.missed_calls = adv.missed_calls;
+          m.total_talk_time_sec = adv.total_talk_time_sec;
+          m.avg_talk_time_sec =
+            adv.answered_calls > 0 ? Math.round(adv.total_talk_time_sec / adv.answered_calls) : 0;
+          m.answer_rate =
+            adv.total_calls > 0 ? Math.round((adv.answered_calls / adv.total_calls) * 100) : 0;
+          m.hot_leads = adv.hot_leads;
+          m.key1_count = adv.key1_count;
+        } else if (empId) {
+          // Unassigned or legacy profile
+          advisorMap.set(empId, {
+            advisor_id: empId,
+            advisor_name: adv.agent_name || 'Advisor',
+            phone: null,
+            role: 'employee',
+            total_calls: adv.total_calls,
+            answered_calls: adv.answered_calls,
+            missed_calls: adv.missed_calls,
+            answer_rate:
+              adv.total_calls > 0 ? Math.round((adv.answered_calls / adv.total_calls) * 100) : 0,
+            total_talk_time_sec: adv.total_talk_time_sec,
+            avg_talk_time_sec:
+              adv.answered_calls > 0 ? Math.round(adv.total_talk_time_sec / adv.answered_calls) : 0,
+            hot_leads: adv.hot_leads,
+            site_visits_booked: 0,
+            key1_count: adv.key1_count,
+          });
+        }
+      });
+
+      const leaderboard: AdvisorPerformanceMetric[] = Array.from(advisorMap.values());
+      leaderboard.sort((a, b) => {
+        if (b.answered_calls !== a.answered_calls) {
+          return b.answered_calls - a.answered_calls;
+        }
+        if (b.hot_leads !== a.hot_leads) {
+          return b.hot_leads - a.hot_leads;
+        }
+        return b.total_calls - a.total_calls;
+      });
+
+      const sum = rpcData.summary;
+      const overallAnswerRate =
+        sum.total_calls > 0 ? Math.round((sum.answered_calls / sum.total_calls) * 100) : 0;
+
+      return NextResponse.json({
+        success: true,
+        summary: {
+          total_calls: sum.total_calls,
+          answered_calls: sum.answered_calls,
+          missed_calls: sum.missed_calls,
+          answer_rate: overallAnswerRate,
+          total_talk_time_sec: sum.total_talk_time_sec,
+          avg_talk_time_sec: sum.avg_talk_time_sec,
+          hot_leads: sum.hot_leads,
+          key1_count: sum.key1_count,
+          active_advisors: leaderboard.filter((a) => a.total_calls > 0).length,
+          total_roster_count: leaderboard.length,
+        },
+        leaderboard,
+        campaigns: rpcData.campaigns || [],
+        recent_hot_calls: rpcData.recent_hot_calls || [],
+      });
+    }
+
+    // 5. Fallback Path: Query with PUSH-DOWN filters at the database level
+    let dbQuery = supabaseAdmin
+      .from('ivr_call_records')
+      .select(
+        'customer_phone, assigned_agent_id, agent_name, dial_status, call_duration, pressed_key, campaign_name, dial_time'
+      );
+
+    if (timeCutoffIso) {
+      dbQuery = dbQuery.gte('dial_time', timeCutoffIso);
+    }
+    if (advisorUuid) {
+      dbQuery = dbQuery.eq('assigned_agent_id', advisorUuid);
+    }
+
+    const { data: rawRecords } = await dbQuery.order('dial_time', { ascending: false }).limit(5000);
+
+    const rawCallRecords = rawRecords || [];
 
     let totalCalls = 0;
     let answeredCalls = 0;
@@ -101,20 +244,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }> = [];
 
     for (const rec of rawCallRecords) {
-      // Apply time filter
-      if (timeCutoff && rec.dial_time) {
-        const dialTs = new Date(rec.dial_time).getTime();
-        if (dialTs < timeCutoff) continue;
-      }
-
-      // Apply advisor filter if specific advisor selected
-      if (advisorFilter !== 'all') {
-        const directMatch = rec.assigned_agent_id === advisorFilter;
-        const nameMatch =
-          nameToId.get((rec.agent_name || '').toLowerCase().trim()) === advisorFilter;
-        if (!directMatch && !nameMatch) continue;
-      }
-
       totalCalls++;
       const isAnswered = rec.dial_status === 'ANSWER';
       const duration = Number(rec.call_duration) || 0;
@@ -143,7 +272,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
       if (rec.pressed_key === '1') totalKey1++;
 
-      // Campaign aggregation
       const cName = rec.campaign_name || 'General IVR Campaign';
       if (!campaignMap.has(cName)) {
         campaignMap.set(cName, {
@@ -161,7 +289,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       else camp.missed_calls++;
       if (isHot) camp.hot_leads++;
 
-      // Advisor aggregation
       let empId = rec.assigned_agent_id;
       if (!empId || !advisorMap.has(empId)) {
         const normName = (rec.agent_name || '').toLowerCase().trim();
@@ -184,7 +311,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // 3. Count site visits from chat_leads
+    // Site visits from chat_leads
     const { data: siteVisitLeads } = await supabaseAdmin
       .from('chat_leads')
       .select('assigned_to')
@@ -199,7 +326,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       }
     }
 
-    // 4. Calculate answer rates and averages for advisors
     const leaderboard: AdvisorPerformanceMetric[] = Array.from(advisorMap.values()).map((m) => {
       const answer_rate =
         m.total_calls > 0 ? Math.round((m.answered_calls / m.total_calls) * 100) : 0;
@@ -212,7 +338,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       };
     });
 
-    // Sort by answered_calls DESC, then hot_leads DESC
     leaderboard.sort((a, b) => {
       if (b.answered_calls !== a.answered_calls) {
         return b.answered_calls - a.answered_calls;
@@ -223,7 +348,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       return b.total_calls - a.total_calls;
     });
 
-    // Calculate campaign answer rates
     const campaigns: CampaignPerformanceMetric[] = Array.from(campaignMap.values()).map((c) => ({
       ...c,
       answer_rate: c.total_calls > 0 ? Math.round((c.answered_calls / c.total_calls) * 100) : 0,
