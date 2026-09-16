@@ -112,7 +112,7 @@ export function StatementPdfTemplate({
                 textTransform: 'uppercase',
               }}
             >
-              SHREE VENKATESHWARA INFRASTRUCTURE PVT. LTD.
+              SVI INFRA SOLUTIONS PVT. LTD.
             </h1>
             <p
               style={{
@@ -565,19 +565,48 @@ export function StatementPdfTemplate({
           </p>
         </div>
 
-        <div style={{ textAlign: 'center', width: '200px' }}>
+        <div style={{ textAlign: 'center', width: '220px', position: 'relative' }}>
           <div
             style={{
-              borderBottom: '1px solid #000000',
-              width: '160px',
-              margin: '0 auto 6px',
-              height: '35px',
+              position: 'relative',
+              height: '65px',
+              display: 'flex',
+              alignItems: 'flex-end',
+              justifyContent: 'center',
             }}
-          />
-          <div style={{ fontSize: '11px', fontWeight: 800, color: '#0F2942' }}>
-            Authorized Signatory
+          >
+            <img
+              src="/signature.png"
+              alt="Director Signature"
+              style={{
+                position: 'absolute',
+                bottom: '-2px',
+                height: '75px',
+                width: 'auto',
+                objectFit: 'contain',
+                mixBlendMode: 'multiply',
+                pointerEvents: 'none',
+              }}
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+              }}
+            />
           </div>
-          <div style={{ fontSize: '9.5px', color: '#64748B' }}>SVI Infra Solutions Pvt. Ltd.</div>
+          <div
+            style={{
+              borderTop: '2px solid #000000',
+              width: '180px',
+              margin: '0 auto 6px',
+              paddingTop: '6px',
+            }}
+          >
+            <div style={{ fontSize: '11px', fontWeight: 800, color: '#0F2942' }}>
+              Authorized Signatory
+            </div>
+            <div style={{ fontSize: '9.5px', fontWeight: 700, color: '#64748B' }}>
+              SVI Infra Solutions Pvt. Ltd.
+            </div>
+          </div>
         </div>
       </div>
     </div>

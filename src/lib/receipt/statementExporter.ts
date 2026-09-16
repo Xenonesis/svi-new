@@ -91,7 +91,7 @@ export async function exportStatementExcel({
     // ── 2. Top Corporate Header ─────────────────────────────────────────────
     worksheet.mergeCells('C1:H1');
     const titleCell = worksheet.getCell('C1');
-    titleCell.value = 'SHREE VENKATESHWARA INFRASTRUCTURE PVT. LTD.';
+    titleCell.value = 'SVI INFRA SOLUTIONS PVT. LTD.';
     titleCell.font = { name: 'Calibri', size: 14, bold: true, color: { argb: 'FF0F2942' } };
     titleCell.alignment = { vertical: 'middle', horizontal: 'left' };
 
@@ -320,7 +320,33 @@ export async function exportStatementExcel({
       worksheet.getRow(r).getCell(8).border = medBorder;
     }
 
-    // ── 12. Write and Trigger File Download ─────────────────────────────────
+    // ── 12. Embed Director Signature in Excel ────────────────────────────────
+    try {
+      const sigRes = await fetch('/signature.png');
+      if (sigRes.ok) {
+        const sigBuffer = await sigRes.arrayBuffer();
+        const sigId = workbook.addImage({
+          buffer: sigBuffer,
+          extension: 'png',
+        });
+        worksheet.addImage(sigId, {
+          tl: { col: 6.2, row: sumRow + 1.2 },
+          ext: { width: 130, height: 45 },
+        });
+      }
+    } catch (sigErr) {
+      console.warn('Could not embed signature image into Excel:', sigErr);
+    }
+
+    const sigRowIdx = sumRow + 4;
+    worksheet.mergeCells(`G${sigRowIdx}:H${sigRowIdx}`);
+    const sigLabelCell = worksheet.getCell(`G${sigRowIdx}`);
+    sigLabelCell.value = 'Authorized Signatory\nSVI Infra Solutions Pvt. Ltd.';
+    sigLabelCell.font = { name: 'Calibri', size: 10, bold: true, color: { argb: 'FF0F2942' } };
+    sigLabelCell.alignment = { vertical: 'middle', horizontal: 'center', wrapText: true };
+    worksheet.getRow(sigRowIdx).height = 28;
+
+    // ── 13. Write and Trigger File Download ─────────────────────────────────
     const buffer = await workbook.xlsx.writeBuffer();
     const blob = new Blob([buffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
