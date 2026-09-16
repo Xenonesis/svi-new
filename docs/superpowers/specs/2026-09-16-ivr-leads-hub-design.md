@@ -125,18 +125,18 @@ Located at `app/admin/leads/page.tsx` with sidebar navigation entry in `AdminSid
    - Direct CSV upload dropzone.
    - Advisor filter chips (`All`, `Shivam Yadav`, `Shikha Tomar`, `Khushi Pal`, `Manish Sharma`, `Unassigned`).
    - Temperature filter chips (`All`, `🔥 Hot`, `⚡ Warm`, `❄️ Cold`).
+   - **Dial Status filter chips (`All`, `🟢 Answered`, `🔴 Not Answered / Missed`)**.
    - Search bar (by customer phone or advisor name).
    - Data Table:
      - Customer Phone (with quick Call & WhatsApp buttons)
      - Advisor (with reassignment dropdown)
+     - **Dial Status Badge** (Clear, prominent badge: `🟢 Answered` vs `🔴 Not Answered` as per CSV data)
      - Call Duration (formatted in MM:SS with visual duration meter)
      - Pressed Key badge (`Key 1`, `Key 2`, etc.)
-     - Dial Status (`ANSWER`, `NOANSWER`)
      - Temperature Pill (with 1-click manual override)
      - Dial Timestamp
-2. **Tab 2: 🤖 AI Chatbot Leads**
    - Integrates existing web chatbot leads with conversation transcript modal.
-3. **Tab 3: 🌐 All Leads Overview**
+2. **Tab 3: 🌐 All Leads Overview**
    - Global pipeline overview, stage conversion funnel, and team workload distribution.
 
 ### 4.3 Key User Actions
