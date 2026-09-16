@@ -30,6 +30,7 @@ export default tseslint.config(
       '.claude/**',
       '.agents/**',
       '.gitnexus/**',
+      '.kilo/**',
       '**/*.cjs',
     ],
   },
@@ -47,6 +48,7 @@ export default tseslint.config(
       ecmaVersion: 2024,
       sourceType: 'module',
       parserOptions: {
+        tsconfigRootDir: import.meta.dirname,
         ecmaFeatures: {
           jsx: true,
         },

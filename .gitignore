@@ -81,7 +81,7 @@ test-results/
 !.crew/artifacts/.gitkeep
 !.crew/graphs/.gitkeep.agents/skills/
 .agents/
-
+.kilo/
 # Capacitor
 # Uncomment to ignore native platform folders (not recommended for team projects)
 # android/
