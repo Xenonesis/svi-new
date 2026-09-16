@@ -49,8 +49,19 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       .from('ivr_call_records')
       .select('*, assigned_agent:assigned_agent_id(id, full_name, phone)', { count: 'exact' });
 
+    let advisorName: string | null = null;
     if (advisorId && advisorId !== 'all') {
-      query = query.eq('assigned_agent_id', advisorId);
+      const { data: advProfile } = await supabaseAdmin
+        .from('profiles')
+        .select('full_name')
+        .eq('id', advisorId)
+        .maybeSingle();
+      advisorName = advProfile?.full_name?.trim() || null;
+      if (advisorName) {
+        query = query.or(`assigned_agent_id.eq.${advisorId},agent_name.ilike.%${advisorName}%`);
+      } else {
+        query = query.eq('assigned_agent_id', advisorId);
+      }
     }
     if (dialStatus && dialStatus !== 'all') {
       query = query.eq('dial_status', dialStatus.toUpperCase());
@@ -236,10 +247,18 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         .select('*', { count: 'exact', head: true });
 
       if (advisorId && advisorId !== 'all') {
-        ansQuery = ansQuery.eq('assigned_agent_id', advisorId);
-        noansQuery = noansQuery.eq('assigned_agent_id', advisorId);
-        hotLeadQuery = hotLeadQuery.eq('assigned_agent_id', advisorId);
-        totalScopeQuery = totalScopeQuery.eq('assigned_agent_id', advisorId);
+        if (advisorName) {
+          const advOr = `assigned_agent_id.eq.${advisorId},agent_name.ilike.%${advisorName}%`;
+          ansQuery = ansQuery.or(advOr);
+          noansQuery = noansQuery.or(advOr);
+          hotLeadQuery = hotLeadQuery.or(advOr);
+          totalScopeQuery = totalScopeQuery.or(advOr);
+        } else {
+          ansQuery = ansQuery.eq('assigned_agent_id', advisorId);
+          noansQuery = noansQuery.eq('assigned_agent_id', advisorId);
+          hotLeadQuery = hotLeadQuery.eq('assigned_agent_id', advisorId);
+          totalScopeQuery = totalScopeQuery.eq('assigned_agent_id', advisorId);
+        }
       }
 
       const [totalScopeRes, ansRes, noansRes, hotRes] = await Promise.all([
@@ -248,7 +267,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         noansQuery,
         hotLeadQuery,
       ]);
-
       const ansCount = ansRes.count || 0;
       const noansCount = noansRes.count || 0;
       const hotCount = hotRes.count || 0;

@@ -110,6 +110,14 @@ export function resolveAdvisorId(
     const manish = profiles.find((p) => p.full_name.toLowerCase().includes('manish'));
     if (manish) return manish.id;
   }
+  if (normAgentName.includes('soniya')) {
+    const soniya = profiles.find((p) => p.full_name.toLowerCase().includes('soniya'));
+    if (soniya) return soniya.id;
+  }
+  if (normAgentName.includes('kajal')) {
+    const kajal = profiles.find((p) => p.full_name.toLowerCase().includes('kajal'));
+    if (kajal) return kajal.id;
+  }
 
   return null;
 }
