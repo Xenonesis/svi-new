@@ -455,6 +455,27 @@
       "serviceDevelopment": "Project Development"
     },
     "contact": {
+      "info": {
+        "address": {
+          "title": "Corporate Office",
+          "line1": "Block E-220, 2nd Floor",
+          "line2": "Sector 63, Noida, UP 201309"
+        },
+        "phone": {
+          "title": "Call Us"
+        },
+        "email": {
+          "title": "Email Us"
+        },
+        "hours": {
+          "title": "Working Hours",
+          "weekdays": "Mon - Fri: 9:00 AM - 7:00 PM",
+          "saturday": "Saturday: 9:00 AM - 5:00 PM",
+          "sunday": "Sunday: 10:00 AM - 4:00 PM",
+          "open": "Office Open Now",
+          "closed": "Closed Now"
+        }
+      },
       "title": "Contact Us",
       "heading": "Get In Touch",
       "reachOut": "Reach Out",
