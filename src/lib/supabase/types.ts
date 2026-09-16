@@ -22,6 +22,7 @@ export interface CreateUserPayload {
   property_interest?: string;
   notes?: string;
   real_email?: string;
+  role?: string;
   is_active?: boolean;
 }
 

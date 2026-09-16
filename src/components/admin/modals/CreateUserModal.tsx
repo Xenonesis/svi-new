@@ -21,7 +21,7 @@ import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { INPUT_CLS, LABEL_CLS, MODAL_OVERLAY_CLASS } from '../helpers/formStyles';
 import { getDisplayProperties, togglePropertySelection } from '../helpers/propertyUtils';
 import { generateSviEmail } from '@/src/lib/utils/sviEmailGenerator';
-
+import { RoleSelect } from '../helpers/RoleSelect';
 interface CreateUserModalProps {
   onClose: () => void;
   onSuccess: () => void;
@@ -36,10 +36,10 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
     real_email: '',
     password: '',
     phone: '',
+    role: 'client',
     property_interest: '',
     notes: '',
   });
-
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -276,6 +276,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
           real_email: realEmail,
           password,
           phone,
+          role: form.role,
           property_interest: propertyInterest,
           notes,
         }),
@@ -461,6 +462,7 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   value={form.phone}
                   onChange={handleChange}
                   required
+                  autoComplete="off"
                   placeholder="9876543210"
                   className={`${inputCls} pr-10 pl-9 ${
                     uniqueErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''
@@ -481,6 +483,14 @@ export function CreateUserModal({ onClose, onSuccess, token, properties }: Creat
                   {uniqueErrors.phone}
                 </p>
               )}
+            </div>
+
+            <div className="col-span-2">
+              <RoleSelect
+                role={form.role}
+                onRoleChange={(newRole) => setForm((prev) => ({ ...prev, role: newRole }))}
+                label="Account Role *"
+              />
             </div>
 
             <div className="col-span-2">

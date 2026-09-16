@@ -173,13 +173,21 @@ export async function POST(request: NextRequest) {
         }
       }
     }
+    const rawRole = (body.role || 'client').toString().trim().toLowerCase();
+    const allowedRoles = ['client', 'employee', 'admin'];
+    const assignedRole = (allowedRoles.includes(rawRole) ? rawRole : 'client') as
+      'client' | 'employee' | 'admin';
+
     // 1. Create the auth user via admin API (bypasses email confirmation)
     const { data: authData, error: authError } = await supabaseAdmin.auth.admin.createUser({
       email,
       password,
       email_confirm: true, // auto-confirm so they can log in immediately
+      user_metadata: {
+        full_name: fullName,
+        role: assignedRole,
+      },
     });
-
     if (authError) {
       const rawMsg = authError.message || '';
       if (
@@ -210,7 +218,7 @@ export async function POST(request: NextRequest) {
       phone: phone || null,
       property_interest: propertyInterest || null,
       notes: notes || null,
-      role: 'client' as const,
+      role: assignedRole,
       created_by: admin.id,
       real_email: realEmail || null,
     };
