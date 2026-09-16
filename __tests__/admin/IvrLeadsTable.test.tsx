@@ -84,4 +84,58 @@ describe('IvrLeadsTable Component', () => {
 
     expect(handleFilterChange).toHaveBeenCalled();
   });
+
+  it('opens advisor filter dropdown and triggers onFilterChange when an advisor is selected', () => {
+    const handleFilterChange = vi.fn();
+    const mockEmployees = [
+      {
+        id: 'emp-shivam',
+        full_name: 'Shivam Yadav',
+        email: 'shivam@svi.com',
+        phone: '9218300593',
+        role: 'employee' as const,
+        notes: '',
+        created_at: '',
+      },
+      {
+        id: 'emp-kajal',
+        full_name: 'Kajal Vishu',
+        email: 'kajal@svi.com',
+        phone: '9218300590',
+        role: 'employee' as const,
+        notes: '',
+        created_at: '',
+      },
+    ];
+
+    render(
+      <IvrLeadsTable
+        records={mockRecords}
+        totalCount={2}
+        page={1}
+        limit={25}
+        loading={false}
+        onPageChange={vi.fn()}
+        onFilterChange={handleFilterChange}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={mockEmployees}
+      />
+    );
+
+    // Open the advisor dropdown button
+    const advisorButton = screen.getByRole('button', { name: /filter by assigned advisor/i });
+    fireEvent.click(advisorButton);
+
+    // Options should be visible
+    expect(screen.getAllByText('Kajal Vishu').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('Shivam Yadav').length).toBeGreaterThanOrEqual(1);
+    // Click on Kajal Vishu from the dropdown
+    const kajalOption = screen.getAllByRole('option', { name: /kajal vishu/i })[0];
+    fireEvent.click(kajalOption);
+
+    expect(handleFilterChange).toHaveBeenCalledWith(
+      expect.objectContaining({ advisor_id: 'emp-kajal' })
+    );
+  });
 });

@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import {
@@ -12,12 +13,14 @@ import {
   Snowflake,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Search,
   CheckCircle2,
   XCircle,
   Sparkles,
+  UserCheck,
+  Check,
 } from 'lucide-react';
-
 export interface IvrFilterState {
   dial_status: 'all' | 'ANSWER' | 'NOANSWER';
   temperature: 'all' | 'hot' | 'warm' | 'cold';
@@ -50,6 +53,173 @@ function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
+interface AdvisorFilterDropdownProps {
+  employees: Employee[];
+  selectedAdvisorId: string;
+  onChange: (id: string) => void;
+}
+
+export function AdvisorFilterDropdown({
+  employees,
+  selectedAdvisorId,
+  onChange,
+}: AdvisorFilterDropdownProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  const selectedEmployee = employees.find((e) => e.id === selectedAdvisorId);
+  const selectedLabel = selectedEmployee ? selectedEmployee.full_name : 'All Advisors';
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        setIsOpen(false);
+      }
+    }
+    if (isOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen]);
+
+  const filteredEmployees = employees.filter((emp) =>
+    emp.full_name.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div ref={dropdownRef} className="relative">
+      <button
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-all ${
+          selectedAdvisorId !== 'all'
+            ? 'border-brand-gold/40 bg-brand-gold/10 text-brand-gold font-semibold shadow-sm'
+            : 'border-gray-200 bg-gray-50/80 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10 dark:hover:text-white'
+        }`}
+        aria-expanded={isOpen}
+        aria-haspopup="listbox"
+        aria-label="Filter by assigned advisor"
+      >
+        <UserCheck
+          className={`h-3.5 w-3.5 ${
+            selectedAdvisorId !== 'all' ? 'text-brand-gold' : 'text-gray-400 dark:text-gray-400'
+          }`}
+        />
+        <span className="max-w-[140px] truncate">{selectedLabel}</span>
+        <ChevronDown
+          className={`h-3 w-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+        />
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 4, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 4, scale: 0.98 }}
+            transition={{ duration: 0.15 }}
+            className="absolute top-full left-0 z-50 mt-1.5 max-w-[280px] min-w-[240px] rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#12121a]"
+            role="listbox"
+          >
+            {employees.length > 5 && (
+              <div className="p-1 pb-1.5">
+                <div className="relative">
+                  <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
+                  <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Search advisor..."
+                    className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pr-3 pl-8 text-xs text-gray-900 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                    autoFocus
+                  />
+                </div>
+              </div>
+            )}
+
+            <div className="max-h-[260px] space-y-0.5 overflow-x-hidden overflow-y-auto">
+              {/* All Advisors Option */}
+              <button
+                type="button"
+                onClick={() => {
+                  onChange('all');
+                  setIsOpen(false);
+                }}
+                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs transition-colors ${
+                  selectedAdvisorId === 'all'
+                    ? 'bg-brand-gold/15 text-brand-gold font-semibold'
+                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-white'
+                }`}
+                role="option"
+                aria-selected={selectedAdvisorId === 'all'}
+              >
+                <div className="flex items-center gap-2">
+                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200/70 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
+                    ALL
+                  </div>
+                  <span>All Advisors</span>
+                </div>
+                {selectedAdvisorId === 'all' && <Check className="text-brand-gold h-3.5 w-3.5" />}
+              </button>
+
+              {/* Individual Advisor Options */}
+              {filteredEmployees.map((emp) => {
+                const isSelected = selectedAdvisorId === emp.id;
+                const initials = emp.full_name
+                  .split(' ')
+                  .map((n) => n[0])
+                  .filter(Boolean)
+                  .slice(0, 2)
+                  .join('')
+                  .toUpperCase();
+
+                return (
+                  <button
+                    key={emp.id}
+                    type="button"
+                    onClick={() => {
+                      onChange(emp.id);
+                      setIsOpen(false);
+                    }}
+                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs transition-colors ${
+                      isSelected
+                        ? 'bg-brand-gold/15 text-brand-gold font-semibold'
+                        : 'text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-white'
+                    }`}
+                    role="option"
+                    aria-selected={isSelected}
+                  >
+                    <div className="flex min-w-0 items-center gap-2">
+                      <div className="bg-brand-gold/15 text-brand-gold flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
+                        {initials}
+                      </div>
+                      <span className="truncate">{emp.full_name}</span>
+                    </div>
+                    {isSelected && <Check className="text-brand-gold h-3.5 w-3.5 shrink-0" />}
+                  </button>
+                );
+              })}
+
+              {filteredEmployees.length === 0 && (
+                <div className="px-3 py-4 text-center text-xs text-gray-400">No advisors found</div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
 }
 
 export function IvrLeadsTable({
@@ -87,8 +257,7 @@ export function IvrLeadsTable({
     onFilterChange({ temperature: temp });
   };
 
-  const handleAdvisorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const val = e.target.value;
+  const handleAdvisorChange = (val: string) => {
     setActiveAdvisor(val);
     onFilterChange({ advisor_id: val });
   };
@@ -110,19 +279,11 @@ export function IvrLeadsTable({
             />
           </form>
 
-          <select
-            value={activeAdvisor}
+          <AdvisorFilterDropdown
+            employees={employees}
+            selectedAdvisorId={activeAdvisor}
             onChange={handleAdvisorChange}
-            aria-label="Filter by assigned advisor"
-            className="focus:border-brand-gold rounded-xl border border-gray-200 bg-gray-50/70 px-3 py-2 text-xs font-medium text-gray-700 transition-colors focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-          >
-            <option value="all">All Advisors</option>
-            {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>
-                {emp.full_name}
-              </option>
-            ))}
-          </select>
+          />
         </div>
 
         {/* Right: Dial Status & Temperature Quick Filters */}
@@ -295,11 +456,21 @@ export function IvrLeadsTable({
                             onReassignAdvisor(record.id, record.customer_phone, e.target.value)
                           }
                           aria-label={`Assigned advisor for ${record.customer_phone}`}
-                          className="focus:border-brand-gold rounded-lg border border-transparent bg-transparent py-1 text-xs font-medium text-gray-800 transition-colors hover:border-gray-200 focus:bg-white focus:outline-none dark:text-gray-200 dark:hover:border-white/10 dark:focus:bg-[#1a1a24]"
+                          style={{ colorScheme: 'dark light' }}
+                          className="focus:border-brand-gold rounded-lg border border-transparent bg-transparent py-1 text-xs font-medium text-gray-800 transition-colors hover:border-gray-200 focus:bg-white focus:outline-none dark:text-gray-200 dark:hover:border-white/10 dark:focus:bg-[#1a1a24] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
                         >
-                          <option value="">{record.agent_name || 'Unassigned'}</option>
+                          <option
+                            value=""
+                            className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
+                          >
+                            {record.agent_name || 'Unassigned'}
+                          </option>
                           {employees.map((emp) => (
-                            <option key={emp.id} value={emp.id}>
+                            <option
+                              key={emp.id}
+                              value={emp.id}
+                              className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
+                            >
                               {emp.full_name}
                             </option>
                           ))}
@@ -369,7 +540,8 @@ export function IvrLeadsTable({
                             )
                           }
                           aria-label={`Lead temperature for ${record.customer_phone}`}
-                          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase transition-all focus:outline-none ${
+                          style={{ colorScheme: 'dark light' }}
+                          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase transition-all focus:outline-none [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white ${
                             record.temperature === 'hot'
                               ? 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400'
                               : record.temperature === 'warm'
@@ -377,9 +549,24 @@ export function IvrLeadsTable({
                                 : 'border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400'
                           }`}
                         >
-                          <option value="hot">🔥 Hot</option>
-                          <option value="warm">⚡ Warm</option>
-                          <option value="cold">❄️ Cold</option>
+                          <option
+                            value="hot"
+                            className="bg-white text-rose-600 dark:bg-[#161622] dark:text-rose-400"
+                          >
+                            🔥 Hot
+                          </option>
+                          <option
+                            value="warm"
+                            className="bg-white text-amber-600 dark:bg-[#161622] dark:text-amber-400"
+                          >
+                            ⚡ Warm
+                          </option>
+                          <option
+                            value="cold"
+                            className="bg-white text-blue-600 dark:bg-[#161622] dark:text-blue-400"
+                          >
+                            ❄️ Cold
+                          </option>
                         </select>
                       </td>
 
