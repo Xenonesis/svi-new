@@ -19,6 +19,22 @@ describe('supabaseImageLoader', () => {
     expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-320w.webp');
     expect(result).not.toContain('%2520');
   });
+  it('selects safe responsive variants for Shivani Vatika 11', () => {
+    const result = supabaseImageLoader({
+      src: '/Shivani Vatika 11/gate.png',
+      width: 640,
+    });
+    expect(result).toBe('/Shivani%20Vatika%2011/gate-640w.webp');
+    expect(result).not.toContain(' ');
+  });
+  it('selects safe responsive variants for Shivani Vatika 11 webp source', () => {
+    const result = supabaseImageLoader({
+      src: '/Shivani Vatika 11/gate.webp',
+      width: 640,
+    });
+    expect(result).toBe('/Shivani%20Vatika%2011/gate-640w.webp');
+    expect(result).not.toContain(' ');
+  });
 
   it('selects safe responsive variants for Shayam angan', () => {
     const result = supabaseImageLoader({

@@ -9,8 +9,8 @@ export function BrochureClosing() {
     >
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1510798831971-661eb04b3739?q=80&w=2187&auto=format&fit=crop"
-          alt="Golden Sunset"
+          src="/Shivani Vatika 11/middle4.webp"
+          alt="Shivani Vatika 11th Township"
           fill
           className="object-cover"
         />

@@ -33,7 +33,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const PROJECT_ROOT = join(__dirname, '..');
 const PUBLIC_DIR = join(PROJECT_ROOT, 'public');
 
-const TARGET_SUBDIRS = ['images', 'Shivani Vatika', 'Shayam angan'];
+const TARGET_SUBDIRS = ['images', 'Shivani Vatika 11', 'Shivani Vatika', 'Shayam angan'];
 
 const RESPONSIVE_SIZES = [320, 640, 1024, 1920];
 const WEBP_QUALITY = 80;

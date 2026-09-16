@@ -23,6 +23,8 @@ const RESPONSIVE_LOCAL_DIRS = [
   './images/',
   '/Shivani Vatika/',
   './Shivani Vatika/',
+  '/Shivani Vatika 11/',
+  './Shivani Vatika 11/',
   '/Shayam angan/',
   './Shayam angan/',
 ];

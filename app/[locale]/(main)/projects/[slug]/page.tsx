@@ -97,6 +97,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         image={project.heroImage}
         location={location}
         status={project.status}
+        url={`${SITE_URL}/projects/${slug}`}
       />
       <AnalyticsTracker event="project_view" data={{ slug }} />
 

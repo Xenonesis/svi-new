@@ -1,5 +1,3 @@
-'use client';
-
 import { SITE_URL, SITE_NAME } from '@/src/lib/seo';
 
 const ORG_SCHEMA = {
@@ -45,6 +43,7 @@ interface RealEstateProps {
   location: string;
   status?: string;
   price?: string;
+  url?: string;
 }
 
 export function OrganizationSchema() {
@@ -94,6 +93,7 @@ export function RealEstateListingSchema({
   location,
   status = 'InStock',
   price,
+  url = SITE_URL,
 }: RealEstateProps) {
   const schema = {
     '@context': 'https://schema.org',
@@ -101,13 +101,12 @@ export function RealEstateListingSchema({
     name,
     description,
     image: image.startsWith('http') ? image : `${SITE_URL}${image}`,
-    datePosted: new Date().toISOString().split('T')[0],
-    url: typeof window !== 'undefined' ? window.location.href : SITE_URL,
+    url,
     itemOffered: {
       '@type': 'Product',
       name,
       description,
-      image,
+      image: image.startsWith('http') ? image : `${SITE_URL}${image}`,
       offers: {
         '@type': 'Offer',
         availability: `https://schema.org/${status === 'Under Construction' ? 'PreOrder' : 'InStock'}`,

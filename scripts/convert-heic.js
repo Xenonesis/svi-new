@@ -4,7 +4,11 @@ import path from 'path';
 import heicConvert from 'heic-convert';
 
 const publicDir = path.join(process.cwd(), 'public');
-const dirs = [path.join(publicDir, 'Shivani Vatika'), path.join(publicDir, 'Shayam angan')];
+const dirs = [
+  path.join(publicDir, 'Shivani Vatika 11'),
+  path.join(publicDir, 'Shivani Vatika'),
+  path.join(publicDir, 'Shayam angan'),
+];
 
 async function convertHeicFiles() {
   for (const dir of dirs) {

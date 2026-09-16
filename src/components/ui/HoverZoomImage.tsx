@@ -2,7 +2,7 @@
 
 import { memo, useState, useEffect } from 'react';
 import Image from 'next/image';
-import { ImageIcon, AlertCircle } from 'lucide-react';
+import { ImageIcon, AlertCircle, RotateCw } from 'lucide-react';
 import blurManifest from '@/src/data/blur-data-urls.json';
 
 interface HoverZoomImageProps {
@@ -69,26 +69,83 @@ const HoverZoomImage = memo(function HoverZoomImage({
 
   return (
     <div
-      className={`hover-zoom-container relative h-full w-full overflow-hidden bg-slate-900 ${className}`}
+      className={`hover-zoom-container relative h-full w-full overflow-hidden bg-[#0c121e] ${className}`}
     >
       {/* Premium Shimmer Skeleton Loader */}
-      {!isLoaded && !hasError && showSkeleton && (
-        <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-slate-900/90 text-slate-400">
-          <div className="absolute inset-0 animate-pulse bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900" />
-          <div className="relative z-10 flex flex-col items-center gap-2">
-            <div className="bg-brand-navy/60 border-brand-gold/20 flex h-10 w-10 items-center justify-center rounded-full border shadow-inner">
-              <ImageIcon className="text-brand-gold/60 h-5 w-5 animate-pulse" />
+      {!hasError && showSkeleton && (
+        <div
+          className={`absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden bg-[#0c121e] transition-opacity duration-500 ease-out ${
+            isLoaded ? 'pointer-events-none opacity-0' : 'opacity-100'
+          }`}
+          aria-hidden={isLoaded}
+        >
+          {/* Sweeping Shimmer Beam */}
+          <div className="animate-image-shimmer via-brand-gold/[0.12] pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" />
+
+          {/* Micro Grid / Pattern Accent */}
+          <div className="pointer-events-none absolute inset-0 [background-image:radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-[0.03]" />
+
+          {/* Central Luxury Dual-Ring Loader */}
+          <div className="relative z-10 flex flex-col items-center gap-3 px-4 text-center">
+            <div className="relative flex items-center justify-center">
+              {/* Outer Golden Spinning Arc */}
+              <div className="border-brand-gold/20 border-t-brand-gold border-r-brand-gold/60 h-12 w-12 animate-spin rounded-full border-2 sm:h-14 sm:w-14" />
+
+              {/* Inner Glassmorphic Badge */}
+              <div className="bg-brand-navy/90 border-brand-gold/30 absolute flex h-9 w-9 items-center justify-center rounded-full border shadow-lg shadow-black/60 backdrop-blur-md sm:h-10 sm:w-10">
+                <ImageIcon className="text-brand-gold h-4 w-4 animate-pulse drop-shadow-[0_0_8px_rgba(212,175,55,0.5)] sm:h-5 sm:w-5" />
+              </div>
             </div>
+
+            {/* Subtle Brand Loading Status Indicator */}
+            <div className="flex flex-col items-center gap-1">
+              <span className="text-brand-gold/85 flex items-center gap-1.5 text-[10px] font-semibold tracking-[0.2em] uppercase drop-shadow-sm sm:text-[11px]">
+                Loading preview
+                <span className="inline-flex gap-1">
+                  <span
+                    className="bg-brand-gold/90 inline-block h-1 w-1 animate-ping rounded-full"
+                    style={{ animationDuration: '1.4s' }}
+                  />
+                  <span
+                    className="bg-brand-gold/70 inline-block h-1 w-1 animate-ping rounded-full"
+                    style={{ animationDuration: '1.4s', animationDelay: '0.2s' }}
+                  />
+                  <span
+                    className="bg-brand-gold/50 inline-block h-1 w-1 animate-ping rounded-full"
+                    style={{ animationDuration: '1.4s', animationDelay: '0.4s' }}
+                  />
+                </span>
+              </span>
+            </div>
+          </div>
+
+          {/* Bottom Gold Progress Accent Line */}
+          <div className="absolute right-0 bottom-0 left-0 h-[2px] overflow-hidden bg-white/5">
+            <div className="animate-image-progress via-brand-gold h-full w-full -translate-x-full bg-gradient-to-r from-transparent to-transparent" />
           </div>
         </div>
       )}
 
       {/* Error Fallback */}
       {hasError ? (
-        <div className="flex h-full w-full flex-col items-center justify-center bg-slate-900 p-6 text-center text-slate-400">
-          <AlertCircle className="mb-2 h-8 w-8 text-amber-500/70" />
-          <p className="text-xs font-semibold text-slate-300">Unable to load image</p>
-          <p className="mt-1 line-clamp-1 text-[11px] text-slate-500">{alt}</p>
+        <div className="flex h-full w-full flex-col items-center justify-center bg-[#0c121e] p-6 text-center text-slate-400">
+          <div className="mb-2 flex h-11 w-11 items-center justify-center rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-400 shadow-inner">
+            <AlertCircle className="h-5 w-5" />
+          </div>
+          <p className="text-xs font-semibold text-slate-200">Unable to load image</p>
+          <p className="mt-1 line-clamp-1 max-w-xs text-[11px] text-slate-500">{alt}</p>
+          <button
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              setHasError(false);
+              setIsLoaded(false);
+            }}
+            className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:border-brand-gold/50 hover:bg-brand-gold/20 mt-3 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-medium transition-all"
+          >
+            <RotateCw className="h-3 w-3" />
+            Retry
+          </button>
         </div>
       ) : (
         <Image
@@ -122,5 +179,4 @@ const HoverZoomImage = memo(function HoverZoomImage({
     </div>
   );
 });
-
 export default HoverZoomImage;

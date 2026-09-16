@@ -22,7 +22,7 @@ async function generatePDF() {
   await page.evaluate(() => window.scrollTo(0, 0));
   await page.waitForTimeout(5000);
   
-  const outputPath = path.join(__dirname, '../public/Shivani Vatika/shivani-vatika-11th-brochure.pdf');
+  const outputPath = path.join(__dirname, '../public/Shivani Vatika 11/shivani-vatika-11th-brochure.pdf');
   
   console.log(`Generating PDF to ${outputPath}...`);
   await page.pdf({

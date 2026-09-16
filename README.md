@@ -1505,7 +1505,7 @@ svi-new/
 │   │   ├── leadership1.png, leadership2.png, leadership3.png
 │   │   └── project1.png, project2.png
 │   ├── Shayam angan/              # Project images
-│   ├── Shivani Vatika/            # Project images
+│   ├── Shivani Vatika 11/         # Project images
 │   ├── a svi 1.mp4                # Hero video
 │   ├── logo.png                   # Company logo
 │   ├── signature.png              # Signature for documents

@@ -8,8 +8,8 @@ export function BrochureCover() {
     >
       <div className="absolute inset-0 z-0">
         <Image
-          src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=2075&auto=format&fit=crop"
-          alt="Luxury Entrance"
+          src="/Shivani Vatika 11/gate.webp"
+          alt="Shivani Vatika 11th Grand Entrance"
           fill
           className="object-cover"
           priority

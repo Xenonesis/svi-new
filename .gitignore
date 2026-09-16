@@ -64,6 +64,8 @@ replace_bba_3.py
 blog.html
 *.exe
 *.pdf
+!public/Shivani Vatika 11/*.pdf
+!public/Shivani Vatika 11/shivani-vatika-11th-brochure.pdf
 !public/Shivani Vatika/shivani-vatika-11th-brochure.pdf
 .playwright-mcp/
 
@@ -107,6 +109,6 @@ backups/
 # Local data & spreadsheet files
 *.xlsx
 *.xls
-
+report*.csv
 
 

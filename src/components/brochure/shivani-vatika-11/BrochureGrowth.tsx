@@ -37,8 +37,8 @@ export function BrochureGrowth() {
         <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-12">
           <div className="relative h-[600px] overflow-hidden rounded-3xl shadow-2xl lg:col-span-7">
             <Image
-              src="https://images.unsplash.com/photo-1598228723793-52759bba239c?q=80&w=1974&auto=format&fit=crop"
-              alt="Jaipur Landscape"
+              src="/Shivani Vatika 11/middle2.webp"
+              alt="Shivani Vatika 11th Site Connectivity"
               fill
               className="object-cover"
             />

@@ -491,6 +491,38 @@
   animation: bg-pan 8s ease-in-out infinite;
 }
 
+/* ─── High-End Image Skeleton Shimmer Animations ─── */
+@keyframes image-shimmer-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-image-shimmer {
+  animation: image-shimmer-sweep 2s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  will-change: transform;
+}
+
+@keyframes image-progress-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-image-progress {
+  animation: image-progress-sweep 1.8s ease-in-out infinite;
+  will-change: transform;
+}
+
 /* ─── Scroll-reveal utility (mobile-safe IntersectionObserver CSS alternative) ─── */
 .reveal {
   opacity: 0;

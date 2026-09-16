@@ -68,8 +68,8 @@ export function BrochureLifestyle() {
 
         <div className="relative mt-20 h-[400px] overflow-hidden rounded-3xl shadow-2xl md:h-[500px]">
           <Image
-            src="https://images.unsplash.com/photo-1605810230434-7631ac76ec81?q=80&w=2070&auto=format&fit=crop"
-            alt="Luxury Lifestyle"
+            src="/Shivani Vatika 11/middle.webp"
+            alt="Shivani Vatika 11th Township Development"
             fill
             className="object-cover"
           />
