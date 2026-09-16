@@ -863,19 +863,35 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                             </div>
 
                             {/* Answer Rate Badge */}
-                            <div className="flex flex-col items-end">
-                              <span
-                                className={`rounded-lg px-2.5 py-0.5 text-xs font-bold shadow-2xs ${
+                            {/* Answer Rate Status Capsule */}
+                            <div className="flex flex-col items-end gap-1">
+                              <div
+                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-2xs transition-colors ${
                                   advisor.answer_rate >= 50
-                                    ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
-                                    : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400'
+                                    : advisor.answer_rate >= 30
+                                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400'
+                                      : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
                                 }`}
                               >
-                                {advisor.answer_rate}% Ans
-                              </span>
-                              <span className="mt-0.5 font-mono text-[10px] text-gray-400 tabular-nums">
-                                {advisor.answered_calls}/{advisor.total_calls} calls
-                              </span>
+                                <span
+                                  className={`h-1.5 w-1.5 rounded-full ${
+                                    advisor.answer_rate >= 50
+                                      ? 'animate-pulse bg-emerald-500'
+                                      : advisor.answer_rate >= 30
+                                        ? 'bg-amber-500'
+                                        : 'bg-gray-400'
+                                  }`}
+                                />
+                                <span>{advisor.answer_rate}% Ans</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                  {advisor.answered_calls}
+                                </span>
+                                <span className="text-gray-400 dark:text-gray-600">/</span>
+                                <span>{advisor.total_calls} calls</span>
+                              </div>
                             </div>
                           </div>
 
@@ -1003,21 +1019,35 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                               </div>
                             </div>
 
-                            <div className="flex flex-col items-end">
-                              <span
-                                className={`rounded-lg px-2 py-0.5 text-xs font-bold ${
+                            {/* Answer Rate Status Capsule */}
+                            <div className="flex flex-col items-end gap-1">
+                              <div
+                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-2xs transition-colors ${
                                   advisor.answer_rate >= 50
-                                    ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400'
                                     : advisor.answer_rate >= 30
-                                      ? 'bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                      : 'bg-gray-100 text-gray-600 dark:bg-white/5 dark:text-gray-400'
+                                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400'
+                                      : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
                                 }`}
                               >
-                                {advisor.answer_rate}% Ans
-                              </span>
-                              <span className="mt-0.5 font-mono text-[10px] text-gray-400 tabular-nums">
-                                {advisor.answered_calls}/{advisor.total_calls} calls
-                              </span>
+                                <span
+                                  className={`h-1.5 w-1.5 rounded-full ${
+                                    advisor.answer_rate >= 50
+                                      ? 'animate-pulse bg-emerald-500'
+                                      : advisor.answer_rate >= 30
+                                        ? 'bg-amber-500'
+                                        : 'bg-gray-400'
+                                  }`}
+                                />
+                                <span>{advisor.answer_rate}% Ans</span>
+                              </div>
+                              <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
+                                <span className="font-bold text-gray-900 dark:text-white">
+                                  {advisor.answered_calls}
+                                </span>
+                                <span className="text-gray-400 dark:text-gray-600">/</span>
+                                <span>{advisor.total_calls} calls</span>
+                              </div>
                             </div>
                           </div>
 
