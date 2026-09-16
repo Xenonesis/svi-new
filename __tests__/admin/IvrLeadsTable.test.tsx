@@ -53,6 +53,12 @@ describe('IvrLeadsTable Component', () => {
     expect(screen.getByText('8744875331')).toBeDefined();
     expect(screen.getByText('8920260621')).toBeDefined();
 
+    // Check dual advisor columns: Attended By & Follow-up Advisor
+    expect(screen.getByText('Attended By')).toBeDefined();
+    expect(screen.getByText('Follow-up Advisor')).toBeDefined();
+    expect(
+      screen.getByRole('combobox', { name: 'Follow-up advisor for 8744875331' })
+    ).toBeDefined();
     // Check Answered vs Not Answered badges and filters
     expect(screen.getAllByText('Answered').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('Not Answered').length).toBeGreaterThanOrEqual(1);

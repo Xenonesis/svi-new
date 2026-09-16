@@ -56,7 +56,8 @@ export async function exportIvrLeadsToExcel(
     worksheet.columns = [
       { header: 'S.No', key: 'sno', width: 8 },
       { header: 'Customer Phone', key: 'phone', width: 18 },
-      { header: 'Assigned Advisor', key: 'advisor', width: 22 },
+      { header: 'Attended By', key: 'telecaller', width: 20 },
+      { header: 'Follow-up Advisor', key: 'advisor', width: 22 },
       { header: 'Dial Status', key: 'dial_status', width: 15 },
       { header: 'Call Duration (Sec)', key: 'duration', width: 18 },
       { header: 'Duration Formatted', key: 'duration_fmt', width: 18 },
@@ -92,6 +93,7 @@ export async function exportIvrLeadsToExcel(
       const row = worksheet.addRow({
         sno: idx + 1,
         phone: rec.customer_phone,
+        telecaller: rec.agent_name || 'Telecaller',
         advisor: rec.assigned_agent?.full_name || rec.agent_name || 'Unassigned',
         dial_status: rec.dial_status,
         duration: duration,
@@ -210,13 +212,14 @@ export async function exportIvrLeadsToPdf(
       doc.setFontSize(9);
       doc.setFont('helvetica', 'bold');
 
-      doc.text('S.No', 38, thY);
-      doc.text('Customer Phone', 80, thY);
-      doc.text('Assigned Advisor', 205, thY);
-      doc.text('Dial Status', 360, thY);
-      doc.text('Duration', 440, thY);
-      doc.text('DTMF Key', 515, thY);
-      doc.text('Temperature', 585, thY);
+      doc.text('S.No', 30, thY);
+      doc.text('Customer Phone', 65, thY);
+      doc.text('Attended By', 170, thY);
+      doc.text('Follow-up Advisor', 280, thY);
+      doc.text('Dial Status', 410, thY);
+      doc.text('Duration', 485, thY);
+      doc.text('Key', 545, thY);
+      doc.text('Temperature', 595, thY);
       doc.text('Dialed Timestamp', 675, thY);
     };
 
@@ -257,11 +260,12 @@ export async function exportIvrLeadsToPdf(
       doc.setTextColor(31, 41, 55);
 
       // Columns
-      doc.text(String(idx + 1), 38, currentY);
-      doc.text(rec.customer_phone, 80, currentY);
+      doc.text(String(idx + 1), 30, currentY);
+      doc.text(rec.customer_phone, 65, currentY);
+      doc.text((rec.agent_name || 'Telecaller').slice(0, 18), 170, currentY);
       doc.text(
-        (rec.assigned_agent?.full_name || rec.agent_name || 'Unassigned').slice(0, 22),
-        205,
+        (rec.assigned_agent?.full_name || rec.agent_name || 'Unassigned').slice(0, 20),
+        280,
         currentY
       );
 
@@ -338,7 +342,8 @@ export function exportIvrLeadsToCsv(
 
   const headers = [
     'Customer Phone',
-    'Assigned Advisor',
+    'Attended By',
+    'Follow-up Advisor',
     'Dial Status',
     'Call Duration (sec)',
     'Pressed Key',
@@ -354,7 +359,8 @@ export function exportIvrLeadsToCsv(
 
     return [
       `"${r.customer_phone}"`,
-      `"${r.assigned_agent?.full_name || r.agent_name || ''}"`,
+      `"${r.agent_name || 'Telecaller'}"`,
+      `"${r.assigned_agent?.full_name || r.agent_name || 'Unassigned'}"`,
       `"${r.dial_status}"`,
       r.call_duration,
       `"${r.pressed_key || ''}"`,

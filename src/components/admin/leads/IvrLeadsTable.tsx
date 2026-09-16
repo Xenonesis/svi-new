@@ -88,15 +88,20 @@ export function IvrTableSkeletonRows({ count = 8 }: { count?: number }) {
             </div>
           </td>
 
-          {/* Assigned Advisor */}
+          {/* Attended By */}
           <td className="px-4 py-3.5">
             <div className="flex items-center gap-2">
-              <div className="h-7 w-7 shrink-0 rounded-full bg-gray-200 dark:bg-white/10" />
+              <div className="h-6 w-6 shrink-0 rounded-full bg-gray-200 dark:bg-white/10" />
               <div className="flex flex-col gap-1">
-                <div className="h-3.5 w-24 rounded-md bg-gray-200 dark:bg-white/10" />
-                <div className="h-2.5 w-16 rounded bg-gray-100 dark:bg-white/5" />
+                <div className="h-3.5 w-20 rounded-md bg-gray-200 dark:bg-white/10" />
+                <div className="h-2.5 w-14 rounded bg-gray-100 dark:bg-white/5" />
               </div>
             </div>
+          </td>
+
+          {/* Follow-up Advisor */}
+          <td className="px-4 py-3.5">
+            <div className="h-7 w-28 rounded-lg bg-gray-200 dark:bg-white/10" />
           </td>
 
           {/* Dial Status */}
@@ -730,7 +735,8 @@ export function IvrLeadsTable({
                   />
                 </th>
                 <th className="px-5 py-3.5">Customer Contact</th>
-                <th className="px-4 py-3.5">Assigned Advisor</th>
+                <th className="px-4 py-3.5">Attended By</th>
+                <th className="px-4 py-3.5">Follow-up Advisor</th>
                 <th className="px-4 py-3.5">Dial Status</th>
                 <th className="px-4 py-3.5">Call Duration</th>
                 <th className="px-4 py-3.5">Pressed Key</th>
@@ -743,7 +749,7 @@ export function IvrLeadsTable({
                 <IvrTableSkeletonRows count={8} />
               ) : records.length === 0 ? (
                 <tr>
-                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={9} className="px-6 py-12 text-center text-gray-400">
                     No IVR call records found matching current filters.
                   </td>
                 </tr>
@@ -826,14 +832,33 @@ export function IvrLeadsTable({
                         </div>
                       </td>
 
-                      {/* Advisor & Reassignment Dropdown */}
+                      {/* 1. Attended By (Original Telecaller - Permanent / Read-Only) */}
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-2">
+                          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
+                            {record.agent_name ? record.agent_name.slice(0, 1).toUpperCase() : '?'}
+                          </div>
+                          <div className="min-w-0">
+                            <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
+                              {record.agent_name || 'Telecaller'}
+                            </p>
+                            {record.agent_phone && (
+                              <p className="font-mono text-[10px] text-gray-400">
+                                {record.agent_phone}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* 2. Follow-up Advisor (Assignable Lead Closer - Dropdown) */}
                       <td className="px-4 py-3.5">
                         <select
                           value={record.assigned_agent_id || ''}
                           onChange={(e) =>
                             onReassignAdvisor(record.id, record.customer_phone, e.target.value)
                           }
-                          aria-label={`Assigned advisor for ${record.customer_phone}`}
+                          aria-label={`Follow-up advisor for ${record.customer_phone}`}
                           style={{ colorScheme: 'dark light' }}
                           className="focus:border-brand-gold rounded-lg border border-transparent bg-transparent py-1 text-xs font-medium text-gray-800 transition-colors hover:border-gray-200 focus:bg-white focus:outline-none dark:text-gray-200 dark:hover:border-white/10 dark:focus:bg-[#1a1a24] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
                         >
@@ -841,7 +866,7 @@ export function IvrLeadsTable({
                             value=""
                             className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
                           >
-                            {record.agent_name || 'Unassigned'}
+                            {record.agent_name ? `${record.agent_name} (Attended)` : 'Unassigned'}
                           </option>
                           {employees.map((emp) => (
                             <option
@@ -1144,7 +1169,6 @@ export function IvrLeadsTable({
           temperature={drawerLead.temperature}
           employees={employees}
           onClose={() => setDrawerLead(null)}
-          token={token}
           onLeadUpdated={() => onFilterChange({})}
         />
       )}

@@ -166,7 +166,6 @@ export function useIvrLeadsManagement(
           ? {
               ...r,
               assigned_agent_id: advisorId || null,
-              agent_name: newName,
               assigned_agent: matchedEmployee ? { id: advisorId, full_name: newName } : null,
             }
           : r
