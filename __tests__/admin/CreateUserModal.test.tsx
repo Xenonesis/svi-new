@@ -20,7 +20,7 @@ describe('CreateUserModal', () => {
     }));
   });
 
-  it('automatically populates SVI Email Address when Full Name is typed', () => {
+  it('automatically populates SVI Email Address when Full Name is typed and keeps it read-only', () => {
     render(
       <CreateUserModal
         token="test-token"
@@ -31,44 +31,16 @@ describe('CreateUserModal', () => {
     );
 
     const nameInput = screen.getByPlaceholderText('Rajesh Kumar');
-    const sviEmailInput = screen.getByPlaceholderText('client@sviinfra.com') as HTMLInputElement;
+    const sviEmailInput = screen.getByPlaceholderText(
+      'Auto-generated from name...'
+    ) as HTMLInputElement;
 
     expect(sviEmailInput.value).toBe('');
+    expect(sviEmailInput.readOnly).toBe(true);
 
     fireEvent.change(nameInput, { target: { value: 'Aman Sharma' } });
-
     expect(sviEmailInput.value).toBe('aman.sharma@sviinfra.com');
   });
-
-  it('allows manual override of SVI email and shows auto-sync button', () => {
-    render(
-      <CreateUserModal
-        token="test-token"
-        onClose={vi.fn()}
-        onSuccess={vi.fn()}
-        properties={[{ name: 'Shivani Vatika', slug: 'shivani-vatika' }]}
-      />
-    );
-
-    const nameInput = screen.getByPlaceholderText('Rajesh Kumar');
-    const sviEmailInput = screen.getByPlaceholderText('client@sviinfra.com') as HTMLInputElement;
-
-    fireEvent.change(nameInput, { target: { value: 'Vikram Singh' } });
-    expect(sviEmailInput.value).toBe('vikram.singh@sviinfra.com');
-
-    // Manually edit the email
-    fireEvent.change(sviEmailInput, { target: { value: 'custom.vikram@sviinfra.com' } });
-    expect(sviEmailInput.value).toBe('custom.vikram@sviinfra.com');
-
-    // "Auto" button appears
-    const autoBtn = screen.getByRole('button', { name: /auto/i });
-    expect(autoBtn).toBeDefined();
-
-    // Clicking Auto button resets email to auto-generated from full name
-    fireEvent.click(autoBtn);
-    expect(sviEmailInput.value).toBe('vikram.singh@sviinfra.com');
-  });
-
   it('generates a strong random password on clicking Generate button', () => {
     render(
       <CreateUserModal
@@ -133,12 +105,12 @@ describe('CreateUserModal', () => {
     expect(notesTextarea.value).toContain('Site visit scheduled');
   });
 
-  it('displays suggested SVI email chip on duplicate conflict and allows 1-click apply', async () => {
+  it('automatically adopts suggested SVI email when unique check returns collision resolution', async () => {
     mockFetch.mockImplementation(async () => ({
       ok: true,
       json: async () => ({
         email_available: false,
-        email_error: 'An account with SVI email "wasi.haider@sviinfra.com" already exists.',
+        email_error: null,
         real_email_available: true,
         phone_available: true,
         suggested_svi_email: 'wasi.haider2@sviinfra.com',
@@ -154,23 +126,18 @@ describe('CreateUserModal', () => {
       />
     );
 
-    const sviEmailInput = screen.getByPlaceholderText('client@sviinfra.com') as HTMLInputElement;
+    const nameInput = screen.getByPlaceholderText('Rajesh Kumar');
+    const sviEmailInput = screen.getByPlaceholderText(
+      'Auto-generated from name...'
+    ) as HTMLInputElement;
 
-    // Manually type the email first (setting isEmailManualRef = true)
-    fireEvent.change(sviEmailInput, { target: { value: 'wasi.haider@sviinfra.com' } });
+    fireEvent.change(nameInput, { target: { value: 'Wasi Haider' } });
 
     await waitFor(
       () => {
-        expect(screen.getByText(/An account with SVI email/i)).toBeDefined();
-        expect(screen.getByText(/wasi.haider2@sviinfra.com/i)).toBeDefined();
+        expect(sviEmailInput.value).toBe('wasi.haider2@sviinfra.com');
       },
       { timeout: 3000 }
     );
-
-    const useThisBtn = screen.getByRole('button', { name: /use this/i });
-    expect(useThisBtn).toBeDefined();
-
-    fireEvent.click(useThisBtn);
-    expect(sviEmailInput.value).toBe('wasi.haider2@sviinfra.com');
   });
 });
