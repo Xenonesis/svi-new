@@ -6,7 +6,6 @@ import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import {
   Phone,
-  MessageCircle,
   Clock,
   Flame,
   Zap,
@@ -20,7 +19,14 @@ import {
   Sparkles,
   UserCheck,
   Check,
+  Download,
+  FileText,
+  Layers,
+  X,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { WhatsAppTemplateDropdown } from './WhatsAppTemplateDropdown';
+import { LeadDrawer, PipelineStage } from './LeadDrawer';
 export interface IvrFilterState {
   dial_status: 'all' | 'ANSWER' | 'NOANSWER';
   temperature: 'all' | 'hot' | 'warm' | 'cold';
@@ -239,7 +245,133 @@ export function IvrLeadsTable({
   const [activeDialStatus, setActiveDialStatus] = useState<'all' | 'ANSWER' | 'NOANSWER'>('all');
   const [activeTemp, setActiveTemp] = useState<'all' | 'hot' | 'warm' | 'cold'>('all');
   const [activeAdvisor, setActiveAdvisor] = useState<string>('all');
+  const [selectedPhones, setSelectedPhones] = useState<Set<string>>(new Set());
+  const [bulkLoading, setBulkLoading] = useState(false);
+  const [drawerLead, setDrawerLead] = useState<{
+    phone: string;
+    clientName?: string;
+    advisorId?: string | null;
+    advisorName?: string | null;
+    temperature?: 'hot' | 'warm' | 'cold';
+  } | null>(null);
 
+  const toggleSelectPhone = (phone: string) => {
+    setSelectedPhones((prev) => {
+      const next = new Set(prev);
+      if (next.has(phone)) next.delete(phone);
+      else next.add(phone);
+      return next;
+    });
+  };
+
+  const toggleSelectAll = () => {
+    if (selectedPhones.size === records.length) {
+      setSelectedPhones(new Set());
+    } else {
+      setSelectedPhones(new Set(records.map((r) => r.customer_phone)));
+    }
+  };
+
+  const handleBulkReassign = async (advisorId: string) => {
+    if (selectedPhones.size === 0) return;
+    const emp = employees.find((e) => e.id === advisorId);
+    const advisorName = emp?.full_name || 'Unassigned';
+    setBulkLoading(true);
+    try {
+      const res = await fetch('/api/admin/leads/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone_numbers: Array.from(selectedPhones),
+          action: 'reassign',
+          advisor_id: advisorId || null,
+          advisor_name: advisorName,
+        }),
+      });
+      if (res.ok) {
+        toast.success(`Reassigned ${selectedPhones.size} leads to ${advisorName}`);
+        setSelectedPhones(new Set());
+        onFilterChange({});
+      }
+    } catch {
+      toast.error('Bulk reassign failed');
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const handleBulkStage = async (stage: string) => {
+    if (selectedPhones.size === 0) return;
+    setBulkLoading(true);
+    try {
+      const res = await fetch('/api/admin/leads/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          phone_numbers: Array.from(selectedPhones),
+          action: 'stage',
+          stage,
+        }),
+      });
+      if (res.ok) {
+        toast.success(`Moved ${selectedPhones.size} leads to stage: ${stage}`);
+        setSelectedPhones(new Set());
+        onFilterChange({});
+      }
+    } catch {
+      toast.error('Bulk stage change failed');
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
+  const exportToCsv = () => {
+    const targetRecords =
+      selectedPhones.size > 0
+        ? records.filter((r) => selectedPhones.has(r.customer_phone))
+        : records;
+
+    if (targetRecords.length === 0) {
+      toast.error('No records to export');
+      return;
+    }
+
+    const headers = [
+      'Customer Phone',
+      'Assigned Advisor',
+      'Dial Status',
+      'Call Duration (sec)',
+      'Pressed Key',
+      'Lead Intent',
+      'Dialed At',
+    ];
+
+    const rows = targetRecords.map((r) => [
+      `"${r.customer_phone}"`,
+      `"${r.agent_name || ''}"`,
+      `"${r.dial_status}"`,
+      r.call_duration,
+      `"${r.pressed_key || ''}"`,
+      `"${r.temperature}"`,
+      `"${r.dial_time}"`,
+    ]);
+
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `svi-telecalling-leads-${new Date().toISOString().slice(0, 10)}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    toast.success(`Exported ${targetRecords.length} leads to CSV`);
+  };
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -374,6 +506,17 @@ export function IvrLeadsTable({
               <Snowflake className="h-3 w-3" /> Cold
             </button>
           </div>
+
+          {/* Quick Export CSV Button */}
+          <button
+            type="button"
+            onClick={exportToCsv}
+            className="flex items-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
+            title="Export records to CSV"
+          >
+            <Download className="text-brand-gold h-3.5 w-3.5" />
+            <span>Export CSV</span>
+          </button>
         </div>
       </div>
 
@@ -383,6 +526,15 @@ export function IvrLeadsTable({
           <table className="w-full text-left text-xs text-gray-600 dark:text-gray-300">
             <thead className="border-b border-gray-100 bg-gray-50/70 text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:border-white/5 dark:bg-white/[0.02] dark:text-gray-400">
               <tr>
+                <th className="w-10 px-4 py-3.5">
+                  <input
+                    type="checkbox"
+                    checked={records.length > 0 && selectedPhones.size === records.length}
+                    onChange={toggleSelectAll}
+                    aria-label="Select all leads"
+                    className="accent-brand-gold h-3.5 w-3.5 rounded border-gray-300 transition-colors"
+                  />
+                </th>
                 <th className="px-5 py-3.5">Customer Contact</th>
                 <th className="px-4 py-3.5">Assigned Advisor</th>
                 <th className="px-4 py-3.5">Dial Status</th>
@@ -395,7 +547,7 @@ export function IvrLeadsTable({
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
               {loading ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
                     <div className="flex items-center justify-center gap-2">
                       <Sparkles className="text-brand-gold h-4 w-4 animate-spin" />
                       <span>Loading IVR call records...</span>
@@ -404,7 +556,7 @@ export function IvrLeadsTable({
                 </tr>
               ) : records.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-gray-400">
+                  <td colSpan={8} className="px-6 py-12 text-center text-gray-400">
                     No IVR call records found matching current filters.
                   </td>
                 </tr>
@@ -421,12 +573,37 @@ export function IvrLeadsTable({
                       key={record.id}
                       className="transition-colors hover:bg-gray-50/80 dark:hover:bg-white/[0.02]"
                     >
+                      {/* Checkbox */}
+                      <td className="w-10 px-4 py-3.5">
+                        <input
+                          type="checkbox"
+                          checked={selectedPhones.has(record.customer_phone)}
+                          onChange={() => toggleSelectPhone(record.customer_phone)}
+                          aria-label={`Select lead ${record.customer_phone}`}
+                          className="accent-brand-gold h-3.5 w-3.5 rounded border-gray-300 transition-colors"
+                        />
+                      </td>
+
                       {/* Customer Phone & Quick Actions */}
                       <td className="px-5 py-3.5">
                         <div className="flex items-center gap-2">
-                          <span className="font-semibold text-gray-900 dark:text-white">
+                          <button
+                            type="button"
+                            onClick={() =>
+                              setDrawerLead({
+                                phone: record.customer_phone,
+                                clientName: `Lead ${record.customer_phone}`,
+                                advisorId: record.assigned_agent_id,
+                                advisorName: record.agent_name,
+                                temperature: record.temperature,
+                              })
+                            }
+                            className="hover:text-brand-gold dark:hover:text-brand-gold font-semibold text-gray-900 transition-colors dark:text-white"
+                            title="Open Lead Timeline & Notes"
+                          >
                             {record.customer_phone}
-                          </span>
+                          </button>
+
                           <div className="flex items-center gap-1 opacity-80 hover:opacity-100">
                             <a
                               href={`tel:${record.customer_phone}`}
@@ -435,15 +612,29 @@ export function IvrLeadsTable({
                             >
                               <Phone className="h-3 w-3" />
                             </a>
-                            <a
-                              href={`https://wa.me/91${record.customer_phone}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-emerald-600 dark:hover:bg-white/5"
-                              title="Open WhatsApp"
+
+                            <WhatsAppTemplateDropdown
+                              phone={record.customer_phone}
+                              clientName={`Lead ${record.customer_phone}`}
+                              advisorName={record.agent_name}
+                            />
+
+                            <button
+                              type="button"
+                              onClick={() =>
+                                setDrawerLead({
+                                  phone: record.customer_phone,
+                                  clientName: `Lead ${record.customer_phone}`,
+                                  advisorId: record.assigned_agent_id,
+                                  advisorName: record.agent_name,
+                                  temperature: record.temperature,
+                                })
+                              }
+                              className="hover:text-brand-gold rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/5"
+                              title="Lead Notes & Timeline"
                             >
-                              <MessageCircle className="h-3 w-3" />
-                            </a>
+                              <FileText className="h-3 w-3" />
+                            </button>
                           </div>
                         </div>
                       </td>
@@ -618,6 +809,105 @@ export function IvrLeadsTable({
           </div>
         </div>
       </div>
+      {/* Floating Bulk Action Dock */}
+      <AnimatePresence>
+        {selectedPhones.size > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            className="border-brand-gold/30 bg-brand-navy/95 fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 flex-wrap items-center gap-3 rounded-2xl border px-5 py-3 text-white shadow-2xl backdrop-blur-md"
+          >
+            <div className="flex items-center gap-2 border-r border-white/10 pr-3">
+              <span className="bg-brand-gold text-brand-navy flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
+                {selectedPhones.size}
+              </span>
+              <span className="text-xs font-semibold">Leads Selected</span>
+            </div>
+
+            {/* Bulk Reassign Dropdown */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-gray-400">Assign:</span>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) handleBulkReassign(e.target.value);
+                }}
+                defaultValue=""
+                disabled={bulkLoading}
+                style={{ colorScheme: 'dark light' }}
+                className="rounded-xl border border-white/20 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none dark:bg-[#1a1a25] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
+              >
+                <option value="" disabled>
+                  Select Advisor...
+                </option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.full_name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Bulk Stage Dropdown */}
+            <div className="flex items-center gap-1.5">
+              <span className="text-[11px] text-gray-400">Stage:</span>
+              <select
+                onChange={(e) => {
+                  if (e.target.value) handleBulkStage(e.target.value);
+                }}
+                defaultValue=""
+                disabled={bulkLoading}
+                style={{ colorScheme: 'dark light' }}
+                className="rounded-xl border border-white/20 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none dark:bg-[#1a1a25] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
+              >
+                <option value="" disabled>
+                  Move Stage...
+                </option>
+                <option value="contacted">Contacted</option>
+                <option value="visit_scheduled">Visit Scheduled</option>
+                <option value="visited">Site Visited</option>
+                <option value="booked">Booked</option>
+                <option value="lost">Lost / Dropped</option>
+              </select>
+            </div>
+
+            {/* Export Selected to CSV */}
+            <button
+              type="button"
+              onClick={exportToCsv}
+              className="flex items-center gap-1 rounded-xl bg-white/10 px-3 py-1 text-xs font-semibold transition-colors hover:bg-white/20"
+            >
+              <Download className="text-brand-gold h-3.5 w-3.5" />
+              <span>Export CSV</span>
+            </button>
+
+            {/* Clear Selection */}
+            <button
+              type="button"
+              onClick={() => setSelectedPhones(new Set())}
+              className="rounded-lg p-1 text-gray-400 hover:text-white"
+              title="Clear selection"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Slide-over Lead Timeline & Notes Drawer */}
+      {drawerLead && (
+        <LeadDrawer
+          isOpen={Boolean(drawerLead)}
+          phone={drawerLead.phone}
+          clientName={drawerLead.clientName}
+          assignedAdvisorId={drawerLead.advisorId}
+          assignedAdvisorName={drawerLead.advisorName}
+          temperature={drawerLead.temperature}
+          employees={employees}
+          onClose={() => setDrawerLead(null)}
+          onLeadUpdated={() => onFilterChange({})}
+        />
+      )}
     </div>
   );
 }

@@ -30,19 +30,20 @@ The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RL
 
 ## Email & Communication
 
-| Table Name           | Purpose                                                                                   |
-| -------------------- | ----------------------------------------------------------------------------------------- |
-| `email_messages`     | Permanent archive of all outbound sent emails (decoupled from Resend 30-day purge)        |
-| `email_inbox`        | Inbound customer replies synced from Resend                                               |
-| `email_drafts`       | Saved email drafts in the admin email center                                              |
-| `scheduled_emails`   | Queue for emails to be sent in the future                                                 |
-| `email_deletions`    | Soft-delete recycle bin tracking for admin email client                                   |
-| `campaigns`          | Email marketing campaigns                                                                 |
-| `contact_groups`     | Segments/groupings for mass emailing                                                      |
-| `push_subscriptions` | PWA push notification subscriptions                                                       |
-| `notifications`      | In-app notifications for admins and users                                                 |
-| `chat_leads`         | Captured leads from AI Chatbot, IVR telephony campaigns, and web registrations            |
-| `ivr_call_records`   | Granular outbound IVR call logs, duration, DTMF keys, dial status, and advisor assignment |
+| Table Name           | Purpose                                                                                                                                                                                            |
+| -------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `email_messages`     | Permanent archive of all outbound sent emails (decoupled from Resend 30-day purge)                                                                                                                 |
+| `email_inbox`        | Inbound customer replies synced from Resend                                                                                                                                                        |
+| `email_drafts`       | Saved email drafts in the admin email center                                                                                                                                                       |
+| `scheduled_emails`   | Queue for emails to be sent in the future                                                                                                                                                          |
+| `email_deletions`    | Soft-delete recycle bin tracking for admin email client                                                                                                                                            |
+| `campaigns`          | Email marketing campaigns                                                                                                                                                                          |
+| `contact_groups`     | Segments/groupings for mass emailing                                                                                                                                                               |
+| `push_subscriptions` | PWA push notification subscriptions                                                                                                                                                                |
+| `notifications`      | In-app notifications for admins and users                                                                                                                                                          |
+| `chat_leads`         | Captured leads from AI Chatbot, IVR telephony campaigns, and web registrations. Extended with `follow_up_at`, `pipeline_stage`, `site_visit_at`, `site_visit_project`, `budget_range`, and `notes` |
+| `ivr_call_records`   | Granular outbound IVR call logs, duration, DTMF keys, dial status, and advisor assignment                                                                                                          |
+| `lead_interactions`  | Complete activity timeline and interaction history for leads (notes, call logs, WhatsApp sends, site visit bookings, follow-ups, reassignments, stage changes)                                     |
 
 ## WhatsApp sales agent MVP
 

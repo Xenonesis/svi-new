@@ -18,6 +18,7 @@ import { toast } from 'sonner';
 import { IvrLeadsTable, type IvrFilterState } from '@/src/components/admin/leads/IvrLeadsTable';
 import { IvrCsvUploadModal } from '@/src/components/admin/leads/IvrCsvUploadModal';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
+import { LeaderboardCard } from '@/src/components/admin/leads/LeaderboardCard';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import dynamic from 'next/dynamic';
 
@@ -362,19 +363,26 @@ export default function AdminLeadsPage() {
 
       {/* Tab Panels */}
       {activeTab === 'ivr' && (
-        <IvrLeadsTable
-          records={ivrRecords}
-          totalCount={ivrTotalCount}
-          page={ivrPage}
-          limit={ivrLimit}
-          loading={ivrLoading}
-          onPageChange={(p) => setIvrPage(p)}
-          onFilterChange={handleFilterChange}
-          onTemperatureChange={handleTemperatureChange}
-          onReassignAdvisor={handleReassignAdvisor}
-          employees={employees}
-          summary={summary}
-        />
+        <div className="space-y-4">
+          <LeaderboardCard
+            totalCalls={summary?.total_calls || ivrTotalCount}
+            answeredCalls={summary?.answered_calls || 0}
+            hotLeads={summary?.hot_count || 0}
+          />
+          <IvrLeadsTable
+            records={ivrRecords}
+            totalCount={ivrTotalCount}
+            page={ivrPage}
+            limit={ivrLimit}
+            loading={ivrLoading}
+            onPageChange={(p) => setIvrPage(p)}
+            onFilterChange={handleFilterChange}
+            onTemperatureChange={handleTemperatureChange}
+            onReassignAdvisor={handleReassignAdvisor}
+            employees={employees}
+            summary={summary}
+          />
+        </div>
       )}
 
       {activeTab === 'chatbot' && token && (

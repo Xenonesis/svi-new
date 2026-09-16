@@ -138,4 +138,74 @@ describe('IvrLeadsTable Component', () => {
       expect.objectContaining({ advisor_id: 'emp-kajal' })
     );
   });
+
+  it('selects leads with checkboxes and renders floating bulk action dock', () => {
+    render(
+      <IvrLeadsTable
+        records={mockRecords}
+        totalCount={2}
+        page={1}
+        limit={25}
+        loading={false}
+        onPageChange={vi.fn()}
+        onFilterChange={vi.fn()}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={[]}
+      />
+    );
+
+    const selectAllCheckbox = screen.getByRole('checkbox', { name: /select all leads/i });
+    fireEvent.click(selectAllCheckbox);
+
+    // Bulk Action Dock should appear
+    expect(screen.getByText('Leads Selected')).toBeDefined();
+    expect(screen.getAllByText('2').length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('opens 1-click WhatsApp templates dropdown', () => {
+    render(
+      <IvrLeadsTable
+        records={mockRecords}
+        totalCount={2}
+        page={1}
+        limit={25}
+        loading={false}
+        onPageChange={vi.fn()}
+        onFilterChange={vi.fn()}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={[]}
+      />
+    );
+
+    const waBtn = screen.getByRole('button', { name: /send whatsapp template to 8744875331/i });
+    fireEvent.click(waBtn);
+
+    expect(screen.getByText('1-Click WhatsApp Templates')).toBeDefined();
+    expect(screen.getByText('Brochure & Maps Location')).toBeDefined();
+    expect(screen.getByText('Free Site Visit (Pick & Drop)')).toBeDefined();
+  });
+
+  it('opens slide-over LeadDrawer when customer phone or note icon is clicked', () => {
+    render(
+      <IvrLeadsTable
+        records={mockRecords}
+        totalCount={2}
+        page={1}
+        limit={25}
+        loading={false}
+        onPageChange={vi.fn()}
+        onFilterChange={vi.fn()}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={[]}
+      />
+    );
+
+    const phoneBtn = screen.getByRole('button', { name: '8744875331' });
+    fireEvent.click(phoneBtn);
+    expect(screen.getByRole('heading', { name: /lead 8744875331/i })).toBeDefined();
+    expect(screen.getByRole('button', { name: /close drawer/i })).toBeDefined();
+  });
 });
