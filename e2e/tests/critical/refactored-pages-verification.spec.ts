@@ -364,6 +364,12 @@ test.describe('Refactored Big Pages E2E Verification Suite', () => {
     // Verify Project Title
     await expect(page.locator('h1')).toContainText('Shivani Vatika 11th');
 
+    // Verify Location Subtitle Header
+    const locationSubtitle = page.locator(
+      'div.mx-auto.max-w-7xl > div.grid.grid-cols-1 > div.flex.w-full > div.mb-3.flex > span'
+    );
+    await expect(locationSubtitle).toHaveText('Jaipur to Khatu Shyam Ji Highway - Harsholi');
+
     // Locate Amenities section
     const amenitiesHeader = page.getByRole('heading', { name: 'Amenities' });
     await expect(amenitiesHeader).toBeVisible();

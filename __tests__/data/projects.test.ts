@@ -35,5 +35,12 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.descriptionHi).toContain('सीसीटीवी कैमरा');
       expect(project.descriptionHi).toContain('24/7 सुरक्षा');
     });
+
+    it('should have location and headerSubtitle pointing to Jaipur to Khatu Shyam Ji Highway - Harsholi', () => {
+      expect(project.location).toBe('Jaipur to Khatu Shyam Ji Highway - Harsholi');
+      expect(project.locationHi).toBe('जयपुर से खाटू श्याम जी हाईवे - हरसोली');
+      expect(project.headerSubtitle).toBe('Jaipur to Khatu Shyam Ji Highway - Harsholi');
+      expect(project.headerSubtitleHi).toBe('जयपुर से खाटू श्याम जी हाईवे - हरसोली');
+    });
   });
 });

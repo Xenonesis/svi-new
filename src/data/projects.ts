@@ -3,6 +3,8 @@ export type ProjectData = {
   titleHi?: string;
   location: string;
   locationHi?: string;
+  headerSubtitle?: string;
+  headerSubtitleHi?: string;
   status: string;
   type: string;
   typeHi?: string;
@@ -24,8 +26,10 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
   'shivani-vatika-11th': {
     title: 'Shivani Vatika 11th',
     titleHi: 'शिवानी वाटिका 11th',
-    location: 'Near Khatu Shyam Ji',
-    locationHi: 'खाटू श्याम जी के पास',
+    location: 'Jaipur to Khatu Shyam Ji Highway - Harsholi',
+    locationHi: 'जयपुर से खाटू श्याम जी हाईवे - हरसोली',
+    headerSubtitle: 'Jaipur to Khatu Shyam Ji Highway - Harsholi',
+    headerSubtitleHi: 'जयपुर से खाटू श्याम जी हाईवे - हरसोली',
     status: 'Ongoing',
     type: 'Premier Residential Plots',
     typeHi: 'प्रीमियर आवासीय प्लॉट्स',

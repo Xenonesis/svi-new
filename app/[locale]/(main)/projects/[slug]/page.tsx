@@ -78,6 +78,8 @@ export default async function ProjectDetailPage({ params }: Props) {
     isHindi && project.descriptionHi ? project.descriptionHi : project.description;
   const location = isHindi && project.locationHi ? project.locationHi : project.location;
   const type = isHindi && project.typeHi ? project.typeHi : project.type;
+  const headerSubtitle =
+    isHindi && project.headerSubtitleHi ? project.headerSubtitleHi : project.headerSubtitle;
   const amenities = isHindi && project.amenitiesHi ? project.amenitiesHi : project.amenities;
   const startingSize =
     isHindi && project.startingSizeHi ? project.startingSizeHi : project.startingSize;
@@ -118,7 +120,12 @@ export default async function ProjectDetailPage({ params }: Props) {
 
           {/* Right Column - Details */}
           <div className="flex w-full flex-col">
-            <ProjectHeader title={title} location={location} type={type} />
+            <ProjectHeader
+              title={title}
+              location={location}
+              type={type}
+              subtitle={headerSubtitle}
+            />
 
             <div className="mb-10">
               <ExpandableDescription text={description} />
