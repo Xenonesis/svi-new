@@ -18,10 +18,12 @@ vi.mock('@/src/lib/supabase/admin', () => ({
         or: vi.fn().mockReturnThis(),
         order: vi.fn().mockReturnThis(),
         limit: vi.fn().mockReturnThis(),
+        range: vi.fn().mockResolvedValue({ data: [], error: null }),
         maybeSingle: vi.fn().mockResolvedValue({
           data: { phone: '8744875331', pipeline_stage: 'contacted' },
           error: null,
         }),
+        then: vi.fn((resolve) => resolve({ data: [], error: null, count: 0 })),
       })),
       update: vi.fn(() => ({
         in: vi.fn().mockResolvedValue({ error: null }),

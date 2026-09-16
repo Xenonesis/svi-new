@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Trophy,
   Award,
@@ -10,9 +11,9 @@ import {
   ChevronDown,
   ChevronUp,
   Clock,
+  BarChart3,
 } from 'lucide-react';
-import type { AdvisorPerformanceMetric } from '@/app/api/admin/leads/performance/route';
-
+import type { AdvisorPerformanceMetric } from '@/src/lib/types/telecalling';
 interface LeaderboardCardProps {
   totalCalls: number;
   answeredCalls: number;
@@ -92,7 +93,7 @@ export function LeaderboardCard({ totalCalls, answeredCalls, hotLeads }: Leaderb
           <button
             type="button"
             onClick={() => setExpanded(!expanded)}
-            className="border-brand-gold/30 bg-brand-gold/15 text-brand-gold hover:bg-brand-gold/25 flex items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-bold transition-colors"
+            className="border-brand-gold/30 bg-brand-gold/15 text-brand-gold hover:bg-brand-gold/25 flex cursor-pointer items-center gap-1 rounded-xl border px-3 py-1.5 text-xs font-bold transition-colors"
           >
             <Award className="h-3.5 w-3.5" />
             <span>Leaderboard</span>
@@ -102,6 +103,15 @@ export function LeaderboardCard({ totalCalls, answeredCalls, hotLeads }: Leaderb
               <ChevronDown className="h-3.5 w-3.5" />
             )}
           </button>
+
+          <Link
+            href="/admin/leads/dashboard"
+            className="flex items-center gap-1 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-bold text-white transition-colors hover:bg-white/20"
+            title="Open dedicated telecalling & conversion dashboard"
+          >
+            <BarChart3 className="text-brand-gold h-3.5 w-3.5" />
+            <span>Full Dashboard &rarr;</span>
+          </Link>
         </div>
       </div>
 

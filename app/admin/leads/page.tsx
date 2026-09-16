@@ -13,15 +13,16 @@ import {
   CheckCircle2,
   XCircle,
   Clock,
+  BarChart3,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { IvrLeadsTable, type IvrFilterState } from '@/src/components/admin/leads/IvrLeadsTable';
 import { IvrCsvUploadModal } from '@/src/components/admin/leads/IvrCsvUploadModal';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 import { LeaderboardCard } from '@/src/components/admin/leads/LeaderboardCard';
+import { TelecallingDashboard } from '@/src/components/admin/leads/TelecallingDashboard';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import dynamic from 'next/dynamic';
-
 const WorkforceLeadsTab = dynamic(
   () =>
     import('@/src/components/admin/workforce/tabs/WorkforceLeadsTab').then(
@@ -34,7 +35,22 @@ export default function AdminLeadsPage() {
   const router = useRouter();
   const { token, isAdmin, loading: authLoading } = useAuthStore();
 
-  const [activeTab, setActiveTab] = useState<'ivr' | 'chatbot' | 'all'>('ivr');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'ivr' | 'chatbot' | 'all'>('ivr');
+
+  // Detect ?tab= in URL on initial mount
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const tabParam = new URLSearchParams(window.location.search).get('tab');
+      if (
+        tabParam === 'dashboard' ||
+        tabParam === 'ivr' ||
+        tabParam === 'chatbot' ||
+        tabParam === 'all'
+      ) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
 
   // IVR records state
@@ -317,11 +333,27 @@ export default function AdminLeadsPage() {
       </div>
 
       {/* Main Tabs Navigation */}
-      <div className="flex items-center gap-2 border-b border-gray-100 pb-2 dark:border-white/5">
+      <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 pb-2 dark:border-white/5">
+        <button
+          type="button"
+          onClick={() => setActiveTab('dashboard')}
+          className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+            activeTab === 'dashboard'
+              ? 'bg-brand-navy dark:text-brand-navy text-white shadow-md dark:bg-white'
+              : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
+          }`}
+        >
+          <BarChart3 className="text-brand-gold h-3.5 w-3.5" />
+          <span>Telecalling Dashboard</span>
+          <span className="py-0.2 rounded-full bg-emerald-500/10 px-1.5 text-[9px] font-extrabold text-emerald-600 uppercase dark:text-emerald-400">
+            Live
+          </span>
+        </button>
+
         <button
           type="button"
           onClick={() => setActiveTab('ivr')}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
             activeTab === 'ivr'
               ? 'bg-brand-navy dark:text-brand-navy text-white shadow-md dark:bg-white'
               : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
@@ -337,7 +369,7 @@ export default function AdminLeadsPage() {
         <button
           type="button"
           onClick={() => setActiveTab('chatbot')}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
             activeTab === 'chatbot'
               ? 'bg-brand-navy dark:text-brand-navy text-white shadow-md dark:bg-white'
               : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
@@ -350,7 +382,7 @@ export default function AdminLeadsPage() {
         <button
           type="button"
           onClick={() => setActiveTab('all')}
-          className={`flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
             activeTab === 'all'
               ? 'bg-brand-navy dark:text-brand-navy text-white shadow-md dark:bg-white'
               : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
@@ -362,6 +394,18 @@ export default function AdminLeadsPage() {
       </div>
 
       {/* Tab Panels */}
+      {activeTab === 'dashboard' && (
+        <TelecallingDashboard
+          token={token || undefined}
+          onNavigateToLeads={(advisorId) => {
+            if (advisorId) {
+              setIvrFilters((prev) => ({ ...prev, advisor_id: advisorId }));
+              fetchIvrRecords(1, { ...ivrFilters, advisor_id: advisorId });
+            }
+            setActiveTab('ivr');
+          }}
+        />
+      )}
       {activeTab === 'ivr' && (
         <div className="space-y-4">
           <LeaderboardCard
