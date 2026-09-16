@@ -208,4 +208,33 @@ describe('IvrLeadsTable Component', () => {
     expect(screen.getByRole('heading', { name: /lead 8744875331/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /close drawer/i })).toBeDefined();
   });
+
+  it('renders realistic animated skeleton rows when loading is true to eliminate layout shifts', () => {
+    render(
+      <IvrLeadsTable
+        records={[]}
+        totalCount={0}
+        page={1}
+        limit={25}
+        loading={true}
+        onPageChange={vi.fn()}
+        onFilterChange={vi.fn()}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={[]}
+        summary={{
+          total_calls: 0,
+          answered_calls: 0,
+          missed_calls: 0,
+          hot_count: 0,
+          warm_count: 0,
+          cold_count: 0,
+        }}
+      />
+    );
+
+    const skeletonRows = screen.getAllByTestId('ivr-table-skeleton-row');
+    expect(skeletonRows).toHaveLength(8);
+    expect(screen.queryByText('Loading IVR call records...')).toBeNull();
+  });
 });
