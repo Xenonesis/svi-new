@@ -121,3 +121,13 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     });
   },
 }));
+
+declare global {
+  interface Window {
+    __AUTH_STORE__?: typeof useAuthStore;
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.__AUTH_STORE__ = useAuthStore;
+}

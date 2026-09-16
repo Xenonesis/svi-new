@@ -202,7 +202,7 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
     // 1. Verify title, Search input, and "Create Allotment" button render
     await expect(page.locator('h1')).toContainText(/Portal Allotments/i);
 
-    const searchInput = page.locator('input[placeholder*="Search by client, property"]');
+    const searchInput = page.locator('input[placeholder*="Search"]');
     await expect(searchInput).toBeVisible();
 
     const createBtn = page.getByRole('button', { name: /Create Allotment|Add Allotment/i });

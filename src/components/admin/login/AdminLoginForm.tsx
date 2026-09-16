@@ -159,6 +159,7 @@ export function AdminLoginForm({
             />
             <button
               type="button"
+              aria-label={showPass ? 'Hide password' : 'Show password'}
               onClick={() => setShowPass(!showPass)}
               className="hover:text-brand-gold absolute inset-y-0 right-0 cursor-pointer px-4 text-gray-500 transition-colors"
             >
