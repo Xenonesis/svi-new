@@ -43,4 +43,15 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.headerSubtitleHi).toBe('जयपुर से खाटू श्याम जी हाईवे - हरसोली');
     });
   });
+
+  describe('Shivani Vatika', () => {
+    const project = PROJECTS_DB['shivani-vatika'];
+
+    it('should use authentic imagery from /Shivani Vatika/ directory', () => {
+      expect(project.heroImage).toBe('/Shivani Vatika/shivani vatika6 frontgate.webp');
+      expect(project.gallery).toContain('/Shivani Vatika/shivani vatika6 frontgate.webp');
+      expect(project.gallery).toContain('/Shivani Vatika/shivani vatika.webp');
+      expect(project.gallery).toContain('/Shivani Vatika/shivani vatik both.webp');
+    });
+  });
 });

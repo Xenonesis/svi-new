@@ -382,4 +382,29 @@ test.describe('Refactored Big Pages E2E Verification Suite', () => {
     await expect(page.getByText('Park')).toBeVisible();
     await expect(page.getByText('Water Supply')).toBeVisible();
   });
+
+  // 8. Current Projects Page - Shivani Vatika Modal Verification
+  test('Current Projects Page: Shivani Vatika modal displays authentic images from /Shivani Vatika/ folder', async ({
+    page,
+  }) => {
+    await page.goto('/projects/current');
+    await page.waitForLoadState('domcontentloaded');
+
+    // Click on Shivani Vatika card
+    const shivaniVatikaCard = page.locator('#project-shivani-vatika');
+    await expect(shivaniVatikaCard).toBeVisible();
+    await shivaniVatikaCard.scrollIntoViewIfNeeded();
+    await shivaniVatikaCard.click();
+
+    // Verify modal is open and has heading Shivani Vatika
+    const modalHeading = page.locator('.fixed.inset-0 h3', { hasText: 'Shivani Vatika' });
+    await expect(modalHeading).toBeVisible();
+
+    // Verify modal image belongs to /Shivani%20Vatika/ and not /Shivani Vatika 11/
+    const modalImage = page.locator('.fixed.inset-0 img').first();
+    await expect(modalImage).toBeVisible();
+    const src = await modalImage.getAttribute('src');
+    expect(src).toMatch(/Shivani(%20|\s)Vatika\//);
+    expect(src).not.toMatch(/Shivani(%20|\s)Vatika(%20|\s)11/);
+  });
 });

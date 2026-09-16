@@ -8,12 +8,8 @@ export const dynamic = 'force-dynamic';
 export async function GET() {
   try {
     const publicDir = path.join(process.cwd(), 'public');
-    const shivaniDir = fs.existsSync(path.join(publicDir, 'Shivani Vatika 11'))
-      ? path.join(publicDir, 'Shivani Vatika 11')
-      : path.join(publicDir, 'Shivani Vatika');
-    const shivaniPrefix = fs.existsSync(path.join(publicDir, 'Shivani Vatika 11'))
-      ? 'Shivani Vatika 11'
-      : 'Shivani Vatika';
+    const shivani11Dir = path.join(publicDir, 'Shivani Vatika 11');
+    const shivaniVatikaDir = path.join(publicDir, 'Shivani Vatika');
     const shyamDir = path.join(publicDir, 'Shayam angan');
 
     const imageRegex = /\.(png|jpe?g|gif|webp|svg|heic|heif)$/i;
@@ -21,7 +17,11 @@ export async function GET() {
     const isBaseImage = (file: string) =>
       !/-\d+w\.(webp|avif)$/i.test(file) && !/\.avif$/i.test(file);
 
-    const getCleanImageList = (dir: string, urlPrefix: string): string[] => {
+    const getCleanImageList = (
+      dir: string,
+      urlPrefix: string,
+      orderPriority: Record<string, number> = {}
+    ): string[] => {
       if (!fs.existsSync(dir)) return [];
       const allFiles = fs
         .readdirSync(dir)
@@ -37,17 +37,6 @@ export async function GET() {
         }
       }
 
-      const orderPriority: Record<string, number> = {
-        gate: 1,
-        plot: 2,
-        middle: 3,
-        middle2: 4,
-        middle3: 5,
-        middle4: 6,
-        middle5: 7,
-        middle6: 8,
-      };
-
       const sortedFiles = Array.from(fileMap.entries())
         .sort(([baseA], [baseB]) => {
           const pA = orderPriority[baseA.toLowerCase()] ?? 99;
@@ -60,14 +49,44 @@ export async function GET() {
       return sortedFiles.map((file) => encodeURI(`/${urlPrefix}/${file}`));
     };
 
-    const shivaniImages = getCleanImageList(shivaniDir, shivaniPrefix);
+    const orderPriorityShivani11: Record<string, number> = {
+      gate: 1,
+      plot: 2,
+      middle: 3,
+      middle2: 4,
+      middle3: 5,
+      middle4: 6,
+      middle5: 7,
+      middle6: 8,
+    };
+
+    const orderPriorityShivaniVatika: Record<string, number> = {
+      'shivani vatika6 frontgate': 1,
+      'shivani vatika': 2,
+      'shivani vatik both': 3,
+      'shivani vatika3': 4,
+      'shivani vatika4': 5,
+      'shivani vatika5': 6,
+      'shivani vatika7': 7,
+    };
+
+    const shivani11Images = getCleanImageList(
+      shivani11Dir,
+      'Shivani Vatika 11',
+      orderPriorityShivani11
+    );
+    const shivaniVatikaImages = getCleanImageList(
+      shivaniVatikaDir,
+      'Shivani Vatika',
+      orderPriorityShivaniVatika
+    );
     const shyamImages = getCleanImageList(shyamDir, 'Shayam angan');
 
     return NextResponse.json(
       {
-        'shivani-vatika': shivaniImages,
-        'shivani-vatika-11': shivaniImages,
-        'shivani-vatika-11th': shivaniImages,
+        'shivani-vatika': shivaniVatikaImages,
+        'shivani-vatika-11': shivani11Images,
+        'shivani-vatika-11th': shivani11Images,
         'shyam-aangan': shyamImages,
       },
       {

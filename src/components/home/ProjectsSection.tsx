@@ -17,7 +17,7 @@ const ALL_PROJECTS = [
   },
   {
     key: 'shivaniVatika',
-    img: '/images/project2.png',
+    img: '/Shivani Vatika/shivani vatika6 frontgate.webp',
     category: 'townships',
     startingPrice: '₹ 22 Lakhs*',
   },

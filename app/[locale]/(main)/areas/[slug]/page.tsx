@@ -29,7 +29,7 @@ const PROJECT_SUMMARIES: Record<
   'shivani-vatika': {
     title: 'Shivani Vatika',
     type: 'Premier Residential',
-    img: '/images/project2.png',
+    img: '/Shivani Vatika/shivani vatika6 frontgate.webp',
     status: 'Under Development',
   },
   'shivani-residency': {

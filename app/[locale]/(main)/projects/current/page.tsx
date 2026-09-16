@@ -61,8 +61,16 @@ const currentProjectsData = (t: any) => [
     description: t('data.shivaniVatika.description'),
     fullDescription: t('data.shivaniVatika.fullDescription'),
     status: t('data.shivaniVatika.status'),
-    img: '/images/project2.png',
-    gallery: ['/images/project2.png', '/images/hero1.png'],
+    img: '/Shivani Vatika/shivani vatika6 frontgate.webp',
+    gallery: [
+      '/Shivani Vatika/shivani vatika6 frontgate.webp',
+      '/Shivani Vatika/shivani vatika.webp',
+      '/Shivani Vatika/shivani vatik both.webp',
+      '/Shivani Vatika/shivani vatika3.webp',
+      '/Shivani Vatika/shivani vatika4.webp',
+      '/Shivani Vatika/shivani vatika5.webp',
+      '/Shivani Vatika/shivani vatika7.webp',
+    ],
   },
   {
     id: 'shyam-aangan',
