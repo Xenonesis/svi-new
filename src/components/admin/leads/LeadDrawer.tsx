@@ -44,6 +44,7 @@ interface LeadDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   onLeadUpdated?: () => void;
+  token?: string;
 }
 
 export function LeadDrawer({
@@ -56,6 +57,7 @@ export function LeadDrawer({
   isOpen,
   onClose,
   onLeadUpdated,
+  token,
 }: LeadDrawerProps) {
   const [activeStage, setActiveStage] = useState<PipelineStage>(currentStage);
   const [interactions, setInteractions] = useState<LeadInteraction[]>([]);
@@ -78,7 +80,11 @@ export function LeadDrawer({
     if (!phone) return;
     setLoading(true);
     try {
-      const res = await fetch(`/api/admin/leads/${phone}/interactions`);
+      const res = await fetch(`/api/admin/leads/${phone}/interactions`, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+      });
       if (res.ok) {
         const data = await res.json();
         setInteractions(data.interactions || []);
@@ -103,7 +109,10 @@ export function LeadDrawer({
     try {
       const res = await fetch(`/api/admin/leads/${phone}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ pipeline_stage: newStage }),
       });
       if (res.ok) {
@@ -123,7 +132,10 @@ export function LeadDrawer({
     try {
       const res = await fetch(`/api/admin/leads/bulk`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           phone_numbers: [phone],
           action: 'reassign',
@@ -148,7 +160,10 @@ export function LeadDrawer({
     try {
       const res = await fetch(`/api/admin/leads/${phone}/interactions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           type: 'note',
           content: noteContent.trim(),
@@ -174,7 +189,10 @@ export function LeadDrawer({
     try {
       const res = await fetch(`/api/admin/leads/${phone}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           follow_up_at: new Date(followUpDate).toISOString(),
         }),
@@ -199,7 +217,10 @@ export function LeadDrawer({
     try {
       const res = await fetch(`/api/admin/leads/${phone}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           site_visit_at: new Date(siteVisitDate).toISOString(),
           site_visit_project: 'Shivani Vatika - 11',

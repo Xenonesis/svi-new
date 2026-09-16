@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import {
@@ -13,11 +13,13 @@ import {
   Loader2,
   Mail,
   RefreshCw,
+  RotateCcw,
   Trash2,
   User,
   X,
   AlertTriangle,
 } from 'lucide-react';
+import { toast } from 'sonner';
 import { Notification, FilterType, ReadFilter } from './types';
 import { resolveNotificationUrl } from '@/src/lib/notifications/notificationNavigation';
 interface NotificationListProps {
@@ -112,6 +114,32 @@ export function NotificationList({
   setCurrentPage,
 }: NotificationListProps) {
   const router = useRouter();
+  const [revertingId, setRevertingId] = useState<string | null>(null);
+
+  const handleRevertAssignment = async (notificationId: string) => {
+    setRevertingId(notificationId);
+    try {
+      const res = await fetch('/api/admin/leads/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'revert',
+          notification_id: notificationId,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`Successfully reverted assignment for ${data.restored_count} leads`);
+        fetchNotifications(1);
+      } else {
+        toast.error(data.message || 'Failed to revert assignment');
+      }
+    } catch {
+      toast.error('Failed to revert assignment');
+    } finally {
+      setRevertingId(null);
+    }
+  };
 
   if (loading) {
     return (
@@ -360,6 +388,28 @@ export function NotificationList({
                         <ArrowUpRight size={11} />
                       </button>
                     )}
+                    {notification.metadata?.action_type === 'bulk_reassign' &&
+                      (notification.metadata?.reverted ? (
+                        <span className="inline-flex items-center gap-1 rounded-lg bg-emerald-50 px-2 py-1 text-[10px] font-bold tracking-widest text-emerald-700 uppercase dark:bg-emerald-500/10 dark:text-emerald-400">
+                          <Check size={11} />
+                          Reverted
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={revertingId === notification.id}
+                          onClick={() => handleRevertAssignment(notification.id)}
+                          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-amber-300 bg-amber-50 px-2.5 py-1 text-[10px] font-bold tracking-wider text-amber-800 uppercase transition-colors hover:bg-amber-100 hover:text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20"
+                          title="Revert leads back to their previous assigned advisors"
+                        >
+                          {revertingId === notification.id ? (
+                            <Loader2 size={11} className="animate-spin" />
+                          ) : (
+                            <RotateCcw size={11} />
+                          )}
+                          <span>Revert Assignment</span>
+                        </button>
+                      ))}
 
                     <button
                       onClick={() => deleteNotification(notification.id)}

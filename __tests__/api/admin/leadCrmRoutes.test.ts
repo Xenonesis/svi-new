@@ -86,6 +86,26 @@ describe('CRM Suite Backend Routes', () => {
     expect(json.success).toBe(true);
     expect(json.stage).toBe('visit_scheduled');
   });
+  it('POST /api/admin/leads/bulk reverts bulk assignment', async () => {
+    const req = new NextRequest('http://localhost:3000/api/admin/leads/bulk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        action: 'revert',
+        previous_assignments: [
+          { phone: '8744875331', advisor_id: 'emp-1', advisor_name: 'Shikha Tomar' },
+          { phone: '9820260621', advisor_id: null, advisor_name: 'Unassigned' },
+        ],
+      }),
+    });
+
+    const res = await bulkPost(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+    expect(json.success).toBe(true);
+    expect(json.action).toBe('revert');
+    expect(json.restored_count).toBe(2);
+  });
 
   it('PATCH /api/admin/leads/[phone] updates lead stage and follow-up', async () => {
     const req = new NextRequest('http://localhost:3000/api/admin/leads/8744875331', {

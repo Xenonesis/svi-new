@@ -45,6 +45,7 @@ interface IvrLeadsTableProps {
   onTemperatureChange: (recordId: string, phone: string, temp: 'hot' | 'warm' | 'cold') => void;
   onReassignAdvisor: (recordId: string, phone: string, advisorId: string) => void;
   employees: Employee[];
+  token?: string;
   summary?: {
     total_calls: number;
     answered_calls: number;
@@ -240,6 +241,7 @@ export function IvrLeadsTable({
   onReassignAdvisor,
   employees,
   summary,
+  token,
 }: IvrLeadsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeDialStatus, setActiveDialStatus] = useState<'all' | 'ANSWER' | 'NOANSWER'>('all');
@@ -276,11 +278,15 @@ export function IvrLeadsTable({
     if (selectedPhones.size === 0) return;
     const emp = employees.find((e) => e.id === advisorId);
     const advisorName = emp?.full_name || 'Unassigned';
+    const count = selectedPhones.size;
     setBulkLoading(true);
     try {
       const res = await fetch('/api/admin/leads/bulk', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           phone_numbers: Array.from(selectedPhones),
           action: 'reassign',
@@ -288,10 +294,46 @@ export function IvrLeadsTable({
           advisor_name: advisorName,
         }),
       });
-      if (res.ok) {
-        toast.success(`Reassigned ${selectedPhones.size} leads to ${advisorName}`);
+      const data = await res.json();
+      if (res.ok && data.success) {
         setSelectedPhones(new Set());
         onFilterChange({});
+        toast.success(`Reassigned ${count} leads to ${advisorName}`, {
+          description: 'Option to revert is saved in Notifications.',
+          action: {
+            label: 'Undo',
+            onClick: async () => {
+              try {
+                const revRes = await fetch('/api/admin/leads/bulk', {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                  },
+                  body: JSON.stringify({
+                    action: 'revert',
+                    notification_id: data.notification_id,
+                    previous_assignments: data.previous_assignments,
+                  }),
+                });
+                const revData = await revRes.json();
+                if (revRes.ok && revData.success) {
+                  toast.success(
+                    `Successfully reverted assignment for ${revData.restored_count} leads`
+                  );
+                  onFilterChange({});
+                } else {
+                  toast.error(revData.message || 'Failed to revert assignment');
+                }
+              } catch {
+                toast.error('Failed to revert assignment');
+              }
+            },
+          },
+          duration: 10000,
+        });
+      } else {
+        toast.error(data.message || 'Bulk reassign failed');
       }
     } catch {
       toast.error('Bulk reassign failed');
@@ -306,7 +348,10 @@ export function IvrLeadsTable({
     try {
       const res = await fetch('/api/admin/leads/bulk', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({
           phone_numbers: Array.from(selectedPhones),
           action: 'stage',
@@ -905,6 +950,7 @@ export function IvrLeadsTable({
           temperature={drawerLead.temperature}
           employees={employees}
           onClose={() => setDrawerLead(null)}
+          token={token}
           onLeadUpdated={() => onFilterChange({})}
         />
       )}

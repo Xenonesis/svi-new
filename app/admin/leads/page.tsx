@@ -381,6 +381,7 @@ export default function AdminLeadsPage() {
             onReassignAdvisor={handleReassignAdvisor}
             employees={employees}
             summary={summary}
+            token={token || undefined}
           />
         </div>
       )}

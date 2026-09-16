@@ -2,7 +2,10 @@
 
 import {
   Bell,
+  Check,
   CheckSquare,
+  Loader2,
+  RotateCcw,
   Trash2,
   Users,
   X,
@@ -20,6 +23,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
+import { toast } from 'sonner';
 import { useEffect, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -59,6 +63,32 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [revertingId, setRevertingId] = useState<string | null>(null);
+
+  const handleRevertAssignment = async (notificationId: string) => {
+    setRevertingId(notificationId);
+    try {
+      const res = await fetch('/api/admin/leads/bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'revert',
+          notification_id: notificationId,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        toast.success(`Successfully reverted assignment for ${data.restored_count} leads`);
+        fetchNotifications();
+      } else {
+        toast.error(data.message || 'Failed to revert assignment');
+      }
+    } catch {
+      toast.error('Failed to revert assignment');
+    } finally {
+      setRevertingId(null);
+    }
+  };
 
   // Load sound preference on mount
   useEffect(() => {
@@ -637,6 +667,34 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                                     <Users className="h-3 w-3 text-gray-400" />
                                     Recipient: {notification.metadata.recipient}
                                   </span>
+                                </div>
+                              )}
+                              {notification.metadata?.action_type === 'bulk_reassign' && (
+                                <div
+                                  className="mt-2"
+                                  onClick={(e) => e.stopPropagation()}
+                                  onKeyDown={(e) => e.stopPropagation()}
+                                >
+                                  {notification.metadata?.reverted ? (
+                                    <span className="inline-flex items-center gap-1 rounded bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 uppercase dark:bg-emerald-500/10 dark:text-emerald-400">
+                                      <Check className="h-3 w-3" /> Reverted
+                                    </span>
+                                  ) : (
+                                    <button
+                                      type="button"
+                                      disabled={revertingId === notification.id}
+                                      onClick={() => handleRevertAssignment(notification.id)}
+                                      className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-amber-300 bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-800 uppercase transition-colors hover:bg-amber-100 hover:text-amber-900 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-300 dark:hover:bg-amber-500/20"
+                                      title="Revert leads back to previous advisors"
+                                    >
+                                      {revertingId === notification.id ? (
+                                        <Loader2 className="h-3 w-3 animate-spin" />
+                                      ) : (
+                                        <RotateCcw className="h-3 w-3" />
+                                      )}
+                                      <span>Revert Assignment</span>
+                                    </button>
+                                  )}
                                 </div>
                               )}
 
