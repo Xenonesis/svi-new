@@ -21,6 +21,7 @@ import {
   X,
   Users,
   Phone,
+  PhoneCall,
   Sparkles,
 } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
@@ -50,6 +51,7 @@ const documentItems = [
 ];
 
 const managementItems = [
+  { name: 'Leads Hub', path: '/admin/leads', icon: PhoneCall },
   { name: 'Portal Allotments', path: '/admin/portal-allotments', icon: Building2 },
   { name: 'Registrations', path: '/admin/registrations', icon: ClipboardList },
   { name: 'Site Visits', path: '/admin/site-visits', icon: Calendar },
