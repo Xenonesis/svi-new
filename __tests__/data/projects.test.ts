@@ -115,5 +115,29 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.description).toContain('50 sq. yds. to 750 sq. yds.');
       expect(project.descriptionHi).toContain('40 बीघा');
     });
+    it('should include 40 ft road, drainage system, school, cctv camera, water supply, street light amenities', () => {
+      const required = [
+        '40 Ft. Road',
+        'Drainage System',
+        'School',
+        'CCTV Camera',
+        'Water Supply',
+        'Street Light',
+      ];
+      for (const item of required) {
+        expect(project.amenities).toContain(item);
+      }
+      const requiredHi = [
+        '40 फीट रोड',
+        'ड्रेनेज सिस्टम',
+        'स्कूल',
+        'सीसीटीवी कैमरा',
+        'पानी की आपूर्ति',
+        'स्ट्रीट लाइट',
+      ];
+      for (const item of requiredHi) {
+        expect(project.amenitiesHi).toContain(item);
+      }
+    });
   });
 });

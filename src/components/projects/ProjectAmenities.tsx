@@ -13,6 +13,9 @@ import {
   Building2,
   Dumbbell,
   Waves,
+  School,
+  Lightbulb,
+  Route,
 } from 'lucide-react';
 
 type ProjectAmenitiesProps = {
@@ -43,9 +46,13 @@ const getAmenityIcon = (name: string): ComponentType<{ className?: string }> => 
     lower.includes('केयरटेकर')
   )
     return UserCheck;
+  if (lower.includes('school') || lower.includes('स्कूल')) return School;
+  if (lower.includes('street light') || lower.includes('light') || lower.includes('लाइट'))
+    return Lightbulb;
+  if (lower.includes('drainage') || lower.includes('ड्रेनेज')) return Waves;
   if (lower.includes('water') || lower.includes('पानी')) return Droplets;
   if (lower.includes('electric') || lower.includes('बिजली') || lower.includes('power')) return Zap;
-  if (lower.includes('road') || lower.includes('सड़क')) return Car;
+  if (lower.includes('road') || lower.includes('सड़क') || lower.includes('रोड')) return Route;
   if (lower.includes('gym') || lower.includes('जिम')) return Dumbbell;
   if (lower.includes('pool') || lower.includes('पूल')) return Waves;
   if (lower.includes('club') || lower.includes('क्लब')) return Building2;
