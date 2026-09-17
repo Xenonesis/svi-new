@@ -131,11 +131,20 @@ const nextConfig = {
     if (process.env.NODE_ENV === 'production') {
       headersList.push(
         {
+          source: '/:path*\\.(webp|avif|jpg|jpeg|png|svg)',
+          headers: [
+            {
+              key: 'Cache-Control',
+              value: 'public, max-age=604800, stale-while-revalidate=2592000',
+            },
+          ],
+        },
+        {
           source: '/images/(.*)',
           headers: [
             {
               key: 'Cache-Control',
-              value: 'public, max-age=86400, must-revalidate',
+              value: 'public, max-age=604800, stale-while-revalidate=2592000',
             },
           ],
         },

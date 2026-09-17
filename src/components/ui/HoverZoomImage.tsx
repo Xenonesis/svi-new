@@ -52,30 +52,51 @@ const HoverZoomImage = memo(function HoverZoomImage({
 }: HoverZoomImageProps) {
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
+  const [renderSkeleton, setRenderSkeleton] = useState(true);
 
   // Reset loading & error state when src changes
   useEffect(() => {
     setIsLoaded(false);
     setHasError(false);
+    setRenderSkeleton(true);
   }, [src]);
 
-  // Find blur data URL from manifest if available
+  // Cleanly unmount skeleton after fade-out transition to stop keyframe animations
+  useEffect(() => {
+    if (isLoaded) {
+      const timer = setTimeout(() => {
+        setRenderSkeleton(false);
+      }, 550);
+      return () => clearTimeout(timer);
+    }
+  }, [isLoaded]);
+
+  // Find blur data URL from manifest if available (robust to encoded & unencoded paths)
   const manifestMap = blurManifest as Record<string, string>;
+  let decodedSrc = src;
+  try {
+    decodedSrc = decodeURI(src);
+  } catch {
+    // fallback to raw src
+  }
+  const encodedSrc = encodeURI(decodedSrc);
   const blurUrl =
     manifestMap[src] ||
-    manifestMap[`/public${src}`] ||
-    manifestMap[src.replace(/^\//, '')] ||
+    manifestMap[decodedSrc] ||
+    manifestMap[encodedSrc] ||
+    manifestMap[`/public${decodedSrc}`] ||
+    manifestMap[`/public${encodedSrc}`] ||
+    manifestMap[decodedSrc.replace(/^\//, '')] ||
     DEFAULT_BLUR_DATA_URL;
-
   return (
     <div
       className={`hover-zoom-container relative h-full w-full overflow-hidden bg-[#0c121e] ${className}`}
     >
       {/* Premium Shimmer Skeleton Loader */}
-      {!hasError && showSkeleton && (
+      {!hasError && showSkeleton && renderSkeleton && (
         <div
-          className={`absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden bg-[#0c121e] transition-opacity duration-500 ease-out ${
-            isLoaded ? 'pointer-events-none opacity-0' : 'opacity-100'
+          className={`absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden bg-[#0c121e] transition-all duration-500 ease-out ${
+            isLoaded ? 'pointer-events-none invisible opacity-0' : 'visible opacity-100'
           }`}
           aria-hidden={isLoaded}
         >

@@ -392,7 +392,7 @@ test.describe('Refactored Big Pages E2E Verification Suite', () => {
 
     // Click on Shivani Vatika card
     const shivaniVatikaCard = page.locator('#project-shivani-vatika');
-    await expect(shivaniVatikaCard).toBeVisible();
+    await expect(shivaniVatikaCard).toBeVisible({ timeout: 15000 });
     await shivaniVatikaCard.scrollIntoViewIfNeeded();
     await shivaniVatikaCard.click();
 

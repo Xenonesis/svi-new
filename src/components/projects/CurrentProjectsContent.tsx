@@ -117,6 +117,22 @@ export default function CurrentProjectsContent({
     document.body.style.overflow = 'hidden';
   }, []);
 
+  // Preload adjacent gallery images in background for instant slide transitions
+  useEffect(() => {
+    if (!selectedProject?.gallery || selectedProject.gallery.length <= 1) return;
+    const len = selectedProject.gallery.length;
+    const nextIdx = (currentGalleryIndex + 1) % len;
+    const prevIdx = (currentGalleryIndex - 1 + len) % len;
+    const targets = [selectedProject.gallery[nextIdx], selectedProject.gallery[prevIdx]];
+
+    targets.forEach((src) => {
+      if (typeof window !== 'undefined' && src) {
+        const img = new window.Image();
+        img.src = src;
+      }
+    });
+  }, [selectedProject, currentGalleryIndex]);
+
   const closeModal = useCallback(() => {
     setSelectedProject(null);
     document.body.style.overflow = 'auto';
@@ -234,6 +250,12 @@ export default function CurrentProjectsContent({
                       <div
                         className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-900"
                         onClick={() => openModal(project)}
+                        onMouseEnter={() => {
+                          if (typeof window !== 'undefined' && project.gallery?.length) {
+                            const img = new window.Image();
+                            img.src = project.gallery[0];
+                          }
+                        }}
                       >
                         <div className="bg-brand-navy/10 pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 group-hover:opacity-0"></div>
                         <HoverZoomImage src={project.img} alt={project.title} />
@@ -382,6 +404,7 @@ export default function CurrentProjectsContent({
                           src={selectedProject.gallery[currentGalleryIndex]}
                           alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
                           priority={true}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 480px"
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -421,6 +444,7 @@ export default function CurrentProjectsContent({
                     src={selectedProject.img}
                     alt={selectedProject.title}
                     priority={true}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 480px"
                   />
                 )}
                 <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm">

@@ -183,6 +183,12 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                     <div
                       className="relative flex h-64 cursor-pointer items-center justify-center overflow-hidden bg-gray-100 dark:bg-gray-900"
                       onClick={() => openModal(project)}
+                      onMouseEnter={() => {
+                        if (typeof window !== 'undefined' && project.gallery?.length) {
+                          const img = new window.Image();
+                          img.src = project.gallery[0];
+                        }
+                      }}
                     >
                       <div className="bg-brand-navy/10 pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 group-hover:opacity-0"></div>
                       <HoverZoomImage src={project.img} alt={project.title} />
@@ -334,6 +340,7 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                           src={selectedProject.gallery[currentGalleryIndex]}
                           alt={`${selectedProject.title} gallery ${currentGalleryIndex + 1}`}
                           priority={true}
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 480px"
                         />
                       </motion.div>
                     </AnimatePresence>
@@ -371,6 +378,7 @@ export default function CompletedProjectsContent({ projects }: { projects: Proje
                     src={selectedProject.img}
                     alt={selectedProject.title}
                     priority={true}
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 480px"
                   />
                 )}
                 <div className="text-brand-navy pointer-events-none absolute top-4 left-4 z-20 bg-white px-3 py-1 text-[10px] font-bold tracking-widest uppercase shadow-sm dark:bg-gray-800 dark:text-gray-100">

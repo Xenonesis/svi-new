@@ -45,7 +45,15 @@ describe('supabaseImageLoader', () => {
     expect(result).not.toContain(' ');
   });
 
-  it('falls back to full-size webp for widths > 1024w', () => {
+  it('caps 1200w device requests to 1024w variant to save bandwidth', () => {
+    const result = supabaseImageLoader({
+      src: '/Shivani Vatika/shivani vatika7.webp',
+      width: 1200,
+    });
+    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-1024w.webp');
+  });
+
+  it('falls back to full-size webp for ultra-wide requests (1920w)', () => {
     const result = supabaseImageLoader({
       src: '/Shivani Vatika/shivani vatika7.webp',
       width: 1920,

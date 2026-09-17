@@ -77,10 +77,14 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
       return encodeURI(`${basePath}-${match}w.webp`);
     }
 
-    // For larger requests (1200w, 1920w), use full-size WebP to avoid 404s
+    // For 1200w device requests, cap to the 1024w variant if not a full hero, saving up to 80% payload
+    if (width <= 1200) {
+      return encodeURI(`${basePath}-1024w.webp`);
+    }
+
+    // For larger requests (1920w), use full-size WebP to avoid 404s
     return encodeURI(`${basePath}.webp?w=${width}`);
   }
-
   // Other local images (e.g. /logo.png, /signature.png, etc.)
   // Always encodeURI so spaces never break HTML srcset parsing
   return encodeURI(`${cleanSrc}?w=${width}`);

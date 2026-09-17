@@ -112,5 +112,6 @@ backups/
 report*.csv
 total data.csv
 *.csv.bak
+.~lock.*
 
 
