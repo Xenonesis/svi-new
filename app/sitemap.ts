@@ -52,6 +52,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...getSitemapEntry('/faq', STATIC_LAST_MODIFIED, 'monthly', 0.7),
     ...getSitemapEntry('/projects/current', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/projects/completed', STATIC_LAST_MODIFIED, 'monthly', 0.8),
+    ...getSitemapEntry('/areas', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/registration', STATIC_LAST_MODIFIED, 'monthly', 0.9),
     ...getSitemapEntry('/contact', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/privacy-policy', STATIC_LAST_MODIFIED, 'yearly', 0.3),

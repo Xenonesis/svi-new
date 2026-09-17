@@ -3,7 +3,7 @@ import { MapPin, CheckCircle, Info, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import type { Metadata } from 'next';
-import { getTranslations } from 'next-intl/server';
+import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { SITE_URL, SITE_NAME, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import { AREAS_DATA } from '@/src/data/areas';
 import { PROJECTS_DB } from '@/src/data/projects';
@@ -82,6 +82,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 export default async function AreaDetailPage({ params }: Props) {
   const { locale, slug } = await params;
+  setRequestLocale(locale);
+  const isHindi = locale === 'hi';
   const area = AREAS_DATA[slug];
 
   if (!area) {
@@ -89,13 +91,12 @@ export default async function AreaDetailPage({ params }: Props) {
   }
 
   const t = await getTranslations({ locale, namespace: 'common' });
-
   return (
     <div className="flex min-h-screen w-full flex-col bg-gray-50 pb-20 dark:bg-gray-900">
       <BreadcrumbSchema
         items={[
           { name: 'Home', item: '/' },
-          { name: 'Areas', item: '/projects/current' },
+          { name: isHindi ? 'क्षेत्र' : 'Areas', item: '/areas' },
           { name: area.name, item: `/areas/${slug}` },
         ]}
       />
