@@ -23,6 +23,12 @@ import {
   FileText,
   FileSpreadsheet,
   X,
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Calendar,
+  SlidersHorizontal,
+  RotateCcw,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -37,6 +43,11 @@ export interface IvrFilterState {
   temperature: 'all' | 'hot' | 'warm' | 'cold';
   advisor_id: string;
   q: string;
+  pressed_key?: 'all' | '1' | 'none';
+  date?: string;
+  duration_filter?: 'all' | 'lt_30' | '30_60' | 'gt_60';
+  sort_by?: 'dial_time' | 'call_duration' | 'customer_phone' | 'agent_name';
+  sort_order?: 'asc' | 'desc';
 }
 
 interface IvrLeadsTableProps {
@@ -326,6 +337,16 @@ export function IvrLeadsTable({
   const [activeDialStatus, setActiveDialStatus] = useState<'all' | 'ANSWER' | 'NOANSWER'>('all');
   const [activeTemp, setActiveTemp] = useState<'all' | 'hot' | 'warm' | 'cold'>('all');
   const [activeAdvisor, setActiveAdvisor] = useState<string>('all');
+  const [activePressedKey, setActivePressedKey] = useState<'all' | '1' | 'none'>('all');
+  const [activeDurationFilter, setActiveDurationFilter] = useState<
+    'all' | 'lt_30' | '30_60' | 'gt_60'
+  >('all');
+  const [activeDate, setActiveDate] = useState<string>('');
+  const [sortBy, setSortBy] = useState<
+    'dial_time' | 'call_duration' | 'customer_phone' | 'agent_name'
+  >('dial_time');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
   const [selectedPhones, setSelectedPhones] = useState<Set<string>>(new Set());
   const [bulkLoading, setBulkLoading] = useState(false);
   const [drawerLead, setDrawerLead] = useState<{
@@ -511,6 +532,60 @@ export function IvrLeadsTable({
     onFilterChange({ advisor_id: val });
   };
 
+  const handleSortToggle = (
+    column: 'dial_time' | 'call_duration' | 'customer_phone' | 'agent_name'
+  ) => {
+    const nextOrder: 'asc' | 'desc' =
+      sortBy === column
+        ? sortOrder === 'asc'
+          ? 'desc'
+          : 'asc'
+        : column === 'customer_phone' || column === 'agent_name'
+          ? 'asc'
+          : 'desc';
+    setSortBy(column);
+    setSortOrder(nextOrder);
+    onFilterChange({ sort_by: column, sort_order: nextOrder });
+  };
+
+  const handlePressedKeyChange = (val: 'all' | '1' | 'none') => {
+    setActivePressedKey(val);
+    onFilterChange({ pressed_key: val });
+  };
+
+  const handleDurationFilterChange = (val: 'all' | 'lt_30' | '30_60' | 'gt_60') => {
+    setActiveDurationFilter(val);
+    onFilterChange({ duration_filter: val });
+  };
+
+  const handleDateChange = (val: string) => {
+    setActiveDate(val);
+    onFilterChange({ date: val });
+  };
+
+  const handleResetFilters = () => {
+    setSearchTerm('');
+    setActiveDialStatus('all');
+    setActiveTemp('all');
+    setActiveAdvisor('all');
+    setActivePressedKey('all');
+    setActiveDurationFilter('all');
+    setActiveDate('');
+    setSortBy('dial_time');
+    setSortOrder('desc');
+    onFilterChange({
+      q: '',
+      dial_status: 'all',
+      temperature: 'all',
+      advisor_id: 'all',
+      pressed_key: 'all',
+      duration_filter: 'all',
+      date: '',
+      sort_by: 'dial_time',
+      sort_order: 'desc',
+    });
+  };
+
   return (
     <div className="space-y-4">
       {/* Filter Toolbar */}
@@ -623,6 +698,34 @@ export function IvrLeadsTable({
               <Snowflake className="h-3 w-3" /> Cold
             </button>
           </div>
+          {/* Filters toggle button */}
+          <button
+            type="button"
+            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
+            className={`flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
+              showAdvancedFilters ||
+              activePressedKey !== 'all' ||
+              activeDurationFilter !== 'all' ||
+              activeDate
+                ? 'border-brand-gold bg-brand-gold/10 text-brand-gold font-bold shadow-xs'
+                : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200'
+            }`}
+            title="Toggle more filters (Date, DTMF Key, Duration)"
+          >
+            <SlidersHorizontal className="h-3.5 w-3.5" />
+            <span>More Filters</span>
+            {(activePressedKey !== 'all' || activeDurationFilter !== 'all' || activeDate) && (
+              <span className="bg-brand-gold text-brand-navy flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
+                {
+                  [
+                    activePressedKey !== 'all',
+                    activeDurationFilter !== 'all',
+                    Boolean(activeDate),
+                  ].filter(Boolean).length
+                }
+              </span>
+            )}
+          </button>
 
           {/* Quick Export Suite Dropdown */}
           <div className="relative" ref={exportMenuRef}>
@@ -737,6 +840,152 @@ export function IvrLeadsTable({
             </AnimatePresence>
           </div>
         </div>
+        {/* Expandable Advanced Filters Panel */}
+        <AnimatePresence>
+          {showAdvancedFilters && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50/80 p-4 shadow-xs dark:border-white/5 dark:bg-[#13131c]"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-4">
+                <div className="flex flex-wrap items-center gap-4">
+                  {/* Specific Day Filter */}
+                  <div>
+                    <label className="mb-1 flex items-center gap-1 text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                      <Calendar className="text-brand-gold h-3 w-3" />
+                      <span>Specific Date</span>
+                    </label>
+                    <div className="flex items-center gap-1">
+                      <input
+                        type="date"
+                        value={activeDate}
+                        onChange={(e) => handleDateChange(e.target.value)}
+                        className="focus:border-brand-gold rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
+                      />
+                      {activeDate && (
+                        <button
+                          type="button"
+                          onClick={() => handleDateChange('')}
+                          className="rounded-lg p-1 text-gray-400 hover:text-rose-500"
+                          title="Clear date"
+                        >
+                          <X className="h-3.5 w-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* DTMF Key Pressed Filter */}
+                  <div>
+                    <label className="mb-1 block text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                      DTMF Pressed Key
+                    </label>
+                    <div className="flex items-center rounded-xl border border-gray-200 bg-white p-0.5 dark:border-white/10 dark:bg-white/5">
+                      <button
+                        type="button"
+                        onClick={() => handlePressedKeyChange('all')}
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                          activePressedKey === 'all'
+                            ? 'bg-brand-gold/15 text-brand-gold'
+                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        }`}
+                      >
+                        All Keys
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePressedKeyChange('1')}
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                          activePressedKey === '1'
+                            ? 'bg-emerald-500/15 font-bold text-emerald-600 dark:text-emerald-400'
+                            : 'text-gray-500 hover:text-emerald-600 dark:text-gray-400'
+                        }`}
+                      >
+                        Key 1 (Interested)
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handlePressedKeyChange('none')}
+                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                          activePressedKey === 'none'
+                            ? 'bg-rose-500/15 font-bold text-rose-600 dark:text-rose-400'
+                            : 'text-gray-500 hover:text-rose-600 dark:text-gray-400'
+                        }`}
+                      >
+                        No Key
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Call Duration Filter */}
+                  <div>
+                    <label className="mb-1 block text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                      Call Duration
+                    </label>
+                    <div className="flex items-center rounded-xl border border-gray-200 bg-white p-0.5 dark:border-white/10 dark:bg-white/5">
+                      <button
+                        type="button"
+                        onClick={() => handleDurationFilterChange('all')}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
+                          activeDurationFilter === 'all'
+                            ? 'bg-brand-gold/15 text-brand-gold'
+                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        }`}
+                      >
+                        Any
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDurationFilterChange('lt_30')}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
+                          activeDurationFilter === 'lt_30'
+                            ? 'bg-rose-500/15 font-bold text-rose-600 dark:text-rose-400'
+                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        }`}
+                      >
+                        &lt; 30s
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDurationFilterChange('30_60')}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
+                          activeDurationFilter === '30_60'
+                            ? 'bg-amber-500/15 font-bold text-amber-600 dark:text-amber-400'
+                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        }`}
+                      >
+                        30s - 60s
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => handleDurationFilterChange('gt_60')}
+                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
+                          activeDurationFilter === 'gt_60'
+                            ? 'bg-emerald-500/15 font-bold text-emerald-600 dark:text-emerald-400'
+                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                        }`}
+                      >
+                        &gt; 60s
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Reset all button */}
+                <button
+                  type="button"
+                  onClick={handleResetFilters}
+                  className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" />
+                  <span>Reset All Filters</span>
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       {/* Main Table */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-colors duration-300 dark:border-white/8 dark:bg-[#0d0d14]">
@@ -753,14 +1002,82 @@ export function IvrLeadsTable({
                     className="accent-brand-gold h-3.5 w-3.5 rounded border-gray-300 transition-colors"
                   />
                 </th>
-                <th className="px-5 py-3.5">Customer Contact</th>
-                <th className="px-4 py-3.5">Attended By</th>
+                <th className="px-5 py-3.5">
+                  <button
+                    type="button"
+                    onClick={() => handleSortToggle('customer_phone')}
+                    className="flex cursor-pointer items-center gap-1 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <span>Customer Contact</span>
+                    {sortBy === 'customer_phone' ? (
+                      sortOrder === 'asc' ? (
+                        <ArrowUp className="text-brand-gold h-3 w-3" />
+                      ) : (
+                        <ArrowDown className="text-brand-gold h-3 w-3" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-2.5 w-2.5 opacity-40" />
+                    )}
+                  </button>
+                </th>
+                <th className="px-4 py-3.5">
+                  <button
+                    type="button"
+                    onClick={() => handleSortToggle('agent_name')}
+                    className="flex cursor-pointer items-center gap-1 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <span>Attended By</span>
+                    {sortBy === 'agent_name' ? (
+                      sortOrder === 'asc' ? (
+                        <ArrowUp className="text-brand-gold h-3 w-3" />
+                      ) : (
+                        <ArrowDown className="text-brand-gold h-3 w-3" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-2.5 w-2.5 opacity-40" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-4 py-3.5">Follow-up Advisor</th>
                 <th className="px-4 py-3.5">Dial Status</th>
-                <th className="px-4 py-3.5">Call Duration</th>
+                <th className="px-4 py-3.5">
+                  <button
+                    type="button"
+                    onClick={() => handleSortToggle('call_duration')}
+                    className="flex cursor-pointer items-center gap-1 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <span>Call Duration</span>
+                    {sortBy === 'call_duration' ? (
+                      sortOrder === 'asc' ? (
+                        <ArrowUp className="text-brand-gold h-3 w-3" />
+                      ) : (
+                        <ArrowDown className="text-brand-gold h-3 w-3" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-2.5 w-2.5 opacity-40" />
+                    )}
+                  </button>
+                </th>
                 <th className="px-4 py-3.5">Pressed Key</th>
                 <th className="px-4 py-3.5">Lead Intent</th>
-                <th className="px-5 py-3.5 text-right">Dialed At</th>
+                <th className="px-5 py-3.5 text-right">
+                  <button
+                    type="button"
+                    onClick={() => handleSortToggle('dial_time')}
+                    className="ml-auto flex cursor-pointer items-center gap-1 hover:text-gray-900 dark:hover:text-white"
+                  >
+                    <span>Dialed At</span>
+                    {sortBy === 'dial_time' ? (
+                      sortOrder === 'asc' ? (
+                        <ArrowUp className="text-brand-gold h-3 w-3" />
+                      ) : (
+                        <ArrowDown className="text-brand-gold h-3 w-3" />
+                      )
+                    ) : (
+                      <ArrowUpDown className="h-2.5 w-2.5 opacity-40" />
+                    )}
+                  </button>
+                </th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">

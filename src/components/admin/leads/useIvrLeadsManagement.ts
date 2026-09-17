@@ -44,6 +44,11 @@ export function useIvrLeadsManagement(
     temperature: 'all',
     advisor_id: 'all',
     q: '',
+    pressed_key: 'all',
+    date: '',
+    duration_filter: 'all',
+    sort_by: 'dial_time',
+    sort_order: 'desc',
   });
 
   const [summary, setSummary] = useState<IvrSummaryStats>({
@@ -87,7 +92,28 @@ export function useIvrLeadsManagement(
           advisor_id: filters.advisor_id,
         });
         if (filters.q) params.set('q', filters.q);
-
+        if (filters.pressed_key && filters.pressed_key !== 'all') {
+          params.set('pressed_key', filters.pressed_key);
+        }
+        if (filters.date) {
+          params.set('date', filters.date);
+        }
+        if (filters.duration_filter && filters.duration_filter !== 'all') {
+          if (filters.duration_filter === 'lt_30') {
+            params.set('max_duration', '29');
+          } else if (filters.duration_filter === '30_60') {
+            params.set('min_duration', '30');
+            params.set('max_duration', '60');
+          } else if (filters.duration_filter === 'gt_60') {
+            params.set('min_duration', '61');
+          }
+        }
+        if (filters.sort_by) {
+          params.set('sort_by', filters.sort_by);
+        }
+        if (filters.sort_order) {
+          params.set('sort_order', filters.sort_order);
+        }
         const res = await fetch(`/api/admin/leads/ivr-records?${params.toString()}`, {
           headers: { Authorization: `Bearer ${token}` },
         });

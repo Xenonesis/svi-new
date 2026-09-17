@@ -47,6 +47,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const startDate = searchParams.get('start_date');
     const endDate = searchParams.get('end_date');
     const q = searchParams.get('q')?.trim();
+    const pressedKey = searchParams.get('pressed_key'); // '1', 'none', or specific key
+    const minDuration = searchParams.get('min_duration'); // in seconds
+    const maxDuration = searchParams.get('max_duration'); // in seconds
+    const campaignName = searchParams.get('campaign_name');
+    const sortBy = searchParams.get('sort_by') || 'dial_time'; // 'dial_time', 'call_duration', 'customer_phone', 'agent_name'
+    const sortOrder = searchParams.get('sort_order') === 'asc' ? true : false;
 
     // 1. Construct database query with push-down filters
     let query = supabaseAdmin
@@ -104,8 +110,35 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     } else if (temperature === 'cold') {
       query = query.or('dial_status.eq.NOANSWER,and(call_duration.lt.20,pressed_key.neq.1)');
     }
+    if (pressedKey && pressedKey !== 'all') {
+      if (pressedKey === 'none') {
+        query = query.is('pressed_key', null);
+      } else {
+        query = query.eq('pressed_key', pressedKey);
+      }
+    }
+    if (minDuration) {
+      const minSec = parseInt(minDuration, 10);
+      if (!isNaN(minSec)) query = query.gte('call_duration', minSec);
+    }
+    if (maxDuration) {
+      const maxSec = parseInt(maxDuration, 10);
+      if (!isNaN(maxSec)) query = query.lte('call_duration', maxSec);
+    }
+    if (campaignName && campaignName !== 'all') {
+      query = query.ilike('campaign_name', `%${campaignName}%`);
+    }
 
-    query = query.order('dial_time', { ascending: false }).range(offset, offset + limit - 1);
+    // Dynamic sorting
+    const validSortColumns: Record<string, string> = {
+      dial_time: 'dial_time',
+      call_duration: 'call_duration',
+      customer_phone: 'customer_phone',
+      agent_name: 'agent_name',
+      created_at: 'created_at',
+    };
+    const sortColumn = validSortColumns[sortBy] || 'dial_time';
+    query = query.order(sortColumn, { ascending: sortOrder }).range(offset, offset + limit - 1);
 
     // Fetch records and summary concurrently
     const advisorUuid = advisorId && advisorId !== 'all' ? advisorId : null;

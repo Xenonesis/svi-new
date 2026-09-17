@@ -243,4 +243,62 @@ describe('IvrLeadsTable Component', () => {
     expect(skeletonRows).toHaveLength(8);
     expect(screen.queryByText('Loading IVR call records...')).toBeNull();
   });
+
+  it('toggles column sorting and triggers onFilterChange with sort_by and sort_order', () => {
+    const handleFilterChange = vi.fn();
+    render(
+      <IvrLeadsTable
+        records={mockRecords}
+        totalCount={2}
+        page={1}
+        limit={25}
+        loading={false}
+        onPageChange={vi.fn()}
+        onFilterChange={handleFilterChange}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={[]}
+      />
+    );
+
+    const durationHeaderBtn = screen.getByRole('button', { name: /call duration/i });
+    fireEvent.click(durationHeaderBtn);
+
+    expect(handleFilterChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sort_by: 'call_duration',
+        sort_order: 'desc',
+      })
+    );
+  });
+
+  it('opens More Filters panel and triggers filters like DTMF key and Call Duration', () => {
+    const handleFilterChange = vi.fn();
+    render(
+      <IvrLeadsTable
+        records={mockRecords}
+        totalCount={2}
+        page={1}
+        limit={25}
+        loading={false}
+        onPageChange={vi.fn()}
+        onFilterChange={handleFilterChange}
+        onTemperatureChange={vi.fn()}
+        onReassignAdvisor={vi.fn()}
+        employees={[]}
+      />
+    );
+
+    const moreFiltersBtn = screen.getByRole('button', { name: /more filters/i });
+    fireEvent.click(moreFiltersBtn);
+
+    const key1Btn = screen.getByRole('button', { name: /key 1/i });
+    fireEvent.click(key1Btn);
+
+    expect(handleFilterChange).toHaveBeenCalledWith(
+      expect.objectContaining({
+        pressed_key: '1',
+      })
+    );
+  });
 });
