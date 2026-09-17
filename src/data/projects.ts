@@ -1,3 +1,18 @@
+export type NearbyPlaceItem = {
+  name: string;
+  nameHi: string;
+  distance?: string;
+  distanceHi?: string;
+  time: string;
+  timeHi: string;
+  category: 'industry' | 'railway' | 'logistics' | 'temple' | 'highway' | 'corridor' | 'civic';
+  tag?: string;
+  tagHi?: string;
+  description: string;
+  descriptionHi: string;
+  featured?: boolean;
+};
+
 export type ProjectData = {
   title: string;
   titleHi?: string;
@@ -21,6 +36,7 @@ export type ProjectData = {
   description: string;
   descriptionHi?: string;
   brochureUrl?: string;
+  nearbyPlaces?: NearbyPlaceItem[];
 };
 
 export const PROJECTS_DB: Record<string, ProjectData> = {
@@ -80,6 +96,115 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     descriptionHi:
       'शिवानी वाटिका 11th – खाटू श्याम जी के पास एक शानदार आवासीय टाउनशिप। शिवानी वाटिका 11th एक सुनियोजित आवासीय परियोजना है जो 11.5 बीघा (लगभग 30,480 वर्ग गज) में फैली हुई है, जिसे पूर्णतः स्पष्ट दस्तावेज़ों और पारदर्शिता के साथ विकसित किया गया है, जो खरीदारों के लिए पूर्ण विश्वास सुनिश्चित करता है। टाउनशिप में 80 वर्ग गज से 250 वर्ग गज तक के 230 आवासीय भूखंड हैं, जो परिवारों को अपनी आवश्यकता के अनुसार चुनने की सुविधा देते हैं। सुरक्षित सोसाइटी बाउंड्री, भव्य मेन गेट, सीसीटीवी कैमरा, 24/7 सुरक्षा, आधुनिक बुनियादी ढांचे और आवश्यक सुविधाओं के साथ डिज़ाइन किया गया है।',
     brochureUrl: '/Shivani Vatika 11/ShivaniVatika 11.pdf',
+    nearbyPlaces: [
+      {
+        name: 'RIICO Industrial Area',
+        nameHi: 'रीको इंडस्ट्रियल एरिया (रेणवाल)',
+        distance: '1 km away',
+        distanceHi: '1 किमी दूर',
+        time: '~2 mins drive',
+        timeHi: '~2 मिनट',
+        category: 'industry',
+        tag: 'Industrial Growth Zone',
+        tagHi: 'औद्योगिक विकास क्षेत्र',
+        description:
+          '64+ acres operational RIICO industrial hub with 155+ planned units driving employment, commercial infrastructure, and high rental demand.',
+        descriptionHi:
+          '64+ एकड़ में विस्तृत रीको औद्योगिक क्षेत्र, 155+ नियोजित इकाइयों के साथ स्थानीय रोजगार और मजबूत रेंटल डिमांड सुनिश्चित करता है।',
+        featured: true,
+      },
+      {
+        name: 'Renwal Railway Station (RNW)',
+        nameHi: 'रेणवाल रेलवे स्टेशन (RNW)',
+        distance: '7 km',
+        distanceHi: '7 किमी',
+        time: '5 mins drive',
+        timeHi: '5 मिनट',
+        category: 'railway',
+        tag: 'Express Rail Transit',
+        tagHi: 'एक्सप्रेस रेल ट्रांजिट',
+        description:
+          'Direct North Western Railway station on the Phulera–Ringas–Rewari line with regular passenger and express train connectivity to Jaipur and Delhi.',
+        descriptionHi:
+          'फुलेरा-रींगस-रेवाड़ी रेल लाइन पर स्थित उत्तर पश्चिम रेलवे स्टेशन, जयपुर और दिल्ली के लिए नियमित ट्रेनों की सुगम सुविधा।',
+        featured: true,
+      },
+      {
+        name: 'Ambani & Adani Warehouses',
+        nameHi: 'अंबानी एवं अडानी वेयरहाउस',
+        distance: 'Next to 7 kms',
+        distanceHi: 'अगले 7 किमी में',
+        time: '~6 mins drive',
+        timeHi: '~6 मिनट',
+        category: 'logistics',
+        tag: 'Mega Logistics Corridor',
+        tagHi: 'लॉजिस्टिक्स कॉरिडोर',
+        description:
+          'Corporate mega warehousing and national supply-chain distribution hubs driving institutional capital and massive land valuation.',
+        descriptionHi:
+          'अग्रणी कॉरपोरेट वेयरहाउसिंग एवं नेशनल सप्लाई-चेन हब, जो इस पूरे रीजन में भूमि के तेजी से बढ़ते पूंजीगत मूल्य को गति दे रहे हैं।',
+        featured: true,
+      },
+      {
+        name: 'Shree Khatu Shyam Ji Mandir',
+        nameHi: 'श्री खाटू श्याम जी मंदिर',
+        time: '20–25 mins',
+        timeHi: '20–25 मिनट',
+        category: 'temple',
+        tag: 'Sacred Tourism Axis',
+        tagHi: 'पवित्र तीर्थ कॉरिडोर',
+        description:
+          'Direct highway corridor to the world-renowned pilgrimage dham, ensuring round-the-year commercial footfall, hospitality, and sustained appreciation.',
+        descriptionHi:
+          'विश्व प्रसिद्ध खाटू श्याम जी धाम के लिए सीधा हाईवे मार्ग, जो साल भर तीर्थयात्रियों के आवागमन और हाईवे कमर्शियल वैल्यू को बढ़ाता है।',
+        featured: true,
+      },
+      {
+        name: 'Jaipur – Khatu Shyam Ji Highway',
+        nameHi: 'जयपुर - खाटू श्याम जी हाईवे',
+        distance: '0 km (Frontage)',
+        distanceHi: '0 किमी (मेन हाईवे)',
+        time: 'Direct Access',
+        timeHi: 'सीधा प्रवेश',
+        category: 'highway',
+        tag: 'Arterial Highway',
+        tagHi: 'मुख्य राजमार्ग',
+        description:
+          'Instant, smooth highway connectivity directly connecting Jaipur City with the holy shrine corridor without navigating unpaved roads.',
+        descriptionHi:
+          'जयपुर शहर और खाटू धाम को जोड़ने वाले मुख्य राजमार्ग पर प्रत्यक्ष प्रवेश, बिना किसी कच्ची सड़क के निर्बाध आवागमन।',
+      },
+      {
+        name: 'Phulera Junction & DMIC Corridor',
+        nameHi: 'फुलेरा जंक्शन एवं DMIC कॉरिडोर',
+        distance: '~34 km',
+        distanceHi: '~34 किमी',
+        time: '~35 mins drive',
+        timeHi: '~35 मिनट',
+        category: 'corridor',
+        tag: 'Dedicated Freight Corridor',
+        tagHi: 'स्मार्ट सिटी / DFC',
+        description:
+          'Major Western Dedicated Freight Corridor (DFC) junction and proposed multi-modal smart logistics city.',
+        descriptionHi:
+          'वेस्टर्न डेडिकेटेड फ्रेट कॉरिडोर (DFC) का मुख्य जंक्शन एवं मेगा स्मार्ट लॉजिस्टिक्स औद्योगिक कॉरिडोर।',
+      },
+      {
+        name: 'Colleges, Schools & Hospitals',
+        nameHi: 'कॉलेज, स्कूल एवं CHC अस्पताल',
+        distance: '5–7 km',
+        distanceHi: '5–7 किमी',
+        time: '5–8 mins drive',
+        timeHi: '5–8 मिनट',
+        category: 'civic',
+        tag: 'Civic Infrastructure',
+        tagHi: 'नागरिक सुविधाएं',
+        description:
+          'Govt. Degree College Kishangarh Renwal, Senior Secondary Schools, 24/7 CHC Hospital, SBI, PNB, and IDFC First Bank branches.',
+        descriptionHi:
+          'राजकीय महाविद्यालय किशनगढ़ रेणवाल, सीनियर सेकेंडरी स्कूल, 24/7 सामुदायिक स्वास्थ्य केंद्र (CHC), एसबीआई व आईडीएफसी बैंक।',
+      },
+    ],
   },
   'shyam-aangan': {
     title: 'Shyam Aangan',

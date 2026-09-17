@@ -18,6 +18,7 @@ import ProjectAmenities from '@/src/components/projects/ProjectAmenities';
 import ProjectSizes from '@/src/components/projects/ProjectSizes';
 import ProjectActions from '@/src/components/projects/ProjectActions';
 import ProjectLocationMap from '@/src/components/projects/ProjectLocationMap';
+import ProjectNearbyPlaces from '@/src/components/projects/ProjectNearbyPlaces';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -177,6 +178,7 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         );
       })()}
+      <ProjectNearbyPlaces nearbyPlaces={project.nearbyPlaces} isHindi={isHindi} />
 
       <ProjectLocationMap
         mapEmbedUrl={project.mapEmbedUrl}

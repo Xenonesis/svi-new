@@ -42,6 +42,31 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.headerSubtitle).toBe('Jaipur to Khatu Shyam Ji Highway - Harsholi');
       expect(project.headerSubtitleHi).toBe('जयपुर से खाटू श्याम जी हाईवे - हरसोली');
     });
+
+    it('should include verified nearbyPlaces with accurate distances and times', () => {
+      expect(project.nearbyPlaces).toBeDefined();
+      expect(project.nearbyPlaces?.length).toBeGreaterThanOrEqual(4);
+
+      const riico = project.nearbyPlaces?.find((p) => p.name === 'RIICO Industrial Area');
+      expect(riico).toBeDefined();
+      expect(riico?.distance).toBe('1 km away');
+
+      const renwalStation = project.nearbyPlaces?.find(
+        (p) => p.name === 'Renwal Railway Station (RNW)'
+      );
+      expect(renwalStation).toBeDefined();
+      expect(renwalStation?.distance).toBe('7 km');
+      expect(renwalStation?.time).toBe('5 mins drive');
+
+      const warehouses = project.nearbyPlaces?.find((p) => p.name === 'Ambani & Adani Warehouses');
+      expect(warehouses).toBeDefined();
+      expect(warehouses?.distance).toBe('Next to 7 kms');
+
+      const khatu = project.nearbyPlaces?.find((p) => p.name === 'Shree Khatu Shyam Ji Mandir');
+      expect(khatu).toBeDefined();
+      expect(khatu?.distance).toBeUndefined(); // no km displayed per user requirement
+      expect(khatu?.time).toBe('20–25 mins');
+    });
   });
 
   describe('Shivani Vatika', () => {
