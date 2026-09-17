@@ -109,17 +109,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           })
           .in('customer_phone', group.phones);
 
-        // 3. Log interaction
-        await Promise.allSettled(
-          group.phones.map((phone) =>
-            leadInteractionsStore.recordInteraction({
-              lead_phone: phone,
-              advisor_id: group.advisor_id,
-              advisor_name: group.advisor_name || 'Unassigned',
-              type: 'reassigned',
-              content: `Bulk assignment reverted back to ${group.advisor_name || 'Unassigned'}`,
-            })
-          )
+        // 3. Log interactions in 1 batch query (eliminates N+1 DB round-trips)
+        await leadInteractionsStore.recordInteractionsBatch(
+          group.phones.map((phone) => ({
+            lead_phone: phone,
+            advisor_id: group.advisor_id,
+            advisor_name: group.advisor_name || 'Unassigned',
+            type: 'reassigned',
+            content: `Bulk assignment reverted back to ${group.advisor_name || 'Unassigned'}`,
+          }))
         );
       }
 
@@ -223,17 +221,15 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         console.warn('Bulk reassign ivr_call_records error:', ivrError.message);
       }
 
-      // 3. Log interaction timeline for each
-      await Promise.allSettled(
-        cleanPhones.map((phone) =>
-          leadInteractionsStore.recordInteraction({
-            lead_phone: phone,
-            advisor_id: advisorId,
-            advisor_name: advisorName,
-            type: 'reassigned',
-            content: `Reassigned to ${advisorName}`,
-          })
-        )
+      // 3. Log interaction timeline for each in 1 single batch query (eliminates N+1 DB round-trips)
+      await leadInteractionsStore.recordInteractionsBatch(
+        cleanPhones.map((phone) => ({
+          lead_phone: phone,
+          advisor_id: advisorId,
+          advisor_name: advisorName,
+          type: 'reassigned',
+          content: `Reassigned to ${advisorName}`,
+        }))
       );
 
       // 4. Create in-app Notification with Revert capability
@@ -299,19 +295,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           pipeline_stage: stage,
         })
         .in('customer_phone', cleanPhones);
-
-      // 3. Log interaction timeline
-      await Promise.allSettled(
-        cleanPhones.map((phone) =>
-          leadInteractionsStore.recordInteraction({
-            lead_phone: phone,
-            advisor_id: admin.id,
-            advisor_name: 'Admin',
-            type: 'stage_changed',
-            content: `Bulk updated pipeline stage to ${stage}`,
-            metadata: { stage },
-          })
-        )
+      // 3. Log interaction timeline in 1 single batch query (eliminates N+1 DB round-trips)
+      await leadInteractionsStore.recordInteractionsBatch(
+        cleanPhones.map((phone) => ({
+          lead_phone: phone,
+          advisor_id: admin.id,
+          advisor_name: 'Admin',
+          type: 'stage_changed',
+          content: `Bulk updated pipeline stage to ${stage}`,
+          metadata: { stage },
+        }))
       );
 
       return NextResponse.json({

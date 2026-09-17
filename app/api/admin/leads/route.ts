@@ -123,26 +123,61 @@ export async function GET(request: NextRequest) {
       };
     });
 
-    // Global summary counts
-    const [totalRes, unassignedRes, hotRes, chatbotRes, siteVisitRes] = await Promise.all([
-      supabaseAdmin.from('chat_leads').select('id', { count: 'exact', head: true }),
-      supabaseAdmin
-        .from('chat_leads')
-        .select('id', { count: 'exact', head: true })
-        .is('assigned_to', null),
-      supabaseAdmin
-        .from('chat_leads')
-        .select('id', { count: 'exact', head: true })
-        .eq('temperature', 'hot'),
-      supabaseAdmin
-        .from('chat_leads')
-        .select('id', { count: 'exact', head: true })
-        .eq('source', 'chatbot'),
-      supabaseAdmin
-        .from('chat_leads')
-        .select('id', { count: 'exact', head: true })
-        .eq('source', 'site_visit'),
-    ]);
+    // Global summary counts: 1 single consolidated SQL query (replaces 5 separate round-trips)
+    let counts = {
+      total: 0,
+      unassigned: 0,
+      hot: 0,
+      chatbot: 0,
+      site_visits: 0,
+    };
+
+    try {
+      const { data: summaryData, error: summaryErr } = await supabaseAdmin.rpc(
+        'get_chat_leads_summary_counts'
+      );
+      if (!summaryErr && summaryData && typeof summaryData === 'object') {
+        const s = summaryData as Record<string, number>;
+        counts = {
+          total: Number(s.total) || 0,
+          unassigned: Number(s.unassigned) || 0,
+          hot: Number(s.hot) || 0,
+          chatbot: Number(s.chatbot) || 0,
+          site_visits: Number(s.site_visits) || 0,
+        };
+      } else {
+        throw new Error('RPC not available, falling back');
+      }
+    } catch {
+      // Graceful fallback if migration is pending
+      const [totalRes, unassignedRes, hotRes, chatbotRes, siteVisitRes] = await Promise.all([
+        supabaseAdmin.from('chat_leads').select('id', { count: 'exact', head: true }),
+        supabaseAdmin
+          .from('chat_leads')
+          .select('id', { count: 'exact', head: true })
+          .is('assigned_to', null),
+        supabaseAdmin
+          .from('chat_leads')
+          .select('id', { count: 'exact', head: true })
+          .eq('temperature', 'hot'),
+        supabaseAdmin
+          .from('chat_leads')
+          .select('id', { count: 'exact', head: true })
+          .eq('source', 'chatbot'),
+        supabaseAdmin
+          .from('chat_leads')
+          .select('id', { count: 'exact', head: true })
+          .eq('source', 'site_visit'),
+      ]);
+
+      counts = {
+        total: totalRes.count || 0,
+        unassigned: unassignedRes.count || 0,
+        hot: hotRes.count || 0,
+        chatbot: chatbotRes.count || 0,
+        site_visits: siteVisitRes.count || 0,
+      };
+    }
 
     return NextResponse.json({
       success: true,
@@ -151,13 +186,7 @@ export async function GET(request: NextRequest) {
       page,
       limit,
       hasMore: (count || 0) > offset + limit,
-      counts: {
-        total: totalRes.count || 0,
-        unassigned: unassignedRes.count || 0,
-        hot: hotRes.count || 0,
-        chatbot: chatbotRes.count || 0,
-        site_visits: siteVisitRes.count || 0,
-      },
+      counts,
     });
   } catch (error) {
     return handleApiError(error);

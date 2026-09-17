@@ -100,6 +100,42 @@ export const leadInteractionsStore = {
     await this.syncLeadAttributes(cleanPhone, input);
     return newInteraction;
   },
+  /**
+   * Record a batch of interactions in 1 single database round-trip (eliminates N+1 sequential inserts)
+   */
+  async recordInteractionsBatch(inputs: CreateInteractionInput[]): Promise<LeadInteraction[]> {
+    if (!inputs || inputs.length === 0) return [];
+
+    const now = new Date().toISOString();
+    const rows = inputs.map((input) => {
+      const cleanPhone = input.lead_phone.replace(/\D/g, '').slice(-10);
+      return {
+        id: crypto.randomUUID(),
+        lead_phone: cleanPhone,
+        advisor_id: input.advisor_id || null,
+        advisor_name: input.advisor_name || null,
+        type: input.type,
+        content: input.content,
+        metadata: input.metadata || {},
+        created_at: now,
+      };
+    });
+
+    // 1. Single batch INSERT into lead_interactions
+    try {
+      const { data, error } = await supabaseAdmin.from('lead_interactions').insert(rows).select();
+
+      if (!error && data && data.length > 0) {
+        return data as LeadInteraction[];
+      }
+    } catch {
+      // Fall back if table is provisioning
+    }
+
+    // 2. Resilient in-memory fallback
+    memoryInteractions.unshift(...rows);
+    return rows;
+  },
 
   /**
    * Helper to sync chat_leads table when note, follow-up, or stage changes
