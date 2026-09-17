@@ -707,8 +707,8 @@ export function IvrLeadsTable({
               activePressedKey !== 'all' ||
               activeDurationFilter !== 'all' ||
               activeDate
-                ? 'border-brand-gold bg-brand-gold/10 text-brand-gold font-bold shadow-xs'
-                : 'border-gray-200 bg-gray-50 text-gray-700 hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200'
+                ? 'border-brand-gold bg-brand-gold/15 text-brand-gold font-bold shadow-xs'
+                : 'border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 hover:text-gray-950 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10 dark:hover:text-white'
             }`}
             title="Toggle more filters (Date, DTMF Key, Duration)"
           >
