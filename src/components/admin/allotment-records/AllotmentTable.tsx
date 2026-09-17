@@ -235,8 +235,20 @@ export function AllotmentTable({
                     {/* Client Name */}
                     <td className="px-5 py-3.5 align-middle">
                       <div className="min-w-0">
-                        <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                          {record.form_data?.clientName || 'N/A'}
+                        <div className="flex items-center gap-2 truncate font-semibold text-gray-900 capitalize dark:text-white">
+                          <span>{record.form_data?.clientName || 'N/A'}</span>
+                          {((record.form_data as Record<string, any>)?.refundStatus ===
+                            'Refund Done' ||
+                            (record.form_data as Record<string, any>)?.notes
+                              ?.toLowerCase()
+                              .includes('refund') ||
+                            (record.form_data as Record<string, any>)?.remarks
+                              ?.toLowerCase()
+                              .includes('refund')) && (
+                            <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                              Refund Done
+                            </span>
+                          )}
                         </div>
                         {record.form_data?.advisorName && (
                           <div className="text-[10px] text-gray-400 dark:text-gray-500">

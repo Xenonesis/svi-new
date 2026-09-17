@@ -9,6 +9,20 @@ interface ApprovePayload {
   candidate?: CandidateClient;
 }
 
+function safeIsoDate(raw?: string | null): string {
+  if (!raw) return '';
+  try {
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) {
+      const match = String(raw).match(/\d{4}-\d{2}-\d{2}/);
+      return match ? match[0] : '';
+    }
+    return d.toISOString().split('T')[0];
+  } catch {
+    return '';
+  }
+}
+
 export async function POST(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
@@ -134,9 +148,7 @@ export async function POST(request: NextRequest) {
       }
 
       // 3. Insert into public.allotments
-      const allottedDate = c.bookingDate
-        ? new Date(c.bookingDate).toISOString().split('T')[0]
-        : new Date().toISOString().split('T')[0];
+      const allottedDate = safeIsoDate(c.bookingDate) || new Date().toISOString().split('T')[0];
 
       const { data: newAllotment, error: allotInsertErr } = await supabaseAdmin
         .from('allotments')

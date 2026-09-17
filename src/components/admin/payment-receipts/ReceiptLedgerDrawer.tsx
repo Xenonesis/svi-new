@@ -74,6 +74,21 @@ export function ReceiptLedgerDrawer({
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const [exportingType, setExportingType] = useState<'excel' | 'pdf' | 'csv' | null>(null);
 
+  const isRefundDone = useMemo(() => {
+    const norm = (refId || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (norm === 'pl2050' || norm === 'pl2081') return true;
+    return Boolean(
+      ledger?.receipts?.some((r) => {
+        const fd = r.form_data as Record<string, any> | undefined;
+        return (
+          fd?.refundStatus?.toLowerCase().includes('refund') ||
+          fd?.notes?.toLowerCase().includes('refund') ||
+          fd?.remarks?.toLowerCase().includes('refund')
+        );
+      })
+    );
+  }, [refId, ledger?.receipts]);
+
   useEffect(() => {
     setAgreedValueInput(dealValue > 0 ? String(dealValue) : '');
     setAreaInput(initialArea > 0 ? String(initialArea) : '');
@@ -281,6 +296,11 @@ export function ReceiptLedgerDrawer({
                     <span className="rounded-md border border-sky-500/20 bg-sky-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
                       Ref ID: {ledger.displayRefId}
                     </span>
+                    {isRefundDone && (
+                      <span className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 font-sans text-xs font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                        Refund Done
+                      </span>
+                    )}
                     {ledger.plotNo && (
                       <span className="rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-mono text-xs font-bold text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
                         Plot {ledger.plotNo}
@@ -318,6 +338,23 @@ export function ReceiptLedgerDrawer({
 
             {/* Content Body */}
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
+              {/* Refund Notice Banner */}
+              {isRefundDone && (
+                <div className="flex items-center gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-rose-500/20 text-xs font-black text-rose-600 dark:text-rose-400">
+                    !
+                  </div>
+                  <div>
+                    <div className="text-xs font-bold tracking-wider uppercase">
+                      Account Status: Refund Done
+                    </div>
+                    <div className="text-xs opacity-90">
+                      This allotment has been processed as Refund Done as per official SVI records.
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Financial Summary Cards */}
               <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
                 {/* Total Received */}

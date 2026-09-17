@@ -58,6 +58,14 @@ export function PortalAllotmentTableRow({
     financials?.percentCompleted ??
     (dealValue > 0 ? Math.min(100, (totalPaid / dealValue) * 100) : 0);
 
+  const isRefundDone = Boolean(
+    allotment.notes?.toLowerCase().includes('refund') ||
+    (allotment.metadata?.status as string)?.toLowerCase().includes('refund') ||
+    (allotment.metadata?.refund_status as string)?.toLowerCase().includes('refund') ||
+    (allotment.metadata?.notes as string)?.toLowerCase().includes('refund') ||
+    (allotment.metadata?.remarks as string)?.toLowerCase().includes('refund')
+  );
+
   return (
     <div className="p-6 transition-colors hover:bg-slate-50/50 dark:hover:bg-gray-800/50">
       <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
@@ -79,6 +87,11 @@ export function PortalAllotmentTableRow({
                 <span className="dark:text-brand-gold inline-flex items-center gap-1 rounded-md bg-[#0f2942] px-2.5 py-0.5 font-mono text-xs font-bold text-white shadow-2xs dark:bg-gray-900">
                   <Tag className="text-brand-gold h-3 w-3" />
                   {ticketId}
+                </span>
+              )}
+              {isRefundDone && (
+                <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-xs font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                  Refund Done
                 </span>
               )}
             </div>
@@ -125,6 +138,14 @@ export function PortalAllotmentTableRow({
                   <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
                     <UserCheck className="h-3 w-3" />
                     {advisorName}
+                  </span>
+                </p>
+              )}
+              {isRefundDone && (
+                <p className="flex items-center gap-1.5">
+                  <strong className="text-gray-900 dark:text-gray-300">Status:</strong>{' '}
+                  <span className="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
+                    Refund Done
                   </span>
                 </p>
               )}

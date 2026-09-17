@@ -307,8 +307,20 @@ export function ReceiptsTable({
                       {/* Client Name */}
                       <td className="px-5 py-3.5 align-middle">
                         <div className="min-w-0">
-                          <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                            {receipt.form_data?.name || 'N/A'}
+                          <div className="flex items-center gap-1.5 truncate font-semibold text-gray-900 capitalize dark:text-white">
+                            <span>{receipt.form_data?.name || 'N/A'}</span>
+                            {((receipt.form_data as Record<string, any>)?.refundStatus ===
+                              'Refund Done' ||
+                              (receipt.form_data as Record<string, any>)?.notes
+                                ?.toLowerCase()
+                                .includes('refund') ||
+                              (receipt.form_data as Record<string, any>)?.remarks
+                                ?.toLowerCase()
+                                .includes('refund')) && (
+                              <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                                Refund Done
+                              </span>
+                            )}
                           </div>
                           {receipt.form_data?.drawnOn && (
                             <div className="text-[10px] text-gray-400 capitalize dark:text-gray-500">

@@ -34,6 +34,20 @@ function normalizeTicketId(raw?: string | null): string {
   return raw.trim().toUpperCase().replace(/[-\s]/g, '');
 }
 
+function safeIsoDate(raw?: string | null): string {
+  if (!raw) return '';
+  try {
+    const d = new Date(raw);
+    if (isNaN(d.getTime())) {
+      const match = String(raw).match(/\d{4}-\d{2}-\d{2}/);
+      return match ? match[0] : '';
+    }
+    return d.toISOString().split('T')[0];
+  } catch {
+    return '';
+  }
+}
+
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
@@ -112,7 +126,7 @@ export async function GET(request: NextRequest) {
           unitNo: r.plot_preference || '',
           area: r.property_size || '',
           totalCost: Number(r.scheme_amount) || 0,
-          bookingDate: r.created_at ? new Date(r.created_at).toISOString().split('T')[0] : '',
+          bookingDate: safeIsoDate(r.created_at),
           documentCount: 0,
           sources: ['Registration Form'],
           paymentMilestones: [],
@@ -164,11 +178,7 @@ export async function GET(request: NextRequest) {
           unitNo: String(unitNo),
           area,
           totalCost: calculatedCost,
-          bookingDate: bookingDate
-            ? new Date(bookingDate).toISOString().split('T')[0]
-            : d.created_at
-              ? new Date(d.created_at).toISOString().split('T')[0]
-              : '',
+          bookingDate: safeIsoDate(bookingDate) || safeIsoDate(d.created_at) || '',
           documentCount: 1,
           sources: [d.document_type || 'Document'],
           paymentMilestones: [],
@@ -202,9 +212,10 @@ export async function GET(request: NextRequest) {
         const item = candidatesMap.get(normId)!;
         const receiptAmount = Number(fd.amount || fd.receivedAmount || fd.totalAmount) || 0;
         const receiptDate =
-          fd.receiptDate ||
-          fd.date ||
-          (d.created_at ? new Date(d.created_at).toISOString().split('T')[0] : '');
+          safeIsoDate(fd.receiptDate) ||
+          safeIsoDate(fd.date) ||
+          safeIsoDate(d.created_at) ||
+          new Date().toISOString().split('T')[0];
         const milestoneTitle =
           fd.installmentName || fd.purpose || `Payment Receipt #${d.id.slice(0, 6)}`;
 
@@ -212,9 +223,9 @@ export async function GET(request: NextRequest) {
           item.paymentMilestones.push({
             title: milestoneTitle,
             amount: receiptAmount,
-            dueDate: receiptDate || new Date().toISOString().split('T')[0],
+            dueDate: receiptDate,
             status: 'paid',
-            paidDate: receiptDate || new Date().toISOString().split('T')[0],
+            paidDate: receiptDate,
           });
         }
       }

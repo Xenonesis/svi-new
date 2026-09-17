@@ -31,6 +31,7 @@ export interface AllotmentRecord {
   unit_no?: string;
   unit_number?: string;
   status?: string;
+  notes?: string | null;
   area?: number | string | null;
   total_cost?: number | null;
   booking_date?: string | null;
