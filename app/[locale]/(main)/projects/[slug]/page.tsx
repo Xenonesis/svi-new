@@ -178,7 +178,11 @@ export default async function ProjectDetailPage({ params }: Props) {
         );
       })()}
 
-      <ProjectLocationMap mapEmbedUrl={project.mapEmbedUrl} isHindi={isHindi} />
+      <ProjectLocationMap
+        mapEmbedUrl={project.mapEmbedUrl}
+        mapUrl={project.mapUrl}
+        isHindi={isHindi}
+      />
 
       {/* News Section */}
       <div className="container mx-auto max-w-7xl px-4">

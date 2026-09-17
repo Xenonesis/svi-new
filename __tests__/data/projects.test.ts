@@ -53,5 +53,13 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.gallery).toContain('/Shivani Vatika/shivani vatika.webp');
       expect(project.gallery).toContain('/Shivani Vatika/shivani vatik both.webp');
     });
+
+    it('should have exact Google Maps pin and valid embed URL', () => {
+      expect(project.mapUrl).toBe(
+        "https://www.google.com/maps/place/26%C2%B055'17.8%22N+76%C2%B000'28.0%22E/@26.9215965,76.0052071,845m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d26.9215965!4d76.007782?hl=en&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D"
+      );
+      expect(project.mapEmbedUrl).toContain('26.9215965');
+      expect(project.mapEmbedUrl).toContain('76.0052071');
+    });
   });
 });
