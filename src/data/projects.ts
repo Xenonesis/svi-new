@@ -245,7 +245,8 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     startingSizeHi: '150 वर्ग गज',
     availableSizes: ['150-200 Sq. Yds.', 'Above 200 Sq. Yds.'],
     mapEmbedUrl:
-      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d113645.72763327663!2d75.75055239726563!3d26.8503923!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x396c4adf4c57e281%3A0xce1c63a0cf22e09!2sJaipur%2C%20Rajasthan!5e0!3m2!1sen!2sin!4v1700000000000!5m2!1sen!2sin',
+      'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.07!2d76.0052071!3d26.9215965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDU1JzE3LjgiTiA3NsKwMDAnMjguMCJF!5e0!3m2!1sen!2sin!4v1789632000000!5m2!1sen!2sin',
+    mapUrl: 'https://www.google.com/maps?q=26.92159652709961,76.00778198242188&z=17&hl=en',
     description:
       'Shyam Aangan offers a premium integrated township experience in the heart of Jaipur. Designed for modern families, it features world-class amenities and 100% Vastu compliant plots.',
     descriptionHi:

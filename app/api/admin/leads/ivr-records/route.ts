@@ -54,11 +54,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const sortBy = searchParams.get('sort_by') || 'dial_time'; // 'dial_time', 'call_duration', 'customer_phone', 'agent_name'
     const sortOrder = searchParams.get('sort_order') === 'asc' ? true : false;
 
-    // 1. Construct database query with push-down filters
-    let query = supabaseAdmin
-      .from('ivr_call_records')
-      .select('*, assigned_agent:assigned_agent_id(id, full_name, phone)', { count: 'exact' });
-
+    // 1. Construct database query factory with push-down filters
     let advisorName: string | null = null;
     if (advisorId && advisorId !== 'all') {
       const { data: advProfile } = await supabaseAdmin
@@ -67,69 +63,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         .eq('id', advisorId)
         .maybeSingle();
       advisorName = advProfile?.full_name?.trim() || null;
-      if (advisorName) {
-        query = query.or(`assigned_agent_id.eq.${advisorId},agent_name.ilike.%${advisorName}%`);
-      } else {
-        query = query.eq('assigned_agent_id', advisorId);
-      }
-    }
-    if (dialStatus && dialStatus !== 'all') {
-      query = query.eq('dial_status', dialStatus.toUpperCase());
-    }
-    if (q) {
-      query = query.or(`customer_phone.ilike.%${q}%,agent_name.ilike.%${q}%`);
-    }
-    if (date) {
-      query = query
-        .gte('dial_time', `${date}T00:00:00.000Z`)
-        .lte('dial_time', `${date}T23:59:59.999Z`);
-    } else {
-      if (startDate) {
-        query = query.gte(
-          'dial_time',
-          startDate.includes('T') ? startDate : `${startDate}T00:00:00.000Z`
-        );
-      }
-      if (endDate) {
-        query = query.lte(
-          'dial_time',
-          endDate.includes('T') ? endDate : `${endDate}T23:59:59.999Z`
-        );
-      }
     }
 
-    // Push down temperature filters to PostgreSQL query so pagination is 100% accurate
-    if (temperature === 'hot') {
-      query = query.or('call_duration.gte.60,pressed_key.eq.1');
-    } else if (temperature === 'warm') {
-      query = query
-        .gte('call_duration', 20)
-        .lt('call_duration', 60)
-        .neq('pressed_key', '1')
-        .eq('dial_status', 'ANSWER');
-    } else if (temperature === 'cold') {
-      query = query.or('dial_status.eq.NOANSWER,and(call_duration.lt.20,pressed_key.neq.1)');
-    }
-    if (pressedKey && pressedKey !== 'all') {
-      if (pressedKey === 'none') {
-        query = query.is('pressed_key', null);
-      } else {
-        query = query.eq('pressed_key', pressedKey);
-      }
-    }
-    if (minDuration) {
-      const minSec = parseInt(minDuration, 10);
-      if (!isNaN(minSec)) query = query.gte('call_duration', minSec);
-    }
-    if (maxDuration) {
-      const maxSec = parseInt(maxDuration, 10);
-      if (!isNaN(maxSec)) query = query.lte('call_duration', maxSec);
-    }
-    if (campaignName && campaignName !== 'all') {
-      query = query.ilike('campaign_name', `%${campaignName}%`);
-    }
-
-    // Dynamic sorting
     const validSortColumns: Record<string, string> = {
       dial_time: 'dial_time',
       call_duration: 'call_duration',
@@ -138,8 +73,81 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       created_at: 'created_at',
     };
     const sortColumn = validSortColumns[sortBy] || 'dial_time';
-    query = query.order(sortColumn, { ascending: sortOrder });
 
+    const createBaseQuery = () => {
+      let qBuilder = supabaseAdmin
+        .from('ivr_call_records')
+        .select('*, assigned_agent:assigned_agent_id(id, full_name, phone)', { count: 'exact' });
+
+      if (advisorId && advisorId !== 'all') {
+        if (advisorName) {
+          qBuilder = qBuilder.or(
+            `assigned_agent_id.eq.${advisorId},agent_name.ilike.%${advisorName}%`
+          );
+        } else {
+          qBuilder = qBuilder.eq('assigned_agent_id', advisorId);
+        }
+      }
+      if (dialStatus && dialStatus !== 'all') {
+        qBuilder = qBuilder.eq('dial_status', dialStatus.toUpperCase());
+      }
+      if (q) {
+        qBuilder = qBuilder.or(`customer_phone.ilike.%${q}%,agent_name.ilike.%${q}%`);
+      }
+      if (date) {
+        qBuilder = qBuilder
+          .gte('dial_time', `${date}T00:00:00.000Z`)
+          .lte('dial_time', `${date}T23:59:59.999Z`);
+      } else {
+        if (startDate) {
+          qBuilder = qBuilder.gte(
+            'dial_time',
+            startDate.includes('T') ? startDate : `${startDate}T00:00:00.000Z`
+          );
+        }
+        if (endDate) {
+          qBuilder = qBuilder.lte(
+            'dial_time',
+            endDate.includes('T') ? endDate : `${endDate}T23:59:59.999Z`
+          );
+        }
+      }
+
+      // Push down temperature filters to PostgreSQL query so pagination is 100% accurate
+      if (temperature === 'hot') {
+        qBuilder = qBuilder.or('call_duration.gte.60,pressed_key.eq.1');
+      } else if (temperature === 'warm') {
+        qBuilder = qBuilder
+          .gte('call_duration', 20)
+          .lt('call_duration', 60)
+          .neq('pressed_key', '1')
+          .eq('dial_status', 'ANSWER');
+      } else if (temperature === 'cold') {
+        qBuilder = qBuilder.or(
+          'dial_status.eq.NOANSWER,and(call_duration.lt.20,pressed_key.neq.1)'
+        );
+      }
+      if (pressedKey && pressedKey !== 'all') {
+        if (pressedKey === 'none') {
+          qBuilder = qBuilder.is('pressed_key', null);
+        } else {
+          qBuilder = qBuilder.eq('pressed_key', pressedKey);
+        }
+      }
+      if (minDuration) {
+        const minSec = parseInt(minDuration, 10);
+        if (!isNaN(minSec)) qBuilder = qBuilder.gte('call_duration', minSec);
+      }
+      if (maxDuration) {
+        const maxSec = parseInt(maxDuration, 10);
+        if (!isNaN(maxSec)) qBuilder = qBuilder.lte('call_duration', maxSec);
+      }
+      if (campaignName && campaignName !== 'all') {
+        qBuilder = qBuilder.ilike('campaign_name', `%${campaignName}%`);
+      }
+
+      return qBuilder.order(sortColumn, { ascending: sortOrder });
+    };
     // Fetch records and summary concurrently
     const advisorUuid = advisorId && advisorId !== 'all' ? advisorId : null;
     let perfRpcResult: unknown = null;
@@ -161,14 +169,13 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     // If limit <= 1000, perform standard single range query.
     // If limit > 1000 (e.g. exporting full dataset of 5,000 or 15,000 rows), batch-fetch in parallel chunks of 1,000.
     if (limit <= 1000) {
-      const singleRes = await query.range(offset, offset + limit - 1);
+      const singleRes = await createBaseQuery().range(offset, offset + limit - 1);
       recordsData = singleRes.data || [];
       error = singleRes.error;
       count = singleRes.count;
     } else {
-      // 1. First probe total matching count with head query
-      const probeQuery = query;
-      const countRes = await probeQuery.range(offset, offset);
+      // 1. Probe total matching count with head query using a fresh query builder
+      const countRes = await createBaseQuery().range(offset, offset);
       error = countRes.error;
       count = countRes.count;
 
@@ -179,11 +186,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         const CHUNK_SIZE = 1000;
         const chunkCount = Math.ceil(totalToFetch / CHUNK_SIZE);
 
-        // Fetch all 1000-row chunks in parallel
+        // Fetch all 1000-row chunks in parallel with a fresh builder instance per chunk
         const chunkPromises = Array.from({ length: chunkCount }, (_, idx) => {
           const chunkStart = offset + idx * CHUNK_SIZE;
           const chunkEnd = Math.min(offset + totalToFetch - 1, chunkStart + CHUNK_SIZE - 1);
-          return query.range(chunkStart, chunkEnd);
+          return createBaseQuery().range(chunkStart, chunkEnd);
         });
 
         const chunkResults = await Promise.all(chunkPromises);

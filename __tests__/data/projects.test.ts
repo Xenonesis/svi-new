@@ -95,4 +95,15 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.descriptionHi).toContain('नायला के शांत और मनोरम परिवेश में स्थित');
     });
   });
+  describe('Shyam Aangan', () => {
+    const project = PROJECTS_DB['shyam-aangan'];
+
+    it('should have exact Google Maps pin and valid embed URL', () => {
+      expect(project.mapUrl).toBe(
+        'https://www.google.com/maps?q=26.92159652709961,76.00778198242188&z=17&hl=en'
+      );
+      expect(project.mapEmbedUrl).toContain('26.9215965');
+      expect(project.mapEmbedUrl).toContain('76.0052071');
+    });
+  });
 });
