@@ -155,7 +155,7 @@ export default function AdminLeadsPage() {
 
       {activeTab === 'chatbot' && token && (
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <WorkforceLeadsTab token={token} employees={employees} />
+          <WorkforceLeadsTab token={token} employees={employees} fixedSource="chatbot" />
         </div>
       )}
 

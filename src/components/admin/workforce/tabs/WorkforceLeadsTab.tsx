@@ -71,9 +71,10 @@ export interface WorkforceLeadItem {
   } | null;
 }
 
-interface WorkforceLeadsTabProps {
+export interface WorkforceLeadsTabProps {
   token: string;
   employees: Employee[];
+  fixedSource?: string;
 }
 
 const LIFECYCLE_STATUS_OPTIONS = [
@@ -88,7 +89,7 @@ const LIFECYCLE_STATUS_OPTIONS = [
   { value: 'lost', label: 'Lost / Closed' },
 ];
 
-export function WorkforceLeadsTab({ token, employees }: WorkforceLeadsTabProps) {
+export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLeadsTabProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -110,7 +111,14 @@ export function WorkforceLeadsTab({ token, employees }: WorkforceLeadsTabProps) 
   // Filters
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [sourceFilter, setSourceFilter] = useState('all');
+  const [sourceFilter, setSourceFilter] = useState(fixedSource || 'all');
+
+  useEffect(() => {
+    if (fixedSource) {
+      setSourceFilter(fixedSource);
+      setPage(1);
+    }
+  }, [fixedSource]);
   const [statusFilter, setStatusFilter] = useState('all');
   const [temperatureFilter, setTemperatureFilter] = useState('all');
   const [assignedFilter, setAssignedFilter] = useState('all');
@@ -388,18 +396,19 @@ export function WorkforceLeadsTab({ token, employees }: WorkforceLeadsTabProps) 
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-              Total Inquiries
+              {fixedSource === 'chatbot' ? 'Chatbot Inquiries' : 'Total Inquiries'}
             </span>
             <div className="bg-brand-gold/10 text-brand-gold rounded-lg p-1.5">
               <MessageSquare className="h-3.5 w-3.5" />
             </div>
           </div>
           <div className="text-brand-navy mt-2 font-serif text-2xl font-bold dark:text-white">
-            {counts.total}
+            {fixedSource === 'chatbot' ? counts.chatbot || total : counts.total}
           </div>
-          <p className="text-[10px] text-gray-500 dark:text-gray-400">All captured channels</p>
+          <p className="text-[10px] text-gray-500 dark:text-gray-400">
+            {fixedSource === 'chatbot' ? 'Direct from AI Chatbot' : 'All captured channels'}
+          </p>
         </div>
-
         {/* Hot Leads */}
         <div className="hover-lift-sm relative overflow-hidden rounded-xl border border-red-200/50 bg-red-50/30 p-4 shadow-xs backdrop-blur-md dark:border-red-500/20 dark:bg-red-500/5">
           <div className="absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
@@ -531,21 +540,23 @@ export function WorkforceLeadsTab({ token, employees }: WorkforceLeadsTabProps) 
             </button>
           </div>
 
-          {/* Source Filter */}
-          <select
-            value={sourceFilter}
-            onChange={(e) => {
-              setSourceFilter(e.target.value);
-              setPage(1);
-            }}
-            className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200"
-          >
-            <option value="all">All Sources</option>
-            <option value="chatbot">AI Chatbot</option>
-            <option value="site_visit">Site Visit Form</option>
-            <option value="whatsapp">WhatsApp Sales</option>
-            <option value="manual">Manual Entry</option>
-          </select>
+          {/* Source Filter (Hidden if fixedSource is provided) */}
+          {!fixedSource && (
+            <select
+              value={sourceFilter}
+              onChange={(e) => {
+                setSourceFilter(e.target.value);
+                setPage(1);
+              }}
+              className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200"
+            >
+              <option value="all">All Sources</option>
+              <option value="chatbot">AI Chatbot</option>
+              <option value="site_visit">Site Visit Form</option>
+              <option value="whatsapp">WhatsApp Sales</option>
+              <option value="manual">Manual Entry</option>
+            </select>
+          )}
 
           {/* Stage / Lifecycle Filter */}
           <select
