@@ -86,5 +86,13 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.mapEmbedUrl).toContain('26.9215965');
       expect(project.mapEmbedUrl).toContain('76.0052071');
     });
+
+    it('should have Nayla, Jaipur location and verified community description', () => {
+      expect(project.location).toBe('Nayla, Jaipur');
+      expect(project.locationHi).toBe('नायला, जयपुर');
+      expect(project.description).toContain('Located in the serene landscapes of Nayla');
+      expect(project.description).toContain('redefining modern community living');
+      expect(project.descriptionHi).toContain('नायला के शांत और मनोरम परिवेश में स्थित');
+    });
   });
 });

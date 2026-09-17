@@ -254,8 +254,8 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
   'shivani-vatika': {
     title: 'Shivani Vatika',
     titleHi: 'शिवानी वाटिका',
-    location: 'Manpura Machedi',
-    locationHi: 'मानपुरा माचेड़ी',
+    location: 'Nayla, Jaipur',
+    locationHi: 'नायला, जयपुर',
     status: 'Under Construction',
     type: 'Premier Residential',
     typeHi: 'प्रीमियर आवासीय',
@@ -280,8 +280,8 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     mapUrl:
       "https://www.google.com/maps/place/26%C2%B055'17.8%22N+76%C2%B000'28.0%22E/@26.9215965,76.0052071,845m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d26.9215965!4d76.007782?hl=en&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D",
     description:
-      'Shivani Vatika brings premier residential living to Manpura Machedi. Surrounded by lush greenery, it provides a serene escape from the city bustle while maintaining excellent connectivity.',
+      "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
     descriptionHi:
-      'शिवानी वाटिका मानपुरा माचेड़ी में प्रमुख आवासीय जीवन लाती है। हरियाली से घिरा, यह बेहतरीन कनेक्टिविटी बनाए रखते हुए शहर की हलचल से दूर एक शांत जगह प्रदान करता है।',
+      'नायला के शांत और मनोरम परिवेश में स्थित, शिवानी वाटिका आधुनिक सामुदायिक जीवन को पुनर्परिभाषित कर रही है। आवश्यक शहरी सुविधाओं से युक्त विशिष्ट रूप से तैयार किए गए आवासीय स्थान प्रदान करते हुए, यह प्रोजेक्ट एसवीआई इंफ्रा सॉल्यूशंस की गुणवत्ता, समय पर डिलीवरी और सक्रिय व शांतिपूर्ण जीवनशैली को बढ़ावा देने वाले वातावरण के निर्माण की प्रतिबद्धता को दर्शाता है। बेहतरीन कनेक्टिविटी और विकास की आशाजनक संभावनाओं के साथ, शिवानी वाटिका संतुलित जीवनशैली चाहने वाले परिवारों के लिए एक आदर्श विकल्प है।',
   },
 };
