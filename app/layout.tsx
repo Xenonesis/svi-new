@@ -26,7 +26,7 @@ const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
   display: 'swap',
-  preload: true,
+  preload: false,
 });
 
 const notoSansDevanagari = Noto_Sans_Devanagari({

@@ -11,6 +11,7 @@ if (dsn) {
     tracesSampleRate: process.env.NODE_ENV === 'development' ? 0 : 0.1,
     enableLogs: false,
     integrations: [],
+    tunnel: '/monitoring',
   });
 }
 

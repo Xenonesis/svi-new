@@ -197,7 +197,7 @@ const nextConfigWithPlugins = withSentryConfig(withNextIntl(withBundleAnalyzer(w
   project: 'javascript-nextjs',
   authToken: process.env.SENTRY_AUTH_TOKEN,
   widenClientFileUpload: true,
-  // tunnelRoute: '/monitoring',
+  tunnelRoute: '/monitoring',
   silent: !process.env.CI,
   telemetry: false,
 });
