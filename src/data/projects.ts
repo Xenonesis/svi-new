@@ -10,6 +10,7 @@ export type NearbyPlaceItem = {
   tagHi?: string;
   description: string;
   descriptionHi: string;
+  image?: string;
   featured?: boolean;
 };
 
@@ -111,6 +112,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           '64+ acres operational RIICO industrial hub with 155+ planned units driving employment, commercial infrastructure, and high rental demand.',
         descriptionHi:
           '64+ एकड़ में विस्तृत रीको औद्योगिक क्षेत्र, 155+ नियोजित इकाइयों के साथ स्थानीय रोजगार और मजबूत रेंटल डिमांड सुनिश्चित करता है।',
+        image: '/images/landmarks/riico-industrial.webp',
         featured: true,
       },
       {
@@ -127,6 +129,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Direct North Western Railway station on the Phulera–Ringas–Rewari line with regular passenger and express train connectivity to Jaipur and Delhi.',
         descriptionHi:
           'फुलेरा-रींगस-रेवाड़ी रेल लाइन पर स्थित उत्तर पश्चिम रेलवे स्टेशन, जयपुर और दिल्ली के लिए नियमित ट्रेनों की सुगम सुविधा।',
+        image: '/images/landmarks/renwal-railway.webp',
         featured: true,
       },
       {
@@ -143,6 +146,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Corporate mega warehousing and national supply-chain distribution hubs driving institutional capital and massive land valuation.',
         descriptionHi:
           'अग्रणी कॉरपोरेट वेयरहाउसिंग एवं नेशनल सप्लाई-चेन हब, जो इस पूरे रीजन में भूमि के तेजी से बढ़ते पूंजीगत मूल्य को गति दे रहे हैं।',
+        image: '/images/landmarks/corporate-warehouses.webp',
         featured: true,
       },
       {
@@ -157,6 +161,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Direct highway corridor to the world-renowned pilgrimage dham, ensuring round-the-year commercial footfall, hospitality, and sustained appreciation.',
         descriptionHi:
           'विश्व प्रसिद्ध खाटू श्याम जी धाम के लिए सीधा हाईवे मार्ग, जो साल भर तीर्थयात्रियों के आवागमन और हाईवे कमर्शियल वैल्यू को बढ़ाता है।',
+        image: '/images/landmarks/khatu-shyam-mandir.webp',
         featured: true,
       },
       {

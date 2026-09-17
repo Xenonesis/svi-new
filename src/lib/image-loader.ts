@@ -61,8 +61,9 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
   }
 
   // Check if this local image lives in one of the directories with pre-generated responsive variants
-  const isResponsiveDir = RESPONSIVE_LOCAL_DIRS.some((dir) => cleanSrc.startsWith(dir));
-
+  const isResponsiveDir =
+    RESPONSIVE_LOCAL_DIRS.some((dir) => cleanSrc.startsWith(dir)) &&
+    !cleanSrc.includes('/images/landmarks/');
   if (isResponsiveDir) {
     const basePath = cleanSrc.replace(/\.(png|jpg|jpeg|webp|avif)$/i, '');
 

@@ -1,4 +1,5 @@
 import type { ComponentType } from 'react';
+import Image from 'next/image';
 import {
   Factory,
   Train,
@@ -46,42 +47,42 @@ const getCategoryAccent = (category: NearbyPlaceItem['category']) => {
   switch (category) {
     case 'industry':
       return {
-        badge: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 border-emerald-500/30',
+        badge: 'bg-black/70 text-emerald-400 border-emerald-500/40',
         iconBg: 'bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400',
         timeBadge: 'bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 border-emerald-500/20',
         glow: 'hover:border-emerald-500/40 hover:shadow-emerald-500/10',
       };
     case 'railway':
       return {
-        badge: 'bg-sky-500/15 text-sky-700 dark:text-sky-400 border-sky-500/30',
+        badge: 'bg-black/70 text-sky-400 border-sky-500/40',
         iconBg: 'bg-sky-500/10 text-sky-600 dark:bg-sky-500/20 dark:text-sky-400',
         timeBadge: 'bg-sky-500/10 text-sky-800 dark:text-sky-300 border-sky-500/20',
         glow: 'hover:border-sky-500/40 hover:shadow-sky-500/10',
       };
     case 'logistics':
       return {
-        badge: 'bg-amber-500/15 text-amber-700 dark:text-amber-400 border-amber-500/30',
+        badge: 'bg-black/70 text-amber-400 border-amber-500/40',
         iconBg: 'bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400',
         timeBadge: 'bg-amber-500/10 text-amber-800 dark:text-amber-300 border-amber-500/20',
         glow: 'hover:border-amber-500/40 hover:shadow-amber-500/10',
       };
     case 'temple':
       return {
-        badge: 'bg-amber-400/20 text-amber-800 dark:text-amber-300 border-amber-400/40',
+        badge: 'bg-black/70 text-amber-300 border-amber-400/50',
         iconBg: 'bg-amber-400/15 text-amber-700 dark:bg-amber-400/25 dark:text-amber-300',
         timeBadge: 'bg-amber-400/15 text-amber-800 dark:text-amber-300 border-amber-400/30',
         glow: 'hover:border-amber-400/50 hover:shadow-amber-400/10',
       };
     case 'highway':
       return {
-        badge: 'bg-slate-500/15 text-slate-700 dark:text-slate-300 border-slate-500/30',
+        badge: 'bg-black/70 text-slate-200 border-slate-400/40',
         iconBg: 'bg-slate-500/10 text-slate-700 dark:bg-slate-500/20 dark:text-slate-300',
         timeBadge: 'bg-slate-500/10 text-slate-800 dark:text-slate-300 border-slate-500/20',
         glow: 'hover:border-slate-500/40 hover:shadow-slate-500/10',
       };
     case 'corridor':
       return {
-        badge: 'bg-indigo-500/15 text-indigo-700 dark:text-indigo-400 border-indigo-500/30',
+        badge: 'bg-black/70 text-indigo-300 border-indigo-400/40',
         iconBg: 'bg-indigo-500/10 text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-400',
         timeBadge: 'bg-indigo-500/10 text-indigo-800 dark:text-indigo-300 border-indigo-500/20',
         glow: 'hover:border-indigo-500/40 hover:shadow-indigo-500/10',
@@ -89,7 +90,7 @@ const getCategoryAccent = (category: NearbyPlaceItem['category']) => {
     case 'civic':
     default:
       return {
-        badge: 'bg-teal-500/15 text-teal-700 dark:text-teal-400 border-teal-500/30',
+        badge: 'bg-black/70 text-teal-300 border-teal-400/40',
         iconBg: 'bg-teal-500/10 text-teal-600 dark:bg-teal-500/20 dark:text-teal-400',
         timeBadge: 'bg-teal-500/10 text-teal-800 dark:text-teal-300 border-teal-500/20',
         glow: 'hover:border-teal-500/40 hover:shadow-teal-500/10',
@@ -145,60 +146,70 @@ export default function ProjectNearbyPlaces({ nearbyPlaces, isHindi }: ProjectNe
             const distance = isHindi && place.distanceHi ? place.distanceHi : place.distance;
             const time = isHindi && place.timeHi ? place.timeHi : place.time;
             const description = isHindi ? place.descriptionHi : place.description;
-
             return (
               <article
                 key={idx}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white/95 p-6 shadow-lg shadow-slate-950/5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl dark:border-slate-800/80 dark:bg-[#0c121e]/90 ${accent.glow}`}
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white/95 p-4 shadow-lg shadow-slate-950/5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:p-5 dark:border-slate-800/80 dark:bg-[#0c121e]/90 ${accent.glow}`}
               >
-                {/* Top Row: Icon + Category Badge */}
                 <div>
-                  <div className="flex items-center justify-between gap-3">
-                    <div
-                      className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ${accent.iconBg} transition-transform duration-300 group-hover:scale-110`}
-                    >
-                      <Icon className="h-6 w-6" />
-                    </div>
-                    {tag && (
-                      <span
-                        className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase ${accent.badge}`}
-                      >
-                        {tag}
-                      </span>
+                  {/* High-Resolution Landmark Image Header */}
+                  <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-slate-100 shadow-inner sm:h-48 dark:bg-slate-800">
+                    {place.image ? (
+                      <>
+                        <Image
+                          src={place.image}
+                          alt={name}
+                          fill
+                          unoptimized
+                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                      </>
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-slate-800">
+                        <Icon className="h-10 w-10 text-slate-400" />
+                      </div>
                     )}
+
+                    {/* Top Category Badge Over Image */}
+                    <div className="absolute top-3 right-3 left-3 flex items-center justify-between gap-2">
+                      {tag && (
+                        <span
+                          className={`rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md ${accent.badge}`}
+                        >
+                          {tag}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Bottom Distance / Time Pill Over Image */}
+                    <div className="absolute right-3 bottom-3">
+                      <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-2.5 py-1 font-mono text-[11px] font-extrabold text-white shadow-lg backdrop-blur-md">
+                        <Clock className="h-3 w-3 text-amber-400" />
+                        <span>{distance ? `${distance} • ${time}` : time}</span>
+                      </span>
+                    </div>
                   </div>
 
                   {/* Title */}
-                  <h3 className="mt-5 font-serif text-xl font-bold tracking-tight text-slate-900 transition-colors group-hover:text-amber-600 dark:text-white dark:group-hover:text-amber-400">
+                  <h3 className="mt-3.5 font-serif text-lg font-bold tracking-tight text-slate-900 transition-colors group-hover:text-amber-600 sm:text-xl dark:text-white dark:group-hover:text-amber-400">
                     {name}
                   </h3>
 
                   {/* Description */}
-                  <p className="mt-2.5 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                     {description}
                   </p>
                 </div>
 
-                {/* Bottom Metric Pill */}
-                <div className="mt-6 border-t border-slate-100 pt-4 dark:border-slate-800/80">
-                  <div className="flex items-center justify-between gap-2">
-                    <div className="flex flex-col">
-                      {distance && (
-                        <span className="font-mono text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
-                          {distance}
-                        </span>
-                      )}
-                      <span
-                        className={`inline-flex items-center gap-1 text-[11px] font-bold ${!distance ? 'font-mono text-base font-extrabold tracking-tight text-slate-900 dark:text-white' : 'text-slate-500 dark:text-slate-400'}`}
-                      >
-                        <Clock className="h-3 w-3 text-amber-500" />
-                        {time}
-                      </span>
-                    </div>
-
-                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors group-hover:bg-amber-400 group-hover:text-slate-950 dark:bg-slate-800 dark:text-slate-500">
-                      <ArrowUpRight className="h-4 w-4" />
-                    </div>
+                {/* Bottom Action Strip */}
+                <div className="mt-5 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800/80">
+                  <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                    <MapPin className="h-3.5 w-3.5" />
+                    <span>{isHindi ? 'सीधा संपर्क मार्ग' : 'Direct Corridor Access'}</span>
+                  </div>
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors group-hover:bg-amber-400 group-hover:text-slate-950 dark:bg-slate-800 dark:text-slate-400">
+                    <ArrowUpRight className="h-3.5 w-3.5" />
                   </div>
                 </div>
               </article>
