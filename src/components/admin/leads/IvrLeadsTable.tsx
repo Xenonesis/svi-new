@@ -1270,7 +1270,8 @@ export function IvrLeadsTable({
                             {/* Sleek Hover Tooltip */}
                             <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 hidden -translate-x-1/2 rounded-lg bg-gray-950/95 px-2.5 py-1.5 text-[11px] font-medium whitespace-nowrap text-white shadow-xl backdrop-blur-md transition-all group-hover/dtmf:block dark:border dark:border-white/15 dark:bg-gray-900/95">
                               <div className="text-brand-gold flex items-center gap-1.5 font-semibold">
-                                <span>📱 IVR Keypad Response</span>
+                                <Phone className="h-3 w-3" />
+                                <span>IVR Keypad Response</span>
                               </div>
                               <p className="mt-0.5 text-[10px] font-normal text-gray-300">
                                 Customer pressed{' '}
@@ -1318,19 +1319,19 @@ export function IvrLeadsTable({
                             value="hot"
                             className="bg-white text-rose-600 dark:bg-[#161622] dark:text-rose-400"
                           >
-                            🔥 Hot
+                            Hot Lead
                           </option>
                           <option
                             value="warm"
                             className="bg-white text-amber-600 dark:bg-[#161622] dark:text-amber-400"
                           >
-                            ⚡ Warm
+                            Warm Lead
                           </option>
                           <option
                             value="cold"
                             className="bg-white text-blue-600 dark:bg-[#161622] dark:text-blue-400"
                           >
-                            ❄️ Cold
+                            Cold Lead
                           </option>
                         </select>
                       </td>

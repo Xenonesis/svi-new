@@ -81,9 +81,8 @@ describe('ExportLeadsModal Component', () => {
     expect(screen.getByText('Raw CSV')).toBeDefined();
 
     // Advisors
-    expect(screen.getByText('🌐 All Advisors (Full Team)')).toBeDefined();
-    expect(screen.getByText('👤 Shivam Yadav')).toBeDefined();
-
+    expect(screen.getByText('All Advisors (Full Team)')).toBeDefined();
+    expect(screen.getByText('Shivam Yadav')).toBeDefined();
     // Date scopes
     expect(screen.getByRole('button', { name: 'All Time' })).toBeDefined();
     expect(screen.getByRole('button', { name: 'Today' })).toBeDefined();

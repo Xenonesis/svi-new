@@ -7,6 +7,7 @@ import { ExportLeadsModal } from '@/src/components/admin/leads/ExportLeadsModal'
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import {
   Trophy,
+  Medal,
   PhoneCall,
   PhoneForwarded,
   PhoneOff,
@@ -871,16 +872,25 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                           <div className="flex items-start justify-between gap-2">
                             <div className="flex min-w-0 items-center gap-2.5">
                               {isGold ? (
-                                <span className="text-brand-navy flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-xs font-black shadow-md">
-                                  🥇 1
+                                <span
+                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-slate-900 shadow-md ring-1 ring-amber-400/40"
+                                  title="Rank 1 - Top Telecaller"
+                                >
+                                  <Trophy className="h-3.5 w-3.5 text-amber-950" />
                                 </span>
                               ) : isSilver ? (
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-300 to-slate-100 text-xs font-black text-slate-800 shadow-md">
-                                  🥈 2
+                                <span
+                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 text-slate-800 shadow-md ring-1 ring-slate-300"
+                                  title="Rank 2"
+                                >
+                                  <Medal className="h-3.5 w-3.5 text-slate-700" />
                                 </span>
                               ) : (
-                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-700 to-amber-600 text-xs font-black text-white shadow-md">
-                                  🥉 3
+                                <span
+                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-700 to-amber-600 text-white shadow-md ring-1 ring-amber-600"
+                                  title="Rank 3"
+                                >
+                                  <Medal className="h-3.5 w-3.5 text-amber-100" />
                                 </span>
                               )}
                               <div className="min-w-0">

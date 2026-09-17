@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { Clock, LogIn, LogOut, Loader2, ShieldCheck, Fingerprint } from 'lucide-react';
+import { Clock, LogIn, LogOut, Loader2, ShieldCheck, Fingerprint, Zap } from 'lucide-react';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
 import { toast } from 'sonner';
@@ -230,8 +230,8 @@ export function PunchTerminalWidget({
       {queuedPunchesCount > 0 && (
         <div className="mb-4 flex items-center justify-between rounded-2xl border border-amber-300 bg-amber-50/90 p-3 text-left shadow-sm dark:border-amber-700/50 dark:bg-amber-950/40">
           <div className="flex items-center gap-2">
-            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/20 text-sm font-bold text-amber-700 dark:text-amber-300">
-              ⚡
+            <span className="flex h-7 w-7 items-center justify-center rounded-xl bg-amber-500/20 text-amber-700 dark:text-amber-300">
+              <Zap className="h-3.5 w-3.5" />
             </span>
             <div>
               <p className="text-xs font-bold text-amber-900 dark:text-amber-200">

@@ -2,7 +2,7 @@
 
 import { useCallback, useState, type ChangeEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { AlertCircle, ArrowRight, CheckCircle2 } from 'lucide-react';
+import { AlertCircle, ArrowRight, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { submitContactForm } from '@/src/actions/contact';
 import { queueSubmission } from '@/src/lib/pwa/backgroundSync';
@@ -324,8 +324,9 @@ export default function ContactForm() {
           </button>
 
           {/* Trust note */}
-          <p className="text-center text-[10px] text-gray-400 dark:text-gray-600">
-            🔒 Your information is kept strictly confidential.
+          <p className="flex items-center justify-center gap-1.5 text-center text-xs text-gray-500 dark:text-gray-400">
+            <ShieldCheck className="text-brand-gold/90 h-3.5 w-3.5" />
+            <span>Your information is kept strictly confidential & secure.</span>
           </p>
         </form>
       </div>

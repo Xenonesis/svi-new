@@ -262,10 +262,10 @@ export function ExportLeadsModal({
               onChange={(e) => setAdvisorId(e.target.value)}
               className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-800 shadow-sm transition-colors focus:outline-none dark:border-white/10 dark:bg-[#161622] dark:text-gray-200"
             >
-              <option value="all">🌐 All Advisors (Full Team)</option>
+              <option value="all">All Advisors (Full Team)</option>
               {employees.map((emp) => (
                 <option key={emp.id} value={emp.id}>
-                  👤 {emp.full_name}
+                  {emp.full_name}
                 </option>
               ))}
             </select>

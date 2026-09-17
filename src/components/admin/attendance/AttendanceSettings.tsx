@@ -297,7 +297,10 @@ export default function AttendanceSettings({ token, showToast }: AttendanceSetti
         </h4>
         <div className="mt-3 grid gap-2.5 text-xs sm:grid-cols-2 md:grid-cols-4">
           <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 p-2.5 dark:border-emerald-900/50 dark:bg-emerald-950/40">
-            <span className="font-bold text-emerald-800 dark:text-emerald-300">🟢 On-Time</span>
+            <span className="inline-flex items-center gap-1.5 font-bold text-emerald-800 dark:text-emerald-300">
+              <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-emerald-400/40" />
+              On-Time
+            </span>
             <p className="mt-0.5 text-[11px] text-emerald-700 dark:text-emerald-400">
               {settings.punch_in_start || '09:00'} – {settings.punch_in_late_after || '09:15'}
             </p>
@@ -307,7 +310,10 @@ export default function AttendanceSettings({ token, showToast }: AttendanceSetti
           </div>
 
           <div className="rounded-xl border border-amber-200 bg-amber-50/80 p-2.5 dark:border-amber-900/50 dark:bg-amber-950/40">
-            <span className="font-bold text-amber-800 dark:text-amber-300">🟡 Late Arrival</span>
+            <span className="inline-flex items-center gap-1.5 font-bold text-amber-800 dark:text-amber-300">
+              <span className="h-2 w-2 rounded-full bg-amber-500 ring-2 ring-amber-400/40" />
+              Late Arrival
+            </span>
             <p className="mt-0.5 text-[11px] text-amber-700 dark:text-amber-400">
               {settings.punch_in_late_after || '09:15'} – {settings.punch_in_cutoff || '10:30'}
             </p>
@@ -317,7 +323,10 @@ export default function AttendanceSettings({ token, showToast }: AttendanceSetti
           </div>
 
           <div className="rounded-xl border border-orange-200 bg-orange-50/80 p-2.5 dark:border-orange-900/50 dark:bg-orange-950/40">
-            <span className="font-bold text-orange-800 dark:text-orange-300">🟠 Half Day</span>
+            <span className="inline-flex items-center gap-1.5 font-bold text-orange-800 dark:text-orange-300">
+              <span className="h-2 w-2 rounded-full bg-orange-500 ring-2 ring-orange-400/40" />
+              Half Day
+            </span>
             <p className="mt-0.5 text-[11px] text-orange-700 dark:text-orange-400">
               After {settings.punch_in_cutoff || '10:30'} OR &ge; {settings.min_hours_half_day ?? 4}
               h
@@ -328,7 +337,10 @@ export default function AttendanceSettings({ token, showToast }: AttendanceSetti
           </div>
 
           <div className="rounded-xl border border-rose-200 bg-rose-50/80 p-2.5 dark:border-rose-900/50 dark:bg-rose-950/40">
-            <span className="font-bold text-rose-800 dark:text-rose-300">🔴 Absent / LOP</span>
+            <span className="inline-flex items-center gap-1.5 font-bold text-rose-800 dark:text-rose-300">
+              <span className="h-2 w-2 rounded-full bg-rose-500 ring-2 ring-rose-400/40" />
+              Absent / LOP
+            </span>
             <p className="mt-0.5 text-[11px] text-rose-700 dark:text-rose-400">
               No Punch OR &lt; {settings.min_hours_half_day ?? 4}h worked
             </p>

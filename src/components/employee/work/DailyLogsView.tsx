@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, PhoneCall, Building2 } from 'lucide-react';
 import { format, parseISO } from 'date-fns';
 import type { WorkLogItem } from './types';
 
@@ -41,9 +41,15 @@ export function DailyLogsView({ workLogs, onOpenSubmitModal }: DailyLogsViewProp
                 {log.summary || log.summary_text}
               </p>
 
-              <div className="mt-3 flex gap-3 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500 dark:border-slate-800">
-                <span>📞 {log.client_interactions_count} Client Calls</span>
-                <span>🏢 {log.site_visits_conducted_count} Visits</span>
+              <div className="mt-3 flex items-center gap-4 border-t border-slate-100 pt-2.5 text-[11px] text-slate-500 dark:border-slate-800">
+                <span className="inline-flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+                  <PhoneCall className="text-brand-gold h-3 w-3" />
+                  <span>{log.client_interactions_count} Client Calls</span>
+                </span>
+                <span className="inline-flex items-center gap-1.5 font-medium text-slate-700 dark:text-slate-300">
+                  <Building2 className="text-brand-gold h-3 w-3" />
+                  <span>{log.site_visits_conducted_count} Visits</span>
+                </span>
               </div>
             </div>
           ))}

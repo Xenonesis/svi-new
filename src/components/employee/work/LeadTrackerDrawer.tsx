@@ -222,19 +222,27 @@ export function LeadTrackerDrawer({
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{lead.name}</h2>
                 {/* Temperature Pill */}
                 <span
-                  className={`rounded-full px-2 py-0.5 text-[10px] font-black uppercase ${
+                  className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase ${
                     temperature === 'hot'
-                      ? 'bg-red-500/15 text-red-600 dark:text-red-400'
+                      ? 'border-rose-500/20 bg-rose-500/15 text-rose-600 dark:text-rose-400'
                       : temperature === 'warm'
-                        ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
-                        : 'bg-blue-500/15 text-blue-600 dark:text-blue-400'
+                        ? 'border-amber-500/20 bg-amber-500/15 text-amber-600 dark:text-amber-400'
+                        : 'border-sky-500/20 bg-sky-500/15 text-sky-600 dark:text-sky-400'
                   }`}
                 >
-                  {temperature === 'hot'
-                    ? '🔥 Hot'
-                    : temperature === 'warm'
-                      ? '⚡ Warm'
-                      : '❄️ Cold'}
+                  {temperature === 'hot' ? (
+                    <>
+                      <Flame className="h-3 w-3" /> Hot
+                    </>
+                  ) : temperature === 'warm' ? (
+                    <>
+                      <Zap className="h-3 w-3" /> Warm
+                    </>
+                  ) : (
+                    <>
+                      <Snowflake className="h-3 w-3" /> Cold
+                    </>
+                  )}
                 </span>
               </div>
               {lead.project_interest && (

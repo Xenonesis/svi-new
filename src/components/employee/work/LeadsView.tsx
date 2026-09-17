@@ -1,6 +1,15 @@
 'use client';
 
-import { Phone, MessageSquare, Plus, Clock, ChevronRight } from 'lucide-react';
+import {
+  Phone,
+  MessageSquare,
+  Plus,
+  Clock,
+  ChevronRight,
+  Flame,
+  Zap,
+  Snowflake,
+} from 'lucide-react';
 import { clsx } from 'clsx';
 import type { LeadItem } from './types';
 
@@ -102,20 +111,28 @@ export function LeadsView({
                         {lead.lead_temperature && (
                           <span
                             className={clsx(
-                              'rounded px-1.5 py-0.5 text-[9px] font-bold uppercase',
+                              'inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-[9px] font-bold uppercase',
                               lead.lead_temperature === 'hot' &&
-                                'bg-red-500/10 text-red-600 dark:text-red-400',
+                                'border-rose-500/20 bg-rose-500/10 text-rose-600 dark:text-rose-400',
                               lead.lead_temperature === 'warm' &&
-                                'bg-amber-500/10 text-amber-600 dark:text-amber-400',
+                                'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400',
                               lead.lead_temperature === 'cold' &&
-                                'bg-blue-500/10 text-blue-600 dark:text-blue-400'
+                                'border-sky-500/20 bg-sky-500/10 text-sky-600 dark:text-sky-400'
                             )}
                           >
-                            {lead.lead_temperature === 'hot'
-                              ? '🔥 Hot'
-                              : lead.lead_temperature === 'warm'
-                                ? '⚡ Warm'
-                                : '❄️ Cold'}
+                            {lead.lead_temperature === 'hot' ? (
+                              <>
+                                <Flame className="h-2.5 w-2.5" /> Hot
+                              </>
+                            ) : lead.lead_temperature === 'warm' ? (
+                              <>
+                                <Zap className="h-2.5 w-2.5" /> Warm
+                              </>
+                            ) : (
+                              <>
+                                <Snowflake className="h-2.5 w-2.5" /> Cold
+                              </>
+                            )}
                           </span>
                         )}
                       </div>
