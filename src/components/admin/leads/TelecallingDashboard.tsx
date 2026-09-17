@@ -3,6 +3,8 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
+import { ExportLeadsModal } from '@/src/components/admin/leads/ExportLeadsModal';
+import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import {
   Trophy,
   PhoneCall,
@@ -73,6 +75,23 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
   const [lastUpdated, setLastUpdated] = useState<string>('');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
   const exportMenuRef = useRef<HTMLDivElement>(null);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [selectedExportAdvisor, setSelectedExportAdvisor] = useState<string>('all');
+  const [employees, setEmployees] = useState<Employee[]>([]);
+
+  useEffect(() => {
+    if (!token) return;
+    fetch('/api/admin/employees', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.employees) {
+          setEmployees(data.employees);
+        }
+      })
+      .catch(() => {});
+  }, [token]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -515,6 +534,24 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                   <button
                     type="button"
                     onClick={() => {
+                      setSelectedExportAdvisor('all');
+                      setIsExportModalOpen(true);
+                      setExportMenuOpen(false);
+                    }}
+                    className="bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold transition-colors"
+                  >
+                    <Download className="h-4 w-4" />
+                    <div className="text-left">
+                      <p className="leading-tight">Custom Export Studio...</p>
+                      <span className="text-[10px] font-normal opacity-80">
+                        By Advisor, Date & Status
+                      </span>
+                    </div>
+                  </button>
+                  <div className="my-1 border-t border-gray-100 dark:border-white/5" />
+                  <button
+                    type="button"
+                    onClick={() => {
                       handleExportExcel();
                       setExportMenuOpen(false);
                     }}
@@ -944,6 +981,17 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                             <ExternalLink className="h-3.5 w-3.5" />
                             <span>View Leads ({advisor.total_calls})</span>
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedExportAdvisor(advisor.advisor_id);
+                              setIsExportModalOpen(true);
+                            }}
+                            className="hover:bg-brand-gold/10 hover:text-brand-gold rounded-lg p-1.5 text-gray-400 transition-colors"
+                            title={`Export ${advisor.advisor_name}'s leads`}
+                          >
+                            <Download className="h-3.5 w-3.5" />
+                          </button>
 
                           <div className="flex items-center gap-1">
                             {advisor.phone && (
@@ -1097,6 +1145,17 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                             <ExternalLink className="h-3 w-3" />
                             <span>View Leads ({advisor.total_calls})</span>
                           </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setSelectedExportAdvisor(advisor.advisor_id);
+                              setIsExportModalOpen(true);
+                            }}
+                            className="hover:bg-brand-gold/10 hover:text-brand-gold rounded-lg p-1 text-gray-400 transition-colors"
+                            title={`Export ${advisor.advisor_name}'s leads`}
+                          >
+                            <Download className="h-3 w-3" />
+                          </button>
 
                           <div className="flex items-center gap-1">
                             {advisor.phone && (
@@ -1219,6 +1278,23 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
           </div>
         )}
       </div>
+      {/* Export Studio Modal */}
+      <ExportLeadsModal
+        isOpen={isExportModalOpen}
+        onClose={() => setIsExportModalOpen(false)}
+        token={token}
+        employees={
+          employees.length > 0
+            ? employees
+            : leaderboard.map((a) => ({ id: a.advisor_id, full_name: a.advisor_name }))
+        }
+        currentRecords={[]}
+        totalRecordsCount={summary?.total_calls || 0}
+        currentFilters={{
+          advisor_id: selectedExportAdvisor,
+          dial_status: 'all',
+        }}
+      />
     </div>
   );
 }

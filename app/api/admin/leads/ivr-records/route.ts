@@ -36,7 +36,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
     const { searchParams } = new URL(request.url);
     const page = Math.max(1, parseInt(searchParams.get('page') || '1', 10));
-    const limit = Math.min(100, Math.max(1, parseInt(searchParams.get('limit') || '25', 10)));
+    const rawLimit = parseInt(searchParams.get('limit') || '25', 10);
+    const limit = Math.min(10000, Math.max(1, isNaN(rawLimit) ? 25 : rawLimit));
     const offset = (page - 1) * limit;
 
     const advisorId = searchParams.get('advisor_id');

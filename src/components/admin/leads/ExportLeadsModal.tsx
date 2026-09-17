@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import {
   Download,
@@ -55,6 +55,12 @@ export function ExportLeadsModal({
 }: ExportLeadsModalProps) {
   const [format, setFormat] = useState<ExportFormat>('excel');
   const [advisorId, setAdvisorId] = useState<string>(currentFilters?.advisor_id || 'all');
+
+  useEffect(() => {
+    if (currentFilters?.advisor_id) {
+      setAdvisorId(currentFilters.advisor_id);
+    }
+  }, [currentFilters?.advisor_id]);
   const [dateScope, setDateScope] = useState<ExportDateScope>('all');
   const [customDate, setCustomDate] = useState<string>(() => {
     return new Date().toISOString().slice(0, 10);
@@ -76,7 +82,7 @@ export function ExportLeadsModal({
         // Build query params to fetch all matching records
         const params = new URLSearchParams();
         params.set('page', '1');
-        params.set('limit', '100'); // Batch or max records
+        params.set('limit', '5000'); // Fetch full dataset for export
 
         if (advisorId !== 'all') {
           params.set('advisor_id', advisorId);
@@ -335,13 +341,14 @@ export function ExportLeadsModal({
             </div>
           </div>
 
-          {/* 5. Dataset Scope */}
           <div>
             <label className="mb-2 flex items-center gap-1.5 text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300">
               <Layers className="text-brand-gold h-3.5 w-3.5" />
               5. Records Scope
             </label>
-            <div className="grid grid-cols-2 gap-2">
+            <div
+              className={`grid gap-2 ${currentRecords.length > 0 ? 'grid-cols-2' : 'grid-cols-1'}`}
+            >
               <button
                 type="button"
                 onClick={() => setRecordScope('all_matching')}
@@ -363,33 +370,35 @@ export function ExportLeadsModal({
                     All Matching Records
                   </p>
                   <p className="text-[10px] text-gray-500 dark:text-gray-400">
-                    Full dataset (Total: {totalRecordsCount})
+                    Full dataset {totalRecordsCount > 0 ? `(Total: ${totalRecordsCount})` : ''}
                   </p>
                 </div>
               </button>
-              <button
-                type="button"
-                onClick={() => setRecordScope('current_page')}
-                className={`flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs transition-all ${
-                  recordScope === 'current_page'
-                    ? 'border-brand-gold bg-brand-gold/10 text-brand-gold font-medium'
-                    : 'border-gray-200 text-gray-600 dark:border-white/10 dark:text-gray-400'
-                }`}
-              >
-                <div
-                  className={`h-3 w-3 rounded-full border ${
+              {currentRecords.length > 0 && (
+                <button
+                  type="button"
+                  onClick={() => setRecordScope('current_page')}
+                  className={`flex items-center gap-2 rounded-xl border p-2.5 text-left text-xs transition-all ${
                     recordScope === 'current_page'
-                      ? 'border-brand-gold bg-brand-gold'
-                      : 'border-gray-400'
+                      ? 'border-brand-gold bg-brand-gold/10 text-brand-gold font-medium'
+                      : 'border-gray-200 text-gray-600 dark:border-white/10 dark:text-gray-400'
                   }`}
-                />
-                <div>
-                  <p className="font-semibold text-gray-900 dark:text-white">Current Page Only</p>
-                  <p className="text-[10px] text-gray-500 dark:text-gray-400">
-                    Visible table ({currentRecords.length} records)
-                  </p>
-                </div>
-              </button>
+                >
+                  <div
+                    className={`h-3 w-3 rounded-full border ${
+                      recordScope === 'current_page'
+                        ? 'border-brand-gold bg-brand-gold'
+                        : 'border-gray-400'
+                    }`}
+                  />
+                  <div>
+                    <p className="font-semibold text-gray-900 dark:text-white">Current Page Only</p>
+                    <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                      Visible table ({currentRecords.length} records)
+                    </p>
+                  </div>
+                </button>
+              )}
             </div>
           </div>
         </div>

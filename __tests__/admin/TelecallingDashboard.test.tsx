@@ -154,4 +154,18 @@ describe('TelecallingDashboard Component', () => {
       );
     });
   });
+
+  it('opens Custom Export Studio modal when option is clicked', async () => {
+    render(<TelecallingDashboard token="test-token" />);
+
+    await screen.findByText('Telecalling & Conversion Command Center');
+
+    const exportMenuBtn = screen.getByRole('button', { name: /export report/i });
+    fireEvent.click(exportMenuBtn);
+
+    const customStudioBtn = await screen.findByText('Custom Export Studio...');
+    fireEvent.click(customStudioBtn);
+
+    expect(await screen.findByText('Export Telecalling Leads Studio')).toBeDefined();
+  });
 });
