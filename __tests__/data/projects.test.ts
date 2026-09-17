@@ -105,5 +105,15 @@ describe('PROJECTS_DB Data Integrity', () => {
       expect(project.mapEmbedUrl).toContain('26.9215965');
       expect(project.mapEmbedUrl).toContain('76.0052071');
     });
+
+    it('should have 178 total plots, 50-750 Sq. Yds. size range and 40 bigha in description', () => {
+      expect(project.totalPlots).toBe('178');
+      expect(project.startingSize).toBe('50-750 Sq. Yds.');
+      expect(project.startingSizeHi).toBe('50-750 वर्ग गज');
+      expect(project.description).toContain('overall 40 bigha');
+      expect(project.description).toContain('178');
+      expect(project.description).toContain('50 sq. yds. to 750 sq. yds.');
+      expect(project.descriptionHi).toContain('40 बीघा');
+    });
   });
 });

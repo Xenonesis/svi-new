@@ -240,17 +240,17 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
       'मंदिर',
       'व्यावसायिक केंद्र',
     ],
-    totalPlots: '250+',
-    startingSize: '150 Sq. Yds.',
-    startingSizeHi: '150 वर्ग गज',
-    availableSizes: ['150-200 Sq. Yds.', 'Above 200 Sq. Yds.'],
+    totalPlots: '178',
+    startingSize: '50-750 Sq. Yds.',
+    startingSizeHi: '50-750 वर्ग गज',
+    availableSizes: ['50-150 Sq. Yds.', '150-300 Sq. Yds.', '300-750 Sq. Yds.'],
     mapEmbedUrl:
       'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.07!2d76.0052071!3d26.9215965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDU1JzE3LjgiTiA3NsKwMDAnMjguMCJF!5e0!3m2!1sen!2sin!4v1789632000000!5m2!1sen!2sin',
     mapUrl: 'https://www.google.com/maps?q=26.92159652709961,76.00778198242188&z=17&hl=en',
     description:
-      'Shyam Aangan offers a premium integrated township experience in the heart of Jaipur. Designed for modern families, it features world-class amenities and 100% Vastu compliant plots.',
+      'Spread over an overall 40 bigha, Shyam Aangan offers 178 meticulously planned residential plots ranging from 50 sq. yds. to 750 sq. yds. near Jaipur. Designed for modern families, it features world-class amenities and 100% Vastu compliant plots.',
     descriptionHi:
-      'श्याम आंगन जयपुर के मध्य में एक प्रीमियम एकीकृत टाउनशिप का अनुभव प्रदान करता है। आधुनिक परिवारों के लिए डिज़ाइन किया गया, इसमें विश्व स्तरीय सुविधाएँ और 100% वास्तु अनुकूल भूखंड हैं।',
+      'कुल 40 बीघा के विशाल क्षेत्र में फैली, श्याम आंगन जयपुर के पास 50 से 750 वर्ग गज तक के 178 सुनियोजित आवासीय भूखंड प्रदान करती है। आधुनिक परिवारों के लिए डिज़ाइन किया गया, इसमें विश्व स्तरीय सुविधाएं और 100% वास्तु अनुकूल भूखंड हैं।',
   },
   'shivani-vatika': {
     title: 'Shivani Vatika',
