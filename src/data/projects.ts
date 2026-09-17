@@ -178,6 +178,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Instant, smooth highway connectivity directly connecting Jaipur City with the holy shrine corridor without navigating unpaved roads.',
         descriptionHi:
           'जयपुर शहर और खाटू धाम को जोड़ने वाले मुख्य राजमार्ग पर प्रत्यक्ष प्रवेश, बिना किसी कच्ची सड़क के निर्बाध आवागमन।',
+        image: '/images/landmarks/jaipur-highway.webp',
       },
       {
         name: 'Phulera Junction & DMIC Corridor',
@@ -193,6 +194,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Major Western Dedicated Freight Corridor (DFC) junction and proposed multi-modal smart logistics city.',
         descriptionHi:
           'वेस्टर्न डेडिकेटेड फ्रेट कॉरिडोर (DFC) का मुख्य जंक्शन एवं मेगा स्मार्ट लॉजिस्टिक्स औद्योगिक कॉरिडोर।',
+        image: '/images/landmarks/phulera-dmic.webp',
       },
       {
         name: 'Colleges, Schools & Hospitals',
@@ -208,6 +210,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Govt. Degree College Kishangarh Renwal, Senior Secondary Schools, 24/7 CHC Hospital, SBI, PNB, and IDFC First Bank branches.',
         descriptionHi:
           'राजकीय महाविद्यालय किशनगढ़ रेणवाल, सीनियर सेकेंडरी स्कूल, 24/7 सामुदायिक स्वास्थ्य केंद्र (CHC), एसबीआई व आईडीएफसी बैंक।',
+        image: '/images/landmarks/civic-institutions.webp',
       },
     ],
   },

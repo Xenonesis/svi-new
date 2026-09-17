@@ -219,49 +219,98 @@ export default function ProjectNearbyPlaces({ nearbyPlaces, isHindi }: ProjectNe
 
         {/* Secondary Connectivity Strip */}
         {secondaryPlaces.length > 0 && (
-          <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-3">
-            {secondaryPlaces.map((place, idx) => {
-              const Icon = getCategoryIcon(place.category);
-              const accent = getCategoryAccent(place.category);
-              const name = isHindi ? place.nameHi : place.name;
-              const tag = isHindi && place.tagHi ? place.tagHi : place.tag;
-              const distance = isHindi && place.distanceHi ? place.distanceHi : place.distance;
-              const time = isHindi && place.timeHi ? place.timeHi : place.time;
-              const description = isHindi ? place.descriptionHi : place.description;
+          <div className="mt-10">
+            <div className="mb-5 flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-amber-400 shadow-xs shadow-amber-400/50" />
+              <h3 className="text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-slate-400">
+                {isHindi
+                  ? 'क्षेत्रीय कनेक्टिविटी एवं नागरिक अवसंरचना'
+                  : 'Regional Corridors & Civic Infrastructure'}
+              </h3>
+            </div>
 
-              return (
-                <div
-                  key={idx}
-                  className="flex items-start gap-4 rounded-2xl border border-slate-200/80 bg-white/70 p-4 shadow-sm backdrop-blur-xs transition-colors hover:border-slate-300 dark:border-slate-800/80 dark:bg-[#0c121e]/60 dark:hover:border-slate-700"
-                >
-                  <div
-                    className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl ${accent.iconBg}`}
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+              {secondaryPlaces.map((place, idx) => {
+                const Icon = getCategoryIcon(place.category);
+                const accent = getCategoryAccent(place.category);
+                const name = isHindi ? place.nameHi : place.name;
+                const tag = isHindi && place.tagHi ? place.tagHi : place.tag;
+                const distance = isHindi && place.distanceHi ? place.distanceHi : place.distance;
+                const time = isHindi && place.timeHi ? place.timeHi : place.time;
+                const description = isHindi ? place.descriptionHi : place.description;
+
+                return (
+                  <article
+                    key={idx}
+                    className={`group relative flex flex-col justify-between overflow-hidden rounded-3xl border border-slate-200/90 bg-white/95 p-4 shadow-lg shadow-slate-950/5 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl sm:p-5 dark:border-slate-800/80 dark:bg-[#0c121e]/90 ${accent.glow}`}
                   >
-                    <Icon className="h-5 w-5" />
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <h4 className="truncate font-serif text-sm font-bold text-slate-900 dark:text-white">
-                        {name}
-                      </h4>
-                      {distance && (
-                        <span className="shrink-0 font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-                          {distance}
-                        </span>
-                      )}
+                    <div>
+                      {/* Landmark Image Header */}
+                      <div className="relative h-36 w-full overflow-hidden rounded-2xl bg-slate-100 shadow-inner sm:h-40 dark:bg-slate-800">
+                        {place.image ? (
+                          <>
+                            <Image
+                              src={place.image}
+                              alt={name}
+                              fill
+                              unoptimized
+                              className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+                          </>
+                        ) : (
+                          <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-slate-800">
+                            <Icon className="h-10 w-10 text-slate-400" />
+                          </div>
+                        )}
+
+                        {/* Top Category Badge Over Image */}
+                        <div className="absolute top-3 right-3 left-3 flex items-center justify-between gap-2">
+                          {tag && (
+                            <span
+                              className={`rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-sm backdrop-blur-md ${accent.badge}`}
+                            >
+                              {tag}
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Bottom Distance / Time Pill Over Image */}
+                        <div className="absolute right-3 bottom-3">
+                          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 bg-black/75 px-2.5 py-1 font-mono text-[11px] font-extrabold text-white shadow-lg backdrop-blur-md">
+                            <Clock className="h-3 w-3 text-amber-400" />
+                            {distance && <span>{distance}</span>}
+                            {distance && time && <span className="text-white/40">•</span>}
+                            {time && <span className="text-amber-300">{time}</span>}
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* Content Section */}
+                      <div className="mt-4">
+                        <h4 className="font-serif text-base font-bold text-slate-900 transition-colors group-hover:text-amber-600 dark:text-white dark:group-hover:text-amber-400">
+                          {name}
+                        </h4>
+                        <p className="mt-2 text-xs leading-relaxed text-slate-600 sm:text-[13px] dark:text-slate-300">
+                          {description}
+                        </p>
+                      </div>
                     </div>
-                    {tag && (
-                      <p className="text-[10px] font-semibold tracking-wider text-slate-400 uppercase">
-                        {tag} {time ? `• ${time}` : ''}
-                      </p>
-                    )}
-                    <p className="mt-1 line-clamp-2 text-xs text-slate-600 dark:text-slate-300">
-                      {description}
-                    </p>
-                  </div>
-                </div>
-              );
-            })}
+
+                    {/* Bottom Status / Access Link */}
+                    <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3 dark:border-slate-800/80">
+                      <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-600 dark:text-amber-400">
+                        <MapPin className="h-3.5 w-3.5" />
+                        <span>{isHindi ? 'क्षेत्रीय कनेक्टिविटी' : 'Regional Connectivity'}</span>
+                      </div>
+                      <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-400 transition-colors group-hover:bg-amber-400 group-hover:text-slate-950 dark:bg-slate-800 dark:text-slate-400">
+                        <ArrowUpRight className="h-3.5 w-3.5" />
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         )}
       </div>
