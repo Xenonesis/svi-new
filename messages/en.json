@@ -116,9 +116,10 @@
     "done": "✓ Done!",
     "register": "Register",
     "locations": "Project Locations",
-    "tonkRoad": "Tonk Road, Jaipur",
-    "nayla": "Nayla, Jaipur",
-    "phulera": "Phulera Smart City"
+    "khatuHighway": "Jaipur to Khatu Shyam Ji Highway - Harsholi",
+    "nayla": "Nayla, Jaipur • Premier Residential",
+    "phulera": "Phulera Smart City",
+    "tonkRoad": "Nayla, Jaipur • Premier Residential"
   },
   "hero": {
     "badge": "Legacy of Excellence",
@@ -1019,8 +1020,8 @@
           "title": "Shyam Aangan",
           "location": "Basri Khurd near Jaipur",
           "type": "Integrated Township",
-          "description": "Master-planned integrated township on NH-12 (Tonk Road), perfectly positioned near the upcoming Inner Ring Road, IT corridors, and SEZs. Offers affordable pricing and flexible plans.",
-          "fullDescription": "Shyam Aangan is a sprawling, master-planned integrated township situated strategically on NH-12 (Tonk Road). It provides unparalleled connectivity to the upcoming Inner Ring Road, key IT corridors, and Special Economic Zones (SEZs). Designed to cater to diverse residential needs, the project blends affordable pricing with world-class facilities, paving the way for substantial future appreciation and a thriving community atmosphere.",
+          "description": "Master-planned integrated township near Basri Khurd, Jaipur, perfectly positioned near the upcoming Inner Ring Road, IT corridors, and SEZs. Offers affordable pricing and flexible plans.",
+          "fullDescription": "Shyam Aangan is a sprawling, master-planned integrated township situated strategically near Basri Khurd, Jaipur. It provides unparalleled connectivity to the upcoming Inner Ring Road, key IT corridors, and Special Economic Zones (SEZs). Designed to cater to diverse residential needs, the project blends affordable pricing with world-class facilities, paving the way for substantial future appreciation and a thriving community atmosphere.",
           "status": "Under Development"
         },
         "shreeShyamResidency": {

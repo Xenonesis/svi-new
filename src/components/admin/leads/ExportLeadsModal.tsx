@@ -82,8 +82,7 @@ export function ExportLeadsModal({
         // Build query params to fetch all matching records
         const params = new URLSearchParams();
         params.set('page', '1');
-        params.set('limit', '5000'); // Fetch full dataset for export
-
+        params.set('limit', '50000'); // Fetch complete dataset across all 1000-row chunks
         if (advisorId !== 'all') {
           params.set('advisor_id', advisorId);
         }

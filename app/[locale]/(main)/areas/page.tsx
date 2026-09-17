@@ -27,23 +27,25 @@ const AREA_VISUALS: Record<
     projectsPreview: Array<{ name: string; slug?: string }>;
   }
 > = {
-  'tonk-road-jaipur': {
-    image: '/images/project1.png',
-    badge: { en: 'NH-12 Growth Axis', hi: 'NH-12 विकास कॉरिडोर' },
-    projectsPreview: [{ name: 'Shyam Aangan', slug: 'shyam-aangan' }],
+  'khatu-shyam-highway': {
+    image: '/Shivani Vatika 11/gate.webp',
+    badge: { en: 'Sacred Growth Corridor', hi: 'पवित्र तीर्थ कॉरिडोर' },
+    projectsPreview: [{ name: 'Shivani Vatika 11th', slug: 'shivani-vatika-11th' }],
   },
   'nayla-jaipur': {
     image: '/Shivani Vatika/shivani vatika6 frontgate.webp',
-    badge: { en: 'Eco-Living Suburb', hi: 'प्राकृतिक आवासीय क्षेत्र' },
+    badge: { en: 'Premier Residential', hi: 'प्रीमियर आवासीय' },
+    projectsPreview: [{ name: 'Shivani Vatika', slug: 'shivani-vatika' }],
+  },
+  'tonk-road-jaipur': {
+    image: '/Shivani Vatika/shivani vatika6 frontgate.webp',
+    badge: { en: 'Premier Residential', hi: 'प्रीमियर आवासीय' },
     projectsPreview: [{ name: 'Shivani Vatika', slug: 'shivani-vatika' }],
   },
   'phulera-smart-city': {
-    image: '/Shivani Vatika 11/gate.webp',
+    image: '/images/landmarks/phulera-dmic.webp',
     badge: { en: 'DMIC Mega Hub', hi: 'DMIC मेगा हब' },
-    projectsPreview: [
-      { name: 'Shivani Residency' },
-      { name: 'Shivani Vatika 11th', slug: 'shivani-vatika-11th' },
-    ],
+    projectsPreview: [{ name: 'Shivani Residency' }],
   },
 };
 
@@ -55,8 +57,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     ? 'प्रमुख निवेश कॉरिडोर एवं विकास क्षेत्र | SVI Infra Solutions'
     : 'Prime Real Estate Corridors & Growth Areas in Jaipur | SVI Infra Solutions';
   const description = isHindi
-    ? 'जयपुर एवं दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) के प्रमुख निवेश क्षेत्रों का अन्वेषण करें। टोंक रोड, नायला एवं फुलेरा स्मार्ट सिटी में रणनीतिक आवासीय प्लॉट्स।'
-    : 'Explore strategic real estate growth corridors across Jaipur and the Delhi-Mumbai Industrial Corridor (DMIC). Discover high-ROI plotted townships in Tonk Road, Nayla, and Phulera Smart City.';
+    ? 'जयपुर एवं दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) के प्रमुख निवेश क्षेत्रों का अन्वेषण करें। जयपुर से खाटू श्याम जी हाईवे, नायला एवं फुलेरा स्मार्ट सिटी में रणनीतिक आवासीय प्लॉट्स।'
+    : 'Explore strategic real estate growth corridors across Jaipur and the Delhi-Mumbai Industrial Corridor (DMIC). Discover high-ROI plotted townships in Jaipur to Khatu Shyam Ji Highway, Nayla, and Phulera Smart City.';
 
   const path = '/areas';
 
@@ -94,7 +96,7 @@ export default async function AreasIndexPage({ params }: Props) {
   setRequestLocale(locale);
   const isHindi = locale === 'hi';
 
-  const areasList = Object.values(AREAS_DATA);
+  const areasList = Object.values(AREAS_DATA).filter((a) => a.slug !== 'tonk-road-jaipur');
 
   return (
     <main className="flex min-h-screen w-full flex-col bg-[#fbf9f4] pb-24 dark:bg-[#080d1a]">
@@ -139,8 +141,8 @@ export default async function AreasIndexPage({ params }: Props) {
 
           <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-slate-300 sm:text-lg">
             {isHindi
-              ? 'जयपुर, टोंक रोड, नायला एवं फुलेरा स्मार्ट सिटी (DMIC कॉरिडोर) के सबसे तेजी से विकसित हो रहे रणनीतिक क्षेत्रों में सुरक्षित, 100% कानूनी और उच्च रिटर्न वाले आवासीय भूखंड।'
-              : 'Curated high-potential corridors backed by multi-lane national highways, the Jaipur Ring Road, and the Delhi-Mumbai Industrial Corridor with complete legal clarity.'}
+              ? 'जयपुर से खाटू श्याम जी हाईवे, नायला एवं फुलेरा स्मार्ट सिटी (DMIC कॉरिडोर) के सबसे तेजी से विकसित हो रहे रणनीतिक क्षेत्रों में सुरक्षित, 100% कानूनी और उच्च रिटर्न वाले आवासीय भूखंड।'
+              : 'Curated high-potential corridors backed by multi-lane national highways, the Jaipur to Khatu Shyam Ji Highway, Nayla, and the Delhi-Mumbai Industrial Corridor with complete legal clarity.'}
           </p>
 
           <div className="mt-8 flex flex-wrap items-center justify-center gap-4 text-xs font-semibold text-slate-300 sm:text-sm">

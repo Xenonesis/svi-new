@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { MapPin, CheckCircle, Info, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -85,6 +85,9 @@ export default async function AreaDetailPage({ params }: Props) {
   setRequestLocale(locale);
   const isHindi = locale === 'hi';
   const area = AREAS_DATA[slug];
+  if (slug === 'tonk-road-jaipur') {
+    redirect(isHindi ? '/hi/areas/nayla-jaipur' : '/areas/nayla-jaipur');
+  }
 
   if (!area) {
     notFound();

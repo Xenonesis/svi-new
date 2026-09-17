@@ -195,8 +195,8 @@ const Footer = memo(function Footer() {
             </h4>
             <ul className="flex flex-col gap-4">
               {[
-                { label: t('footer.tonkRoad'), href: '/areas/tonk-road-jaipur' },
-                { label: t('footer.nayla'), href: '/areas/nayla-jaipur' },
+                { label: t('footer.khatuHighway'), href: '/projects/shivani-vatika-11th' },
+                { label: t('footer.nayla'), href: '/projects/shivani-vatika' },
                 { label: t('footer.phulera'), href: '/areas/phulera-smart-city' },
               ].map(({ label, href }) => (
                 <li key={href}>

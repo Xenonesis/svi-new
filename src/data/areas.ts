@@ -13,34 +13,56 @@ export interface AreaInfo {
 }
 
 export const AREAS_DATA: Record<string, AreaInfo> = {
-  'tonk-road-jaipur': {
-    slug: 'tonk-road-jaipur',
-    name: 'Tonk Road, Jaipur',
-    title: 'Investment Hub on Tonk Road (NH-12), Jaipur',
+  'khatu-shyam-highway': {
+    slug: 'khatu-shyam-highway',
+    name: 'Jaipur to Khatu Shyam Ji Highway - Harsholi',
+    title: 'Premier Plotted Township on Jaipur – Khatu Shyam Ji Highway (Harsholi)',
     description:
-      "Tonk Road (NH-12) is one of Jaipur's fastest-growing residential and commercial corridors, offering rapid appreciation and excellent connectivity.",
-    metaTitle: 'Properties in Tonk Road Jaipur - Plots & Townships',
+      'Direct highway corridor connecting Jaipur to the sacred Khatu Shyam Dham, adjacent to RIICO Industrial Area and Renwal Railway Station.',
+    metaTitle: 'Plots on Jaipur to Khatu Shyam Ji Highway Harsholi | SVI Infra',
     metaDescription:
-      'Explore premium residential and commercial projects on Tonk Road, Jaipur. Master-planned townships near IT parks and the upcoming ring road.',
-    metaTitleHi: 'टोंक रोड जयपुर में प्लॉट्स और रेजिडेंशियल टाउनशिप | SVI Infra',
+      'Explore Shivani Vatika 11th on Jaipur to Khatu Shyam Ji Highway - Harsholi. RERA-approved plots with immediate highway connectivity, RIICO proximity, and clear documentation.',
+    metaTitleHi: 'जयपुर से खाटू श्याम जी हाईवे हरसोली में प्लॉट्स | SVI Infra',
     metaDescriptionHi:
-      'टोंक रोड, जयपुर में प्रीमियम आवासीय और कमर्शियल प्लॉट्स। रिंग रोड और प्रमुख आईटी हब के पास आधुनिक टाउनशिप।',
+      'जयपुर से खाटू श्याम जी हाईवे - हरसोली (शिवानी वाटिका 11th) में आवासीय भूखंड। रीको औद्योगिक क्षेत्र और रेणवाल रेलवे स्टेशन के पास।',
     highlights: [
-      'Direct connectivity to Jaipur International Airport (15 mins)',
-      'Close proximity to Chokhi Dhani and upcoming Ring Road',
-      'Near major education hubs and IT SEZs',
-      'Master-planned developments with secure land titles',
+      'Direct frontage on Jaipur - Khatu Shyam Ji Highway',
+      '1 km from 64-acre RIICO Industrial Area with 155+ planned units',
+      '7 km from Renwal Railway Station (RNW) with direct Jaipur-Delhi trains',
+      'Gated community with 24/7 security, boundary wall, and CCTV',
     ],
     content:
-      "Tonk Road (NH-12) has emerged as the prime growth engine of Jaipur's real estate. With massive infrastructure investments including the Jaipur Ring Road and proximity to the Sitapura Industrial Area, this region has seen property values appreciate steadily over the last decade. It offers a balanced mix of residential townships, luxury apartments, and commercial complexes, making it a hotspot for both end-users and long-term investors.",
-    projects: ['shyam-aangan'],
+      'The Jaipur to Khatu Shyam Ji Highway corridor via Harsholi and Kishangarh Renwal has emerged as one of the most promising growth corridors in Rajasthan. Anchored by the expansion of the pilgrimage corridor, proximity to the RIICO Industrial Area, and seamless rail transit via Renwal Junction, property appreciation in this corridor is outperforming conventional suburbs. SVI Infra Solutions brings Shivani Vatika 11th to this strategic location with full legal documentation.',
+    projects: ['shivani-vatika-11th'],
+  },
+  'tonk-road-jaipur': {
+    slug: 'tonk-road-jaipur',
+    name: 'Nayla, Jaipur • Premier Residential',
+    title: 'Premier Residential Living in Nayla, Jaipur',
+    description:
+      "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
+    metaTitle: 'Shivani Vatika in Nayla, Jaipur - Premier Residential Plots | SVI Infra',
+    metaDescription:
+      'Located in the serene landscapes of Nayla, Shivani Vatika offers uniquely crafted residential spaces with essential urban facilities, excellent connectivity and growth potential.',
+    metaTitleHi: 'शिवानी वाटिका नायला, जयपुर - प्रीमियर आवासीय प्लॉट्स | SVI Infra',
+    metaDescriptionHi:
+      'नायला, जयपुर में शिवानी वाटिका - आधुनिक सुविधाओं, उत्कृष्ट कनेक्टिविटी और प्राकृतिक शांत परिवेश में प्रीमियम आवासीय प्लॉट्स।',
+    highlights: [
+      'Pollution-free, scenic natural surroundings in Nayla',
+      'Uniquely crafted residential plots with essential urban utilities',
+      'Active community environment with kids play area & gymnasium',
+      'High appreciation potential in a serene developing suburb',
+    ],
+    content:
+      "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
+    projects: ['shivani-vatika'],
   },
   'nayla-jaipur': {
     slug: 'nayla-jaipur',
-    name: 'Nayla, Jaipur',
-    title: 'Serene Residential living in Nayla, Jaipur',
+    name: 'Nayla, Jaipur • Premier Residential',
+    title: 'Premier Residential Living in Nayla, Jaipur',
     description:
-      "Nayla offers a peaceful, pollution-free living environment nestled in nature while remaining fully connected to Jaipur's main city.",
+      "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
     metaTitle: 'Plots and Residential Properties in Nayla Jaipur',
     metaDescription:
       'Find your dream home or plot in Nayla, Jaipur. Peaceful community living with essential urban utilities and high ROI potential.',
