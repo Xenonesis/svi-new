@@ -1259,11 +1259,37 @@ export function IvrLeadsTable({
                       {/* Pressed Key */}
                       <td className="px-4 py-3.5">
                         {record.pressed_key ? (
-                          <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-bold">
-                            Key {record.pressed_key}
-                          </span>
+                          <div className="group/dtmf relative inline-flex">
+                            <span
+                              className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:border-brand-gold/60 hover:bg-brand-gold/20 inline-flex cursor-help items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-bold transition-all"
+                              title={`DTMF Key ${record.pressed_key}: Caller actively pressed key ${record.pressed_key} during IVR call to express interest`}
+                            >
+                              Key {record.pressed_key}
+                            </span>
+
+                            {/* Sleek Hover Tooltip */}
+                            <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 hidden -translate-x-1/2 rounded-lg bg-gray-950/95 px-2.5 py-1.5 text-[11px] font-medium whitespace-nowrap text-white shadow-xl backdrop-blur-md transition-all group-hover/dtmf:block dark:border dark:border-white/15 dark:bg-gray-900/95">
+                              <div className="text-brand-gold flex items-center gap-1.5 font-semibold">
+                                <span>📱 IVR Keypad Response</span>
+                              </div>
+                              <p className="mt-0.5 text-[10px] font-normal text-gray-300">
+                                Customer pressed{' '}
+                                <strong className="text-white">Key {record.pressed_key}</strong> on
+                                phone
+                                <br />
+                                Indicating high purchase interest
+                              </p>
+                              {/* Little arrow */}
+                              <div className="absolute top-full left-1/2 -mt-px -translate-x-1/2 border-4 border-transparent border-t-gray-950 dark:border-t-gray-900" />
+                            </div>
+                          </div>
                         ) : (
-                          <span className="text-gray-400">—</span>
+                          <span
+                            className="text-gray-400"
+                            title="No keypad button was pressed during the call"
+                          >
+                            —
+                          </span>
                         )}
                       </td>
 
