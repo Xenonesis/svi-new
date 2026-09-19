@@ -16,6 +16,7 @@ import {
   Phone,
   Mail,
   MapPin,
+  Target,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, AllotmentFinancials } from './types';
@@ -75,6 +76,17 @@ export function PortalAllotmentTableRow({
   const clientAddress =
     (allotment.metadata?.client_address as string) || (allotment.metadata?.address as string) || '';
 
+  const allotmentMode =
+    (allotment.metadata?.allotment_mode as string) ||
+    (allotment.metadata?.allotmentMode as string) ||
+    '';
+  const drawDate =
+    (allotment.metadata?.draw_date as string) || (allotment.metadata?.drawDate as string) || '';
+  const allotmentDate =
+    (allotment.metadata?.allotment_date as string) ||
+    (allotment.metadata?.allotmentDate as string) ||
+    '';
+
   const dealValue = financials?.dealValue ?? (isNaN(totalCost) ? 0 : totalCost);
   const totalPaid = financials?.totalPaid ?? 0;
   const balanceDue =
@@ -107,6 +119,22 @@ export function PortalAllotmentTableRow({
                   <span className="inline-flex items-center gap-0.5 rounded bg-[#0f2942] px-1.5 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-gray-900">
                     <Tag className="text-brand-gold h-2.5 w-2.5" />
                     {ticketId}
+                  </span>
+                )}
+                {allotmentMode === 'Direct Sell' && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 font-sans text-[10px] font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/40 dark:text-indigo-300">
+                    <Target className="h-2.5 w-2.5 text-indigo-600 dark:text-indigo-400" />
+                    Direct Sell {allotmentDate ? `• ${allotmentDate}` : ''}
+                  </span>
+                )}
+                {allotmentMode === 'Draw' && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-sans text-[10px] font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
+                    🎲 Draw{' '}
+                    {drawDate && drawDate !== 'Direct sell'
+                      ? `• ${drawDate}`
+                      : allotmentDate
+                        ? `• ${allotmentDate}`
+                        : ''}
                   </span>
                 )}
               </div>
@@ -147,10 +175,10 @@ export function PortalAllotmentTableRow({
               {clientAddress && (
                 <div
                   title={clientAddress}
-                  className="inline-flex max-w-[180px] items-center gap-1 truncate text-[10px] text-amber-700 dark:text-amber-300"
+                  className="flex max-w-[240px] items-start gap-1 text-[10px] leading-tight break-words text-amber-700 dark:text-amber-300"
                 >
-                  <MapPin className="h-2.5 w-2.5 shrink-0" />
-                  <span className="truncate">{clientAddress}</span>
+                  <MapPin className="mt-0.5 h-2.5 w-2.5 shrink-0" />
+                  <span className="break-words">{clientAddress}</span>
                 </div>
               )}
             </div>
@@ -307,6 +335,22 @@ export function PortalAllotmentTableRow({
                   {ticketId}
                 </span>
               )}
+              {allotmentMode === 'Direct Sell' && (
+                <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 font-sans text-xs font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/40 dark:text-indigo-300">
+                  <Target className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                  Direct Sell {allotmentDate ? `• ${allotmentDate}` : ''}
+                </span>
+              )}
+              {allotmentMode === 'Draw' && (
+                <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-sans text-xs font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
+                  🎲 Draw Allotment{' '}
+                  {drawDate && drawDate !== 'Direct sell'
+                    ? `• ${drawDate}`
+                    : allotmentDate
+                      ? `• ${allotmentDate}`
+                      : ''}
+                </span>
+              )}
               {isRefundDone && (
                 <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
                   Refund Done
@@ -379,6 +423,25 @@ export function PortalAllotmentTableRow({
             <span>{bookingDate}</span>
           </p>
         )}
+        {allotmentMode && (
+          <p className="flex items-center gap-1">
+            <strong className="text-gray-900 dark:text-gray-300">Mode:</strong>{' '}
+            <span
+              className={
+                allotmentMode === 'Direct Sell'
+                  ? 'inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 text-[11px] font-bold text-indigo-700 dark:text-indigo-300'
+                  : 'inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-bold text-amber-800 dark:text-amber-300'
+              }
+            >
+              {allotmentMode === 'Direct Sell' ? '🎯 Direct Sell' : '🎲 Draw'}
+              {drawDate && drawDate !== 'Direct sell'
+                ? ` (${drawDate})`
+                : allotmentDate
+                  ? ` (${allotmentDate})`
+                  : ''}
+            </span>
+          </p>
+        )}
         {advisorName && (
           <p className="flex items-center gap-1">
             <strong className="text-gray-900 dark:text-gray-300">{t('advisorLabel')}:</strong>{' '}
@@ -409,10 +472,10 @@ export function PortalAllotmentTableRow({
         {clientAddress && (
           <span
             title={clientAddress}
-            className="inline-flex max-w-xs items-center gap-1 truncate rounded-md bg-amber-50 px-1.5 py-0.5 text-[11px] text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
+            className="inline-flex items-start gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[11px] leading-snug break-words text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
           >
-            <MapPin className="h-3 w-3 shrink-0" />
-            <span className="truncate">{clientAddress}</span>
+            <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
+            <span className="break-words">{clientAddress}</span>
           </span>
         )}
       </div>

@@ -1177,8 +1177,8 @@
       "backToTop": "Back to top"
     },
     "adminPortalAllotments": {
-      "title": "Portal Allotments",
-      "subtitle": "Manage customer portal allotments and their payment schedules.",
+      "title": "Plots Allotments",
+      "subtitle": "Manage customer plot allotments and their payment schedules.",
       "addAllotment": "Add Allotment",
       "searchPlaceholder": "Search by client, property, or unit...",
       "loading": "Loading...",

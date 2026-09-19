@@ -2,7 +2,7 @@ import React from 'react';
 import { BookOpen, Loader2, Plus, ShieldCheck } from 'lucide-react';
 
 export interface PortalAllotmentsHeaderProps {
-  title: string;
+  title: React.ReactNode;
   subtitle: string;
   activeAccountsCount: number;
   onOpenOverallLedger: () => void;

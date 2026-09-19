@@ -13,6 +13,9 @@ interface StatementPdfTemplateProps {
   phone?: string | null;
   email?: string | null;
   address?: string | null;
+  allotmentMode?: string | null;
+  drawDate?: string | null;
+  allotmentDate?: string | null;
 }
 
 export function StatementPdfTemplate({
@@ -24,6 +27,9 @@ export function StatementPdfTemplate({
   phone,
   email,
   address,
+  allotmentMode,
+  drawDate,
+  allotmentDate,
 }: StatementPdfTemplateProps) {
   const plotSizeNum =
     parseFloat(String(plotArea || ledger.plotSize || '0').replace(/[^\d.]/g, '')) || 0;
@@ -159,6 +165,18 @@ export function StatementPdfTemplate({
           >
             {ledger.displayRefId}
           </div>
+          {allotmentMode && (
+            <div
+              style={{
+                fontSize: '10.5px',
+                fontWeight: 700,
+                color: allotmentMode === 'Direct Sell' ? '#4338CA' : '#B45309',
+                marginTop: '2px',
+              }}
+            >
+              {allotmentMode === 'Direct Sell' ? '🎯 Direct Sell' : '🎲 Draw Allotment'}
+            </div>
+          )}
           <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px' }}>
             Date: {todayStr}
           </div>
@@ -376,9 +394,10 @@ export function StatementPdfTemplate({
                 fontWeight: 700,
               }}
             >
-              {receiptsList[0]
-                ? formatDate(receiptsList[0].form_data?.date || receiptsList[0].created_at)
-                : '—'}
+              {drawDate ||
+                (receiptsList[0]
+                  ? formatDate(receiptsList[0].form_data?.date || receiptsList[0].created_at)
+                  : '—')}
             </td>
             <td
               style={{

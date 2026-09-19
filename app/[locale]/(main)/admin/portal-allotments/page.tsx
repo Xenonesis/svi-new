@@ -68,7 +68,11 @@ export default function PortalAllotmentsAdmin() {
   return (
     <div className="mx-auto w-full max-w-7xl pb-12 font-sans">
       <PortalAllotmentsHeader
-        title={t('title')}
+        title={
+          <>
+            Plots <span className="text-brand-gold italic">Allotments</span>
+          </>
+        }
         subtitle={t('subtitle')}
         activeAccountsCount={salesRevenueStats.activeAccountsCount}
         onOpenOverallLedger={() => setIsLedgersModalOpen(true)}

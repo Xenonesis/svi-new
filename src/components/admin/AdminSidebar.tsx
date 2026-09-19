@@ -52,7 +52,7 @@ const documentItems = [
 
 const managementItems = [
   { name: 'Leads Hub', path: '/admin/leads', icon: PhoneCall },
-  { name: 'Portal Allotments', path: '/admin/portal-allotments', icon: Building2 },
+  { name: 'Plots Allotments', path: '/admin/portal-allotments', icon: Building2 },
   { name: 'Registrations', path: '/admin/registrations', icon: ClipboardList },
   { name: 'Site Visits', path: '/admin/site-visits', icon: Calendar },
   { name: 'Workforce & HR', path: '/admin/workforce', icon: Users },

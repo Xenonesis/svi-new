@@ -11,6 +11,9 @@ interface ExportStatementOptions {
   phone?: string | null;
   email?: string | null;
   address?: string | null;
+  allotmentMode?: string | null;
+  drawDate?: string | null;
+  allotmentDate?: string | null;
   filename?: string;
 }
 
@@ -46,6 +49,9 @@ export async function exportStatementExcel({
   phone,
   email,
   address,
+  allotmentMode,
+  drawDate,
+  allotmentDate,
   filename,
 }: ExportStatementOptions): Promise<void> {
   if (!ledger || !ledger.receipts || ledger.receipts.length === 0) {
@@ -111,10 +117,13 @@ export async function exportStatementExcel({
     worksheet.getRow(2).height = 20;
 
     let startRow = 4;
-    if (phone || email || address) {
+    if (phone || email || address || allotmentMode) {
       worksheet.mergeCells('A3:H3');
       const contactCell = worksheet.getCell('A3');
       const parts = [
+        allotmentMode
+          ? `Channel: ${allotmentMode}${drawDate && drawDate !== 'Direct sell' ? ` (Draw: ${drawDate})` : allotmentDate ? ` (Date: ${allotmentDate})` : ''}`
+          : null,
         phone ? `Phone: ${phone}` : null,
         email ? `Email: ${email}` : null,
         address ? `Address: ${address}` : null,
@@ -297,10 +306,13 @@ export async function exportStatementExcel({
 
       if (rec) {
         const amt = parseFloat(rec.form_data?.amount || '0') || 0;
-        row.getCell(6).value = formatStatementDate(rec.form_data?.date || rec.created_at);
+        row.getCell(6).value =
+          i === 0 && drawDate
+            ? drawDate
+            : formatStatementDate(rec.form_data?.date || rec.created_at);
         row.getCell(7).value = amt;
       } else {
-        row.getCell(6).value = '';
+        row.getCell(6).value = i === 0 && drawDate ? drawDate : '';
         row.getCell(7).value = '';
       }
 

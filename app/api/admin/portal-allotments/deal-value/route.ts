@@ -194,145 +194,239 @@ export async function GET(request: NextRequest) {
     }
 
     // Static authoritative directory fallback from SVI Payment Details.xlsx
-    const CONTACT_FALLBACK: Record<string, { phone?: string; email?: string; address?: string }> = {
+    const CONTACT_FALLBACK: Record<
+      string,
+      {
+        phone?: string;
+        email?: string;
+        address?: string;
+        allotmentMode?: 'Direct Sell' | 'Draw';
+        drawDate?: string;
+        allotmentDate?: string;
+      }
+    > = {
       pl2075: {
         phone: '9716154616',
         email: 'kundanjha2010@gmail.com',
         address:
           'House No. Plot 531/A, No.-7717, Ramesh Nagar, Bawana, District: North West Delhi, 110039',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
       },
       pl2077: {
         phone: '7838045231',
         email: 'Shantanujoshi9999@gmail.com',
         address:
           'A-803, Garden Estates Apartments, Plot No-5B, Sector-22, Dwarka, Raj Nagar-II, Delhi-110077',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
       },
       pl2076: {
         phone: '7838221323',
         email: 'truemoon.india@gmail.com',
         address: '7 /50, 3rd Floor, Subhash Nagar, West Delhi-110027.',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
       },
       pl2050: {
         phone: '9811686535',
         email: 'agarwalgoyalmanish@yahoo.com',
         address: 'A-32, pushpanjali enclave Pitampura',
+        allotmentMode: 'Draw',
+        drawDate: '2025-12-30',
+        allotmentDate: '2025-12-30',
       },
       pl2066: {
         phone: '9318444582',
         email: 'varun.arora1515@gmail.com',
         address: 'Rohtak',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2025-12-30',
       },
       pl2065: {
         phone: '9318444582',
         email: 'varun.arora1515@gmail.com',
         address: 'Rohtak',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-01-03',
       },
       pl2080: {
         phone: '7042046477',
         email: 'Rohitca871@gmail.com',
         address: 'KH NO 791 STREET NO 2 ASHOK COLONY KUSHAK NO 2 KADIPUR 110036',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-01-02',
       },
       svi002023: {
         phone: '9810065290',
         email: 'rkjindal@ksprecision.com',
         address: '4/20, sector 2 rajendra nagar ghaziabad',
+        allotmentMode: 'Draw',
+        drawDate: '2026-01-15',
+        allotmentDate: '2026-01-15',
       },
       svi2023: {
         phone: '9810065290',
         email: 'rkjindal@ksprecision.com',
         address: '4/20, sector 2 rajendra nagar ghaziabad',
+        allotmentMode: 'Draw',
+        drawDate: '2026-01-15',
+        allotmentDate: '2026-01-15',
       },
       pl2081: {
         phone: '8882559449',
         email: 'kapiltanwar18@gmail.com',
         address: '',
+        allotmentMode: 'Draw',
+        drawDate: '2026-01-15',
+        allotmentDate: '2026-01-15',
       },
       pl2078: {
         phone: '',
         email: '',
         address: 'i -599 Govindpuram Ghaziabad Uttar Pradesh 201013',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
       },
       pl2006: {
         phone: '',
         email: '',
         address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
       },
       pl2126: {
         phone: '9506394111',
         email: '',
         address: 'Sector- 10A / 10 Chiranjeev vihar Ghaziabad Uttar Pradesh -201002',
+        allotmentMode: 'Draw',
+        drawDate: '2025-12-29',
+        allotmentDate: '2025-12-29',
       },
       pl2221: {
         phone: '9953630825',
         email: 'SMSHARMA1987@GMAIL.COM',
         address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+        allotmentMode: 'Draw',
+        drawDate: '2026-01-30',
+        allotmentDate: '2026-01-30',
       },
       svi002025: {
         phone: '9911300308',
         email: 'kohli.gaurav141@gmail.com',
         address: 'H/N 141-142, nehru vihar west delhi-110054',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-01-27',
       },
       svi2025: {
         phone: '9911300308',
         email: 'kohli.gaurav141@gmail.com',
         address: 'H/N 141-142, nehru vihar west delhi-110054',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-01-27',
       },
       svi002106: {
         phone: '7206075395',
         email: 'bhagwanshiv1982@gmail.com',
         address: 'Ahrod(29)Rewari',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-02-16',
       },
       svi2106: {
         phone: '7206075395',
         email: 'bhagwanshiv1982@gmail.com',
         address: 'Ahrod(29)Rewari',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-02-16',
       },
       pl2181: {
         phone: '9953630825',
         email: 'SMSHARMA1987@GMAIL.COM',
         address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+        allotmentMode: 'Draw',
+        drawDate: '2026-02-19',
+        allotmentDate: '2026-02-19',
       },
       svi002050: {
         phone: '9958894058',
         email: '',
         address:
           'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-03-22',
       },
       svi2050: {
         phone: '9958894058',
         email: '',
         address:
           'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-03-22',
       },
       svi002051: {
         phone: '9958894058',
         email: 'client.svi002051@sviinfra.com',
         address:
           'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-03-22',
       },
       svi2051: {
         phone: '9958894058',
         email: 'client.svi002051@sviinfra.com',
         address:
           'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+        allotmentMode: 'Direct Sell',
+        drawDate: 'Direct sell',
+        allotmentDate: '2026-03-22',
       },
       svi002134: {
         phone: '9031439111',
         email: 'abhilashasahayvarma@gmail.com',
         address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+        allotmentMode: 'Draw',
+        drawDate: '2026-05-24',
+        allotmentDate: '2026-05-24',
       },
       svi2134: {
         phone: '9031439111',
         email: 'abhilashasahayvarma@gmail.com',
         address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+        allotmentMode: 'Draw',
+        drawDate: '2026-05-24',
+        allotmentDate: '2026-05-24',
       },
     };
+
+    let allotmentMode =
+      (matchedMeta?.allotment_mode as string) || (matchedMeta?.sale_type as string) || '';
+    let drawDate = (matchedMeta?.draw_date as string) || '';
+    let allotmentDate =
+      (matchedMeta?.allotment_date as string) || (matchedMeta?.booking_date as string) || '';
 
     const fallback = CONTACT_FALLBACK[norm];
     if (fallback) {
       if (!clientPhone && fallback.phone) clientPhone = fallback.phone;
       if (!clientEmail && fallback.email) clientEmail = fallback.email;
       if (!clientAddress && fallback.address) clientAddress = fallback.address;
+      if (!allotmentMode && fallback.allotmentMode) allotmentMode = fallback.allotmentMode;
+      if (!drawDate && fallback.drawDate) drawDate = fallback.drawDate;
+      if (!allotmentDate && fallback.allotmentDate) allotmentDate = fallback.allotmentDate;
     }
 
     const dealValue = matchedMeta?.total_cost ? Number(matchedMeta.total_cost) : null;
@@ -350,6 +444,9 @@ export async function GET(request: NextRequest) {
       clientPhone: clientPhone || null,
       clientEmail: clientEmail || null,
       clientAddress: clientAddress || null,
+      allotmentMode: allotmentMode || null,
+      drawDate: drawDate || null,
+      allotmentDate: allotmentDate || null,
     });
   } catch (err: unknown) {
     return handleApiError(err);

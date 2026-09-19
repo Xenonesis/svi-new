@@ -19,6 +19,8 @@ import {
   Phone,
   Mail,
   MapPin,
+  Target,
+  Calendar,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SavedReceipt } from './ReceiptTypes';
@@ -27,138 +29,223 @@ import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
 import { exportStatementExcel, exportStatementPdf } from '@/src/lib/receipt/statementExporter';
 import { StatementPdfTemplate } from './StatementPdfTemplate';
 
-// Authoritative client contact directory as per SVI Payment Details.xlsx
-const CLIENT_CONTACT_MAP: Record<string, { phone?: string; email?: string; address?: string }> = {
+// Authoritative client contact and allotment directory as per SVI Payment Details.xlsx
+const CLIENT_CONTACT_MAP: Record<
+  string,
+  {
+    phone?: string;
+    email?: string;
+    address?: string;
+    allotmentMode?: string;
+    drawDate?: string;
+    allotmentDate?: string;
+  }
+> = {
   pl2075: {
     phone: '9716154616',
     email: 'kundanjha2010@gmail.com',
     address:
       'House No. Plot 531/A, No.-7717, Ramesh Nagar, Bawana, District: North West Delhi, 110039',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
   },
   pl2077: {
     phone: '7838045231',
     email: 'Shantanujoshi9999@gmail.com',
     address:
       'A-803, Garden Estates Apartments, Plot No-5B, Sector-22, Dwarka, Raj Nagar-II, Delhi-110077',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
   },
   pl2076: {
     phone: '7838221323',
     email: 'truemoon.india@gmail.com',
     address: '7 /50, 3rd Floor, Subhash Nagar, West Delhi-110027.',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
   },
   pl2050: {
     phone: '9811686535',
     email: 'agarwalgoyalmanish@yahoo.com',
     address: 'A-32, pushpanjali enclave Pitampura',
+    allotmentMode: 'Draw',
+    drawDate: '30.12.25',
+    allotmentDate: '2025-12-30',
   },
   pl2066: {
     phone: '9318444582',
     email: 'varun.arora1515@gmail.com',
     address: 'Rohtak',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2025-12-30',
   },
   pl2065: {
     phone: '9318444582',
     email: 'varun.arora1515@gmail.com',
     address: 'Rohtak',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-01-03',
   },
   pl2080: {
     phone: '7042046477',
     email: 'Rohitca871@gmail.com',
     address: 'KH NO 791 STREET NO 2 ASHOK COLONY KUSHAK NO 2 KADIPUR 110036',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-01-02',
   },
   svi002023: {
     phone: '9810065290',
     email: 'rkjindal@ksprecision.com',
     address: '4/20, sector 2 rajendra nagar ghaziabad',
+    allotmentMode: 'Draw',
+    drawDate: '15.01.26',
+    allotmentDate: '2026-01-15',
   },
   svi2023: {
     phone: '9810065290',
     email: 'rkjindal@ksprecision.com',
     address: '4/20, sector 2 rajendra nagar ghaziabad',
+    allotmentMode: 'Draw',
+    drawDate: '15.01.26',
+    allotmentDate: '2026-01-15',
   },
   pl2081: {
     phone: '8882559449',
     email: 'kapiltanwar18@gmail.com',
     address: '',
+    allotmentMode: 'Draw',
+    drawDate: '15.01.26',
+    allotmentDate: '2026-01-15',
   },
   pl2078: {
     phone: '',
     email: '',
     address: 'i -599 Govindpuram Ghaziabad Uttar Pradesh 201013',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
   },
   pl2006: {
     phone: '',
     email: '',
     address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
   },
   pl2126: {
     phone: '9506394111',
     email: '',
     address: 'Sector- 10A / 10 Chiranjeev vihar Ghaziabad Uttar Pradesh -201002',
+    allotmentMode: 'Draw',
+    drawDate: '29.12.25',
+    allotmentDate: '2025-12-29',
   },
   pl2221: {
     phone: '9953630825',
     email: 'SMSHARMA1987@GMAIL.COM',
     address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+    allotmentMode: 'Draw',
+    drawDate: '30.01.26',
+    allotmentDate: '2026-01-30',
   },
   svi002025: {
     phone: '9911300308',
     email: 'kohli.gaurav141@gmail.com',
     address: 'H/N 141-142, nehru vihar west delhi-110054',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-01-27',
   },
   svi2025: {
     phone: '9911300308',
     email: 'kohli.gaurav141@gmail.com',
     address: 'H/N 141-142, nehru vihar west delhi-110054',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-01-27',
   },
   svi002106: {
     phone: '7206075395',
     email: 'bhagwanshiv1982@gmail.com',
     address: 'Ahrod(29)Rewari',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-02-16',
   },
   svi2106: {
     phone: '7206075395',
     email: 'bhagwanshiv1982@gmail.com',
     address: 'Ahrod(29)Rewari',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-02-16',
   },
   pl2181: {
     phone: '9953630825',
     email: 'SMSHARMA1987@GMAIL.COM',
     address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+    allotmentMode: 'Draw',
+    drawDate: '19.02.26',
+    allotmentDate: '2026-02-19',
   },
   svi002050: {
     phone: '9958894058',
     email: '',
     address:
       'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-03-22',
   },
   svi2050: {
     phone: '9958894058',
     email: '',
     address:
       'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-03-22',
   },
   svi002051: {
     phone: '9958894058',
     email: 'client.svi002051@sviinfra.com',
     address:
       'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-03-22',
   },
   svi2051: {
     phone: '9958894058',
     email: 'client.svi002051@sviinfra.com',
     address:
       'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+    allotmentMode: 'Direct Sell',
+    drawDate: 'Direct sell',
+    allotmentDate: '2026-03-22',
   },
   svi002134: {
     phone: '9031439111',
     email: 'abhilashasahayvarma@gmail.com',
     address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+    allotmentMode: 'Draw',
+    drawDate: '24.05.26',
+    allotmentDate: '2026-05-24',
   },
   svi2134: {
     phone: '9031439111',
     email: 'abhilashasahayvarma@gmail.com',
     address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+    allotmentMode: 'Draw',
+    drawDate: '24.05.26',
+    allotmentDate: '2026-05-24',
   },
 };
 
@@ -212,6 +299,11 @@ export function ReceiptLedgerDrawer({
   const [clientEmail, setClientEmail] = useState<string>('');
   const [clientAddress, setClientAddress] = useState<string>('');
   const [copiedContactField, setCopiedContactField] = useState<string | null>(null);
+
+  // Allotment Mode & Dates State
+  const [allotmentMode, setAllotmentMode] = useState<string>('');
+  const [drawDate, setDrawDate] = useState<string>('');
+  const [allotmentDate, setAllotmentDate] = useState<string>('');
 
   // Advisor and Export Dropdown state
   const [resolvedAdvisorName, setResolvedAdvisorName] = useState<string>(advisorName || '');
@@ -278,6 +370,15 @@ export function ReceiptLedgerDrawer({
           }
           if (data?.clientAddress) {
             setClientAddress(data.clientAddress);
+          }
+          if (data?.allotmentMode) {
+            setAllotmentMode(data.allotmentMode);
+          }
+          if (data?.drawDate) {
+            setDrawDate(data.drawDate);
+          }
+          if (data?.allotmentDate) {
+            setAllotmentDate(data.allotmentDate);
           }
         })
         .catch(() => {});
@@ -361,6 +462,9 @@ export function ReceiptLedgerDrawer({
   const displayPhone = clientPhone || fallbackContact.phone || '';
   const displayEmail = clientEmail || fallbackContact.email || '';
   const displayAddress = clientAddress || fallbackContact.address || '';
+  const displayAllotmentMode = allotmentMode || fallbackContact.allotmentMode || '';
+  const displayDrawDate = drawDate || fallbackContact.drawDate || '';
+  const displayAllotmentDate = allotmentDate || fallbackContact.allotmentDate || '';
 
   const handleCopyContact = (text: string, field: string) => {
     if (typeof navigator !== 'undefined' && navigator.clipboard) {
@@ -386,6 +490,9 @@ export function ReceiptLedgerDrawer({
         phone: displayPhone,
         email: displayEmail,
         address: displayAddress,
+        allotmentMode: displayAllotmentMode,
+        drawDate: displayDrawDate,
+        allotmentDate: displayAllotmentDate,
       });
     } finally {
       setExportingType(null);
@@ -466,6 +573,21 @@ export function ReceiptLedgerDrawer({
                     <span className="rounded-md border border-sky-500/20 bg-sky-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
                       Ref ID: {ledger.displayRefId}
                     </span>
+                    {displayAllotmentMode === 'Direct Sell' ? (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 font-sans text-xs font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/50 dark:text-indigo-300">
+                        <Target className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                        Direct Sell {displayAllotmentDate ? `• ${displayAllotmentDate}` : ''}
+                      </span>
+                    ) : displayAllotmentMode === 'Draw' ? (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 font-sans text-xs font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/50 dark:text-amber-300">
+                        🎲 Draw Allotment{' '}
+                        {displayDrawDate && displayDrawDate !== 'Direct sell'
+                          ? `• ${displayDrawDate}`
+                          : displayAllotmentDate
+                            ? `• ${displayAllotmentDate}`
+                            : ''}
+                      </span>
+                    ) : null}
                     {isRefundDone && (
                       <span className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 font-sans text-xs font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
                         Refund Done
@@ -631,6 +753,41 @@ export function ReceiptLedgerDrawer({
                     </button>
                   )}
                 </div>
+
+                {/* Allotment Channel & Dates */}
+                {(displayAllotmentMode || displayDrawDate || displayAllotmentDate) && (
+                  <div className="mt-2.5 flex items-center justify-between rounded-lg border border-gray-200/60 bg-white p-2.5 text-xs shadow-2xs dark:border-white/5 dark:bg-gray-800/60">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-indigo-50 text-indigo-600 dark:bg-indigo-950/50 dark:text-indigo-400">
+                        <Calendar className="h-3.5 w-3.5" />
+                      </div>
+                      <div>
+                        <div className="text-[10px] font-medium text-gray-400 uppercase">
+                          Allotment Channel & Dates
+                        </div>
+                        <div className="mt-0.5 flex flex-wrap items-center gap-2">
+                          <span className="font-bold text-gray-900 dark:text-white">
+                            {displayAllotmentMode === 'Direct Sell'
+                              ? '🎯 Direct Sell'
+                              : displayAllotmentMode === 'Draw'
+                                ? '🎲 Draw Allotment'
+                                : displayAllotmentMode || 'Official Allotment'}
+                          </span>
+                          {displayDrawDate && (
+                            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] font-medium text-gray-700 dark:bg-white/10 dark:text-gray-300">
+                              Draw Date: {displayDrawDate}
+                            </span>
+                          )}
+                          {displayAllotmentDate && (
+                            <span className="rounded bg-slate-100 px-1.5 py-0.5 font-mono text-[11px] font-medium text-gray-700 dark:bg-white/10 dark:text-gray-300">
+                              Effective Date: {displayAllotmentDate}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Refund Notice Banner */}
@@ -1012,6 +1169,9 @@ export function ReceiptLedgerDrawer({
               phone={displayPhone}
               email={displayEmail}
               address={displayAddress}
+              allotmentMode={displayAllotmentMode}
+              drawDate={displayDrawDate}
+              allotmentDate={displayAllotmentDate}
             />
           </motion.div>
         </div>

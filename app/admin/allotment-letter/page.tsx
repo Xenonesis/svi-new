@@ -15,7 +15,7 @@ export default function AllotmentLetterPage() {
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-brand-navy mb-2 font-serif text-3xl tracking-tight dark:text-white">
-            Allotment <span className="text-brand-gold italic">Letter</span>
+            Plots <span className="text-brand-gold italic">Allotments</span>
           </h1>
           <p className="text-sm text-gray-500 dark:text-gray-400">
             Generate and download official allotment letters for clients.
