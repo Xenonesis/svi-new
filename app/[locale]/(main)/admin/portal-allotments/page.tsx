@@ -23,6 +23,16 @@ export default function PortalAllotmentsAdmin() {
     profiles,
     properties,
     advisors,
+    selectedProperty,
+    setSelectedProperty,
+    selectedPaymentStatus,
+    setSelectedPaymentStatus,
+    selectedSaleMode,
+    setSelectedSaleMode,
+    selectedAdvisor,
+    setSelectedAdvisor,
+    activeFilterCount,
+    resetFilters,
     loading,
     loadingCandidates,
     searchTerm,
@@ -124,6 +134,18 @@ export default function PortalAllotmentsAdmin() {
           onTogglePaymentStatus={togglePaymentStatus}
           onSelectReceipt={setSelectedReceipt}
           onShareWhatsApp={setWhatsAppReceipt}
+          selectedProperty={selectedProperty}
+          setSelectedProperty={setSelectedProperty}
+          selectedPaymentStatus={selectedPaymentStatus}
+          setSelectedPaymentStatus={setSelectedPaymentStatus}
+          selectedSaleMode={selectedSaleMode}
+          setSelectedSaleMode={setSelectedSaleMode}
+          selectedAdvisor={selectedAdvisor}
+          setSelectedAdvisor={setSelectedAdvisor}
+          properties={properties}
+          advisors={advisors}
+          activeFilterCount={activeFilterCount}
+          resetFilters={resetFilters}
         />
       )}
 

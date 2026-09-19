@@ -10,3 +10,4 @@ export * from './PortalAllotmentsTabsNav';
 export * from './PortalAllotmentsPendingView';
 export * from './PortalAllotmentsActiveView';
 export * from './PortalAllotmentsModalsContainer';
+export * from './PortalAllotmentsFilterBar';

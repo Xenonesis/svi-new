@@ -33,11 +33,10 @@ const mockAllotments: AllotmentRecord[] = [
       id: 'prof-1',
       full_name: 'Aditya Sharma',
       email: 'aditya@example.com',
-      phone: '9876543210',
     },
     properties: {
       id: 'prop-1',
-      name: 'Shyam Aangan Phase 1',
+      name: 'Emerald Heights',
     },
     payment_schedules: [],
   },
@@ -52,11 +51,10 @@ const mockAllotments: AllotmentRecord[] = [
       id: 'prof-2',
       full_name: 'Gaurav Kohli',
       email: 'gaurav@example.com',
-      phone: '9812345678',
     },
     properties: {
       id: 'prop-2',
-      name: 'Green Valley Villas',
+      name: 'Diamond City',
     },
     payment_schedules: [],
   },
@@ -72,58 +70,51 @@ const mockGetFinancials = (allotment: AllotmentRecord) => ({
 });
 
 describe('PortalAllotmentsActiveView', () => {
-  it('renders toolbar with search input, property filter, sort dropdown, and view toggles', () => {
-    render(
-      <PortalAllotmentsActiveView
-        searchTerm=""
-        onSearchChange={vi.fn()}
-        searchPlaceholder="Search by client..."
-        loading={false}
-        loadingText="Loading..."
-        noAllotmentsFoundText="No allotments found."
-        filteredAllotments={mockAllotments}
-        getAllotmentFinancials={mockGetFinancials}
-        expandedAllotment={null}
-        onToggleExpand={vi.fn()}
-        onOpenLedger={vi.fn()}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onTogglePaymentStatus={vi.fn()}
-        onSelectReceipt={vi.fn()}
-        onShareWhatsApp={vi.fn()}
-      />
-    );
+  const defaultProps = {
+    searchTerm: '',
+    onSearchChange: vi.fn(),
+    searchPlaceholder: 'Search by client...',
+    loading: false,
+    loadingText: 'Loading...',
+    noAllotmentsFoundText: 'No allotments found.',
+    filteredAllotments: mockAllotments,
+    getAllotmentFinancials: mockGetFinancials,
+    expandedAllotment: null,
+    onToggleExpand: vi.fn(),
+    onOpenLedger: vi.fn(),
+    onEdit: vi.fn(),
+    onDelete: vi.fn(),
+    onTogglePaymentStatus: vi.fn(),
+    onSelectReceipt: vi.fn(),
+    onShareWhatsApp: vi.fn(),
+    selectedProperty: 'all',
+    setSelectedProperty: vi.fn(),
+    properties: [{ id: 'prop-1', name: 'Emerald Heights' }],
+    selectedPaymentStatus: 'all' as const,
+    setSelectedPaymentStatus: vi.fn(),
+    selectedSaleMode: 'all' as const,
+    setSelectedSaleMode: vi.fn(),
+    selectedAdvisor: 'all',
+    setSelectedAdvisor: vi.fn(),
+    advisors: ['Aarav'],
+    activeFilterCount: 0,
+    resetFilters: vi.fn(),
+  };
+
+  it('renders toolbar with search input, property filter, and view toggles', () => {
+    render(<PortalAllotmentsActiveView {...defaultProps} />);
 
     expect(screen.getByPlaceholderText('Search by client...')).toBeDefined();
-    expect(screen.getByText(/All Projects/)).toBeDefined();
+    expect(screen.getByLabelText(/property/i)).toBeDefined();
+    expect(screen.getByLabelText(/payment status/i)).toBeDefined();
+    expect(screen.getByLabelText(/sale mode/i)).toBeDefined();
+    expect(screen.getByLabelText(/advisor/i)).toBeDefined();
     expect(screen.getByRole('button', { name: 'Table View' })).toBeDefined();
     expect(screen.getByRole('button', { name: 'Card View' })).toBeDefined();
-    expect(screen.getByText('All Allotments')).toBeDefined();
-    expect(screen.getByText('Pending Balance')).toBeDefined();
-    expect(screen.getByText('Fully Paid')).toBeDefined();
   });
 
   it('switches to card view when Card View button is clicked', () => {
-    render(
-      <PortalAllotmentsActiveView
-        searchTerm=""
-        onSearchChange={vi.fn()}
-        searchPlaceholder="Search by client..."
-        loading={false}
-        loadingText="Loading..."
-        noAllotmentsFoundText="No allotments found."
-        filteredAllotments={mockAllotments}
-        getAllotmentFinancials={mockGetFinancials}
-        expandedAllotment={null}
-        onToggleExpand={vi.fn()}
-        onOpenLedger={vi.fn()}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onTogglePaymentStatus={vi.fn()}
-        onSelectReceipt={vi.fn()}
-        onShareWhatsApp={vi.fn()}
-      />
-    );
+    render(<PortalAllotmentsActiveView {...defaultProps} />);
 
     const cardViewBtn = screen.getByRole('button', { name: 'Card View' });
     fireEvent.click(cardViewBtn);
@@ -133,33 +124,15 @@ describe('PortalAllotmentsActiveView', () => {
     expect(screen.getByText('Gaurav Kohli')).toBeDefined();
   });
 
-  it('filters by status chips (e.g. Fully Paid)', () => {
+  it('calls filter change handler when selecting property', () => {
+    const setSelectedProperty = vi.fn();
     render(
-      <PortalAllotmentsActiveView
-        searchTerm=""
-        onSearchChange={vi.fn()}
-        searchPlaceholder="Search by client..."
-        loading={false}
-        loadingText="Loading..."
-        noAllotmentsFoundText="No allotments found."
-        filteredAllotments={mockAllotments}
-        getAllotmentFinancials={mockGetFinancials}
-        expandedAllotment={null}
-        onToggleExpand={vi.fn()}
-        onOpenLedger={vi.fn()}
-        onEdit={vi.fn()}
-        onDelete={vi.fn()}
-        onTogglePaymentStatus={vi.fn()}
-        onSelectReceipt={vi.fn()}
-        onShareWhatsApp={vi.fn()}
-      />
+      <PortalAllotmentsActiveView {...defaultProps} setSelectedProperty={setSelectedProperty} />
     );
 
-    // Click Fully Paid chip (Aditya is 100% paid, Gaurav is 40%)
-    const paidChip = screen.getByText('Fully Paid');
-    fireEvent.click(paidChip);
+    const propertySelect = screen.getByLabelText(/property/i);
+    fireEvent.change(propertySelect, { target: { value: 'prop-1' } });
 
-    expect(screen.getByText('Aditya Sharma')).toBeDefined();
-    expect(screen.queryByText('Gaurav Kohli')).toBeNull();
+    expect(setSelectedProperty).toHaveBeenCalledWith('prop-1');
   });
 });
