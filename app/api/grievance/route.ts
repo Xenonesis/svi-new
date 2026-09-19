@@ -135,7 +135,7 @@ async function sendGrievanceResponse(
             <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px; background-color: #ffffff;">
               <div style="text-align: right; margin-bottom: 15px;">
                 <span style="background-color: #d4af37; color: #ffffff; font-size: 9px; font-weight: bold; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; font-family: sans-serif;">
-                  ✨ System Automated Notification
+                  OFFICIAL SYSTEM NOTIFICATION
                 </span>
               </div>
               <h2>New Grievance Submitted</h2>

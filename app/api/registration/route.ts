@@ -381,7 +381,7 @@ export async function POST(request: NextRequest) {
           <div style="font-family: sans-serif;max-width:600px;margin:0 auto;padding:20px;border:1px solid #eaeaea;border-radius:10px;background:#fff;">
             <div style="text-align:right;margin-bottom:15px;">
               <span style="background:#d4af37;color:#fff;font-size:9px;font-weight:bold;padding:4px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:1px;">
-                ✨ System Automated Notification
+                OFFICIAL SYSTEM NOTIFICATION
               </span>
             </div>
             <h2 style="color:#d4af37;font-family:serif;border-bottom:2px solid #f0d080;padding-bottom:10px;">

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, memo } from 'react';
-import { Send, X, User, Phone, Check } from 'lucide-react';
+import { Send, X, User, Phone, Check, PhoneCall } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { normalizeIndianPhone } from '@/src/lib/utils/phone';
 
@@ -63,7 +63,10 @@ function LeadCapture({ onClose, onSubmitted }: LeadCaptureProps) {
   return (
     <div className="border-brand-gold/20 bg-brand-gold/5 dark:border-brand-gold/10 mx-4 mb-3 rounded-xl border p-4">
       <div className="mb-3 flex items-center justify-between">
-        <p className="text-brand-navy text-sm font-medium dark:text-gray-200">{t('followUp')}</p>
+        <p className="text-brand-navy flex items-center gap-2 text-sm font-medium dark:text-gray-200">
+          <PhoneCall className="text-brand-gold h-4 w-4 shrink-0" />
+          {t('followUp')}
+        </p>
         <button
           onClick={onClose}
           className="rounded-lg p-1 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
