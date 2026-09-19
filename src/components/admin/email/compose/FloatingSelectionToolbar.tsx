@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, PenLine, Trash2, X, Loader2, Wand2, ArrowRight } from 'lucide-react';
+import { Sparkles, PenLine, Trash2, X, Loader2, Wand2, ArrowRight, Edit3 } from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
 import { toast } from 'sonner';
 
@@ -329,8 +329,8 @@ export function FloatingSelectionToolbar({
               className="mt-1.5 w-72 rounded-xl border border-gray-200 bg-white p-3 shadow-2xl dark:border-gray-700 dark:bg-gray-900"
             >
               <div className="mb-2 flex items-center justify-between">
-                <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                  ✨ AI Quick Actions
+                <span className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                  <Sparkles className="text-brand-gold h-3 w-3" /> AI Quick Actions
                 </span>
                 {loading && <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />}
               </div>
@@ -388,8 +388,8 @@ export function FloatingSelectionToolbar({
               className="mt-1.5 w-80 rounded-xl border border-gray-200 bg-white p-3 shadow-2xl dark:border-gray-700 dark:bg-gray-900"
             >
               <div className="mb-1.5 flex items-center justify-between">
-                <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-                  ✏️ Edit Selected Text
+                <span className="flex items-center gap-1.5 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                  <Edit3 className="text-brand-gold h-3 w-3" /> Edit Selected Text
                 </span>
                 <span className="text-[10px] text-gray-400">Ctrl+Enter to save</span>
               </div>

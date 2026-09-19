@@ -225,7 +225,7 @@ export function EmailBodyEditor({
                       title="Auto-fill or reset smart values"
                     >
                       <Wand2 className="h-3.5 w-3.5" />
-                      <span>⚡ Auto-Fill</span>
+                      <span>Auto-Fill</span>
                     </button>
                   )}
 

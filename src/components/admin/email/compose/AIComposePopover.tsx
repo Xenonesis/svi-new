@@ -716,7 +716,7 @@ export function AIComposePopover({
                     title="Generate or refresh subject suggestions with AI"
                   >
                     <Sparkles className="h-3 w-3" />
-                    <span>{suggestingSubject ? 'Generating...' : '⚡ Auto-Suggest Subject'}</span>
+                    <span>{suggestingSubject ? 'Generating...' : 'Auto-Suggest Subject'}</span>
                   </button>
                 </div>
                 <input
@@ -857,7 +857,7 @@ export function AIComposePopover({
                         title="Auto-fill details from your prompt"
                       >
                         <Wand2 className="h-3 w-3" />
-                        <span>⚡ Re-Fill Fields</span>
+                        <span>Re-Fill Fields</span>
                       </button>
                       <button
                         type="button"
@@ -917,7 +917,7 @@ export function AIComposePopover({
                       </span>
                       {lastGenTime !== null && (
                         <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/15 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                          ⚡ Took {lastGenTime}s
+                          <Clock className="h-2.5 w-2.5" /> Took {lastGenTime}s
                         </span>
                       )}
                     </div>

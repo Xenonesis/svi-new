@@ -2,7 +2,16 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, X, Loader2, ArrowRight } from 'lucide-react';
+import {
+  Sparkles,
+  X,
+  Loader2,
+  ArrowRight,
+  Smile,
+  MinusCircle,
+  Frown,
+  AlertCircle,
+} from 'lucide-react';
 import { useAIEmail } from '../hooks/useAIEmail';
 
 interface SentimentResult {
@@ -28,28 +37,28 @@ const SENTIMENT_CONFIG = {
     text: 'text-emerald-700 dark:text-emerald-400',
     dot: 'bg-emerald-500',
     label: 'Positive',
-    emoji: '😊',
+    icon: <Smile className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />,
   },
   neutral: {
     bg: 'bg-gray-100 dark:bg-gray-500/15',
     text: 'text-gray-700 dark:text-gray-400',
     dot: 'bg-gray-500',
     label: 'Neutral',
-    emoji: '😐',
+    icon: <MinusCircle className="h-3.5 w-3.5 text-gray-500 dark:text-gray-400" />,
   },
   negative: {
     bg: 'bg-red-100 dark:bg-red-500/15',
     text: 'text-red-700 dark:text-red-400',
     dot: 'bg-red-500',
     label: 'Negative',
-    emoji: '😟',
+    icon: <Frown className="h-3.5 w-3.5 text-red-600 dark:text-red-400" />,
   },
   urgent: {
     bg: 'bg-amber-100 dark:bg-amber-500/15',
     text: 'text-amber-700 dark:text-amber-400',
     dot: 'bg-amber-500',
     label: 'Urgent',
-    emoji: '⚡',
+    icon: <AlertCircle className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />,
   },
 };
 
@@ -107,7 +116,7 @@ export function SentimentBadge({ emailHtml, emailText, onSuggestionSelect }: Sen
             {/* Header */}
             <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3 dark:border-gray-800">
               <div className="flex items-center gap-2">
-                <span className="text-lg">{config?.emoji}</span>
+                {config?.icon}
                 <div>
                   <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
                     Sentiment: {config?.label}
