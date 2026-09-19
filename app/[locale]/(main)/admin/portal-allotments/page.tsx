@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import {
   usePortalAllotmentsAdmin,
@@ -9,6 +10,8 @@ import {
   PortalAllotmentsPendingView,
   PortalAllotmentsActiveView,
   PortalAllotmentsModalsContainer,
+  PortalAllotmentsFloatingDock,
+  BulkWhatsAppReminderModal,
 } from '@/src/components/admin/portal-allotments';
 
 export default function PortalAllotmentsAdmin() {
@@ -76,7 +79,61 @@ export default function PortalAllotmentsAdmin() {
     getPlotAreaForRef,
     salesRevenueStats,
     getAllotmentFinancials,
+    selectedIds,
+    toggleSelectRow,
+    toggleSelectAll,
+    clearSelection,
+    isAllSelected,
+    isSomeSelected,
+    selectedAllotments,
+    selectedTotalBalance,
   } = usePortalAllotmentsAdmin();
+
+  const [isBulkWhatsAppOpen, setIsBulkWhatsAppOpen] = useState(false);
+
+  const handleExportSelected = () => {
+    if (selectedAllotments.length === 0) return;
+    const rows = [
+      [
+        'Ref ID',
+        'Unit Number',
+        'Property',
+        'Client Name',
+        'Email',
+        'Phone',
+        'Deal Value',
+        'Total Paid',
+        'Balance Due',
+      ],
+      ...selectedAllotments.map((a) => {
+        const fin = getAllotmentFinancials(a);
+        return [
+          fin.ticketId,
+          a.unit_no || a.unit_number || '',
+          a.properties?.name || '',
+          a.profiles?.full_name || '',
+          a.profiles?.email || '',
+          a.profiles?.phone || '',
+          fin.dealValue.toString(),
+          fin.totalPaid.toString(),
+          fin.balanceDue.toString(),
+        ];
+      }),
+    ];
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      rows.map((e) => e.map((val) => `"${String(val).replace(/"/g, '""')}"`).join(',')).join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `allotments_export_${new Date().toISOString().split('T')[0]}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
 
   return (
     <div className="mx-auto w-full max-w-7xl pb-12 font-sans">
@@ -152,6 +209,11 @@ export default function PortalAllotmentsAdmin() {
           sortField={sortField}
           sortDirection={sortDirection}
           onSort={handleSort}
+          selectedIds={selectedIds}
+          onToggleSelectRow={toggleSelectRow}
+          onToggleSelectAll={toggleSelectAll}
+          isAllSelected={isAllSelected}
+          isSomeSelected={isSomeSelected}
         />
       )}
 
@@ -183,6 +245,23 @@ export default function PortalAllotmentsAdmin() {
         getDealValueForRef={getDealValueForRef}
         getPlotAreaForRef={getPlotAreaForRef}
         handleSaveDealValue={handleSaveDealValue}
+      />
+
+      {activeTab === 'active' && (
+        <PortalAllotmentsFloatingDock
+          selectedCount={selectedIds.size}
+          selectedTotalBalance={selectedTotalBalance}
+          onOpenBulkWhatsApp={() => setIsBulkWhatsAppOpen(true)}
+          onExportSelected={handleExportSelected}
+          onClearSelection={clearSelection}
+        />
+      )}
+
+      <BulkWhatsAppReminderModal
+        isOpen={isBulkWhatsAppOpen}
+        onClose={() => setIsBulkWhatsAppOpen(false)}
+        selectedAllotments={selectedAllotments}
+        getAllotmentFinancials={getAllotmentFinancials}
       />
     </div>
   );

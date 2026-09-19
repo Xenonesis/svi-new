@@ -34,6 +34,8 @@ export interface PortalAllotmentTableRowProps {
   onDelete: (id: string) => void;
   children?: React.ReactNode;
   variant?: 'card' | 'table-row';
+  isSelected?: boolean;
+  onToggleSelect?: (id: string) => void;
 }
 
 export function PortalAllotmentTableRow({
@@ -46,6 +48,8 @@ export function PortalAllotmentTableRow({
   onDelete,
   children,
   variant = 'card',
+  isSelected,
+  onToggleSelect,
 }: PortalAllotmentTableRowProps) {
   const t = useTranslations('pages.adminPortalAllotments');
 
@@ -141,7 +145,22 @@ export function PortalAllotmentTableRow({
   if (variant === 'table-row') {
     return (
       <React.Fragment>
-        <tr className="group border-b border-gray-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.02]">
+        <tr
+          className={`group border-b border-gray-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.02] ${
+            isSelected ? 'bg-brand-gold/10 dark:bg-brand-gold/15' : ''
+          }`}
+        >
+          {/* 0. Selection Checkbox */}
+          <td className="w-[44px] px-3 py-3.5 text-center align-top">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect?.(allotment.id)}
+              aria-label={`Select unit ${unitNumber}`}
+              className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+            />
+          </td>
+
           {/* 1. Ref ID (Ticket / Booking Ref) */}
           <td className="w-[130px] px-4 py-3.5 align-top whitespace-nowrap">
             <div className="flex flex-col items-start gap-1">
@@ -374,7 +393,7 @@ export function PortalAllotmentTableRow({
 
         {isExpanded && children && (
           <tr className="border-b border-gray-100 bg-slate-50/60 dark:border-white/5 dark:bg-black/20">
-            <td colSpan={9} className="px-4 py-4">
+            <td colSpan={10} className="px-4 py-4">
               {children}
             </td>
           </tr>
@@ -385,10 +404,26 @@ export function PortalAllotmentTableRow({
 
   // Card Presentation (Responsive Mobile / Tablet / Grid View)
   return (
-    <div className="hover:border-brand-gold/30 rounded-2xl border border-gray-200/80 bg-white p-4 shadow-xs transition-all hover:shadow-md sm:p-5 dark:border-white/10 dark:bg-gray-800">
+    <div
+      className={`rounded-2xl border p-4 shadow-xs transition-all hover:shadow-md sm:p-5 ${
+        isSelected
+          ? 'border-brand-gold/60 ring-brand-gold/40 bg-brand-gold/5 dark:bg-brand-gold/10 ring-1'
+          : 'hover:border-brand-gold/30 border-gray-200/80 bg-white dark:border-white/10 dark:bg-gray-800'
+      }`}
+    >
       {/* Top Header Row: Unit, Property & Direct Actions */}
       <div className="flex items-start justify-between gap-3">
         <div className="flex min-w-0 items-start gap-3">
+          {/* Card Checkbox */}
+          <div className="pt-0.5">
+            <input
+              type="checkbox"
+              checked={isSelected}
+              onChange={() => onToggleSelect?.(allotment.id)}
+              aria-label={`Select unit ${unitNumber}`}
+              className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+            />
+          </div>
           <div className="bg-brand-gold/10 hidden rounded-xl p-2.5 sm:block">
             <Building2 className="text-brand-gold h-5 w-5" />
           </div>

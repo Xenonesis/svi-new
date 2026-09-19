@@ -124,12 +124,32 @@ export function usePortalAllotmentsAdmin() {
     [sortField]
   );
 
+  // Multi-select bulk actions state
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+
+  const toggleSelectRow = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) {
+        next.delete(id);
+      } else {
+        next.add(id);
+      }
+      return next;
+    });
+  }, []);
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
   const resetFilters = useCallback(() => {
     setSelectedProperty('all');
     setSelectedPaymentStatus('all');
     setSelectedSaleMode('all');
     setSelectedAdvisor('all');
     setSearchTerm('');
+    setSelectedIds(new Set());
   }, []);
 
   const activeFilterCount = useMemo(() => {
@@ -323,6 +343,9 @@ export function usePortalAllotmentsAdmin() {
       });
 
       setAllotments(enrichedAllotments);
+      setSelectedIds(
+        (prev) => new Set([...prev].filter((id) => enrichedAllotments.some((a) => a.id === id)))
+      );
       setAllReceipts(allReceipts);
       setProfiles((profilesData as unknown as ProfileSummary[]) || []);
       setProperties((propertiesData as unknown as PropertySummary[]) || []);
@@ -789,6 +812,38 @@ export function usePortalAllotmentsAdmin() {
     dealValuesMap,
   ]);
 
+  // Selection derived states & helpers
+  const isAllSelected = useMemo(() => {
+    return filteredAllotments.length > 0 && filteredAllotments.every((a) => selectedIds.has(a.id));
+  }, [filteredAllotments, selectedIds]);
+
+  const isSomeSelected = useMemo(() => {
+    return selectedIds.size > 0 && !isAllSelected;
+  }, [selectedIds, isAllSelected]);
+
+  const toggleSelectAll = useCallback(() => {
+    if (filteredAllotments.length === 0) return;
+    const allIn = filteredAllotments.every((a) => selectedIds.has(a.id));
+    if (allIn) {
+      setSelectedIds(new Set());
+    } else {
+      const next = new Set(selectedIds);
+      filteredAllotments.forEach((a) => next.add(a.id));
+      setSelectedIds(next);
+    }
+  }, [filteredAllotments, selectedIds]);
+
+  const selectedAllotments = useMemo(() => {
+    return allotments.filter((a) => selectedIds.has(a.id));
+  }, [allotments, selectedIds]);
+
+  const selectedTotalBalance = useMemo(() => {
+    return selectedAllotments.reduce(
+      (sum, a) => sum + getAllotmentFinancials(a, dealValuesMap).balanceDue,
+      0
+    );
+  }, [selectedAllotments, dealValuesMap]);
+
   // Filtered pending candidates
   const filteredCandidates = useMemo(() => {
     const term = searchTerm.toLowerCase().trim();
@@ -1143,5 +1198,15 @@ export function usePortalAllotmentsAdmin() {
     handleSort,
     resetFilters,
     activeFilterCount,
+    // Multi-select bulk actions
+    selectedIds,
+    setSelectedIds,
+    toggleSelectRow,
+    toggleSelectAll,
+    clearSelection,
+    isAllSelected,
+    isSomeSelected,
+    selectedAllotments,
+    selectedTotalBalance,
   };
 }

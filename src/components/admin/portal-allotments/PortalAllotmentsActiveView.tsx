@@ -55,6 +55,12 @@ export interface PortalAllotmentsActiveViewProps {
   sortField?: SortField;
   sortDirection?: SortDirection;
   onSort?: (field: SortField) => void;
+  // Multi-select bulk actions
+  selectedIds?: Set<string>;
+  onToggleSelectRow?: (id: string) => void;
+  onToggleSelectAll?: () => void;
+  isAllSelected?: boolean;
+  isSomeSelected?: boolean;
 }
 
 type ViewMode = 'table' | 'cards';
@@ -96,6 +102,11 @@ export function PortalAllotmentsActiveView({
   sortField,
   sortDirection,
   onSort,
+  selectedIds,
+  onToggleSelectRow,
+  onToggleSelectAll,
+  isAllSelected,
+  isSomeSelected,
 }: PortalAllotmentsActiveViewProps): React.JSX.Element {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
 
@@ -174,9 +185,21 @@ export function PortalAllotmentsActiveView({
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[1040px] text-left text-xs">
+            <table className="w-full min-w-[1100px] text-left text-xs">
               <thead className="border-b border-gray-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-400">
                 <tr>
+                  <th className="w-[44px] px-3 py-3.5 text-center">
+                    <input
+                      type="checkbox"
+                      checked={isAllSelected}
+                      ref={(el) => {
+                        if (el) el.indeterminate = Boolean(isSomeSelected);
+                      }}
+                      onChange={onToggleSelectAll}
+                      aria-label="Select all allotments"
+                      className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                    />
+                  </th>
                   {renderSortableHeader('ref_id', 'Ref ID', 'w-[130px] px-4 py-3.5')}
                   {renderSortableHeader('unit_number', 'Unit & Property', 'px-4 py-3.5')}
                   <th className="w-[140px] px-4 py-3.5">Sale Mode</th>
@@ -200,6 +223,8 @@ export function PortalAllotmentsActiveView({
                     onOpenLedger={onOpenLedger}
                     onEdit={onEdit}
                     onDelete={onDelete}
+                    isSelected={selectedIds?.has(allotment.id)}
+                    onToggleSelect={onToggleSelectRow}
                   >
                     <PortalAllotmentScheduleDrawer
                       isExpanded={expandedAllotment === allotment.id}
@@ -234,6 +259,8 @@ export function PortalAllotmentsActiveView({
               onOpenLedger={onOpenLedger}
               onEdit={onEdit}
               onDelete={onDelete}
+              isSelected={selectedIds?.has(allotment.id)}
+              onToggleSelect={onToggleSelectRow}
             >
               <PortalAllotmentScheduleDrawer
                 isExpanded={expandedAllotment === allotment.id}

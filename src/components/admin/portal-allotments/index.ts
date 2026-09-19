@@ -11,3 +11,5 @@ export * from './PortalAllotmentsPendingView';
 export * from './PortalAllotmentsActiveView';
 export * from './PortalAllotmentsModalsContainer';
 export * from './PortalAllotmentsFilterBar';
+export * from './PortalAllotmentsFloatingDock';
+export * from './BulkWhatsAppReminderModal';
