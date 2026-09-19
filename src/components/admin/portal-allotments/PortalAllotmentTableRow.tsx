@@ -122,22 +122,6 @@ export function PortalAllotmentTableRow({
                     {ticketId}
                   </span>
                 )}
-                {allotmentMode === 'Direct Sell' && (
-                  <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-1.5 py-0.5 font-sans text-[10px] font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/40 dark:text-indigo-300">
-                    <Target className="h-2.5 w-2.5 text-indigo-600 dark:text-indigo-400" />
-                    Direct Sell {allotmentDate ? `• ${allotmentDate}` : ''}
-                  </span>
-                )}
-                {allotmentMode === 'Draw' && (
-                  <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-sans text-[10px] font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                    <Shuffle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" /> Draw{' '}
-                    {drawDate && drawDate !== 'Direct sell'
-                      ? `• ${drawDate}`
-                      : allotmentDate
-                        ? `• ${allotmentDate}`
-                        : ''}
-                  </span>
-                )}
               </div>
               <div className="text-xs font-semibold text-gray-900 dark:text-white">
                 {allotment.properties?.name || 'Assigned Property'}
@@ -145,6 +129,34 @@ export function PortalAllotmentTableRow({
               {area !== null && area !== undefined && area !== '' && (
                 <div className="text-[11px] text-gray-500 dark:text-gray-400">{area} Sq. Yds.</div>
               )}
+            </div>
+          </td>
+
+          {/* 2. Sale Mode (Direct Sell / Draw) */}
+          <td className="w-[140px] px-4 py-3.5 align-top whitespace-nowrap">
+            <div className="flex flex-col items-start gap-1">
+              {allotmentMode === 'Direct Sell' ? (
+                <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 font-sans text-[10.5px] font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/40 dark:text-indigo-300">
+                  <Target className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                  Direct Sell
+                </span>
+              ) : allotmentMode === 'Draw' ? (
+                <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-sans text-[10.5px] font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
+                  <Shuffle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                  Draw
+                </span>
+              ) : (
+                <span className="text-xs text-gray-400">—</span>
+              )}
+              {drawDate && drawDate !== 'Direct sell' ? (
+                <span className="font-mono text-[10.5px] text-gray-500 dark:text-gray-400">
+                  {drawDate}
+                </span>
+              ) : allotmentDate ? (
+                <span className="font-mono text-[10.5px] text-gray-500 dark:text-gray-400">
+                  {allotmentDate}
+                </span>
+              ) : null}
             </div>
           </td>
 
@@ -307,7 +319,7 @@ export function PortalAllotmentTableRow({
 
         {isExpanded && children && (
           <tr className="border-b border-gray-100 bg-slate-50/60 dark:border-white/5 dark:bg-black/20">
-            <td colSpan={7} className="px-4 py-4">
+            <td colSpan={8} className="px-4 py-4">
               {children}
             </td>
           </tr>
