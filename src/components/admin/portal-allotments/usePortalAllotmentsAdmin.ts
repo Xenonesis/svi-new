@@ -560,14 +560,20 @@ export function usePortalAllotmentsAdmin() {
       const pEmail = a.profiles?.email?.toLowerCase() || '';
       const propName = a.properties?.name?.toLowerCase() || '';
       const unit = (a.unit_no || a.unit_number || '').toLowerCase();
-      const ticket = String(a.metadata?.ticket_id || a.metadata?.ticketId || '').toLowerCase();
+      const rawTicket = String(
+        a.metadata?.ticket_id || a.metadata?.ticketId || a.metadata?.refId || ''
+      ).toLowerCase();
+      const hasValidTicket =
+        rawTicket && !rawTicket.startsWith('plot ') && !/^svi-[0-9a-f]{4}/.test(rawTicket);
+      const isMissingMatch = !hasValidTicket && 'missing'.includes(term);
       const advisor = String(a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
       return (
+        isMissingMatch ||
         pName.includes(term) ||
         pEmail.includes(term) ||
         propName.includes(term) ||
         unit.includes(term) ||
-        ticket.includes(term) ||
+        rawTicket.includes(term) ||
         advisor.includes(term)
       );
     });
@@ -732,7 +738,9 @@ export function usePortalAllotmentsAdmin() {
       setActiveLedgerRefId(target);
     } else {
       const ref =
-        target.metadata?.ticket_id || target.metadata?.ticketId || `SVI-${target.id.slice(0, 4)}`;
+        target.metadata?.ticket_id ||
+        target.metadata?.ticketId ||
+        (target.unit_no ? `Plot ${target.unit_no}` : `SVI-${target.id.slice(0, 4)}`);
       setActiveLedgerRefId(ref);
     }
   }, []);
@@ -746,7 +754,11 @@ export function usePortalAllotmentsAdmin() {
       }
       const matching = allotments.find((a) => {
         const aRef = a.metadata?.ticket_id || a.metadata?.ticketId || a.id;
-        return normalizeRefId(aRef) === norm;
+        return (
+          normalizeRefId(aRef) === norm ||
+          (a.unit_no && normalizeRefId(`Plot ${a.unit_no}`) === norm) ||
+          (a.unit_no && normalizeRefId(a.unit_no) === norm)
+        );
       });
       return Number(matching?.metadata?.total_cost ?? matching?.total_cost) || 0;
     },
@@ -759,7 +771,11 @@ export function usePortalAllotmentsAdmin() {
       const norm = normalizeRefId(refId);
       const matching = allotments.find((a) => {
         const aRef = a.metadata?.ticket_id || a.metadata?.ticketId || a.id;
-        return normalizeRefId(aRef) === norm;
+        return (
+          normalizeRefId(aRef) === norm ||
+          (a.unit_no && normalizeRefId(`Plot ${a.unit_no}`) === norm) ||
+          (a.unit_no && normalizeRefId(a.unit_no) === norm)
+        );
       });
       return matching?.metadata?.area;
     },

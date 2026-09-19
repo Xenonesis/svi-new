@@ -303,6 +303,22 @@ export async function GET(request: NextRequest) {
         drawDate: '2025-11-26',
         allotmentDate: '2025-11-26',
       },
+      plot6: {
+        phone: '',
+        email: '',
+        address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
+      },
+      '6': {
+        phone: '',
+        email: '',
+        address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+        allotmentMode: 'Draw',
+        drawDate: '2025-11-26',
+        allotmentDate: '2025-11-26',
+      },
       pl2126: {
         phone: '9506394111',
         email: '',

@@ -160,10 +160,19 @@ export function StatementPdfTemplate({
               fontSize: '13px',
               fontFamily: 'monospace',
               fontWeight: 800,
-              color: '#0F2942',
+              color:
+                ledger.displayRefId &&
+                !ledger.displayRefId.toLowerCase().startsWith('plot ') &&
+                !/^svi-[0-9a-f]{4}/i.test(ledger.displayRefId)
+                  ? '#0F2942'
+                  : '#DC2626',
             }}
           >
-            {ledger.displayRefId}
+            {ledger.displayRefId &&
+            !ledger.displayRefId.toLowerCase().startsWith('plot ') &&
+            !/^svi-[0-9a-f]{4}/i.test(ledger.displayRefId)
+              ? ledger.displayRefId
+              : 'Missing'}
           </div>
           {allotmentMode && (
             <div

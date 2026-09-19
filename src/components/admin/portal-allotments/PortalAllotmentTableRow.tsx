@@ -18,6 +18,7 @@ import {
   MapPin,
   Target,
   Shuffle,
+  AlertCircle,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, AllotmentFinancials } from './types';
@@ -57,11 +58,17 @@ export function PortalAllotmentTableRow({
   const totalCost = Number(allotment.metadata?.total_cost ?? allotment.total_cost);
   const area = allotment.metadata?.area ?? allotment.area;
   const bookingDate = (allotment.metadata?.booking_date as string) || allotment.booking_date;
-  const ticketId =
+  const rawTicketId =
     (allotment.metadata?.ticket_id as string) ||
     (allotment.metadata?.ticketId as string) ||
     (allotment.metadata?.refId as string) ||
     (allotment.metadata?.ref_id as string);
+  const ticketId =
+    rawTicketId &&
+    !rawTicketId.toLowerCase().startsWith('plot ') &&
+    !/^svi-[0-9a-f]{4}/i.test(rawTicketId)
+      ? rawTicketId
+      : null;
   const advisorName =
     allotment.advisor_name ||
     (allotment.metadata?.advisor_name as string) ||
@@ -116,10 +123,15 @@ export function PortalAllotmentTableRow({
                 <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-bold">
                   Unit {unitNumber}
                 </span>
-                {ticketId && (
+                {ticketId ? (
                   <span className="inline-flex items-center gap-0.5 rounded bg-[#0f2942] px-1.5 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-gray-900">
                     <Tag className="text-brand-gold h-2.5 w-2.5" />
                     {ticketId}
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
+                    <AlertCircle className="h-2.5 w-2.5 text-rose-500" />
+                    Ref: Missing
                   </span>
                 )}
               </div>
@@ -342,10 +354,15 @@ export function PortalAllotmentTableRow({
               <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2.5 py-0.5 font-mono text-xs font-bold">
                 Unit {unitNumber}
               </span>
-              {ticketId && (
+              {ticketId ? (
                 <span className="inline-flex items-center gap-1 rounded bg-[#0f2942] px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs dark:bg-gray-900">
                   <Tag className="text-brand-gold h-2.5 w-2.5" />
                   {ticketId}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
+                  <AlertCircle className="h-3 w-3 text-rose-500" />
+                  Ref ID: Missing
                 </span>
               )}
               {allotmentMode === 'Direct Sell' && (

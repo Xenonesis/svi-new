@@ -22,6 +22,7 @@ import {
   Target,
   Calendar,
   Shuffle,
+  AlertCircle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SavedReceipt } from './ReceiptTypes';
@@ -133,6 +134,22 @@ const CLIENT_CONTACT_MAP: Record<
     allotmentDate: '2025-11-26',
   },
   pl2006: {
+    phone: '',
+    email: '',
+    address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
+  },
+  plot6: {
+    phone: '',
+    email: '',
+    address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+    allotmentMode: 'Draw',
+    drawDate: '26.11.25',
+    allotmentDate: '2025-11-26',
+  },
+  '6': {
     phone: '',
     email: '',
     address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
@@ -571,9 +588,18 @@ export function ReceiptLedgerDrawer({
                 </div>
                 <div>
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="rounded-md border border-sky-500/20 bg-sky-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
-                      Ref ID: {ledger.displayRefId}
-                    </span>
+                    {ledger.displayRefId &&
+                    !ledger.displayRefId.toLowerCase().startsWith('plot ') &&
+                    !/^svi-[0-9a-f]{4}/i.test(ledger.displayRefId) ? (
+                      <span className="rounded-md border border-sky-500/20 bg-sky-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-sky-600 dark:text-sky-400">
+                        Ref ID: {ledger.displayRefId}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 rounded-md border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 font-mono text-xs font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
+                        <AlertCircle className="h-3 w-3 text-rose-500" />
+                        Ref ID: Missing
+                      </span>
+                    )}
                     {displayAllotmentMode === 'Direct Sell' ? (
                       <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-0.5 font-sans text-xs font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/50 dark:text-indigo-300">
                         <Target className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
