@@ -1,8 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { usePortalAllotmentsAdmin } from '@/src/components/admin/portal-allotments/usePortalAllotmentsAdmin';
+import type { AllotmentRecord } from '@/src/components/admin/portal-allotments/types';
 
-const mockAllotments = [
+const mockAllotments: AllotmentRecord[] = [
   {
     id: 'allot-1',
     profile_id: 'prof-1',
@@ -47,6 +48,8 @@ const mockProperties = [
   { id: 'prop-2', name: 'Shyam Farm' },
 ];
 
+let currentAllotments: AllotmentRecord[] = mockAllotments;
+
 const mockDeleteEq = vi.fn().mockResolvedValue({ error: null });
 const mockUpdateEq = vi.fn().mockResolvedValue({ error: null });
 const mockInsert = vi.fn().mockResolvedValue({ error: null });
@@ -57,7 +60,9 @@ vi.mock('@/src/lib/supabase/client', () => ({
       if (table === 'allotments') {
         return {
           select: vi.fn(() => ({
-            order: vi.fn().mockResolvedValue({ data: mockAllotments, error: null }),
+            order: vi
+              .fn()
+              .mockImplementation(() => Promise.resolve({ data: currentAllotments, error: null })),
           })),
           insert: mockInsert,
           update: vi.fn(() => ({
@@ -117,6 +122,7 @@ vi.mock('sonner', () => ({
 describe('usePortalAllotmentsAdmin', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    currentAllotments = mockAllotments;
   });
 
   it('fetches allotments, profiles, and properties on mount', async () => {
@@ -256,5 +262,242 @@ describe('usePortalAllotmentsAdmin', () => {
       await result.current.handleSaveDealValue('ALLOT1', 6500000);
     });
     expect(result.current.dealValuesMap['ALLOT1']).toBe(6500000);
+  });
+
+  it('filters allotments by property', async () => {
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      result.current.setSelectedProperty('prop-1');
+    });
+    expect(result.current.filteredAllotments.length).toBe(1);
+    expect(result.current.filteredAllotments[0].property_id).toBe('prop-1');
+
+    act(() => {
+      result.current.setSelectedProperty('prop-2');
+    });
+    expect(result.current.filteredAllotments.length).toBe(1);
+    expect(result.current.filteredAllotments[0].property_id).toBe('prop-2');
+
+    act(() => {
+      result.current.setSelectedProperty('all');
+    });
+    expect(result.current.filteredAllotments.length).toBe(2);
+  });
+
+  it('filters allotments by sale mode (Direct Sell vs Draw)', async () => {
+    currentAllotments = [
+      {
+        ...mockAllotments[0],
+        metadata: { allotment_mode: 'Direct Sell' },
+      },
+      {
+        ...mockAllotments[1],
+        metadata: { allotment_mode: 'Draw' },
+      },
+    ];
+
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      result.current.setSelectedSaleMode('Direct Sell');
+    });
+    expect(result.current.filteredAllotments.length).toBe(1);
+    expect(result.current.filteredAllotments[0].id).toBe('allot-1');
+
+    act(() => {
+      result.current.setSelectedSaleMode('Draw');
+    });
+    expect(result.current.filteredAllotments.length).toBe(1);
+    expect(result.current.filteredAllotments[0].id).toBe('allot-2');
+
+    act(() => {
+      result.current.setSelectedSaleMode('all');
+    });
+    expect(result.current.filteredAllotments.length).toBe(2);
+  });
+
+  it('filters allotments by payment status (fully_paid, partially_paid, overdue, unpaid)', async () => {
+    currentAllotments = [
+      {
+        ...mockAllotments[0],
+        id: 'allot-fully-paid',
+        total_cost: 5000000,
+        payment_schedules: [
+          {
+            id: 'pay-f1',
+            milestone_name: 'Full',
+            due_date: '2026-01-01',
+            amount: 5000000,
+            status: 'paid',
+          },
+        ],
+      },
+      {
+        ...mockAllotments[0],
+        id: 'allot-partially-paid',
+        total_cost: 6000000,
+        payment_schedules: [
+          {
+            id: 'pay-p1',
+            milestone_name: 'Token',
+            due_date: '2026-01-01',
+            amount: 3000000,
+            status: 'paid',
+          },
+          {
+            id: 'pay-p2',
+            milestone_name: 'Balance',
+            due_date: '2027-01-01',
+            amount: 3000000,
+            status: 'pending',
+          },
+        ],
+      },
+      {
+        ...mockAllotments[0],
+        id: 'allot-overdue',
+        total_cost: 4000000,
+        payment_schedules: [
+          {
+            id: 'pay-o1',
+            milestone_name: 'Overdue Installment',
+            due_date: '2020-01-01',
+            amount: 1000000,
+            status: 'pending',
+          },
+        ],
+      },
+      {
+        ...mockAllotments[0],
+        id: 'allot-unpaid',
+        total_cost: 7000000,
+        payment_schedules: [],
+      },
+    ];
+
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      result.current.setSelectedPaymentStatus('fully_paid');
+    });
+    expect(result.current.filteredAllotments.map((a) => a.id)).toEqual(['allot-fully-paid']);
+
+    act(() => {
+      result.current.setSelectedPaymentStatus('partially_paid');
+    });
+    expect(result.current.filteredAllotments.map((a) => a.id)).toEqual(['allot-partially-paid']);
+
+    act(() => {
+      result.current.setSelectedPaymentStatus('overdue');
+    });
+    expect(result.current.filteredAllotments.map((a) => a.id)).toEqual(['allot-overdue']);
+
+    act(() => {
+      result.current.setSelectedPaymentStatus('unpaid');
+    });
+    expect(result.current.filteredAllotments.map((a) => a.id)).toEqual([
+      'allot-overdue',
+      'allot-unpaid',
+    ]);
+
+    act(() => {
+      result.current.setSelectedPaymentStatus('all');
+    });
+    expect(result.current.filteredAllotments.length).toBe(4);
+  });
+
+  it('sorts allotments by deal_value (descending and ascending)', async () => {
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    // Default sort is booking_date desc
+    expect(result.current.sortField).toBe('booking_date');
+    expect(result.current.sortDirection).toBe('desc');
+
+    // Click deal_value -> sets deal_value desc (allot-2: 8500000, allot-1: 6000000)
+    act(() => {
+      result.current.handleSort('deal_value');
+    });
+    expect(result.current.sortField).toBe('deal_value');
+    expect(result.current.sortDirection).toBe('desc');
+    expect(result.current.filteredAllotments[0].id).toBe('allot-2');
+    expect(result.current.filteredAllotments[1].id).toBe('allot-1');
+
+    // Click deal_value again -> toggles to asc (allot-1: 6000000, allot-2: 8500000)
+    act(() => {
+      result.current.handleSort('deal_value');
+    });
+    expect(result.current.sortDirection).toBe('asc');
+    expect(result.current.filteredAllotments[0].id).toBe('allot-1');
+    expect(result.current.filteredAllotments[1].id).toBe('allot-2');
+  });
+
+  it('defaults unit_number and ref_id to asc when clicked as new sort field', async () => {
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    act(() => {
+      result.current.handleSort('unit_number');
+    });
+    expect(result.current.sortField).toBe('unit_number');
+    expect(result.current.sortDirection).toBe('asc');
+
+    act(() => {
+      result.current.handleSort('ref_id');
+    });
+    expect(result.current.sortField).toBe('ref_id');
+    expect(result.current.sortDirection).toBe('asc');
+  });
+
+  it('resets filters and clears active count', async () => {
+    const { result } = renderHook(() => usePortalAllotmentsAdmin());
+
+    await act(async () => {
+      await Promise.resolve();
+    });
+
+    expect(result.current.activeFilterCount).toBe(0);
+
+    act(() => {
+      result.current.setSelectedProperty('prop-1');
+    });
+    expect(result.current.activeFilterCount).toBe(1);
+
+    act(() => {
+      result.current.setSelectedPaymentStatus('overdue');
+      result.current.setSelectedSaleMode('Direct Sell');
+      result.current.setSelectedAdvisor('Advisor A');
+      result.current.setSearchTerm('Rahul');
+    });
+    expect(result.current.activeFilterCount).toBe(5);
+
+    act(() => {
+      result.current.resetFilters();
+    });
+    expect(result.current.selectedProperty).toBe('all');
+    expect(result.current.selectedPaymentStatus).toBe('all');
+    expect(result.current.selectedSaleMode).toBe('all');
+    expect(result.current.selectedAdvisor).toBe('all');
+    expect(result.current.searchTerm).toBe('');
+    expect(result.current.activeFilterCount).toBe(0);
   });
 });

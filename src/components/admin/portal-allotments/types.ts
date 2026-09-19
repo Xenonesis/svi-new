@@ -100,6 +100,8 @@ export interface AllotmentFinancials {
   totalPaid: number;
   balanceDue: number;
   percentCompleted: number;
+  collectionPercentage?: number;
+  totalCost?: number;
 }
 
 export interface SalesRevenueSummary {
@@ -111,3 +113,9 @@ export interface SalesRevenueSummary {
   pendingPipelineRevenue: number;
   pendingCandidatesCount: number;
 }
+
+export type PaymentStatusFilter = 'all' | 'fully_paid' | 'partially_paid' | 'overdue' | 'unpaid';
+export type SaleModeFilter = 'all' | 'Direct Sell' | 'Draw';
+export type SortField =
+  'booking_date' | 'deal_value' | 'balance_due' | 'unit_number' | 'collection_pct' | 'ref_id';
+export type SortDirection = 'asc' | 'desc';

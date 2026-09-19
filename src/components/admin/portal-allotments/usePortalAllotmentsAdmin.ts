@@ -12,6 +12,10 @@ import type {
   AllotmentCandidate,
   AllotmentFinancials,
   SalesRevenueSummary,
+  PaymentStatusFilter,
+  SaleModeFilter,
+  SortField,
+  SortDirection,
 } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
 import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
@@ -55,14 +59,39 @@ export function getAllotmentFinancials(
   const balanceDue = dealValue > 0 ? Math.max(0, dealValue - totalPaid) : 0;
   const percentCompleted = dealValue > 0 ? Math.min(100, (totalPaid / dealValue) * 100) : 0;
 
+  const roundedPct = Math.round(percentCompleted * 100) / 100;
   return {
     ticketId: ticket,
     normalizedTicketId: normTicket,
     dealValue,
     totalPaid,
     balanceDue,
-    percentCompleted: Math.round(percentCompleted * 100) / 100,
+    percentCompleted: roundedPct,
+    collectionPercentage: roundedPct,
+    totalCost: dealValue,
   };
+}
+
+export function getAllotmentMode(allotment: AllotmentRecord): string {
+  const mode =
+    (allotment.metadata?.allotment_mode as string) ||
+    (allotment.metadata?.allotmentMode as string) ||
+    (allotment.metadata?.sale_type as string) ||
+    (allotment.metadata?.booking_type as string) ||
+    (allotment.metadata?.source as string) ||
+    '';
+  if (mode) {
+    if (mode.toLowerCase().includes('direct')) return 'Direct Sell';
+    if (mode.toLowerCase().includes('draw')) return 'Draw';
+    return mode;
+  }
+  const drawDate =
+    (allotment.metadata?.draw_date as string) || (allotment.metadata?.drawDate as string) || '';
+  if (drawDate) {
+    if (drawDate.toLowerCase().includes('direct')) return 'Direct Sell';
+    return 'Draw';
+  }
+  return '';
 }
 
 export function usePortalAllotmentsAdmin() {
@@ -74,6 +103,44 @@ export function usePortalAllotmentsAdmin() {
   const [loading, setLoading] = useState(true);
   const [loadingCandidates, setLoadingCandidates] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+
+  // Multi-filter and sorting state
+  const [selectedProperty, setSelectedProperty] = useState<string>('all');
+  const [selectedPaymentStatus, setSelectedPaymentStatus] = useState<PaymentStatusFilter>('all');
+  const [selectedSaleMode, setSelectedSaleMode] = useState<SaleModeFilter>('all');
+  const [selectedAdvisor, setSelectedAdvisor] = useState<string>('all');
+  const [sortField, setSortField] = useState<SortField>('booking_date');
+  const [sortDirection, setSortDirection] = useState<SortDirection>('desc');
+
+  const handleSort = useCallback(
+    (field: SortField) => {
+      if (sortField === field) {
+        setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'));
+      } else {
+        setSortField(field);
+        setSortDirection(field === 'unit_number' || field === 'ref_id' ? 'asc' : 'desc');
+      }
+    },
+    [sortField]
+  );
+
+  const resetFilters = useCallback(() => {
+    setSelectedProperty('all');
+    setSelectedPaymentStatus('all');
+    setSelectedSaleMode('all');
+    setSelectedAdvisor('all');
+    setSearchTerm('');
+  }, []);
+
+  const activeFilterCount = useMemo(() => {
+    let count = 0;
+    if (selectedProperty !== 'all') count++;
+    if (selectedPaymentStatus !== 'all') count++;
+    if (selectedSaleMode !== 'all') count++;
+    if (selectedAdvisor !== 'all') count++;
+    if (searchTerm.trim() !== '') count++;
+    return count;
+  }, [selectedProperty, selectedPaymentStatus, selectedSaleMode, selectedAdvisor, searchTerm]);
 
   // Customer Ledger Modal & Drawer state
   const [isLedgersModalOpen, setIsLedgersModalOpen] = useState(false);
@@ -553,31 +620,174 @@ export function usePortalAllotmentsAdmin() {
 
   // Filtered active allotments
   const filteredAllotments = useMemo(() => {
+    // 1. Search term filter
     const term = searchTerm.toLowerCase().trim();
-    if (!term) return allotments;
-    return allotments.filter((a) => {
-      const pName = a.profiles?.full_name?.toLowerCase() || '';
-      const pEmail = a.profiles?.email?.toLowerCase() || '';
-      const propName = a.properties?.name?.toLowerCase() || '';
-      const unit = (a.unit_no || a.unit_number || '').toLowerCase();
-      const rawTicket = String(
-        a.metadata?.ticket_id || a.metadata?.ticketId || a.metadata?.refId || ''
-      ).toLowerCase();
-      const hasValidTicket =
-        rawTicket && !rawTicket.startsWith('plot ') && !/^svi-[0-9a-f]{4}/.test(rawTicket);
-      const isMissingMatch = !hasValidTicket && 'missing'.includes(term);
-      const advisor = String(a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
-      return (
-        isMissingMatch ||
-        pName.includes(term) ||
-        pEmail.includes(term) ||
-        propName.includes(term) ||
-        unit.includes(term) ||
-        rawTicket.includes(term) ||
-        advisor.includes(term)
+    let result = allotments;
+    if (term) {
+      result = result.filter((a) => {
+        const pName = a.profiles?.full_name?.toLowerCase() || '';
+        const pEmail = a.profiles?.email?.toLowerCase() || '';
+        const propName = a.properties?.name?.toLowerCase() || '';
+        const unit = (a.unit_no || a.unit_number || '').toLowerCase();
+        const rawTicket = String(
+          a.metadata?.ticket_id || a.metadata?.ticketId || a.metadata?.refId || ''
+        ).toLowerCase();
+        const hasValidTicket =
+          rawTicket && !rawTicket.startsWith('plot ') && !/^svi-[0-9a-f]{4}/.test(rawTicket);
+        const isMissingMatch = !hasValidTicket && 'missing'.includes(term);
+        const advisor = String(a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
+        return (
+          isMissingMatch ||
+          pName.includes(term) ||
+          pEmail.includes(term) ||
+          propName.includes(term) ||
+          unit.includes(term) ||
+          rawTicket.includes(term) ||
+          advisor.includes(term)
+        );
+      });
+    }
+
+    // 2. Property filter
+    if (selectedProperty !== 'all') {
+      result = result.filter(
+        (a) => a.property_id === selectedProperty || a.properties?.id === selectedProperty
       );
+    }
+
+    // 3. Sale mode filter
+    if (selectedSaleMode !== 'all') {
+      result = result.filter((a) => getAllotmentMode(a) === selectedSaleMode);
+    }
+
+    // 4. Advisor filter
+    if (selectedAdvisor !== 'all') {
+      result = result.filter((a) => {
+        const advName =
+          a.advisor_name ||
+          (a.metadata?.advisor_name as string) ||
+          (a.metadata?.agent_name as string) ||
+          '';
+        return advName === selectedAdvisor;
+      });
+    }
+
+    // 5. Payment status filter
+    if (selectedPaymentStatus !== 'all') {
+      result = result.filter((a) => {
+        const fin = getAllotmentFinancials(a, dealValuesMap);
+        const pct = fin.collectionPercentage ?? fin.percentCompleted;
+
+        if (selectedPaymentStatus === 'fully_paid') {
+          return (fin.balanceDue <= 0 && (fin.dealValue > 0 || fin.totalPaid > 0)) || pct >= 100;
+        }
+        if (selectedPaymentStatus === 'partially_paid') {
+          return pct > 0 && pct < 100 && fin.balanceDue > 0;
+        }
+        if (selectedPaymentStatus === 'unpaid') {
+          return fin.totalPaid === 0;
+        }
+        if (selectedPaymentStatus === 'overdue') {
+          return (a.payment_schedules || []).some((p) => {
+            const isPaid = (p.status || '').toLowerCase() === 'paid';
+            if (isPaid) return false;
+            if (!p.due_date) return false;
+            const dueDate = new Date(p.due_date);
+            return !isNaN(dueDate.getTime()) && dueDate.getTime() < Date.now();
+          });
+        }
+        return true;
+      });
+    }
+
+    // 6. Sorting
+    return [...result].sort((a, b) => {
+      const multiplier = sortDirection === 'asc' ? 1 : -1;
+
+      if (sortField === 'deal_value') {
+        const finA = getAllotmentFinancials(a, dealValuesMap);
+        const finB = getAllotmentFinancials(b, dealValuesMap);
+        const valA =
+          finA.totalCost ?? finA.dealValue ?? (Number(a.metadata?.total_cost ?? a.total_cost) || 0);
+        const valB =
+          finB.totalCost ?? finB.dealValue ?? (Number(b.metadata?.total_cost ?? b.total_cost) || 0);
+        return multiplier * (valA - valB);
+      }
+
+      if (sortField === 'balance_due') {
+        const finA = getAllotmentFinancials(a, dealValuesMap);
+        const finB = getAllotmentFinancials(b, dealValuesMap);
+        return multiplier * (finA.balanceDue - finB.balanceDue);
+      }
+
+      if (sortField === 'collection_pct') {
+        const finA = getAllotmentFinancials(a, dealValuesMap);
+        const finB = getAllotmentFinancials(b, dealValuesMap);
+        const pctA = finA.collectionPercentage ?? finA.percentCompleted ?? 0;
+        const pctB = finB.collectionPercentage ?? finB.percentCompleted ?? 0;
+        return multiplier * (pctA - pctB);
+      }
+
+      if (sortField === 'booking_date') {
+        const rawDateA =
+          a.booking_date ||
+          a.allotted_date ||
+          a.created_at ||
+          (a.metadata?.booking_date as string) ||
+          (a.metadata?.allotment_date as string) ||
+          '';
+        const rawDateB =
+          b.booking_date ||
+          b.allotted_date ||
+          b.created_at ||
+          (b.metadata?.booking_date as string) ||
+          (b.metadata?.allotment_date as string) ||
+          '';
+        const timeA = rawDateA ? new Date(rawDateA).getTime() : 0;
+        const timeB = rawDateB ? new Date(rawDateB).getTime() : 0;
+        return multiplier * (timeA - timeB);
+      }
+
+      if (sortField === 'unit_number') {
+        const unitA = (a.unit_no || a.unit_number || (a.metadata?.unit_no as string) || '').trim();
+        const unitB = (b.unit_no || b.unit_number || (b.metadata?.unit_no as string) || '').trim();
+        return (
+          multiplier * unitA.localeCompare(unitB, undefined, { numeric: true, sensitivity: 'base' })
+        );
+      }
+
+      if (sortField === 'ref_id') {
+        const ticketA = (
+          a.metadata?.ticket_id ||
+          a.metadata?.ticketId ||
+          a.metadata?.refId ||
+          `SVI-${a.id.slice(0, 4)}`
+        ).toString();
+        const ticketB = (
+          b.metadata?.ticket_id ||
+          b.metadata?.ticketId ||
+          b.metadata?.refId ||
+          `SVI-${b.id.slice(0, 4)}`
+        ).toString();
+        return (
+          multiplier *
+          ticketA.localeCompare(ticketB, undefined, { numeric: true, sensitivity: 'base' })
+        );
+      }
+
+      return 0;
     });
-  }, [allotments, searchTerm]);
+  }, [
+    allotments,
+    searchTerm,
+    selectedProperty,
+    selectedSaleMode,
+    selectedAdvisor,
+    selectedPaymentStatus,
+    sortField,
+    sortDirection,
+    dealValuesMap,
+  ]);
 
   // Filtered pending candidates
   const filteredCandidates = useMemo(() => {
@@ -917,5 +1127,21 @@ export function usePortalAllotmentsAdmin() {
     salesRevenueStats,
     getAllotmentFinancials: (allotment: AllotmentRecord) =>
       getAllotmentFinancials(allotment, dealValuesMap),
+    // Multi-filter and sorting
+    selectedProperty,
+    setSelectedProperty,
+    selectedPaymentStatus,
+    setSelectedPaymentStatus,
+    selectedSaleMode,
+    setSelectedSaleMode,
+    selectedAdvisor,
+    setSelectedAdvisor,
+    sortField,
+    setSortField,
+    sortDirection,
+    setSortDirection,
+    handleSort,
+    resetFilters,
+    activeFilterCount,
   };
 }
