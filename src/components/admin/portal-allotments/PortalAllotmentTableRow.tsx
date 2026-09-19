@@ -13,6 +13,9 @@ import {
   Wallet,
   Clock,
   UserCheck,
+  Phone,
+  Mail,
+  MapPin,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, AllotmentFinancials } from './types';
@@ -40,15 +43,32 @@ export function PortalAllotmentTableRow({
 }: PortalAllotmentTableRowProps) {
   const t = useTranslations('pages.adminPortalAllotments');
 
-  const ticketId = allotment.metadata?.ticket_id || allotment.metadata?.ticketId;
-  const unitNumber = allotment.unit_no || allotment.unit_number || '—';
-  const area = allotment.metadata?.area ?? allotment.area;
-  const totalCost = Number(allotment.metadata?.total_cost ?? allotment.total_cost);
-  const bookingDate = allotment.allotted_date || allotment.booking_date;
+  const unitNumber =
+    allotment.unit_no ||
+    (allotment.metadata?.unit_no as string) ||
+    (allotment.metadata?.unitNumber as string) ||
+    '—';
+
+  const totalCost = Number(allotment.metadata?.total_cost);
+  const area = allotment.metadata?.area;
+  const bookingDate = allotment.metadata?.booking_date as string;
+  const ticketId =
+    (allotment.metadata?.ticket_id as string) ||
+    (allotment.metadata?.ticketId as string) ||
+    (allotment.metadata?.refId as string) ||
+    (allotment.metadata?.ref_id as string);
   const advisorName =
-    allotment.advisor_name ||
-    (allotment.metadata?.advisor_name as string) ||
-    (allotment.metadata?.advisorName as string);
+    (allotment.metadata?.advisor_name as string) || (allotment.metadata?.advisorName as string);
+
+  const clientPhone =
+    (allotment.metadata?.client_phone as string) || allotment.profiles?.phone || '';
+  const clientEmail =
+    (allotment.metadata?.client_email as string) ||
+    allotment.profiles?.real_email ||
+    allotment.profiles?.email ||
+    '';
+  const clientAddress =
+    (allotment.metadata?.client_address as string) || (allotment.metadata?.address as string) || '';
 
   const dealValue = financials?.dealValue ?? (isNaN(totalCost) ? 0 : totalCost);
   const totalPaid = financials?.totalPaid ?? 0;
@@ -146,6 +166,34 @@ export function PortalAllotmentTableRow({
                   <strong className="text-gray-900 dark:text-gray-300">Status:</strong>{' '}
                   <span className="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
                     Refund Done
+                  </span>
+                </p>
+              )}
+              {clientPhone && (
+                <p className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
+                    <Phone className="h-3 w-3" />
+                    <a href={`tel:${clientPhone}`} className="font-mono hover:underline">
+                      {clientPhone}
+                    </a>
+                  </span>
+                </p>
+              )}
+              {clientEmail && (
+                <p className="flex items-center gap-1.5">
+                  <span className="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
+                    <Mail className="h-3 w-3" />
+                    <a href={`mailto:${clientEmail}`} className="hover:underline">
+                      {clientEmail}
+                    </a>
+                  </span>
+                </p>
+              )}
+              {clientAddress && (
+                <p className="flex max-w-sm items-center gap-1.5 truncate" title={clientAddress}>
+                  <span className="inline-flex items-center gap-1 truncate rounded-md bg-amber-50 px-2 py-0.5 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
+                    <MapPin className="h-3 w-3 shrink-0" />
+                    <span className="truncate">{clientAddress}</span>
                   </span>
                 </p>
               )}

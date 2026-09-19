@@ -8,6 +8,9 @@ interface ExportStatementOptions {
   advisorName?: string;
   area?: number | string | null;
   ratePerSqYd?: number | string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
   filename?: string;
 }
 
@@ -40,6 +43,9 @@ export async function exportStatementExcel({
   advisorName = 'Direct / SVI Official',
   area,
   ratePerSqYd,
+  phone,
+  email,
+  address,
   filename,
 }: ExportStatementOptions): Promise<void> {
   if (!ledger || !ledger.receipts || ledger.receipts.length === 0) {
@@ -103,10 +109,28 @@ export async function exportStatementExcel({
 
     worksheet.getRow(1).height = 24;
     worksheet.getRow(2).height = 20;
-    worksheet.getRow(3).height = 10; // Spacing gap
 
-    // ── 3. Table Column Headers (Row 4) ─────────────────────────────────────
-    const startRow = 4;
+    let startRow = 4;
+    if (phone || email || address) {
+      worksheet.mergeCells('A3:H3');
+      const contactCell = worksheet.getCell('A3');
+      const parts = [
+        phone ? `Phone: ${phone}` : null,
+        email ? `Email: ${email}` : null,
+        address ? `Address: ${address}` : null,
+      ].filter(Boolean);
+      contactCell.value = parts.join('   |   ');
+      contactCell.font = { name: 'Calibri', size: 9.5, italic: true, color: { argb: 'FF475569' } };
+      contactCell.alignment = { vertical: 'middle', horizontal: 'left' };
+      worksheet.getRow(3).height = 18;
+      worksheet.getRow(4).height = 8; // Spacing gap
+      startRow = 5;
+    } else {
+      worksheet.getRow(3).height = 10; // Spacing gap
+      startRow = 4;
+    }
+
+    // ── 3. Table Column Headers ─────────────────────────────────────
     const headerRow = worksheet.getRow(startRow);
     headerRow.height = 26;
 

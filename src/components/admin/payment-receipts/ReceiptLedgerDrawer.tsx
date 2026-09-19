@@ -16,6 +16,9 @@ import {
   FileText,
   UserCheck,
   Loader2,
+  Phone,
+  Mail,
+  MapPin,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SavedReceipt } from './ReceiptTypes';
@@ -23,6 +26,141 @@ import { calculateLedgerStatement, normalizeRefId } from '@/src/lib/receipt/rece
 import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
 import { exportStatementExcel, exportStatementPdf } from '@/src/lib/receipt/statementExporter';
 import { StatementPdfTemplate } from './StatementPdfTemplate';
+
+// Authoritative client contact directory as per SVI Payment Details.xlsx
+const CLIENT_CONTACT_MAP: Record<string, { phone?: string; email?: string; address?: string }> = {
+  pl2075: {
+    phone: '9716154616',
+    email: 'kundanjha2010@gmail.com',
+    address:
+      'House No. Plot 531/A, No.-7717, Ramesh Nagar, Bawana, District: North West Delhi, 110039',
+  },
+  pl2077: {
+    phone: '7838045231',
+    email: 'Shantanujoshi9999@gmail.com',
+    address:
+      'A-803, Garden Estates Apartments, Plot No-5B, Sector-22, Dwarka, Raj Nagar-II, Delhi-110077',
+  },
+  pl2076: {
+    phone: '7838221323',
+    email: 'truemoon.india@gmail.com',
+    address: '7 /50, 3rd Floor, Subhash Nagar, West Delhi-110027.',
+  },
+  pl2050: {
+    phone: '9811686535',
+    email: 'agarwalgoyalmanish@yahoo.com',
+    address: 'A-32, pushpanjali enclave Pitampura',
+  },
+  pl2066: {
+    phone: '9318444582',
+    email: 'varun.arora1515@gmail.com',
+    address: 'Rohtak',
+  },
+  pl2065: {
+    phone: '9318444582',
+    email: 'varun.arora1515@gmail.com',
+    address: 'Rohtak',
+  },
+  pl2080: {
+    phone: '7042046477',
+    email: 'Rohitca871@gmail.com',
+    address: 'KH NO 791 STREET NO 2 ASHOK COLONY KUSHAK NO 2 KADIPUR 110036',
+  },
+  svi002023: {
+    phone: '9810065290',
+    email: 'rkjindal@ksprecision.com',
+    address: '4/20, sector 2 rajendra nagar ghaziabad',
+  },
+  svi2023: {
+    phone: '9810065290',
+    email: 'rkjindal@ksprecision.com',
+    address: '4/20, sector 2 rajendra nagar ghaziabad',
+  },
+  pl2081: {
+    phone: '8882559449',
+    email: 'kapiltanwar18@gmail.com',
+    address: '',
+  },
+  pl2078: {
+    phone: '',
+    email: '',
+    address: 'i -599 Govindpuram Ghaziabad Uttar Pradesh 201013',
+  },
+  pl2006: {
+    phone: '',
+    email: '',
+    address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+  },
+  pl2126: {
+    phone: '9506394111',
+    email: '',
+    address: 'Sector- 10A / 10 Chiranjeev vihar Ghaziabad Uttar Pradesh -201002',
+  },
+  pl2221: {
+    phone: '9953630825',
+    email: 'SMSHARMA1987@GMAIL.COM',
+    address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+  },
+  svi002025: {
+    phone: '9911300308',
+    email: 'kohli.gaurav141@gmail.com',
+    address: 'H/N 141-142, nehru vihar west delhi-110054',
+  },
+  svi2025: {
+    phone: '9911300308',
+    email: 'kohli.gaurav141@gmail.com',
+    address: 'H/N 141-142, nehru vihar west delhi-110054',
+  },
+  svi002106: {
+    phone: '7206075395',
+    email: 'bhagwanshiv1982@gmail.com',
+    address: 'Ahrod(29)Rewari',
+  },
+  svi2106: {
+    phone: '7206075395',
+    email: 'bhagwanshiv1982@gmail.com',
+    address: 'Ahrod(29)Rewari',
+  },
+  pl2181: {
+    phone: '9953630825',
+    email: 'SMSHARMA1987@GMAIL.COM',
+    address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+  },
+  svi002050: {
+    phone: '9958894058',
+    email: '',
+    address:
+      'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+  },
+  svi2050: {
+    phone: '9958894058',
+    email: '',
+    address:
+      'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+  },
+  svi002051: {
+    phone: '9958894058',
+    email: 'client.svi002051@sviinfra.com',
+    address:
+      'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+  },
+  svi2051: {
+    phone: '9958894058',
+    email: 'client.svi002051@sviinfra.com',
+    address:
+      'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+  },
+  svi002134: {
+    phone: '9031439111',
+    email: 'abhilashasahayvarma@gmail.com',
+    address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+  },
+  svi2134: {
+    phone: '9031439111',
+    email: 'abhilashasahayvarma@gmail.com',
+    address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+  },
+};
 
 interface ReceiptLedgerDrawerProps {
   refId: string | null;
@@ -68,6 +206,12 @@ export function ReceiptLedgerDrawer({
   const [areaInput, setAreaInput] = useState('');
   const [savingDealValue, setSavingDealValue] = useState(false);
   const [copiedReceiptNo, setCopiedReceiptNo] = useState<string | null>(null);
+
+  // Client Contact State (Phone, Email, Address)
+  const [clientPhone, setClientPhone] = useState<string>('');
+  const [clientEmail, setClientEmail] = useState<string>('');
+  const [clientAddress, setClientAddress] = useState<string>('');
+  const [copiedContactField, setCopiedContactField] = useState<string | null>(null);
 
   // Advisor and Export Dropdown state
   const [resolvedAdvisorName, setResolvedAdvisorName] = useState<string>(advisorName || '');
@@ -125,6 +269,15 @@ export function ReceiptLedgerDrawer({
           }
           if (data?.dealValue && (!agreedValueInput || agreedValueInput === '0')) {
             setAgreedValueInput(String(data.dealValue));
+          }
+          if (data?.clientPhone) {
+            setClientPhone(data.clientPhone);
+          }
+          if (data?.clientEmail) {
+            setClientEmail(data.clientEmail);
+          }
+          if (data?.clientAddress) {
+            setClientAddress(data.clientAddress);
           }
         })
         .catch(() => {});
@@ -204,6 +357,20 @@ export function ReceiptLedgerDrawer({
     }
   };
 
+  const fallbackContact = CLIENT_CONTACT_MAP[normalizedKey] || {};
+  const displayPhone = clientPhone || fallbackContact.phone || '';
+  const displayEmail = clientEmail || fallbackContact.email || '';
+  const displayAddress = clientAddress || fallbackContact.address || '';
+
+  const handleCopyContact = (text: string, field: string) => {
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedContactField(field);
+      toast.success(`Copied ${field} to clipboard`);
+      setTimeout(() => setCopiedContactField(null), 2000);
+    }
+  };
+
   const handleExportExcel = async () => {
     if (ledger.receipts.length === 0) {
       toast.error('No receipts available to export');
@@ -216,6 +383,9 @@ export function ReceiptLedgerDrawer({
         advisorName: resolvedAdvisorName || 'Direct / SVI Official',
         area: areaInput || initialArea,
         ratePerSqYd: ratePerSqYdInput || ledger.ratePerSqYd,
+        phone: displayPhone,
+        email: displayEmail,
+        address: displayAddress,
       });
     } finally {
       setExportingType(null);
@@ -338,6 +508,131 @@ export function ReceiptLedgerDrawer({
 
             {/* Content Body */}
             <div className="flex-1 space-y-6 overflow-y-auto p-6">
+              {/* Client Contact & Billing Information Card */}
+              <div className="rounded-xl border border-gray-200/80 bg-slate-50/70 p-4 shadow-2xs dark:border-white/10 dark:bg-white/[0.03]">
+                <div className="flex items-center justify-between border-b border-gray-200/60 pb-2.5 dark:border-white/10">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                      Client Contact Details
+                    </span>
+                    <span className="bg-brand-gold/10 text-brand-gold rounded px-1.5 py-0.5 font-mono text-[10px] font-semibold">
+                      Official Records
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-3 grid grid-cols-1 gap-2.5 text-xs sm:grid-cols-2">
+                  {/* Phone */}
+                  <div className="flex items-center justify-between rounded-lg border border-gray-200/60 bg-white p-2.5 shadow-2xs dark:border-white/5 dark:bg-gray-800/60">
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-emerald-50 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400">
+                        <Phone className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[10px] font-medium text-gray-400 uppercase">
+                          Phone Number
+                        </div>
+                        {displayPhone ? (
+                          <a
+                            href={`tel:${displayPhone}`}
+                            className="hover:text-brand-gold block truncate font-mono font-bold text-gray-900 dark:text-white"
+                          >
+                            {displayPhone}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400 italic">Not Available</span>
+                        )}
+                      </div>
+                    </div>
+                    {displayPhone && (
+                      <button
+                        type="button"
+                        onClick={() => handleCopyContact(displayPhone, 'Phone Number')}
+                        className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-white"
+                        title="Copy Phone Number"
+                      >
+                        {copiedContactField === 'Phone Number' ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Email */}
+                  <div className="flex items-center justify-between rounded-lg border border-gray-200/60 bg-white p-2.5 shadow-2xs dark:border-white/5 dark:bg-gray-800/60">
+                    <div className="flex items-center gap-2.5 overflow-hidden">
+                      <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-sky-50 text-sky-600 dark:bg-sky-950/50 dark:text-sky-400">
+                        <Mail className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="text-[10px] font-medium text-gray-400 uppercase">
+                          Email Address
+                        </div>
+                        {displayEmail ? (
+                          <a
+                            href={`mailto:${displayEmail}`}
+                            className="hover:text-brand-gold block truncate text-[11px] font-semibold text-gray-900 dark:text-white"
+                          >
+                            {displayEmail}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400 italic">Not Available</span>
+                        )}
+                      </div>
+                    </div>
+                    {displayEmail && (
+                      <button
+                        type="button"
+                        onClick={() => handleCopyContact(displayEmail, 'Email Address')}
+                        className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-white"
+                        title="Copy Email Address"
+                      >
+                        {copiedContactField === 'Email Address' ? (
+                          <Check className="h-3.5 w-3.5 text-emerald-500" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </div>
+                </div>
+
+                {/* Address */}
+                <div className="mt-2.5 flex items-start justify-between rounded-lg border border-gray-200/60 bg-white p-2.5 text-xs shadow-2xs dark:border-white/5 dark:bg-gray-800/60">
+                  <div className="flex min-w-0 items-start gap-2.5">
+                    <div className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-md bg-amber-50 text-amber-600 dark:bg-amber-950/50 dark:text-amber-400">
+                      <MapPin className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="min-w-0">
+                      <div className="text-[10px] font-medium text-gray-400 uppercase">
+                        Registered Billing / Postal Address
+                      </div>
+                      <div className="mt-0.5 text-[11.5px] leading-relaxed font-medium text-gray-800 dark:text-gray-200">
+                        {displayAddress || (
+                          <span className="text-gray-400 italic">Not Available</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  {displayAddress && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopyContact(displayAddress, 'Address')}
+                      className="ml-2 shrink-0 rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-700 dark:hover:bg-white/10 dark:hover:text-white"
+                      title="Copy Address"
+                    >
+                      {copiedContactField === 'Address' ? (
+                        <Check className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </div>
+              </div>
+
               {/* Refund Notice Banner */}
               {isRefundDone && (
                 <div className="flex items-center gap-3 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3.5 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300">
@@ -714,6 +1009,9 @@ export function ReceiptLedgerDrawer({
               advisorName={resolvedAdvisorName || 'Direct / SVI Official'}
               plotArea={areaInput || initialArea}
               ratePerSqYd={ratePerSqYdInput || ledger.ratePerSqYd}
+              phone={displayPhone}
+              email={displayEmail}
+              address={displayAddress}
             />
           </motion.div>
         </div>

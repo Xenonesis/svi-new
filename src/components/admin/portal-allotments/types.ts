@@ -2,6 +2,8 @@ export interface ProfileSummary {
   id: string;
   full_name: string | null;
   email: string | null;
+  phone?: string | null;
+  real_email?: string | null;
 }
 
 export interface PropertySummary {

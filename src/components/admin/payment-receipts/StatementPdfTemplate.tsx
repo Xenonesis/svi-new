@@ -10,6 +10,9 @@ interface StatementPdfTemplateProps {
   advisorName?: string;
   plotArea?: number | string | null;
   ratePerSqYd?: number | string | null;
+  phone?: string | null;
+  email?: string | null;
+  address?: string | null;
 }
 
 export function StatementPdfTemplate({
@@ -18,6 +21,9 @@ export function StatementPdfTemplate({
   advisorName = 'Direct / SVI Official',
   plotArea,
   ratePerSqYd,
+  phone,
+  email,
+  address,
 }: StatementPdfTemplateProps) {
   const plotSizeNum =
     parseFloat(String(plotArea || ledger.plotSize || '0').replace(/[^\d.]/g, '')) || 0;
@@ -158,6 +164,51 @@ export function StatementPdfTemplate({
           </div>
         </div>
       </div>
+
+      {/* Client Contact & Billing Information Banner */}
+      {(phone || email || address) && (
+        <div
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: '8px',
+            backgroundColor: '#F8FAFC',
+            border: '1px solid #E2E8F0',
+            borderRadius: '6px',
+            padding: '7px 12px',
+            marginBottom: '16px',
+            fontSize: '11px',
+            color: '#334155',
+          }}
+        >
+          <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap' }}>
+            {phone && (
+              <div>
+                <strong style={{ color: '#0F2942' }}>Phone:</strong> {phone}
+              </div>
+            )}
+            {email && (
+              <div>
+                <strong style={{ color: '#0F2942' }}>Email:</strong> {email}
+              </div>
+            )}
+          </div>
+          {address && (
+            <div
+              style={{
+                flex: '1 1 100%',
+                marginTop: '2px',
+                borderTop: '1px dashed #CBD5E1',
+                paddingTop: '4px',
+              }}
+            >
+              <strong style={{ color: '#0F2942' }}>Address:</strong> {address}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Main Statement Table matching Abhilasha's Delhi Office format */}
       <table

@@ -137,10 +137,11 @@ export async function GET(request: NextRequest) {
     // 1. Fetch from allotments table
     const { data: allAllotments } = await supabaseAdmin
       .from('allotments')
-      .select('id, metadata, unit_no');
+      .select('id, user_id, metadata, unit_no');
 
     let matchedMeta: Record<string, unknown> | null = null;
     let unitNo: string | null = null;
+    let matchedUserId: string | null = null;
 
     if (allAllotments && allAllotments.length > 0) {
       const match = allAllotments.find((a) => {
@@ -151,6 +152,7 @@ export async function GET(request: NextRequest) {
       if (match) {
         matchedMeta = (match.metadata as Record<string, unknown>) || {};
         unitNo = match.unit_no || null;
+        matchedUserId = match.user_id || null;
       }
     }
 
@@ -168,6 +170,171 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    // 3. Extract Client Phone, Email, and Address
+    let clientPhone = (matchedMeta?.client_phone as string) || '';
+    let clientEmail = (matchedMeta?.client_email as string) || '';
+    let clientAddress =
+      (matchedMeta?.client_address as string) || (matchedMeta?.address as string) || '';
+
+    if ((!clientPhone || !clientEmail || !clientAddress) && matchedUserId) {
+      const { data: prof } = await supabaseAdmin
+        .from('profiles')
+        .select('phone, real_email, email, notes')
+        .eq('id', matchedUserId)
+        .maybeSingle();
+      if (prof) {
+        if (!clientPhone && prof.phone) clientPhone = prof.phone;
+        if (!clientEmail && (prof.real_email || prof.email))
+          clientEmail = prof.real_email || prof.email;
+        if (!clientAddress && prof.notes) {
+          const matchAddr = prof.notes.match(/Address:\s*(.+)$/i);
+          if (matchAddr) clientAddress = matchAddr[1].trim();
+        }
+      }
+    }
+
+    // Static authoritative directory fallback from SVI Payment Details.xlsx
+    const CONTACT_FALLBACK: Record<string, { phone?: string; email?: string; address?: string }> = {
+      pl2075: {
+        phone: '9716154616',
+        email: 'kundanjha2010@gmail.com',
+        address:
+          'House No. Plot 531/A, No.-7717, Ramesh Nagar, Bawana, District: North West Delhi, 110039',
+      },
+      pl2077: {
+        phone: '7838045231',
+        email: 'Shantanujoshi9999@gmail.com',
+        address:
+          'A-803, Garden Estates Apartments, Plot No-5B, Sector-22, Dwarka, Raj Nagar-II, Delhi-110077',
+      },
+      pl2076: {
+        phone: '7838221323',
+        email: 'truemoon.india@gmail.com',
+        address: '7 /50, 3rd Floor, Subhash Nagar, West Delhi-110027.',
+      },
+      pl2050: {
+        phone: '9811686535',
+        email: 'agarwalgoyalmanish@yahoo.com',
+        address: 'A-32, pushpanjali enclave Pitampura',
+      },
+      pl2066: {
+        phone: '9318444582',
+        email: 'varun.arora1515@gmail.com',
+        address: 'Rohtak',
+      },
+      pl2065: {
+        phone: '9318444582',
+        email: 'varun.arora1515@gmail.com',
+        address: 'Rohtak',
+      },
+      pl2080: {
+        phone: '7042046477',
+        email: 'Rohitca871@gmail.com',
+        address: 'KH NO 791 STREET NO 2 ASHOK COLONY KUSHAK NO 2 KADIPUR 110036',
+      },
+      svi002023: {
+        phone: '9810065290',
+        email: 'rkjindal@ksprecision.com',
+        address: '4/20, sector 2 rajendra nagar ghaziabad',
+      },
+      svi2023: {
+        phone: '9810065290',
+        email: 'rkjindal@ksprecision.com',
+        address: '4/20, sector 2 rajendra nagar ghaziabad',
+      },
+      pl2081: {
+        phone: '8882559449',
+        email: 'kapiltanwar18@gmail.com',
+        address: '',
+      },
+      pl2078: {
+        phone: '',
+        email: '',
+        address: 'i -599 Govindpuram Ghaziabad Uttar Pradesh 201013',
+      },
+      pl2006: {
+        phone: '',
+        email: '',
+        address: 'Faridpur Simbhavali Hapur Uttar Pradesh - 245207',
+      },
+      pl2126: {
+        phone: '9506394111',
+        email: '',
+        address: 'Sector- 10A / 10 Chiranjeev vihar Ghaziabad Uttar Pradesh -201002',
+      },
+      pl2221: {
+        phone: '9953630825',
+        email: 'SMSHARMA1987@GMAIL.COM',
+        address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+      },
+      svi002025: {
+        phone: '9911300308',
+        email: 'kohli.gaurav141@gmail.com',
+        address: 'H/N 141-142, nehru vihar west delhi-110054',
+      },
+      svi2025: {
+        phone: '9911300308',
+        email: 'kohli.gaurav141@gmail.com',
+        address: 'H/N 141-142, nehru vihar west delhi-110054',
+      },
+      svi002106: {
+        phone: '7206075395',
+        email: 'bhagwanshiv1982@gmail.com',
+        address: 'Ahrod(29)Rewari',
+      },
+      svi2106: {
+        phone: '7206075395',
+        email: 'bhagwanshiv1982@gmail.com',
+        address: 'Ahrod(29)Rewari',
+      },
+      pl2181: {
+        phone: '9953630825',
+        email: 'SMSHARMA1987@GMAIL.COM',
+        address: 'House no. D-110/3, Street no. 12, Gamri extension north east delhi-110053',
+      },
+      svi002050: {
+        phone: '9958894058',
+        email: '',
+        address:
+          'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+      },
+      svi2050: {
+        phone: '9958894058',
+        email: '',
+        address:
+          'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, Wakad, Pune-411057Maharashtra',
+      },
+      svi002051: {
+        phone: '9958894058',
+        email: 'client.svi002051@sviinfra.com',
+        address:
+          'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+      },
+      svi2051: {
+        phone: '9958894058',
+        email: 'client.svi002051@sviinfra.com',
+        address:
+          'A-1004, 10th Floor, Green Valley Society, Kaspate Wasti Road, WakadPune-411057Maharashtra',
+      },
+      svi002134: {
+        phone: '9031439111',
+        email: 'abhilashasahayvarma@gmail.com',
+        address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+      },
+      svi2134: {
+        phone: '9031439111',
+        email: 'abhilashasahayvarma@gmail.com',
+        address: 'Arya Kumar Road Rajendra Nagar, Patna, Bihar, 800016',
+      },
+    };
+
+    const fallback = CONTACT_FALLBACK[norm];
+    if (fallback) {
+      if (!clientPhone && fallback.phone) clientPhone = fallback.phone;
+      if (!clientEmail && fallback.email) clientEmail = fallback.email;
+      if (!clientAddress && fallback.address) clientAddress = fallback.address;
+    }
+
     const dealValue = matchedMeta?.total_cost ? Number(matchedMeta.total_cost) : null;
     const area = matchedMeta?.area ? Number(matchedMeta.area) : null;
     const ratePerSqYd = matchedMeta?.rate_per_sq_yd ? Number(matchedMeta.rate_per_sq_yd) : null;
@@ -180,6 +347,9 @@ export async function GET(request: NextRequest) {
       ratePerSqYd,
       advisorName: advisorName || null,
       unitNo,
+      clientPhone: clientPhone || null,
+      clientEmail: clientEmail || null,
+      clientAddress: clientAddress || null,
     });
   } catch (err: unknown) {
     return handleApiError(err);
