@@ -146,4 +146,37 @@ describe('PortalAllotmentTableRow', () => {
     expect(screen.getByText('Advisor / Agent:')).toBeDefined();
     expect(screen.getByText('Muskan Varshney')).toBeDefined();
   });
+
+  it('renders separate Ref ID and Unit No in table-row variant', () => {
+    const allotmentWithTicket: AllotmentRecord = {
+      ...mockAllotment,
+      metadata: {
+        ticket_id: 'PL2181',
+      },
+    };
+
+    const { container } = render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={allotmentWithTicket}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    const cells = container.querySelectorAll('td');
+    expect(cells.length).toBeGreaterThanOrEqual(8);
+    // Cell 1: Ref ID
+    expect(cells[0].textContent).toContain('PL2181');
+    // Cell 2: Unit & Property (does NOT contain Ref ID)
+    expect(cells[1].textContent).toContain('Unit Villa-42');
+    expect(cells[1].textContent).toContain('Shyam Aangan');
+    expect(cells[1].textContent).not.toContain('PL2181');
+  });
 });

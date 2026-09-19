@@ -116,24 +116,30 @@ export function PortalAllotmentTableRow({
     return (
       <React.Fragment>
         <tr className="group border-b border-gray-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.02]">
-          {/* 1. Unit & Property */}
+          {/* 1. Ref ID (Ticket / Booking Ref) */}
+          <td className="w-[130px] px-4 py-3.5 align-top whitespace-nowrap">
+            <div className="flex flex-col items-start gap-1">
+              {ticketId ? (
+                <span className="inline-flex items-center gap-1 rounded bg-[#0f2942] px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs dark:bg-gray-900">
+                  <Tag className="text-brand-gold h-2.5 w-2.5" />
+                  {ticketId}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
+                  <AlertCircle className="h-2.5 w-2.5 text-rose-500" />
+                  Ref: Missing
+                </span>
+              )}
+            </div>
+          </td>
+
+          {/* 2. Unit & Property */}
           <td className="px-4 py-3.5 align-top">
             <div className="flex flex-col gap-1">
-              <div className="flex flex-wrap items-center gap-1.5">
+              <div className="flex items-center">
                 <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-bold">
                   Unit {unitNumber}
                 </span>
-                {ticketId ? (
-                  <span className="inline-flex items-center gap-0.5 rounded bg-[#0f2942] px-1.5 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-gray-900">
-                    <Tag className="text-brand-gold h-2.5 w-2.5" />
-                    {ticketId}
-                  </span>
-                ) : (
-                  <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
-                    <AlertCircle className="h-2.5 w-2.5 text-rose-500" />
-                    Ref: Missing
-                  </span>
-                )}
               </div>
               <div className="text-xs font-semibold text-gray-900 dark:text-white">
                 {allotment.properties?.name || 'Assigned Property'}
@@ -143,7 +149,6 @@ export function PortalAllotmentTableRow({
               )}
             </div>
           </td>
-
           {/* 2. Sale Mode (Direct Sell / Draw) */}
           <td className="w-[140px] px-4 py-3.5 align-top whitespace-nowrap">
             <div className="flex flex-col items-start gap-1">
@@ -331,7 +336,7 @@ export function PortalAllotmentTableRow({
 
         {isExpanded && children && (
           <tr className="border-b border-gray-100 bg-slate-50/60 dark:border-white/5 dark:bg-black/20">
-            <td colSpan={8} className="px-4 py-4">
+            <td colSpan={9} className="px-4 py-4">
               {children}
             </td>
           </tr>
@@ -357,7 +362,7 @@ export function PortalAllotmentTableRow({
               {ticketId ? (
                 <span className="inline-flex items-center gap-1 rounded bg-[#0f2942] px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs dark:bg-gray-900">
                   <Tag className="text-brand-gold h-2.5 w-2.5" />
-                  {ticketId}
+                  Ref ID: {ticketId}
                 </span>
               ) : (
                 <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">

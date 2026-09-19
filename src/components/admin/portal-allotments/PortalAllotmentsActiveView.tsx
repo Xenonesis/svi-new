@@ -412,9 +412,10 @@ export function PortalAllotmentsActiveView({
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full min-w-[980px] text-left text-xs">
+            <table className="w-full min-w-[1040px] text-left text-xs">
               <thead className="border-b border-gray-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-400">
                 <tr>
+                  <th className="w-[130px] px-4 py-3.5">Ref ID</th>
                   <th className="px-4 py-3.5">Unit & Property</th>
                   <th className="w-[140px] px-4 py-3.5">Sale Mode</th>
                   <th className="px-4 py-3.5">Client & Contact</th>
