@@ -48,7 +48,7 @@ export interface AllotmentRecord {
     approved_by?: string;
     approved_at?: string;
     source?: string;
-    [key: string]: any;
+    [key: string]: unknown;
   } | null;
   profiles?: ProfileSummary | null;
   properties?: PropertySummary | null;

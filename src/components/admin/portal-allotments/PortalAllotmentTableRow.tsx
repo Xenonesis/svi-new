@@ -29,6 +29,7 @@ export interface PortalAllotmentTableRowProps {
   onEdit: (allotment: AllotmentRecord) => void;
   onDelete: (id: string) => void;
   children?: React.ReactNode;
+  variant?: 'card' | 'table-row';
 }
 
 export function PortalAllotmentTableRow({
@@ -40,25 +41,29 @@ export function PortalAllotmentTableRow({
   onEdit,
   onDelete,
   children,
+  variant = 'card',
 }: PortalAllotmentTableRowProps) {
   const t = useTranslations('pages.adminPortalAllotments');
 
   const unitNumber =
     allotment.unit_no ||
+    allotment.unit_number ||
     (allotment.metadata?.unit_no as string) ||
     (allotment.metadata?.unitNumber as string) ||
     '—';
 
-  const totalCost = Number(allotment.metadata?.total_cost);
-  const area = allotment.metadata?.area;
-  const bookingDate = allotment.metadata?.booking_date as string;
+  const totalCost = Number(allotment.metadata?.total_cost ?? allotment.total_cost);
+  const area = allotment.metadata?.area ?? allotment.area;
+  const bookingDate = (allotment.metadata?.booking_date as string) || allotment.booking_date;
   const ticketId =
     (allotment.metadata?.ticket_id as string) ||
     (allotment.metadata?.ticketId as string) ||
     (allotment.metadata?.refId as string) ||
     (allotment.metadata?.ref_id as string);
   const advisorName =
-    (allotment.metadata?.advisor_name as string) || (allotment.metadata?.advisorName as string);
+    allotment.advisor_name ||
+    (allotment.metadata?.advisor_name as string) ||
+    (allotment.metadata?.advisorName as string);
 
   const clientPhone =
     (allotment.metadata?.client_phone as string) || allotment.profiles?.phone || '';
@@ -86,209 +91,424 @@ export function PortalAllotmentTableRow({
     (allotment.metadata?.remarks as string)?.toLowerCase().includes('refund')
   );
 
-  return (
-    <div className="p-6 transition-colors hover:bg-slate-50/50 dark:hover:bg-gray-800/50">
-      <div className="flex flex-col justify-between gap-4 md:flex-row md:items-center">
-        <div className="flex items-start gap-4">
-          <div className="bg-brand-gold/10 hidden rounded-xl p-3 sm:block">
-            <Building2 className="text-brand-gold h-6 w-6" />
-          </div>
-          <div>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <h3 className="text-lg font-bold text-gray-900 dark:text-white">
-                {allotment.profiles?.full_name || 'Client'}
-              </h3>
-              {allotment.profiles?.email && (
-                <span className="text-sm font-normal text-gray-400">
-                  ({allotment.profiles?.email})
+  // Table Row Presentation (Desktop & High-density ERP View)
+  if (variant === 'table-row') {
+    return (
+      <React.Fragment>
+        <tr className="group border-b border-gray-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.02]">
+          {/* 1. Unit & Property */}
+          <td className="px-4 py-3.5 align-top">
+            <div className="flex flex-col gap-1">
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-bold">
+                  Unit {unitNumber}
                 </span>
-              )}
-              {ticketId && (
-                <span className="dark:text-brand-gold inline-flex items-center gap-1 rounded-md bg-[#0f2942] px-2.5 py-0.5 font-mono text-xs font-bold text-white shadow-2xs dark:bg-gray-900">
-                  <Tag className="text-brand-gold h-3 w-3" />
-                  {ticketId}
-                </span>
-              )}
-              {isRefundDone && (
-                <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/30 bg-rose-500/10 px-2.5 py-0.5 text-xs font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
-                  Refund Done
-                </span>
+                {ticketId && (
+                  <span className="inline-flex items-center gap-0.5 rounded bg-[#0f2942] px-1.5 py-0.5 font-mono text-[10px] font-bold text-white shadow-2xs dark:bg-gray-900">
+                    <Tag className="text-brand-gold h-2.5 w-2.5" />
+                    {ticketId}
+                  </span>
+                )}
+              </div>
+              <div className="text-xs font-semibold text-gray-900 dark:text-white">
+                {allotment.properties?.name || 'Assigned Property'}
+              </div>
+              {area !== null && area !== undefined && area !== '' && (
+                <div className="text-[11px] text-gray-500 dark:text-gray-400">{area} Sq. Yds.</div>
               )}
             </div>
+          </td>
 
-            <div className="mt-1.5 flex flex-wrap gap-x-6 gap-y-2 text-sm text-gray-600 dark:text-gray-400">
-              <p>
-                <strong className="text-gray-900 dark:text-gray-300">{t('propertyLabel')}:</strong>{' '}
-                {allotment.properties?.name || 'Assigned Property'}
-              </p>
-              <p>
-                <strong className="text-gray-900 dark:text-gray-300">{t('unitLabel')}:</strong>{' '}
-                <span className="dark:text-brand-gold font-semibold text-[#0f2942]">
-                  {unitNumber}
-                </span>
-              </p>
-              {area !== null && area !== undefined && area !== '' && (
-                <p>
-                  <strong className="text-gray-900 dark:text-gray-300">{t('area')}:</strong>{' '}
-                  <span>{area}</span> Sq. Yds.
-                </p>
-              )}
-              {!isNaN(totalCost) && totalCost > 0 && (
-                <p>
-                  <strong className="text-gray-900 dark:text-gray-300">
-                    {t('totalCostLabel')}:
-                  </strong>{' '}
-                  ₹{totalCost.toLocaleString('en-IN')}
-                  {Number(area) > 0 && (
-                    <span className="ml-1 text-xs font-medium text-emerald-600 dark:text-emerald-400">
-                      (@ ₹{Math.round(totalCost / Number(area)).toLocaleString('en-IN')}/sq.yd.)
-                    </span>
-                  )}
-                </p>
-              )}
-              {bookingDate && (
-                <p>
-                  <strong className="text-gray-900 dark:text-gray-300">{t('bookingDate')}:</strong>{' '}
-                  {bookingDate}
-                </p>
-              )}
-              {advisorName && (
-                <p className="flex items-center gap-1.5">
-                  <strong className="text-gray-900 dark:text-gray-300">{t('advisorLabel')}:</strong>{' '}
-                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                    <UserCheck className="h-3 w-3" />
-                    {advisorName}
-                  </span>
-                </p>
-              )}
-              {isRefundDone && (
-                <p className="flex items-center gap-1.5">
-                  <strong className="text-gray-900 dark:text-gray-300">Status:</strong>{' '}
-                  <span className="inline-flex items-center rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-700 dark:bg-rose-950/40 dark:text-rose-300">
-                    Refund Done
-                  </span>
-                </p>
-              )}
+          {/* 2. Client & Contact */}
+          <td className="px-4 py-3.5 align-top">
+            <div className="flex flex-col gap-1">
+              <div className="text-xs font-bold text-gray-900 dark:text-white">
+                {allotment.profiles?.full_name || 'Client'}
+              </div>
               {clientPhone && (
-                <p className="flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-xs font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">
-                    <Phone className="h-3 w-3" />
-                    <a href={`tel:${clientPhone}`} className="font-mono hover:underline">
-                      {clientPhone}
-                    </a>
-                  </span>
-                </p>
+                <a
+                  href={`tel:${clientPhone}`}
+                  className="inline-flex items-center gap-1 font-mono text-[11px] font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                >
+                  <Phone className="h-2.5 w-2.5" />
+                  {clientPhone}
+                </a>
               )}
               {clientEmail && (
-                <p className="flex items-center gap-1.5">
-                  <span className="inline-flex items-center gap-1 rounded-md bg-sky-50 px-2 py-0.5 text-xs font-medium text-sky-700 dark:bg-sky-950/40 dark:text-sky-300">
-                    <Mail className="h-3 w-3" />
-                    <a href={`mailto:${clientEmail}`} className="hover:underline">
-                      {clientEmail}
-                    </a>
-                  </span>
-                </p>
+                <a
+                  href={`mailto:${clientEmail}`}
+                  title={clientEmail}
+                  className="inline-flex max-w-[180px] items-center gap-1 truncate text-[11px] text-gray-500 hover:underline dark:text-gray-400"
+                >
+                  <Mail className="h-2.5 w-2.5 shrink-0" />
+                  <span className="truncate">{clientEmail}</span>
+                </a>
               )}
               {clientAddress && (
-                <p className="flex max-w-sm items-center gap-1.5 truncate" title={clientAddress}>
-                  <span className="inline-flex items-center gap-1 truncate rounded-md bg-amber-50 px-2 py-0.5 text-xs text-amber-800 dark:bg-amber-950/40 dark:text-amber-300">
-                    <MapPin className="h-3 w-3 shrink-0" />
-                    <span className="truncate">{clientAddress}</span>
-                  </span>
-                </p>
+                <div
+                  title={clientAddress}
+                  className="inline-flex max-w-[180px] items-center gap-1 truncate text-[10px] text-amber-700 dark:text-amber-300"
+                >
+                  <MapPin className="h-2.5 w-2.5 shrink-0" />
+                  <span className="truncate">{clientAddress}</span>
+                </div>
               )}
             </div>
+          </td>
 
-            {/* Per-Client Sales Revenue & Payment Realization Bar */}
-            <div className="mt-3.5 flex flex-wrap items-center gap-3 rounded-xl border border-gray-200/70 bg-slate-50/80 p-2.5 text-xs dark:border-white/5 dark:bg-white/[0.02]">
-              <div className="flex items-center gap-1.5">
-                <TrendingUp className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                <span className="text-gray-500 dark:text-gray-400">Sales Value:</span>
-                <span className="font-mono font-bold text-gray-900 dark:text-white">
-                  {dealValue > 0 ? `₹${dealValue.toLocaleString('en-IN')}` : 'Not Set'}
-                  {dealValue > 0 && Number(area) > 0 && (
-                    <span className="ml-1 text-[11px] font-normal text-sky-600 dark:text-sky-400">
-                      (₹{Math.round(dealValue / Number(area)).toLocaleString('en-IN')}/sq.yd.)
-                    </span>
-                  )}
+          {/* 3. Advisor */}
+          <td className="px-4 py-3.5 align-top">
+            {advisorName ? (
+              <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+                <UserCheck className="h-3 w-3 shrink-0" />
+                <span className="max-w-[120px] truncate">{advisorName}</span>
+              </span>
+            ) : (
+              <span className="text-xs text-gray-400">—</span>
+            )}
+          </td>
+
+          {/* 4. Deal Value & Rate */}
+          <td className="px-4 py-3.5 align-top">
+            <div className="flex flex-col">
+              <span className="font-mono text-xs font-bold text-gray-900 dark:text-white">
+                {dealValue > 0
+                  ? `₹${dealValue.toLocaleString('en-IN')}`
+                  : !isNaN(totalCost) && totalCost > 0
+                    ? `₹${totalCost.toLocaleString('en-IN')}`
+                    : '—'}
+              </span>
+              {dealValue > 0 && Number(area) > 0 && (
+                <span className="text-[10px] text-sky-600 dark:text-sky-400">
+                  @ ₹{Math.round(dealValue / Number(area)).toLocaleString('en-IN')}/yd
                 </span>
-              </div>
+              )}
+              {bookingDate && (
+                <span className="text-[10px] text-gray-400">Booked: {bookingDate}</span>
+              )}
+            </div>
+          </td>
 
-              <span className="text-gray-300 dark:text-gray-600">•</span>
-
-              <div className="flex items-center gap-1.5">
-                <Wallet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span className="text-gray-500 dark:text-gray-400">Received:</span>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400">
-                  ₹{totalPaid.toLocaleString('en-IN')}
-                </span>
-              </div>
-
-              <span className="text-gray-300 dark:text-gray-600">•</span>
-
-              <div className="flex items-center gap-1.5">
-                <Clock className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
-                <span className="text-gray-500 dark:text-gray-400">Balance:</span>
-                <span className="font-mono font-bold text-amber-600 dark:text-amber-400">
-                  {dealValue > 0 ? `₹${balanceDue.toLocaleString('en-IN')}` : '—'}
-                </span>
-              </div>
-
+          {/* 5. Received & Progress */}
+          <td className="px-4 py-3.5 align-top">
+            <div className="flex flex-col gap-1">
+              <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                ₹{totalPaid.toLocaleString('en-IN')}
+              </span>
               {dealValue > 0 && (
-                <div className="ml-auto flex items-center gap-2">
-                  <div className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200 sm:w-20 dark:bg-white/10">
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
                     <div
                       className="h-full rounded-full bg-emerald-500 transition-all"
                       style={{ width: `${Math.min(100, percentCompleted)}%` }}
                     />
                   </div>
-                  <span className="font-mono text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+                  <span className="font-mono text-[10px] font-semibold text-gray-600 dark:text-gray-300">
                     {Math.round(percentCompleted)}%
                   </span>
                 </div>
               )}
             </div>
+          </td>
+
+          {/* 6. Balance Due */}
+          <td className="px-4 py-3.5 align-top">
+            {isRefundDone ? (
+              <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                Refund Done
+              </span>
+            ) : (
+              <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                {dealValue > 0 ? `₹${balanceDue.toLocaleString('en-IN')}` : '—'}
+              </span>
+            )}
+          </td>
+
+          {/* 7. Actions */}
+          <td className="px-4 py-3.5 text-right align-top">
+            <div className="flex items-center justify-end gap-1.5">
+              {onOpenLedger && (
+                <button
+                  type="button"
+                  onClick={() => onOpenLedger(allotment)}
+                  aria-label="View Client Ledger"
+                  title="Open Customer Ledger Statement"
+                  className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all active:scale-95"
+                >
+                  <BookOpen className="h-3.5 w-3.5" />
+                  <span className="hidden sm:inline">Ledger</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={onToggleExpand}
+                className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+              >
+                <span className="hidden sm:inline">
+                  {isExpanded ? t('hidePayments') : t('viewPayments')}
+                </span>
+                {isExpanded ? (
+                  <ChevronUp className="h-3.5 w-3.5" />
+                ) : (
+                  <ChevronDown className="h-3.5 w-3.5" />
+                )}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onEdit(allotment)}
+                aria-label={t('editAllotment')}
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
+              >
+                <Edit className="h-3.5 w-3.5" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => onDelete(allotment.id)}
+                aria-label="Delete"
+                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+              >
+                <Trash2 className="h-3.5 w-3.5" />
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        {isExpanded && children && (
+          <tr className="border-b border-gray-100 bg-slate-50/60 dark:border-white/5 dark:bg-black/20">
+            <td colSpan={7} className="px-4 py-4">
+              {children}
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    );
+  }
+
+  // Card Presentation (Responsive Mobile / Tablet / Grid View)
+  return (
+    <div className="hover:border-brand-gold/30 rounded-2xl border border-gray-200/80 bg-white p-4 shadow-xs transition-all hover:shadow-md sm:p-5 dark:border-white/10 dark:bg-gray-800">
+      {/* Top Header Row: Unit, Property & Direct Actions */}
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex min-w-0 items-start gap-3">
+          <div className="bg-brand-gold/10 hidden rounded-xl p-2.5 sm:block">
+            <Building2 className="text-brand-gold h-5 w-5" />
+          </div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2.5 py-0.5 font-mono text-xs font-bold">
+                Unit {unitNumber}
+              </span>
+              {ticketId && (
+                <span className="inline-flex items-center gap-1 rounded bg-[#0f2942] px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs dark:bg-gray-900">
+                  <Tag className="text-brand-gold h-2.5 w-2.5" />
+                  {ticketId}
+                </span>
+              )}
+              {isRefundDone && (
+                <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                  Refund Done
+                </span>
+              )}
+            </div>
+
+            <h3 className="mt-1.5 truncate text-sm font-bold text-gray-900 sm:text-base dark:text-white">
+              {allotment.profiles?.full_name || 'Client'}
+              {allotment.profiles?.email && (
+                <span className="ml-1.5 text-xs font-normal text-gray-400">
+                  ({allotment.profiles?.email})
+                </span>
+              )}
+            </h3>
           </div>
         </div>
 
-        <div className="flex items-center gap-2.5 self-end md:self-auto">
-          {onOpenLedger && (
-            <button
-              type="button"
-              onClick={() => onOpenLedger(allotment)}
-              aria-label="View Client Ledger"
-              title="Open Customer Ledger Statement"
-              className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold flex items-center gap-1.5 rounded-lg border px-3 py-2 text-sm font-bold transition-all active:scale-[0.98]"
-            >
-              <BookOpen className="h-4 w-4" />
-              <span>Ledger</span>
-            </button>
-          )}
+        {/* Quick Edit/Delete icon triggers */}
+        <div className="flex items-center gap-1">
           <button
-            onClick={onToggleExpand}
-            className="text-brand-navy dark:text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors"
-          >
-            {isExpanded ? t('hidePayments') : t('viewPayments')}
-            {isExpanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-          </button>
-          <button
+            type="button"
             onClick={() => onEdit(allotment)}
             aria-label={t('editAllotment')}
-            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-blue-50 hover:text-blue-600"
+            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
           >
             <Edit className="h-4 w-4" />
           </button>
           <button
+            type="button"
             onClick={() => onDelete(allotment.id)}
             aria-label="Delete"
-            className="rounded-lg p-2 text-gray-500 transition-colors hover:bg-red-50 hover:text-red-600"
+            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
           >
             <Trash2 className="h-4 w-4" />
           </button>
         </div>
       </div>
 
-      {children}
+      {/* Property & Specs Meta Info */}
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-600 dark:text-gray-400">
+        <p>
+          <strong className="text-gray-900 dark:text-gray-300">{t('propertyLabel')}:</strong>{' '}
+          {allotment.properties?.name || 'Assigned Property'}
+        </p>
+        <p>
+          <strong className="text-gray-900 dark:text-gray-300">{t('unitLabel')}:</strong>{' '}
+          <span className="font-semibold text-gray-900 dark:text-white">{unitNumber}</span>
+        </p>
+        {area !== null && area !== undefined && area !== '' && (
+          <p>
+            <strong className="text-gray-900 dark:text-gray-300">{t('area')}:</strong>{' '}
+            <span>{area}</span> Sq. Yds.
+          </p>
+        )}
+        {!isNaN(totalCost) && totalCost > 0 && (
+          <p>
+            <strong className="text-gray-900 dark:text-gray-300">{t('totalCostLabel')}:</strong>{' '}
+            <span>₹{totalCost.toLocaleString('en-IN')}</span>
+            {Number(area) > 0 && (
+              <span className="ml-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+                (@ ₹{Math.round(totalCost / Number(area)).toLocaleString('en-IN')}/sq.yd.)
+              </span>
+            )}
+          </p>
+        )}
+        {bookingDate && (
+          <p>
+            <strong className="text-gray-900 dark:text-gray-300">{t('bookingDate')}:</strong>{' '}
+            <span>{bookingDate}</span>
+          </p>
+        )}
+        {advisorName && (
+          <p className="flex items-center gap-1">
+            <strong className="text-gray-900 dark:text-gray-300">{t('advisorLabel')}:</strong>{' '}
+            <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
+              <UserCheck className="h-3 w-3" />
+              <span>{advisorName}</span>
+            </span>
+          </p>
+        )}
+        {clientPhone && (
+          <a
+            href={`tel:${clientPhone}`}
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 hover:underline dark:bg-emerald-950/40 dark:text-emerald-300"
+          >
+            <Phone className="h-3 w-3" />
+            {clientPhone}
+          </a>
+        )}
+        {clientEmail && (
+          <a
+            href={`mailto:${clientEmail}`}
+            className="inline-flex items-center gap-1 rounded-md bg-sky-50 px-1.5 py-0.5 text-[11px] text-sky-700 hover:underline dark:bg-sky-950/40 dark:text-sky-300"
+          >
+            <Mail className="h-3 w-3" />
+            {clientEmail}
+          </a>
+        )}
+        {clientAddress && (
+          <span
+            title={clientAddress}
+            className="inline-flex max-w-xs items-center gap-1 truncate rounded-md bg-amber-50 px-1.5 py-0.5 text-[11px] text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
+          >
+            <MapPin className="h-3 w-3 shrink-0" />
+            <span className="truncate">{clientAddress}</span>
+          </span>
+        )}
+      </div>
+
+      {/* 3-Column Financial Realization Meter */}
+      <div className="mt-3.5 rounded-xl border border-gray-100 bg-slate-50/90 p-3 text-xs dark:border-white/5 dark:bg-white/[0.02]">
+        <div className="grid grid-cols-3 gap-2 text-center sm:gap-4 sm:text-left">
+          {/* Col 1: Deal Value */}
+          <div>
+            <div className="flex items-center justify-center gap-1 text-[11px] text-gray-500 sm:justify-start dark:text-gray-400">
+              <TrendingUp className="h-3 w-3 text-blue-500" />
+              <span>Deal Value</span>
+            </div>
+            <div className="mt-0.5 font-mono text-xs font-bold text-gray-900 sm:text-sm dark:text-white">
+              {dealValue > 0 ? `₹${dealValue.toLocaleString('en-IN')}` : 'Not Set'}
+            </div>
+          </div>
+
+          {/* Col 2: Received */}
+          <div>
+            <div className="flex items-center justify-center gap-1 text-[11px] text-emerald-600 sm:justify-start dark:text-emerald-400">
+              <Wallet className="h-3 w-3" />
+              <span>Received</span>
+            </div>
+            <div className="mt-0.5 font-mono text-xs font-bold text-emerald-600 sm:text-sm dark:text-emerald-400">
+              ₹{totalPaid.toLocaleString('en-IN')}
+            </div>
+          </div>
+
+          {/* Col 3: Balance */}
+          <div>
+            <div className="flex items-center justify-center gap-1 text-[11px] text-amber-600 sm:justify-start dark:text-amber-400">
+              <Clock className="h-3 w-3" />
+              <span>Balance</span>
+            </div>
+            <div className="mt-0.5 font-mono text-xs font-bold text-amber-600 sm:text-sm dark:text-amber-400">
+              {isRefundDone
+                ? 'Refunded'
+                : dealValue > 0
+                  ? `₹${balanceDue.toLocaleString('en-IN')}`
+                  : '—'}
+            </div>
+          </div>
+        </div>
+
+        {/* Progress Bar & Realization Percentage */}
+        {dealValue > 0 && (
+          <div className="mt-2.5 flex items-center gap-2 border-t border-gray-200/60 pt-2 dark:border-white/5">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
+              <div
+                className="h-full rounded-full bg-emerald-500 transition-all"
+                style={{ width: `${Math.min(100, percentCompleted)}%` }}
+              />
+            </div>
+            <span className="font-mono text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+              {Math.round(percentCompleted)}% Realized
+            </span>
+          </div>
+        )}
+      </div>
+
+      {/* Action Bar */}
+      <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-gray-100 pt-3 dark:border-white/5">
+        {onOpenLedger ? (
+          <button
+            type="button"
+            onClick={() => onOpenLedger(allotment)}
+            aria-label="View Client Ledger"
+            title="Open Customer Ledger Statement"
+            className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition-all active:scale-95"
+          >
+            <BookOpen className="h-3.5 w-3.5" />
+            <span>Ledger</span>
+          </button>
+        ) : (
+          <div />
+        )}
+
+        <button
+          type="button"
+          onClick={onToggleExpand}
+          className="bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors"
+        >
+          <span>{isExpanded ? t('hidePayments') : t('viewPayments')}</span>
+          {isExpanded ? (
+            <ChevronUp className="h-3.5 w-3.5" />
+          ) : (
+            <ChevronDown className="h-3.5 w-3.5" />
+          )}
+        </button>
+      </div>
+
+      {/* Expandable Schedule Drawer */}
+      {isExpanded && children && (
+        <div className="mt-3 border-t border-gray-100 pt-3 dark:border-white/5">{children}</div>
+      )}
     </div>
   );
 }

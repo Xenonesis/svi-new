@@ -560,8 +560,8 @@ export function usePortalAllotmentsAdmin() {
       const pEmail = a.profiles?.email?.toLowerCase() || '';
       const propName = a.properties?.name?.toLowerCase() || '';
       const unit = (a.unit_no || a.unit_number || '').toLowerCase();
-      const ticket = (a.metadata?.ticket_id || a.metadata?.ticketId || '').toLowerCase();
-      const advisor = (a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
+      const ticket = String(a.metadata?.ticket_id || a.metadata?.ticketId || '').toLowerCase();
+      const advisor = String(a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
       return (
         pName.includes(term) ||
         pEmail.includes(term) ||
