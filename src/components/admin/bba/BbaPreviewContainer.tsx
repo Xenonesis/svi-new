@@ -10,6 +10,7 @@ import {
   FileDown,
   Image as ImageIcon,
   FileText,
+  MousePointer,
 } from 'lucide-react';
 import { DownloadOptions, PreviewContainer } from '@/src/components/admin/DocumentGenerator/Shared';
 import BbaPreviewContent from '@/src/components/admin/DocumentGenerator/BbaPreviewContent';
@@ -267,8 +268,8 @@ export function BbaPreviewContainer({
               >
                 100%
               </button>
-              <span className="hidden border-l border-slate-700/80 px-2 py-0.5 font-mono text-[10px] text-slate-400 lg:inline">
-                Ctrl + 🖱️ Scroll
+              <span className="hidden border-l border-slate-700/80 px-2 py-0.5 font-mono text-[10px] text-slate-400 lg:inline-flex lg:items-center lg:gap-1">
+                <MousePointer className="h-2.5 w-2.5 text-slate-400" /> Ctrl + Scroll
               </span>
             </div>
           </div>

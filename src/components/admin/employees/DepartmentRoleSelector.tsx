@@ -1,12 +1,21 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Briefcase, ChevronDown, Check, X, Sparkles } from 'lucide-react';
+import {
+  Briefcase,
+  ChevronDown,
+  Check,
+  X,
+  Sparkles,
+  Laptop,
+  BarChart3,
+  type LucideIcon,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 export interface RoleGroup {
   department: string;
-  icon: string;
+  icon: LucideIcon;
   roles: Array<{
     label: string;
     value: string;
@@ -17,7 +26,7 @@ export interface RoleGroup {
 export const OFFER_LETTER_ROLES: RoleGroup[] = [
   {
     department: 'Sales & Business Development',
-    icon: '💼',
+    icon: Briefcase,
     roles: [
       { label: 'Telecaller', value: 'Telecaller', description: 'Inbound & Outbound Calling' },
       {
@@ -49,7 +58,7 @@ export const OFFER_LETTER_ROLES: RoleGroup[] = [
   },
   {
     department: 'IT & Engineering',
-    icon: '💻',
+    icon: Laptop,
     roles: [
       {
         label: 'Software Engineer',
@@ -66,7 +75,7 @@ export const OFFER_LETTER_ROLES: RoleGroup[] = [
   },
   {
     department: 'Operations & Management',
-    icon: '📊',
+    icon: BarChart3,
     roles: [
       {
         label: 'Project Manager',
@@ -91,6 +100,8 @@ export const OFFER_LETTER_ROLES: RoleGroup[] = [
     ],
   },
 ];
+
+export const DEPARTMENT_ROLE_DATA = OFFER_LETTER_ROLES;
 
 export const QUICK_ROLE_PILLS = [
   'Telecaller',
@@ -263,7 +274,7 @@ export function DepartmentRoleSelector({
                 <div key={group.department} className="mb-2.5 last:mb-0">
                   {/* Department Group Header */}
                   <div className="text-brand-gold flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase">
-                    <span>{group.icon}</span>
+                    <group.icon size={12} className="shrink-0" />
                     <span>{group.department}</span>
                   </div>
 

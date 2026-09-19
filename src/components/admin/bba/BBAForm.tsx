@@ -1,6 +1,6 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
-import { RefreshCw, Plus, Loader2 } from 'lucide-react';
+import { RefreshCw, Plus, Loader2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 interface BBAFormProps {
   formData: any;
@@ -278,10 +278,10 @@ export function BBAForm({
             step="any"
           />
           {Number(formData.plc) > 30 && (
-            <p className="text-[11px] font-medium text-amber-600 dark:text-amber-400">
-              ⚠️ Warning: PLC is entered as percentage (%). {formData.plc}% adds{' '}
-              {Number(formData.plc).toFixed(0)}% to base price. If you intended ₹/sq.yd, convert to
-              %.
+            <p className="flex items-center gap-1.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
+              <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" /> Warning: PLC is
+              entered as percentage (%). {formData.plc}% adds {Number(formData.plc).toFixed(0)}% to
+              base price. If you intended ₹/sq.yd, convert to %.
             </p>
           )}
         </div>

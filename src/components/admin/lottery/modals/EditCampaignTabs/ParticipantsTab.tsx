@@ -1,4 +1,4 @@
-import { RefreshCw, Award, Edit2, Trophy, X } from 'lucide-react';
+import { RefreshCw, Award, Edit2, Trophy, X, Plus } from 'lucide-react';
 import { Dispatch, SetStateAction } from 'react';
 import type { DbParticipant } from '../../types';
 
@@ -64,7 +64,9 @@ export function ParticipantsTab({
       {/* Add new participant */}
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-white/10 dark:bg-white/5">
         <p className="mb-3 text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-gray-400">
-          ➕ Add New Participant
+          <span className="flex items-center gap-1">
+            <Plus className="h-3 w-3 text-slate-500 dark:text-gray-400" /> Add New Participant
+          </span>
         </p>
         <div className="grid grid-cols-2 gap-3">
           <input

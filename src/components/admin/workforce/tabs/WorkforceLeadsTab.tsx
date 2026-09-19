@@ -414,7 +414,7 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
           <div className="absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-red-500/40 to-transparent" />
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold tracking-wider text-red-600 uppercase dark:text-red-400">
-              Hot Prospects 🔥
+              Hot Prospects
             </span>
             <div className="rounded-lg bg-red-500/10 p-1.5 text-red-500">
               <Flame className="h-3.5 w-3.5" />
@@ -1268,9 +1268,9 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
                             className="w-full rounded-xl border border-gray-200 bg-white p-2.5 text-xs text-gray-900 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-white"
                           >
                             <option value="">-- None --</option>
-                            <option value="hot">🔥 Hot</option>
-                            <option value="warm">⚡ Warm</option>
-                            <option value="cold">❄️ Cold</option>
+                            <option value="hot">Hot</option>
+                            <option value="warm">Warm</option>
+                            <option value="cold">Cold</option>
                           </select>
                         </div>
                       </div>

@@ -1,4 +1,4 @@
-import { RefreshCw, Trophy, Search } from 'lucide-react';
+import { RefreshCw, Trophy, Search, Zap } from 'lucide-react';
 import { Dispatch, SetStateAction } from 'react';
 import type { DbParticipant } from '../../types';
 
@@ -44,7 +44,9 @@ export function WinnerTab({
       {/* Search Autocomplete */}
       <div>
         <label className="mb-1.5 block text-xs font-bold tracking-wider text-slate-500 uppercase dark:text-gray-400">
-          ⚡ Quick Select Existing Participant
+          <span className="flex items-center gap-1">
+            <Zap className="h-3 w-3 text-amber-500" /> Quick Select Existing Participant
+          </span>
         </label>
         <div className="relative">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">

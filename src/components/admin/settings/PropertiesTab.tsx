@@ -2,6 +2,7 @@
 
 import {
   Building2,
+  MapPin,
   Plus,
   Trash2,
   Edit2,
@@ -484,12 +485,14 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
                       </span>
                       <div className="mt-1 flex flex-col gap-0.5">
                         {property.legal_location_hi ? (
-                          <span className="text-[11px] text-gray-600 dark:text-gray-300">
-                            📍 {property.legal_location_hi}
+                          <span className="inline-flex items-center gap-1 text-[11px] text-gray-600 dark:text-gray-300">
+                            <MapPin className="h-3 w-3 shrink-0 text-gray-400" />{' '}
+                            {property.legal_location_hi}
                           </span>
                         ) : (
-                          <span className="text-[11px] text-amber-600 italic dark:text-amber-400">
-                            ⚠️ विधिक स्थान सेट नहीं है (Legal location not set)
+                          <span className="inline-flex items-center gap-1 text-[11px] text-amber-600 italic dark:text-amber-400">
+                            <AlertCircle className="h-3 w-3 shrink-0 text-amber-500" /> विधिक स्थान
+                            सेट नहीं है (Legal location not set)
                           </span>
                         )}
                         {property.legal_location_en && (
