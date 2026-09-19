@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { RotateCcw } from 'lucide-react';
+import { RotateCcw, ArrowDown, ArrowUp, ArrowUpDown } from 'lucide-react';
 import { PortalAllotmentTableRow } from './PortalAllotmentTableRow';
 import { PortalAllotmentScheduleDrawer } from './PortalAllotmentScheduleDrawer';
 import { PortalAllotmentsFilterBar } from './PortalAllotmentsFilterBar';
@@ -11,6 +11,8 @@ import type {
   PropertySummary,
   PaymentStatusFilter,
   SaleModeFilter,
+  SortField,
+  SortDirection,
 } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
 
@@ -49,6 +51,10 @@ export interface PortalAllotmentsActiveViewProps {
   activeFilterCount: number;
   resetFilters?: () => void;
   onResetFilters?: () => void;
+  // Sorting props
+  sortField?: SortField;
+  sortDirection?: SortDirection;
+  onSort?: (field: SortField) => void;
 }
 
 type ViewMode = 'table' | 'cards';
@@ -87,6 +93,9 @@ export function PortalAllotmentsActiveView({
   activeFilterCount,
   resetFilters,
   onResetFilters,
+  sortField,
+  sortDirection,
+  onSort,
 }: PortalAllotmentsActiveViewProps): React.JSX.Element {
   const [viewMode, setViewMode] = useState<ViewMode>('table');
 
@@ -95,6 +104,29 @@ export function PortalAllotmentsActiveView({
   const handleSaleModeChange = onSaleModeChange || setSelectedSaleMode || (() => {});
   const handleAdvisorChange = onAdvisorChange || setSelectedAdvisor || (() => {});
   const handleResetFilters = onResetFilters || resetFilters || (() => {});
+  const renderSortableHeader = (field: SortField, title: string, className?: string) => {
+    const isSorted = sortField === field;
+    return (
+      <th className={className}>
+        <button
+          type="button"
+          onClick={() => onSort?.(field)}
+          aria-label={`Sort by ${title}`}
+          className="group inline-flex items-center gap-1.5 font-bold tracking-wider uppercase hover:text-gray-900 dark:hover:text-white"
+        >
+          <span>{title}</span>
+          {isSorted && sortDirection === 'asc' ? (
+            <ArrowUp className="text-brand-gold h-3 w-3" />
+          ) : isSorted && sortDirection === 'desc' ? (
+            <ArrowDown className="text-brand-gold h-3 w-3" />
+          ) : (
+            <ArrowUpDown className="h-3 w-3 opacity-40 transition-opacity group-hover:opacity-100" />
+          )}
+        </button>
+      </th>
+    );
+  };
+
   return (
     <div className="space-y-4">
       {/* 1. Multi-Dimension Filter Bar */}
@@ -145,14 +177,14 @@ export function PortalAllotmentsActiveView({
             <table className="w-full min-w-[1040px] text-left text-xs">
               <thead className="border-b border-gray-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-400">
                 <tr>
-                  <th className="w-[130px] px-4 py-3.5">Ref ID</th>
-                  <th className="px-4 py-3.5">Unit & Property</th>
+                  {renderSortableHeader('ref_id', 'Ref ID', 'w-[130px] px-4 py-3.5')}
+                  {renderSortableHeader('unit_number', 'Unit & Property', 'px-4 py-3.5')}
                   <th className="w-[140px] px-4 py-3.5">Sale Mode</th>
                   <th className="px-4 py-3.5">Client & Contact</th>
                   <th className="px-4 py-3.5">Advisor</th>
-                  <th className="px-4 py-3.5">Deal Value</th>
-                  <th className="px-4 py-3.5">Received / %</th>
-                  <th className="px-4 py-3.5">Balance Due</th>
+                  {renderSortableHeader('deal_value', 'Deal Value', 'px-4 py-3.5')}
+                  {renderSortableHeader('collection_pct', 'Received / %', 'px-4 py-3.5')}
+                  {renderSortableHeader('balance_due', 'Balance Due', 'px-4 py-3.5')}
                   <th className="px-4 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>

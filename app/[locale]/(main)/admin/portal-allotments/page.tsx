@@ -31,6 +31,9 @@ export default function PortalAllotmentsAdmin() {
     setSelectedSaleMode,
     selectedAdvisor,
     setSelectedAdvisor,
+    sortField,
+    sortDirection,
+    handleSort,
     activeFilterCount,
     resetFilters,
     loading,
@@ -146,6 +149,9 @@ export default function PortalAllotmentsAdmin() {
           advisors={advisors}
           activeFilterCount={activeFilterCount}
           resetFilters={resetFilters}
+          sortField={sortField}
+          sortDirection={sortDirection}
+          onSort={handleSort}
         />
       )}
 

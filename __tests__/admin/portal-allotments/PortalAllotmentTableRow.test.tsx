@@ -179,4 +179,183 @@ describe('PortalAllotmentTableRow', () => {
     expect(cells[1].textContent).toContain('Shyam Aangan');
     expect(cells[1].textContent).not.toContain('PL2181');
   });
+
+  it('renders micro-progress bar with appropriate color and width based on collection percentage in table-row', () => {
+    const { container: c100 } = render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={mockAllotment}
+            financials={{
+              ticketId: 'TICKET-1',
+              normalizedTicketId: 'ticket-1',
+              dealValue: 7500000,
+              totalPaid: 7500000,
+              balanceDue: 0,
+              percentCompleted: 100,
+              collectionPercentage: 100,
+            }}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    const bar100 = c100.querySelector('div[style*="width: 100%"]');
+    expect(bar100).toBeDefined();
+    expect(bar100?.className).toContain('bg-emerald-500');
+
+    const { container: c50 } = render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={mockAllotment}
+            financials={{
+              ticketId: 'TICKET-1',
+              normalizedTicketId: 'ticket-1',
+              dealValue: 7500000,
+              totalPaid: 3750000,
+              balanceDue: 3750000,
+              percentCompleted: 50,
+              collectionPercentage: 50,
+            }}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    const bar50 = c50.querySelector('div[style*="width: 50%"]');
+    expect(bar50).toBeDefined();
+    expect(bar50?.className).toContain('bg-indigo-600');
+
+    const { container: c25 } = render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={mockAllotment}
+            financials={{
+              ticketId: 'TICKET-1',
+              normalizedTicketId: 'ticket-1',
+              dealValue: 7500000,
+              totalPaid: 1875000,
+              balanceDue: 5625000,
+              percentCompleted: 25,
+              collectionPercentage: 25,
+            }}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    const bar25 = c25.querySelector('div[style*="width: 25%"]');
+    expect(bar25).toBeDefined();
+    expect(bar25?.className).toContain('bg-amber-500');
+  });
+
+  it('renders overdue alert badge when past-due unpaid payment schedule exists', () => {
+    const overdueAllotment: AllotmentRecord = {
+      ...mockAllotment,
+      payment_schedules: [
+        {
+          id: 'sched-1',
+          title: 'Installment 1',
+          amount: 500000,
+          due_date: '2026-01-15',
+          status: 'pending',
+        },
+        {
+          id: 'sched-2',
+          title: 'Installment 2',
+          amount: 500000,
+          due_date: '2026-03-01',
+          status: 'unpaid',
+        },
+      ],
+    };
+
+    // Table-row variant
+    const { container: tableContainer } = render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={overdueAllotment}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    expect(tableContainer.textContent).toContain('Overdue: 2026-01-15');
+
+    // Card variant
+    const { container: cardContainer } = render(
+      <PortalAllotmentTableRow
+        variant="card"
+        allotment={overdueAllotment}
+        isExpanded={false}
+        onToggleExpand={vi.fn()}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    expect(cardContainer.textContent).toContain('Overdue: 2026-01-15');
+  });
+
+  it('does not render overdue alert badge when payment schedule is paid or in the future', () => {
+    const paidAllotment: AllotmentRecord = {
+      ...mockAllotment,
+      payment_schedules: [
+        {
+          id: 'sched-1',
+          title: 'Installment 1',
+          amount: 500000,
+          due_date: '2026-01-15',
+          status: 'paid',
+        },
+        {
+          id: 'sched-2',
+          title: 'Installment 2',
+          amount: 500000,
+          due_date: '2099-12-31',
+          status: 'pending',
+        },
+      ],
+    };
+
+    const { container } = render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={paidAllotment}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    expect(container.textContent).not.toContain('Overdue:');
+  });
 });

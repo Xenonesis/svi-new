@@ -19,6 +19,7 @@ import {
   Target,
   Shuffle,
   AlertCircle,
+  AlertTriangle,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, AllotmentFinancials } from './types';
@@ -99,9 +100,34 @@ export function PortalAllotmentTableRow({
   const totalPaid = financials?.totalPaid ?? 0;
   const balanceDue =
     financials?.balanceDue ?? (dealValue > 0 ? Math.max(0, dealValue - totalPaid) : 0);
-  const percentCompleted =
+  const pct =
+    financials?.collectionPercentage ??
     financials?.percentCompleted ??
-    (dealValue > 0 ? Math.min(100, (totalPaid / dealValue) * 100) : 0);
+    (dealValue > 0 ? (totalPaid / dealValue) * 100 : 0);
+  const clampedPct = Math.min(Math.max(pct, 0), 100);
+  const percentCompleted = clampedPct;
+
+  const overdueSchedules = (allotment.payment_schedules || []).filter((s) => {
+    if (!s.due_date) return false;
+    const status = (s.status || '').toLowerCase().trim();
+    if (status === 'paid') return false;
+    const dueTime = new Date(s.due_date).getTime();
+    return !isNaN(dueTime) && dueTime < Date.now();
+  });
+
+  const earliestOverdue =
+    overdueSchedules.length > 0
+      ? overdueSchedules.reduce((earliest, current) => {
+          const earliestTime = new Date(earliest.due_date).getTime();
+          const currentTime = new Date(current.due_date).getTime();
+          return currentTime < earliestTime ? current : earliest;
+        })
+      : null;
+
+  const isOverdue = earliestOverdue !== null;
+  const overdueDateStr = earliestOverdue?.due_date
+    ? String(earliestOverdue.due_date).split('T')[0]
+    : '';
 
   const isRefundDone = Boolean(
     allotment.notes?.toLowerCase().includes('refund') ||
@@ -250,36 +276,48 @@ export function PortalAllotmentTableRow({
           {/* 5. Received & Progress */}
           <td className="px-4 py-3.5 align-top">
             <div className="flex flex-col gap-1">
-              <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                ₹{totalPaid.toLocaleString('en-IN')}
-              </span>
-              {dealValue > 0 && (
-                <div className="flex items-center gap-1.5">
-                  <div className="h-1.5 w-16 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
-                    <div
-                      className="h-full rounded-full bg-emerald-500 transition-all"
-                      style={{ width: `${Math.min(100, percentCompleted)}%` }}
-                    />
-                  </div>
-                  <span className="font-mono text-[10px] font-semibold text-gray-600 dark:text-gray-300">
-                    {Math.round(percentCompleted)}%
-                  </span>
-                </div>
-              )}
+              <div className="flex items-baseline justify-between gap-1">
+                <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                  ₹{totalPaid.toLocaleString('en-IN')}
+                </span>
+                <span className="font-mono text-[10px] font-semibold text-gray-600 dark:text-gray-300">
+                  {Math.round(clampedPct)}%
+                </span>
+              </div>
+              <div className="mt-1.5 h-1.5 w-full max-w-[120px] min-w-[70px] overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+                <div
+                  className={`h-full rounded-full transition-all duration-300 ${
+                    clampedPct >= 100
+                      ? 'bg-emerald-500'
+                      : clampedPct >= 40
+                        ? 'bg-indigo-600 dark:bg-indigo-400'
+                        : 'bg-amber-500'
+                  }`}
+                  style={{ width: `${clampedPct}%` }}
+                />
+              </div>
             </div>
           </td>
 
           {/* 6. Balance Due */}
           <td className="px-4 py-3.5 align-top">
-            {isRefundDone ? (
-              <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
-                Refund Done
-              </span>
-            ) : (
-              <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
-                {dealValue > 0 ? `₹${balanceDue.toLocaleString('en-IN')}` : '—'}
-              </span>
-            )}
+            <div className="flex flex-col items-start gap-1">
+              {isRefundDone ? (
+                <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                  Refund Done
+                </span>
+              ) : (
+                <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                  {dealValue > 0 ? `₹${balanceDue.toLocaleString('en-IN')}` : '—'}
+                </span>
+              )}
+              {isOverdue && (
+                <span className="mt-1 inline-flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9.5px] font-bold text-amber-700 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
+                  <AlertTriangle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+                  Overdue: {overdueDateStr}
+                </span>
+              )}
+            </div>
           </td>
 
           {/* 7. Actions */}
@@ -543,6 +581,18 @@ export function PortalAllotmentTableRow({
             <div className="mt-0.5 font-mono text-xs font-bold text-emerald-600 sm:text-sm dark:text-emerald-400">
               ₹{totalPaid.toLocaleString('en-IN')}
             </div>
+            <div className="mx-auto mt-1.5 h-1.5 w-full max-w-[120px] min-w-[70px] overflow-hidden rounded-full bg-gray-100 sm:mx-0 dark:bg-gray-700">
+              <div
+                className={`h-full rounded-full transition-all duration-300 ${
+                  clampedPct >= 100
+                    ? 'bg-emerald-500'
+                    : clampedPct >= 40
+                      ? 'bg-indigo-600 dark:bg-indigo-400'
+                      : 'bg-amber-500'
+                }`}
+                style={{ width: `${clampedPct}%` }}
+              />
+            </div>
           </div>
 
           {/* Col 3: Balance */}
@@ -558,20 +608,32 @@ export function PortalAllotmentTableRow({
                   ? `₹${balanceDue.toLocaleString('en-IN')}`
                   : '—'}
             </div>
+            {isOverdue && (
+              <span className="mt-1 inline-flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9.5px] font-bold text-amber-700 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
+                <AlertTriangle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+                Overdue: {overdueDateStr}
+              </span>
+            )}
           </div>
         </div>
 
         {/* Progress Bar & Realization Percentage */}
         {dealValue > 0 && (
           <div className="mt-2.5 flex items-center gap-2 border-t border-gray-200/60 pt-2 dark:border-white/5">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-200 dark:bg-white/10">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
               <div
-                className="h-full rounded-full bg-emerald-500 transition-all"
-                style={{ width: `${Math.min(100, percentCompleted)}%` }}
+                className={`h-full rounded-full transition-all duration-300 ${
+                  clampedPct >= 100
+                    ? 'bg-emerald-500'
+                    : clampedPct >= 40
+                      ? 'bg-indigo-600 dark:bg-indigo-400'
+                      : 'bg-amber-500'
+                }`}
+                style={{ width: `${clampedPct}%` }}
               />
             </div>
             <span className="font-mono text-[11px] font-semibold text-gray-600 dark:text-gray-300">
-              {Math.round(percentCompleted)}% Realized
+              {Math.round(clampedPct)}% Realized
             </span>
           </div>
         )}

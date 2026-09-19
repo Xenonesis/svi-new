@@ -105,7 +105,7 @@ describe('PortalAllotmentsActiveView', () => {
     render(<PortalAllotmentsActiveView {...defaultProps} />);
 
     expect(screen.getByPlaceholderText('Search by client...')).toBeDefined();
-    expect(screen.getByLabelText(/property/i)).toBeDefined();
+    expect(screen.getByRole('combobox', { name: /property/i })).toBeDefined();
     expect(screen.getByLabelText(/payment status/i)).toBeDefined();
     expect(screen.getByLabelText(/sale mode/i)).toBeDefined();
     expect(screen.getByLabelText(/advisor/i)).toBeDefined();
@@ -130,9 +130,41 @@ describe('PortalAllotmentsActiveView', () => {
       <PortalAllotmentsActiveView {...defaultProps} setSelectedProperty={setSelectedProperty} />
     );
 
-    const propertySelect = screen.getByLabelText(/property/i);
+    const propertySelect = screen.getByRole('combobox', { name: /property/i });
     fireEvent.change(propertySelect, { target: { value: 'prop-1' } });
 
     expect(setSelectedProperty).toHaveBeenCalledWith('prop-1');
+  });
+
+  it('renders interactive sort buttons for sortable headers and triggers onSort', () => {
+    const onSort = vi.fn();
+    render(
+      <PortalAllotmentsActiveView
+        {...defaultProps}
+        sortField="ref_id"
+        sortDirection="asc"
+        onSort={onSort}
+      />
+    );
+
+    const refIdBtn = screen.getByRole('button', { name: 'Sort by Ref ID' });
+    fireEvent.click(refIdBtn);
+    expect(onSort).toHaveBeenCalledWith('ref_id');
+
+    const unitBtn = screen.getByRole('button', { name: 'Sort by Unit & Property' });
+    fireEvent.click(unitBtn);
+    expect(onSort).toHaveBeenCalledWith('unit_number');
+
+    const dealValueBtn = screen.getByRole('button', { name: 'Sort by Deal Value' });
+    fireEvent.click(dealValueBtn);
+    expect(onSort).toHaveBeenCalledWith('deal_value');
+
+    const receivedBtn = screen.getByRole('button', { name: 'Sort by Received / %' });
+    fireEvent.click(receivedBtn);
+    expect(onSort).toHaveBeenCalledWith('collection_pct');
+
+    const balanceBtn = screen.getByRole('button', { name: 'Sort by Balance Due' });
+    fireEvent.click(balanceBtn);
+    expect(onSort).toHaveBeenCalledWith('balance_due');
   });
 });
