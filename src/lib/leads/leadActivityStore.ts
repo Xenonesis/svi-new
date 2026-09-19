@@ -187,7 +187,7 @@ export const leadActivityStore = {
 
       const notifications = adminProfiles.map((admin) => ({
         user_id: admin.id,
-        title: `📌 New Lead: ${data.clientName} (${data.employeeName})`,
+        title: `New Lead: ${data.clientName} (${data.employeeName})`,
         message: `Employee ${data.employeeName} added a new lead for ${data.projectInterest || 'general enquiry'}. Phone: ${data.phone}${formattedFollowUp ? ` | Follow-up: ${formattedFollowUp}` : ''}`,
         type: 'info',
         is_read: false,
@@ -236,7 +236,7 @@ export const leadActivityStore = {
 
       const notifications = adminProfiles.map((admin) => ({
         user_id: admin.id,
-        title: `🔔 Lead Follow-up: ${data.clientName}`,
+        title: `Lead Follow-up: ${data.clientName}`,
         message: `${data.employeeName} scheduled client follow-up for ${formattedFollowUp}.${data.notes ? ` Notes: "${data.notes}"` : ''}`,
         type: 'alert',
         is_read: false,

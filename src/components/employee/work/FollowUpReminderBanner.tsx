@@ -65,7 +65,7 @@ export function FollowUpReminderBanner({ leads, onSelectLead }: FollowUpReminder
         soundPlayedRef.current.add(urgent.id);
 
         followUpAudio.triggerSystemNotification(
-          `🔔 Follow-up Due: ${urgent.name}`,
+          `Follow-up Due: ${urgent.name}`,
           `You have a scheduled follow-up for ${urgent.project_interest || 'Client Enquiry'}.`
         );
       }
@@ -125,8 +125,18 @@ export function FollowUpReminderBanner({ leads, onSelectLead }: FollowUpReminder
 
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-xs font-bold text-slate-900 dark:text-white">
-                  {isOverdue ? '⚠️ Overdue Client Follow-up' : '🔔 Follow-up Reminder Due'}
+                <span className="flex items-center gap-1.5 text-xs font-bold text-slate-900 dark:text-white">
+                  {isOverdue ? (
+                    <>
+                      <AlertTriangle className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                      Overdue Client Follow-up
+                    </>
+                  ) : (
+                    <>
+                      <Bell className="h-3.5 w-3.5 shrink-0 text-blue-500" />
+                      Follow-up Reminder Due
+                    </>
+                  )}
                 </span>
                 <span className="rounded-md bg-white/80 px-1.5 py-0.5 font-mono text-[10px] font-bold text-slate-800 dark:bg-slate-800 dark:text-slate-200">
                   {new Date(activeReminder.follow_up_at!).toLocaleTimeString([], {

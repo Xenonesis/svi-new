@@ -51,7 +51,7 @@ function AdminRealtimeListeners() {
           const lead = payload.new;
           const isHandoff = lead.source === 'chatbot_handoff';
           const msg = isHandoff
-            ? `⚠️ Human Agent Handoff Needed! Guest "${lead.name}" requested to chat with an agent.`
+            ? `Human Agent Handoff Needed! Guest "${lead.name}" requested to chat with an agent.`
             : `New Chat Lead! ${lead.name} (${lead.phone || lead.email || 'No contact'}) qualified.`;
 
           toast(msg, {

@@ -10,6 +10,7 @@ import {
   Navigation,
   FileText,
   Edit2,
+  Check,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { clsx } from 'clsx';
@@ -305,8 +306,8 @@ export function TimesheetTable({
                       Late Arrival
                     </span>
                   ) : rec.punch_in_time ? (
-                    <span className="mt-0.5 inline-block text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                      On Time ✓
+                    <span className="mt-0.5 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                      <Check className="h-2.5 w-2.5" /> On Time
                     </span>
                   ) : null}
                 </td>

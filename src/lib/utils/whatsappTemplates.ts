@@ -31,17 +31,17 @@ export const WHATSAPP_TEMPLATES: Record<string, WhatsAppTemplate> = {
 
 SVI Infra Solutions ki taraf se Shivani Vatika (Kankerkhera, Meerut) project ki details neeche di gayi hain:
 
-🌟 *Shivani Vatika - 11 Highlights:*
+*Shivani Vatika - 11 Highlights:*
 • 143 Approved Gated Township
 • Immediate Registry & Dakhil Kharij
 • 24/7 Security with CCTV Surveillance
 • 30 ft. & 25 ft. Wide Concrete Roads
 • Complete Underground Sewerage & Electricity
 
-📄 *Official Brochure & Layout Map:*
+*Official Brochure & Layout Map:*
 https://sviinfra.com/brochure/shivani-vatika-11
 
-📍 *Google Maps Location:*
+*Google Maps Location:*
 https://maps.app.goo.gl/svi-shivani-vatika-11
 
 Agar aapko plot size ya pricing se related koi sawaal ho to isi WhatsApp par reply kar sakte hain.${advisorSign}`;
@@ -61,9 +61,9 @@ Agar aapko plot size ya pricing se related koi sawaal ho to isi WhatsApp par rep
 
       return `${greeting}
 
-Aapko aur aapki family ko SVI Infra Solutions ki taraf se *Shivani Vatika* par complimentary site visit ke liye invite karte hain! 🚗✨
+Aapko aur aapki family ko SVI Infra Solutions ki taraf se *Shivani Vatika* par complimentary site visit ke liye invite karte hain!
 
-🌟 *Site Visit Facility:*
+*Site Visit Facility:*
 • Free AC Cab Pick & Drop (Ghar se Site tak)
 • Direct On-Site Plot Selection & Map Inspection
 • Legal Documents (Registry/Khatauni/143) Verification
@@ -87,13 +87,13 @@ Aap is Saturday ya Sunday kab free hain? Humein confirm karein taaki hum aapke l
 
 *Shivani Vatika - Plot Sizes & Investment Options:*
 
-📐 *Available Plot Sizes:*
+*Available Plot Sizes:*
 • 50 Sq. Yards (Front 15 ft x Depth 30 ft)
 • 100 Sq. Yards (Front 20 ft x Depth 45 ft)
 • 150 Sq. Yards (Front 25 ft x Depth 54 ft)
 • 200 Sq. Yards (Corner & Park Facing)
 
-💳 *Payment & Loan Benefits:*
+*Payment & Loan Benefits:*
 • Starting from ₹18,000 / Sq. Yard*
 • Up to 80% Bank Loan Available (SBI / PNB / HDFC)
 • Easy 3-Stage Construction Friendly Payment Plan

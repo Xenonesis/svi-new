@@ -186,7 +186,13 @@ export function GeofenceStatusCard({
                   : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
               )}
             >
-              {effectiveVerified ? 'In Work Zone ✓' : 'Outside Zone'}
+              {effectiveVerified ? (
+                <span className="inline-flex items-center gap-1">
+                  <CheckCircle2 className="h-3 w-3 text-emerald-500" /> In Work Zone
+                </span>
+              ) : (
+                'Outside Zone'
+              )}
             </span>
           </div>
 
