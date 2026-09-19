@@ -167,4 +167,65 @@ describe('PortalAllotmentsActiveView', () => {
     fireEvent.click(balanceBtn);
     expect(onSort).toHaveBeenCalledWith('balance_due');
   });
+
+  it('renders 10-column table shimmer skeletons when loading in table view', () => {
+    render(<PortalAllotmentsActiveView {...defaultProps} loading={true} />);
+
+    const skeletonRows = screen.getAllByTestId('skeleton-row');
+    expect(skeletonRows).toHaveLength(5);
+    // Check that table headers for the 10 columns are rendered
+    expect(screen.getByText('Ref ID')).toBeDefined();
+    expect(screen.getByText('Unit & Property')).toBeDefined();
+    expect(screen.getByText('Sale Mode')).toBeDefined();
+    expect(screen.getByText('Client & Contact')).toBeDefined();
+    expect(screen.getByText('Advisor')).toBeDefined();
+    expect(screen.getByText('Deal Value')).toBeDefined();
+    expect(screen.getByText('Received / %')).toBeDefined();
+    expect(screen.getByText('Balance Due')).toBeDefined();
+    expect(screen.getByText('Actions')).toBeDefined();
+  });
+
+  it('renders 4 card shimmer skeletons when loading in card view', () => {
+    render(<PortalAllotmentsActiveView {...defaultProps} loading={true} />);
+
+    const cardViewBtn = screen.getByRole('button', { name: 'Card View' });
+    fireEvent.click(cardViewBtn);
+
+    const skeletonCards = screen.getAllByTestId('skeleton-card');
+    expect(skeletonCards).toHaveLength(4);
+  });
+
+  it('renders architectural empty state with filter reset CTA when filteredAllotments is empty and activeFilterCount > 0', () => {
+    const onResetFilters = vi.fn();
+    render(
+      <PortalAllotmentsActiveView
+        {...defaultProps}
+        filteredAllotments={[]}
+        activeFilterCount={3}
+        onResetFilters={onResetFilters}
+      />
+    );
+
+    expect(screen.getByText('No Allotments Found')).toBeDefined();
+    expect(
+      screen.getByText(
+        'No plot allotments match your current filter criteria. Try clearing filters or refining your search.'
+      )
+    ).toBeDefined();
+
+    const resetBtn = screen.getByRole('button', { name: /Clear All Filters \(3\)/i });
+    expect(resetBtn).toBeDefined();
+    fireEvent.click(resetBtn);
+    expect(onResetFilters).toHaveBeenCalled();
+  });
+
+  it('renders architectural empty state without reset CTA when activeFilterCount is 0', () => {
+    render(
+      <PortalAllotmentsActiveView {...defaultProps} filteredAllotments={[]} activeFilterCount={0} />
+    );
+
+    expect(screen.getByText('No Allotments Found')).toBeDefined();
+    expect(screen.getByText('No active plot allotments have been created yet.')).toBeDefined();
+    expect(screen.queryByRole('button', { name: /Clear All Filters/i })).toBeNull();
+  });
 });

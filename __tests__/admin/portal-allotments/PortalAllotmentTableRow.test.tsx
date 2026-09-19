@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { PortalAllotmentTableRow } from '@/src/components/admin/portal-allotments/PortalAllotmentTableRow';
 import type { AllotmentRecord } from '@/src/components/admin/portal-allotments/types';
 
@@ -357,5 +357,87 @@ describe('PortalAllotmentTableRow', () => {
     );
 
     expect(container.textContent).not.toContain('Overdue:');
+  });
+
+  it('renders client luxury popover when info button is clicked in table-row variant', () => {
+    const allotmentWithDetails: AllotmentRecord = {
+      ...mockAllotment,
+      metadata: {
+        ticket_id: 'SVI-TICKET-88',
+        client_address: 'Flat 402, Radhe Residency, Mathura',
+        client_phone: '+91 9876543210',
+        client_email: 'rajesh.sharma@example.com',
+      },
+      advisor_name: 'Vikram Singh',
+    };
+
+    render(
+      <table>
+        <tbody>
+          <PortalAllotmentTableRow
+            variant="table-row"
+            allotment={allotmentWithDetails}
+            isExpanded={false}
+            onToggleExpand={vi.fn()}
+            onEdit={vi.fn()}
+            onDelete={vi.fn()}
+          />
+        </tbody>
+      </table>
+    );
+
+    // Popover should not be visible initially
+    expect(screen.queryByText('Client Portfolio Details')).toBeNull();
+
+    // Click info button
+    const infoBtn = screen.getByRole('button', { name: 'View client details' });
+    fireEvent.click(infoBtn);
+
+    // Popover should be visible with details
+    const popoverTitle = screen.getByText('Client Portfolio Details');
+    expect(popoverTitle).toBeDefined();
+    const popover = popoverTitle.closest('div[class*="shadow-xl"]');
+    if (!(popover instanceof HTMLElement)) throw new Error('Popover not found');
+    expect(within(popover).getByText('Flat 402, Radhe Residency, Mathura')).toBeDefined();
+    expect(within(popover).getByText('+91 9876543210')).toBeDefined();
+    expect(within(popover).getByText('rajesh.sharma@example.com')).toBeDefined();
+    expect(within(popover).getByText('Vikram Singh')).toBeDefined();
+    expect(within(popover).getByText(/SVI-TICKET-88/)).toBeDefined();
+    // Close popover
+    const closeBtn = screen.getByRole('button', { name: 'Close client details' });
+    fireEvent.click(closeBtn);
+    expect(screen.queryByText('Client Portfolio Details')).toBeNull();
+  });
+
+  it('renders client luxury popover when info button is clicked in card variant', () => {
+    const allotmentWithDetails: AllotmentRecord = {
+      ...mockAllotment,
+      metadata: {
+        ticket_id: 'SVI-TICKET-99',
+        client_address: 'Bungalow 7, Krishna Heights, Vrindavan',
+        client_phone: '+91 9123456780',
+      },
+    };
+
+    render(
+      <PortalAllotmentTableRow
+        variant="card"
+        allotment={allotmentWithDetails}
+        isExpanded={false}
+        onToggleExpand={vi.fn()}
+        onEdit={vi.fn()}
+        onDelete={vi.fn()}
+      />
+    );
+
+    // Click info button
+    const infoBtn = screen.getByRole('button', { name: 'View client details' });
+    fireEvent.click(infoBtn);
+    const popoverTitle = screen.getByText('Client Portfolio Details');
+    expect(popoverTitle).toBeDefined();
+    const popover = popoverTitle.closest('div[class*="shadow-xl"]');
+    if (!(popover instanceof HTMLElement)) throw new Error('Popover not found');
+    expect(within(popover).getByText('Bungalow 7, Krishna Heights, Vrindavan')).toBeDefined();
+    expect(within(popover).getByText('+91 9123456780')).toBeDefined();
   });
 });

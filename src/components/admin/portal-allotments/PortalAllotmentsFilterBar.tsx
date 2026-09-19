@@ -68,6 +68,7 @@ export function PortalAllotmentsFilterBar({
           <input
             type="text"
             placeholder={searchPlaceholder}
+            aria-label="Search allotments"
             value={searchTerm}
             onChange={(e) => onSearchChange(e.target.value)}
             className="focus:ring-brand-gold w-full rounded-xl border border-gray-200 bg-slate-50/70 py-2.5 pr-9 pl-9 text-xs text-gray-900 transition-all outline-none focus:bg-white focus:ring-2 sm:text-sm dark:border-gray-700 dark:bg-gray-900/60 dark:text-white dark:focus:bg-gray-900"

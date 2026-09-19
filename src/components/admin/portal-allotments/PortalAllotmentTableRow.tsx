@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Building2,
   ChevronDown,
@@ -20,6 +20,9 @@ import {
   Shuffle,
   AlertCircle,
   AlertTriangle,
+  Info,
+  Users,
+  X,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, AllotmentFinancials } from './types';
@@ -51,6 +54,67 @@ export function PortalAllotmentTableRow({
   isSelected,
   onToggleSelect,
 }: PortalAllotmentTableRowProps) {
+  const [showClientPopover, setShowClientPopover] = useState(false);
+
+  const renderClientPopover = () => {
+    if (!showClientPopover) return null;
+    return (
+      <div className="absolute top-full left-0 z-30 mt-1.5 w-72 rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-xl dark:border-white/10 dark:bg-gray-900">
+        <div className="flex items-center justify-between border-b border-gray-100 pb-2 dark:border-white/10">
+          <span className="text-xs font-bold text-gray-900 dark:text-white">
+            Client Portfolio Details
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowClientPopover(false)}
+            aria-label="Close client details"
+            className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <div className="mt-2.5 space-y-2">
+          <div className="text-xs font-semibold text-gray-900 dark:text-white">
+            {allotment.profiles?.full_name || 'Client'}
+          </div>
+          {clientAddress && (
+            <div className="flex items-start gap-1.5 text-[11px] break-words text-gray-600 dark:text-gray-300">
+              <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-amber-600 dark:text-amber-400" />
+              <span className="break-words">{clientAddress}</span>
+            </div>
+          )}
+          {clientEmail && (
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-600 dark:text-gray-300">
+              <Mail className="h-3 w-3 shrink-0 text-sky-600 dark:text-sky-400" />
+              <a href={`mailto:${clientEmail}`} className="truncate hover:underline">
+                {clientEmail}
+              </a>
+            </div>
+          )}
+          {clientPhone && (
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-gray-600 dark:text-gray-300">
+              <Phone className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+              <a href={`tel:${clientPhone}`} className="hover:underline">
+                {clientPhone}
+              </a>
+            </div>
+          )}
+          {advisorName && (
+            <div className="flex items-center gap-1.5 text-[11px] text-gray-600 dark:text-gray-300">
+              <Users className="h-3 w-3 shrink-0 text-blue-600 dark:text-blue-400" />
+              <span>{advisorName}</span>
+            </div>
+          )}
+          <div className="pt-1">
+            <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+              ID: {ticketId || allotment.id}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   const t = useTranslations('pages.adminPortalAllotments');
 
   const unitNumber =
@@ -223,10 +287,21 @@ export function PortalAllotmentTableRow({
           </td>
 
           {/* 2. Client & Contact */}
-          <td className="px-4 py-3.5 align-top">
+          <td className="relative px-4 py-3.5 align-top">
             <div className="flex flex-col gap-1">
-              <div className="text-xs font-bold text-gray-900 dark:text-white">
-                {allotment.profiles?.full_name || 'Client'}
+              <div className="relative flex items-center gap-1">
+                <span className="text-xs font-bold text-gray-900 dark:text-white">
+                  {allotment.profiles?.full_name || 'Client'}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setShowClientPopover(!showClientPopover)}
+                  aria-label="View client details"
+                  className="hover:text-brand-gold hover:bg-brand-gold/10 rounded p-1 text-gray-400 transition-colors"
+                >
+                  <Info className="h-3 w-3" />
+                </button>
+                {renderClientPopover()}
               </div>
               {clientPhone && (
                 <a
@@ -466,14 +541,27 @@ export function PortalAllotmentTableRow({
               )}
             </div>
 
-            <h3 className="mt-1.5 truncate text-sm font-bold text-gray-900 sm:text-base dark:text-white">
-              {allotment.profiles?.full_name || 'Client'}
-              {allotment.profiles?.email && (
-                <span className="ml-1.5 text-xs font-normal text-gray-400">
-                  ({allotment.profiles?.email})
-                </span>
-              )}
-            </h3>
+            <div className="relative mt-1.5">
+              <div className="flex items-center gap-1.5">
+                <h3 className="truncate text-sm font-bold text-gray-900 sm:text-base dark:text-white">
+                  {allotment.profiles?.full_name || 'Client'}
+                  {allotment.profiles?.email && (
+                    <span className="ml-1.5 text-xs font-normal text-gray-400">
+                      ({allotment.profiles?.email})
+                    </span>
+                  )}
+                </h3>
+                <button
+                  type="button"
+                  onClick={() => setShowClientPopover(!showClientPopover)}
+                  aria-label="View client details"
+                  className="hover:text-brand-gold hover:bg-brand-gold/10 rounded p-1 text-gray-400 transition-colors"
+                >
+                  <Info className="h-3 w-3" />
+                </button>
+              </div>
+              {renderClientPopover()}
+            </div>
           </div>
         </div>
 
