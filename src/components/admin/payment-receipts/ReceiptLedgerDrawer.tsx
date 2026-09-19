@@ -21,6 +21,7 @@ import {
   MapPin,
   Target,
   Calendar,
+  Shuffle,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SavedReceipt } from './ReceiptTypes';
@@ -580,7 +581,8 @@ export function ReceiptLedgerDrawer({
                       </span>
                     ) : displayAllotmentMode === 'Draw' ? (
                       <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 font-sans text-xs font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/50 dark:text-amber-300">
-                        🎲 Draw Allotment{' '}
+                        <Shuffle className="h-3 w-3 text-amber-600 dark:text-amber-400" /> Draw
+                        Allotment{' '}
                         {displayDrawDate && displayDrawDate !== 'Direct sell'
                           ? `• ${displayDrawDate}`
                           : displayAllotmentDate
@@ -768,9 +770,9 @@ export function ReceiptLedgerDrawer({
                         <div className="mt-0.5 flex flex-wrap items-center gap-2">
                           <span className="font-bold text-gray-900 dark:text-white">
                             {displayAllotmentMode === 'Direct Sell'
-                              ? '🎯 Direct Sell'
+                              ? 'Direct Sell'
                               : displayAllotmentMode === 'Draw'
-                                ? '🎲 Draw Allotment'
+                                ? 'Draw Allotment'
                                 : displayAllotmentMode || 'Official Allotment'}
                           </span>
                           {displayDrawDate && (

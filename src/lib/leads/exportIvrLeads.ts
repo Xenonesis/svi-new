@@ -88,7 +88,7 @@ export async function exportIvrLeadsToExcel(
 
       const isHot = (duration >= 60 && isAnswered) || rec.pressed_key === '1';
       const isWarm = !isHot && isAnswered;
-      const tempLabel = isHot ? 'Hot 🔥' : isWarm ? 'Warm ⚡' : 'Cold ❄️';
+      const tempLabel = isHot ? 'Hot' : isWarm ? 'Warm' : 'Cold';
 
       const row = worksheet.addRow({
         sno: idx + 1,

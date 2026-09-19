@@ -174,7 +174,7 @@ export function StatementPdfTemplate({
                 marginTop: '2px',
               }}
             >
-              {allotmentMode === 'Direct Sell' ? '🎯 Direct Sell' : '🎲 Draw Allotment'}
+              {allotmentMode === 'Direct Sell' ? 'Direct Sell' : 'Draw Allotment'}
             </div>
           )}
           <div style={{ fontSize: '10px', color: '#94A3B8', marginTop: '2px' }}>

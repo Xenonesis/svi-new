@@ -17,6 +17,7 @@ import {
   Mail,
   MapPin,
   Target,
+  Shuffle,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, AllotmentFinancials } from './types';
@@ -129,7 +130,7 @@ export function PortalAllotmentTableRow({
                 )}
                 {allotmentMode === 'Draw' && (
                   <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-sans text-[10px] font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                    🎲 Draw{' '}
+                    <Shuffle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" /> Draw{' '}
                     {drawDate && drawDate !== 'Direct sell'
                       ? `• ${drawDate}`
                       : allotmentDate
@@ -343,7 +344,7 @@ export function PortalAllotmentTableRow({
               )}
               {allotmentMode === 'Draw' && (
                 <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-sans text-xs font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                  🎲 Draw Allotment{' '}
+                  <Shuffle className="h-3 w-3 text-amber-600 dark:text-amber-400" /> Draw Allotment{' '}
                   {drawDate && drawDate !== 'Direct sell'
                     ? `• ${drawDate}`
                     : allotmentDate
@@ -433,7 +434,12 @@ export function PortalAllotmentTableRow({
                   : 'inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[11px] font-bold text-amber-800 dark:text-amber-300'
               }
             >
-              {allotmentMode === 'Direct Sell' ? '🎯 Direct Sell' : '🎲 Draw'}
+              {allotmentMode === 'Direct Sell' ? (
+                <Target className="h-2.5 w-2.5 text-indigo-600 dark:text-indigo-400" />
+              ) : (
+                <Shuffle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+              )}
+              {allotmentMode === 'Direct Sell' ? 'Direct Sell' : 'Draw'}
               {drawDate && drawDate !== 'Direct sell'
                 ? ` (${drawDate})`
                 : allotmentDate
