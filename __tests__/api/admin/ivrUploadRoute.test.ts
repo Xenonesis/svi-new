@@ -11,6 +11,7 @@ const mockInsert = vi.fn();
 const mockUpsert = vi.fn();
 const mockSelect = vi.fn();
 const mockIn = vi.fn();
+const mockIvrSelectIn = vi.fn();
 
 vi.mock('@/src/lib/supabase/admin', () => ({
   supabaseAdmin: {
@@ -33,7 +34,7 @@ vi.mock('@/src/lib/supabase/admin', () => ({
       if (table === 'ivr_call_records') {
         return {
           select: vi.fn(() => ({
-            in: vi.fn().mockResolvedValue({ data: [], error: null }),
+            in: mockIvrSelectIn,
           })),
           insert: mockInsert.mockResolvedValue({ data: null, error: null }),
         };
@@ -57,6 +58,7 @@ import { POST } from '@/app/api/admin/leads/ivr-upload/route';
 describe('POST /api/admin/leads/ivr-upload', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockIvrSelectIn.mockResolvedValue({ data: [], error: null });
   });
 
   it('rejects unauthorized requests with 401', async () => {
@@ -94,5 +96,47 @@ describe('POST /api/admin/leads/ivr-upload', () => {
     expect(json.missed_calls).toBe(3);
     expect(json.hot_leads).toBe(3);
     expect(json.warm_leads).toBe(1);
+    expect(json.new_calls_inserted).toBe(4);
+    expect(json.duplicate_calls_skipped).toBe(0);
+  });
+
+  it('automatically filters out existing database leads using normalized timestamps', async () => {
+    // Mock that DB already has 8744875331 from 2026-09-15 15:55:29 stored in ISO format
+    mockIvrSelectIn.mockResolvedValueOnce({
+      data: [{ customer_phone: '8744875331', dial_time: '2026-09-15T15:55:29+00:00' }],
+      error: null,
+    });
+
+    const csvContent = `Number,AgentNumber,AgentName,Dialtime,CustomerAnstime,CustHangTime,Call Duration,Dialstatus,PressedKey
+8744875331,9311290543,Shivam Yadav,2026-09-15 15:55:29,2026-09-15 15:55:39,2026-09-15 15:57:22,103,NOANSWER,2
+8920260621,9870345702,Shikha Tomar,2026-09-15 15:55:10,2026-09-15 15:55:42,2026-09-15 15:57:01,79,ANSWER,1`;
+
+    const req = new NextRequest('http://localhost/api/admin/leads/ivr-upload', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ csvText: csvContent, campaignName: 'Incremental Upload Test' }),
+    });
+
+    const res = await POST(req);
+    expect(res.status).toBe(200);
+    const json = await res.json();
+
+    expect(json.processed_calls).toBe(2);
+    expect(json.duplicate_calls_skipped).toBe(1);
+    expect(json.new_calls_inserted).toBe(1);
+
+    // Verify only the genuinely new call was inserted
+    expect(mockInsert).toHaveBeenCalledWith(
+      expect.arrayContaining([
+        expect.objectContaining({
+          customer_phone: '8920260621',
+        }),
+      ])
+    );
+    // Ensure existing call was NOT passed to insert
+    const insertedArray = mockInsert.mock.calls[0][0];
+    expect(
+      insertedArray.some((c: { customer_phone: string }) => c.customer_phone === '8744875331')
+    ).toBe(false);
   });
 });

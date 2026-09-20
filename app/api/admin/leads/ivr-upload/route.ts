@@ -5,6 +5,7 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 import {
   parseIvrCsvText,
   resolveAdvisorId,
+  normalizeCallKey,
   type AdvisorProfile,
   type ParsedIvrRecord,
 } from '@/src/lib/leads/ivrParser';
@@ -65,10 +66,10 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       throw AppError.badRequest('No valid call records found in CSV file');
     }
 
-    // Deduplicate within the uploaded CSV batch itself
+    // Deduplicate within the uploaded CSV batch itself using canonical key
     const batchKeyMap = new Map<string, ParsedIvrRecord>();
     for (const r of parsedRecords) {
-      const key = `${r.customer_phone}_${r.dial_time}`;
+      const key = normalizeCallKey(r.customer_phone, r.dial_time);
       if (!batchKeyMap.has(key)) {
         batchKeyMap.set(key, r);
       }
@@ -123,11 +124,11 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         .in('customer_phone', phones);
 
       const existingSet = new Set(
-        (existingInDb || []).map((e) => `${e.customer_phone}_${e.dial_time}`)
+        (existingInDb || []).map((e) => normalizeCallKey(e.customer_phone, e.dial_time))
       );
 
       const genuinelyNewCalls = chunk.filter(
-        (c) => !existingSet.has(`${c.customer_phone}_${c.dial_time}`)
+        (c) => !existingSet.has(normalizeCallKey(c.customer_phone, c.dial_time))
       );
 
       duplicateCallsSkipped += chunk.length - genuinelyNewCalls.length;

@@ -42,6 +42,21 @@ export function cleanPhoneNumber(raw: string): string {
   }
   return digits;
 }
+/**
+ * Normalizes customer phone and dial timestamp into a canonical comparison key.
+ * Strips 'T', timezone offsets (+00:00, Z), and millisecond precision,
+ * producing: `<10_digit_phone>_<YYYY-MM-DD HH:mm:ss>`
+ */
+export function normalizeCallKey(phone: string, dialTime: string): string {
+  const cleanPhone = cleanPhoneNumber(phone);
+  const normalizedTime = (dialTime || '')
+    .replace('T', ' ')
+    .replace(/\+.*$/, '')
+    .replace(/Z$/, '')
+    .replace(/\.\d+$/, '')
+    .trim();
+  return `${cleanPhone}_${normalizedTime}`;
+}
 
 /**
  * Calculates lead temperature based on call duration and pressed key:

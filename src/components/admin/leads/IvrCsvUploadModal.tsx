@@ -20,6 +20,8 @@ import { MODAL_OVERLAY_CLASS } from '@/src/components/admin/helpers/formStyles';
 interface UploadStats {
   campaign_name: string;
   processed_calls: number;
+  new_calls_inserted?: number;
+  duplicate_calls_skipped?: number;
   unique_leads: number;
   answered_calls: number;
   missed_calls: number;
@@ -243,7 +245,25 @@ export function IvrCsvUploadModal({ isOpen, onClose, onSuccess, token }: IvrCsvU
 
               <div className="grid grid-cols-2 gap-3">
                 <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-white/5 dark:bg-white/5">
-                  <span className="text-[10px] font-bold text-gray-400 uppercase">Total Calls</span>
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">
+                    New Calls Inserted
+                  </span>
+                  <div className="mt-0.5 text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                    {(stats.new_calls_inserted ?? stats.processed_calls).toLocaleString()}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-white/5 dark:bg-white/5">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">
+                    Duplicates Filtered
+                  </span>
+                  <div className="mt-0.5 text-lg font-bold text-amber-600 dark:text-amber-400">
+                    {(stats.duplicate_calls_skipped ?? 0).toLocaleString()}
+                  </div>
+                </div>
+                <div className="rounded-xl border border-gray-100 bg-gray-50/80 p-3 dark:border-white/5 dark:bg-white/5">
+                  <span className="text-[10px] font-bold text-gray-400 uppercase">
+                    Total in CSV
+                  </span>
                   <div className="mt-0.5 text-lg font-bold text-gray-900 dark:text-white">
                     {stats.processed_calls.toLocaleString()}
                   </div>
@@ -252,7 +272,7 @@ export function IvrCsvUploadModal({ isOpen, onClose, onSuccess, token }: IvrCsvU
                   <span className="text-[10px] font-bold text-gray-400 uppercase">
                     Unique Leads
                   </span>
-                  <div className="mt-0.5 text-lg font-bold text-emerald-600 dark:text-emerald-400">
+                  <div className="mt-0.5 text-lg font-bold text-indigo-600 dark:text-indigo-400">
                     {stats.unique_leads.toLocaleString()}
                   </div>
                 </div>

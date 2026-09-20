@@ -4,6 +4,7 @@ import {
   calculateLeadTemperature,
   parseIvrCsvText,
   resolveAdvisorId,
+  normalizeCallKey,
   type AdvisorProfile,
   type ParsedIvrRecord,
 } from '@/src/lib/leads/ivrParser';
@@ -103,6 +104,19 @@ describe('ivrParser utilities', () => {
       expect(records[3].customer_phone).toBe('8057493106');
       expect(records[3].pressed_key).toBeNull();
       expect(records[3].temperature).toBe('warm'); // 22 seconds
+    });
+  });
+  describe('normalizeCallKey', () => {
+    it('normalizes timestamps across CSV space format and DB ISO/tz formats', () => {
+      const csvKey = normalizeCallKey('9971544114', '2026-09-17 17:45:07');
+      const dbKey1 = normalizeCallKey('+919971544114', '2026-09-17T17:45:07+00:00');
+      const dbKey2 = normalizeCallKey('09971544114', '2026-09-17T17:45:07.000Z');
+      const dbKey3 = normalizeCallKey('9971544114', '2026-09-17T17:45:07Z');
+
+      expect(csvKey).toBe('9971544114_2026-09-17 17:45:07');
+      expect(dbKey1).toBe(csvKey);
+      expect(dbKey2).toBe(csvKey);
+      expect(dbKey3).toBe(csvKey);
     });
   });
 });
