@@ -8,6 +8,7 @@ import { useTheme } from '@/src/components/ThemeProvider';
 import { toast } from 'sonner';
 import { DigitalStaffIdCard } from '@/src/components/employee/profile/DigitalStaffIdCard';
 import { WorkspaceSettingsCard } from '@/src/components/employee/profile/WorkspaceSettingsCard';
+import { ChangePasswordCard } from '@/src/components/employee/profile/ChangePasswordCard';
 import { BrandedLoadingState } from '@/src/components/employee/BrandedLoadingState';
 
 interface ProfileData {
@@ -107,6 +108,7 @@ export default function EmployeeProfilePage() {
 
         {/* RIGHT COLUMN: Shift Guidelines & Preferences (7 Columns) */}
         <div className="space-y-6 lg:col-span-7">
+          <ChangePasswordCard />
           <WorkspaceSettingsCard
             theme={theme}
             onThemeToggle={handleThemeToggle}
