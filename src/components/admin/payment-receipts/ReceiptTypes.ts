@@ -2,6 +2,7 @@ export interface SavedReceipt {
   id: string;
   document_type: string;
   status: string;
+  user_id?: string | null;
   created_at: string;
   form_data: {
     receiptNo: string;

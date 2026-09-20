@@ -107,8 +107,16 @@ export function calculateLedgerStatement(
   overridePlotArea?: string | number | null
 ): CustomerLedgerDetail {
   const norm = normalizeRefId(refId);
+  const cleanPlot = norm.replace(/^PLOT/, '');
   const matched = receipts
-    .filter((r) => normalizeRefId(r.form_data?.refId) === norm)
+    .filter((r) => {
+      const rRef = normalizeRefId(r.form_data?.refId);
+      const rPlot = normalizeRefId(r.form_data?.plotNo);
+      if (rRef && rRef === norm) return true;
+      if (rRef && cleanPlot && (rRef === `PLOT${cleanPlot}` || rRef === cleanPlot)) return true;
+      if (cleanPlot && rPlot && (rPlot === cleanPlot || rPlot === `PLOT${cleanPlot}`)) return true;
+      return false;
+    })
     .sort((a, b) => {
       const dateA = new Date(a.form_data?.date || a.created_at).getTime();
       const dateB = new Date(b.form_data?.date || b.created_at).getTime();

@@ -35,13 +35,16 @@ export function getAllotmentFinancials(
   allotment: AllotmentRecord,
   dealValuesMap: Record<string, number> = {}
 ): AllotmentFinancials {
-  const ticket =
-    allotment.metadata?.ticket_id ||
-    allotment.metadata?.ticketId ||
-    `SVI-${allotment.id.slice(0, 4)}`;
+  const rawTicket = allotment.metadata?.ticket_id || allotment.metadata?.ticketId;
+  const unitRef = allotment.unit_no ? `Plot ${allotment.unit_no}` : '';
+  const ticket = rawTicket || unitRef || `SVI-${allotment.id.slice(0, 4)}`;
   const normTicket = normalizeRefId(ticket);
+  const normUnit = normalizeRefId(allotment.unit_no || allotment.unit_number);
 
-  const explicitDealVal = dealValuesMap[normTicket];
+  const explicitDealVal =
+    dealValuesMap[normTicket] ||
+    (normUnit ? dealValuesMap[normUnit] : undefined) ||
+    (normUnit ? dealValuesMap[`PLOT${normUnit}`] : undefined);
   const totalCostVal = Number(allotment.metadata?.total_cost ?? allotment.total_cost) || 0;
   const dealValue =
     typeof explicitDealVal === 'number' && explicitDealVal > 0 ? explicitDealVal : totalCostVal;
@@ -317,15 +320,67 @@ export function usePortalAllotmentsAdmin() {
           ticketToAdvisor[normTicket] ||
           null;
 
+        const normUnit = normalizeId(a.unit_no || a.unit_number);
+        const normClientName = normalizeId(
+          a.profiles?.full_name || (a.metadata?.client_name as string) || ''
+        );
+
         const matchedReceipts = allReceipts.filter((r) => {
           const fd = r.form_data as Record<string, any> | undefined;
           const rRef = normalizeId(fd?.refId || fd?.ticketId);
-          return (
-            rRef &&
-            (rRef === normTicket ||
-              (normTicket && rRef.includes(normTicket)) ||
-              (normTicket && normTicket.includes(rRef)))
-          );
+          const rPlot = normalizeId(fd?.plotNo || fd?.unitNumber || fd?.unit_no);
+          const rName = normalizeId(fd?.clientName || fd?.name);
+
+          // 1. Primary Match: Ticket ID / Ref ID
+          if (normTicket && rRef) {
+            if (rRef === normTicket || rRef.includes(normTicket) || normTicket.includes(rRef)) {
+              return true;
+            }
+          }
+
+          // 2. User ID Match (if both allotment and receipt link to same profile)
+          if (r.user_id && a.user_id && r.user_id === a.user_id) {
+            return true;
+          }
+
+          // 3. Plot Number / Unit Number Match (e.g. Unit 50 === Plot 50, Unit 65 === Plot 65)
+          if (normUnit && rPlot) {
+            if (normUnit === rPlot) return true;
+            if (normUnit.length > 1 && (normUnit.includes(rPlot) || rPlot.includes(normUnit))) {
+              if (
+                !normClientName ||
+                !rName ||
+                normClientName.includes(rName) ||
+                rName.includes(normClientName)
+              ) {
+                return true;
+              }
+            }
+          }
+
+          // 4. Receipt Ref ID has Plot Number (e.g. 'PLOT50', 'PLOT65', 'PLOT6')
+          if (normUnit && rRef) {
+            if (rRef === `PLOT${normUnit}` || rRef === normUnit) {
+              return true;
+            }
+          }
+
+          // 5. Client Name + Plot Match (cross-confirmation)
+          if (
+            normClientName &&
+            rName &&
+            (normClientName.includes(rName) || rName.includes(normClientName))
+          ) {
+            if (
+              normUnit &&
+              rPlot &&
+              (normUnit === rPlot || normUnit.includes(rPlot) || rPlot.includes(normUnit))
+            ) {
+              return true;
+            }
+          }
+
+          return false;
         });
         return {
           ...a,
