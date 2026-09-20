@@ -11,6 +11,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
 import ExitIntentPopup from '@/src/components/common/ExitIntentPopup';
+import AnnouncementBar from '@/src/components/layout/AnnouncementBar';
 
 const ChatLauncher = dynamic(() => import('@/src/components/home/ChatLauncher'), {
   ssr: false,
@@ -99,6 +100,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
       <ThemeProvider>
         <ThemeAwareBackground />
         <ScrollToTop />
+        <AnnouncementBar />
         <Header />
         <main className="flex min-h-screen flex-grow flex-col overflow-x-hidden">{children}</main>
         <Footer />

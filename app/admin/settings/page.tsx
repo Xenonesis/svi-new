@@ -2,12 +2,11 @@
 
 import {
   Activity,
-  AlertCircle,
   Bell,
   Building2,
-  CheckCircle2,
   ChevronRight,
   History,
+  Megaphone,
   Mail,
   Paintbrush,
   Shield,
@@ -24,6 +23,7 @@ import { SecurityTab } from '@/src/components/admin/settings/SecurityTab';
 import { AppearanceTab } from '@/src/components/admin/settings/AppearanceTab';
 import { EmailTab } from '@/src/components/admin/settings/EmailTab';
 import { LogsTab } from '@/src/components/admin/settings/LogsTab';
+import { AnnouncementTab } from '@/src/components/admin/settings/AnnouncementTab';
 import { useSettings } from '@/src/components/admin/settings/hooks/useSettings';
 
 const TABS = [
@@ -35,6 +35,7 @@ const TABS = [
   { id: 'notifications', label: 'Notifications', icon: Bell },
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Paintbrush },
+  { id: 'announcement', label: 'Announcement Bar', icon: Megaphone },
   { id: 'logs', label: 'Activity Logs', icon: History },
 ];
 
@@ -198,6 +199,7 @@ export default function AdminSettings() {
                       handleSelectDensity={s.selectDensity}
                     />
                   )}
+                  {s.activeTab === 'announcement' && <AnnouncementTab />}
                   {s.activeTab === 'properties' && (
                     <PropertiesTab
                       token={s.token}
