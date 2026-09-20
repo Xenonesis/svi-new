@@ -36,6 +36,8 @@ import { EmailDetailPanel } from './sections/EmailDetailPanel';
 import { ConfirmDialog } from './ConfirmDialog';
 import { COMMON_TAGS, getTagStyle } from './constants';
 import { buildForwardHtml, buildReplyHtml, cleanEmailSubject } from './helpers';
+import { useInboxFilters } from './hooks/useInboxFilters';
+import { InboxToolbar } from './sections/InboxToolbar';
 
 interface RepliesTabProps {
   adminEmail: string;
@@ -62,13 +64,11 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   const prevCountRef = useRef(0);
   const pollRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Filters & Search
-  const [activeFilter, setActiveFilter] = useState<InboxFilterView>('inbox');
-  const [search, setSearch] = useState('');
-  const [selectedTag, setSelectedTag] = useState<string | null>(null);
-  const [tagFilterOpen, setTagFilterOpen] = useState(false);
-  const tagFilterRef = useRef<HTMLDivElement>(null);
-
+  // Filters & Sorting Hook
+  const filters = useInboxFilters({
+    replies,
+    starred,
+  });
   // Multi-Selection State
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [bulkTagMenuOpen, setBulkTagMenuOpen] = useState(false);
@@ -101,7 +101,6 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
       if (rowMenuRef.current && !rowMenuRef.current.contains(target)) setActiveMenuId(null);
       if (rowTagMenuRef.current && !rowTagMenuRef.current.contains(target))
         setActiveTagMenuId(null);
-      if (tagFilterRef.current && !tagFilterRef.current.contains(target)) setTagFilterOpen(false);
       if (bulkTagRef.current && !bulkTagRef.current.contains(target)) setBulkTagMenuOpen(false);
     };
     document.addEventListener('mousedown', handler);
@@ -109,76 +108,70 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   }, []);
 
   // Fetch Inbox Data
-  const fetchReplies = useCallback(
-    async (isBackground = false) => {
-      if (!isBackground) setLoading(true);
-      else setRefreshing(true);
-      setError(null);
-      try {
-        const token = await getToken();
-        if (!token) {
-          setError('Not authenticated. Please sign in.');
-          setReplies([]);
-          return;
-        }
-
-        const params = new URLSearchParams({
-          action: 'inbox',
-          filter: activeFilter,
-        });
-        if (selectedTag) params.append('tag', selectedTag);
-        if (search.trim()) params.append('search', search.trim());
-
-        const res = await fetch(`/api/admin/email?${params.toString()}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (!res.ok) {
-          setError(data?.error?.message || data?.error || 'Failed to load inbox');
-          setReplies([]);
-          return;
-        }
-
-        const emailList: InboxEmailItem[] = data.emails || [];
-        const stored = localStorage.getItem('adminEmail');
-        if (stored) setAdminEmail(stored);
-
-        // Update starred IDs set
-        const starSet = new Set<string>();
-        emailList.forEach((e) => {
-          if (e.is_starred) {
-            starSet.add(e.id);
-            if (e.email_id) starSet.add(e.email_id);
-          }
-        });
-        setStarred(starSet);
-
-        // Unread count
-        if (data.unreadCount !== undefined) {
-          setUnreadCount(data.unreadCount);
-        } else {
-          setUnreadCount(emailList.filter((e) => !e.is_read && !e.is_archived).length);
-        }
-
-        // Show toast if new emails arrived during background refresh
-        if (isBackground && prevCountRef.current > 0 && emailList.length > prevCountRef.current) {
-          const diff = emailList.length - prevCountRef.current;
-          toast.success(`${diff} new email${diff > 1 ? 's' : ''} received!`);
-        }
-        prevCountRef.current = emailList.length;
-
-        setReplies(emailList);
-        setLastFetched(new Date());
-      } catch (e) {
-        console.error('Failed to fetch replies:', e);
-        if (!isBackground) setError('Network error. Please try again.');
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
+  const fetchReplies = useCallback(async (isBackground = false) => {
+    if (!isBackground) setLoading(true);
+    else setRefreshing(true);
+    setError(null);
+    try {
+      const token = await getToken();
+      if (!token) {
+        setError('Not authenticated. Please sign in.');
+        setReplies([]);
+        return;
       }
-    },
-    [activeFilter, selectedTag, search]
-  );
+
+      const params = new URLSearchParams({
+        action: 'inbox',
+        filter: 'all',
+      });
+      const res = await fetch(`/api/admin/email?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data?.error?.message || data?.error || 'Failed to load inbox');
+        setReplies([]);
+        return;
+      }
+
+      const emailList: InboxEmailItem[] = data.emails || [];
+      const stored = localStorage.getItem('adminEmail');
+      if (stored) setAdminEmail(stored);
+
+      // Update starred IDs set
+      const starSet = new Set<string>();
+      emailList.forEach((e) => {
+        if (e.is_starred) {
+          starSet.add(e.id);
+          if (e.email_id) starSet.add(e.email_id);
+        }
+      });
+      setStarred(starSet);
+
+      // Unread count
+      if (data.unreadCount !== undefined) {
+        setUnreadCount(data.unreadCount);
+      } else {
+        setUnreadCount(emailList.filter((e) => !e.is_read && !e.is_archived).length);
+      }
+
+      // Show toast if new emails arrived during background refresh
+      if (isBackground && prevCountRef.current > 0 && emailList.length > prevCountRef.current) {
+        const diff = emailList.length - prevCountRef.current;
+        toast.success(`${diff} new email${diff > 1 ? 's' : ''} received!`);
+      }
+      prevCountRef.current = emailList.length;
+
+      setReplies(emailList);
+      setLastFetched(new Date());
+    } catch (e) {
+      console.error('Failed to fetch replies:', e);
+      if (!isBackground) setError('Network error. Please try again.');
+    } finally {
+      setLoading(false);
+      setRefreshing(false);
+    }
+  }, []);
 
   // Initial & filter change fetch
   useEffect(() => {
@@ -340,15 +333,9 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
 
     // Optimistic UI update
     setReplies((prev) =>
-      activeFilter === 'inbox' && newArchivedState
-        ? prev.filter((item) => item.id !== id && item.email_id !== id)
-        : activeFilter === 'archived' && !newArchivedState
-          ? prev.filter((item) => item.id !== id && item.email_id !== id)
-          : prev.map((item) =>
-              item.id === id || item.email_id === id
-                ? { ...item, is_archived: newArchivedState }
-                : item
-            )
+      prev.map((item) =>
+        item.id === id || item.email_id === id ? { ...item, is_archived: newArchivedState } : item
+      )
     );
     if (selectedReply && (selectedReply.id === id || selectedReply.email_id === id)) {
       setSelectedReply({ ...selectedReply, is_archived: newArchivedState });
@@ -444,14 +431,6 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
     });
   };
 
-  const handleSelectAll = () => {
-    if (selectedIds.size === replies.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(replies.map((r) => r.id)));
-    }
-  };
-
   const handleBulkMarkRead = async (isRead: boolean) => {
     if (selectedIds.size === 0) return;
     const ids = Array.from(selectedIds);
@@ -517,13 +496,7 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
 
     // Optimistic update
     setReplies((prev) =>
-      activeFilter === 'inbox' && isArchived
-        ? prev.filter((item) => !selectedIds.has(item.id))
-        : activeFilter === 'archived' && !isArchived
-          ? prev.filter((item) => !selectedIds.has(item.id))
-          : prev.map((item) =>
-              selectedIds.has(item.id) ? { ...item, is_archived: isArchived } : item
-            )
+      prev.map((item) => (selectedIds.has(item.id) ? { ...item, is_archived: isArchived } : item))
     );
 
     try {
@@ -816,8 +789,17 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
   }, [replies]);
 
   // Checkbox indeterminate state calculation
-  const isAllSelected = replies.length > 0 && selectedIds.size === replies.length;
-  const isIndeterminate = selectedIds.size > 0 && selectedIds.size < replies.length;
+  const isAllSelected =
+    filters.processed.length > 0 && selectedIds.size === filters.processed.length;
+  const isIndeterminate = selectedIds.size > 0 && selectedIds.size < filters.processed.length;
+
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setSelectedIds(new Set());
+    } else {
+      setSelectedIds(new Set(filters.processed.map((r) => r.id)));
+    }
+  };
 
   return (
     <div className="dark:bg-brand-dark-surface grid grid-cols-1 gap-0 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:grid-cols-5 dark:border-gray-700/60">
@@ -827,324 +809,75 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
           selectedReply ? 'hidden lg:col-span-2 lg:flex' : 'col-span-1 lg:col-span-5'
         }`}
       >
-        {/* ─── Header View Filter Tabs & Main Actions ─── */}
-        <div className="flex flex-col border-b border-gray-100 px-4 pt-3 pb-2 dark:border-gray-800">
-          <div className="flex flex-wrap items-center justify-between gap-2 pb-2.5">
-            <div className="flex items-center gap-2">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Inbox & Replies</h3>
-              {unreadCount > 0 && (
-                <span className="bg-brand-gold/20 text-brand-gold rounded-full px-2 py-0.5 text-xs font-bold">
-                  {unreadCount} unread
-                </span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              {unreadCount > 0 && (
-                <button
-                  onClick={handleMarkAllAsRead}
-                  className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-gray-50/80 px-2.5 py-1 text-xs font-medium text-gray-600 transition-colors hover:border-gray-300 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300"
-                  title="Mark all as read"
-                >
-                  <CheckCheck className="text-brand-gold h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Mark all read</span>
-                </button>
-              )}
-
-              <button
-                onClick={() => fetchReplies(false)}
-                disabled={loading || refreshing}
-                title="Refresh inbox"
-                className="hover:border-brand-gold/40 hover:text-brand-gold flex items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-500 transition-all disabled:opacity-50 dark:border-gray-700 dark:text-gray-400"
-              >
-                <RefreshCw className={`h-3 w-3 ${refreshing ? 'animate-spin' : ''}`} />
-                <span className="hidden sm:inline">{refreshing ? 'Syncing…' : 'Refresh'}</span>
-              </button>
-            </div>
-          </div>
-
-          {/* View Filter Switcher Pills */}
-          <div className="flex scrollbar-none items-center gap-1.5 overflow-x-auto py-1">
-            {filterTabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeFilter === tab.id;
-              return (
-                <button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveFilter(tab.id);
-                    setSelectedIds(new Set());
-                  }}
-                  className={`inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2.5 py-1 text-xs font-medium transition-all ${
-                    isActive
-                      ? 'bg-brand-navy dark:bg-brand-gold dark:text-brand-navy font-bold text-white shadow-xs'
-                      : 'text-gray-500 hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-200'
-                  }`}
-                >
-                  <Icon className={`h-3.5 w-3.5 ${isActive ? 'stroke-[2.5]' : ''}`} />
-                  {tab.label}
-                  {tab.id === 'unread' && unreadCount > 0 && (
-                    <span
-                      className={`py-0.2 ml-0.5 rounded-full px-1.5 text-[10px] ${
-                        isActive
-                          ? 'dark:text-brand-navy bg-white/20 text-white dark:bg-black/20'
-                          : 'bg-brand-gold/20 text-brand-gold'
-                      }`}
-                    >
-                      {unreadCount}
-                    </span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* ─── Search & Tag Filter Bar ─── */}
-        <div className="flex items-center gap-2 border-b border-gray-100 px-4 py-2.5 dark:border-gray-800">
-          {/* Header Select All Checkbox */}
-          <div
-            onClick={handleSelectAll}
-            role="checkbox"
-            aria-checked={isAllSelected}
-            tabIndex={0}
-            title={isAllSelected ? 'Deselect all' : 'Select all'}
-            className={`flex h-5 w-5 shrink-0 cursor-pointer items-center justify-center rounded border-2 transition-all ${
-              isAllSelected || isIndeterminate
-                ? 'border-brand-gold bg-brand-gold text-white'
-                : 'hover:border-brand-gold/50 border-gray-300 dark:border-gray-600'
-            }`}
-          >
-            {isAllSelected && <Check className="h-3.5 w-3.5 stroke-[3]" />}
-            {isIndeterminate && <MinusSquare className="h-3.5 w-3.5" />}
-          </div>
-
-          {/* Search Bar */}
-          <div className="relative flex-1">
-            <Search className="pointer-events-none absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search sender, subject, content..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="focus-gold w-full rounded-lg border border-gray-200 bg-gray-50/80 py-1.5 pr-7 pl-8 text-xs text-gray-900 placeholder-gray-400 outline-none dark:border-gray-700 dark:bg-gray-800/50 dark:text-white dark:placeholder-gray-500"
-            />
-            {search && (
-              <button
-                onClick={() => setSearch('')}
-                className="absolute top-1/2 right-2 -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
-            )}
-          </div>
-
-          {/* Tag Filter Dropdown */}
-          <div ref={tagFilterRef} className="relative">
-            <button
-              onClick={() => setTagFilterOpen(!tagFilterOpen)}
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs font-medium transition-all ${
-                selectedTag
-                  ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
-                  : 'border-gray-200 bg-gray-50/80 text-gray-600 hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800/50 dark:text-gray-300'
-              }`}
-            >
-              <Tag className="h-3.5 w-3.5" />
-              <span className="max-w-[80px] truncate">{selectedTag || 'Tag'}</span>
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${tagFilterOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
-
-            <AnimatePresence>
-              {tagFilterOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: -4, scale: 0.96 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                  className="dark:bg-brand-dark-surface absolute top-full right-0 z-40 mt-1.5 w-48 rounded-xl border border-gray-200 bg-white p-2 shadow-xl dark:border-gray-700"
-                >
-                  <button
-                    onClick={() => {
-                      setSelectedTag(null);
-                      setTagFilterOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs ${
-                      !selectedTag
-                        ? 'bg-brand-gold/10 text-brand-gold font-bold'
-                        : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5'
-                    }`}
-                  >
-                    <span>All Tags</span>
-                    {!selectedTag && <Check className="h-3.5 w-3.5" />}
-                  </button>
-
-                  <div className="my-1 border-t border-gray-100 dark:border-gray-800" />
-
-                  <div className="max-h-48 space-y-0.5 overflow-y-auto">
-                    {COMMON_TAGS.map((t) => (
-                      <button
-                        key={t.name}
-                        onClick={() => {
-                          setSelectedTag(t.name);
-                          setTagFilterOpen(false);
-                        }}
-                        className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-xs ${
-                          selectedTag === t.name
-                            ? 'bg-brand-gold/10 text-brand-gold font-bold'
-                            : 'text-gray-700 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-white/5'
-                        }`}
-                      >
-                        <span className="flex items-center gap-1.5">
-                          <span className={`h-2 w-2 rounded-full ${t.bg} border ${t.border}`} />
-                          {t.name}
-                        </span>
-                        {selectedTag === t.name && <Check className="h-3.5 w-3.5" />}
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-
-        {/* ─── Floating / Top Bulk Action Bar (When Items Selected) ─── */}
-        <AnimatePresence>
-          {selectedIds.size > 0 && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-              className="overflow-hidden border-b border-gray-100 bg-amber-50/70 px-4 py-2 dark:border-gray-800 dark:bg-amber-500/10"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-amber-800 dark:text-amber-300">
-                    {selectedIds.size} selected
-                  </span>
-                  <button
-                    onClick={() => setSelectedIds(new Set())}
-                    className="text-[11px] text-gray-500 underline hover:text-gray-700 dark:hover:text-gray-300"
-                  >
-                    Clear
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {/* Mark as Read */}
-                  <button
-                    onClick={() => handleBulkMarkRead(true)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-2xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                    title="Mark as Read"
-                  >
-                    <MailOpen className="h-3.5 w-3.5 text-blue-500" />
-                    <span className="hidden sm:inline">Read</span>
-                  </button>
-
-                  {/* Mark as Unread */}
-                  <button
-                    onClick={() => handleBulkMarkRead(false)}
-                    className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-2xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                    title="Mark as Unread"
-                  >
-                    <Mail className="h-3.5 w-3.5 text-blue-500" />
-                    <span className="hidden sm:inline">Unread</span>
-                  </button>
-
-                  {/* Archive */}
-                  <button
-                    onClick={() => handleBulkArchive(activeFilter !== 'archived')}
-                    className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-2xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                    title={activeFilter === 'archived' ? 'Move to Inbox' : 'Archive'}
-                  >
-                    <Archive className="h-3.5 w-3.5 text-amber-500" />
-                    <span className="hidden sm:inline">
-                      {activeFilter === 'archived' ? 'Unarchive' : 'Archive'}
-                    </span>
-                  </button>
-
-                  {/* Apply Tag Popover */}
-                  <div ref={bulkTagRef} className="relative">
-                    <button
-                      onClick={() => setBulkTagMenuOpen(!bulkTagMenuOpen)}
-                      className="inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs font-medium text-gray-700 shadow-2xs hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
-                      title="Apply Tag"
-                    >
-                      <Tag className="h-3.5 w-3.5 text-emerald-500" />
-                      <span className="hidden sm:inline">Tag</span>
-                    </button>
-
-                    <AnimatePresence>
-                      {bulkTagMenuOpen && (
-                        <motion.div
-                          initial={{ opacity: 0, y: -4, scale: 0.96 }}
-                          animate={{ opacity: 1, y: 0, scale: 1 }}
-                          exit={{ opacity: 0, y: -4, scale: 0.96 }}
-                          className="dark:bg-brand-dark-surface absolute top-full right-0 z-50 mt-1.5 w-52 rounded-xl border border-gray-200 bg-white p-2.5 shadow-xl dark:border-gray-700"
-                        >
-                          <p className="mb-2 text-[11px] font-bold text-gray-500 uppercase dark:text-gray-400">
-                            Apply Tag to {selectedIds.size} emails
-                          </p>
-                          <div className="mb-2.5 flex flex-wrap gap-1.5">
-                            {COMMON_TAGS.map((t) => (
-                              <button
-                                key={t.name}
-                                onClick={() => handleBulkApplyTag(t.name)}
-                                className={`rounded-md border px-2 py-1 text-[11px] font-semibold transition-all ${t.bg} ${t.color} ${t.border} hover:scale-105`}
-                              >
-                                {t.name}
-                              </button>
-                            ))}
-                          </div>
-                          <div className="flex gap-1.5 border-t border-gray-100 pt-2 dark:border-gray-800">
-                            <input
-                              type="text"
-                              placeholder="Custom tag..."
-                              value={bulkCustomTag}
-                              onChange={(e) => setBulkCustomTag(e.target.value)}
-                              onKeyDown={(e) => {
-                                if (e.key === 'Enter' && bulkCustomTag.trim()) {
-                                  e.preventDefault();
-                                  handleBulkApplyTag(bulkCustomTag.trim());
-                                }
-                              }}
-                              className="w-full rounded-md border border-gray-200 bg-gray-50 px-2 py-1 text-xs text-gray-900 outline-none dark:border-gray-700 dark:bg-gray-800 dark:text-white"
-                            />
-                            <button
-                              onClick={() => {
-                                if (bulkCustomTag.trim()) {
-                                  handleBulkApplyTag(bulkCustomTag.trim());
-                                }
-                              }}
-                              className="bg-brand-gold text-brand-navy rounded-md px-2.5 py-1 text-xs font-bold"
-                            >
-                              Add
-                            </button>
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-
-                  {/* Move to Trash */}
-                  <button
-                    onClick={() => {
-                      setDeleteTargetIds(Array.from(selectedIds));
-                      setShowDeleteConfirm(true);
-                    }}
-                    className="inline-flex items-center gap-1 rounded-lg border border-red-200 bg-white px-2 py-1 text-xs font-medium text-red-600 shadow-2xs hover:bg-red-50 dark:border-red-500/20 dark:bg-gray-800 dark:text-red-400"
-                    title="Move to Trash"
-                  >
-                    <Trash2 className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Delete</span>
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        {/* ─── Inbox Toolbar: Search, Filter, Sort, Chips, Bulk Actions ─── */}
+        <InboxToolbar
+          search={filters.search}
+          onSearchChange={filters.setSearch}
+          onSearchClear={() => filters.setSearch('')}
+          sortField={filters.sortField}
+          sortDir={filters.sortDir}
+          sortLabel={filters.sortLabel}
+          sortOpen={filters.sortOpen}
+          onSortToggle={() => {
+            filters.setSortOpen(!filters.sortOpen);
+            filters.setFilterOpen(false);
+          }}
+          onSort={filters.handleSort}
+          sortRef={filters.sortRef}
+          hasSortChanged={filters.hasSortChanged}
+          filterOpen={filters.filterOpen}
+          onFilterToggle={() => {
+            filters.setFilterOpen(!filters.filterOpen);
+            filters.setSortOpen(false);
+          }}
+          filterRef={filters.filterRef}
+          activeFilterCount={filters.activeFilterCount}
+          hasActiveFilters={filters.hasActiveFilters}
+          viewFilter={filters.viewFilter}
+          onViewFilterChange={filters.setViewFilter}
+          datePreset={filters.datePreset}
+          onDatePresetChange={filters.setDatePreset}
+          senderFilter={filters.senderFilter}
+          onSenderFilterChange={filters.setSenderFilter}
+          selectedTag={filters.selectedTag}
+          onTagChange={filters.setSelectedTag}
+          allUsedTags={allUsedTags}
+          showStarredOnly={filters.showStarredOnly}
+          onStarToggle={() => filters.setShowStarredOnly(!filters.showStarredOnly)}
+          loading={loading}
+          refreshing={refreshing}
+          onRefresh={() => fetchReplies(false)}
+          unreadCount={unreadCount}
+          onMarkAllAsRead={handleMarkAllAsRead}
+          selectedCount={selectedIds.size}
+          isAllSelected={isAllSelected}
+          isIndeterminate={isIndeterminate}
+          onSelectAll={handleSelectAll}
+          onClearSelection={() => setSelectedIds(new Set())}
+          onBulkMarkRead={handleBulkMarkRead}
+          onBulkArchive={(archive) => handleBulkArchive(archive)}
+          onBulkDelete={() => {
+            setDeleteTargetIds(Array.from(selectedIds));
+            setShowDeleteConfirm(true);
+          }}
+          onBulkApplyTag={handleBulkApplyTag}
+          bulkCustomTag={bulkCustomTag}
+          setBulkCustomTag={setBulkCustomTag}
+          bulkTagMenuOpen={bulkTagMenuOpen}
+          setBulkTagMenuOpen={setBulkTagMenuOpen}
+          bulkTagRef={bulkTagRef}
+          onDatePresetReset={() => filters.setDatePreset('all')}
+          onSenderClear={() => filters.setSenderFilter('')}
+          onTagClear={() => filters.setSelectedTag(null)}
+          onStarFilterClear={() => filters.setShowStarredOnly(false)}
+          onSortReset={() => {
+            filters.setSortField('date');
+            filters.setSortDir('desc');
+          }}
+          onClearAllFilters={filters.clearAllFilters}
+          totalCount={replies.length}
+          processedCount={filters.processed.length}
+        />
 
         {/* ─── Email List Content ─── */}
         <div className="max-h-[calc(100vh-280px)] flex-1 overflow-y-auto">
@@ -1180,27 +913,29 @@ export function RepliesTab({ adminEmail: propAdminEmail, onForward, onReply }: R
                 Retry
               </button>
             </div>
-          ) : replies.length === 0 ? (
+          ) : filters.processed.length === 0 ? (
             <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
               <Inbox className="mb-3 h-10 w-10 text-gray-300 dark:text-gray-700" />
               <h4 className="text-sm font-bold text-gray-900 dark:text-white">
-                {activeFilter === 'unread'
-                  ? 'No unread messages'
-                  : activeFilter === 'starred'
-                    ? 'No starred messages'
-                    : activeFilter === 'archived'
-                      ? 'No archived messages'
-                      : 'No emails found'}
+                {filters.hasActiveFilters ? 'No matching messages found' : 'No messages'}
               </h4>
               <p className="mt-1 max-w-xs text-xs text-gray-400">
-                {search || selectedTag
-                  ? 'Try clearing the search query or tag filter.'
+                {filters.hasActiveFilters
+                  ? 'Try clearing or adjusting your search, view, date, or tag filters.'
                   : 'New customer replies and inbound emails will appear here.'}
               </p>
+              {filters.hasActiveFilters && (
+                <button
+                  onClick={filters.clearAllFilters}
+                  className="text-brand-gold mt-3 text-xs font-bold underline"
+                >
+                  Clear all filters
+                </button>
+              )}
             </div>
           ) : (
             <div>
-              {replies.map((reply, i) => {
+              {filters.processed.map((reply, i) => {
                 const isSelected =
                   selectedReply?.id === reply.id || selectedReply?.email_id === reply.id;
                 const isChecked = selectedIds.has(reply.id);
