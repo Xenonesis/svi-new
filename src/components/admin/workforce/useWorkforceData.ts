@@ -5,6 +5,24 @@ import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
 import type { SalaryStructure } from '@/src/lib/payroll/types';
 import type { WorkforceTeam } from './types';
+export interface UseWorkforceDataReturn {
+  employees: Employee[];
+  setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>;
+  loadingEmployees: boolean;
+  teams: WorkforceTeam[];
+  salaryStructures: SalaryStructure[];
+  setSalaryStructures: React.Dispatch<React.SetStateAction<SalaryStructure[]>>;
+  pendingLeavesCount: number;
+  pendingRegularizationsCount: number;
+  liveStatuses: EmployeeLiveStatus[];
+  liveStatusMap: Map<string, EmployeeLiveStatus>;
+  refreshing: boolean;
+  fetchEmployees: () => Promise<void>;
+  fetchTeams: () => Promise<void>;
+  fetchSalaryStructures: () => Promise<void>;
+  fetchMetrics: () => Promise<void>;
+  refetchAll: () => Promise<void>;
+}
 
 const CACHE_TTL_MS = 60_000; // 60 seconds client cache for smooth tab navigation
 

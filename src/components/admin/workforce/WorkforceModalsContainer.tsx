@@ -4,6 +4,12 @@ import React from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { AlertCircle, X } from 'lucide-react';
 import dynamic from 'next/dynamic';
+import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
+import type { SalaryStructure, PayrollItem } from '@/src/lib/payroll/types';
+import type { WorkforceTeam } from './types';
+import type { UseWorkforcePageModalsReturn } from './useWorkforcePageModals';
+import type { UseWorkforceDataReturn } from './useWorkforceData';
+import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 
 const AddEmployeeModal = dynamic(
   () => import('@/src/components/admin/modals/AddEmployeeModal').then((m) => m.AddEmployeeModal),
@@ -47,71 +53,88 @@ const PayslipDocument = dynamic(
   () => import('@/src/components/admin/payroll/PayslipDocument').then((m) => m.PayslipDocument),
   { ssr: false }
 );
-import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
-import type { SalaryStructure, PayrollItem } from '@/src/lib/payroll/types';
-import type { WorkforceTeam } from './types';
 
-interface WorkforceModalsContainerProps {
+export interface WorkforceModalsContainerProps {
   token: string;
-  showAddModal: boolean;
-  setShowAddModal: (show: boolean) => void;
-  showBulkImportModal: boolean;
-  setShowBulkImportModal: (show: boolean) => void;
-  editingEmployee: Employee | null;
-  setEditingEmployee: (emp: Employee | null) => void;
-  resetTarget: Employee | null;
-  setResetTarget: (emp: Employee | null) => void;
-  performanceTarget: Employee | null;
-  setPerformanceTarget: (emp: Employee | null) => void;
+  modals?: UseWorkforcePageModalsReturn;
+  data?: UseWorkforceDataReturn;
   initialPerformanceTab?: 'kpi' | 'leads';
-  isMarkModalOpen: boolean;
-  setIsMarkModalOpen: (open: boolean) => void;
-  isDrawerOpen: boolean;
-  setIsDrawerOpen: (open: boolean) => void;
-  editingStructure: SalaryStructure | null;
-  setEditingStructure: (struct: SalaryStructure | null) => void;
-  previewPayslipItem: PayrollItem | null;
-  setPreviewPayslipItem: (item: PayrollItem | null) => void;
-  employees: Employee[];
-  setEmployees: React.Dispatch<React.SetStateAction<Employee[]>>;
-  teams: WorkforceTeam[];
-  teamsLoading: boolean;
-  onRefreshEmployees: () => void;
-  onRefreshMetrics: () => void;
-  onRefreshSalaryStructures: () => void;
-  showToast: (type: 'success' | 'error', text: string) => void;
+  showAddModal?: boolean;
+  setShowAddModal?: (show: boolean) => void;
+  showBulkImportModal?: boolean;
+  setShowBulkImportModal?: (show: boolean) => void;
+  editingEmployee?: Employee | null;
+  setEditingEmployee?: (emp: Employee | null) => void;
+  resetTarget?: Employee | null;
+  setResetTarget?: (emp: Employee | null) => void;
+  performanceTarget?: Employee | null;
+  setPerformanceTarget?: (emp: Employee | null) => void;
+  isMarkModalOpen?: boolean;
+  setIsMarkModalOpen?: (open: boolean) => void;
+  isDrawerOpen?: boolean;
+  setIsDrawerOpen?: (open: boolean) => void;
+  editingStructure?: SalaryStructure | null;
+  setEditingStructure?: (struct: SalaryStructure | null) => void;
+  previewPayslipItem?: PayrollItem | null;
+  setPreviewPayslipItem?: (item: PayrollItem | null) => void;
+  employees?: Employee[];
+  setEmployees?: React.Dispatch<React.SetStateAction<Employee[]>>;
+  teams?: WorkforceTeam[];
+  teamsLoading?: boolean;
+  onRefreshEmployees?: () => void;
+  onRefreshMetrics?: () => void;
+  onRefreshSalaryStructures?: () => void;
+  showToast?: (type: 'success' | 'error', text: string) => void;
 }
 
-export function WorkforceModalsContainer({
-  token,
-  showAddModal,
-  setShowAddModal,
-  showBulkImportModal,
-  setShowBulkImportModal,
-  editingEmployee,
-  setEditingEmployee,
-  resetTarget,
-  setResetTarget,
-  performanceTarget,
-  setPerformanceTarget,
-  initialPerformanceTab,
-  isMarkModalOpen,
-  setIsMarkModalOpen,
-  isDrawerOpen,
-  setIsDrawerOpen,
-  editingStructure,
-  setEditingStructure,
-  previewPayslipItem,
-  setPreviewPayslipItem,
-  employees,
-  setEmployees,
-  teams,
-  teamsLoading,
-  onRefreshEmployees,
-  onRefreshMetrics,
-  onRefreshSalaryStructures,
-  showToast,
-}: WorkforceModalsContainerProps) {
+export function WorkforceModalsContainer(props: WorkforceModalsContainerProps) {
+  const { token, initialPerformanceTab } = props;
+
+  const showAddModal = props.modals?.showAddModal ?? props.showAddModal ?? false;
+  const setShowAddModal = props.modals?.setShowAddModal ?? props.setShowAddModal ?? (() => {});
+  const showBulkImportModal =
+    props.modals?.showBulkImportModal ?? props.showBulkImportModal ?? false;
+  const setShowBulkImportModal =
+    props.modals?.setShowBulkImportModal ?? props.setShowBulkImportModal ?? (() => {});
+  const editingEmployee = props.modals?.editingEmployee ?? props.editingEmployee ?? null;
+  const setEditingEmployee =
+    props.modals?.setEditingEmployee ?? props.setEditingEmployee ?? (() => {});
+  const resetTarget = props.modals?.resetTarget ?? props.resetTarget ?? null;
+  const setResetTarget = props.modals?.setResetTarget ?? props.setResetTarget ?? (() => {});
+  const performanceTarget = props.modals?.performanceTarget ?? props.performanceTarget ?? null;
+  const setPerformanceTarget =
+    props.modals?.setPerformanceTarget ?? props.setPerformanceTarget ?? (() => {});
+  const isMarkModalOpen = props.modals?.isMarkModalOpen ?? props.isMarkModalOpen ?? false;
+  const setIsMarkModalOpen =
+    props.modals?.setIsMarkModalOpen ?? props.setIsMarkModalOpen ?? (() => {});
+  const isDrawerOpen = props.modals?.isDrawerOpen ?? props.isDrawerOpen ?? false;
+  const setIsDrawerOpen = props.modals?.setIsDrawerOpen ?? props.setIsDrawerOpen ?? (() => {});
+  const editingStructure = props.modals?.editingStructure ?? props.editingStructure ?? null;
+  const setEditingStructure =
+    props.modals?.setEditingStructure ?? props.setEditingStructure ?? (() => {});
+  const previewPayslipItem = props.modals?.previewPayslipItem ?? props.previewPayslipItem ?? null;
+  const setPreviewPayslipItem =
+    props.modals?.setPreviewPayslipItem ?? props.setPreviewPayslipItem ?? (() => {});
+
+  const employees = props.data?.employees ?? props.employees ?? [];
+  const setEmployees = props.data?.setEmployees ?? props.setEmployees ?? (() => {});
+  const teams = props.data?.teams ?? props.teams ?? [];
+  const teamsLoading = props.teamsLoading ?? false;
+
+  const onRefreshEmployees = () => {
+    props.data?.fetchEmployees();
+    props.onRefreshEmployees?.();
+  };
+  const onRefreshMetrics = () => {
+    props.data?.fetchMetrics();
+    props.onRefreshMetrics?.();
+  };
+  const onRefreshSalaryStructures = () => {
+    props.data?.fetchSalaryStructures();
+    props.onRefreshSalaryStructures?.();
+  };
+  const showToast = props.modals?.showToast ?? props.showToast ?? (() => {});
+
   return (
     <>
       {/* Directory Modals */}
@@ -247,6 +270,38 @@ export function WorkforceModalsContainer({
             />
           </div>
         </div>
+      )}
+
+      {/* UI Confirmation: Delete Employee Modal */}
+      {props.modals?.employeeToDelete && (
+        <DeleteConfirm
+          title="Remove Employee?"
+          itemName={props.modals.employeeToDelete.full_name}
+          itemType="employee"
+          description={`Are you sure you want to remove ${props.modals.employeeToDelete.full_name}? They will lose access to the workforce portal.`}
+          confirmLabel="Remove"
+          loading={props.modals.deletingEmployee}
+          onConfirm={props.modals.handleConfirmDeleteEmployee}
+          onClose={() => props.modals?.setEmployeeToDelete(null)}
+        />
+      )}
+
+      {/* UI Confirmation: Toggle Active Status Modal */}
+      {props.modals?.toggleActiveTarget && (
+        <DeleteConfirm
+          title={
+            props.modals.toggleActiveTarget.is_active
+              ? 'Disable Employee Account?'
+              : 'Enable Employee Account?'
+          }
+          itemName={props.modals.toggleActiveTarget.full_name}
+          itemType="employee"
+          description={`Are you sure you want to ${props.modals.toggleActiveTarget.is_active ? 'disable' : 'enable'} ${props.modals.toggleActiveTarget.full_name}'s account?`}
+          confirmLabel={props.modals.toggleActiveTarget.is_active ? 'Disable' : 'Enable'}
+          loading={props.modals.togglingActive}
+          onConfirm={props.modals.handleConfirmToggleActive}
+          onClose={() => props.modals?.setToggleActiveTarget(null)}
+        />
       )}
     </>
   );
