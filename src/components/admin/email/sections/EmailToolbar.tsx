@@ -217,48 +217,47 @@ export function EmailToolbar({
               <ArrowUpDown className="h-3.5 w-3.5" />
               <span className="hidden sm:inline">{sortLabel}</span>
             </button>
+            {/* Sort Dropdown */}
+            <AnimatePresence>
+              {sortOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute top-full right-0 z-50 mt-1.5 w-56 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                >
+                  <div className="p-1.5">
+                    {SORT_OPTIONS.map((opt) => {
+                      const isActive = sortField === opt.field;
+                      const isAsc = isActive && sortDir === 'asc';
+                      return (
+                        <button
+                          key={opt.field}
+                          onClick={() => onSort(opt.field)}
+                          className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm transition-colors ${
+                            isActive
+                              ? 'bg-brand-gold/10 text-brand-gold'
+                              : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/5'
+                          }`}
+                        >
+                          <opt.icon className="h-4 w-4" />
+                          <span className="flex-1">{opt.label}</span>
+                          {isActive && (
+                            <span className="text-brand-gold text-xs font-bold">
+                              {isAsc ? '↑' : '↓'}
+                            </span>
+                          )}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-
-          {/* Sort Dropdown */}
-          <AnimatePresence>
-            {sortOpen && (
-              <motion.div
-                initial={{ opacity: 0, y: -8 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.15 }}
-                className="absolute top-full right-0 z-50 mt-1.5 w-56 rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800"
-                onClick={(e) => e.stopPropagation()}
-                onMouseDown={(e) => e.stopPropagation()}
-              >
-                <div className="p-1.5">
-                  {SORT_OPTIONS.map((opt) => {
-                    const isActive = sortField === opt.field;
-                    const isAsc = isActive && sortDir === 'asc';
-                    return (
-                      <button
-                        key={opt.field}
-                        onClick={() => onSort(opt.field)}
-                        className={`flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-left text-sm transition-colors ${
-                          isActive
-                            ? 'bg-brand-gold/10 text-brand-gold'
-                            : 'text-gray-600 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-white/5'
-                        }`}
-                      >
-                        <opt.icon className="h-4 w-4" />
-                        <span className="flex-1">{opt.label}</span>
-                        {isActive && (
-                          <span className="text-brand-gold text-xs font-bold">
-                            {isAsc ? '↑' : '↓'}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
 
           {/* Star toggle */}
           <button
