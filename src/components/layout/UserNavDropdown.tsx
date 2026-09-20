@@ -33,7 +33,7 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
     admin: {
       badge: t('roleAdmin'),
       badgeClass: 'bg-amber-400/15 text-amber-600 dark:text-amber-400 border-amber-400/30',
-      dashboardPath: '/admin',
+      dashboardPath: '/admin/dashboard',
       dashboardLabel: t('adminPanel'),
       settingsPath: '/admin/settings',
       icon: ShieldCheck,

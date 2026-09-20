@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';
@@ -45,6 +45,37 @@ export function useAdminLogin(): AdminLoginState {
 
   const showEmailError = emailTouched && !emailIsValid;
   const showPasswordError = passwordTouched && !passwordIsValid;
+  // Redirect if already authenticated as admin
+  const authUserId = useAuthStore((s) => s.userId);
+  const authIsAdmin = useAuthStore((s) => s.isAdmin);
+  const authLoading = useAuthStore((s) => s.loading);
+
+  useEffect(() => {
+    if (!authLoading && authUserId && authIsAdmin) {
+      router.replace('/admin/dashboard');
+      return;
+    }
+
+    let mounted = true;
+    async function checkSession() {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session?.user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role, is_active')
+        .eq('id', session.user.id)
+        .maybeSingle();
+      if (mounted && profile?.role === 'admin' && profile?.is_active !== false) {
+        router.replace('/admin/dashboard');
+      }
+    }
+    checkSession();
+    return () => {
+      mounted = false;
+    };
+  }, [authLoading, authUserId, authIsAdmin, router]);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
