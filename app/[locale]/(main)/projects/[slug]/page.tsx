@@ -184,7 +184,12 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         );
       })()}
-      <ProjectNearbyPlaces nearbyPlaces={project.nearbyPlaces} isHindi={isHindi} />
+      <ProjectNearbyPlaces
+        nearbyPlaces={project.nearbyPlaces}
+        isHindi={isHindi}
+        title={isHindi ? project.nearbyHeadlineHi : project.nearbyHeadline}
+        subtitle={isHindi ? project.nearbySubheadlineHi : project.nearbySubheadline}
+      />
 
       <ProjectLocationMap
         mapEmbedUrl={project.mapEmbedUrl}

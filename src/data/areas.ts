@@ -55,7 +55,7 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     ],
     content:
       "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
-    projects: ['shivani-vatika'],
+    projects: [],
   },
   'nayla-jaipur': {
     slug: 'nayla-jaipur',

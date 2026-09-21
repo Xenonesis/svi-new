@@ -18,6 +18,8 @@ import type { NearbyPlaceItem } from '@/src/data/projects';
 type ProjectNearbyPlacesProps = {
   nearbyPlaces?: NearbyPlaceItem[];
   isHindi?: boolean;
+  title?: string;
+  subtitle?: string;
 };
 
 const getCategoryIcon = (
@@ -98,7 +100,12 @@ const getCategoryAccent = (category: NearbyPlaceItem['category']) => {
   }
 };
 
-export default function ProjectNearbyPlaces({ nearbyPlaces, isHindi }: ProjectNearbyPlacesProps) {
+export default function ProjectNearbyPlaces({
+  nearbyPlaces,
+  isHindi,
+  title,
+  subtitle,
+}: ProjectNearbyPlacesProps) {
   if (!nearbyPlaces || nearbyPlaces.length === 0) return null;
 
   const featuredPlaces = nearbyPlaces.filter((p) => p.featured);
@@ -119,14 +126,16 @@ export default function ProjectNearbyPlaces({ nearbyPlaces, isHindi }: ProjectNe
               </span>
             </div>
             <h2 className="mt-3 font-serif text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl dark:text-white">
-              {isHindi
-                ? 'औद्योगिक विकास, द्रुतगामी रेल एवं पावन तीर्थ का संगम'
-                : 'Where Industry, Rapid Transit & Sacred Horizons Converge'}
+              {title ||
+                (isHindi
+                  ? 'औद्योगिक विकास, द्रुतगामी रेल एवं पावन तीर्थ का संगम'
+                  : 'Where Industry, Rapid Transit & Sacred Horizons Converge')}
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-300">
-              {isHindi
-                ? 'प्रमुख औद्योगिक क्षेत्रों, राष्ट्रीय वेयरहाउसिंग हब, रेलवे स्टेशन एवं पवित्र खाटू धाम तक त्वरित पहुँच — सुरक्षित निवेश और उच्च पूंजीगत लाभ।'
-                : 'Immediate proximity to established state industrial zones, national warehousing hubs, railway transit, and the sacred Khatu Dham corridor.'}
+              {subtitle ||
+                (isHindi
+                  ? 'प्रमुख औद्योगिक क्षेत्रों, राष्ट्रीय वेयरहाउसिंग हब, रेलवे स्टेशन एवं पवित्र खाटू धाम तक त्वरित पहुँच — सुरक्षित निवेश और उच्च पूंजीगत लाभ।'
+                  : 'Immediate proximity to established state industrial zones, national warehousing hubs, railway transit, and the sacred Khatu Dham corridor.')}
             </p>
           </div>
 

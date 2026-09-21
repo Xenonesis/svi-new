@@ -37,6 +37,10 @@ export type ProjectData = {
   description: string;
   descriptionHi?: string;
   brochureUrl?: string;
+  nearbyHeadline?: string;
+  nearbyHeadlineHi?: string;
+  nearbySubheadline?: string;
+  nearbySubheadlineHi?: string;
   nearbyPlaces?: NearbyPlaceItem[];
   showcaseGallery?: Array<{
     id: string;
@@ -334,9 +338,11 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     titleHi: 'शिवानी वाटिका',
     location: 'Nayla, Jaipur',
     locationHi: 'नायला, जयपुर',
-    status: 'Under Construction',
-    type: 'Premier Residential',
-    typeHi: 'प्रीमियर आवासीय',
+    status: 'Under Development',
+    type: 'Premier Residential Plots',
+    typeHi: 'प्रीमियर आवासीय प्लॉट्स',
+    headerSubtitle: 'Nayla, Jaipur • Premier Residential Township',
+    headerSubtitleHi: 'नायला, जयपुर • प्रीमियर आवासीय टाउनशिप',
     heroImage: '/Shivani Vatika/shivani vatika6 frontgate.webp',
     gallery: [
       '/Shivani Vatika/shivani vatika6 frontgate.webp',
@@ -347,19 +353,240 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
       '/Shivani Vatika/shivani vatika5.webp',
       '/Shivani Vatika/shivani vatika7.webp',
     ],
-    amenities: ['Gated Community', 'Kids Play Area', 'Gymnasium', 'Rainwater Harvesting'],
-    amenitiesHi: ['गेटेड कम्युनिटी', 'बच्चों के खेलने का क्षेत्र', 'जिम', 'रेनवाटर हार्वेस्टिंग'],
-    totalPlots: '100+',
-    startingSize: '100 Sq. Yds.',
-    startingSizeHi: '100 वर्ग गज',
-    availableSizes: ['100-150 Sq. Yds.'],
+    amenities: [
+      'Gated Community Boundary Wall',
+      'Grand Entrance Gate with Security Cabin',
+      '24/7 Security & CCTV Surveillance',
+      'Wide Paved Interlocking Roads',
+      'Underground Water Supply Network',
+      'Reliable Electricity & Streetlights',
+      'Landscaped Green Parks & Gardens',
+      'Kids Play Area',
+      'Rainwater Harvesting System',
+      'Avenue Plantation & Eco Reserves',
+    ],
+    amenitiesHi: [
+      'गेटेड कम्युनिटी बाउंड्री वॉल',
+      'सुरक्षा केबिन के साथ भव्य प्रवेश द्वार',
+      '24/7 सुरक्षा और सीसीटीवी निगरानी',
+      'चौड़ी पेवर इंटरलॉकिंग सड़कें',
+      'भूमिगत जल आपूर्ति नेटवर्क',
+      'निर्बाध बिजली और स्ट्रीटलाइट्स',
+      'हरित पार्क और लैंडस्केप गार्डन',
+      'बच्चों के खेलने का सुरक्षित क्षेत्र',
+      'वर्षा जल संचयन प्रणाली',
+      'वृक्षारोपण एवं प्राकृतिक हरित वातावरण',
+    ],
+    totalPlots: '180+',
+    startingSize: '100-250 Sq. Yds.',
+    startingSizeHi: '100-250 वर्ग गज',
+    availableSizes: ['100-150 Sq. Yds.', '150-200 Sq. Yds.', '200-250 Sq. Yds.'],
     mapEmbedUrl:
       'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3557.07!2d76.0052071!3d26.9215965!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMjbCsDU1JzE3LjgiTiA3NsKwMDAnMjguMCJF!5e0!3m2!1sen!2sin!4v1789632000000!5m2!1sen!2sin',
     mapUrl:
       "https://www.google.com/maps/place/26%C2%B055'17.8%22N+76%C2%B000'28.0%22E/@26.9215965,76.0052071,845m/data=!3m2!1e3!4b1!4m4!3m3!8m2!3d26.9215965!4d76.007782?hl=en&entry=ttu&g_ep=EgoyMDI2MDkxNC4wIKXMDSoASAFQAw%3D%3D",
+    brochureUrl: '/Shivani Vatika/shivani-vatika-11th-brochure.pdf',
     description:
       "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
     descriptionHi:
       'नायला के शांत और मनोरम परिवेश में स्थित, शिवानी वाटिका आधुनिक सामुदायिक जीवन को पुनर्परिभाषित कर रही है। आवश्यक शहरी सुविधाओं से युक्त विशिष्ट रूप से तैयार किए गए आवासीय स्थान प्रदान करते हुए, यह प्रोजेक्ट एसवीआई इंफ्रा सॉल्यूशंस की गुणवत्ता, समय पर डिलीवरी और सक्रिय व शांतिपूर्ण जीवनशैली को बढ़ावा देने वाले वातावरण के निर्माण की प्रतिबद्धता को दर्शाता है। बेहतरीन कनेक्टिविटी और विकास की आशाजनक संभावनाओं के साथ, शिवानी वाटिका संतुलित जीवनशैली चाहने वाले परिवारों के लिए एक आदर्श विकल्प है।',
+    nearbyHeadline: 'Tranquil Living with Seamless Capital Highway Access',
+    nearbyHeadlineHi: 'शांत प्राकृतिक परिवेश एवं राजधानी से तीव्र कनेक्टिविटी',
+    nearbySubheadline:
+      'Immediate access to national highway network, Kanota eco-corridor, transport junctions, and historic Nayla landmarks.',
+    nearbySubheadlineHi:
+      'राष्ट्रीय राजमार्ग नेटवर्क, कानोता इको-कॉरिडोर, बस टर्मिनल और ऐतिहासिक नायला हेरिटेज तक त्वरित पहुँच।',
+    nearbyPlaces: [
+      {
+        name: 'Jaipur-Agra Highway (NH-21) / Ring Road',
+        nameHi: 'जयपुर-आगरा हाईवे (NH-21) और रिंग रोड',
+        distance: '4 km away',
+        distanceHi: '4 किमी दूर',
+        time: '~8 mins drive',
+        timeHi: '~8 मिनट',
+        category: 'highway',
+        tag: 'Fast Highway Transit',
+        tagHi: 'एक्सप्रेस कनेक्टिविटी',
+        description:
+          'Seamless arterial connectivity to Jaipur city, Dausa, and Agra via national highway network with upcoming Ring Road integration.',
+        descriptionHi:
+          'राष्ट्रीय राजमार्ग और आगामी रिंग रोड के माध्यम से जयपुर शहर, दौसा और आगरा के लिए सुगम और तीव्र कनेक्टिविटी।',
+        image: '/images/landmarks/jaipur-airport.webp',
+        featured: true,
+      },
+      {
+        name: 'Kanota Dam & Lake Resort Corridor',
+        nameHi: 'कानोता बांध और लेक रिजॉर्ट कॉरिडोर',
+        distance: '6 km away',
+        distanceHi: '6 किमी दूर',
+        time: '~10 mins drive',
+        timeHi: '~10 मिनट',
+        category: 'corridor',
+        tag: 'Scenic & Leisure Zone',
+        tagHi: 'प्राकृतिक मनोरम क्षेत्र',
+        description:
+          'Popular destination offering tranquil water bodies, boutique weekend resorts, and clean air away from urban pollution.',
+        descriptionHi:
+          'शांत जल निकायों, वीकेंड रिसॉर्ट्स और प्रदूषण मुक्त प्राकृतिक वातावरण वाला प्रसिद्ध दर्शनीय स्थल।',
+        image: '/images/landmarks/khatu-mandir.webp',
+        featured: true,
+      },
+      {
+        name: 'Nayla Central Bus Stand & Transit Hub',
+        nameHi: 'नायला बस स्टैंड और ट्रांसपोर्ट हब',
+        distance: '1.5 km away',
+        distanceHi: '1.5 किमी दूर',
+        time: '~3 mins drive',
+        timeHi: '~3 मिनट',
+        category: 'highway',
+        tag: 'Daily Commute',
+        tagHi: 'दैनिक परिवहन सुविधा',
+        description:
+          'Frequent local buses and shared transit connecting directly to Transport Nagar, Ghat Ki Guni, and eastern Jaipur.',
+        descriptionHi:
+          'ट्रांसपोर्ट नगर, घाट की गूणी और पूर्वी जयपुर के लिए निरंतर लोकल बस और परिवहन कनेक्टिविटी।',
+        image: '/images/landmarks/renwal-station.webp',
+        featured: true,
+      },
+      {
+        name: 'Community Healthcare & Hospital',
+        nameHi: 'सामुदायिक स्वास्थ्य केंद्र एवं अस्पताल',
+        distance: '3.5 km away',
+        distanceHi: '3.5 किमी दूर',
+        time: '~7 mins drive',
+        timeHi: '~7 मिनट',
+        category: 'civic',
+        tag: 'Medical Support',
+        tagHi: 'चिकित्सा सुविधाएं',
+        description:
+          'Nearby 24/7 medical centers, pharmacies, and clinics ensuring prompt healthcare accessibility for township residents.',
+        descriptionHi:
+          'टाउनशिप निवासियों के लिए 24/7 प्राथमिक स्वास्थ्य केंद्र, फार्मेसी और त्वरित चिकित्सा सेवाएं उपलब्ध।',
+        image: '/images/landmarks/medical-hospital.webp',
+        featured: true,
+      },
+      {
+        name: 'Government & Private Secondary Schools',
+        nameHi: 'विद्यालय और उच्च शिक्षण संस्थान',
+        distance: '2 km away',
+        distanceHi: '2 किमी दूर',
+        time: '~5 mins drive',
+        timeHi: '~5 मिनट',
+        category: 'civic',
+        tag: 'Academic Infrastructure',
+        tagHi: 'शैक्षणिक संस्थान',
+        description:
+          'Reputed English & Hindi medium primary and secondary schools ensuring quality education in the neighborhood.',
+        descriptionHi:
+          'आस-पास प्रतिष्ठित अंग्रेजी और हिंदी माध्यम के प्राथमिक व माध्यमिक स्कूल उपलब्ध।',
+        image: '/images/landmarks/schools-colleges.webp',
+      },
+      {
+        name: 'Historic Nayla Fort & Heritage Area',
+        nameHi: 'ऐतिहासिक नायला फोर्ट और हेरिटेज जोन',
+        distance: '2.5 km away',
+        distanceHi: '2.5 किमी दूर',
+        time: '~6 mins drive',
+        timeHi: '~6 मिनट',
+        category: 'temple',
+        tag: 'Heritage Tourism',
+        tagHi: 'विरासत एवं पर्यटन',
+        description:
+          'World-famous heritage site visited by international dignitaries, elevating local cultural prestige and property appreciation.',
+        descriptionHi:
+          'विश्व प्रसिद्ध ऐतिहासिक धरोहर स्थल जो क्षेत्र की सांस्कृतिक पहचान और प्रॉपर्टी की मांग को गति देता है।',
+        image: '/images/landmarks/civic-institutions.webp',
+      },
+      {
+        name: 'Jaipur Urban Center (Ghat Ki Guni / Transport Nagar)',
+        nameHi: 'जयपुर अर्बन सेंटर (घाट की गूणी / ट्रांसपोर्ट नगर)',
+        distance: '18 km away',
+        distanceHi: '18 किमी दूर',
+        time: '~25 mins drive',
+        timeHi: '~25 मिनट',
+        category: 'corridor',
+        tag: 'City Center Access',
+        tagHi: 'मुख्य शहर तक पहुंच',
+        description:
+          'Direct signal-free connectivity to Jaipur main city markets, business hubs, and administrative zones.',
+        descriptionHi:
+          'जयपुर मुख्य शहर के बाजारों, व्यापारिक केंद्रों और प्रशासनिक क्षेत्रों के लिए सीधी सड़क कनेक्टिविटी।',
+        image: '/images/landmarks/dmic-freight.webp',
+      },
+      {
+        name: 'Local Commercial Market & Banking Hub',
+        nameHi: 'स्थानीय व्यावसायिक मार्केट और बैंकिंग हब',
+        distance: '2 km away',
+        distanceHi: '2 किमी दूर',
+        time: '~4 mins drive',
+        timeHi: '~4 मिनट',
+        category: 'industry',
+        tag: 'Daily Conveniences',
+        tagHi: 'दैनिक व्यापारिक सुविधाएं',
+        description:
+          'Retail shopping centers, daily convenience stores, ATMs, and branch banking ensuring self-sufficient community living.',
+        descriptionHi:
+          'दैनिक उपयोग की वस्तुओं के रिटेल स्टोर्स, किराना बाजार, एटीएम और बैंकिंग सेवाएं निकट उपलब्ध।',
+        image: '/images/landmarks/commercial-market.webp',
+      },
+    ],
+    showcaseGallery: [
+      {
+        id: 'master-plan',
+        title: 'Master Plan · Gated Community',
+        titleHi: 'मास्टर प्लान · गेटेड कम्युनिटी',
+        subtitle:
+          '100-250 Sq. Yds. planned residential layouts with wide internal avenues and green reserves',
+        subtitleHi:
+          'चौड़ी आंतरिक सड़कों और हरित क्षेत्र के साथ 100-250 वर्ग गज के सुनियोजित प्लॉट्स',
+        tag: 'Master Blueprint',
+        image: '/Shivani Vatika/shivani vatika.webp',
+        pdfUrl: '/Shivani Vatika/shivani-vatika-11th-brochure.pdf',
+        colSpan: 'single',
+      },
+      {
+        id: 'grand-entrance',
+        title: 'Grand Entrance Gateway',
+        titleHi: 'भव्य मुख्य प्रवेश द्वार',
+        subtitle: 'Secured entrance archway with 24/7 guarded security cabin and boundary wall',
+        subtitleHi: '24/7 सुरक्षा केबिन और मजबूत बाउंड्री वॉल के साथ भव्य मुख्य प्रवेश द्वार',
+        tag: 'Architecture',
+        image: '/Shivani Vatika/shivani vatika6 frontgate.webp',
+        colSpan: 'single',
+      },
+      {
+        id: 'internal-roads',
+        title: 'Wide Paved Roads & Drainage',
+        titleHi: 'चौड़ी पेवर सड़कें और जल निकासी',
+        subtitle: 'Engineered interlocking concrete paver roads built for all-weather durability',
+        subtitleHi:
+          'सभी मौसमों में टिकाऊ मजबूत इंटरलॉकिंग पेवर रोड्स और व्यवस्थित जल निकासी व्यवस्था',
+        tag: 'Infrastructure',
+        image: '/Shivani Vatika/shivani vatika3.webp',
+        colSpan: 'single',
+      },
+      {
+        id: 'landscaped-parks',
+        title: 'Lush Landscaped Green Reserves',
+        titleHi: 'हरित लैंडस्केप पार्क और ओपन स्पेस',
+        subtitle:
+          'Dedicated parks and tree-lined avenues promoting serene, eco-friendly community living',
+        subtitleHi:
+          'शांत और प्रदूषण-मुक्त वातावरण के लिए समर्पित ग्रीन पार्क्स और सुंदर वृक्षारोपण',
+        tag: 'Landscape Feature',
+        image: '/Shivani Vatika/shivani vatika4.webp',
+        colSpan: 'wide',
+      },
+      {
+        id: 'peaceful-avenues',
+        title: 'Scenic Suburban Living',
+        titleHi: 'प्राकृतिक मनोरम परिवेश',
+        subtitle: 'Picturesque surroundings nestled amidst the gentle hills and fresh air of Nayla',
+        subtitleHi: 'नायला की पहाड़ियों और स्वच्छ हवा के बीच शांतिपूर्ण प्राकृतिक आवासीय वातावरण',
+        tag: 'Suburban Ambiance',
+        image: '/Shivani Vatika/shivani vatika7.webp',
+        colSpan: 'wide',
+      },
+    ],
   },
 };

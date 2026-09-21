@@ -30,7 +30,10 @@ export default function Breadcrumbs() {
       const routesKey = `routes.${path}`;
       const label = t.has(routesKey)
         ? t(routesKey)
-        : path.charAt(0).toUpperCase() + path.slice(1).replace(/-/g, ' ');
+        : path
+            .split('-')
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+            .join(' ');
       return { label, href };
     }),
   ];
