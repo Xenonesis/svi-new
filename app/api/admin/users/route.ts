@@ -21,9 +21,12 @@ export async function GET(request: NextRequest) {
 
     let query = supabaseAdmin
       .from('profiles')
-      .select('id, email, full_name, phone, property_interest, role, created_at, real_email', {
-        count: 'exact',
-      })
+      .select(
+        'id, email, full_name, phone, property_interest, role, created_at, real_email, department',
+        {
+          count: 'exact',
+        }
+      )
       .order('created_at', { ascending: false })
       .range(offset, offset + limit - 1);
 

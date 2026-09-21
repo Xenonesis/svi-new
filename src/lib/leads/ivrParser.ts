@@ -109,29 +109,39 @@ export function resolveAdvisorId(
   }
 
   // 3. Known agent aliases
-  if (normAgentName.includes('shivam')) {
-    const shivam = profiles.find((p) => p.full_name.toLowerCase().includes('shivam'));
-    if (shivam) return shivam.id;
-  }
-  if (normAgentName.includes('shikha')) {
-    const shikha = profiles.find((p) => p.full_name.toLowerCase().includes('shikha'));
-    if (shikha) return shikha.id;
-  }
-  if (normAgentName.includes('khushi')) {
-    const khushi = profiles.find((p) => p.full_name.toLowerCase().includes('khushi'));
-    if (khushi) return khushi.id;
-  }
-  if (normAgentName.includes('manish')) {
-    const manish = profiles.find((p) => p.full_name.toLowerCase().includes('manish'));
-    if (manish) return manish.id;
-  }
-  if (normAgentName.includes('soniya')) {
-    const soniya = profiles.find((p) => p.full_name.toLowerCase().includes('soniya'));
-    if (soniya) return soniya.id;
-  }
-  if (normAgentName.includes('kajal')) {
-    const kajal = profiles.find((p) => p.full_name.toLowerCase().includes('kajal'));
-    if (kajal) return kajal.id;
+  const aliasMap: Record<string, string[]> = {
+    deepa: ['deepa'],
+    ruby: ['ruby'],
+    riya: ['riya'],
+    arbaaz: ['arbaaz', 'arwaz'],
+    khushbu: ['khushbu', 'khusboo', 'kushbo'],
+    ananya: ['ananya', 'anaya'],
+    shubham: ['shubham'],
+    raghvendra: ['raghvendra', 'ragvendra'],
+    gaurav: ['gaurav', 'gagan', 'ganga'],
+    javed: ['javed'],
+    luv: ['luv'],
+    piyush: ['piyush'],
+    prateek: ['prateek', 'prteek'],
+    suhan: ['suhan'],
+    aryan: ['aryan'],
+    dheeraj: ['dheeraj', 'dhiraj'],
+    deepak: ['deepak'],
+    santosh: ['santosh'],
+    shashank: ['shashank'],
+    shivam: ['shivam'],
+    shikha: ['shikha'],
+    khushi: ['khushi'],
+    manish: ['manish'],
+    soniya: ['soniya'],
+    kajal: ['kajal'],
+  };
+
+  for (const [keyName, aliases] of Object.entries(aliasMap)) {
+    if (aliases.some((alias) => normAgentName.includes(alias))) {
+      const match = profiles.find((p) => p.full_name.toLowerCase().includes(keyName));
+      if (match) return match.id;
+    }
   }
 
   return null;

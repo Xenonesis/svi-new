@@ -238,6 +238,11 @@ export function DashboardUsersTable({
                             <span className="text-base font-bold text-gray-900 dark:text-white">
                               {u.full_name}
                             </span>
+                            {u.department && (
+                              <span className="rounded-md border border-indigo-500/20 bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:border-indigo-400/20 dark:bg-indigo-500/10 dark:text-indigo-400">
+                                {u.department}
+                              </span>
+                            )}
                             {u.is_active === false && (
                               <span className="rounded-md border border-red-500/20 bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
                                 Inactive
@@ -468,6 +473,11 @@ export function DashboardUsersTable({
                                     onRoleChange={(newRole) => onRoleChange(u, newRole)}
                                     disabled={u.id === currentAdminId}
                                   />
+                                )}
+                                {u.department && (
+                                  <span className="rounded-md border border-indigo-500/20 bg-indigo-50 px-1.5 py-0.5 text-[10px] font-semibold text-indigo-600 dark:border-indigo-400/20 dark:bg-indigo-500/10 dark:text-indigo-400">
+                                    {u.department}
+                                  </span>
                                 )}
                                 {u.is_active === false && (
                                   <span className="rounded-md border border-red-500/20 bg-red-50 px-1.5 py-0.5 text-[10px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">

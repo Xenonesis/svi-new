@@ -12,6 +12,7 @@ export interface UserProfile {
   notes: string | null;
   real_email?: string | null;
   is_active?: boolean;
+  department?: string | null;
 }
 
 export interface CreateUserPayload {

@@ -899,6 +899,11 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                                 </h4>
                                 <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
                                   <span className="capitalize">{advisor.role || 'Advisor'}</span>
+                                  {advisor.is_active === false && (
+                                    <span className="py-0.2 rounded-md border border-red-500/20 bg-red-50 px-1 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
+                                      Disabled
+                                    </span>
+                                  )}
                                   {advisor.phone && (
                                     <>
                                       <span>&bull;</span>
@@ -1067,6 +1072,11 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                                 </h4>
                                 <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
                                   <span className="capitalize">{advisor.role || 'Advisor'}</span>
+                                  {advisor.is_active === false && (
+                                    <span className="py-0.2 rounded-md border border-red-500/20 bg-red-50 px-1 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
+                                      Disabled
+                                    </span>
+                                  )}
                                   {advisor.phone && (
                                     <>
                                       <span>&bull;</span>
@@ -1246,6 +1256,11 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                           </p>
                           <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
                             <span className="capitalize">{advisor.role || 'Advisor'}</span>
+                            {advisor.is_active === false && (
+                              <span className="py-0.2 rounded-md border border-red-500/20 bg-red-50 px-1 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
+                                Disabled
+                              </span>
+                            )}
                             {advisor.phone && (
                               <>
                                 <span>&bull;</span>

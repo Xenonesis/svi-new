@@ -54,13 +54,11 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const timeRange = searchParams.get('timeRange') || 'all'; // all, today, week, month
     const advisorFilter = searchParams.get('advisor_id') || 'all';
 
-    // 1. Fetch active employees & advisors
+    // 1. Fetch employees & advisors (including disabled ones so their historical data/leads are displayed)
     const { data: employees } = await supabaseAdmin
       .from('profiles')
       .select('id, full_name, phone, role, is_active')
-      .eq('is_active', true)
       .in('role', ['employee', 'admin']);
-
     const advisorMap = new Map<string, AdvisorPerformanceMetric>();
     const nameToId = new Map<string, string>();
 
@@ -70,6 +68,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         advisor_name: emp.full_name.trim(),
         phone: emp.phone || null,
         role: emp.role || 'employee',
+        is_active: emp.is_active ?? true,
         total_calls: 0,
         answered_calls: 0,
         missed_calls: 0,

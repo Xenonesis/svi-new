@@ -3,6 +3,7 @@ export interface AdvisorPerformanceMetric {
   advisor_name: string;
   phone?: string | null;
   role?: string | null;
+  is_active?: boolean;
   total_calls: number;
   answered_calls: number;
   missed_calls: number;

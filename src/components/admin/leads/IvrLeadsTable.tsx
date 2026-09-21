@@ -302,6 +302,11 @@ export function AdvisorFilterDropdown({
                         {initials}
                       </div>
                       <span className="truncate">{emp.full_name}</span>
+                      {emp.is_active === false && (
+                        <span className="rounded-md border border-red-500/20 bg-red-50 px-1 py-0.5 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
+                          Disabled
+                        </span>
+                      )}
                     </div>
                     {isSelected && <Check className="text-brand-gold h-3.5 w-3.5 shrink-0" />}
                   </button>
