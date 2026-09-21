@@ -22,6 +22,29 @@ function safeIsoDate(raw?: string | null): string {
     return '';
   }
 }
+async function findAuthUserByEmail(email: string): Promise<string | null> {
+  const cleanEmail = email.trim().toLowerCase();
+
+  // 1. Fast profile lookup
+  const { data: prof } = await supabaseAdmin
+    .from('profiles')
+    .select('id')
+    .ilike('email', cleanEmail)
+    .maybeSingle();
+  if (prof?.id) return prof.id;
+
+  // 2. Bounded paginated search in Supabase Auth (max 5 pages = 500 users)
+  let page = 1;
+  while (page <= 5) {
+    const { data: usersList } = await supabaseAdmin.auth.admin.listUsers({ page, perPage: 100 });
+    if (!usersList?.users || usersList.users.length === 0) break;
+    const match = usersList.users.find((u) => u.email?.toLowerCase() === cleanEmail);
+    if (match) return match.id;
+    if (!('nextPage' in usersList) || !usersList.nextPage) break;
+    page = usersList.nextPage;
+  }
+  return null;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -67,7 +90,7 @@ export async function POST(request: NextRequest) {
         const { data: existingProf } = await supabaseAdmin
           .from('profiles')
           .select('id')
-          .eq('email', email)
+          .ilike('email', email)
           .maybeSingle();
         if (existingProf) profileId = existingProf.id;
       }
@@ -102,16 +125,12 @@ export async function POST(request: NextRequest) {
         });
 
         if (authErr) {
-          // If already registered in auth, look up user
+          // If already registered in auth, safely resolve user ID
           if (authErr.message.includes('already been registered') || authErr.status === 422) {
-            const { data: usersList } = await supabaseAdmin.auth.admin.listUsers();
-            const existingUser = usersList?.users.find((u) => u.email === email);
-            if (existingUser) {
-              profileId = existingUser.id;
-            }
+            profileId = await findAuthUserByEmail(email);
           }
           if (!profileId) {
-            console.error(`Failed to create auth user for ${cleanTicketId}:`, authErr);
+            console.error(`Failed to resolve auth user for ${cleanTicketId}:`, authErr);
             continue;
           }
         } else if (authData.user) {
