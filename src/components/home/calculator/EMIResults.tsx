@@ -9,6 +9,7 @@ interface EMIResultsProps {
   totalInterest: number;
   projectedValuation: number;
   isNoCostEmi?: boolean;
+  isOneTime?: boolean;
   paymentMonths?: number | null;
 }
 
@@ -18,17 +19,27 @@ export default function EMIResults({
   totalInterest,
   projectedValuation,
   isNoCostEmi = false,
+  isOneTime = false,
   paymentMonths = null,
 }: EMIResultsProps) {
-  const headlineLabel = isNoCostEmi
-    ? 'MONTHLY INSTALLMENT · 0% INTEREST'
-    : 'ESTIMATED MONTHLY INSTALLMENT';
+  const headlineLabel = isOneTime
+    ? 'TOTAL OUTFLOW · FULL PAYMENT'
+    : isNoCostEmi
+      ? 'MONTHLY INSTALLMENT · 0% INTEREST'
+      : 'ESTIMATED MONTHLY INSTALLMENT';
 
   return (
     <div className="dark:border-brand-gold/30 relative overflow-hidden rounded-2xl border border-amber-500/30 bg-slate-900 p-6 text-white shadow-2xl md:p-8">
       <div className="pointer-events-none absolute top-0 right-0 h-32 w-32 rounded-full bg-amber-500/10 blur-2xl" />
 
-      {isNoCostEmi && (
+      {isOneTime && (
+        <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-amber-500/15 px-3 py-1 text-[10px] font-bold tracking-widest text-amber-400 uppercase">
+          <Tag size={12} />
+          One-Time Payment Plan (Best Rate)
+        </div>
+      )}
+
+      {isNoCostEmi && !isOneTime && (
         <div className="mb-4 inline-flex items-center gap-1.5 rounded-full bg-emerald-500/15 px-3 py-1 text-[10px] font-bold tracking-widest text-emerald-400 uppercase">
           <Tag size={12} />
           No Cost EMI Offer
@@ -40,21 +51,28 @@ export default function EMIResults({
           {headlineLabel}
         </span>
         <div className="dark:text-brand-gold mt-2 font-serif text-4xl font-bold text-amber-400 md:text-5xl">
-          ₹ {monthlyEmi.toLocaleString('en-IN')}
+          ₹{' '}
+          {isOneTime
+            ? Math.round(loanAmountLakhs * 100000).toLocaleString('en-IN')
+            : monthlyEmi.toLocaleString('en-IN')}
           <span className="ml-2 font-sans text-xs font-normal text-gray-300">
-            {paymentMonths ? `/ month × ${paymentMonths} mo` : '/ month'}
+            {isOneTime ? '(One-Time)' : paymentMonths ? `/ month × ${paymentMonths} mo` : '/ month'}
           </span>
         </div>
-        {isNoCostEmi && (
+        {isOneTime ? (
+          <p className="mt-2 text-[10px] text-amber-300/80">
+            Best upfront price · Zero interest · Direct registry ownership
+          </p>
+        ) : isNoCostEmi ? (
           <p className="mt-2 text-[10px] text-emerald-400/80">
             Zero interest · Zero processing fees · Pay only the plot value
           </p>
-        )}
+        ) : null}
       </div>
 
       <div className="space-y-4 border-t border-white/10 pt-4 text-xs">
         <div className="flex items-center justify-between text-gray-300">
-          <span>Principal Amount:</span>
+          <span>{isOneTime ? 'Total Plot Cost:' : 'Principal Amount:'}</span>
           <span className="font-semibold text-white">
             ₹ {Math.round(loanAmountLakhs * 100000).toLocaleString('en-IN')}
           </span>
@@ -62,7 +80,7 @@ export default function EMIResults({
         <div className="flex items-center justify-between text-gray-300">
           <span>Total Payable Interest:</span>
           <span className="font-semibold text-white">
-            {isNoCostEmi ? '₹ 0' : `₹ ${totalInterest.toLocaleString('en-IN')}`}
+            {isOneTime || isNoCostEmi ? '₹ 0' : `₹ ${totalInterest.toLocaleString('en-IN')}`}
           </span>
         </div>
 
@@ -92,7 +110,7 @@ export default function EMIResults({
           href="/contact"
           className="text-brand-navy dark:bg-brand-gold rounded-lg bg-amber-500 px-4 py-2 text-xs font-bold shadow-md transition-all hover:bg-white"
         >
-          {isNoCostEmi ? 'Book with No-Cost EMI' : 'Apply Loan'}
+          {isOneTime ? 'Book Plot Directly' : isNoCostEmi ? 'Book with No-Cost EMI' : 'Apply Loan'}
         </Link>
       </div>
     </div>

@@ -38,6 +38,17 @@ export type ProjectData = {
   descriptionHi?: string;
   brochureUrl?: string;
   nearbyPlaces?: NearbyPlaceItem[];
+  showcaseGallery?: Array<{
+    id: string;
+    title: string;
+    titleHi?: string;
+    subtitle: string;
+    subtitleHi?: string;
+    tag: string;
+    image: string;
+    colSpan?: 'single' | 'wide';
+    pdfUrl?: string;
+  }>;
 };
 
 export const PROJECTS_DB: Record<string, ProjectData> = {
@@ -92,6 +103,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     availableSizes: ['80-150 Sq. Yds.', '150-200 Sq. Yds.', '200-250 Sq. Yds.'],
     mapEmbedUrl:
       'https://www.google.com/maps/embed?pb=!1m13!1m8!1m3!1d1620.527332206488!2d75.422285!3d27.130247!3m2!1i1024!2i768!4f13.1!3m2!1m1!2zMjfCsDA3JzUxLjIiTiA3NcKwMjUnMTkuMCJF!5e1!3m2!1sen!2sus!4v1784202961766!5m2!1sen!2sus',
+    mapUrl: 'https://maps.google.com/maps?q=27.130247,75.422285&z=17&hl=en',
     description:
       'Shivani Vatika 11th – A Promising Residential Society Near Khatu Shyam Ji. Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed with clear documentation and complete transparency for buyers. The township offers 230 residential plots ranging from 80 sq. yds. to 250 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure, secure society boundary, grand main gate, CCTV cameras, 24/7 security, and essential facilities.',
     descriptionHi:
@@ -211,6 +223,59 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
         descriptionHi:
           'राजकीय महाविद्यालय किशनगढ़ रेणवाल, सीनियर सेकेंडरी स्कूल, 24/7 सामुदायिक स्वास्थ्य केंद्र (CHC), एसबीआई व आईडीएफसी बैंक।',
         image: '/images/landmarks/civic-institutions.webp',
+      },
+    ],
+    showcaseGallery: [
+      {
+        id: 'master-plan',
+        title: 'Master Plan · 230 Plots',
+        titleHi: 'मास्टर प्लान · 230 प्लॉट्स',
+        subtitle: '80–250 Sq. Yds. planned residential layouts with 30ft and 24ft wide roads',
+        subtitleHi: '30 फीट और 24 फीट चौड़ी सड़कों के साथ 80-250 वर्ग गज के सुनियोजित प्लॉट्स',
+        tag: 'Master Blueprint',
+        image: '/Shivani Vatika 11/plot.webp',
+        pdfUrl: '/Shivani Vatika 11/master-plan-layout.pdf',
+        colSpan: 'single',
+      },
+      {
+        id: 'grand-entrance',
+        title: 'Arrival Court & Main Gate',
+        titleHi: 'भव्य प्रवेश द्वार और सुरक्षा गेट',
+        subtitle: 'Grand entrance archway with 24/7 security cabin and perimeter fencing',
+        subtitleHi: '24/7 सुरक्षा केबिन और बाउंड्री वॉल के साथ भव्य मुख्य प्रवेश द्वार',
+        tag: 'Architecture',
+        image: '/Shivani Vatika 11/gate.webp',
+        colSpan: 'single',
+      },
+      {
+        id: 'internal-roads',
+        title: 'Paved Internal Boulevards',
+        titleHi: 'चौड़ी इंटरनल सड़कें और कर्ब स्टोन',
+        subtitle: 'Durable interlocking paver roadways with proper water drainage and curbing',
+        subtitleHi: 'उचित जल निकासी और फुटपाथ के साथ टिकाऊ इंटरलॉकिंग पेवर सड़कें',
+        tag: 'Infrastructure',
+        image: '/Shivani Vatika 11/middle.webp',
+        colSpan: 'single',
+      },
+      {
+        id: 'fountain-court',
+        title: 'Fountain Court & Avenue Boulevard',
+        titleHi: 'फाउंटेन कोर्ट और इल्यूमिनेटेड बुलेवार्ड',
+        subtitle: 'Roundabout water feature and palm-lined lit walkways for evening strolls',
+        subtitleHi: 'शाम की सैर के लिए वॉटर फाउंटेन और खजूर के पेड़ों से सजी सुंदर सड़कें',
+        tag: 'Landscape Feature',
+        image: '/Shivani Vatika 11/middle2.webp',
+        colSpan: 'wide',
+      },
+      {
+        id: 'streetlights-greenery',
+        title: 'Illuminated Green Avenues',
+        titleHi: 'एलईडी स्ट्रीटलाइट्स और हरियाली',
+        subtitle: 'Eco-friendly LED lighting across all internal roads and landscaped reserves',
+        subtitleHi: 'टाउनशिप की सभी सड़कों पर पर्यावरण-अनुकूल एलईडी लाइट्स और पौधे',
+        tag: 'Night Ambience',
+        image: '/Shivani Vatika 11/middle3.webp',
+        colSpan: 'wide',
       },
     ],
   },

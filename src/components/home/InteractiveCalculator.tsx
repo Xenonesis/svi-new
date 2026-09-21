@@ -40,13 +40,14 @@ export default function InteractiveCalculator() {
   const edcAmount = hasFixedPrice ? plotSize * 150 : 0; // EDC: ₹150/sq.yd
   const derivedAmount = baseAmount + plcAmount + edcAmount;
   const derivedLoanLakhs = hasFixedPrice ? derivedAmount / 100000 : customLoanLakhs;
-  const effectiveInterestRate = hasFixedPrice && selectedPlan.noCost ? 0 : interestRate;
+  const isOneTimePlan = hasFixedPrice && plan === 'onetime';
+  const effectiveInterestRate = hasFixedPrice ? 0 : interestRate;
   const effectiveTenureYears = hasFixedPrice
     ? plan === '24months'
       ? 2
       : plan === '1year'
         ? 1
-        : tenureMonths / 12
+        : 1 / 12
     : tenureMonths / 12;
 
   const { monthlyEmi, totalInterest, projectedValuation } = useMemo(
@@ -206,44 +207,13 @@ export default function InteractiveCalculator() {
                   <p className="mt-1 text-[10px] text-gray-500 dark:text-gray-400">
                     {plotSize} sq.yd × ₹{selectedPlan.rate.toLocaleString('en-IN')}/sq.yd + PLC &
                     EDC
-                    {plan !== 'onetime' && (
+                    {isOneTimePlan ? (
+                      <> · One-time upfront full payment with 0% interest</>
+                    ) : (
                       <> · Pay over {plan === '1year' ? '12 months' : '24 months'} at 0% interest</>
                     )}
                   </p>
                 </div>
-
-                {/* Tenure Override (only for one-time) */}
-                {plan === 'onetime' && (
-                  <div>
-                    <div className="mb-2 flex items-center justify-between">
-                      <label
-                        htmlFor="calc-tenure-months"
-                        className="text-xs font-bold tracking-wider text-gray-900 uppercase dark:text-gray-200"
-                      >
-                        Loan Tenure (Months)
-                      </label>
-                      <span className="dark:text-brand-gold text-lg font-bold text-amber-600">
-                        {tenureMonths} {tenureMonths === 1 ? 'Month' : 'Months'}
-                      </span>
-                    </div>
-                    <input
-                      id="calc-tenure-months"
-                      aria-label="Loan Tenure in Months"
-                      type="range"
-                      min={1}
-                      max={24}
-                      step={1}
-                      value={tenureMonths}
-                      onChange={(e) => setTenureMonths(Number(e.target.value))}
-                      className="dark:accent-brand-gold h-2 w-full cursor-pointer appearance-none rounded-lg bg-gray-200 accent-amber-500 dark:bg-gray-700"
-                    />
-                    <div className="mt-1 flex justify-between text-[10px] font-semibold text-gray-500 dark:text-gray-400">
-                      <span>1 Mo</span>
-                      <span>12 Mo</span>
-                      <span>24 Mo</span>
-                    </div>
-                  </div>
-                )}
               </div>
             ) : (
               <EMISliders
@@ -265,6 +235,7 @@ export default function InteractiveCalculator() {
               totalInterest={totalInterest}
               projectedValuation={projectedValuation}
               isNoCostEmi={hasFixedPrice && selectedPlan.noCost}
+              isOneTime={isOneTimePlan}
               paymentMonths={plan === '1year' ? 12 : plan === '24months' ? 24 : null}
             />
           </AnimatedSection>

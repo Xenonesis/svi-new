@@ -19,6 +19,7 @@ import ProjectSizes from '@/src/components/projects/ProjectSizes';
 import ProjectActions from '@/src/components/projects/ProjectActions';
 import ProjectLocationMap from '@/src/components/projects/ProjectLocationMap';
 import ProjectNearbyPlaces from '@/src/components/projects/ProjectNearbyPlaces';
+import ProjectShowcaseGallery from '@/src/components/projects/ProjectShowcaseGallery';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -126,6 +127,7 @@ export default async function ProjectDetailPage({ params }: Props) {
               location={location}
               type={type}
               subtitle={headerSubtitle}
+              mapUrl={project.mapUrl}
             />
 
             <div className="mb-10">
@@ -151,6 +153,10 @@ export default async function ProjectDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+      {/* Township Visual Showcase (Editorial Grid & Blueprint Viewer) */}
+      {project.showcaseGallery && project.showcaseGallery.length > 0 && (
+        <ProjectShowcaseGallery items={project.showcaseGallery} isHindi={isHindi} />
+      )}
 
       {/* Area cross-link: helps crawlers discover the orphaned /areas/* pages */}
       {(() => {

@@ -44,11 +44,19 @@ export default function ProjectLocationMap({
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 rounded-full border border-amber-400/40 bg-amber-400/10 px-4 py-2 text-xs font-semibold text-amber-700 transition-all hover:border-amber-400 hover:bg-amber-400 hover:text-slate-950 sm:text-sm dark:border-amber-400/30 dark:bg-amber-400/10 dark:text-amber-400 dark:hover:bg-amber-400 dark:hover:text-slate-950"
+              className="group border-brand-gold/60 text-brand-gold hover:border-brand-gold inline-flex items-center gap-2.5 rounded-full border bg-[#161a22] px-6 py-2.5 text-sm font-bold shadow-lg transition-all duration-300 hover:scale-105 hover:bg-[#1f2430] active:scale-95"
             >
-              <MapPin size={15} />
-              <span>{isHindi ? 'गूगल मैप्स पर देखें' : 'Open in Google Maps'}</span>
-              <ExternalLink size={13} className="opacity-70" />
+              <MapPin
+                size={18}
+                className="text-brand-gold transition-transform group-hover:scale-110"
+              />
+              <span className="tracking-wide">
+                {isHindi ? 'Open in Google Maps' : 'Open in Google Maps'}
+              </span>
+              <ExternalLink
+                size={16}
+                className="text-brand-gold opacity-90 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5"
+              />
             </a>
           </div>
         )}
