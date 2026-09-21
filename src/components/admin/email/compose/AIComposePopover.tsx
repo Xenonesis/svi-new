@@ -419,19 +419,29 @@ export function AIComposePopover({
         }
         img { max-width: 100% !important; height: auto !important; }
 
-        /* Guaranteed crisp high-contrast header banner styling ONLY */
+        /* Guaranteed crisp high-contrast header banner styling */
         .header-cell h1, tr.header-row h1,
-        tr[style*="linear-gradient"] h1, td[style*="background-color:#07111e"] h1, td[style*="background-color:#0f172a"] h1 {
+        td[style*="linear-gradient"] h1, td[style*="07111e"] h1, td[style*="0f172a"] h1, td[style*="1a2744"] h1 {
           color: #ffffff !important;
+          font-family: Georgia, serif !important;
         }
         .header-cell p, tr.header-row p,
-        tr[style*="linear-gradient"] p, td[style*="background-color:#07111e"] p, td[style*="background-color:#0f172a"] p {
-          color: #cbd5e1 !important;
+        td[style*="linear-gradient"] p, td[style*="07111e"] p, td[style*="0f172a"] p, td[style*="1a2744"] p {
+          color: #e2e8f0 !important;
         }
-        .header-cell span.header-pill, .header-cell span, tr.header-row span {
+        .header-cell span, tr.header-row span,
+        td[style*="linear-gradient"] span, td[style*="07111e"] span, td[style*="0f172a"] span, td[style*="1a2744"] span {
           color: #D4AF37 !important;
         }
-
+        td[style*="linear-gradient"] img[src*="logo.png"]:not([style*="background"]),
+        td[style*="07111e"] img[src*="logo.png"]:not([style*="background"]) {
+          background-color: #ffffff !important;
+          padding: 6px 18px !important;
+          border-radius: 20px !important;
+          box-shadow: 0 4px 14px rgba(0,0,0,0.3) !important;
+          display: inline-block !important;
+          box-sizing: content-box !important;
+        }
         /* Email body text MUST be dark, legible, and high-contrast (#0f172a / #334155) */
         .email-card td:not(.header-cell):not(.footer-cell) h1,
         .email-card td:not(.header-cell):not(.footer-cell) h2,
@@ -490,25 +500,25 @@ export function AIComposePopover({
           color: #0f172a;
           font-weight: 700;
         }
-        /* Guaranteed crisp high-contrast footer text & link styling */
-        div[style*="text-align:center"] p {
-          color: #334155 !important;
+        /* Guaranteed crisp high-contrast footer text & link styling (SCOPED ONLY TO FOOTER) */
+        .footer-cell p, .email-footer p, table[role="presentation"]:last-child td[style*="text-align:center"] p,
+        table:last-of-type td[style*="text-align:center"] p {
+          color: #64748b !important;
+          font-size: 11px !important;
+          line-height: 1.5 !important;
         }
-        div[style*="text-align:center"] p:first-child {
-          color: #0f172a !important;
-          font-weight: 800 !important;
-          font-size: 13px !important;
+        .footer-cell p:first-child, .email-footer p:first-child, table[role="presentation"]:last-child td[style*="text-align:center"] p:first-child,
+        table:last-of-type td[style*="text-align:center"] p:first-child {
+          color: #475569 !important;
+          font-weight: 700 !important;
+          font-size: 12px !important;
         }
-        div[style*="text-align:center"] p:last-child {
+        .footer-cell a, .email-footer a, table[role="presentation"]:last-child td[style*="text-align:center"] a,
+        table:last-of-type td[style*="text-align:center"] a {
           color: #64748b !important;
           font-weight: 600 !important;
-        }
-        div[style*="text-align:center"] a {
-          color: #1e3a8a !important;
-          font-weight: 700 !important;
           text-decoration: underline !important;
         }
-
         /* Mobile Responsive Viewport Overrides */
         @media only screen and (max-width: 600px) {
           body { padding: 8px 4px !important; }

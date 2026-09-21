@@ -59,6 +59,39 @@ export const sanitizeEmailHtml = (html: string | null | undefined): string => {
     'src="https://www.sviinfrasolutions.com/logo.png"'
   );
 
+  // 7. Ensure dark header banners never contain dark-on-dark text and wrap naked logo in white capsule
+  result = result.replace(
+    /(<td[^>]*style=["'][^"']*(?:linear-gradient|#07111e|#0f172a|#1a2744|#0a1526|#070d18)[^"']*["'][^>]*>[\s\S]*?)(<\/td>)/gi,
+    (_match, headerContent, tdClose) => {
+      let fixedHeader = headerContent;
+
+      // Wrap naked logo in clean white pill capsule if missing
+      if (
+        !fixedHeader.includes('background-color:#ffffff') &&
+        !fixedHeader.includes('background:#ffffff')
+      ) {
+        fixedHeader = fixedHeader.replace(
+          /(<img[^>]*src=["'][^"']*logo\.png["'][^>]*>)/gi,
+          `<div style="display:inline-block;background-color:#ffffff;padding:8px 22px;border-radius:24px;box-shadow:0 4px 14px rgba(0,0,0,0.25);margin-bottom:14px;">$1</div>`
+        );
+      }
+
+      // Remove redundant "SVI INFRA SOLUTIONS" paragraph in header if logo is already present
+      fixedHeader = fixedHeader.replace(
+        /<p[^>]*>\s*SVI\s+INFRA\s+SOLUTIONS(?:\s+PVT\.?\s*LTD\.?)?\s*<\/p>/gi,
+        ''
+      );
+
+      // Fix accidental dark text styles in dark header banner to crisp white
+      fixedHeader = fixedHeader.replace(
+        /color:\s*(?:#0f172a|#334155|#1e293b|#475569|#64748b|#000000|black)/gi,
+        'color:#ffffff'
+      );
+
+      return fixedHeader + tdClose;
+    }
+  );
+
   return result.trim();
 };
 

@@ -227,19 +227,42 @@ ${templatesList}
 
 ─── LUXURY MOBILE-RESPONSIVE CORPORATE DESIGN SYSTEM ───
 Construct email with 100% mobile-responsive HTML email architecture:
-- Container: Outer wrapper #f1f5f9. Main card: max-width 600px, width 100%, background #ffffff, border-radius 16px, overflow hidden, border 1px solid #e2e8f0.
-- Header Banner: Background #07111e with linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%), border-bottom 2px solid #D4AF37.
-  Include official logo: <img src='https://www.sviinfrasolutions.com/logo.png' alt='SVI Infra Solutions' width='160' style='height:36px;width:auto;display:block;margin:0 auto;' />
-  Include category badge (#D4AF37 text, gold border), Georgia serif title in white (#ffffff), and subtitle 'SVI INFRA SOLUTIONS PVT. LTD.'.
-- Body: Content inside <td> with padding 28px, background #ffffff.
-  Salutation: Crisp dark text #0f172a (<h2 style='color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;'>Dear {{name}},</h2>).
-  Paragraphs: Color #334155, line-height 1.75, font-size 14px.
-- Tables (if needed for structured facts): Explicit border 1px solid #e2e8f0 on every cell, th background #0f172a text #ffffff, values formatted as badges.
-- Notice Boxes (if applicable): Alert (#fff1f2 border-left #e11d48), confirmation (#f0fdf4 border-left #16a34a), or neutral (#f8fafc border-left #0f172a).
-- Helpdesk Bar: Background #f8fafc, border-top 1px solid #e2e8f0, SVI Helpdesk: +91-73000-07643 &bull; info@sviinfrasolutions.com.
-- Corporate Legal Footer: Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, UP 201309 &bull; www.sviinfrasolutions.com &copy; ${new Date().getFullYear()} SVI Infra Solutions.
+- Container: Outer wrapper #f1f5f9. Main card: max-width 600px, width 100%, background #ffffff, border-radius 16px, overflow hidden, border 1px solid #e2e8f0, box-shadow: 0 10px 30px rgba(0,0,0,0.08).
+- Header Banner:
+  * Background: linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%) with border-bottom 3px solid #D4AF37, padding 34px 28px, text-align center.
+  * Official Logo: MUST be wrapped in a crisp white rounded capsule so the dark blue corporate logo is 100% visible and sharp:
+    <div style='display:inline-block;background-color:#ffffff;padding:8px 22px;border-radius:24px;box-shadow:0 4px 14px rgba(0,0,0,0.25);margin-bottom:14px;'><img src='https://www.sviinfrasolutions.com/logo.png' alt='SVI Infra Solutions' width='145' style='display:block;height:auto;max-height:36px;border:0;' /></div>
+  * Category Pill Badge:
+    <div style='display:inline-block;padding:5px 14px;background:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;'>💳 REFUND ACKNOWLEDGMENT</div>
+  * Subtitle: Crisp white text (NEVER dark/black text):
+    <p style='color:#e2e8f0;font-size:13px;margin:8px 0 0;font-weight:400;'>Official Transaction Acknowledgment</p>
+  * CRITICAL RULES FOR HEADER:
+    - NEVER repeat "SVI INFRA SOLUTIONS PVT. LTD." as subtitle text (the logo already clearly identifies the company).
+    - NEVER generate dark text (like #0f172a or #334155) inside the header — all text in the header MUST be #ffffff, #e2e8f0, or #D4AF37.
+    - NEVER duplicate the badge title and heading title.
+
+- Body (padding: 34px 30px, background #ffffff):
+  1. Highlight Notice Box:
+     - For refunds / confirmations: Soft green background (#f0fdf4), green border-left 4px solid (#16a34a), border 1px solid #bbf7d0, border-radius 8px, padding 14px 18px, margin-bottom 22px. Title: <p style='margin:0;color:#15803d;font-weight:700;font-size:13.5px;'>✓ Refund Processed Successfully</p><p style='margin:4px 0 0;color:#166534;font-size:12.5px;line-height:1.5;'>Your refund has been processed to your source account.</p>
+     - For reminders: Soft amber (#fffbeb) with border-left 4px solid #d97706, text #92400e.
+  2. Salutation: <h2 style='color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;'>Dear {{name}},</h2>
+  3. Paragraph: Crisp text in #334155, line-height 1.7, font-size 14px, margin 0 0 20px.
+  4. STRUCTURED DETAIL SUMMARY TABLE (MANDATORY FOR ALL TRANSACTIONS, REFUNDS, LOTTERIES, BOOKINGS, PAYMENTS):
+     Format all key transaction data as an elegant summary card table:
+     <table width='100%' cellpadding='0' cellspacing='0' style='border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:22px 0;overflow:hidden;font-size:13px;'>
+       <tr style='background-color:#f1f5f9;'><td style='padding:12px 16px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;' colspan='2'>🧾 Transaction & Refund Details</td></tr>
+       <tr><td style='padding:11px 16px;color:#64748b;font-weight:600;width:40%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Refund Amount</td><td style='padding:11px 16px;color:#16a34a;font-weight:800;font-size:15px;border-bottom:1px solid #e2e8f0;'>₹2,100</td></tr>
+       <tr style='background-color:#ffffff;'><td style='padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Transaction ID / UTR</td><td style='padding:11px 16px;color:#0f172a;font-weight:700;font-family:monospace;border-bottom:1px solid #e2e8f0;'>854575376539</td></tr>
+       <tr><td style='padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Event / Scheme</td><td style='padding:11px 16px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;'>Lucky Draw (20 September)</td></tr>
+       <tr style='background-color:#ffffff;'><td style='padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Status</td><td style='padding:11px 16px;color:#16a34a;font-weight:700;border-bottom:1px solid #e2e8f0;'>CREDITED</td></tr>
+       <tr><td style='padding:11px 16px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;'>Payment Mode</td><td style='padding:11px 16px;color:#0f172a;font-weight:700;'>Bank Transfer / UPI</td></tr>
+     </table>
+  5. Action CTA Button (centered):
+     <div style='text-align:center;margin:30px 0 18px;'><a href='{{portal_url}}' style='background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:13px 34px;border-radius:30px;text-decoration:none;font-weight:800;font-size:12.5px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(212,175,55,0.35);text-transform:uppercase;'>View Refund Receipt</a></div>
+
+- Helpdesk Bar: Background #f8fafc, border-top 1px solid #e2e8f0, padding 16px 28px, font-size: 12px, color: #64748b. SVI Helpdesk: +91-73000-07643 &bull; info@sviinfrasolutions.com.
+- Corporate Legal Footer: Background #f1f5f9, padding: 24px 20px, text-align: center. Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, UP 201309 &bull; www.sviinfrasolutions.com &copy; ${new Date().getFullYear()} SVI Infra Solutions.
 - CRITICAL: Use single quotes (') for HTML tag attributes inside JSON to prevent quote escape issues.
-TASK:
 Analyze the email subject, user instructions/prompt, requested tone (${tone || 'Professional'}), and recipient details.
 1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:
 {
