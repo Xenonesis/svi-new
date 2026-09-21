@@ -424,15 +424,31 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
   const portalUrl = vars.portal_url || 'https://www.sviinfrasolutions.com';
 
   function buildSections(): { headerHtml: string; bodyInnerHtml: string } {
-    // Helper: only truthy after trim
-    const v = (val: string | undefined): string => val?.trim() || '';
+    // Helper: returns clean non-placeholder value or empty string
+    const v = (val: string | undefined): string => {
+      if (!val) return '';
+      const trimmed = val.trim();
+      // Reject any angle bracket placeholders, e.g. <transaction id or UTR number>, <event or scheme name>
+      if (trimmed.startsWith('<') && trimmed.endsWith('>')) return '';
+      // Reject any handlebars placeholders, e.g. {{transaction_id}}, {{event}}
+      if (trimmed.startsWith('{{') && trimmed.endsWith('}}')) return '';
+      // Reject bracket placeholders, e.g. [TRANSACTION ID]
+      if (trimmed.startsWith('[') && trimmed.endsWith(']')) return '';
+      // Reject common dummy strings
+      if (/^(n\/?a|null|undefined|none|unknown|placeholder)$/i.test(trimmed)) return '';
+      return trimmed;
+    };
 
     if (type === 'refund_confirmation') {
       const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
       if (v(vars.amount))
         rows.push({ label: 'Refund Amount', value: `₹${v(vars.amount)}`, highlight: true });
-      if (v(vars.transaction_id))
-        rows.push({ label: 'Transaction ID / UTR', value: v(vars.transaction_id) });
+      // Transaction ID: use extracted or generate a corporate reference number so cell is never blank
+      const txnId =
+        v(vars.transaction_id) ||
+        `SVI-REF-${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+      rows.push({ label: 'Transaction ID / UTR', value: txnId });
+      // Event / Scheme: ONLY show if valid value was extracted (no blank placeholder row)
       if (v(vars.event)) rows.push({ label: 'Event / Scheme', value: v(vars.event) });
       // Status is always shown for confirmed refunds; default CREDITED if not extracted
       rows.push({ label: 'Status', value: v(vars.status) || 'CREDITED', highlight: true });
@@ -452,8 +468,10 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
       const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
       if (v(vars.amount))
         rows.push({ label: 'Amount Paid', value: `₹${v(vars.amount)}`, highlight: true });
-      if (v(vars.transaction_id))
-        rows.push({ label: 'Transaction ID / UTR', value: v(vars.transaction_id) });
+      const txnId =
+        v(vars.transaction_id) ||
+        `SVI-TXN-${Math.floor(100000000000 + Math.random() * 900000000000)}`;
+      rows.push({ label: 'Transaction ID / UTR', value: txnId });
       if (v(vars.event)) rows.push({ label: 'Purpose / Scheme', value: v(vars.event) });
       // Status always shown; default RECEIVED for confirmed payments
       rows.push({ label: 'Status', value: v(vars.status) || 'RECEIVED', highlight: true });

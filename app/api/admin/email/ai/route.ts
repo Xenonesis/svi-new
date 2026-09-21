@@ -240,41 +240,36 @@ export async function POST(request: NextRequest) {
         'TASK:',
         'Analyze the user prompt and extract structured data. Respond ONLY with valid JSON.',
         '',
-        'OUTPUT SCHEMA:',
+        'OUTPUT SCHEMA (Return ONLY concrete values, NEVER output text enclosed in angle brackets):',
         '{',
         '  "action": "template_match" or "ai_template",',
-        '  "templateId": "<id from list if matched, else _ai_generated>",',
-        '  "templateName": "<2-4 word title>",',
-        '  "subject": "<crisp email subject line>",',
-        '  "emailType": "refund_confirmation" or "payment_confirmation" or "booking_confirmation" or "payment_reminder" or "general",',
+        '  "templateId": "_ai_generated",',
+        '  "templateName": "Refund Acknowledgment",',
+        '  "subject": "Official Refund Acknowledgment - SVI Infra Solutions",',
+        '  "emailType": "refund_confirmation",',
         '  "variables": {',
-        '    "name": "<recipient name or Valued Customer>",',
-        '    "amount": "<numeric amount without rupee symbol e.g. 2,100>",',
-        '    "transaction_id": "<transaction id or UTR number>",',
-        '    "event": "<event or scheme name>",',
-        '    "status": "<CREDITED or RECEIVED or CONFIRMED>",',
-        '    "payment_mode": "<Bank Transfer or UPI or Cash>",',
-        '    "project": "<project name if booking>",',
-        '    "unit_no": "<unit or plot number if booking>",',
-        '    "plot_size": "<plot size if booking>",',
-        '    "booking_date": "<booking date if booking>",',
-        '    "body_text": "<one-sentence summary for general emails>",',
-        '    "portal_url": "https://www.sviinfrasolutions.com"',
+        '    "name": "Valued Customer",',
+        '    "amount": "2,100",',
+        '    "transaction_id": "854575376539",',
+        '    "event": "Lucky Draw",',
+        '    "status": "CREDITED",',
+        '    "payment_mode": "UPI"',
         '  }',
         '}',
         '',
         'RULES:',
-        'Extract ONLY values actually mentioned in the prompt. OMIT fields entirely (do not include the key) if the value is not mentioned.',
-        'For refunds: emailType = refund_confirmation. Set status = "CREDITED" always for refund emails.',
-        'For payments received: emailType = payment_confirmation. Set status = "RECEIVED" always for payment emails.',
-        'For bookings or allotments: emailType = booking_confirmation',
-        'For payment dues or reminders: emailType = payment_reminder',
-        'For everything else: emailType = general',
-        'For payment_mode: if prompt mentions UPI/gpay/phonepe/paytm → "UPI", bank/NEFT/RTGS/IMPS → "Bank Transfer", cash → "Cash", card → "Card Payment", one-time/onetime → "One-Time Payment".',
-        'If subject or prompt matches an EXISTING TEMPLATE set action = template_match and provide that templateId.',
-        'Otherwise set action = ai_template.',
-        "IMPORTANT: Do NOT match lucky_draw or other event templates for refund/payment emails. Only match templates when the prompt is explicitly about that template's purpose.",
-        'Respond with ONLY the JSON object. No explanation, no markdown fences.',
+        '1. CRITICAL: NEVER output placeholder strings with angle brackets like "<transaction id>" or "{{variable}}". If a value is not mentioned in the prompt, DO NOT include the key in the variables object.',
+        '2. For refunds: emailType = refund_confirmation. Set status = "CREDITED" always for refund emails.',
+        '3. For payments received: emailType = payment_confirmation. Set status = "RECEIVED" always for payment emails.',
+        '4. Extract UTR / Transaction ID from any UTR number, TXN ID, reference number, or 10-18 digit numeric code in the prompt.',
+        '5. Extract Event / Scheme from phrases like "lucky draw", "diwali scheme", "allotment", etc.',
+        '6. For bookings or allotments: emailType = booking_confirmation.',
+        '7. For payment dues or reminders: emailType = payment_reminder.',
+        '8. For everything else: emailType = general.',
+        '9. For payment_mode: if prompt mentions UPI/gpay/phonepe/paytm → "UPI", bank/NEFT/RTGS/IMPS → "Bank Transfer", cash → "Cash", card → "Card Payment", one-time/onetime → "One-Time Payment".',
+        '10. If subject or prompt matches an EXISTING TEMPLATE set action = template_match and provide that templateId. Otherwise action = ai_template.',
+        '11. IMPORTANT: Do NOT match lucky_draw or other event templates for refund/payment emails.',
+        '12. Respond with ONLY the JSON object. No explanation, no markdown fences.',
         '',
         'RECIPIENT DATA:',
         JSON.stringify(recipientData),
@@ -323,12 +318,93 @@ export async function POST(request: NextRequest) {
       });
 
       const emailType: EmailTemplateType = extracted.emailType || 'general';
-      const vars: LuxuryEmailVars = {
-        portal_url: 'https://www.sviinfrasolutions.com',
-        ...extracted.variables,
-        subject: extracted.subject || subject || 'Official Communication',
+
+      // Clean extracted variables: strip any placeholder patterns (<...>, {{...}}, [...], dummy strings)
+      const cleanVar = (val: unknown): string => {
+        if (typeof val !== 'string') return '';
+        const trimmed = val.trim();
+        if (
+          (trimmed.startsWith('<') && trimmed.endsWith('>')) ||
+          (trimmed.startsWith('{{') && trimmed.endsWith('}}')) ||
+          (trimmed.startsWith('[') && trimmed.endsWith(']')) ||
+          /^n\/?a$/i.test(trimmed) ||
+          /^(none|null|undefined|unknown|placeholder)$/i.test(trimmed)
+        ) {
+          return '';
+        }
+        return trimmed;
       };
 
+      const rawVars = extracted.variables || {};
+      const cleanedVars: Record<string, string> = {};
+      for (const [k, v] of Object.entries(rawVars)) {
+        const cleaned = cleanVar(v);
+        if (cleaned) cleanedVars[k] = cleaned;
+      }
+
+      // Deterministic regex fallbacks from prompt (catches numbers & phrases LLM might miss)
+      const promptText = `${userPrompt || ''} ${subject || ''}`;
+
+      // Amount fallback
+      if (!cleanedVars.amount) {
+        const amountMatch =
+          promptText.match(/(?:₹|rs\.?|inr)\s*([\d,]+(?:\.\d{1,2})?)/i) ||
+          promptText.match(/([\d,]+(?:\.\d{1,2})?)\s*(?:₹|rs\.?|inr|rupees|\/-)/i) ||
+          promptText.match(/\b([1-9]\d{2,6})\b/);
+        if (amountMatch) {
+          const num = parseFloat(amountMatch[1].replace(/,/g, ''));
+          if (!isNaN(num) && num > 0) cleanedVars.amount = num.toLocaleString('en-IN');
+        }
+      }
+
+      // Transaction ID / UTR fallback (explicit prefix OR 10-18 digit standalone sequence)
+      if (!cleanedVars.transaction_id) {
+        const utrExplicit = promptText.match(
+          /(?:utr|txn(?:id)?|transaction(?:\s*id)?|ref(?:erence)?(?:\s*id|\s*no)?)[\s#:=-]*([A-Za-z0-9]{8,24})/i
+        );
+        if (utrExplicit) {
+          cleanedVars.transaction_id = utrExplicit[1].trim();
+        } else {
+          const longNum = promptText.match(/\b([0-9]{10,18})\b/);
+          if (longNum && longNum[1] !== (cleanedVars.amount || '').replace(/,/g, '')) {
+            cleanedVars.transaction_id = longNum[1].trim();
+          }
+        }
+      }
+
+      // Event fallback
+      if (!cleanedVars.event) {
+        const eventMatch = promptText.match(
+          /\b(lucky\s*draw|diwali\s*(?:offer|scheme)?|monsoon\s*(?:offer|scheme)?|allotment(?:\s*draw)?)\b/i
+        );
+        if (eventMatch) {
+          cleanedVars.event = eventMatch[1].trim().replace(/\b\w/g, (c) => c.toUpperCase());
+        }
+      }
+
+      // Payment mode fallback
+      if (!cleanedVars.payment_mode) {
+        if (/upi|gpay|google\s*pay|phonepe|paytm/i.test(promptText))
+          cleanedVars.payment_mode = 'UPI';
+        else if (/neft|rtgs|imps|net\s*banking|bank\s*transfer/i.test(promptText))
+          cleanedVars.payment_mode = 'Bank Transfer';
+        else if (/\bcash\b/i.test(promptText)) cleanedVars.payment_mode = 'Cash';
+        else if (/\bcard\b|debit|credit/i.test(promptText))
+          cleanedVars.payment_mode = 'Card Payment';
+      }
+
+      // Status default
+      if (emailType === 'refund_confirmation' && !cleanedVars.status) {
+        cleanedVars.status = 'CREDITED';
+      } else if (emailType === 'payment_confirmation' && !cleanedVars.status) {
+        cleanedVars.status = 'RECEIVED';
+      }
+
+      const vars: LuxuryEmailVars = {
+        portal_url: 'https://www.sviinfrasolutions.com',
+        ...cleanedVars,
+        subject: extracted.subject || subject || 'Official Communication',
+      };
       // ── Step 3: Check for existing template match ──────────────────────────
       type EmailTpl = { id: string; name: string; subject: string; html: string };
       let matchedTpl: EmailTpl | null = null;
