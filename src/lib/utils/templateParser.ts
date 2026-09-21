@@ -434,7 +434,8 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
       if (v(vars.transaction_id))
         rows.push({ label: 'Transaction ID / UTR', value: v(vars.transaction_id) });
       if (v(vars.event)) rows.push({ label: 'Event / Scheme', value: v(vars.event) });
-      if (v(vars.status)) rows.push({ label: 'Status', value: v(vars.status), highlight: true });
+      // Status is always shown for confirmed refunds; default CREDITED if not extracted
+      rows.push({ label: 'Status', value: v(vars.status) || 'CREDITED', highlight: true });
       if (v(vars.payment_mode)) rows.push({ label: 'Payment Mode', value: v(vars.payment_mode) });
       return {
         headerHtml: headerBanner('💳 Refund Acknowledgment', 'Official Transaction Acknowledgment'),
@@ -454,7 +455,8 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
       if (v(vars.transaction_id))
         rows.push({ label: 'Transaction ID / UTR', value: v(vars.transaction_id) });
       if (v(vars.event)) rows.push({ label: 'Purpose / Scheme', value: v(vars.event) });
-      if (v(vars.status)) rows.push({ label: 'Status', value: v(vars.status), highlight: true });
+      // Status always shown; default RECEIVED for confirmed payments
+      rows.push({ label: 'Status', value: v(vars.status) || 'RECEIVED', highlight: true });
       if (v(vars.payment_mode)) rows.push({ label: 'Payment Mode', value: v(vars.payment_mode) });
       return {
         headerHtml: headerBanner('✅ Payment Confirmed', 'Official Payment Receipt'),
