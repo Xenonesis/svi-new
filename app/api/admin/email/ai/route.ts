@@ -6,7 +6,11 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { streamText, generateText } from 'ai';
 import { groq } from '@ai-sdk/groq';
 import emailTemplates from '@/src/data/email-templates.json';
-import { sanitizeEmailHtml, buildLuxuryEmailHtml } from '@/src/lib/utils/templateParser';
+import {
+  sanitizeEmailHtml,
+  buildLuxuryEmailHtml,
+  getPreviewHtml,
+} from '@/src/lib/utils/templateParser';
 import type { EmailTemplateType, LuxuryEmailVars } from '@/src/lib/utils/templateParser';
 
 export const maxDuration = 30;
@@ -260,7 +264,7 @@ export async function POST(request: NextRequest) {
         '}',
         '',
         'RULES:',
-        'Extract ONLY values actually mentioned in the prompt. Leave fields as empty string if not mentioned.',
+        'Extract ONLY values actually mentioned in the prompt. OMIT fields entirely (do not include the key) if the value is not mentioned.',
         'For refunds: emailType = refund_confirmation',
         'For payments received: emailType = payment_confirmation',
         'For bookings or allotments: emailType = booking_confirmation',
@@ -342,7 +346,13 @@ export async function POST(request: NextRequest) {
       let finalSubject: string;
 
       if (matchedTpl) {
-        finalHtml = sanitizeEmailHtml(matchedTpl.html);
+        // Substitute extracted vars into the template so placeholders become real values
+        const varsForSubstitution: Record<string, string> = {};
+        Object.entries(vars).forEach(([k, v]) => {
+          if (v && typeof v === 'string' && v.trim()) varsForSubstitution[k] = v;
+        });
+        const substitutedHtml = getPreviewHtml(matchedTpl.html, varsForSubstitution);
+        finalHtml = sanitizeEmailHtml(substitutedHtml || matchedTpl.html);
         finalAction = 'template_match';
         finalTemplateId = matchedTpl.id;
         finalTemplateName = matchedTpl.name;

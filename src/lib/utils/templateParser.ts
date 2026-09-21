@@ -424,15 +424,18 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
   const portalUrl = vars.portal_url || 'https://www.sviinfrasolutions.com';
 
   function buildSections(): { headerHtml: string; bodyInnerHtml: string } {
+    // Helper: only truthy after trim
+    const v = (val: string | undefined): string => val?.trim() || '';
+
     if (type === 'refund_confirmation') {
       const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
-      if (vars.amount)
-        rows.push({ label: 'Refund Amount', value: `₹${vars.amount}`, highlight: true });
-      if (vars.transaction_id)
-        rows.push({ label: 'Transaction ID / UTR', value: vars.transaction_id });
-      if (vars.event) rows.push({ label: 'Event / Scheme', value: vars.event });
-      if (vars.status) rows.push({ label: 'Status', value: vars.status, highlight: true });
-      if (vars.payment_mode) rows.push({ label: 'Payment Mode', value: vars.payment_mode });
+      if (v(vars.amount))
+        rows.push({ label: 'Refund Amount', value: `₹${v(vars.amount)}`, highlight: true });
+      if (v(vars.transaction_id))
+        rows.push({ label: 'Transaction ID / UTR', value: v(vars.transaction_id) });
+      if (v(vars.event)) rows.push({ label: 'Event / Scheme', value: v(vars.event) });
+      if (v(vars.status)) rows.push({ label: 'Status', value: v(vars.status), highlight: true });
+      if (v(vars.payment_mode)) rows.push({ label: 'Payment Mode', value: v(vars.payment_mode) });
       return {
         headerHtml: headerBanner('💳 Refund Acknowledgment', 'Official Transaction Acknowledgment'),
         bodyInnerHtml: `
@@ -446,13 +449,13 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
     }
     if (type === 'payment_confirmation') {
       const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
-      if (vars.amount)
-        rows.push({ label: 'Amount Paid', value: `₹${vars.amount}`, highlight: true });
-      if (vars.transaction_id)
-        rows.push({ label: 'Transaction ID / UTR', value: vars.transaction_id });
-      if (vars.event) rows.push({ label: 'Purpose / Scheme', value: vars.event });
-      if (vars.status) rows.push({ label: 'Status', value: vars.status, highlight: true });
-      if (vars.payment_mode) rows.push({ label: 'Payment Mode', value: vars.payment_mode });
+      if (v(vars.amount))
+        rows.push({ label: 'Amount Paid', value: `₹${v(vars.amount)}`, highlight: true });
+      if (v(vars.transaction_id))
+        rows.push({ label: 'Transaction ID / UTR', value: v(vars.transaction_id) });
+      if (v(vars.event)) rows.push({ label: 'Purpose / Scheme', value: v(vars.event) });
+      if (v(vars.status)) rows.push({ label: 'Status', value: v(vars.status), highlight: true });
+      if (v(vars.payment_mode)) rows.push({ label: 'Payment Mode', value: v(vars.payment_mode) });
       return {
         headerHtml: headerBanner('✅ Payment Confirmed', 'Official Payment Receipt'),
         bodyInnerHtml: `
@@ -465,13 +468,14 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
     }
     if (type === 'booking_confirmation') {
       const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
-      if (vars.project) rows.push({ label: 'Project', value: vars.project });
-      if (vars.unit_no) rows.push({ label: 'Unit / Plot No.', value: vars.unit_no });
-      if (vars.plot_size) rows.push({ label: 'Plot Size', value: vars.plot_size });
-      if (vars.amount)
-        rows.push({ label: 'Booking Amount', value: `₹${vars.amount}`, highlight: true });
-      if (vars.booking_date) rows.push({ label: 'Booking Date', value: vars.booking_date });
-      if (vars.transaction_id) rows.push({ label: 'Transaction ID', value: vars.transaction_id });
+      if (v(vars.project)) rows.push({ label: 'Project', value: v(vars.project) });
+      if (v(vars.unit_no)) rows.push({ label: 'Unit / Plot No.', value: v(vars.unit_no) });
+      if (v(vars.plot_size)) rows.push({ label: 'Plot Size', value: v(vars.plot_size) });
+      if (v(vars.amount))
+        rows.push({ label: 'Booking Amount', value: `₹${v(vars.amount)}`, highlight: true });
+      if (v(vars.booking_date)) rows.push({ label: 'Booking Date', value: v(vars.booking_date) });
+      if (v(vars.transaction_id))
+        rows.push({ label: 'Transaction ID', value: v(vars.transaction_id) });
       return {
         headerHtml: headerBanner(
           '🏡 Booking Confirmed',
@@ -487,10 +491,11 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
     }
     if (type === 'payment_reminder') {
       const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
-      if (vars.amount)
-        rows.push({ label: 'Amount Due', value: `₹${vars.amount}`, highlight: true });
-      if (vars.event) rows.push({ label: 'Purpose / Scheme', value: vars.event });
-      if (vars.transaction_id) rows.push({ label: 'Reference ID', value: vars.transaction_id });
+      if (v(vars.amount))
+        rows.push({ label: 'Amount Due', value: `₹${v(vars.amount)}`, highlight: true });
+      if (v(vars.event)) rows.push({ label: 'Purpose / Scheme', value: v(vars.event) });
+      if (v(vars.transaction_id))
+        rows.push({ label: 'Reference ID', value: v(vars.transaction_id) });
       return {
         headerHtml: headerBanner('⏰ Payment Reminder', 'Action Required — Pending Payment'),
         bodyInnerHtml: `
