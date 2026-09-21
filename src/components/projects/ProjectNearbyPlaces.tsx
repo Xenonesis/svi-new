@@ -1,5 +1,5 @@
 import type { ComponentType } from 'react';
-import Image from 'next/image';
+import LandmarkImage from './LandmarkImage';
 import {
   Factory,
   Train,
@@ -163,22 +163,7 @@ export default function ProjectNearbyPlaces({
                 <div>
                   {/* High-Resolution Landmark Image Header */}
                   <div className="relative h-44 w-full overflow-hidden rounded-2xl bg-slate-100 shadow-inner sm:h-48 dark:bg-slate-800">
-                    {place.image ? (
-                      <>
-                        <Image
-                          src={place.image}
-                          alt={name}
-                          fill
-                          unoptimized
-                          className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                      </>
-                    ) : (
-                      <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-slate-800">
-                        <Icon className="h-10 w-10 text-slate-400" />
-                      </div>
-                    )}
+                    <LandmarkImage src={place.image} alt={name} category={place.category} />
 
                     {/* Top Category Badge Over Image */}
                     <div className="absolute top-3 right-3 left-3 flex items-center justify-between gap-2">
@@ -256,22 +241,7 @@ export default function ProjectNearbyPlaces({
                     <div>
                       {/* Landmark Image Header */}
                       <div className="relative h-36 w-full overflow-hidden rounded-2xl bg-slate-100 shadow-inner sm:h-40 dark:bg-slate-800">
-                        {place.image ? (
-                          <>
-                            <Image
-                              src={place.image}
-                              alt={name}
-                              fill
-                              unoptimized
-                              className="object-cover transition-transform duration-700 ease-out group-hover:scale-108"
-                            />
-                            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
-                          </>
-                        ) : (
-                          <div className="flex h-full w-full items-center justify-center bg-slate-100 dark:bg-slate-800">
-                            <Icon className="h-10 w-10 text-slate-400" />
-                          </div>
-                        )}
+                        <LandmarkImage src={place.image} alt={name} category={place.category} />
 
                         {/* Top Category Badge Over Image */}
                         <div className="absolute top-3 right-3 left-3 flex items-center justify-between gap-2">

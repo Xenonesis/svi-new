@@ -411,7 +411,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Seamless arterial connectivity to Jaipur city, Dausa, and Agra via national highway network with upcoming Ring Road integration.',
         descriptionHi:
           'राष्ट्रीय राजमार्ग और आगामी रिंग रोड के माध्यम से जयपुर शहर, दौसा और आगरा के लिए सुगम और तीव्र कनेक्टिविटी।',
-        image: '/images/landmarks/jaipur-airport.webp',
+        image: '/images/landmarks/jaipur-highway.webp',
         featured: true,
       },
       {
@@ -428,7 +428,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Popular destination offering tranquil water bodies, boutique weekend resorts, and clean air away from urban pollution.',
         descriptionHi:
           'शांत जल निकायों, वीकेंड रिसॉर्ट्स और प्रदूषण मुक्त प्राकृतिक वातावरण वाला प्रसिद्ध दर्शनीय स्थल।',
-        image: '/images/landmarks/khatu-mandir.webp',
+        image: '/images/landmarks/kanota-dam.webp',
         featured: true,
       },
       {
@@ -445,7 +445,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Frequent local buses and shared transit connecting directly to Transport Nagar, Ghat Ki Guni, and eastern Jaipur.',
         descriptionHi:
           'ट्रांसपोर्ट नगर, घाट की गूणी और पूर्वी जयपुर के लिए निरंतर लोकल बस और परिवहन कनेक्टिविटी।',
-        image: '/images/landmarks/renwal-station.webp',
+        image: '/images/landmarks/transit-terminal.webp',
         featured: true,
       },
       {
@@ -511,7 +511,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
           'Direct signal-free connectivity to Jaipur main city markets, business hubs, and administrative zones.',
         descriptionHi:
           'जयपुर मुख्य शहर के बाजारों, व्यापारिक केंद्रों और प्रशासनिक क्षेत्रों के लिए सीधी सड़क कनेक्टिविटी।',
-        image: '/images/landmarks/dmic-freight.webp',
+        image: '/images/landmarks/jaipur-urban.webp',
       },
       {
         name: 'Local Commercial Market & Banking Hub',
