@@ -6,6 +6,42 @@ import { supabase } from '@/src/lib/supabase/client';
 import { toast } from 'sonner';
 import { defaultAnnouncementConfig, type AnnouncementConfig } from '@/src/config/announcement';
 
+const PRESET_ROUTES = [
+  {
+    group: 'Projects & Properties',
+    routes: [
+      { label: 'Current Projects', url: '/projects/current' },
+      { label: 'Completed Projects', url: '/projects/completed' },
+      { label: 'Exclusive Offers & Deals', url: '/exclusive-offers' },
+      { label: 'Shivani Vatika 11 Brochure', url: '/brochure/shivani-vatika-11' },
+    ],
+  },
+  {
+    group: 'Main Pages',
+    routes: [
+      { label: 'Homepage', url: '/' },
+      { label: 'About Us', url: '/about' },
+      { label: 'Contact Us & Site Visit', url: '/contact' },
+      { label: 'Leadership Team', url: '/leadership' },
+      { label: 'Articles & Blogs', url: '/blog' },
+      { label: 'Careers / Hiring', url: '/careers' },
+      { label: 'Frequently Asked Questions', url: '/faq' },
+    ],
+  },
+  {
+    group: 'Portals & Utilities',
+    routes: [
+      { label: 'Lucky Draw (Lottery)', url: '/lottery' },
+      { label: 'EMI & Investment Calculators', url: '/calculators' },
+      { label: 'Online Payment Portal', url: '/payment' },
+      { label: 'Client Allotment Portal', url: '/portal' },
+      { label: 'Online Booking Registration', url: '/registration' },
+    ],
+  },
+];
+
+const ALL_PRESET_URLS = PRESET_ROUTES.flatMap((g) => g.routes.map((r) => r.url));
+
 export function AnnouncementTab() {
   const [config, setConfig] = useState<AnnouncementConfig>(defaultAnnouncementConfig);
   const [loading, setLoading] = useState(true);
@@ -72,8 +108,8 @@ export function AnnouncementTab() {
     <form onSubmit={handleSave} className="space-y-6 font-sans">
       <div className="flex items-center justify-between border-b border-gray-100 pb-4 dark:border-white/5">
         <div>
-          <h2 className="text-brand-navy flex items-center gap-2 font-sans font-serif text-xl font-bold dark:text-white">
-            <Megaphone className="h-5 w-5 text-[#22c55e]" />
+          <h2 className="flex items-center gap-2 font-serif text-xl font-bold text-gray-900 dark:text-white">
+            <Megaphone className="h-5 w-5 text-[#d4af37]" />
             Announcement Bar Settings
           </h2>
           <p className="font-sans text-xs text-gray-500 dark:text-gray-400">
@@ -84,7 +120,7 @@ export function AnnouncementTab() {
         <button
           type="submit"
           disabled={saving}
-          className="flex items-center gap-2 rounded-lg bg-[#22c55e] px-4 py-2 text-xs font-bold text-slate-950 transition hover:bg-[#16a34a] disabled:opacity-50"
+          className="flex items-center gap-2 rounded-lg bg-[#d4af37] px-4 py-2 text-xs font-bold text-slate-950 transition hover:bg-[#c59e2b] disabled:opacity-50"
         >
           {saving ? (
             'Saving...'
@@ -103,13 +139,14 @@ export function AnnouncementTab() {
           Live Preview
         </span>
         {config.enabled ? (
-          <div className="flex items-center justify-between rounded-lg bg-gradient-to-r from-[#4ade80] via-[#22c55e] to-[#a3e635] px-4 py-2 text-slate-950 shadow-sm">
-            <div className="flex flex-1 items-center justify-center gap-2 text-xs font-semibold">
-              <span className="rounded-full bg-black/10 px-2 py-0.5 text-[10px] font-black uppercase">
+          <div className="relative flex items-center justify-between overflow-hidden rounded-lg border border-[#d4af37]/30 bg-[#070b14] px-4 py-2.5 text-slate-100 shadow-md">
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
+            <div className="flex flex-1 items-center justify-center gap-2 text-xs font-medium">
+              <span className="rounded-full border border-[#d4af37]/40 bg-[#d4af37]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#f5d77f] uppercase">
                 {config.badgeText || 'NEW'}
               </span>
-              <span className="truncate">{config.text}</span>
-              <span className="underline decoration-slate-950/40 underline-offset-4">
+              <span className="truncate text-slate-200">{config.text}</span>
+              <span className="font-bold text-[#f5d77f] underline decoration-[#d4af37]/50 underline-offset-4">
                 {config.actionText} →
               </span>
             </div>
@@ -137,7 +174,7 @@ export function AnnouncementTab() {
             type="button"
             onClick={() => setConfig({ ...config, enabled: !config.enabled })}
             className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none ${
-              config.enabled ? 'bg-[#22c55e]' : 'bg-gray-200 dark:bg-white/10'
+              config.enabled ? 'bg-[#d4af37]' : 'bg-gray-200 dark:bg-white/10'
             }`}
           >
             <span
@@ -158,7 +195,7 @@ export function AnnouncementTab() {
             value={config.badgeText}
             onChange={(e) => setConfig({ ...config, badgeText: e.target.value })}
             placeholder="NEW"
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#22c55e] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
         </div>
 
@@ -172,7 +209,7 @@ export function AnnouncementTab() {
             value={config.text}
             onChange={(e) => setConfig({ ...config, text: e.target.value })}
             placeholder="Announcement text..."
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#22c55e] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
         </div>
 
@@ -186,22 +223,51 @@ export function AnnouncementTab() {
             value={config.actionText}
             onChange={(e) => setConfig({ ...config, actionText: e.target.value })}
             placeholder="EXPLORE PROPERTIES"
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#22c55e] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
         </div>
 
-        {/* Button Action URL */}
-        <div>
-          <label className="mb-1 block text-xs font-bold text-gray-700 dark:text-gray-300">
+        {/* Button Action URL with Dropdown */}
+        <div className="space-y-1.5">
+          <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
             Target URL / Route
           </label>
+          {/* Dropdown for selecting from existing pages */}
+          <select
+            value={ALL_PRESET_URLS.includes(config.actionUrl) ? config.actionUrl : 'custom'}
+            onChange={(e) => {
+              if (e.target.value !== 'custom') {
+                setConfig({ ...config, actionUrl: e.target.value });
+              }
+            }}
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
+          >
+            <option value="" disabled>
+              -- Select an existing page --
+            </option>
+            {PRESET_ROUTES.map((group) => (
+              <optgroup key={group.group} label={group.group}>
+                {group.routes.map((r) => (
+                  <option key={r.url} value={r.url}>
+                    {r.label} ({r.url})
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+            <option value="custom">✏️ Custom URL or External Link...</option>
+          </select>
+
+          {/* Editable text input for fine-tuning or custom URLs */}
           <input
             type="text"
             value={config.actionUrl}
             onChange={(e) => setConfig({ ...config, actionUrl: e.target.value })}
-            placeholder="/projects/current"
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#22c55e] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
+            placeholder="/projects/current or https://..."
+            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 font-mono text-xs text-gray-900 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
           />
+          <span className="block text-[10px] text-gray-400">
+            Dropdown se existing page select karein ya neeche custom link type karein.
+          </span>
         </div>
 
         {/* Dismissible Toggle */}
@@ -211,7 +277,7 @@ export function AnnouncementTab() {
             id="dismissible-check"
             checked={config.dismissible}
             onChange={(e) => setConfig({ ...config, dismissible: e.target.checked })}
-            className="h-4 w-4 rounded border-gray-300 text-[#22c55e] focus:ring-[#22c55e]"
+            className="h-4 w-4 rounded border-gray-300 text-[#d4af37] focus:ring-[#d4af37]"
           />
           <label
             htmlFor="dismissible-check"
