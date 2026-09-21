@@ -287,10 +287,15 @@ export function EmailBodyEditor({
             <style>{`
               .email-rendered-preview table { border-collapse: collapse !important; }
               .email-rendered-preview table.details-table td,
-              .email-rendered-preview table[style*="border-collapse"] td {
+              .email-rendered-preview table[style*="border-collapse"] td,
+              .email-rendered-preview table[style*="border-spacing"] td {
                 padding: 10px 14px !important;
                 border: 1px solid #e2e8f0 !important;
                 font-size: 13px !important;
+                color: #0f172a !important;
+              }
+              .email-rendered-preview table td[style*="16a34a"] {
+                color: #16a34a !important;
               }
               .email-rendered-preview table.details-table th,
               .email-rendered-preview table[style*="border-collapse"] th {

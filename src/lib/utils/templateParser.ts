@@ -61,7 +61,7 @@ export const sanitizeEmailHtml = (html: string | null | undefined): string => {
 
   // 7. Ensure dark header banners never contain dark-on-dark text and wrap naked logo in white capsule
   result = result.replace(
-    /(<td[^>]*style=["'][^"']*(?:linear-gradient|#07111e|#0f172a|#1a2744|#0a1526|#070d18)[^"']*["'][^>]*>[\s\S]*?)(<\/td>)/gi,
+    /(<td[^>]*style=["'][^"']*background(?:-color)?\s*:\s*[^"']*(?:linear-gradient|#07111e|#0f172a|#1a2744|#0a1526|#070d18)[^"']*["'][^>]*>[\s\S]*?)(<\/td>)/gi,
     (_match, headerContent, tdClose) => {
       let fixedHeader = headerContent;
 
@@ -374,10 +374,10 @@ function detailTable(rows: Array<{ label: string; value: string; highlight?: boo
   const rowsHtml = rows
     .map(
       (r, i) =>
-        `<tr style="${i % 2 === 0 ? '' : 'background-color:#ffffff;'}"><td style="padding:11px 16px;color:#64748b;font-weight:600;width:42%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;font-size:13px;">${r.label}</td><td style="padding:11px 16px;color:${r.highlight ? '#16a34a' : '#0f172a'};font-weight:${r.highlight ? '800' : '700'};font-size:${r.highlight ? '15px' : '13px'};border-bottom:1px solid #e2e8f0;${r.label === 'Transaction ID / UTR' ? 'font-family:monospace;' : ''}">${r.value}</td></tr>`
+        `<tr style="${i % 2 === 0 ? '' : 'background-color:#ffffff;'}"><td style="padding:11px 16px;color:#64748b !important;font-weight:600;width:42%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;font-size:13px;">${r.label}</td><td style="padding:11px 16px;color:${r.highlight ? '#16a34a' : '#0f172a'} !important;font-weight:${r.highlight ? '800' : '700'};font-size:${r.highlight ? '15px' : '13px'};border-bottom:1px solid #e2e8f0;${r.label === 'Transaction ID / UTR' ? 'font-family:monospace;' : ''}">${r.value}</td></tr>`
     )
     .join('');
-  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:22px 0;overflow:hidden;"><tr style="background-color:#f1f5f9;"><td style="padding:12px 16px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;" colspan="2">🧾 Transaction Summary</td></tr>${rowsHtml}</table>`;
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:22px 0;overflow:hidden;"><tr style="background-color:#f1f5f9;"><td style="padding:12px 16px;font-weight:700;color:#0f172a !important;border-bottom:1px solid #e2e8f0;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;" colspan="2">🧾 Transaction Summary</td></tr>${rowsHtml}</table>`;
 }
 
 function ctaButton(href: string, label: string): string {

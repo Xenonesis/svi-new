@@ -421,16 +421,16 @@ export function AIComposePopover({
 
         /* Guaranteed crisp high-contrast header banner styling */
         .header-cell h1, tr.header-row h1,
-        td[style*="linear-gradient"] h1, td[style*="07111e"] h1, td[style*="0f172a"] h1, td[style*="1a2744"] h1 {
+        td[style*="linear-gradient"] h1, td[style*="07111e"] h1, td[style*="background"][style*="0f172a"] h1, td[style*="1a2744"] h1 {
           color: #ffffff !important;
           font-family: Georgia, serif !important;
         }
         .header-cell p, tr.header-row p,
-        td[style*="linear-gradient"] p, td[style*="07111e"] p, td[style*="0f172a"] p, td[style*="1a2744"] p {
+        td[style*="linear-gradient"] p, td[style*="07111e"] p, td[style*="background"][style*="0f172a"] p, td[style*="1a2744"] p {
           color: #e2e8f0 !important;
         }
         .header-cell span, tr.header-row span,
-        td[style*="linear-gradient"] span, td[style*="07111e"] span, td[style*="0f172a"] span, td[style*="1a2744"] span {
+        td[style*="linear-gradient"] span, td[style*="07111e"] span, td[style*="background"][style*="0f172a"] span, td[style*="1a2744"] span {
           color: #D4AF37 !important;
         }
         td[style*="linear-gradient"] img[src*="logo.png"]:not([style*="background"]),
@@ -495,10 +495,13 @@ export function AIComposePopover({
           color: #475569;
           font-weight: 600;
         }
-        table.details-table td:last-child, table[style*="border-collapse"] td:last-child {
+        table.details-table td:last-child, table[style*="border-collapse"] td:last-child, table[style*="border-spacing"] td:last-child {
           background-color: #ffffff;
-          color: #0f172a;
+          color: #0f172a !important;
           font-weight: 700;
+        }
+        table.details-table td[style*="16a34a"], table[style*="border-collapse"] td[style*="16a34a"], table[style*="border-spacing"] td[style*="16a34a"] {
+          color: #16a34a !important;
         }
         /* Guaranteed crisp high-contrast footer text & link styling (SCOPED ONLY TO FOOTER) */
         .footer-cell p, .email-footer p, table[role="presentation"]:last-child td[style*="text-align:center"] p,
