@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Megaphone, Save } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Megaphone, Save, ChevronDown, Check, Search, Globe, Link2 } from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import { toast } from 'sonner';
 import { defaultAnnouncementConfig, type AnnouncementConfig } from '@/src/config/announcement';
@@ -40,13 +40,38 @@ const PRESET_ROUTES = [
   },
 ];
 
-const ALL_PRESET_URLS = PRESET_ROUTES.flatMap((g) => g.routes.map((r) => r.url));
-
 export function AnnouncementTab() {
   const [config, setConfig] = useState<AnnouncementConfig>(defaultAnnouncementConfig);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    if (isDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isDropdownOpen]);
+
+  const selectedPreset = PRESET_ROUTES.flatMap((g) => g.routes).find(
+    (r) => r.url === config.actionUrl
+  );
+
+  const filteredGroups = PRESET_ROUTES.map((group) => ({
+    ...group,
+    routes: group.routes.filter(
+      (r) =>
+        r.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.url.toLowerCase().includes(searchQuery.toLowerCase())
+    ),
+  })).filter((group) => group.routes.length > 0);
   useEffect(() => {
     const fetchSetting = async () => {
       try {
@@ -232,31 +257,110 @@ export function AnnouncementTab() {
           <label className="block text-xs font-bold text-gray-700 dark:text-gray-300">
             Target URL / Route
           </label>
-          {/* Dropdown for selecting from existing pages */}
-          <select
-            value={ALL_PRESET_URLS.includes(config.actionUrl) ? config.actionUrl : 'custom'}
-            onChange={(e) => {
-              if (e.target.value !== 'custom') {
-                setConfig({ ...config, actionUrl: e.target.value });
-              }
-            }}
-            className="w-full rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-900 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-black/20 dark:text-white"
-          >
-            <option value="" disabled>
-              -- Select an existing page --
-            </option>
-            {PRESET_ROUTES.map((group) => (
-              <optgroup key={group.group} label={group.group}>
-                {group.routes.map((r) => (
-                  <option key={r.url} value={r.url}>
-                    {r.label} ({r.url})
-                  </option>
-                ))}
-              </optgroup>
-            ))}
-            <option value="custom">✏️ Custom URL or External Link...</option>
-          </select>
+          {/* Custom High-Contrast Dropdown with Search */}
+          <div ref={dropdownRef} className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen((prev) => !prev)}
+              className="flex w-full items-center justify-between rounded-lg border border-gray-200 bg-white px-3 py-2 text-left text-xs font-medium text-gray-900 shadow-xs transition-colors hover:border-[#d4af37]/60 focus:border-[#d4af37] focus:outline-none dark:border-white/10 dark:bg-[#0c1017] dark:text-white"
+            >
+              <div className="flex items-center gap-2 truncate">
+                <Globe className="h-3.5 w-3.5 shrink-0 text-[#d4af37]" />
+                <span className="truncate">
+                  {selectedPreset
+                    ? `${selectedPreset.label} (${selectedPreset.url})`
+                    : config.actionUrl
+                      ? `Custom: ${config.actionUrl}`
+                      : '-- Select an existing page --'}
+                </span>
+              </div>
+              <ChevronDown
+                className={`h-3.5 w-3.5 shrink-0 text-gray-400 transition-transform duration-200 ${
+                  isDropdownOpen ? 'rotate-180 text-[#d4af37]' : ''
+                }`}
+              />
+            </button>
 
+            {isDropdownOpen && (
+              <div className="absolute z-50 mt-1 max-h-72 w-full overflow-hidden rounded-xl border border-gray-200 bg-white shadow-2xl dark:border-white/15 dark:bg-[#0b0f19]">
+                {/* Search Filter */}
+                <div className="border-b border-gray-100 p-2 dark:border-white/10">
+                  <div className="relative flex items-center">
+                    <Search className="absolute left-2.5 h-3.5 w-3.5 text-gray-400" />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search pages or routes..."
+                      className="w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pr-2.5 pl-8 text-xs text-gray-900 placeholder:text-gray-400 focus:border-[#d4af37] focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-[#111827]"
+                      autoFocus
+                    />
+                  </div>
+                </div>
+
+                {/* Options List */}
+                <div className="max-h-52 overflow-y-auto p-1.5 text-xs">
+                  {filteredGroups.length === 0 ? (
+                    <div className="px-3 py-3 text-center text-xs text-gray-400">
+                      No matching pages found
+                    </div>
+                  ) : (
+                    filteredGroups.map((group) => (
+                      <div key={group.group} className="mb-2 last:mb-0">
+                        <div className="px-2.5 py-1 text-[10px] font-bold tracking-wider text-[#d4af37] uppercase">
+                          {group.group}
+                        </div>
+                        <div className="space-y-0.5">
+                          {group.routes.map((r) => {
+                            const isSelected = config.actionUrl === r.url;
+                            return (
+                              <button
+                                key={r.url}
+                                type="button"
+                                onClick={() => {
+                                  setConfig({ ...config, actionUrl: r.url });
+                                  setIsDropdownOpen(false);
+                                  setSearchQuery('');
+                                }}
+                                className={`flex w-full items-center justify-between rounded-lg px-2.5 py-2 text-left transition-colors ${
+                                  isSelected
+                                    ? 'bg-[#d4af37]/15 font-semibold text-[#d4af37]'
+                                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/10'
+                                }`}
+                              >
+                                <span className="truncate">{r.label}</span>
+                                <div className="ml-2 flex shrink-0 items-center gap-1.5">
+                                  <span className="rounded bg-black/5 px-1.5 py-0.5 font-mono text-[10px] text-gray-500 dark:bg-white/10 dark:text-gray-300">
+                                    {r.url}
+                                  </span>
+                                  {isSelected && <Check className="h-3.5 w-3.5 text-[#d4af37]" />}
+                                </div>
+                              </button>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))
+                  )}
+
+                  {/* Custom URL Trigger */}
+                  <div className="border-t border-gray-100 pt-1 dark:border-white/10">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDropdownOpen(false);
+                        setSearchQuery('');
+                      }}
+                      className="flex w-full items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs text-gray-600 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
+                    >
+                      <Link2 className="h-3.5 w-3.5 text-[#d4af37]" />
+                      <span>Custom URL / External Link (enter below)</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
           {/* Editable text input for fine-tuning or custom URLs */}
           <input
             type="text"
