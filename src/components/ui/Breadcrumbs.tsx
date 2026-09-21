@@ -38,7 +38,8 @@ export default function Breadcrumbs() {
   return (
     <nav
       aria-label={t('ariaLabel')}
-      className="breadcrumbs-nav container mx-auto px-4 pt-20 pb-3 md:pt-24 md:pb-4"
+      style={{ paddingTop: 'calc(var(--header-height, 120px) + 12px)' }}
+      className="breadcrumbs-nav container mx-auto px-4 pb-2 sm:pb-3"
     >
       <ol className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
         {breadcrumbs.map((item, index) => (

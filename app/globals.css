@@ -977,6 +977,7 @@ main > .page-transition > section {
    Spotlight Card Backdrop Tokens
    ============================================================ */
 :root {
+  --header-height: 120px;
   --glow-backdrop: #ffffff;
   --glow-border: rgba(17, 24, 39, 0.08);
   --glow-lightness: 45;

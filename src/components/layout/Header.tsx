@@ -1,5 +1,6 @@
 'use client';
 
+import { useRef, useEffect } from 'react';
 import { useHeaderNavigation } from '@/src/components/layout/useHeaderNavigation';
 import Image from 'next/image';
 import { Link } from '@/src/i18n/navigation';
@@ -10,10 +11,34 @@ import AnnouncementBar from '@/src/components/layout/AnnouncementBar';
 
 export default function Header() {
   const h = useHeaderNavigation();
+  const headerRef = useRef<HTMLElement>(null);
 
+  useEffect(() => {
+    const el = headerRef.current;
+    if (!el) return;
+
+    const updateHeight = () => {
+      if (!h.isScrolled) {
+        const height = el.offsetHeight;
+        if (height > 0) {
+          document.documentElement.style.setProperty('--header-height', `${height}px`);
+        }
+      }
+    };
+
+    updateHeight();
+    const observer = new ResizeObserver(updateHeight);
+    observer.observe(el);
+    window.addEventListener('resize', updateHeight);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', updateHeight);
+    };
+  }, [h.isScrolled]);
   return (
     <>
       <motion.header
+        ref={headerRef}
         suppressHydrationWarning
         layout
         transition={{ layout: { type: 'spring', bounce: 0, duration: 0.5 } }}
