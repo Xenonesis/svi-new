@@ -326,3 +326,196 @@ export const safeReplaceTemplateContent = (
 
   return { updatedTemplate, updatedVars, changed };
 };
+
+// ─── Email Template Types ────────────────────────────────────────────────────
+
+export type EmailTemplateType =
+  | 'refund_confirmation'
+  | 'payment_confirmation'
+  | 'booking_confirmation'
+  | 'payment_reminder'
+  | 'general';
+
+export interface LuxuryEmailVars {
+  name?: string;
+  subject?: string;
+  // Financial
+  amount?: string;
+  transaction_id?: string;
+  event?: string;
+  status?: string;
+  payment_mode?: string;
+  // Booking
+  project?: string;
+  plot_size?: string;
+  unit_no?: string;
+  booking_date?: string;
+  // Links
+  portal_url?: string;
+  // Generic body paragraph
+  body_text?: string;
+  // Extra rows: key=label, value=text
+  [key: string]: string | undefined;
+}
+
+const YEAR = new Date().getFullYear();
+
+const LOGO_CAPSULE = `<div style="display:inline-block;background-color:#ffffff;padding:8px 22px;border-radius:24px;box-shadow:0 4px 14px rgba(0,0,0,0.25);margin-bottom:16px;"><img src="https://www.sviinfrasolutions.com/logo.png" alt="SVI Infra Solutions" width="145" height="auto" style="display:block;max-height:36px;border:0;" /></div>`;
+
+const HELPDESK_BAR = `<tr><td style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:16px 28px;font-size:12px;color:#64748b;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;"><strong style="color:#0f172a;">Need assistance?</strong>&nbsp;&nbsp;SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91 73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;font-weight:600;">info@sviinfrasolutions.com</a></td></tr>`;
+
+const LEGAL_FOOTER = `<tr><td style="background-color:#f1f5f9;padding:24px 20px;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;"><p style="margin:0 0 4px;color:#475569;font-size:12px;font-weight:700;">SVI Infra Solutions Pvt. Ltd.</p><p style="margin:0 0 8px;color:#94a3b8;font-size:11px;line-height:1.6;">Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309<br>Official Website: <a href="https://www.sviinfrasolutions.com" style="color:#64748b;text-decoration:underline;">www.sviinfrasolutions.com</a></p><p style="margin:0;color:#cbd5e1;font-size:10px;">&copy; ${YEAR} SVI Infra Solutions Pvt. Ltd. All rights reserved.</p></td></tr>`;
+
+function headerBanner(badge: string, subtitle: string): string {
+  return `<tr><td style="background:linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%);padding:36px 30px 28px;text-align:center;border-bottom:3px solid #D4AF37;">${LOGO_CAPSULE}<br><div style="display:inline-block;padding:5px 16px;background:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${badge}</div><p style="color:#e2e8f0;font-size:13px;margin:10px 0 0;font-weight:400;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${subtitle}</p></td></tr>`;
+}
+
+function detailTable(rows: Array<{ label: string; value: string; highlight?: boolean }>): string {
+  const rowsHtml = rows
+    .map(
+      (r, i) =>
+        `<tr style="${i % 2 === 0 ? '' : 'background-color:#ffffff;'}"><td style="padding:11px 16px;color:#64748b;font-weight:600;width:42%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;font-size:13px;">${r.label}</td><td style="padding:11px 16px;color:${r.highlight ? '#16a34a' : '#0f172a'};font-weight:${r.highlight ? '800' : '700'};font-size:${r.highlight ? '15px' : '13px'};border-bottom:1px solid #e2e8f0;${r.label === 'Transaction ID / UTR' ? 'font-family:monospace;' : ''}">${r.value}</td></tr>`
+    )
+    .join('');
+  return `<table width="100%" cellpadding="0" cellspacing="0" style="border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:22px 0;overflow:hidden;"><tr style="background-color:#f1f5f9;"><td style="padding:12px 16px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;font-size:13px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;" colspan="2">🧾 Transaction Summary</td></tr>${rowsHtml}</table>`;
+}
+
+function ctaButton(href: string, label: string): string {
+  return `<div style="text-align:center;margin:28px 0 16px;"><a href="${href}" style="background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:13px 36px;border-radius:30px;text-decoration:none;font-weight:800;font-size:12.5px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(212,175,55,0.35);text-transform:uppercase;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${label}</a></div>`;
+}
+
+function alertBox(
+  type: 'success' | 'warning' | 'info',
+  title: string,
+  description: string
+): string {
+  const styles = {
+    success: {
+      bg: '#f0fdf4',
+      border: '#bbf7d0',
+      accent: '#16a34a',
+      titleColor: '#15803d',
+      descColor: '#166534',
+    },
+    warning: {
+      bg: '#fffbeb',
+      border: '#fde68a',
+      accent: '#d97706',
+      titleColor: '#92400e',
+      descColor: '#78350f',
+    },
+    info: {
+      bg: '#eff6ff',
+      border: '#bfdbfe',
+      accent: '#2563eb',
+      titleColor: '#1d4ed8',
+      descColor: '#1e40af',
+    },
+  }[type];
+  return `<div style="background-color:${styles.bg};border:1px solid ${styles.border};border-left:4px solid ${styles.accent};border-radius:8px;padding:14px 18px;margin-bottom:22px;"><p style="margin:0;color:${styles.titleColor};font-weight:700;font-size:13.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${title}</p><p style="margin:4px 0 0;color:${styles.descColor};font-size:12.5px;line-height:1.5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${description}</p></div>`;
+}
+
+/**
+ * Build a complete luxury SVI corporate email HTML string from extracted variables.
+ * This runs entirely server-side — no AI token budget spent on HTML generation.
+ */
+export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailVars): string {
+  const name = vars.name || 'Valued Customer';
+  const portalUrl = vars.portal_url || 'https://www.sviinfrasolutions.com';
+
+  function buildSections(): { headerHtml: string; bodyInnerHtml: string } {
+    if (type === 'refund_confirmation') {
+      const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
+      if (vars.amount)
+        rows.push({ label: 'Refund Amount', value: `₹${vars.amount}`, highlight: true });
+      if (vars.transaction_id)
+        rows.push({ label: 'Transaction ID / UTR', value: vars.transaction_id });
+      if (vars.event) rows.push({ label: 'Event / Scheme', value: vars.event });
+      if (vars.status) rows.push({ label: 'Status', value: vars.status, highlight: true });
+      if (vars.payment_mode) rows.push({ label: 'Payment Mode', value: vars.payment_mode });
+      return {
+        headerHtml: headerBanner('💳 Refund Acknowledgment', 'Official Transaction Acknowledgment'),
+        bodyInnerHtml: `
+          ${alertBox('success', '✓ Refund Processed Successfully', 'Your refund has been processed and will be credited to your source account within 2–4 business hours.')}
+          <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
+          <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">We are pleased to confirm that your refund request has been processed successfully. Please review the transaction details below:</p>
+          ${rows.length > 0 ? detailTable(rows) : ''}
+          <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">If you have any questions or do not receive the credit within the stated timeframe, please contact our helpdesk and quote your Transaction ID above.</p>
+          ${ctaButton(portalUrl, 'Download Refund Receipt')}`,
+      };
+    }
+    if (type === 'payment_confirmation') {
+      const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
+      if (vars.amount)
+        rows.push({ label: 'Amount Paid', value: `₹${vars.amount}`, highlight: true });
+      if (vars.transaction_id)
+        rows.push({ label: 'Transaction ID / UTR', value: vars.transaction_id });
+      if (vars.event) rows.push({ label: 'Purpose / Scheme', value: vars.event });
+      if (vars.status) rows.push({ label: 'Status', value: vars.status, highlight: true });
+      if (vars.payment_mode) rows.push({ label: 'Payment Mode', value: vars.payment_mode });
+      return {
+        headerHtml: headerBanner('✅ Payment Confirmed', 'Official Payment Receipt'),
+        bodyInnerHtml: `
+          ${alertBox('success', '✓ Payment Received Successfully', 'Your payment has been received and recorded in our system.')}
+          <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
+          <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">Thank you for your payment. We have successfully received and recorded your transaction. Please retain the details below for your records:</p>
+          ${rows.length > 0 ? detailTable(rows) : ''}
+          ${ctaButton(portalUrl, 'View Payment Receipt')}`,
+      };
+    }
+    if (type === 'booking_confirmation') {
+      const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
+      if (vars.project) rows.push({ label: 'Project', value: vars.project });
+      if (vars.unit_no) rows.push({ label: 'Unit / Plot No.', value: vars.unit_no });
+      if (vars.plot_size) rows.push({ label: 'Plot Size', value: vars.plot_size });
+      if (vars.amount)
+        rows.push({ label: 'Booking Amount', value: `₹${vars.amount}`, highlight: true });
+      if (vars.booking_date) rows.push({ label: 'Booking Date', value: vars.booking_date });
+      if (vars.transaction_id) rows.push({ label: 'Transaction ID', value: vars.transaction_id });
+      return {
+        headerHtml: headerBanner(
+          '🏡 Booking Confirmed',
+          'Official Property Allotment Acknowledgment'
+        ),
+        bodyInnerHtml: `
+          ${alertBox('success', '🎉 Booking Confirmed!', 'Your property booking with SVI Infra Solutions has been confirmed successfully.')}
+          <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
+          <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">We are delighted to confirm your booking with SVI Infra Solutions. Your investment journey begins today. Here are your booking details:</p>
+          ${rows.length > 0 ? detailTable(rows) : ''}
+          ${ctaButton(portalUrl, 'View Booking Details')}`,
+      };
+    }
+    if (type === 'payment_reminder') {
+      const rows: Array<{ label: string; value: string; highlight?: boolean }> = [];
+      if (vars.amount)
+        rows.push({ label: 'Amount Due', value: `₹${vars.amount}`, highlight: true });
+      if (vars.event) rows.push({ label: 'Purpose / Scheme', value: vars.event });
+      if (vars.transaction_id) rows.push({ label: 'Reference ID', value: vars.transaction_id });
+      return {
+        headerHtml: headerBanner('⏰ Payment Reminder', 'Action Required — Pending Payment'),
+        bodyInnerHtml: `
+          ${alertBox('warning', '⚠ Payment Due — Action Required', 'Please complete your payment at the earliest to avoid any delays or service interruptions.')}
+          <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
+          <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">This is a friendly reminder regarding a pending payment in your account. Kindly review the details below and complete the payment at your earliest convenience:</p>
+          ${rows.length > 0 ? detailTable(rows) : ''}
+          <p style="color:#64748b;font-size:13px;line-height:1.6;margin:0 0 24px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">If you believe this is an error or have already made the payment, please contact our helpdesk immediately.</p>
+          ${ctaButton(portalUrl, 'Pay Now')}`,
+      };
+    }
+    // general
+    return {
+      headerHtml: headerBanner(
+        '📋 Official Communication',
+        'SVI Infra Solutions — Corporate Notice'
+      ),
+      bodyInnerHtml: `
+        <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
+        <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${vars.body_text || 'Please find the details of your communication below.'}</p>
+        ${ctaButton(portalUrl, 'Visit Portal')}`,
+    };
+  }
+
+  const { headerHtml, bodyInnerHtml } = buildSections();
+
+  return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>${vars.subject || 'SVI Infra Solutions'}</title></head><body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="background-color:#f1f5f9;padding:32px 10px;"><tr><td align="center"><table width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0;">${headerHtml}<tr><td style="padding:34px 30px 28px;background-color:#ffffff;">${bodyInnerHtml}</td></tr>${HELPDESK_BAR}${LEGAL_FOOTER}</table></td></tr></table></body></html>`;
+}

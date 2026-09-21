@@ -6,7 +6,8 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { streamText, generateText } from 'ai';
 import { groq } from '@ai-sdk/groq';
 import emailTemplates from '@/src/data/email-templates.json';
-import { sanitizeEmailHtml } from '@/src/lib/utils/templateParser';
+import { sanitizeEmailHtml, buildLuxuryEmailHtml } from '@/src/lib/utils/templateParser';
+import type { EmailTemplateType, LuxuryEmailVars } from '@/src/lib/utils/templateParser';
 
 export const maxDuration = 30;
 
@@ -204,7 +205,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing action field' }, { status: 400 });
     }
 
-    // ─── Auto Compose: subject / prompt → template match or AI corporate template ───
+    // ─── Auto Compose: extract vars via AI, build HTML server-side ───────────
     if (action === 'auto_compose') {
       const { subject, prompt: userPrompt, tone, to } = body;
       if (!subject && !userPrompt) {
@@ -212,104 +213,82 @@ export async function POST(request: NextRequest) {
       }
 
       // Fetch recipient context if email provided
-      let recipientData: Record<string, any> = {};
+      let recipientData: Record<string, string> = {};
       if (to) {
-        recipientData = await fetchRecipientData(to);
+        const raw = await fetchRecipientData(to);
+        recipientData = Object.fromEntries(
+          Object.entries(raw)
+            .filter(([, v]) => v !== null && v !== undefined)
+            .map(([k, v]) => [k, String(v)])
+        );
       }
 
       // Build existing templates list for AI to match against
       const templatesList = getTemplatesSummary();
 
-      const prompt = `You are an elite email HTML template designer for SVI Infra Solutions, a luxury real estate developer in India.
+      // ── Step 1: AI extracts variables only (small JSON, fast) ──────────────
+      const extractPrompt = [
+        'You are an email data extractor for SVI Infra Solutions.',
+        '',
+        'EXISTING TEMPLATES:',
+        templatesList,
+        '',
+        'TASK:',
+        'Analyze the user prompt and extract structured data. Respond ONLY with valid JSON.',
+        '',
+        'OUTPUT SCHEMA:',
+        '{',
+        '  "action": "template_match" or "ai_template",',
+        '  "templateId": "<id from list if matched, else _ai_generated>",',
+        '  "templateName": "<2-4 word title>",',
+        '  "subject": "<crisp email subject line>",',
+        '  "emailType": "refund_confirmation" or "payment_confirmation" or "booking_confirmation" or "payment_reminder" or "general",',
+        '  "variables": {',
+        '    "name": "<recipient name or Valued Customer>",',
+        '    "amount": "<numeric amount without rupee symbol e.g. 2,100>",',
+        '    "transaction_id": "<transaction id or UTR number>",',
+        '    "event": "<event or scheme name>",',
+        '    "status": "<CREDITED or RECEIVED or CONFIRMED>",',
+        '    "payment_mode": "<Bank Transfer or UPI or Cash>",',
+        '    "project": "<project name if booking>",',
+        '    "unit_no": "<unit or plot number if booking>",',
+        '    "plot_size": "<plot size if booking>",',
+        '    "booking_date": "<booking date if booking>",',
+        '    "body_text": "<one-sentence summary for general emails>",',
+        '    "portal_url": "https://www.sviinfrasolutions.com"',
+        '  }',
+        '}',
+        '',
+        'RULES:',
+        'Extract ONLY values actually mentioned in the prompt. Leave fields as empty string if not mentioned.',
+        'For refunds: emailType = refund_confirmation',
+        'For payments received: emailType = payment_confirmation',
+        'For bookings or allotments: emailType = booking_confirmation',
+        'For payment dues or reminders: emailType = payment_reminder',
+        'For everything else: emailType = general',
+        'If subject or prompt matches an EXISTING TEMPLATE set action = template_match and provide that templateId.',
+        'Otherwise set action = ai_template.',
+        'Respond with ONLY the JSON object. No explanation, no markdown fences.',
+        '',
+        'RECIPIENT DATA:',
+        JSON.stringify(recipientData),
+        '',
+        'EMAIL SUBJECT:',
+        subject || 'General Correspondence',
+        '',
+        'USER PROMPT:',
+        userPrompt || 'Draft an appropriate professional email.',
+        '',
+        `Tone: ${tone || 'Professional'}`,
+      ].join('\n');
 
-EXISTING TEMPLATES:
-${templatesList}
-
-─── LUXURY MOBILE-RESPONSIVE CORPORATE DESIGN SYSTEM ───
-Construct email with 100% mobile-responsive HTML email architecture:
-- Container: Outer wrapper #f1f5f9. Main card: max-width 600px, width 100%, background #ffffff, border-radius 16px, overflow hidden, border 1px solid #e2e8f0, box-shadow: 0 10px 30px rgba(0,0,0,0.08).
-- Header Banner:
-  * Background: linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%) with border-bottom 3px solid #D4AF37, padding 34px 28px, text-align center.
-  * Official Logo: MUST be wrapped in a crisp white rounded capsule so the dark blue corporate logo is 100% visible and sharp:
-    <div style='display:inline-block;background-color:#ffffff;padding:8px 22px;border-radius:24px;box-shadow:0 4px 14px rgba(0,0,0,0.25);margin-bottom:14px;'><img src='https://www.sviinfrasolutions.com/logo.png' alt='SVI Infra Solutions' width='145' style='display:block;height:auto;max-height:36px;border:0;' /></div>
-  * Category Pill Badge:
-    <div style='display:inline-block;padding:5px 14px;background:rgba(212,175,55,0.15);border:1px solid #D4AF37;border-radius:20px;color:#D4AF37;font-size:11px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;'>💳 REFUND ACKNOWLEDGMENT</div>
-  * Subtitle: Crisp white text (NEVER dark/black text):
-    <p style='color:#e2e8f0;font-size:13px;margin:8px 0 0;font-weight:400;'>Official Transaction Acknowledgment</p>
-  * CRITICAL RULES FOR HEADER:
-    - NEVER repeat "SVI INFRA SOLUTIONS PVT. LTD." as subtitle text (the logo already clearly identifies the company).
-    - NEVER generate dark text (like #0f172a or #334155) inside the header — all text in the header MUST be #ffffff, #e2e8f0, or #D4AF37.
-    - NEVER duplicate the badge title and heading title.
-
-- Body (padding: 34px 30px, background #ffffff):
-  1. Highlight Notice Box:
-     - For refunds / confirmations: Soft green background (#f0fdf4), green border-left 4px solid (#16a34a), border 1px solid #bbf7d0, border-radius 8px, padding 14px 18px, margin-bottom 22px. Title: <p style='margin:0;color:#15803d;font-weight:700;font-size:13.5px;'>✓ Refund Processed Successfully</p><p style='margin:4px 0 0;color:#166534;font-size:12.5px;line-height:1.5;'>Your refund has been processed to your source account.</p>
-     - For reminders: Soft amber (#fffbeb) with border-left 4px solid #d97706, text #92400e.
-  2. Salutation: <h2 style='color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;'>Dear {{name}},</h2>
-  3. Paragraph: Crisp text in #334155, line-height 1.7, font-size 14px, margin 0 0 20px.
-  4. STRUCTURED DETAIL SUMMARY TABLE (MANDATORY FOR ALL TRANSACTIONS, REFUNDS, LOTTERIES, BOOKINGS, PAYMENTS):
-     Format all key transaction data as an elegant summary card table:
-     <table width='100%' cellpadding='0' cellspacing='0' style='border-collapse:separate;border-spacing:0;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;margin:22px 0;overflow:hidden;font-size:13px;'>
-       <tr style='background-color:#f1f5f9;'><td style='padding:12px 16px;font-weight:700;color:#0f172a;border-bottom:1px solid #e2e8f0;' colspan='2'>🧾 Transaction & Refund Details</td></tr>
-       <tr><td style='padding:11px 16px;color:#64748b;font-weight:600;width:40%;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Refund Amount</td><td style='padding:11px 16px;color:#16a34a;font-weight:800;font-size:15px;border-bottom:1px solid #e2e8f0;'>₹2,100</td></tr>
-       <tr style='background-color:#ffffff;'><td style='padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Transaction ID / UTR</td><td style='padding:11px 16px;color:#0f172a;font-weight:700;font-family:monospace;border-bottom:1px solid #e2e8f0;'>854575376539</td></tr>
-       <tr><td style='padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Event / Scheme</td><td style='padding:11px 16px;color:#0f172a;font-weight:700;border-bottom:1px solid #e2e8f0;'>Lucky Draw (20 September)</td></tr>
-       <tr style='background-color:#ffffff;'><td style='padding:11px 16px;color:#64748b;font-weight:600;border-bottom:1px solid #e2e8f0;border-right:1px solid #e2e8f0;'>Status</td><td style='padding:11px 16px;color:#16a34a;font-weight:700;border-bottom:1px solid #e2e8f0;'>CREDITED</td></tr>
-       <tr><td style='padding:11px 16px;color:#64748b;font-weight:600;border-right:1px solid #e2e8f0;'>Payment Mode</td><td style='padding:11px 16px;color:#0f172a;font-weight:700;'>Bank Transfer / UPI</td></tr>
-     </table>
-  5. Action CTA Button (centered):
-     <div style='text-align:center;margin:30px 0 18px;'><a href='{{portal_url}}' style='background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:13px 34px;border-radius:30px;text-decoration:none;font-weight:800;font-size:12.5px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 14px rgba(212,175,55,0.35);text-transform:uppercase;'>View Refund Receipt</a></div>
-
-- Helpdesk Bar: Background #f8fafc, border-top 1px solid #e2e8f0, padding 16px 28px, font-size: 12px, color: #64748b. SVI Helpdesk: +91-73000-07643 &bull; info@sviinfrasolutions.com.
-- Corporate Legal Footer: Background #f1f5f9, padding: 24px 20px, text-align: center. Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, UP 201309 &bull; www.sviinfrasolutions.com &copy; ${new Date().getFullYear()} SVI Infra Solutions.
-- CRITICAL: Use single quotes (') for HTML tag attributes inside JSON to prevent quote escape issues.
-Analyze the email subject, user instructions/prompt, requested tone (${tone || 'Professional'}), and recipient details.
-1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:
-{
-  "action": "template_match",
-  "subject": "<matching template subject with relevant placeholders, or refined subject line>",
-  "templateId": "<matching template id from list>",
-  "templateName": "<matching template name>",
-  "variables": {
-    "name": "<recipient name or Valued Customer>",
-    "<other template variables>": "<value or placeholder>"
-  },
-  "html": "<complete email HTML with variables filled or placeholders>"
-}
-
-2) If NO MATCH with existing templates, create a custom, high-end, responsive HTML email template using the EXACT luxury structure above:
-{
-  "action": "ai_template",
-  "subject": "<crisp, executive, and punchy email subject line accurately summarizing the email intent>",
-  "templateId": "_ai_generated",
-  "templateName": "<short 2-4 word descriptive title>",
-  "variables": {
-    "name": "<recipient name or Valued Customer>",
-    "<other custom variables>": "<value or placeholder>"
-  },
-  "html": "<!DOCTYPE html><html>...complete valid HTML email...</html>"
-}
-RECIPIENT DATA:
-${JSON.stringify(recipientData, null, 2)}
-
-EMAIL SUBJECT:
-${subject || 'General Correspondence'}
-
-USER INSTRUCTIONS / PROMPT:
-${userPrompt || 'Draft an appropriate professional email response based on the subject and recipient context.'}
-
-CRITICAL JSON & ATTRIBUTE SYNTAX RULES:
-- Respond with ONLY a valid, parseable JSON object matching the schema above.
-- Inside the "html" field, write clean HTML. Use single quotes (') for all HTML tag attributes (e.g. <table class='email-card'>, <img src='https://www.sviinfrasolutions.com/logo.png' alt='SVI Infra Solutions' />) to prevent quote escaping conflicts.
-- Never output double-escaped sequences (do NOT write \\" or \\n).
-- No markdown code blocks, no explanation text outside the JSON.`;
-
-      let text = '';
+      let extractedText = '';
       try {
-        text = await safeGenerateText({
-          system: EMAIL_SYSTEM_PROMPT,
-          prompt,
-          maxOutputTokens: 2500,
+        extractedText = await safeGenerateText({
+          system:
+            'You are a JSON data extractor. Output ONLY valid JSON. No markdown, no HTML, no explanation.',
+          prompt: extractPrompt,
+          maxOutputTokens: 600,
         });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'AI service temporarily unavailable';
@@ -319,38 +298,72 @@ CRITICAL JSON & ATTRIBUTE SYNTAX RULES:
         );
       }
 
-      const parsed = parseAutoComposeOutput(text, subject || '');
+      // ── Step 2: Parse extracted vars ───────────────────────────────────────
+      type ExtractedPayload = {
+        action: 'template_match' | 'ai_template';
+        templateId: string;
+        templateName: string;
+        subject: string;
+        emailType: EmailTemplateType;
+        variables: LuxuryEmailVars;
+      };
+      const extracted = safeParseJson<ExtractedPayload>(extractedText, {
+        action: 'ai_template',
+        templateId: '_ai_generated',
+        templateName: 'AI Generated',
+        subject: subject || 'Official Communication',
+        emailType: 'general',
+        variables: { name: 'Valued Customer', portal_url: 'https://www.sviinfrasolutions.com' },
+      });
 
-      let matchedTpl: any = null;
-      if (parsed.action === 'template_match' && parsed.templateId) {
-        matchedTpl = (emailTemplates as Array<any>).find(
-          (t) =>
-            t.id === parsed.templateId ||
-            t.name.toLowerCase() === (parsed.templateName || '').toLowerCase()
-        );
-        if (matchedTpl) {
-          parsed.templateId = matchedTpl.id;
-          parsed.templateName = matchedTpl.name;
-          if (!parsed.html) parsed.html = sanitizeEmailHtml(matchedTpl.html);
-        } else {
-          parsed.action = 'ai_template';
-          parsed.templateId = '_ai_generated';
-        }
+      const emailType: EmailTemplateType = extracted.emailType || 'general';
+      const vars: LuxuryEmailVars = {
+        portal_url: 'https://www.sviinfrasolutions.com',
+        ...extracted.variables,
+        subject: extracted.subject || subject || 'Official Communication',
+      };
+
+      // ── Step 3: Check for existing template match ──────────────────────────
+      type EmailTpl = { id: string; name: string; subject: string; html: string };
+      let matchedTpl: EmailTpl | null = null;
+      if (extracted.action === 'template_match' && extracted.templateId) {
+        matchedTpl =
+          (emailTemplates as EmailTpl[]).find(
+            (t) =>
+              t.id === extracted.templateId ||
+              t.name.toLowerCase() === (extracted.templateName || '').toLowerCase()
+          ) ?? null;
       }
 
-      let finalSubject = parsed.subject || '';
-      if (!finalSubject && parsed.action === 'template_match' && matchedTpl?.subject) {
-        finalSubject = matchedTpl.subject;
+      let finalHtml: string;
+      let finalAction: string;
+      let finalTemplateId: string;
+      let finalTemplateName: string;
+      let finalSubject: string;
+
+      if (matchedTpl) {
+        finalHtml = sanitizeEmailHtml(matchedTpl.html);
+        finalAction = 'template_match';
+        finalTemplateId = matchedTpl.id;
+        finalTemplateName = matchedTpl.name;
+        finalSubject = extracted.subject || matchedTpl.subject;
+      } else {
+        // ── Step 4: Build complete luxury HTML server-side ─────────────────
+        finalHtml = buildLuxuryEmailHtml(emailType, vars);
+        finalAction = 'ai_template';
+        finalTemplateId = '_ai_generated';
+        finalTemplateName = extracted.templateName || 'AI Generated';
+        finalSubject = extracted.subject || subject || 'Official Communication';
       }
 
       return NextResponse.json({
         success: true,
-        action: parsed.action || 'ai_template',
-        templateId: parsed.templateId || '_ai_generated',
-        templateName: parsed.templateName || 'AI Generated',
+        action: finalAction,
+        templateId: finalTemplateId,
+        templateName: finalTemplateName,
         subject: finalSubject,
-        variables: parsed.variables || {},
-        html: sanitizeEmailHtml(parsed.html || ''),
+        variables: vars,
+        html: finalHtml,
       });
     }
 
