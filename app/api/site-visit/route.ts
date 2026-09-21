@@ -55,8 +55,8 @@ export async function POST(req: NextRequest) {
 
     const { name, phone, email, project_interest, preferred_date } = body;
 
-    if (!name?.trim() || !phone?.trim() || !email?.trim()) {
-      throw AppError.badRequest('Name, phone, and email are required');
+    if (!name?.trim() || !phone?.trim()) {
+      throw AppError.badRequest('Name and phone number are required');
     }
 
     const cleanPhone = normalizeIndianPhone(phone);
@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       .insert({
         name: name.trim(),
         phone: cleanPhone,
-        email: email.trim(),
+        email: email?.trim() || null,
         project_interest: project_interest?.trim() || null,
         preferred_date: preferred_date || null,
         source: 'site_visit',
