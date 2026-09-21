@@ -1,15 +1,11 @@
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
+import { AppError } from '@/src/lib/api/errors';
 import type {
   SalaryStructure,
   MonthlyPayroll,
   PayrollItem,
   CalculatePayrollPayload,
 } from './types';
-
-// Fallback in-memory storage for resilience when migrations are pending
-const memorySalaryStructures: Map<string, SalaryStructure> = new Map();
-const memoryMonthlyPayrolls: Map<string, MonthlyPayroll> = new Map();
-const memoryPayrollItems: Map<string, PayrollItem[]> = new Map();
 
 /**
  * Resilient Payroll Store
@@ -26,11 +22,8 @@ export const payrollStore = {
         .order('created_at', { ascending: false });
 
       if (error) {
-        console.warn(
-          '[payrollStore] DB read failed for salary_structures, using memory store:',
-          error.message
-        );
-        return Array.from(memorySalaryStructures.values());
+        console.error('[payrollStore] DB read failed for salary_structures:', error.message);
+        throw AppError.internal(`Failed to fetch salary structures: ${error.message}`);
       }
 
       // Enrich with employee profile details
@@ -78,8 +71,9 @@ export const payrollStore = {
         };
       });
     } catch (err) {
-      console.warn('[payrollStore] Unexpected error in getSalaryStructures:', err);
-      return Array.from(memorySalaryStructures.values());
+      if (err instanceof AppError) throw err;
+      console.error('[payrollStore] Unexpected error in getSalaryStructures:', err);
+      throw AppError.internal('Unexpected error fetching salary structures');
     }
   },
 
@@ -91,9 +85,11 @@ export const payrollStore = {
         .eq('user_id', userId)
         .maybeSingle();
 
-      if (error || !data) {
-        return memorySalaryStructures.get(userId) || null;
+      if (error) {
+        console.error('[payrollStore] Error getting salary structure by user_id:', error.message);
+        throw AppError.internal(`Failed to fetch salary structure: ${error.message}`);
       }
+      if (!data) return null;
 
       const { data: prof } = await supabaseAdmin
         .from('profiles')
@@ -127,8 +123,9 @@ export const payrollStore = {
         employee_department: prof?.department,
       };
     } catch (err) {
-      console.warn('[payrollStore] Error getting salary structure by user_id:', err);
-      return memorySalaryStructures.get(userId) || null;
+      if (err instanceof AppError) throw err;
+      console.error('[payrollStore] Error getting salary structure by user_id:', err);
+      throw AppError.internal('Failed to get salary structure');
     }
   },
 
@@ -173,14 +170,8 @@ export const payrollStore = {
         .single();
 
       if (error) {
-        console.warn('[payrollStore] DB upsert failed, updating memory store:', error.message);
-        const memObj: SalaryStructure = {
-          id: `mem_sal_${Date.now()}`,
-          ...record,
-          created_at: new Date().toISOString(),
-        };
-        memorySalaryStructures.set(payload.user_id, memObj);
-        return memObj;
+        console.error('[payrollStore] DB upsert failed for salary structure:', error.message);
+        throw AppError.internal(`Failed to save salary structure: ${error.message}`);
       }
 
       return {
@@ -197,14 +188,9 @@ export const payrollStore = {
         tds: Number(data.tds),
       };
     } catch (err) {
-      console.warn('[payrollStore] Error upserting salary structure:', err);
-      const memObj: SalaryStructure = {
-        id: `mem_sal_${Date.now()}`,
-        ...record,
-        created_at: new Date().toISOString(),
-      };
-      memorySalaryStructures.set(payload.user_id, memObj);
-      return memObj;
+      if (err instanceof AppError) throw err;
+      console.error('[payrollStore] Error upserting salary structure:', err);
+      throw AppError.internal('Failed to save salary structure');
     }
   },
 
@@ -217,8 +203,8 @@ export const payrollStore = {
         .order('month_year', { ascending: false });
 
       if (error) {
-        console.warn('[payrollStore] DB read failed for monthly_payrolls:', error.message);
-        return Array.from(memoryMonthlyPayrolls.values());
+        console.error('[payrollStore] DB read failed for monthly_payrolls:', error.message);
+        throw AppError.internal(`Failed to fetch monthly payrolls: ${error.message}`);
       }
 
       return (data || []).map((m) => ({
@@ -237,8 +223,9 @@ export const payrollStore = {
         updated_at: m.updated_at,
       }));
     } catch (err) {
-      console.warn('[payrollStore] Error getting monthly payrolls:', err);
-      return Array.from(memoryMonthlyPayrolls.values());
+      if (err instanceof AppError) throw err;
+      console.error('[payrollStore] Error getting monthly payrolls:', err);
+      throw AppError.internal('Failed to get monthly payrolls');
     }
   },
 
@@ -252,12 +239,11 @@ export const payrollStore = {
         .eq('id', payrollId)
         .maybeSingle();
 
-      if (error || !payroll) {
-        const memPayroll = memoryMonthlyPayrolls.get(payrollId);
-        if (!memPayroll) return null;
-        return { payroll: memPayroll, items: memoryPayrollItems.get(payrollId) || [] };
+      if (error) {
+        console.error('[payrollStore] DB read failed for monthly payroll by id:', error.message);
+        throw AppError.internal(`Failed to fetch monthly payroll: ${error.message}`);
       }
-
+      if (!payroll) return null;
       // Fetch items joined with employee profiles
       const { data: items } = await supabaseAdmin
         .from('payroll_items')
@@ -523,34 +509,27 @@ export const payrollStore = {
         .single();
 
       if (pErr || !pData) {
-        console.warn(
-          '[payrollStore] DB upsert failed for monthly_payrolls, saving to memory:',
-          pErr?.message
+        console.error('[payrollStore] DB upsert failed for monthly_payrolls:', pErr?.message);
+        throw AppError.internal(
+          `Failed to save monthly payroll: ${pErr?.message || 'Database error'}`
         );
-        savedPayroll = {
-          id: `mem_pay_${month_year}`,
-          ...payrollPayload,
-          created_at: new Date().toISOString(),
-        };
-        memoryMonthlyPayrolls.set(savedPayroll.id, savedPayroll);
-      } else {
-        savedPayroll = {
-          id: pData.id,
-          month_year: pData.month_year,
-          title: pData.title,
-          total_employees: pData.total_employees,
-          total_gross_payout: Number(pData.total_gross_payout),
-          total_net_payout: Number(pData.total_net_payout),
-          total_deductions: Number(pData.total_deductions),
-          status: pData.status,
-          allow_payslip_download: pData.allow_payslip_download ?? false,
-          processed_by: pData.processed_by,
-          notes: pData.notes,
-          created_at: pData.created_at,
-          updated_at: pData.updated_at,
-        };
       }
 
+      savedPayroll = {
+        id: pData.id,
+        month_year: pData.month_year,
+        title: pData.title,
+        total_employees: pData.total_employees,
+        total_gross_payout: Number(pData.total_gross_payout),
+        total_net_payout: Number(pData.total_net_payout),
+        total_deductions: Number(pData.total_deductions),
+        status: pData.status,
+        allow_payslip_download: pData.allow_payslip_download ?? false,
+        processed_by: pData.processed_by,
+        notes: pData.notes,
+        created_at: pData.created_at,
+        updated_at: pData.updated_at,
+      };
       // Upsert individual items
       const itemsWithId = itemsToUpsert.map((item) => ({
         ...item,
@@ -563,61 +542,44 @@ export const payrollStore = {
         .select();
 
       if (iErr || !dbItems) {
-        console.warn(
-          '[payrollStore] DB upsert failed for payroll_items, saving to memory:',
-          iErr?.message
+        console.error('[payrollStore] DB upsert failed for payroll_items:', iErr?.message);
+        throw AppError.internal(
+          `Failed to save payroll items: ${iErr?.message || 'Database error'}`
         );
-        savedItems = itemsWithId.map((item, idx) => ({
-          id: `mem_item_${idx}_${Date.now()}`,
-          ...item,
-          payroll_id: savedPayroll.id,
-        }));
-        memoryPayrollItems.set(savedPayroll.id, savedItems);
-      } else {
-        savedItems = dbItems.map((di) => ({
-          ...di,
-          present_days: Number(di.present_days),
-          half_days: Number(di.half_days),
-          paid_leaves: Number(di.paid_leaves),
-          absent_days: Number(di.absent_days),
-          lop_days: Number(di.lop_days),
-          base_salary: Number(di.base_salary),
-          basic_pay: Number(di.basic_pay),
-          hra: Number(di.hra),
-          special_allowance: Number(di.special_allowance),
-          conveyance_allowance: Number(di.conveyance_allowance),
-          medical_allowance: Number(di.medical_allowance),
-          gross_earnings: Number(di.gross_earnings),
-          lop_deduction: Number(di.lop_deduction),
-          pf_deduction: Number(di.pf_deduction),
-          esi_deduction: Number(di.esi_deduction),
-          professional_tax: Number(di.professional_tax),
-          tds: Number(di.tds),
-          advance_deduction: Number(di.advance_deduction),
-          other_deductions: Number(di.other_deductions),
-          incentive_bonus: Number(di.incentive_bonus),
-          total_deductions: Number(di.total_deductions),
-          net_salary: Number(di.net_salary),
-          is_download_allowed: di.is_download_allowed ?? false,
-        }));
       }
+
+      savedItems = dbItems.map((di) => ({
+        ...di,
+        present_days: Number(di.present_days),
+        half_days: Number(di.half_days),
+        paid_leaves: Number(di.paid_leaves),
+        absent_days: Number(di.absent_days),
+        lop_days: Number(di.lop_days),
+        base_salary: Number(di.base_salary),
+        basic_pay: Number(di.basic_pay),
+        hra: Number(di.hra),
+        special_allowance: Number(di.special_allowance),
+        conveyance_allowance: Number(di.conveyance_allowance),
+        medical_allowance: Number(di.medical_allowance),
+        gross_earnings: Number(di.gross_earnings),
+        lop_deduction: Number(di.lop_deduction),
+        pf_deduction: Number(di.pf_deduction),
+        esi_deduction: Number(di.esi_deduction),
+        professional_tax: Number(di.professional_tax),
+        tds: Number(di.tds),
+        advance_deduction: Number(di.advance_deduction),
+        other_deductions: Number(di.other_deductions),
+        incentive_bonus: Number(di.incentive_bonus),
+        total_deductions: Number(di.total_deductions),
+        net_salary: Number(di.net_salary),
+        is_download_allowed: di.is_download_allowed ?? false,
+      }));
 
       return { payroll: savedPayroll, items: savedItems };
     } catch (err) {
-      console.warn('[payrollStore] Error in calculateMonthlyPayroll:', err);
-      savedPayroll = {
-        id: `mem_pay_${month_year}`,
-        ...payrollPayload,
-        created_at: new Date().toISOString(),
-      };
-      savedItems = itemsToUpsert.map((item, idx) => ({
-        id: `mem_item_${idx}_${Date.now()}`,
-        ...item,
-        payroll_id: savedPayroll.id,
-      }));
-      memoryMonthlyPayrolls.set(savedPayroll.id, savedPayroll);
-      memoryPayrollItems.set(savedPayroll.id, savedItems);
-      return { payroll: savedPayroll, items: savedItems };
+      if (err instanceof AppError) throw err;
+      console.error('[payrollStore] Error in calculateMonthlyPayroll:', err);
+      throw AppError.internal('Failed to calculate monthly payroll');
     }
   },
 
@@ -638,26 +600,13 @@ export const payrollStore = {
           .from('payroll_items')
           .update({ is_download_allowed: options.allow, updated_at: new Date().toISOString() })
           .eq('payroll_id', payrollId);
-
-        // Memory fallback update
-        const memP = memoryMonthlyPayrolls.get(payrollId);
-        if (memP) memP.allow_payslip_download = options.allow;
-        const memItems = memoryPayrollItems.get(payrollId);
-        if (memItems) memItems.forEach((i) => (i.is_download_allowed = options.allow));
       } else if (options.itemId) {
         // Single employee toggle
         await supabaseAdmin
           .from('payroll_items')
           .update({ is_download_allowed: options.allow, updated_at: new Date().toISOString() })
           .eq('id', options.itemId);
-
-        const memItems = memoryPayrollItems.get(payrollId);
-        if (memItems) {
-          const it = memItems.find((i) => i.id === options.itemId);
-          if (it) it.is_download_allowed = options.allow;
-        }
       }
-
       return { success: true, allow: options.allow };
     } catch (err) {
       console.warn('[payrollStore] Error toggling payslip download:', err);
