@@ -167,9 +167,14 @@ export function AnnouncementTab() {
           <div className="relative flex items-center justify-between overflow-hidden rounded-lg border border-[#d4af37]/30 bg-[#070b14] px-4 py-2.5 text-slate-100 shadow-md">
             <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
             <div className="flex flex-1 items-center justify-center gap-2 text-xs font-medium">
-              <span className="rounded-full border border-[#d4af37]/40 bg-[#d4af37]/15 px-2.5 py-0.5 text-[10px] font-bold text-[#f5d77f] uppercase">
-                {config.badgeText || 'NEW'}
-              </span>
+              {config.badgeText ? (
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-[#d4af37]/35 bg-[#d4af37]/15 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-[#f5d77f] uppercase">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="inline-flex h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
+                  </span>
+                  <span>{config.badgeText}</span>
+                </span>
+              ) : null}
               <span className="truncate text-slate-200">{config.text}</span>
               <span className="font-bold text-[#f5d77f] underline decoration-[#d4af37]/50 underline-offset-4">
                 {config.actionText} →

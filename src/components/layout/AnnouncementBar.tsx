@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { ArrowRight, X, Sparkles } from 'lucide-react';
+import { ArrowRight, X } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { defaultAnnouncementConfig, type AnnouncementConfig } from '@/src/config/announcement';
 import { supabase } from '@/src/lib/supabase/client';
@@ -91,14 +91,15 @@ export default function AnnouncementBar() {
           <div className="relative mx-auto flex min-h-[38px] max-w-7xl items-center justify-between px-3 py-1.5 sm:px-6">
             {/* Pulsing indicator dot / Star badge */}
             <div className="flex flex-1 items-center justify-center gap-2 overflow-hidden text-center text-[11px] sm:text-xs md:gap-3 md:text-[13px]">
-              <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#d4af37]/40 bg-[#d4af37]/15 px-2.5 py-0.5 font-bold tracking-widest text-[#f5d77f] uppercase shadow-xs ring-1 ring-[#d4af37]/20 backdrop-blur-xs">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d4af37] opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-[#d4af37]" />
-                </span>
-                <Sparkles className="h-3 w-3 fill-[#d4af37] text-[#d4af37]" />
-                <span className="text-[10px] font-bold">{config.badgeText}</span>
-              </div>
+              {config.badgeText && (
+                <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#d4af37]/35 bg-[#d4af37]/15 px-2.5 py-0.5 font-bold tracking-wider text-[#f5d77f] uppercase shadow-xs ring-1 ring-[#d4af37]/20 backdrop-blur-xs">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d4af37] opacity-75" />
+                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
+                  </span>
+                  <span className="text-[10px] font-bold">{config.badgeText}</span>
+                </div>
+              )}
 
               {/* Text content & Action Link */}
               <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 font-medium tracking-wide text-slate-200">
