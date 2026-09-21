@@ -51,7 +51,7 @@ export default function CurrentProjectsContent({
   const [currentGalleryIndex, setCurrentGalleryIndex] = useState(0);
   const [direction, setDirection] = useState(0);
   const [highlightedProject, setHighlightedProject] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(!initialProjects || initialProjects.length === 0);
 
   const { compareList, addToCompare, removeFromCompare } = useComparisonStore();
   const isInCompare = (id: string) => compareList.some((p) => p.id === id);

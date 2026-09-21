@@ -1,6 +1,6 @@
 'use client';
 
-import { memo, useState, useEffect } from 'react';
+import { memo, useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ImageIcon, AlertCircle, RotateCw } from 'lucide-react';
 import blurManifest from '@/src/data/blur-data-urls.json';
@@ -38,6 +38,14 @@ const toBase64 = (str: string) =>
 
 const DEFAULT_BLUR_DATA_URL = `data:image/svg+xml;base64,${toBase64(shimmerSvg())}`;
 
+function normalizeUrl(url: string): string {
+  try {
+    return decodeURI(url);
+  } catch {
+    return url;
+  }
+}
+
 const HoverZoomImage = memo(function HoverZoomImage({
   src,
   alt,
@@ -53,13 +61,56 @@ const HoverZoomImage = memo(function HoverZoomImage({
   const [isLoaded, setIsLoaded] = useState(false);
   const [hasError, setHasError] = useState(false);
   const [renderSkeleton, setRenderSkeleton] = useState(true);
+  const imgRef = useRef<HTMLImageElement | null>(null);
+  const prevNormalizedSrcRef = useRef<string>('');
 
-  // Reset loading & error state when src changes
-  useEffect(() => {
-    setIsLoaded(false);
+  const handleLoad = useCallback(() => {
+    setIsLoaded(true);
     setHasError(false);
-    setRenderSkeleton(true);
-  }, [src]);
+    if (onLoad) onLoad();
+  }, [onLoad]);
+
+  const handleError = useCallback(() => {
+    setHasError(true);
+    setIsLoaded(true);
+    if (onError) onError();
+  }, [onError]);
+
+  // Reset loading & error state when src changes, avoiding false resets from URL encoding diffs
+  useEffect(() => {
+    const normalized = normalizeUrl(src);
+    if (prevNormalizedSrcRef.current !== normalized) {
+      prevNormalizedSrcRef.current = normalized;
+      setIsLoaded(false);
+      setHasError(false);
+      setRenderSkeleton(true);
+    }
+
+    // Immediate check if native <img> is already complete (e.g. browser cache or fast render)
+    if (imgRef.current && imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+      handleLoad();
+    }
+  }, [src, handleLoad]);
+
+  // Safety watchdog timer: prevent perpetual spinner if browser omits load event
+  useEffect(() => {
+    if (isLoaded) return;
+
+    const timer = setTimeout(() => {
+      if (imgRef.current) {
+        if (imgRef.current.complete && imgRef.current.naturalWidth > 0) {
+          handleLoad();
+        } else if (imgRef.current.complete && imgRef.current.naturalWidth === 0) {
+          handleError();
+        } else {
+          // Gracefully reveal image rather than locking user out with infinite spinner
+          handleLoad();
+        }
+      }
+    }, 3500);
+
+    return () => clearTimeout(timer);
+  }, [isLoaded, handleLoad, handleError]);
 
   // Cleanly unmount skeleton after fade-out transition to stop keyframe animations
   useEffect(() => {
@@ -70,7 +121,6 @@ const HoverZoomImage = memo(function HoverZoomImage({
       return () => clearTimeout(timer);
     }
   }, [isLoaded]);
-
   // Find blur data URL from manifest if available (robust to encoded & unencoded paths)
   const manifestMap = blurManifest as Record<string, string>;
   let decodedSrc = src;
@@ -170,6 +220,7 @@ const HoverZoomImage = memo(function HoverZoomImage({
         </div>
       ) : (
         <Image
+          ref={imgRef}
           src={src}
           alt={alt}
           fill
@@ -179,13 +230,10 @@ const HoverZoomImage = memo(function HoverZoomImage({
           placeholder="blur"
           blurDataURL={blurUrl}
           onLoad={() => {
-            setIsLoaded(true);
-            if (onLoad) onLoad();
+            handleLoad();
           }}
           onError={() => {
-            setHasError(true);
-            setIsLoaded(true);
-            if (onError) onError();
+            handleError();
           }}
           className={`hover-zoom-img object-cover transition-all duration-700 ease-out ${
             isLoaded ? 'blur-0 scale-100 opacity-100' : 'scale-[1.03] opacity-0 blur-sm'
