@@ -49,7 +49,7 @@ export function useAIEmail() {
     setLoading(false);
   }, []);
 
-  const apiCall = useCallback(async (body: Record<string, any>, signal?: AbortSignal) => {
+  const apiCall = useCallback(async (body: Record<string, unknown>, signal?: AbortSignal) => {
     const token = await getToken();
     const res = await fetch('/api/admin/email/ai', {
       method: 'POST',
@@ -63,7 +63,11 @@ export function useAIEmail() {
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || `Request failed (${res.status})`);
+      const errMsg =
+        typeof data.error === 'string'
+          ? data.error
+          : data.error?.message || data.message || `Request failed (${res.status})`;
+      throw new Error(errMsg);
     }
 
     return res;

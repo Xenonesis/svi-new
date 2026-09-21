@@ -99,8 +99,95 @@ Analyze the email and return a JSON object with this exact structure:
 
 // ─── Handler ─────────────────────────────────────────────────
 
-const AI_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+const PRIMARY_MODEL = process.env.GROQ_MODEL || 'openai/gpt-oss-120b';
+const FALLBACK_MODEL = 'openai/gpt-oss-20b';
 
+/**
+ * Safely generate text with automatic fallback if primary model is unavailable or rate-limited.
+ */
+async function safeGenerateText(options: {
+  system?: string;
+  prompt: string;
+  maxOutputTokens?: number;
+}): Promise<string> {
+  const maxOutputTokens = options.maxOutputTokens ?? 2500;
+  try {
+    const { text } = await generateText({
+      model: groq(PRIMARY_MODEL),
+      system: options.system,
+      prompt: options.prompt,
+      maxOutputTokens,
+    });
+    return text;
+  } catch (primaryErr: unknown) {
+    const msg = primaryErr instanceof Error ? primaryErr.message : String(primaryErr);
+    console.warn(
+      `[AI Email] Primary model (${PRIMARY_MODEL}) failed: ${msg}. Attempting fallback (${FALLBACK_MODEL})...`
+    );
+    try {
+      const { text } = await generateText({
+        model: groq(FALLBACK_MODEL),
+        system: options.system,
+        prompt: options.prompt,
+        maxOutputTokens: Math.min(maxOutputTokens, 2000),
+      });
+      return text;
+    } catch (fallbackErr: unknown) {
+      const fbMsg = fallbackErr instanceof Error ? fallbackErr.message : String(fallbackErr);
+      console.error('[AI Email] Fallback model also failed:', fbMsg);
+      throw primaryErr;
+    }
+  }
+}
+
+/**
+ * Resilient JSON parsing helper that extracts valid JSON even if surrounded by markdown or conversational text.
+ */
+function safeParseJson<T>(raw: string, fallback: T): T {
+  if (!raw || typeof raw !== 'string') return fallback;
+
+  const clean = raw
+    .trim()
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/\s*```$/i, '')
+    .trim();
+
+  try {
+    return JSON.parse(clean);
+  } catch {
+    // Continue to regex extraction
+  }
+
+  const objMatch = clean.match(/\{[\s\S]*\}/);
+  if (objMatch) {
+    try {
+      return JSON.parse(objMatch[0]);
+    } catch {
+      try {
+        const cleanedCommas = objMatch[0].replace(/,\s*([\}\]])/g, '$1');
+        return JSON.parse(cleanedCommas);
+      } catch {
+        // Fall through
+      }
+    }
+  }
+
+  const arrMatch = clean.match(/\[[\s\S]*\]/);
+  if (arrMatch) {
+    try {
+      return JSON.parse(arrMatch[0]);
+    } catch {
+      try {
+        const cleanedCommas = arrMatch[0].replace(/,\s*([\}\]])/g, '$1');
+        return JSON.parse(cleanedCommas);
+      } catch {
+        // Fall through
+      }
+    }
+  }
+
+  return fallback;
+}
 export async function POST(request: NextRequest) {
   // Rate limit: 10 AI requests per admin per minute
   const limited = await rateLimit(request, { limit: 10, windowSeconds: 60 });
@@ -139,122 +226,19 @@ EXISTING TEMPLATES:
 ${templatesList}
 
 ─── LUXURY MOBILE-RESPONSIVE CORPORATE DESIGN SYSTEM ───
-Always construct email with this clean, 100% mobile-responsive HTML email architecture:
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="x-apple-disable-message-reformatting">
-  <meta name="format-detection" content="telephone=no, date=no, address=no, email=no">
-  <title>SVI Infra Solutions</title>
-  <style>
-    * { box-sizing: border-box; }
-    body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; -webkit-font-smoothing: antialiased; }
-    table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
-    img { -ms-interpolation-mode: bicubic; max-width: 100%; height: auto; }
-    @media only screen and (max-width: 600px) {
-      .email-wrapper { padding: 12px 6px !important; }
-      .email-card { width: 100% !important; max-width: 100% !important; border-radius: 12px !important; }
-      .header-cell { padding: 24px 16px !important; }
-      .header-title { font-size: 20px !important; line-height: 1.3 !important; }
-      .header-subtitle { font-size: 12px !important; }
-      .body-cell { padding: 22px 16px !important; font-size: 14px !important; }
-      .details-table th, .details-table td { padding: 8px 10px !important; font-size: 12px !important; }
-      .cta-button { display: block !important; width: 100% !important; box-sizing: border-box !important; text-align: center !important; padding: 14px 18px !important; }
-      .helpdesk-bar { padding: 14px 16px !important; font-size: 11.5px !important; }
-      .footer-cell { padding: 18px 12px !important; font-size: 11px !important; }
-    }
-  </style>
-</head>
-<body style="margin:0;padding:0;background-color:#f1f5f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
-  <table class="email-wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="margin:0;padding:28px 10px;background-color:#f1f5f9;width:100%;">
-    <tr>
-      <td align="center">
-        <!-- Main Card Container: Fluid 100% with max-width 600px -->
-        <table class="email-card" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,0.08);border:1px solid #e2e8f0;margin:0 auto;">
-          <!-- Header Banner with Official Corporate Logo -->
-          <tr class="header-row" style="background-color:#07111e;background:linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%);border-bottom:2px solid #D4AF37;">
-            <td class="header-cell" style="padding:28px 24px 22px;text-align:center;">
-              <div style="background:#ffffff;display:inline-block;padding:6px 14px;border-radius:8px;box-shadow:0 3px 12px rgba(0,0,0,0.3);margin-bottom:12px;">
-                <img src="https://www.sviinfrasolutions.com/logo.png" alt="SVI Infra Solutions" width="160" style="height:36px;width:auto;max-height:40px;display:block;margin:0 auto;border:0;" />
-              </div>
-              <div style="margin-bottom:6px;">
-                <span class="header-pill" style="display:inline-block;padding:3px 12px;background:rgba(212,175,55,0.12);border:1px solid rgba(212,175,55,0.4);border-radius:16px;color:#D4AF37 !important;font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;">OFFICIAL NOTICE / CATEGORY</span>
-              </div>
-              <h1 class="header-title" style="color:#ffffff !important;font-size:20px;margin:0;font-family:Georgia,serif;font-weight:700;letter-spacing:0.5px;line-height:1.35;">Email Subject / Heading</h1>
-              <p class="header-subtitle" style="color:#cbd5e1 !important;font-size:11.5px;margin:4px 0 0;font-weight:400;line-height:1.4;">SVI INFRA SOLUTIONS PVT. LTD.</p>
-            </td>
-          </tr>
-
-<!-- Body Content (inside <td class="email-body-content" style="padding:32px 28px;background-color:#ffffff;color:#0f172a;">) -->
-  - Salutation (MUST BE CRISP, HIGH-CONTRAST DARK TEXT #0f172a, NEVER LIGHT OR FAINT):
-    * If request from Employee to HR/Management: <h2 style="color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;line-height:1.4;">Respected Sir/Madam,</h2> (or Dear Management,)
-    * If Company to Customer: <h2 style="color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;line-height:1.4;">Dear {{name}},</h2>
-    * If Company to Employee: <h2 style="color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;line-height:1.4;">Dear {{name}},</h2>
-  - Main text paragraphs:
-    <p style="color:#334155 !important;font-size:14px;line-height:1.75;margin:0 0 16px;">Paragraph content addressing user prompt directly with professional spacing...</p>
-
-  - CONDITIONAL ELEMENTS (ONLY include when explicitly justified or requested):
-    * Key-Value / Application Details Table: When displaying structured facts (e.g. status, dates, amounts, targets).
-      CRITICAL: Every <th> and <td> MUST have explicit inline border and padding styles so it renders perfectly across all clients!
-      Values must be REAL concrete values or executive status badges, NEVER generic phrases like 'Status' or 'Variable Name'.
-      <table class="details-table" width="100%" cellpadding="0" cellspacing="0" style="border-collapse:collapse;width:100%;background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;margin:18px 0;overflow:hidden;font-size:13px;">
-        <thead>
-          <tr style="background-color:#0f172a;"><th colspan="2" style="padding:10px 14px;text-align:left;font-weight:700;color:#ffffff !important;border:1px solid #0f172a;font-size:11.5px;text-transform:uppercase;letter-spacing:0.5px;">Summary Details</th></tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:10px 14px;color:#475569;font-weight:600;width:38%;border:1px solid #e2e8f0;background-color:#f8fafc;">Client Form</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border:1px solid #e2e8f0;background-color:#ffffff;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-size:11px;font-weight:700;">Pending</span></td></tr>
-          <tr style="border-bottom:1px solid #e2e8f0;"><td style="padding:10px 14px;color:#475569;font-weight:600;border:1px solid #e2e8f0;background-color:#f8fafc;">Allotment Amount</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border:1px solid #e2e8f0;background-color:#ffffff;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:#fee2e2;color:#991b1b;border:1px solid #fecaca;font-size:11px;font-weight:700;">Awaited</span></td></tr>
-          <tr><td style="padding:10px 14px;color:#475569;font-weight:600;border:1px solid #e2e8f0;background-color:#f8fafc;">Target Completion</td><td style="padding:10px 14px;color:#0f172a;font-weight:700;border:1px solid #e2e8f0;background-color:#ffffff;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;background-color:#fffbeb;color:#92400e;border:1px solid #fde68a;font-size:11px;font-weight:700;">Incomplete</span></td></tr>
-        </tbody>
-      </table>
-
-    * Highlight/Alert Box (SEMANTIC COLORS):
-      - For Warnings / Disciplinary Notices / Salary Holds / Suspensions:
-        <div style="background-color:#fff1f2;border:1px solid #fecdd3;border-left:4px solid #e11d48;border-radius:8px;padding:13px 16px;margin:18px 0;">
-          <p style="margin:0;color:#9f1239;font-weight:700;font-size:13px;line-height:1.5;">Important Notice: Attendance suspension and salary hold will remain in effect until compliance.</p>
-        </div>
-      - For Approvals / Positive Confirmations:
-        <div style="background-color:#f0fdf4;border:1px solid #bbf7d0;border-left:4px solid #16a34a;border-radius:8px;padding:13px 16px;margin:18px 0;">
-          <p style="margin:0;color:#15803d;font-weight:700;font-size:13px;line-height:1.5;">✓ Confirmation: Details have been approved and updated.</p>
-        </div>
-      - For General Informational Notices:
-        <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-left:4px solid #0f172a;border-radius:8px;padding:13px 16px;margin:18px 0;">
-          <p style="margin:0;color:#0f172a;font-weight:700;font-size:13px;line-height:1.5;">Notice: Please take note of the policy requirements.</p>
-        </div>
-
-    * Action Roadmap / Next Steps: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly asks for next steps or action points.
-      <div style="background-color:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px;margin:20px 0;">
-        <h3 style="margin:0 0 10px;color:#0f172a;font-size:13.5px;font-weight:700;">📌 Required Action Steps:</h3>
-        <ol style="margin:0;padding-left:18px;color:#475569;font-size:13px;line-height:1.8;">
-          <li>...specific steps from user prompt...</li>
-        </ol>
-      </div>
-
-    * CTA Button: STRICTLY PROHIBITED unless the USER INSTRUCTIONS / PROMPT explicitly requests a button, portal link, or call-to-action.
-      <div style="text-align:center;margin:24px 0 16px;">
-        <a href="{{portal_url}}" class="cta-button" style="background-color:#D4AF37;background:linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%);color:#0f172a;padding:13px 30px;border-radius:26px;text-decoration:none;font-weight:800;font-size:12.5px;display:inline-block;letter-spacing:0.5px;box-shadow:0 4px 15px rgba(212,175,55,0.35);text-transform:uppercase;min-height:42px;line-height:16px;">Action Button</a>
-      </div>
-
-  - Sign-off (Clean professional sign-off):
-    <div style="margin:22px 0 0;color:#334155;font-size:13.5px;line-height:1.6;">Warm regards,<br><strong style="color:#0f172a;">HR & Operations Team</strong><br><span style="color:#64748b;font-size:12px;">SVI Infra Solutions Pvt. Ltd.</span></div>
-
-- Advisor / Helpdesk Bar:
-  <div class="helpdesk-bar" style="background-color:#f8fafc;border-top:1px solid #e2e8f0;padding:14px 20px;font-size:12px;color:#64748b;word-break:break-word;">
-    <strong style="color:#0f172a;">Need assistance?</strong> SVI Helpdesk: <a href="tel:+917300007643" style="color:#0f172a;font-weight:700;text-decoration:none;">+91-73000-07643</a> &bull; <a href="mailto:info@sviinfrasolutions.com" style="color:#D4AF37;text-decoration:none;">info@sviinfrasolutions.com</a>
-  </div>
-- Corporate Legal Footer:
-  <div class="footer-cell" style="padding:18px 16px;text-align:center;background-color:#f8fafc;border-top:1px solid #cbd5e1;word-break:break-word;">
-    <p style="color:#0f172a !important;font-size:12.5px;font-weight:800;letter-spacing:0.3px;margin:0 0 4px;">SVI Infra Solutions Pvt. Ltd.</p>
-    <p style="color:#475569 !important;font-size:11.5px;margin:0 0 5px;line-height:1.5;font-weight:500;">Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309 &bull; <a href="https://www.sviinfrasolutions.com" style="color:#1e3a8a !important;font-weight:700;text-decoration:underline;">www.sviinfrasolutions.com</a></p>
-    <p style="color:#64748b !important;font-size:10.5px;margin:0;font-weight:600;">&copy; ${new Date().getFullYear()} SVI Infra Solutions. All rights reserved.</p>
-  </div>
-CRITICAL RULES:
-- DO NOT include 'Next Steps' or 'View Details on Portal' CTA buttons by default. Only generate them if the user's prompt explicitly asks for next steps or a portal action button.
-- The official logo MUST be included in the header banner using https://www.sviinfrasolutions.com/logo.png.
-- Tables MUST have explicit borders on every cell. Status values must be formatted as badges (Pending, Awaited, Approved, etc.).
+Construct email with 100% mobile-responsive HTML email architecture:
+- Container: Outer wrapper #f1f5f9. Main card: max-width 600px, width 100%, background #ffffff, border-radius 16px, overflow hidden, border 1px solid #e2e8f0.
+- Header Banner: Background #07111e with linear-gradient(135deg,#07111e 0%,#0d1e36 50%,#0a1628 100%), border-bottom 2px solid #D4AF37.
+  Include official logo: <img src='https://www.sviinfrasolutions.com/logo.png' alt='SVI Infra Solutions' width='160' style='height:36px;width:auto;display:block;margin:0 auto;' />
+  Include category badge (#D4AF37 text, gold border), Georgia serif title in white (#ffffff), and subtitle 'SVI INFRA SOLUTIONS PVT. LTD.'.
+- Body: Content inside <td> with padding 28px, background #ffffff.
+  Salutation: Crisp dark text #0f172a (<h2 style='color:#0f172a !important;font-size:16px;margin:0 0 16px;font-weight:700;'>Dear {{name}},</h2>).
+  Paragraphs: Color #334155, line-height 1.75, font-size 14px.
+- Tables (if needed for structured facts): Explicit border 1px solid #e2e8f0 on every cell, th background #0f172a text #ffffff, values formatted as badges.
+- Notice Boxes (if applicable): Alert (#fff1f2 border-left #e11d48), confirmation (#f0fdf4 border-left #16a34a), or neutral (#f8fafc border-left #0f172a).
+- Helpdesk Bar: Background #f8fafc, border-top 1px solid #e2e8f0, SVI Helpdesk: +91-73000-07643 &bull; info@sviinfrasolutions.com.
+- Corporate Legal Footer: Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, UP 201309 &bull; www.sviinfrasolutions.com &copy; ${new Date().getFullYear()} SVI Infra Solutions.
+- CRITICAL: Use single quotes (') for HTML tag attributes inside JSON to prevent quote escape issues.
 TASK:
 Analyze the email subject, user instructions/prompt, requested tone (${tone || 'Professional'}), and recipient details.
 1) If the subject/prompt matches one of the EXISTING TEMPLATES above, output a JSON object:
@@ -297,11 +281,20 @@ CRITICAL JSON & ATTRIBUTE SYNTAX RULES:
 - Never output double-escaped sequences (do NOT write \\" or \\n).
 - No markdown code blocks, no explanation text outside the JSON.`;
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
-        system: EMAIL_SYSTEM_PROMPT,
-        prompt,
-      });
+      let text = '';
+      try {
+        text = await safeGenerateText({
+          system: EMAIL_SYSTEM_PROMPT,
+          prompt,
+          maxOutputTokens: 2500,
+        });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'AI service temporarily unavailable';
+        return NextResponse.json(
+          { error: `AI generation failed: ${msg}. Please try again.` },
+          { status: 503 }
+        );
+      }
 
       const parsed = parseAutoComposeOutput(text, subject || '');
 
@@ -349,19 +342,28 @@ CRITICAL JSON & ATTRIBUTE SYNTAX RULES:
       const contextInfo = context?.recipientName ? `Recipient: ${context.recipientName}.` : '';
       const subjectInfo = context?.subject ? `Email subject: ${context.subject}.` : '';
 
-      const result = streamText({
-        model: groq(AI_MODEL),
-        system: `You are an elite business email writer for SVI Infra Solutions.
+      try {
+        const result = streamText({
+          model: groq(PRIMARY_MODEL),
+          system: `You are an elite business email writer for SVI Infra Solutions.
 Write a clear, professional, and directly usable HTML email body based on the prompt.
 Rules:
 - Output clean semantic HTML tags (<p>, <ul>, <li>, <strong>, <br>).
 - Do NOT output markdown code blocks or fences like \`\`\`html.
 - Do NOT include Subject headers or metadata.
 - Make the email engaging, concise, and appropriate for corporate real estate communication.`,
-        prompt: `${toneInstruction} ${contextInfo} ${subjectInfo}\n\nWrite an email message addressing this prompt:\n"${prompt}"\n\nReturn the HTML body directly:`,
-      });
-
-      return result.toTextStreamResponse();
+          prompt: `${toneInstruction} ${contextInfo} ${subjectInfo}\n\nWrite an email message addressing this prompt:\n"${prompt}"\n\nReturn the HTML body directly:`,
+        });
+        return result.toTextStreamResponse();
+      } catch {
+        const result = streamText({
+          model: groq(FALLBACK_MODEL),
+          system: `You are an elite business email writer for SVI Infra Solutions.
+Write a clear, professional, and directly usable HTML email body based on the prompt.`,
+          prompt: `${toneInstruction} ${contextInfo} ${subjectInfo}\n\nWrite an email message addressing this prompt:\n"${prompt}"\n\nReturn the HTML body directly:`,
+        });
+        return result.toTextStreamResponse();
+      }
     }
 
     // ─── Feature 2: Improve email content (streaming) ──────
@@ -375,13 +377,21 @@ Rules:
         ? `Specific instruction: ${instruction}`
         : 'General improvement for grammar, tone, and clarity.';
 
-      const result = streamText({
-        model: groq(AI_MODEL),
-        system: IMPROVE_PROMPT,
-        prompt: `${instructionText}\n\nOriginal email HTML:\n${html}`,
-      });
-
-      return result.toTextStreamResponse();
+      try {
+        const result = streamText({
+          model: groq(PRIMARY_MODEL),
+          system: IMPROVE_PROMPT,
+          prompt: `${instructionText}\n\nOriginal email HTML:\n${html}`,
+        });
+        return result.toTextStreamResponse();
+      } catch {
+        const result = streamText({
+          model: groq(FALLBACK_MODEL),
+          system: IMPROVE_PROMPT,
+          prompt: `${instructionText}\n\nOriginal email HTML:\n${html}`,
+        });
+        return result.toTextStreamResponse();
+      }
     }
 
     // ─── Feature 3: Summarize email thread (non-streaming) ─
@@ -398,25 +408,17 @@ Rules:
         )
         .join('\n\n');
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
+      const text = await safeGenerateText({
         system: SUMMARIZE_PROMPT,
         prompt: `Summarize this email thread:\n\n${threadText}`,
       });
 
-      // Parse JSON response
-      try {
-        const summary = JSON.parse(text);
-        return NextResponse.json({ success: true, summary });
-      } catch {
-        // Try extracting JSON from response
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const summary = JSON.parse(jsonMatch[0]);
-          return NextResponse.json({ success: true, summary });
-        }
-        return NextResponse.json({ error: 'Failed to parse summary' }, { status: 500 });
-      }
+      const summary = safeParseJson(text, {
+        overview: stripHtml(threadText).slice(0, 300),
+        keyPoints: [],
+        actionItems: [],
+      });
+      return NextResponse.json({ success: true, summary });
     }
 
     // ─── Feature 4: Populate template variables (non-streaming) ─
@@ -432,23 +434,22 @@ Rules:
         recipientData = await fetchRecipientData(recipientEmail);
       }
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
+      const text = await safeGenerateText({
         system: POPULATE_TEMPLATE_PROMPT,
         prompt: `Template ID: ${templateId || 'unknown'}\n\nVariables to populate:\n${variables.join(', ')}\n\nRecipient data:\n${JSON.stringify(recipientData, null, 2)}`,
       });
 
-      try {
-        const result = JSON.parse(text);
-        return NextResponse.json({ success: true, ...result });
-      } catch {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const result = JSON.parse(jsonMatch[0]);
-          return NextResponse.json({ success: true, ...result });
-        }
-        return NextResponse.json({ error: 'Failed to parse suggestions' }, { status: 500 });
-      }
+      const parsed = safeParseJson<Record<string, unknown>>(text, {});
+      const suggestions =
+        typeof parsed.suggestions === 'object' && parsed.suggestions !== null
+          ? parsed.suggestions
+          : parsed;
+      const confidence = typeof parsed.confidence === 'string' ? parsed.confidence : 'medium';
+      return NextResponse.json({
+        success: true,
+        suggestions,
+        confidence,
+      });
     }
 
     // ─── Feature 5: Sentiment analysis (non-streaming) ─────
@@ -460,23 +461,18 @@ Rules:
 
       const content = stripHtml(emailHtml || '') || emailText || '';
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
+      const text = await safeGenerateText({
         system: SENTIMENT_PROMPT,
         prompt: `Analyze this email:\n\n${content}`,
       });
 
-      try {
-        const result = JSON.parse(text);
-        return NextResponse.json({ success: true, ...result });
-      } catch {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) {
-          const result = JSON.parse(jsonMatch[0]);
-          return NextResponse.json({ success: true, ...result });
-        }
-        return NextResponse.json({ error: 'Failed to parse sentiment analysis' }, { status: 500 });
-      }
+      const result = safeParseJson(text, {
+        sentiment: 'neutral',
+        score: 0.5,
+        summary: 'Standard correspondence',
+        suggestedResponses: ['Thank you for your email. We will review and revert back soon.'],
+      });
+      return NextResponse.json({ success: true, ...result });
     }
 
     // ─── Feature 6: Suggest Subject Lines ─────
@@ -484,8 +480,7 @@ Rules:
       const { html } = body;
       if (!html) return NextResponse.json({ error: 'Missing html' }, { status: 400 });
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
+      const text = await safeGenerateText({
         system:
           'You are an email subject line expert for SVI Infra Solutions, a real estate company.',
         prompt: `Analyze this email body and suggest exactly 3 professional subject lines.
@@ -497,23 +492,26 @@ Email body:
 ${stripHtml(html)}`,
       });
 
-      try {
-        const suggestions = JSON.parse(text);
-        return NextResponse.json({
-          success: true,
-          suggestions: Array.isArray(suggestions) ? suggestions.slice(0, 3) : [],
-        });
-      } catch {
-        const arrMatch = text.match(/\[[\s\S]*?\]/);
-        if (arrMatch) {
-          const suggestions = JSON.parse(arrMatch[0]);
-          return NextResponse.json({
-            success: true,
-            suggestions: Array.isArray(suggestions) ? suggestions.slice(0, 3) : [],
-          });
-        }
-        return NextResponse.json({ error: 'Failed to parse suggestions' }, { status: 500 });
+      let suggestions = safeParseJson<string[]>(text, []);
+      if (!Array.isArray(suggestions) || suggestions.length === 0) {
+        suggestions = text
+          .split('\n')
+          .map((l) =>
+            l
+              .replace(/^[0-9-.*"]+\s*/, '')
+              .replace(/[",]+$/, '')
+              .trim()
+          )
+          .filter((l) => l.length > 5 && l.length < 80)
+          .slice(0, 3);
       }
+      if (suggestions.length === 0) {
+        suggestions = ['Important Communication from SVI Infra Solutions'];
+      }
+      return NextResponse.json({
+        success: true,
+        suggestions: suggestions.slice(0, 3),
+      });
     }
 
     // ─── Feature 7: Classify Email (priority + category) ─────
@@ -524,8 +522,7 @@ ${stripHtml(html)}`,
 
       const content = stripHtml(emailHtml || '') || emailText || '';
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
+      const text = await safeGenerateText({
         system: 'You classify real estate emails for SVI Infra Solutions admin team.',
         prompt: `Classify this email and return JSON:
 {
@@ -543,14 +540,12 @@ Email:
 ${content.slice(0, 3000)}`,
       });
 
-      try {
-        const result = JSON.parse(text);
-        return NextResponse.json({ success: true, ...result });
-      } catch {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return NextResponse.json({ success: true, ...JSON.parse(jsonMatch[0]) });
-        return NextResponse.json({ error: 'Failed to classify' }, { status: 500 });
-      }
+      const result = safeParseJson(text, {
+        priority: 'medium',
+        category: 'Inquiry',
+        summary: 'Customer correspondence',
+      });
+      return NextResponse.json({ success: true, ...result });
     }
 
     // ─── Feature 8: Suggest Follow-up Date ─────
@@ -558,8 +553,7 @@ ${content.slice(0, 3000)}`,
       const { html, recipientName } = body;
       if (!html) return NextResponse.json({ error: 'Missing html' }, { status: 400 });
 
-      const { text } = await generateText({
-        model: groq(AI_MODEL),
+      const text = await safeGenerateText({
         system: 'You suggest follow-up timing for SVI Infra Solutions real estate emails.',
         prompt: `Analyze this sent email and suggest when to follow up.
 Return JSON:
@@ -582,14 +576,12 @@ Email content:
 ${stripHtml(html)}`,
       });
 
-      try {
-        const result = JSON.parse(text);
-        return NextResponse.json({ success: true, ...result });
-      } catch {
-        const jsonMatch = text.match(/\{[\s\S]*\}/);
-        if (jsonMatch) return NextResponse.json({ success: true, ...JSON.parse(jsonMatch[0]) });
-        return NextResponse.json({ error: 'Failed to suggest follow-up' }, { status: 500 });
-      }
+      const result = safeParseJson(text, {
+        suggestedDays: 3,
+        reason: 'Standard follow-up for client confirmation',
+        message: 'Follow up with client within 3 days to verify status.',
+      });
+      return NextResponse.json({ success: true, ...result });
     }
 
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });

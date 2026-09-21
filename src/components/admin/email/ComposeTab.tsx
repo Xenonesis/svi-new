@@ -490,9 +490,11 @@ export function ComposeTab({
         // Suggest follow-up in background
         const finalBody = getPreviewHtml() || html;
         const recipient = toRecipients[0]?.email;
-        suggestFollowup(finalBody, recipient).then((followUp) => {
-          if (followUp) setFollowUpSuggestion(followUp);
-        });
+        suggestFollowup(finalBody, recipient)
+          .then((followUp) => {
+            if (followUp) setFollowUpSuggestion(followUp);
+          })
+          .catch(() => {});
 
         setTimeout(() => {
           setSent(false);
