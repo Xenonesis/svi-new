@@ -1,4 +1,5 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
@@ -23,7 +24,7 @@ const DEFAULT_COMPANY_INFO = {
   bank_ifsc: 'IBKL0000894',
 };
 
-function writeFallback(data: any) {
+function writeFallback(data: unknown) {
   try {
     if (!fs.existsSync(FALLBACK_DIR)) {
       fs.mkdirSync(FALLBACK_DIR, { recursive: true });
@@ -44,6 +45,22 @@ function readFallback() {
     console.error('Failed to read local settings fallback:', err);
   }
   return DEFAULT_COMPANY_INFO;
+}
+interface SettingsCacheEntry {
+  data: unknown[];
+  expiresAt: number;
+}
+
+interface SettingsRequestBody {
+  key?: string;
+  value?: unknown;
+}
+
+let settingsCache: SettingsCacheEntry | null = null;
+const CACHE_TTL_MS = 60_000;
+
+export function _clearSettingsCacheForTesting(): void {
+  settingsCache = null;
 }
 
 // GET /api/admin/settings
@@ -73,26 +90,40 @@ export async function GET(request: NextRequest) {
       }
       return NextResponse.json({ key: data.key, value: data.value });
     } else {
+      if (settingsCache && Date.now() < settingsCache.expiresAt) {
+        return NextResponse.json(
+          { settings: settingsCache.data },
+          { headers: { 'X-Cache': 'HIT' } }
+        );
+      }
+
       const { data, error } = await supabaseAdmin.from('portal_settings').select('*');
 
       if (error) {
         if (error.message?.includes('does not exist')) {
-          return NextResponse.json({
-            settings: [{ key: 'company_info', value: readFallback() }],
-          });
+          return NextResponse.json(
+            { settings: [{ key: 'company_info', value: readFallback() }] },
+            { headers: { 'X-Cache': 'MISS' } }
+          );
         }
         throw error;
       }
 
       if (!data || data.length === 0) {
-        return NextResponse.json({
-          settings: [{ key: 'company_info', value: DEFAULT_COMPANY_INFO }],
-        });
+        return NextResponse.json(
+          { settings: [{ key: 'company_info', value: DEFAULT_COMPANY_INFO }] },
+          { headers: { 'X-Cache': 'MISS' } }
+        );
       }
 
-      return NextResponse.json({ settings: data });
+      settingsCache = {
+        data,
+        expiresAt: Date.now() + CACHE_TTL_MS,
+      };
+
+      return NextResponse.json({ settings: data }, { headers: { 'X-Cache': 'MISS' } });
     }
-  } catch (err: any) {
+  } catch (err) {
     // If auth error, don't leak data
     if (err instanceof AppError) {
       return handleApiError(err);
@@ -108,9 +139,9 @@ export async function POST(request: NextRequest) {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
-    let body;
+    let body: SettingsRequestBody;
     try {
-      body = await request.json();
+      body = (await request.json()) as SettingsRequestBody;
     } catch {
       throw AppError.badRequest('Invalid JSON body');
     }
@@ -135,6 +166,7 @@ export async function POST(request: NextRequest) {
     } else {
       if (key === 'company_info') writeFallback(value);
     }
+    settingsCache = null;
 
     // 2. Activity log + notification (non-blocking)
     try {
