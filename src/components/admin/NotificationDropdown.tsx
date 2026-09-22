@@ -469,33 +469,31 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.96 }}
               transition={{ duration: 0.18 }}
-              className="dark:border-brand-gold/20 fixed top-[4.5rem] right-2 left-2 z-50 mt-0 w-auto overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-3 sm:w-[27rem] sm:max-w-[calc(100vw-2rem)] dark:bg-[#070b14]"
+              className="dark:border-brand-gold/20 fixed top-[4.5rem] right-2 left-2 z-50 mt-0 w-auto overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-3 sm:w-[28.5rem] sm:max-w-[calc(100vw-2rem)] dark:bg-[#070b14]"
             >
               {/* Header */}
-              <div className="flex items-center justify-between border-b border-gray-100 px-4 pt-4 pb-3 dark:border-white/5">
-                <div className="flex items-center gap-2.5">
-                  <div className="bg-brand-gold/10 text-brand-gold flex h-8 w-8 items-center justify-center rounded-xl">
+              <div className="flex items-center justify-between gap-2 border-b border-gray-100 px-4 py-3 dark:border-white/5">
+                <div className="flex min-w-0 shrink-0 items-center gap-2.5">
+                  <div className="border-brand-gold/20 bg-brand-gold/10 text-brand-gold flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border">
                     <Bell className="h-4 w-4" />
                   </div>
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white">
-                        Notifications &amp; Alerts
-                      </h3>
-                      {unreadCount > 0 && (
-                        <span className="bg-brand-gold/15 border-brand-gold/30 text-brand-gold rounded-full border px-2 py-0.5 text-[10px] font-bold">
-                          {unreadCount} new
-                        </span>
-                      )}
-                    </div>
+                  <div className="flex min-w-0 items-center gap-2">
+                    <h3 className="text-sm font-semibold whitespace-nowrap text-gray-900 dark:text-white">
+                      Notifications &amp; Alerts
+                    </h3>
+                    {unreadCount > 0 && (
+                      <span className="border-brand-gold/30 bg-brand-gold/15 text-brand-gold inline-flex shrink-0 items-center rounded-full border px-2 py-0.5 text-[10px] font-bold whitespace-nowrap">
+                        {unreadCount} new
+                      </span>
+                    )}
                   </div>
                 </div>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex shrink-0 items-center gap-1.5">
                   <button
                     type="button"
                     onClick={toggleSoundSetting}
-                    className="dark:hover:text-brand-gold flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5"
+                    className="hover:border-brand-gold/40 hover:text-brand-gold dark:hover:border-brand-gold/40 dark:hover:text-brand-gold flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5"
                     title={soundEnabled ? 'Mute alert chime' : 'Enable alert chime'}
                     aria-label={soundEnabled ? 'Mute alert chime' : 'Enable alert chime'}
                   >
@@ -508,22 +506,24 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                   <button
                     type="button"
                     onClick={() => fetchNotifications(true)}
-                    className="flex cursor-pointer items-center gap-1.5 rounded-lg border border-gray-200 px-2.5 py-1 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/5"
+                    className="hover:border-brand-gold/40 hover:text-brand-gold dark:hover:border-brand-gold/40 dark:hover:text-brand-gold flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5"
+                    title="Refresh notifications"
                     aria-label="Refresh notifications"
                   >
                     <RefreshCw
-                      className={`text-brand-gold h-3 w-3 ${isRefreshing ? 'animate-spin' : ''}`}
+                      className={`text-brand-gold h-3.5 w-3.5 ${isRefreshing ? 'animate-spin' : ''}`}
                     />
-                    <span>Refresh</span>
                   </button>
 
                   {unreadCount > 0 && (
                     <button
                       type="button"
                       onClick={markAllAsRead}
-                      className="text-brand-gold hover:text-brand-gold/80 cursor-pointer text-xs font-semibold transition-colors"
+                      className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:border-brand-gold/50 hover:bg-brand-gold/20 inline-flex h-8 shrink-0 cursor-pointer items-center gap-1 rounded-lg border px-2.5 text-xs font-semibold whitespace-nowrap transition-colors"
+                      title="Mark all notifications as read"
                     >
-                      Mark read
+                      <Check className="h-3 w-3" />
+                      <span>Mark read</span>
                     </button>
                   )}
                 </div>
