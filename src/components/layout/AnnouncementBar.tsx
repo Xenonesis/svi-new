@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, X } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { defaultAnnouncementConfig, type AnnouncementConfig } from '@/src/config/announcement';
-import { supabase } from '@/src/lib/supabase/client';
 
 const STORAGE_DISMISS_KEY = 'svi_announcement_dismissed_v1';
 
@@ -24,26 +23,24 @@ export default function AnnouncementBar() {
       // ignore storage access errors
     }
 
-    // Try fetching dynamic settings from portal_settings in Supabase
+    // Try fetching dynamic settings from /api/announcement endpoint
     let isMounted = true;
     const loadDynamicSettings = async () => {
       try {
-        const { data, error } = await supabase
-          .from('portal_settings')
-          .select('value')
-          .eq('key', 'announcement_bar')
-          .single();
-
-        if (!error && data?.value && isMounted) {
-          const parsed = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
-          setConfig({
-            ...defaultAnnouncementConfig,
-            ...parsed,
-          });
-          if (parsed.enabled !== false) {
-            setIsVisible(true);
+        const res = await fetch('/api/announcement');
+        if (res.ok) {
+          const json = await res.json();
+          if (json?.value && isMounted) {
+            const parsed = typeof json.value === 'string' ? JSON.parse(json.value) : json.value;
+            setConfig({
+              ...defaultAnnouncementConfig,
+              ...parsed,
+            });
+            if (parsed.enabled !== false) {
+              setIsVisible(true);
+            }
+            return;
           }
-          return;
         }
       } catch {
         // Fallback to default config silently

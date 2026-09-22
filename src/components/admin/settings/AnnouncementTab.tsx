@@ -79,7 +79,7 @@ export function AnnouncementTab() {
           .from('portal_settings')
           .select('value')
           .eq('key', 'announcement_bar')
-          .single();
+          .maybeSingle();
 
         if (!error && data?.value) {
           const parsed = typeof data.value === 'string' ? JSON.parse(data.value) : data.value;
