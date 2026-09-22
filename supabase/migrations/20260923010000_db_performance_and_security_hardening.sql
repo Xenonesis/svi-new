@@ -1,8 +1,9 @@
 -- ==============================================================================
 -- Migration: 20260923010000_db_performance_and_security_hardening.sql
 -- Description:
---   1. Fix P0 Data Leaks: Enable RLS on legacy shadow tables (salary_structures,
---      allotment_records, tasks, chat_lead_activities).
+--   1. Fix P0 Data Leaks on Views: Revoke public anon access and enable
+--      security_invoker on compatibility views (salary_structures, allotment_records,
+--      tasks, chat_lead_activities).
 --   2. Protect PII in lottery_participants: Revoke public SELECT on phone & email
 --      while preserving public access to id, name, ticket_number, and is_winner
 --      for the public live draw and Hall of Fame.
@@ -11,39 +12,59 @@
 --   5. Optimize frequently evaluated RLS policies with cached subquery wrapping.
 -- ==============================================================================
 
--- ── 1. Security Hardening: Enable RLS on Legacy & Leaking Tables ─────────────
+-- ── 1. Security Hardening on Views (Lock Anon Access & Enforce Invoker RLS) ──
 
--- 1.1 salary_structures (Contains bank accounts, salary, PAN numbers)
-ALTER TABLE IF EXISTS public.salary_structures ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Restrict salary_structures to admins" ON public.salary_structures;
-CREATE POLICY "Restrict salary_structures to admins"
-  ON public.salary_structures
-  FOR ALL
-  USING ((SELECT public.is_admin()));
+-- 1.1 salary_structures view (Exposes bank accounts, salaries, PAN cards)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname = 'public' AND viewname = 'salary_structures') THEN
+    REVOKE ALL ON public.salary_structures FROM anon;
+    ALTER VIEW public.salary_structures SET (security_invoker = true);
+  ELSIF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'salary_structures') THEN
+    EXECUTE 'ALTER TABLE public.salary_structures ENABLE ROW LEVEL SECURITY;';
+    EXECUTE 'DROP POLICY IF EXISTS "Restrict salary_structures to admins" ON public.salary_structures;';
+    EXECUTE 'CREATE POLICY "Restrict salary_structures to admins" ON public.salary_structures FOR ALL USING ((SELECT public.is_admin()));';
+  END IF;
+END $$;
 
--- 1.2 allotment_records (Contains customer allotment contracts and form_data)
-ALTER TABLE IF EXISTS public.allotment_records ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Restrict allotment_records to admins" ON public.allotment_records;
-CREATE POLICY "Restrict allotment_records to admins"
-  ON public.allotment_records
-  FOR ALL
-  USING ((SELECT public.is_admin()));
+-- 1.2 allotment_records view (Exposes customer allotment contracts and form_data)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname = 'public' AND viewname = 'allotment_records') THEN
+    REVOKE ALL ON public.allotment_records FROM anon;
+    ALTER VIEW public.allotment_records SET (security_invoker = true);
+  ELSIF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'allotment_records') THEN
+    EXECUTE 'ALTER TABLE public.allotment_records ENABLE ROW LEVEL SECURITY;';
+    EXECUTE 'DROP POLICY IF EXISTS "Restrict allotment_records to admins" ON public.allotment_records;';
+    EXECUTE 'CREATE POLICY "Restrict allotment_records to admins" ON public.allotment_records FOR ALL USING ((SELECT public.is_admin()));';
+  END IF;
+END $$;
 
--- 1.3 tasks (Legacy workforce tasks)
-ALTER TABLE IF EXISTS public.tasks ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Restrict tasks to admins" ON public.tasks;
-CREATE POLICY "Restrict tasks to admins"
-  ON public.tasks
-  FOR ALL
-  USING ((SELECT public.is_admin()));
+-- 1.3 tasks view (Legacy workforce tasks)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname = 'public' AND viewname = 'tasks') THEN
+    REVOKE ALL ON public.tasks FROM anon;
+    ALTER VIEW public.tasks SET (security_invoker = true);
+  ELSIF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'tasks') THEN
+    EXECUTE 'ALTER TABLE public.tasks ENABLE ROW LEVEL SECURITY;';
+    EXECUTE 'DROP POLICY IF EXISTS "Restrict tasks to admins" ON public.tasks;';
+    EXECUTE 'CREATE POLICY "Restrict tasks to admins" ON public.tasks FOR ALL USING ((SELECT public.is_admin()));';
+  END IF;
+END $$;
 
--- 1.4 chat_lead_activities (Legacy telecalling notes)
-ALTER TABLE IF EXISTS public.chat_lead_activities ENABLE ROW LEVEL SECURITY;
-DROP POLICY IF EXISTS "Restrict chat_lead_activities to admins" ON public.chat_lead_activities;
-CREATE POLICY "Restrict chat_lead_activities to admins"
-  ON public.chat_lead_activities
-  FOR ALL
-  USING ((SELECT public.is_admin()));
+-- 1.4 chat_lead_activities view (Legacy telecalling notes)
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_views WHERE schemaname = 'public' AND viewname = 'chat_lead_activities') THEN
+    REVOKE ALL ON public.chat_lead_activities FROM anon;
+    ALTER VIEW public.chat_lead_activities SET (security_invoker = true);
+  ELSIF EXISTS (SELECT 1 FROM pg_tables WHERE schemaname = 'public' AND tablename = 'chat_lead_activities') THEN
+    EXECUTE 'ALTER TABLE public.chat_lead_activities ENABLE ROW LEVEL SECURITY;';
+    EXECUTE 'DROP POLICY IF EXISTS "Restrict chat_lead_activities to admins" ON public.chat_lead_activities;';
+    EXECUTE 'CREATE POLICY "Restrict chat_lead_activities to admins" ON public.chat_lead_activities FOR ALL USING ((SELECT public.is_admin()));';
+  END IF;
+END $$;
 
 -- ── 2. Protect PII in lottery_participants ──────────────────────────────────
 -- Keep public access for live lottery draw & Hall of Fame (id, name, ticket_number, is_winner),
