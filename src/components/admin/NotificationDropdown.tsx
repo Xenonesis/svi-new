@@ -35,6 +35,10 @@ import { resolveNotificationUrl } from '@/src/lib/notifications/notificationNavi
 import {
   isNotificationSoundEnabled,
   setNotificationSoundEnabled,
+  getNotificationSoundTone,
+  setNotificationSoundTone,
+  SOUND_OPTIONS,
+  type SoundTone,
   playNotificationChime,
   playTestTone,
 } from '@/src/lib/notifications/notificationSound';
@@ -65,6 +69,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [soundEnabled, setSoundEnabled] = useState(true);
+  const [selectedTone, setSelectedTone] = useState<SoundTone>('chime');
   const [revertingId, setRevertingId] = useState<string | null>(null);
 
   const handleRevertAssignment = async (notificationId: string) => {
@@ -95,6 +100,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
   // Load sound preference on mount
   useEffect(() => {
     setSoundEnabled(isNotificationSoundEnabled());
+    setSelectedTone(getNotificationSoundTone());
   }, []);
 
   // Fetch notifications
@@ -200,6 +206,13 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
     if (nextState) {
       playTestTone();
     }
+  };
+
+  // Handle tone selection
+  const handleSelectTone = (tone: SoundTone) => {
+    setSelectedTone(tone);
+    setNotificationSoundTone(tone);
+    playTestTone(tone);
   };
 
   // Helper to determine if a notification is an actionable "Task"
@@ -602,7 +615,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
               <div className="hover:[&::-webkit-scrollbar-thumb]:bg-brand-gold/40 max-h-[27rem] scrollbar-thin [scrollbar-color:rgba(212,175,55,0.25)_transparent] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent">
                 {activeTab === 'sounds' ? (
                   /* Sounds Settings View */
-                  <div className="space-y-4 p-5">
+                  <div className="space-y-3.5 p-4">
                     <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 dark:border-white/5 dark:bg-white/[0.02]">
                       <div className="flex items-center gap-3">
                         <div className="bg-brand-gold/10 text-brand-gold flex h-9 w-9 items-center justify-center rounded-xl">
@@ -638,15 +651,101 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                       </button>
                     </div>
 
-                    <div className="rounded-xl border border-gray-100 p-4 text-center dark:border-white/5">
-                      <p className="text-xs text-gray-600 dark:text-gray-300">
+                    {/* Tone Selection Cards */}
+                    <div>
+                      <div className="mb-2 flex items-center justify-between px-0.5">
+                        <span className="text-[11px] font-semibold text-gray-800 dark:text-gray-200">
+                          Select Notification Tone
+                        </span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                          6 Luxury Styles
+                        </span>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        {SOUND_OPTIONS.map((option) => {
+                          const isSelected = selectedTone === option.id;
+                          return (
+                            <div
+                              key={option.id}
+                              onClick={() => handleSelectTone(option.id)}
+                              className={`group flex cursor-pointer items-center justify-between rounded-xl border p-2.5 transition-all ${
+                                isSelected
+                                  ? 'border-brand-gold/60 bg-brand-gold/[0.07] dark:border-brand-gold/50 dark:bg-brand-gold/[0.08] shadow-xs'
+                                  : 'border-gray-100 bg-white/60 hover:border-gray-200 hover:bg-gray-50 dark:border-white/5 dark:bg-white/[0.01] dark:hover:border-white/10 dark:hover:bg-white/[0.03]'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div
+                                  className={`flex h-4 w-4 items-center justify-center rounded-full border transition-colors ${
+                                    isSelected
+                                      ? 'border-brand-gold bg-brand-gold'
+                                      : 'border-gray-300 group-hover:border-gray-400 dark:border-gray-600'
+                                  }`}
+                                >
+                                  {isSelected && (
+                                    <div className="h-1.5 w-1.5 rounded-full bg-gray-950" />
+                                  )}
+                                </div>
+
+                                <div className="text-left">
+                                  <div className="flex items-center gap-1.5">
+                                    <span
+                                      className={`text-xs ${
+                                        isSelected
+                                          ? 'text-brand-gold font-bold'
+                                          : 'font-medium text-gray-800 dark:text-gray-200'
+                                      }`}
+                                    >
+                                      {option.name}
+                                    </span>
+                                    <span
+                                      className={`rounded px-1.5 py-0.5 text-[9px] font-medium tracking-wide ${
+                                        isSelected
+                                          ? 'bg-brand-gold/20 text-brand-gold'
+                                          : 'bg-gray-100 text-gray-500 dark:bg-white/5 dark:text-gray-400'
+                                      }`}
+                                    >
+                                      {option.badge}
+                                    </span>
+                                  </div>
+                                  <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                                    {option.description}
+                                  </p>
+                                </div>
+                              </div>
+
+                              <button
+                                type="button"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleSelectTone(option.id);
+                                }}
+                                title={`Play ${option.name}`}
+                                aria-label={`Play ${option.name}`}
+                                className={`flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border transition-colors ${
+                                  isSelected
+                                    ? 'border-brand-gold/40 bg-brand-gold/20 text-brand-gold hover:bg-brand-gold/30'
+                                    : 'border-gray-200 text-gray-400 hover:border-gray-300 hover:text-gray-700 dark:border-white/10 dark:text-gray-400 dark:hover:border-white/20 dark:hover:text-white'
+                                }`}
+                              >
+                                <Play className="ml-0.5 h-3 w-3 fill-current" />
+                              </button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="rounded-xl border border-gray-100 bg-gray-50/50 p-3 text-center dark:border-white/5 dark:bg-white/[0.01]">
+                      <p className="text-[11px] text-gray-500 dark:text-gray-400">
                         Synthesized gentle corporate bell tone via Web Audio API. Zero external file
                         lag.
                       </p>
                       <button
                         type="button"
-                        onClick={playTestTone}
-                        className="bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold mt-3 inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors"
+                        onClick={() => playTestTone(selectedTone)}
+                        className="bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-gold mt-2.5 inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-3.5 py-1.5 text-xs font-semibold transition-colors"
                       >
                         <Play className="h-3.5 w-3.5 fill-current" />
                         <span>Play Sample Tone</span>
@@ -837,7 +936,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                   </span>
                   <button
                     type="button"
-                    onClick={playTestTone}
+                    onClick={() => playTestTone(selectedTone)}
                     className="text-brand-gold hover:text-brand-gold/80 flex cursor-pointer items-center gap-1 text-[11px] font-semibold transition-colors"
                   >
                     <Play className="h-2.5 w-2.5 fill-current" />

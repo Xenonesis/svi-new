@@ -13,11 +13,42 @@ vi.mock('next/navigation', () => ({
 }));
 
 const mockPlayTestTone = vi.fn();
+const mockSetNotificationSoundTone = vi.fn();
 vi.mock('@/src/lib/notifications/notificationSound', () => ({
   isNotificationSoundEnabled: vi.fn(() => true),
   setNotificationSoundEnabled: vi.fn(),
+  getNotificationSoundTone: vi.fn(() => 'chime'),
+  setNotificationSoundTone: (tone: string) => mockSetNotificationSoundTone(tone),
+  SOUND_OPTIONS: [
+    {
+      id: 'chime',
+      name: 'Classic Gold Chime',
+      description: 'Subtle luxury two-tone chime',
+      badge: 'Default',
+    },
+    { id: 'bell', name: 'Crystal Bell', description: 'Crisp executive bell', badge: 'Crisp' },
+    { id: 'marimba', name: 'Warm Marimba', description: 'Soft harmonic triad', badge: 'Mellow' },
+    {
+      id: 'ping',
+      name: 'Minimal Tech Ping',
+      description: 'Clean modern pulse note',
+      badge: 'Discreet',
+    },
+    {
+      id: 'pop',
+      name: 'Modern Bubble Pop',
+      description: 'Upbeat micro-interaction pop',
+      badge: 'Snappy',
+    },
+    {
+      id: 'ascend',
+      name: 'Ascend Sparkle',
+      description: 'Three-step upbeat alert',
+      badge: 'Upbeat',
+    },
+  ],
   playNotificationChime: vi.fn(),
-  playTestTone: () => mockPlayTestTone(),
+  playTestTone: (tone?: string) => mockPlayTestTone(tone),
 }));
 
 const mockNotifications = [
@@ -148,6 +179,32 @@ describe('NotificationDropdown', () => {
     fireEvent.click(testToneButton);
 
     expect(mockPlayTestTone).toHaveBeenCalled();
+  });
+
+  it('renders all 6 sound tone options and selects a new tone', async () => {
+    render(<NotificationDropdown userId="admin-1" />);
+
+    const bellButton = screen.getByRole('button', { name: /notifications/i });
+    fireEvent.click(bellButton);
+
+    // Switch to Sounds tab
+    const soundsTab = screen.getByRole('button', { name: /sounds/i });
+    fireEvent.click(soundsTab);
+
+    expect(screen.getByText('Select Notification Tone')).toBeInTheDocument();
+    expect(screen.getByText('Classic Gold Chime')).toBeInTheDocument();
+    expect(screen.getByText('Crystal Bell')).toBeInTheDocument();
+    expect(screen.getByText('Warm Marimba')).toBeInTheDocument();
+    expect(screen.getByText('Minimal Tech Ping')).toBeInTheDocument();
+    expect(screen.getByText('Modern Bubble Pop')).toBeInTheDocument();
+    expect(screen.getByText('Ascend Sparkle')).toBeInTheDocument();
+
+    // Click on Crystal Bell
+    const bellOption = screen.getByText('Crystal Bell');
+    fireEvent.click(bellOption);
+
+    expect(mockSetNotificationSoundTone).toHaveBeenCalledWith('bell');
+    expect(mockPlayTestTone).toHaveBeenCalledWith('bell');
   });
 
   it('clicks on "New Chat Lead" notification, marks as read and redirects to /admin/chat-logs', async () => {
