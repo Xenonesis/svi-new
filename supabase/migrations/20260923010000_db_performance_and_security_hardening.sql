@@ -4,10 +4,10 @@
 --   1. Fix P0 Data Leaks on Views: Revoke public anon access and enable
 --      security_invoker on compatibility views (salary_structures, allotment_records,
 --      tasks, chat_lead_activities).
---   2. Protect PII in lottery_participants: Revoke public SELECT on phone & email
---      while preserving public access to id, name, ticket_number, and is_winner
---      for the public live draw and Hall of Fame.
---   3. Enable pg_stat_statements for performance tracking & get_slow_queries RPC.
+--   2. Protect PII in lottery_participants: Revoke table-level SELECT from anon
+--      and grant SELECT exclusively on non-sensitive public columns (id, lottery_id,
+--      name, ticket_number, is_winner, prize_rank, created_at).
+--   3. Enable pg_stat_statements in extensions schema and fix get_slow_queries RPC.
 --   4. Add missing Foreign Key indexes to optimize JOINs and cascading deletes.
 --   5. Optimize frequently evaluated RLS policies with cached subquery wrapping.
 -- ==============================================================================
@@ -67,13 +67,40 @@ BEGIN
 END $$;
 
 -- ── 2. Protect PII in lottery_participants ──────────────────────────────────
--- Keep public access for live lottery draw & Hall of Fame (id, name, ticket_number, is_winner),
--- but revoke access to phone and email from anonymous public callers.
-REVOKE SELECT (phone, email) ON public.lottery_participants FROM anon;
-GRANT SELECT (id, lottery_id, name, ticket_number, is_winner, prize_rank, created_at) ON public.lottery_participants TO anon;
+-- Revoke table-wide SELECT from anon, then grant SELECT exclusively on public fields.
+-- This ensures phone and email are never disclosed to anonymous callers.
+REVOKE ALL ON public.lottery_participants FROM anon;
+GRANT SELECT (id, lottery_id, name, ticket_number, is_winner, prize_rank, created_at)
+  ON public.lottery_participants TO anon;
 
--- ── 3. Enable Performance Diagnostics Extension ─────────────────────────────
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements;
+-- ── 3. Enable Performance Diagnostics Extension & Fix RPC ───────────────────
+CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA extensions;
+
+CREATE OR REPLACE FUNCTION public.get_slow_queries(limit_count integer DEFAULT 10)
+RETURNS TABLE (
+    query text,
+    calls bigint,
+    total_time_ms double precision,
+    mean_time_ms double precision
+)
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+BEGIN
+    RETURN QUERY
+    SELECT
+        s.query,
+        s.calls,
+        ROUND(s.total_exec_time::numeric, 2)::double precision AS total_time_ms,
+        ROUND(s.mean_exec_time::numeric, 2)::double precision AS mean_time_ms
+    FROM extensions.pg_stat_statements s
+    ORDER BY s.mean_exec_time DESC
+    LIMIT limit_count;
+END;
+$$ LANGUAGE plpgsql;
+
+REVOKE EXECUTE ON FUNCTION public.get_slow_queries(integer) FROM PUBLIC;
+GRANT EXECUTE ON FUNCTION public.get_slow_queries(integer) TO service_role;
 
 -- ── 4. Add Missing Foreign Key Indexes (schema-foreign-key-indexes.md) ──────
 
