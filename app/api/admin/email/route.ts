@@ -247,6 +247,59 @@ export async function GET(request: NextRequest) {
         console.warn('[EMAIL DETAIL] Supabase lookup error, falling back to Resend:', dbErr);
       }
 
+      // 2) Try Supabase email_inbox table for inbound emails
+      try {
+        const { data: inboxMsg } = await supabaseAdmin
+          .from('email_inbox')
+          .select('*')
+          .or(`id.eq.${emailId},email_id.eq.${emailId}`)
+          .maybeSingle();
+
+        if (inboxMsg) {
+          const { data: attachmentsData } = await supabaseAdmin
+            .from('email_attachments')
+            .select('*')
+            .eq('email_id', inboxMsg.email_id);
+
+          const { data: starRecord } = await supabaseAdmin
+            .from('email_stars')
+            .select('id')
+            .eq('admin_id', admin.id)
+            .or(`email_id.eq.${inboxMsg.id},email_id.eq.${inboxMsg.email_id}`)
+            .maybeSingle();
+
+          const isStarred = Boolean(inboxMsg.is_starred || starRecord);
+
+          return NextResponse.json({
+            email: {
+              id: inboxMsg.id,
+              email_id: inboxMsg.email_id,
+              thread_id: inboxMsg.thread_id,
+              subject: inboxMsg.subject,
+              from: inboxMsg.from_email,
+              from_email: inboxMsg.from_email,
+              from_name: inboxMsg.from_name || null,
+              to: inboxMsg.to_emails || [],
+              created_at: inboxMsg.received_at,
+              html: inboxMsg.html_content,
+              text: inboxMsg.text_content,
+              opened: inboxMsg.opened,
+              clicked: inboxMsg.clicked,
+              is_read: Boolean(inboxMsg.is_read),
+              is_archived: Boolean(inboxMsg.is_archived),
+              is_starred: isStarred,
+              tags: Array.isArray(inboxMsg.tags) ? inboxMsg.tags : [],
+              attachments:
+                attachmentsData && attachmentsData.length > 0
+                  ? attachmentsData
+                  : inboxMsg.attachments || undefined,
+            },
+          });
+        }
+      } catch (inboxErr) {
+        console.warn('[EMAIL DETAIL] Supabase email_inbox lookup error:', inboxErr);
+      }
+
       const email = await resend.emails.get(emailId);
       const emailData = email.data as any;
 
@@ -353,7 +406,7 @@ export async function GET(request: NextRequest) {
       let query = supabaseAdmin
         .from('email_inbox')
         .select(
-          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked, attachments, is_read, is_archived, is_starred, tags'
+          'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, text_content, opened, clicked, attachments, is_read, is_archived, is_starred, tags'
         )
         .order('received_at', { ascending: false });
 
@@ -381,7 +434,7 @@ export async function GET(request: NextRequest) {
         const fallbackRes = await supabaseAdmin
           .from('email_inbox')
           .select(
-            'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, html_content, text_content, opened, clicked, attachments'
+            'id, email_id, thread_id, subject, from_email, from_name, to_emails, received_at, text_content, opened, clicked, attachments'
           )
           .order('received_at', { ascending: false })
           .limit(limit);
@@ -481,11 +534,8 @@ export async function GET(request: NextRequest) {
           from_name: email.from_name || null,
           to: email.to_emails || [],
           created_at: email.received_at,
-          snippet:
-            email.text_content ||
-            email.html_content?.replace(/<[^>]+>/g, '').substring(0, 100) ||
-            '',
-          html: email.html_content,
+          snippet: email.text_content ? email.text_content.substring(0, 100) : '',
+          html: undefined,
           text: email.text_content,
           is_starred: isStarred,
           is_read: isRead,
@@ -506,7 +556,7 @@ export async function GET(request: NextRequest) {
     }
 
     // ─── Inbox detail — single email from email_inbox table ───
-    if (action === 'inbox_detail' && emailId) {
+    if ((action === 'inbox_detail' || action === 'email') && emailId) {
       const autoMarkRead = url.searchParams.get('mark_read') !== 'false';
 
       const { data, error } = await supabaseAdmin
