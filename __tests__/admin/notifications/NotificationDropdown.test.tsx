@@ -278,4 +278,39 @@ describe('NotificationDropdown', () => {
     expect(screen.getByText('New Chat Lead')).toBeInTheDocument();
     expect(screen.queryByText('Settings Updated')).not.toBeInTheDocument();
   });
+
+  it('closes dropdown when clicking outside on the screen or pressing Escape', async () => {
+    render(
+      <div>
+        <div data-testid="outside-area">Outside Screen Area</div>
+        <NotificationDropdown userId="admin-1" />
+      </div>
+    );
+
+    const bellButton = screen.getByRole('button', { name: /notifications/i });
+    fireEvent.click(bellButton);
+
+    await waitFor(() => {
+      expect(screen.getByText('Notifications & Alerts')).toBeInTheDocument();
+    });
+
+    // Click outside on the screen
+    const outsideArea = screen.getByTestId('outside-area');
+    fireEvent.mouseDown(outsideArea);
+
+    await waitFor(() => {
+      expect(screen.queryByText('Notifications & Alerts')).not.toBeInTheDocument();
+    });
+
+    // Reopen and test Escape key
+    fireEvent.click(bellButton);
+    await waitFor(() => {
+      expect(screen.getByText('Notifications & Alerts')).toBeInTheDocument();
+    });
+
+    fireEvent.keyDown(document, { key: 'Escape' });
+    await waitFor(() => {
+      expect(screen.queryByText('Notifications & Alerts')).not.toBeInTheDocument();
+    });
+  });
 });
