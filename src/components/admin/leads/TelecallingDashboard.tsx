@@ -79,9 +79,23 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const [selectedExportAdvisor, setSelectedExportAdvisor] = useState<string>('all');
   const [employees, setEmployees] = useState<Employee[]>([]);
+  const employeesLoadedRef = useRef(false);
 
+  // 60-second in-memory dashboard cache for 0ms instant tab switching
+  const dashboardCacheRef = useRef<
+    Map<
+      string,
+      {
+        summary: DashboardSummary | null;
+        leaderboard: AdvisorPerformanceMetric[];
+        campaigns: CampaignPerformanceMetric[];
+        lastUpdated: string;
+        timestamp: number;
+      }
+    >
+  >(new Map());
   useEffect(() => {
-    if (!token) return;
+    if (!token || employeesLoadedRef.current) return;
     fetch('/api/admin/employees', {
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -89,6 +103,7 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
       .then((data) => {
         if (data.employees) {
           setEmployees(data.employees);
+          employeesLoadedRef.current = true;
         }
       })
       .catch(() => {});
@@ -105,6 +120,19 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
   }, []);
   const fetchDashboardData = useCallback(
     async (showRefreshAnimation = false) => {
+      const cached = dashboardCacheRef.current.get(timeRange);
+      const now = Date.now();
+
+      // Return instant cached data if available and fresh (<60s)
+      if (!showRefreshAnimation && cached && now - cached.timestamp < 60_000) {
+        setSummary(cached.summary);
+        setLeaderboard(cached.leaderboard);
+        setCampaigns(cached.campaigns);
+        setLastUpdated(cached.lastUpdated);
+        setLoading(false);
+        return;
+      }
+
       if (showRefreshAnimation) setIsRefreshing(true);
       else setLoading(true);
 
@@ -120,16 +148,27 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
 
         if (res.ok) {
           const data = await res.json();
-          setSummary(data.summary || null);
-          setLeaderboard(data.leaderboard || []);
-          setCampaigns(data.campaigns || []);
-          setLastUpdated(
-            new Date().toLocaleTimeString('en-IN', {
-              hour: '2-digit',
-              minute: '2-digit',
-              second: '2-digit',
-            })
-          );
+          const nextSummary = data.summary || null;
+          const nextLeaderboard = data.leaderboard || [];
+          const nextCampaigns = data.campaigns || [];
+          const nextTime = new Date().toLocaleTimeString('en-IN', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+          });
+
+          setSummary(nextSummary);
+          setLeaderboard(nextLeaderboard);
+          setCampaigns(nextCampaigns);
+          setLastUpdated(nextTime);
+
+          dashboardCacheRef.current.set(timeRange, {
+            summary: nextSummary,
+            leaderboard: nextLeaderboard,
+            campaigns: nextCampaigns,
+            lastUpdated: nextTime,
+            timestamp: now,
+          });
         } else {
           toast.error('Failed to load telecalling analytics');
         }

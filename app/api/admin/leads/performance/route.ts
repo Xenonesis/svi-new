@@ -45,6 +45,13 @@ interface RpcPerformanceResult {
   }>;
 }
 
+interface CachedPerformanceResponse {
+  payload: Record<string, unknown>;
+  timestamp: number;
+}
+const performanceCache = new Map<string, CachedPerformanceResponse>();
+const PERFORMANCE_TTL_MS = 60_000; // 60s TTL
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const admin = await verifyAdmin(request);
@@ -54,6 +61,12 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const timeRange = searchParams.get('timeRange') || 'all'; // all, today, week, month
     const advisorFilter = searchParams.get('advisor_id') || 'all';
 
+    const cacheKey = `${timeRange}_${advisorFilter}`;
+    const cached = performanceCache.get(cacheKey);
+    const requestNow = Date.now();
+    if (cached && requestNow - cached.timestamp < PERFORMANCE_TTL_MS) {
+      return NextResponse.json(cached.payload);
+    }
     // 1. Fetch employees & advisors (including disabled ones so their historical data/leads are displayed)
     const { data: employees } = await supabaseAdmin
       .from('profiles')
@@ -187,7 +200,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const overallAnswerRate =
         sum.total_calls > 0 ? Math.round((sum.answered_calls / sum.total_calls) * 100) : 0;
 
-      return NextResponse.json({
+      const payload = {
         success: true,
         summary: {
           total_calls: sum.total_calls,
@@ -204,7 +217,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         leaderboard,
         campaigns: rpcData.campaigns || [],
         recent_hot_calls: rpcData.recent_hot_calls || [],
-      });
+      };
+      performanceCache.set(cacheKey, { payload, timestamp: Date.now() });
+      return NextResponse.json(payload);
     }
 
     // 5. Fallback Path: Query with PUSH-DOWN filters and full range pagination
@@ -377,7 +392,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const overallAnswerRate = totalCalls > 0 ? Math.round((answeredCalls / totalCalls) * 100) : 0;
     const overallAvgTalkTime = answeredCalls > 0 ? Math.round(totalTalkTimeSec / answeredCalls) : 0;
 
-    return NextResponse.json({
+    const fallbackPayload = {
       success: true,
       summary: {
         total_calls: totalCalls,
@@ -394,7 +409,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       leaderboard,
       campaigns,
       recent_hot_calls: recentHotCalls,
-    });
+    };
+    performanceCache.set(cacheKey, { payload: fallbackPayload, timestamp: Date.now() });
+    return NextResponse.json(fallbackPayload);
   } catch (error) {
     return handleApiError(error);
   }

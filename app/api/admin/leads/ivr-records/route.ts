@@ -29,6 +29,21 @@ export interface IvrRecordItem {
   created_at: string;
 }
 
+interface CachedSummary {
+  summary: {
+    total_calls: number;
+    answered_calls: number;
+    missed_calls: number;
+    hot_count: number;
+    warm_count: number;
+    cold_count: number;
+  };
+  timestamp: number;
+}
+
+const summaryCache = new Map<string, CachedSummary>();
+const SUMMARY_TTL_MS = 60_000; // 60 seconds TTL
+
 export async function GET(request: NextRequest): Promise<NextResponse> {
   try {
     const admin = await verifyAdmin(request);
@@ -77,7 +92,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     const createBaseQuery = () => {
       let qBuilder = supabaseAdmin
         .from('ivr_call_records')
-        .select('*, assigned_agent:assigned_agent_id(id, full_name, phone)', { count: 'exact' });
+        .select(
+          'id, customer_phone, agent_name, agent_phone, assigned_agent_id, dial_time, customer_ans_time, customer_hang_time, call_duration, dial_status, pressed_key, campaign_name, created_at, assigned_agent:assigned_agent_id(id, full_name, phone)',
+          { count: 'exact' }
+        );
 
       if (advisorId && advisorId !== 'all') {
         if (advisorName) {
@@ -148,65 +166,84 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
       return qBuilder.order(sortColumn, { ascending: sortOrder });
     };
-    // Fetch records and summary concurrently
     const advisorUuid = advisorId && advisorId !== 'all' ? advisorId : null;
-    let perfRpcResult: unknown = null;
-    try {
-      const rpcRes = await supabaseAdmin.rpc('get_telecalling_performance', {
-        p_time_cutoff: null,
-        p_advisor_id: advisorUuid,
-      });
-      perfRpcResult = rpcRes.data;
-    } catch {
-      // Fall back gracefully
-    }
+    const cacheKey = advisorId || 'all';
+    const cached = summaryCache.get(cacheKey);
+    const now = Date.now();
+    const isSummaryFresh = cached && now - cached.timestamp < SUMMARY_TTL_MS;
 
-    let recordsData: Record<string, unknown>[] = [];
-    let error: { message: string } | null = null;
-    let count: number | null = null;
+    // Concurrently fetch records and summary/RPC to cut round-trip latency in half
+    const fetchRecordsPromise = (async () => {
+      let recordsData: Record<string, unknown>[] = [];
+      let error: { message: string } | null;
+      let count: number | null;
 
-    // PostgREST limits single responses to 1,000 rows (max_rows = 1000 in Supabase).
-    // If limit <= 1000, perform standard single range query.
-    // If limit > 1000 (e.g. exporting full dataset of 5,000 or 15,000 rows), batch-fetch in parallel chunks of 1,000.
-    if (limit <= 1000) {
-      const singleRes = await createBaseQuery().range(offset, offset + limit - 1);
-      recordsData = singleRes.data || [];
-      error = singleRes.error;
-      count = singleRes.count;
-    } else {
-      // 1. Probe total matching count with head query using a fresh query builder
-      const countRes = await createBaseQuery().range(offset, offset);
-      error = countRes.error;
-      count = countRes.count;
+      if (limit <= 1000) {
+        const singleRes = await createBaseQuery().range(offset, offset + limit - 1);
+        recordsData = singleRes.data || [];
+        error = singleRes.error;
+        count = singleRes.count;
+      } else {
+        const countRes = await createBaseQuery().range(offset, offset);
+        error = countRes.error;
+        count = countRes.count;
 
-      const totalAvailable = count ?? 0;
-      const totalToFetch = Math.min(limit, Math.max(0, totalAvailable - offset));
+        const totalAvailable = count ?? 0;
+        const totalToFetch = Math.min(limit, Math.max(0, totalAvailable - offset));
 
-      if (!error && totalToFetch > 0) {
-        const CHUNK_SIZE = 1000;
-        const chunkCount = Math.ceil(totalToFetch / CHUNK_SIZE);
+        if (!error && totalToFetch > 0) {
+          const CHUNK_SIZE = 1000;
+          const chunkCount = Math.ceil(totalToFetch / CHUNK_SIZE);
 
-        // Fetch all 1000-row chunks in parallel with a fresh builder instance per chunk
-        const chunkPromises = Array.from({ length: chunkCount }, (_, idx) => {
-          const chunkStart = offset + idx * CHUNK_SIZE;
-          const chunkEnd = Math.min(offset + totalToFetch - 1, chunkStart + CHUNK_SIZE - 1);
-          return createBaseQuery().range(chunkStart, chunkEnd);
-        });
+          const chunkPromises = Array.from({ length: chunkCount }, (_, idx) => {
+            const chunkStart = offset + idx * CHUNK_SIZE;
+            const chunkEnd = Math.min(offset + totalToFetch - 1, chunkStart + CHUNK_SIZE - 1);
+            return createBaseQuery().range(chunkStart, chunkEnd);
+          });
 
-        const chunkResults = await Promise.all(chunkPromises);
-        for (const res of chunkResults) {
-          if (res.error) {
-            error = res.error;
-            break;
-          }
-          if (res.data) {
-            recordsData.push(...res.data);
+          const chunkResults = await Promise.all(chunkPromises);
+          for (const res of chunkResults) {
+            if (res.error) {
+              error = res.error;
+              break;
+            }
+            if (res.data) {
+              recordsData.push(...res.data);
+            }
           }
         }
-      } else if (!error && totalToFetch === 0) {
-        recordsData = [];
       }
-    }
+      return { recordsData, error, count };
+    })();
+
+    const fetchSummaryPromise = (async () => {
+      if (isSummaryFresh && cached) {
+        return { rpcSummary: null, cachedSummary: cached.summary };
+      }
+      try {
+        const rpcRes = await supabaseAdmin.rpc('get_telecalling_performance', {
+          p_time_cutoff: null,
+          p_advisor_id: advisorUuid,
+        });
+        if (!rpcRes.error && rpcRes.data) {
+          const rpcSummary = (rpcRes.data as { summary?: Record<string, number> })?.summary;
+          if (rpcSummary && rpcSummary.total_calls !== undefined) {
+            return { rpcSummary, cachedSummary: null };
+          }
+        }
+      } catch {
+        // Gracefully fall back
+      }
+      return { rpcSummary: null, cachedSummary: null };
+    })();
+
+    const [recordsResult, summaryResult] = await Promise.all([
+      fetchRecordsPromise,
+      fetchSummaryPromise,
+    ]);
+
+    const { recordsData, error, count } = recordsResult;
+    const { rpcSummary, cachedSummary } = summaryResult;
     // Fallback if ivr_call_records is not yet populated
     if (error) {
       console.warn('ivr_call_records query fallback to chat_leads:', error.message);
@@ -314,8 +351,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       };
     });
 
-    // Accurate campaign-wide summary
-    const rpcSummary = (perfRpcResult as { summary?: Record<string, number> } | null)?.summary;
     let summary: {
       total_calls: number;
       answered_calls: number;
@@ -325,7 +360,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       cold_count: number;
     };
 
-    if (rpcSummary && rpcSummary.total_calls !== undefined) {
+    if (cachedSummary) {
+      summary = cachedSummary;
+    } else if (rpcSummary && rpcSummary.total_calls !== undefined) {
       summary = {
         total_calls: rpcSummary.total_calls || count || 0,
         answered_calls: rpcSummary.answered_calls || 0,
@@ -334,58 +371,56 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         warm_count: Math.max(0, (rpcSummary.answered_calls || 0) - (rpcSummary.hot_leads || 0)),
         cold_count: rpcSummary.missed_calls || 0,
       };
+      summaryCache.set(cacheKey, { summary, timestamp: Date.now() });
     } else {
-      // Execute fast HEAD count queries across the whole campaign scope (not just 25 rows on page)
+      // Fast fallback: query answered & hot counts (missed is derived without redundant queries)
       let ansQuery = supabaseAdmin
         .from('ivr_call_records')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .eq('dial_status', 'ANSWER');
-      let noansQuery = supabaseAdmin
-        .from('ivr_call_records')
-        .select('*', { count: 'exact', head: true })
-        .eq('dial_status', 'NOANSWER');
       let hotLeadQuery = supabaseAdmin
         .from('ivr_call_records')
-        .select('*', { count: 'exact', head: true })
+        .select('id', { count: 'exact', head: true })
         .or('call_duration.gte.60,pressed_key.eq.1');
-      let totalScopeQuery = supabaseAdmin
-        .from('ivr_call_records')
-        .select('*', { count: 'exact', head: true });
+
+      let scopeTotalQuery =
+        advisorId && advisorId !== 'all'
+          ? supabaseAdmin.from('ivr_call_records').select('id', { count: 'exact', head: true })
+          : null;
 
       if (advisorId && advisorId !== 'all') {
         if (advisorName) {
           const advOr = `assigned_agent_id.eq.${advisorId},agent_name.ilike.%${advisorName}%`;
           ansQuery = ansQuery.or(advOr);
-          noansQuery = noansQuery.or(advOr);
           hotLeadQuery = hotLeadQuery.or(advOr);
-          totalScopeQuery = totalScopeQuery.or(advOr);
+          if (scopeTotalQuery) scopeTotalQuery = scopeTotalQuery.or(advOr);
         } else {
           ansQuery = ansQuery.eq('assigned_agent_id', advisorId);
-          noansQuery = noansQuery.eq('assigned_agent_id', advisorId);
           hotLeadQuery = hotLeadQuery.eq('assigned_agent_id', advisorId);
-          totalScopeQuery = totalScopeQuery.eq('assigned_agent_id', advisorId);
+          if (scopeTotalQuery) scopeTotalQuery = scopeTotalQuery.eq('assigned_agent_id', advisorId);
         }
       }
 
-      const [totalScopeRes, ansRes, noansRes, hotRes] = await Promise.all([
-        totalScopeQuery,
+      const [ansRes, hotRes, scopeRes] = await Promise.all([
         ansQuery,
-        noansQuery,
         hotLeadQuery,
+        scopeTotalQuery || Promise.resolve({ count: count ?? 0 }),
       ]);
+
       const ansCount = ansRes.count || 0;
-      const noansCount = noansRes.count || 0;
       const hotCount = hotRes.count || 0;
-      const scopeTotal = totalScopeRes.count || ansCount + noansCount;
+      const scopeTotal = scopeRes.count ?? count ?? 0;
+      const missedCount = Math.max(0, scopeTotal - ansCount);
 
       summary = {
         total_calls: scopeTotal,
         answered_calls: ansCount,
-        missed_calls: noansCount,
+        missed_calls: missedCount,
         hot_count: hotCount,
         warm_count: Math.max(0, ansCount - hotCount),
-        cold_count: noansCount,
+        cold_count: missedCount,
       };
+      summaryCache.set(cacheKey, { summary, timestamp: Date.now() });
     }
     return NextResponse.json({
       records: items,

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { IvrFilterState } from '@/src/components/admin/leads/IvrLeadsTable';
@@ -39,7 +39,6 @@ export function useIvrLeadsManagement(
   const [ivrTotalCount, setIvrTotalCount] = useState(0);
   const [ivrPage, setIvrPage] = useState(1);
   const [ivrLimit] = useState(25);
-  const [ivrLoading, setIvrLoading] = useState(false);
   const [ivrFilters, setIvrFilters] = useState<IvrFilterState>({
     dial_status: 'all',
     temperature: 'all',
@@ -77,70 +76,93 @@ export function useIvrLeadsManagement(
   });
   const employees = employeesData || [];
 
-  // Fetch IVR records
-  const fetchIvrRecords = useCallback(
-    async (targetPage = ivrPage, filters = ivrFilters) => {
-      if (!token) return;
-      setIvrLoading(true);
-      try {
-        const params = new URLSearchParams({
-          page: String(targetPage),
-          limit: String(ivrLimit),
-          dial_status: filters.dial_status,
-          temperature: filters.temperature,
-          advisor_id: filters.advisor_id,
-        });
-        if (filters.q) params.set('q', filters.q);
-        if (filters.pressed_key && filters.pressed_key !== 'all') {
-          params.set('pressed_key', filters.pressed_key);
-        }
-        if (filters.date) {
-          params.set('date', filters.date);
-        }
-        if (filters.duration_filter && filters.duration_filter !== 'all') {
-          if (filters.duration_filter === 'lt_30') {
-            params.set('max_duration', '29');
-          } else if (filters.duration_filter === '30_60') {
-            params.set('min_duration', '30');
-            params.set('max_duration', '60');
-          } else if (filters.duration_filter === 'gt_60') {
-            params.set('min_duration', '61');
-          }
-        }
-        if (filters.sort_by) {
-          params.set('sort_by', filters.sort_by);
-        }
-        if (filters.sort_order) {
-          params.set('sort_order', filters.sort_order);
-        }
-        const res = await fetch(`/api/admin/leads/ivr-records?${params.toString()}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const json = await res.json();
-
-        if (res.ok) {
-          setIvrRecords(json.records || []);
-          setIvrTotalCount(json.total_count || 0);
-          if (json.summary) {
-            setSummary(json.summary);
-          }
-        } else {
-          toast.error(json.message || 'Failed to fetch IVR records');
-        }
-      } catch (err: unknown) {
-        console.error('Fetch IVR records error:', err);
-      } finally {
-        setIvrLoading(false);
-      }
-    },
-    [token, ivrPage, ivrLimit, ivrFilters]
+  // TanStack Query for cached IVR records (45s staleTime, smooth placeholderData)
+  const queryKey = useMemo(
+    () => ['admin', 'ivr-records', ivrPage, ivrLimit, ivrFilters],
+    [ivrPage, ivrLimit, ivrFilters]
   );
 
+  const {
+    data: ivrData,
+    isLoading: ivrQueryLoading,
+    refetch: refetchIvrQuery,
+  } = useQuery({
+    queryKey,
+    queryFn: async () => {
+      const params = new URLSearchParams({
+        page: String(ivrPage),
+        limit: String(ivrLimit),
+        dial_status: ivrFilters.dial_status,
+        temperature: ivrFilters.temperature,
+        advisor_id: ivrFilters.advisor_id,
+      });
+      if (ivrFilters.q) params.set('q', ivrFilters.q);
+      if (ivrFilters.pressed_key && ivrFilters.pressed_key !== 'all') {
+        params.set('pressed_key', ivrFilters.pressed_key);
+      }
+      if (ivrFilters.date) {
+        params.set('date', ivrFilters.date);
+      }
+      if (ivrFilters.duration_filter && ivrFilters.duration_filter !== 'all') {
+        if (ivrFilters.duration_filter === 'lt_30') {
+          params.set('max_duration', '29');
+        } else if (ivrFilters.duration_filter === '30_60') {
+          params.set('min_duration', '30');
+          params.set('max_duration', '60');
+        } else if (ivrFilters.duration_filter === 'gt_60') {
+          params.set('min_duration', '61');
+        }
+      }
+      if (ivrFilters.sort_by) {
+        params.set('sort_by', ivrFilters.sort_by);
+      }
+      if (ivrFilters.sort_order) {
+        params.set('sort_order', ivrFilters.sort_order);
+      }
+      const res = await fetch(`/api/admin/leads/ivr-records?${params.toString()}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const json = await res.json();
+      if (!res.ok) {
+        throw new Error(json.message || 'Failed to fetch IVR records');
+      }
+      return {
+        records: (json.records || []) as IvrRecordItem[],
+        total_count: (json.total_count || 0) as number,
+        summary: (json.summary || {
+          total_calls: 0,
+          answered_calls: 0,
+          missed_calls: 0,
+          hot_count: 0,
+          warm_count: 0,
+          cold_count: 0,
+        }) as IvrSummaryStats,
+      };
+    },
+    enabled: !!token && activeTab === 'ivr',
+    staleTime: 1000 * 45,
+    placeholderData: (previousData) => previousData,
+  });
+
+  // Sync query data into local state for instant optimistic updates
   useEffect(() => {
-    if (activeTab === 'ivr') {
-      fetchIvrRecords(ivrPage, ivrFilters);
+    if (ivrData) {
+      setIvrRecords(ivrData.records);
+      setIvrTotalCount(ivrData.total_count);
+      setSummary(ivrData.summary);
     }
-  }, [activeTab, ivrPage, ivrFilters, fetchIvrRecords]);
+  }, [ivrData]);
+
+  const ivrLoading = ivrQueryLoading && !ivrData;
+
+  const fetchIvrRecords = useCallback(
+    async (targetPage = ivrPage, filters = ivrFilters) => {
+      if (targetPage !== ivrPage) setIvrPage(targetPage);
+      if (filters !== ivrFilters) setIvrFilters(filters);
+      await refetchIvrQuery();
+    },
+    [ivrPage, ivrFilters, refetchIvrQuery]
+  );
 
   const handleFilterChange = (newFilters: Partial<IvrFilterState>) => {
     const updated = { ...ivrFilters, ...newFilters };
