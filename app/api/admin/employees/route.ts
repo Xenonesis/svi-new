@@ -1,4 +1,31 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
+
+interface EmployeeStats {
+  totalLeads: number;
+  activeLeads: number;
+  wonLeads: number;
+  presentDays: number;
+  totalDays: number;
+  attendanceRate: number;
+}
+
+interface EmployeeLeadStatsRpcRow {
+  assigned_to: string;
+  total_leads: number;
+  won_leads: number;
+  active_leads: number;
+}
+
+interface AttendanceRecordRow {
+  user_id: string;
+  status: string;
+}
+
+interface LegacyChatLeadRow {
+  assigned_to: string | null;
+  lifecycle_status: string | null;
+}
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
@@ -37,17 +64,7 @@ export async function GET(request: NextRequest) {
     const employees = data || [];
     const employeeIds = employees.map((e) => e.id);
 
-    const statsMap: Record<
-      string,
-      {
-        totalLeads: number;
-        activeLeads: number;
-        wonLeads: number;
-        presentDays: number;
-        totalDays: number;
-        attendanceRate: number;
-      }
-    > = {};
+    const statsMap: Record<string, EmployeeStats> = {};
 
     if (employeeIds.length > 0) {
       // Bound attendance calculation to the last 60 days to prevent unbounded memory transfer
@@ -55,11 +72,10 @@ export async function GET(request: NextRequest) {
       sixtyDaysAgo.setDate(sixtyDaysAgo.getDate() - 60);
       const sixtyDaysStr = sixtyDaysAgo.toISOString().split('T')[0];
 
-      const [leadsRes, attRes] = await Promise.all([
-        supabaseAdmin
-          .from('chat_leads')
-          .select('assigned_to, lifecycle_status')
-          .in('assigned_to', employeeIds),
+      const [rpcLeadsRes, attRes] = await Promise.all([
+        Promise.resolve(
+          supabaseAdmin.rpc('get_employee_lead_stats', { p_employee_ids: employeeIds })
+        ).catch((err: Error) => ({ data: null, error: err })),
         supabaseAdmin
           .from('attendance_records')
           .select('user_id, status')
@@ -67,16 +83,47 @@ export async function GET(request: NextRequest) {
           .gte('date', sixtyDaysStr),
       ]);
 
-      const leads = leadsRes.data || [];
-      const attendance = attRes.data || [];
+      const attendance = (attRes.data as AttendanceRecordRow[] | null) || [];
+      const leadStatsByEmployee = new Map<
+        string,
+        { totalLeads: number; wonLeads: number; activeLeads: number }
+      >();
+
+      if (!rpcLeadsRes.error && Array.isArray(rpcLeadsRes.data)) {
+        const rpcRows = rpcLeadsRes.data as EmployeeLeadStatsRpcRow[];
+        for (const row of rpcRows) {
+          leadStatsByEmployee.set(row.assigned_to, {
+            totalLeads: Number(row.total_leads) || 0,
+            wonLeads: Number(row.won_leads) || 0,
+            activeLeads: Number(row.active_leads) || 0,
+          });
+        }
+      } else {
+        // Fallback to legacy query if RPC is not deployed yet or encounters an error
+        const legacyLeadsRes = await supabaseAdmin
+          .from('chat_leads')
+          .select('assigned_to, lifecycle_status')
+          .in('assigned_to', employeeIds);
+
+        const legacyLeads = (legacyLeadsRes.data as LegacyChatLeadRow[] | null) || [];
+        for (const id of employeeIds) {
+          const empLeads = legacyLeads.filter((l) => l.assigned_to === id);
+          leadStatsByEmployee.set(id, {
+            totalLeads: empLeads.length,
+            wonLeads: empLeads.filter((l) => l.lifecycle_status === 'won').length,
+            activeLeads: empLeads.filter(
+              (l) => l.lifecycle_status !== 'won' && l.lifecycle_status !== 'lost'
+            ).length,
+          });
+        }
+      }
 
       employeeIds.forEach((id) => {
-        const empLeads = leads.filter((l) => l.assigned_to === id);
-        const totalLeads = empLeads.length;
-        const wonLeads = empLeads.filter((l) => l.lifecycle_status === 'won').length;
-        const activeLeads = empLeads.filter(
-          (l) => l.lifecycle_status !== 'won' && l.lifecycle_status !== 'lost'
-        ).length;
+        const leadStats = leadStatsByEmployee.get(id) || {
+          totalLeads: 0,
+          wonLeads: 0,
+          activeLeads: 0,
+        };
 
         const empAtt = attendance.filter((a) => a.user_id === id);
         const totalDays = empAtt.length;
@@ -84,9 +131,9 @@ export async function GET(request: NextRequest) {
         const attendanceRate = totalDays > 0 ? Math.round((presentDays / totalDays) * 100) : 100;
 
         statsMap[id] = {
-          totalLeads,
-          activeLeads,
-          wonLeads,
+          totalLeads: leadStats.totalLeads,
+          activeLeads: leadStats.activeLeads,
+          wonLeads: leadStats.wonLeads,
           presentDays,
           totalDays,
           attendanceRate,
@@ -123,19 +170,21 @@ export async function POST(request: NextRequest) {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
-    let body: Record<string, any>;
+    let body: Record<string, unknown>;
     try {
-      body = await request.json();
+      body = (await request.json()) as Record<string, unknown>;
     } catch {
       throw AppError.badRequest('Invalid JSON body in request.');
     }
 
-    const fullName = body.full_name?.trim();
-    const email = body.email?.trim().toLowerCase();
-    const password = body.password;
-    const phone = body.phone?.trim();
-    const department = body.department?.trim();
-    const notes = body.notes?.trim();
+    const fullName = typeof body.full_name === 'string' ? body.full_name.trim() : undefined;
+    const email = typeof body.email === 'string' ? body.email.trim().toLowerCase() : undefined;
+    const password = typeof body.password === 'string' ? body.password : undefined;
+    const phone = typeof body.phone === 'string' ? body.phone.trim() : undefined;
+    const department = typeof body.department === 'string' ? body.department.trim() : undefined;
+    const notes = typeof body.notes === 'string' ? body.notes.trim() : undefined;
+    const realEmail =
+      typeof body.real_email === 'string' ? body.real_email.trim().toLowerCase() || null : null;
     if (!fullName) {
       throw AppError.badRequest('Full Name is required.');
     }
@@ -160,7 +209,6 @@ export async function POST(request: NextRequest) {
         throw AppError.badRequest('Phone Number must contain at least 10 valid digits.');
       }
     }
-    const realEmail = body.real_email?.trim().toLowerCase() || null;
 
     // 1. Pre-check SVI Email uniqueness in profiles
     const { data: existingProfile } = await supabaseAdmin
@@ -239,7 +287,7 @@ export async function POST(request: NextRequest) {
     const newUserId = authData.user.id;
 
     // 2. Insert profile row
-    const insertPayload: Record<string, any> = {
+    const insertPayload: Record<string, unknown> = {
       id: newUserId,
       email,
       real_email: realEmail,
