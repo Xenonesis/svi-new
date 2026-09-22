@@ -1,12 +1,78 @@
-import { NextRequest, NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+
+interface UserGrowthPoint {
+  date: string;
+  users: number;
+}
+
+interface DocumentStatItem {
+  name: string;
+  count: number;
+}
+
+interface AnalyticsTrends {
+  userGrowth: string;
+  clientGrowth: string;
+  adminCount: string;
+}
+
+interface AnalyticsData {
+  userGrowth: UserGrowthPoint[];
+  documentStats: DocumentStatItem[];
+  trends: AnalyticsTrends;
+}
+
+interface AnalyticsCacheEntry {
+  data: AnalyticsData;
+  expiresAt: number;
+}
+
+interface DocumentRecord {
+  document_type: string | null;
+}
+
+const DOCUMENT_TYPE_KEYS = [
+  'allotment_letter',
+  'payment_receipt',
+  'payment_plan',
+  'offer_letter',
+  'bba',
+] as const;
+
+type DocumentTypeKey = (typeof DOCUMENT_TYPE_KEYS)[number];
+
+function isDocumentRecord(item: unknown): item is DocumentRecord {
+  return typeof item === 'object' && item !== null && 'document_type' in item;
+}
+
+function isDocumentTypeKey(type: string): type is DocumentTypeKey {
+  return (DOCUMENT_TYPE_KEYS as readonly string[]).includes(type);
+}
+
+let analyticsCache: AnalyticsCacheEntry | null = null;
+const CACHE_TTL_MS = 60_000;
+
+export function _clearAnalyticsCacheForTesting(): void {
+  analyticsCache = null;
+}
 
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
+
+    if (analyticsCache && Date.now() < analyticsCache.expiresAt) {
+      return NextResponse.json(analyticsCache.data, {
+        headers: {
+          'X-Cache': 'HIT',
+          'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+        },
+      });
+    }
 
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
@@ -18,14 +84,23 @@ export async function GET(request: NextRequest) {
       calculateTrends(),
     ]);
 
-    const response = NextResponse.json({
+    const payload: AnalyticsData = {
       userGrowth: growthResult,
       documentStats,
       trends,
-    });
+    };
 
-    response.headers.set('Cache-Control', 'private, max-age=30, stale-while-revalidate=60');
-    return response;
+    analyticsCache = {
+      data: payload,
+      expiresAt: Date.now() + CACHE_TTL_MS,
+    };
+
+    return NextResponse.json(payload, {
+      headers: {
+        'X-Cache': 'MISS',
+        'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
+      },
+    });
   } catch (err) {
     return handleApiError(err);
   }
@@ -81,29 +156,41 @@ async function fetchUserGrowth(thirtyDaysAgo: Date) {
 }
 
 /**
- * Fetch document stats using individual count queries instead of fetching all rows.
- * 5 head-only count queries are much faster than SELECT * on the entire table.
+ * Fetch document stats using a single query and in-memory tallying
+ * instead of 5 separate count queries.
  */
-async function fetchDocumentStats() {
-  const types = ['allotment_letter', 'payment_receipt', 'payment_plan', 'offer_letter', 'bba'];
+async function fetchDocumentStats(): Promise<DocumentStatItem[]> {
+  const { data: docs } = await supabaseAdmin
+    .from('documents')
+    .select('document_type')
+    .eq('status', 'completed');
 
-  const counts = await Promise.all(
-    types.map(async (type) => {
-      const { count } = await supabaseAdmin
-        .from('documents')
-        .select('*', { count: 'exact', head: true })
-        .eq('status', 'completed')
-        .eq('document_type', type);
-      return count || 0;
-    })
-  );
+  const counts: Record<DocumentTypeKey, number> = {
+    allotment_letter: 0,
+    payment_receipt: 0,
+    payment_plan: 0,
+    offer_letter: 0,
+    bba: 0,
+  };
+
+  if (Array.isArray(docs)) {
+    for (const doc of docs) {
+      if (
+        isDocumentRecord(doc) &&
+        typeof doc.document_type === 'string' &&
+        isDocumentTypeKey(doc.document_type)
+      ) {
+        counts[doc.document_type] += 1;
+      }
+    }
+  }
 
   return [
-    { name: 'Allotment', count: counts[0] },
-    { name: 'Receipt', count: counts[1] },
-    { name: 'Plan', count: counts[2] },
-    { name: 'Offer', count: counts[3] },
-    { name: 'BBA', count: counts[4] },
+    { name: 'Allotment', count: counts.allotment_letter },
+    { name: 'Receipt', count: counts.payment_receipt },
+    { name: 'Plan', count: counts.payment_plan },
+    { name: 'Offer', count: counts.offer_letter },
+    { name: 'BBA', count: counts.bba },
   ];
 }
 
