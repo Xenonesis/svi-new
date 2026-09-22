@@ -51,12 +51,19 @@ describe('InventoryPulseWidget', () => {
     { name: 'Shreeji Heights', slug: 'shreeji-heights' },
   ];
 
+  const mockInventory = {
+    'Shreeji Valley - Phase 1': { total: 60, allotted: 39, reserved: 8, available: 13 },
+    'Shreeji Heights': { total: 50, allotted: 10, reserved: 5, available: 35 },
+  };
+
   it('renders inventory pulse widget with occupancy and link', () => {
-    render(<InventoryPulseWidget properties={mockProperties} />);
+    render(
+      <InventoryPulseWidget properties={mockProperties} inventoryByProperty={mockInventory} />
+    );
     expect(screen.getByText('Project Inventory Pulse')).toBeDefined();
     expect(screen.getByText(/Allotment & booking status/i)).toBeDefined();
     expect(screen.getByText('60')).toBeDefined();
-    expect(screen.getByText('78% Occupancy')).toBeDefined();
+    expect(screen.getByText('65% Occupancy')).toBeDefined();
     expect(screen.getByText('Allotted (39)')).toBeDefined();
     expect(screen.getByText('Reserved (8)')).toBeDefined();
     expect(screen.getByText('Available (13)')).toBeDefined();
@@ -65,7 +72,6 @@ describe('InventoryPulseWidget', () => {
     expect(link).toBeDefined();
     expect(link.getAttribute('href')).toBe('/admin/allotment-letter');
   });
-
   it('allows selecting different properties from dropdown', () => {
     render(<InventoryPulseWidget properties={mockProperties} />);
     const select = screen.getByRole('combobox');
@@ -79,6 +85,6 @@ describe('InventoryPulseWidget', () => {
     render(<InventoryPulseWidget properties={[]} />);
     expect(screen.getByText('Project Inventory Pulse')).toBeDefined();
     const select = screen.getByRole('combobox');
-    expect((select as HTMLSelectElement).value).toBe('Shreeji Valley - Phase 1');
+    expect((select as HTMLSelectElement).value).toBe('Shyam Aangan Phase 1');
   });
 });

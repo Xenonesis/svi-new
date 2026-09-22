@@ -6,12 +6,41 @@ import Link from 'next/link';
 
 export interface InventoryPulseWidgetProps {
   properties: Array<{ name: string; slug: string }>;
+  inventoryByProperty?: Record<
+    string,
+    {
+      total: number;
+      allotted: number;
+      reserved: number;
+      available: number;
+    }
+  >;
 }
 
-export function InventoryPulseWidget({ properties }: InventoryPulseWidgetProps) {
+export function InventoryPulseWidget({
+  properties,
+  inventoryByProperty,
+}: InventoryPulseWidgetProps) {
   const [selectedProperty, setSelectedProperty] = useState(
-    properties[0]?.name || 'Shreeji Valley - Phase 1'
+    properties[0]?.name || 'Shyam Aangan Phase 1'
   );
+
+  const currentInventory = (inventoryByProperty && inventoryByProperty[selectedProperty]) || {
+    total: 60,
+    allotted: 0,
+    reserved: 0,
+    available: 60,
+  };
+
+  const total = currentInventory.total || 60;
+  const allotted = currentInventory.allotted || 0;
+  const reserved = currentInventory.reserved || 0;
+  const available = currentInventory.available || Math.max(0, total - allotted - reserved);
+
+  const occupancyPercent = total > 0 ? Math.round((allotted / total) * 100) : 0;
+  const allottedPercent = total > 0 ? Math.round((allotted / total) * 100) : 0;
+  const reservedPercent = total > 0 ? Math.round((reserved / total) * 100) : 0;
+  const availablePercent = Math.max(0, 100 - allottedPercent - reservedPercent);
 
   return (
     <div className="rounded-2xl border border-white/10 bg-[#090e17]/80 p-6 shadow-xl backdrop-blur-xl">
@@ -39,7 +68,7 @@ export function InventoryPulseWidget({ properties }: InventoryPulseWidgetProps) 
               </option>
             ))
           ) : (
-            <option value="Shreeji Valley - Phase 1">Shreeji Valley - Phase 1</option>
+            <option value="Shyam Aangan Phase 1">Shyam Aangan Phase 1</option>
           )}
         </select>
       </div>
@@ -47,29 +76,41 @@ export function InventoryPulseWidget({ properties }: InventoryPulseWidgetProps) 
       <div className="mt-6 space-y-3">
         <div className="flex items-center justify-between text-xs">
           <span className="text-gray-400">
-            Total Units: <strong className="text-white">60</strong>
+            Total Units: <strong className="text-white">{total}</strong>
           </span>
-          <span className="text-brand-gold text-xs font-medium">78% Occupancy</span>
+          <span className="text-brand-gold text-xs font-medium">{occupancyPercent}% Occupancy</span>
         </div>
 
         <div className="flex h-3 w-full gap-0.5 overflow-hidden rounded-full bg-white/10">
-          <div className="bg-brand-gold" style={{ width: '65%' }} title="Allotted: 39 Units" />
-          <div className="bg-amber-400" style={{ width: '13%' }} title="Reserved: 8 Units" />
-          <div className="bg-emerald-500" style={{ width: '22%' }} title="Available: 13 Units" />
+          <div
+            className="bg-brand-gold transition-all duration-300"
+            style={{ width: `${Math.max(allottedPercent, allotted > 0 ? 3 : 0)}%` }}
+            title={`Allotted: ${allotted} Units`}
+          />
+          <div
+            className="bg-amber-400 transition-all duration-300"
+            style={{ width: `${reservedPercent}%` }}
+            title={`Reserved: ${reserved} Units`}
+          />
+          <div
+            className="bg-emerald-500 transition-all duration-300"
+            style={{ width: `${availablePercent}%` }}
+            title={`Available: ${available} Units`}
+          />
         </div>
 
         <div className="flex items-center justify-between pt-1 text-[11px] text-gray-400">
           <div className="flex items-center gap-1.5">
             <span className="bg-brand-gold h-2 w-2 rounded-full" />
-            <span>Allotted (39)</span>
+            <span>Allotted ({allotted})</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-amber-400" />
-            <span>Reserved (8)</span>
+            <span>Reserved ({reserved})</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="h-2 w-2 rounded-full bg-emerald-500" />
-            <span>Available (13)</span>
+            <span>Available ({available})</span>
           </div>
         </div>
       </div>

@@ -76,6 +76,7 @@ describe('Executive PDF Dossier Exporter', () => {
         target: 1200000,
       },
     ],
+    inventoryByProperty: {},
   };
 
   beforeEach(() => {
@@ -131,6 +132,7 @@ describe('Executive PDF Dossier Exporter', () => {
       },
       paymentDues: [],
       revenueTrend: [],
+      inventoryByProperty: {},
     };
 
     const doc = await generateExecutiveDossierPdf(emptyData);

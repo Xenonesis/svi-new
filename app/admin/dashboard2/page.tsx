@@ -255,7 +255,10 @@ export default function AdminDashboard2() {
         {/* Zone 4: Dual Cockpit (Target Achievement & Inventory Pulse) */}
         <div className="mb-8 grid grid-cols-1 gap-6 lg:grid-cols-2">
           <TargetAchievementMeter target={execData?.target ?? defaultTarget} />
-          <InventoryPulseWidget properties={properties} />
+          <InventoryPulseWidget
+            properties={properties}
+            inventoryByProperty={execData?.inventoryByProperty}
+          />
         </div>
 
         {/* Zone 5: Operational Triage (Urgent Attention & Payment Dues) */}
