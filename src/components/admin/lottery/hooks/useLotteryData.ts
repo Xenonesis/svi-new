@@ -43,14 +43,14 @@ export function useLotteryData(): UseLotteryDataReturn {
     try {
       const { data: lotteriesData, error: lError } = await supabase
         .from('lotteries')
-        .select('*')
+        .select('id, title, description, status, created_at')
         .order('created_at', { ascending: false });
 
       if (lError) throw lError;
 
       const { data: participantsData, error: pError } = await supabase
         .from('lottery_participants')
-        .select('*')
+        .select('id, lottery_id, name, ticket_number, phone, email, is_winner')
         .eq('is_winner', true);
 
       if (pError) throw pError;
@@ -99,7 +99,7 @@ export function useLotteryData(): UseLotteryDataReturn {
 
         const { data: activeWinnersData, error: wError } = await supabase
           .from('lottery_participants')
-          .select('*')
+          .select('id, lottery_id, name, ticket_number, phone, email, is_winner')
           .eq('lottery_id', active.id)
           .eq('is_winner', true);
 
@@ -111,9 +111,9 @@ export function useLotteryData(): UseLotteryDataReturn {
         setActiveParticipantsCount(0);
         setActiveWinners([]);
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Error fetching lottery data:', error);
-      setErrorMessage(error.message || 'Failed to load lottery data.');
+      setErrorMessage(error instanceof Error ? error.message : 'Failed to load lottery data.');
     }
   }, []);
 

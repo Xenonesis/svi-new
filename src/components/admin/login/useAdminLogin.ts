@@ -115,7 +115,7 @@ export function useAdminLogin(): AdminLoginState {
       // Verify admin role server-side via profile lookup
       const { data: profile, error: profileError } = await supabase
         .from('profiles')
-        .select('*')
+        .select('role, is_active, full_name, email')
         .eq('id', data.user.id)
         .maybeSingle();
 

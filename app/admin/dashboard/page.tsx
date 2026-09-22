@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient, useQuery } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 
 import ActivityTimeline from '@/src/components/admin/ActivityTimeline';
@@ -37,7 +37,21 @@ export default function AdminDashboard() {
   const [showAdvisorSettings, setShowAdvisorSettings] = useState(false);
   const [editTarget, setEditTarget] = useState<UserProfile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<UserProfile | null>(null);
-  const [properties, setProperties] = useState<Array<{ name: string; slug: string }>>([]);
+  // React Query hook — active properties with 15 min cache
+  const { data: propertiesData } = useQuery({
+    queryKey: ['admin', 'properties', 'active'],
+    queryFn: async () => {
+      const { data } = await supabase
+        .from('properties')
+        .select('name, slug')
+        .eq('active', true)
+        .order('name', { ascending: true });
+      return (data || []) as Array<{ name: string; slug: string }>;
+    },
+    enabled: !!token && isAdmin,
+    staleTime: 1000 * 60 * 15,
+  });
+  const properties = propertiesData || [];
 
   // React Query hooks — data fetching with caching
   const { data: usersData, isLoading: usersLoading } = useUsers(token);
@@ -68,23 +82,6 @@ export default function AdminDashboard() {
       router.replace('/admin');
     }
   }, [authLoading, token, isAdmin, router]);
-
-  // Fetch active properties
-  useEffect(() => {
-    if (!token) return;
-    let cancelled = false;
-    supabase
-      .from('properties')
-      .select('name, slug')
-      .eq('active', true)
-      .order('name', { ascending: true })
-      .then(({ data }) => {
-        if (!cancelled && data) setProperties(data);
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [token]);
 
   const clientCount = users.filter((u) => u.role === 'client').length;
   const employeeCount = users.filter((u) => u.role === 'employee').length;

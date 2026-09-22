@@ -135,7 +135,9 @@ export function useAdminNotifications(): UseAdminNotificationsReturn {
 
       let query = supabase
         .from('notifications')
-        .select('*', { count: 'exact' })
+        .select('id, user_id, title, message, type, is_read, action_url, metadata, created_at', {
+          count: 'exact',
+        })
         .eq('user_id', userId);
 
       // Type filter

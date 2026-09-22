@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import type { IvrFilterState } from '@/src/components/admin/leads/IvrLeadsTable';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
@@ -60,23 +61,21 @@ export function useIvrLeadsManagement(
     cold_count: 0,
   });
 
-  // Employees for advisor dropdowns
-  const [employees, setEmployees] = useState<Employee[]>([]);
-
-  // Fetch employees
-  useEffect(() => {
-    if (!token) return;
-    fetch('/api/admin/employees', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.employees) {
-          setEmployees(data.employees);
-        }
-      })
-      .catch(() => {});
-  }, [token]);
+  // Cached employees for advisor dropdowns (10 min stale time)
+  const { data: employeesData } = useQuery({
+    queryKey: ['admin', 'employees', 'dropdown'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/employees', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch employees');
+      const data = await res.json();
+      return (data.employees || []) as Employee[];
+    },
+    enabled: !!token,
+    staleTime: 1000 * 60 * 10,
+  });
+  const employees = employeesData || [];
 
   // Fetch IVR records
   const fetchIvrRecords = useCallback(

@@ -103,7 +103,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
     try {
       const { data, error } = await supabase
         .from('notifications')
-        .select('*')
+        .select('id, user_id, title, message, type, is_read, action_url, metadata, created_at')
         .eq('user_id', userId)
         .order('created_at', { ascending: false })
         .limit(50);
