@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import ExcelJS from 'exceljs';
 import { toast } from 'sonner';
 import type { Employee } from './EmployeeCard';
 import { getSviEmail } from './EmployeeCard';
@@ -127,7 +126,8 @@ export async function exportEmployeesToExcel(
     }
 
     toast.info('Generating Excel workbook...');
-    // Initialize workbook
+    // Lazy-load ExcelJS on export trigger to prevent 1.5MB library from bloating initial bundle
+    const ExcelJS = (await import('exceljs')).default;
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'SVI Infra Systems';
     workbook.created = new Date();

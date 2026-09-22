@@ -3,33 +3,12 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
-interface UserGrowthPoint {
-  date: string;
-  users: number;
-}
-
-interface DocumentStatItem {
-  name: string;
-  count: number;
-}
-
-interface AnalyticsTrends {
-  userGrowth: string;
-  clientGrowth: string;
-  adminCount: string;
-}
-
-interface AnalyticsData {
-  userGrowth: UserGrowthPoint[];
-  documentStats: DocumentStatItem[];
-  trends: AnalyticsTrends;
-}
-
-interface AnalyticsCacheEntry {
-  data: AnalyticsData;
-  expiresAt: number;
-}
+import {
+  getAnalyticsCache,
+  setAnalyticsCache,
+  type AnalyticsData,
+  type DocumentStatItem,
+} from '@/src/lib/cache/adminAnalyticsCache';
 
 interface DocumentRecord {
   document_type: string | null;
@@ -53,20 +32,14 @@ function isDocumentTypeKey(type: string): type is DocumentTypeKey {
   return (DOCUMENT_TYPE_KEYS as readonly string[]).includes(type);
 }
 
-let analyticsCache: AnalyticsCacheEntry | null = null;
-const CACHE_TTL_MS = 60_000;
-
-export function _clearAnalyticsCacheForTesting(): void {
-  analyticsCache = null;
-}
-
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
     if (!admin) throw AppError.unauthorized();
 
-    if (analyticsCache && Date.now() < analyticsCache.expiresAt) {
-      return NextResponse.json(analyticsCache.data, {
+    const cached = getAnalyticsCache();
+    if (cached && Date.now() < cached.expiresAt) {
+      return NextResponse.json(cached.data, {
         headers: {
           'X-Cache': 'HIT',
           'Cache-Control': 'private, max-age=30, stale-while-revalidate=60',
@@ -90,10 +63,7 @@ export async function GET(request: NextRequest) {
       trends,
     };
 
-    analyticsCache = {
-      data: payload,
-      expiresAt: Date.now() + CACHE_TTL_MS,
-    };
+    setAnalyticsCache(payload);
 
     return NextResponse.json(payload, {
       headers: {

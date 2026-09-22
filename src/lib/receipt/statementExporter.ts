@@ -1,4 +1,4 @@
-import ExcelJS from 'exceljs';
+import type ExcelJS from 'exceljs';
 import { toast } from 'sonner';
 import { CustomerLedgerDetail } from './receiptLedger';
 import { exportToPDF } from '@/src/lib/utils/documentExporter';
@@ -61,7 +61,9 @@ export async function exportStatementExcel({
 
   try {
     toast.info('Generating Excel statement...');
-    const workbook = new ExcelJS.Workbook();
+    // Lazy-load ExcelJS on export trigger to prevent 1.5MB library from bloating initial bundle
+    const ExcelJSModule = (await import('exceljs')).default;
+    const workbook = new ExcelJSModule.Workbook();
     workbook.creator = 'SVI Infra Solutions Pvt. Ltd.';
     workbook.created = new Date();
 

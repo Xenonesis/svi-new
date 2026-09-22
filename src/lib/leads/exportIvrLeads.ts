@@ -1,5 +1,5 @@
-import ExcelJS from 'exceljs';
-import { jsPDF } from 'jspdf';
+import type ExcelJS from 'exceljs';
+import type { jsPDF } from 'jspdf';
 import { toast } from 'sonner';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 
@@ -45,7 +45,8 @@ export async function exportIvrLeadsToExcel(
 
   try {
     toast.info('Generating Excel file...');
-    const workbook = new ExcelJS.Workbook();
+    const ExcelJSModule = (await import('exceljs')).default;
+    const workbook = new ExcelJSModule.Workbook();
     workbook.creator = 'SVI Infra Solutions Pvt. Ltd.';
     workbook.created = new Date();
 
@@ -161,6 +162,7 @@ export async function exportIvrLeadsToPdf(
 
   try {
     toast.info('Generating PDF report...');
+    const { jsPDF } = await import('jspdf');
     const doc = new jsPDF({
       orientation: 'landscape',
       unit: 'pt',

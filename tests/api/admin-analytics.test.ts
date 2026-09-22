@@ -149,7 +149,8 @@ vi.mock('@/src/lib/supabase/admin', () => ({
   },
 }));
 
-import { GET, _clearAnalyticsCacheForTesting } from '@/app/api/admin/analytics/route';
+import { GET } from '@/app/api/admin/analytics/route';
+import { clearAnalyticsCache as _clearAnalyticsCacheForTesting } from '@/src/lib/cache/adminAnalyticsCache';
 
 const sampleDocuments: DocumentRecord[] = [
   { document_type: 'allotment_letter' },

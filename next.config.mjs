@@ -57,6 +57,7 @@ const nextConfig = {
       'clsx',
       'tailwind-merge',
       'zustand',
+      'canvas-confetti',
     ],
     // TS7 side-by-side setup: `typescript` is aliased to @typescript/typescript6
     // (no bin/tsc), so Next must use the compiler API instead of the tsc CLI.
@@ -66,7 +67,7 @@ const nextConfig = {
   // Keep compiled pages in memory longer during dev (no production impact)
   onDemandEntries: {
     maxInactiveAge: 60 * 60 * 1000,
-    pagesBufferLength: 5,
+    pagesBufferLength: 30,
   },
   webpack: (config, { dev }) => {
     if (dev) {

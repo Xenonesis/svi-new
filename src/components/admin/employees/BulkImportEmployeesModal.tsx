@@ -14,7 +14,6 @@ import {
   KeyRound,
   Copy,
 } from 'lucide-react';
-import ExcelJS from 'exceljs';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 
@@ -142,6 +141,8 @@ export function BulkImportEmployeesModal({
   // Template Download: Excel
   const handleDownloadExcelTemplate = async () => {
     try {
+      // Lazy-load ExcelJS to keep it out of the initial workforce/employees page compilation bundle
+      const ExcelJS = (await import('exceljs')).default;
       const workbook = new ExcelJS.Workbook();
       const worksheet = workbook.addWorksheet('Template');
 
@@ -293,6 +294,8 @@ export function BulkImportEmployeesModal({
     } else if (ext === 'xlsx' || ext === 'xls') {
       try {
         const buffer = await file.arrayBuffer();
+        // Lazy-load ExcelJS on demand
+        const ExcelJS = (await import('exceljs')).default;
         const workbook = new ExcelJS.Workbook();
         await workbook.xlsx.load(buffer);
         const worksheet = workbook.worksheets[0];

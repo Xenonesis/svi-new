@@ -1,4 +1,3 @@
-import ExcelJS from 'exceljs';
 import { toast } from 'sonner';
 import { SavedReceipt } from '@/src/components/admin/payment-receipts/ReceiptTypes';
 
@@ -13,6 +12,8 @@ export async function exportReceiptsToExcel(
 
   try {
     toast.info('Generating Excel workbook...');
+    // Lazy-load ExcelJS on export trigger to prevent 1.5MB library from bloating initial bundle
+    const ExcelJS = (await import('exceljs')).default;
     const workbook = new ExcelJS.Workbook();
     workbook.creator = 'SVI Infra Systems';
     workbook.created = new Date();

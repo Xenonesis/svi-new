@@ -90,7 +90,8 @@ vi.mock('@/src/lib/supabase/notifications', () => ({
   },
 }));
 
-import { GET, POST, _clearSettingsCacheForTesting } from '@/app/api/admin/settings/route';
+import { GET, POST } from '@/app/api/admin/settings/route';
+import { clearSettingsCache as _clearSettingsCacheForTesting } from '@/src/lib/cache/adminSettingsCache';
 
 describe('Admin Settings In-Memory Cache', () => {
   beforeEach(() => {

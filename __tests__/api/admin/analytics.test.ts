@@ -51,14 +51,15 @@ vi.mock('@/src/lib/supabase/admin', () => ({
   },
 }));
 
-import { GET, _clearAnalyticsCacheForTesting } from '@/app/api/admin/analytics/route';
+import { GET } from '@/app/api/admin/analytics/route';
+import { clearAnalyticsCache } from '@/src/lib/cache/adminAnalyticsCache';
 
 describe('GET /api/admin/analytics', () => {
   beforeEach(() => {
     vi.clearAllMocks();
     fromCalls.length = 0;
     mockVerifyAdmin.mockResolvedValue({ id: 'admin-123', email: 'admin@test.com' });
-    _clearAnalyticsCacheForTesting();
+    clearAnalyticsCache();
   });
 
   it('should return 401 when not admin', async () => {

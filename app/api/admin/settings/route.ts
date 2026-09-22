@@ -4,6 +4,11 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import {
+  getSettingsCache,
+  setSettingsCache,
+  clearSettingsCache,
+} from '@/src/lib/cache/adminSettingsCache';
 import fs from 'fs';
 import path from 'path';
 
@@ -46,21 +51,10 @@ function readFallback() {
   }
   return DEFAULT_COMPANY_INFO;
 }
-interface SettingsCacheEntry {
-  data: unknown[];
-  expiresAt: number;
-}
 
 interface SettingsRequestBody {
   key?: string;
   value?: unknown;
-}
-
-let settingsCache: SettingsCacheEntry | null = null;
-const CACHE_TTL_MS = 60_000;
-
-export function _clearSettingsCacheForTesting(): void {
-  settingsCache = null;
 }
 
 // GET /api/admin/settings
@@ -90,11 +84,9 @@ export async function GET(request: NextRequest) {
       }
       return NextResponse.json({ key: data.key, value: data.value });
     } else {
-      if (settingsCache && Date.now() < settingsCache.expiresAt) {
-        return NextResponse.json(
-          { settings: settingsCache.data },
-          { headers: { 'X-Cache': 'HIT' } }
-        );
+      const cached = getSettingsCache();
+      if (cached && Date.now() < cached.expiresAt) {
+        return NextResponse.json({ settings: cached.data }, { headers: { 'X-Cache': 'HIT' } });
       }
 
       const { data, error } = await supabaseAdmin.from('portal_settings').select('*');
@@ -116,10 +108,7 @@ export async function GET(request: NextRequest) {
         );
       }
 
-      settingsCache = {
-        data,
-        expiresAt: Date.now() + CACHE_TTL_MS,
-      };
+      setSettingsCache(data);
 
       return NextResponse.json({ settings: data }, { headers: { 'X-Cache': 'MISS' } });
     }
@@ -166,7 +155,7 @@ export async function POST(request: NextRequest) {
     } else {
       if (key === 'company_info') writeFallback(value);
     }
-    settingsCache = null;
+    clearSettingsCache();
 
     // 2. Activity log + notification (non-blocking)
     try {

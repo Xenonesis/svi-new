@@ -25,8 +25,6 @@ import {
   ChevronDown,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import ExcelJS from 'exceljs';
-import { jsPDF } from 'jspdf';
 import type {
   AdvisorPerformanceMetric,
   CampaignPerformanceMetric,
@@ -243,6 +241,8 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
     }
     try {
       toast.info('Generating Excel report...');
+      // Lazy-load ExcelJS to keep it out of the initial page compilation bundle
+      const ExcelJS = (await import('exceljs')).default;
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'SVI Infra Solutions Pvt. Ltd.';
       workbook.created = new Date();
@@ -318,13 +318,15 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
   };
 
   // Export Leaderboard to PDF (.pdf)
-  const handleExportPdf = () => {
+  const handleExportPdf = async () => {
     if (filteredLeaderboard.length === 0) {
       toast.error('No advisor performance records to export');
       return;
     }
     try {
       toast.info('Generating PDF report...');
+      // Lazy-load jsPDF to keep it out of the initial page compilation bundle
+      const { jsPDF } = await import('jspdf');
       const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
