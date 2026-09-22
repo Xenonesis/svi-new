@@ -114,15 +114,14 @@ export function CommandPaletteModal({ isOpen, onClose }: CommandPaletteModalProp
   );
 
   useEffect(() => {
+    if (!isOpen) return;
+
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
         onClose();
         return;
       }
-
-      if (!isOpen) return;
-
       if (e.key === 'Escape') {
         e.preventDefault();
         onClose();
