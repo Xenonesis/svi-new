@@ -21,6 +21,8 @@ import {
   Settings,
   CalendarCheck,
   Sparkles,
+  Phone,
+  MessageCircle,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
@@ -52,7 +54,7 @@ interface NotificationDropdownProps {
   userId: string;
 }
 
-type TabType = 'alerts' | 'tasks' | 'sounds';
+type TabType = 'alerts' | 'leads' | 'tasks' | 'sounds';
 
 export default function NotificationDropdown({ userId }: NotificationDropdownProps) {
   const router = useRouter();
@@ -231,13 +233,67 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
     () => taskNotifications.filter((n) => !n.is_read).length,
     [taskNotifications]
   );
+  // Lead notifications filter & unread badge
+  const isLeadNotification = (n: Notification) => {
+    const event = (n.metadata?.event || '').toLowerCase();
+    const title = (n.title || '').toLowerCase();
+    const msg = (n.message || '').toLowerCase();
+
+    return (
+      event.includes('chat') ||
+      event.includes('lead') ||
+      title.includes('lead') ||
+      title.includes('chat') ||
+      msg.includes('chatbot') ||
+      msg.includes('shared their contact info')
+    );
+  };
+
+  const leadNotifications = useMemo(
+    () => notifications.filter(isLeadNotification),
+    [notifications]
+  );
+  const leadUnreadCount = useMemo(
+    () => leadNotifications.filter((n) => !n.is_read).length,
+    [leadNotifications]
+  );
+
+  // Extract phone & name for 1-click Call / WhatsApp actions
+  const extractLeadContact = (message: string) => {
+    if (!message) return null;
+    const phoneMatch = message.match(/\(?(\+?91[\-\s]?)?([6-9]\d{9})\)?/);
+    if (!phoneMatch) return null;
+
+    const rawDigits = phoneMatch[2];
+    const displayPhone = phoneMatch[1]
+      ? `${phoneMatch[1].trim()} ${rawDigits}`
+      : `+91 ${rawDigits}`;
+    const waPhone = `91${rawDigits}`;
+
+    const nameMatch = message.match(/^([A-Za-z\s]{2,30})\s*\(/);
+    const name = nameMatch ? nameMatch[1].trim() : undefined;
+
+    return { name, phone: displayPhone, waPhone };
+  };
+
+  // Convert raw hashes e.g. "registration 4cfe6cbf..." to clean ticket format "#REG-4CFE"
+  const formatNotificationMessage = (message: string) => {
+    if (!message) return '';
+    return message.replace(
+      /registration\s+([0-9a-fA-F]{4})[0-9a-fA-F\-]+(\.{3})?/gi,
+      'registration #REG-$1'
+    );
+  };
 
   const displayedNotifications = useMemo(() => {
+    if (activeTab === 'leads') {
+      return leadNotifications;
+    }
     if (activeTab === 'tasks') {
       return taskNotifications;
     }
     return notifications;
-  }, [activeTab, notifications, taskNotifications]);
+  }, [activeTab, notifications, leadNotifications, taskNotifications]);
 
   // Icon with soft tinted rounded container matching the reference design
   const getNotificationIcon = (notification: Notification) => {
@@ -413,7 +469,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.96 }}
               transition={{ duration: 0.18 }}
-              className="dark:border-brand-gold/15 dark:bg-brand-dark-surface fixed top-[4.5rem] right-2 left-2 z-50 mt-0 w-auto overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-3 sm:w-[26rem] sm:max-w-[calc(100vw-2rem)]"
+              className="dark:border-brand-gold/20 fixed top-[4.5rem] right-2 left-2 z-50 mt-0 w-auto overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl backdrop-blur-xl sm:absolute sm:top-full sm:right-0 sm:left-auto sm:mt-3 sm:w-[27rem] sm:max-w-[calc(100vw-2rem)] dark:bg-[#070b14]"
             >
               {/* Header */}
               <div className="flex items-center justify-between border-b border-gray-100 px-4 pt-4 pb-3 dark:border-white/5">
@@ -427,7 +483,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                         Notifications &amp; Alerts
                       </h3>
                       {unreadCount > 0 && (
-                        <span className="rounded-full bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                        <span className="bg-brand-gold/15 border-brand-gold/30 text-brand-gold rounded-full border px-2 py-0.5 text-[10px] font-bold">
                           {unreadCount} new
                         </span>
                       )}
@@ -435,7 +491,20 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={toggleSoundSetting}
+                    className="dark:hover:text-brand-gold flex h-7 w-7 cursor-pointer items-center justify-center rounded-lg border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 dark:border-white/10 dark:text-gray-400 dark:hover:bg-white/5"
+                    title={soundEnabled ? 'Mute alert chime' : 'Enable alert chime'}
+                    aria-label={soundEnabled ? 'Mute alert chime' : 'Enable alert chime'}
+                  >
+                    {soundEnabled ? (
+                      <Volume2 className="text-brand-gold h-3.5 w-3.5" />
+                    ) : (
+                      <VolumeX className="h-3.5 w-3.5 text-gray-400" />
+                    )}
+                  </button>
                   <button
                     type="button"
                     onClick={() => fetchNotifications(true)}
@@ -467,7 +536,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                   onClick={() => setActiveTab('alerts')}
                   className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
                     activeTab === 'alerts'
-                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white'
+                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white dark:shadow-none'
                       : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                   }`}
                 >
@@ -477,10 +546,28 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
 
                 <button
                   type="button"
+                  onClick={() => setActiveTab('leads')}
+                  className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
+                    activeTab === 'leads'
+                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white dark:shadow-none'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  }`}
+                >
+                  <MessageSquare className="h-3.5 w-3.5" />
+                  <span>Leads</span>
+                  {leadUnreadCount > 0 && (
+                    <span className="bg-brand-gold flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold text-slate-900">
+                      {leadUnreadCount}
+                    </span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setActiveTab('tasks')}
                   className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
                     activeTab === 'tasks'
-                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white'
+                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white dark:shadow-none'
                       : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                   }`}
                 >
@@ -498,7 +585,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                   onClick={() => setActiveTab('sounds')}
                   className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
                     activeTab === 'sounds'
-                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white'
+                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white dark:shadow-none'
                       : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
                   }`}
                 >
@@ -512,7 +599,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
               </div>
 
               {/* Main Content Area */}
-              <div className="max-h-[26rem] overflow-y-auto">
+              <div className="hover:[&::-webkit-scrollbar-thumb]:bg-brand-gold/40 max-h-[27rem] scrollbar-thin [scrollbar-color:rgba(212,175,55,0.25)_transparent] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent">
                 {activeTab === 'sounds' ? (
                   /* Sounds Settings View */
                   <div className="space-y-4 p-5">
@@ -592,6 +679,9 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                   <div className="divide-y divide-gray-100 dark:divide-white/5">
                     {displayedNotifications.map((notification) => {
                       const isEmail = notification.metadata?.subType === 'email';
+                      const isLead = isLeadNotification(notification);
+                      const leadContact = isLead ? extractLeadContact(notification.message) : null;
+                      const formattedMsg = formatNotificationMessage(notification.message);
 
                       return (
                         <motion.div
@@ -607,14 +697,14 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                               handleNotificationClick(notification);
                             }
                           }}
-                          className={`group relative cursor-pointer px-4 py-3.5 transition-colors ${
+                          className={`group relative cursor-pointer px-4 py-3.5 transition-all ${
                             isEmail
                               ? !notification.is_read
-                                ? 'border-brand-gold dark:bg-brand-gold/15 border-l-2 bg-amber-500/10 hover:bg-amber-500/15'
-                                : 'dark:hover:bg-brand-gold/5 hover:bg-amber-500/5'
+                                ? 'border-brand-gold bg-brand-gold/10 hover:bg-brand-gold/15 dark:bg-brand-gold/15 border-l-2'
+                                : 'border-l-2 border-transparent hover:bg-gray-50/80 dark:hover:bg-white/[0.03]'
                               : !notification.is_read
-                                ? 'bg-brand-gold/5 hover:bg-brand-gold/10 dark:bg-brand-gold/10 dark:hover:bg-brand-gold/15'
-                                : 'hover:bg-gray-50 dark:hover:bg-white/5'
+                                ? 'border-brand-gold bg-brand-gold/[0.06] hover:bg-brand-gold/[0.12] dark:bg-brand-gold/[0.08] border-l-2'
+                                : 'border-l-2 border-transparent hover:bg-gray-50/80 dark:hover:bg-white/[0.03]'
                           }`}
                         >
                           <div className="flex items-start gap-3">
@@ -635,6 +725,13 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                                 </p>
 
                                 <div className="flex flex-shrink-0 items-center gap-1.5">
+                                  {!notification.is_read && (
+                                    <span
+                                      className="bg-brand-gold ring-brand-gold/20 h-2 w-2 flex-shrink-0 rounded-full shadow-[0_0_8px_rgba(212,175,55,0.7)] ring-2"
+                                      title="Unread"
+                                      aria-label="Unread"
+                                    />
+                                  )}
                                   <span className="text-[11px] font-medium text-gray-400 dark:text-gray-500">
                                     {formatTime(notification.created_at)}
                                   </span>
@@ -654,7 +751,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                               </div>
 
                               <p className="mt-1 line-clamp-2 text-xs leading-relaxed text-gray-600 dark:text-gray-400">
-                                {notification.message}
+                                {formattedMsg}
                               </p>
 
                               {isEmail && notification.metadata?.subject && (
@@ -697,13 +794,30 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                                   )}
                                 </div>
                               )}
-
-                              {!notification.is_read && (
-                                <div className="mt-1.5 flex items-center gap-1">
-                                  <span className="bg-brand-gold h-1.5 w-1.5 rounded-full" />
-                                  <span className="text-brand-gold text-[10px] font-semibold">
-                                    Unread
-                                  </span>
+                              {leadContact && (
+                                <div className="mt-2.5 flex flex-wrap items-center gap-2 border-t border-gray-100 pt-2 dark:border-white/5">
+                                  <a
+                                    href={`tel:${leadContact.phone.replace(/\s+/g, '')}`}
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 transition-colors hover:bg-emerald-500/20 dark:text-emerald-400"
+                                    title={`Call ${leadContact.phone}`}
+                                  >
+                                    <Phone className="h-3 w-3" />
+                                    <span>Call {leadContact.phone}</span>
+                                  </a>
+                                  <a
+                                    href={`https://wa.me/${leadContact.waPhone}?text=${encodeURIComponent(
+                                      `Namaste ${leadContact.name || ''}, thank you for contacting SVI Infra Solutions. How may we assist you today?`
+                                    )}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    onClick={(e) => e.stopPropagation()}
+                                    className="inline-flex items-center gap-1.5 rounded-lg border border-[#25D366]/20 bg-[#25D366]/10 px-2.5 py-1 text-[11px] font-semibold text-[#128C7E] transition-colors hover:bg-[#25D366]/20 dark:text-[#25D366]"
+                                    title={`Chat on WhatsApp with ${leadContact.phone}`}
+                                  >
+                                    <MessageCircle className="h-3 w-3" />
+                                    <span>WhatsApp</span>
+                                  </a>
                                 </div>
                               )}
                             </div>

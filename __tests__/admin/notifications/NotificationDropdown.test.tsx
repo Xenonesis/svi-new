@@ -199,4 +199,26 @@ describe('NotificationDropdown', () => {
 
     expect(mockSelect).toHaveBeenCalled();
   });
+
+  it('renders Leads tab and quick action links (Call & WhatsApp) for chat leads', async () => {
+    render(<NotificationDropdown userId="admin-1" />);
+
+    const bellButton = screen.getByRole('button', { name: /notifications/i });
+    fireEvent.click(bellButton);
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /leads/i })).toBeInTheDocument();
+    });
+
+    // Verify Call and WhatsApp quick action links exist for the chat lead
+    expect(screen.getByRole('link', { name: /call/i })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /whatsapp/i })).toBeInTheDocument();
+
+    // Switch to Leads tab
+    const leadsTab = screen.getByRole('button', { name: /leads/i });
+    fireEvent.click(leadsTab);
+
+    expect(screen.getByText('New Chat Lead')).toBeInTheDocument();
+    expect(screen.queryByText('Settings Updated')).not.toBeInTheDocument();
+  });
 });
