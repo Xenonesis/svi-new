@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, lazy, Suspense } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { MessageCircle } from 'lucide-react';
 
 const ChatBotDialog = lazy(() => import('./ChatBot'));
@@ -8,11 +8,17 @@ const ChatBotDialog = lazy(() => import('./ChatBot'));
 export default function ChatLauncher() {
   const [isOpen, setIsOpen] = useState(false);
 
+  useEffect(() => {
+    const handleOpenChat = () => setIsOpen(true);
+    window.addEventListener('open-svi-chat', handleOpenChat);
+    return () => window.removeEventListener('open-svi-chat', handleOpenChat);
+  }, []);
+
   return (
     <>
-      {/* Floating button — always visible with hover tooltip */}
+      {/* Floating button — visible on desktop (on mobile it is integrated into the floating bottom dock) */}
       {!isOpen && (
-        <div className="group fixed bottom-20 left-4 z-40 flex items-center gap-3 md:bottom-8 md:left-8">
+        <div className="group fixed bottom-8 left-8 z-40 hidden items-center gap-3 md:flex">
           <button
             onClick={() => setIsOpen(true)}
             className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy border-brand-gold/30 relative flex h-14 w-14 items-center justify-center rounded-full border text-white shadow-xl transition-all duration-300 hover:scale-110 hover:shadow-2xl md:h-16 md:w-16"

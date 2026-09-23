@@ -131,10 +131,12 @@ export default function AnnouncementBar() {
               <button
                 type="button"
                 onClick={handleDismiss}
-                className="ml-2 inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-[#d4af37]/40 focus:outline-none"
+                className="ml-1 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-[#d4af37]/40 focus:outline-none"
                 aria-label="Dismiss announcement"
               >
-                <X className="h-3.5 w-3.5" />
+                <span className="flex h-6 w-6 items-center justify-center rounded">
+                  <X className="h-3.5 w-3.5" />
+                </span>
               </button>
             )}
           </div>

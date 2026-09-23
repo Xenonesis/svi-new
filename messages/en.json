@@ -157,6 +157,7 @@
   "floatingContact": {
     "call": "Call",
     "whatsapp": "WhatsApp",
+    "aiAssistant": "AI Help",
     "bookVisit": "Book Visit",
     "bookSiteVisit": "Book a Site Visit",
     "bookSiteVisitDesc": "Experience luxury living firsthand. Schedule your visit today.",
