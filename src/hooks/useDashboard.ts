@@ -50,7 +50,7 @@ export interface ActivitiesResponse {
  * Users change infrequently — stale after 30s, cache for 5 min.
  */
 export function useUsers(token: string | null) {
-  return useGetApi<UsersResponse>(['admin', 'users'], '/api/admin/users', {
+  return useGetApi<UsersResponse>(['admin', 'users'], '/api/admin/users?limit=500', {
     headers: token ? { Authorization: `Bearer ${token}` } : undefined,
     enabled: !!token,
     staleTime: 30_000,
