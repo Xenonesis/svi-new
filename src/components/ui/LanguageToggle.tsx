@@ -105,7 +105,7 @@ export default function LanguageToggle({ isHomeTransparent }: { isHomeTransparen
       type="button"
       onClick={toggleLocale}
       disabled={isPending}
-      className={`3xl:text-sm flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all duration-200 xl:px-3.5 xl:py-2 xl:text-[12.5px] 2xl:text-[13.5px] ${
+      className={`touch-lux 3xl:text-sm flex min-h-[44px] min-w-[44px] cursor-pointer items-center justify-center gap-1.5 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition-all duration-200 xl:px-3.5 xl:py-2 xl:text-[12.5px] 2xl:text-[13.5px] ${
         isPending ? 'opacity-80' : ''
       } ${
         isHomeTransparent

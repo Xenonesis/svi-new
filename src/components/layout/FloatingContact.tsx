@@ -200,7 +200,7 @@ export function FloatingContact() {
         <a
           href={PHONE_HREF}
           onClick={handleCallClick}
-          className="hover:text-brand-gold flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 text-gray-700 transition-colors active:bg-gray-100 dark:text-gray-300 dark:active:bg-white/5"
+          className="dock-lux-item hover:text-brand-gold flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 text-gray-700 transition-colors active:bg-gray-100 dark:text-gray-300 dark:active:bg-white/5"
           aria-label={t('call')}
         >
           <Phone size={19} />
@@ -211,7 +211,7 @@ export function FloatingContact() {
           target="_blank"
           rel="noopener noreferrer"
           onClick={handleWhatsAppClick}
-          className="group flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 text-gray-700 transition-colors hover:text-emerald-600 active:bg-green-50 dark:text-gray-300 dark:hover:text-emerald-400 dark:active:bg-green-950/20"
+          className="dock-lux-item group flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 text-gray-700 transition-colors hover:text-emerald-600 active:bg-green-50 dark:text-gray-300 dark:hover:text-emerald-400 dark:active:bg-green-950/20"
           aria-label={t('whatsapp')}
         >
           <MessageCircle
@@ -225,7 +225,7 @@ export function FloatingContact() {
         <button
           type="button"
           onClick={handleOpenChat}
-          className="text-brand-navy dark:text-brand-gold hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors"
+          className="dock-lux-item text-brand-navy dark:text-brand-gold hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors"
           aria-label={t('aiAssistant')}
         >
           <Bot size={19} className="dark:text-brand-gold text-amber-500" />
@@ -236,7 +236,7 @@ export function FloatingContact() {
         <button
           type="button"
           onClick={handleBookVisitOpen}
-          className="text-brand-navy hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors dark:text-gray-100"
+          className="dock-lux-item text-brand-navy hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors dark:text-gray-100"
           aria-label={t('bookVisit')}
         >
           <Calendar size={19} />
