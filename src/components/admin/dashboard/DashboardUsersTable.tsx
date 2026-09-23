@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion } from 'motion/react';
 import {
   Users,
@@ -20,6 +20,9 @@ import {
   Calendar,
   ToggleLeft,
   ToggleRight,
+  Shield,
+  Building2,
+  Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { UserProfile } from '@/src/lib/supabase/types';
@@ -63,6 +66,7 @@ export function DashboardUsersTable({
   activeLoading = {},
 }: DashboardUsersTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [roleFilter, setRoleFilter] = useState<'all' | 'client' | 'employee' | 'admin'>('all');
 
   const copyToClipboard = (text: string, id: string, label = 'Copied') => {
     if (!text) return;
@@ -72,13 +76,75 @@ export function DashboardUsersTable({
     setTimeout(() => setCopiedId(null), 2000);
   };
 
-  const filtered = users.filter(
-    (u) =>
-      u.full_name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase()) ||
-      u.real_email?.toLowerCase().includes(search.toLowerCase()) ||
-      u.phone?.includes(search)
-  );
+  // Compute role counts across all users
+  const roleCounts = useMemo(() => {
+    const counts = { all: users.length, client: 0, employee: 0, admin: 0 };
+    for (const u of users) {
+      const r = (u.role || 'client').toLowerCase();
+      if (r === 'admin') counts.admin++;
+      else if (r === 'employee') counts.employee++;
+      else counts.client++;
+    }
+    return counts;
+  }, [users]);
+
+  const filtered = useMemo(() => {
+    return users.filter((u) => {
+      const roleMatches =
+        roleFilter === 'all' ||
+        (roleFilter === 'client' && (!u.role || u.role.toLowerCase() === 'client')) ||
+        (u.role && u.role.toLowerCase() === roleFilter);
+
+      if (!roleMatches) return false;
+
+      const q = search.toLowerCase();
+      return (
+        !q ||
+        u.full_name?.toLowerCase().includes(q) ||
+        u.email?.toLowerCase().includes(q) ||
+        u.real_email?.toLowerCase().includes(q) ||
+        u.phone?.includes(search)
+      );
+    });
+  }, [users, roleFilter, search]);
+  // Role styling helper functions
+  const getRoleTheme = (role?: string) => {
+    const r = (role || 'client').toLowerCase();
+    if (r === 'admin') {
+      return {
+        name: 'Admin',
+        accentBorder: 'border-l-[3px] border-l-amber-500 dark:border-l-brand-gold',
+        avatarBorder:
+          'border-amber-400/40 bg-gradient-to-br from-amber-500/20 via-amber-400/10 to-amber-600/5 text-amber-600 dark:text-brand-gold dark:border-brand-gold/40 shadow-xs shadow-amber-500/10',
+        tagBg:
+          'bg-amber-500/10 text-amber-700 dark:text-brand-gold border-amber-500/20 dark:border-brand-gold/30',
+        hoverBg: 'hover:bg-amber-500/[0.03] dark:hover:bg-amber-400/[0.02]',
+        icon: Shield,
+      };
+    }
+    if (r === 'employee') {
+      return {
+        name: 'Employee',
+        accentBorder: 'border-l-[3px] border-l-emerald-500 dark:border-l-emerald-400',
+        avatarBorder:
+          'border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/5 to-teal-500/10 text-emerald-600 dark:text-emerald-400 dark:border-emerald-400/30 shadow-xs shadow-emerald-500/10',
+        tagBg:
+          'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/20 dark:border-emerald-400/30',
+        hoverBg: 'hover:bg-emerald-500/[0.03] dark:hover:bg-emerald-400/[0.02]',
+        icon: Briefcase,
+      };
+    }
+    return {
+      name: 'Client',
+      accentBorder: 'border-l-[3px] border-l-blue-500 dark:border-l-blue-400',
+      avatarBorder:
+        'border-blue-500/30 bg-gradient-to-br from-blue-500/15 via-blue-500/5 to-indigo-500/10 text-blue-600 dark:text-blue-400 dark:border-blue-400/30 shadow-xs shadow-blue-500/10',
+      tagBg:
+        'bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/20 dark:border-blue-400/30',
+      hoverBg: 'hover:bg-blue-500/[0.03] dark:hover:bg-blue-400/[0.02]',
+      icon: Users,
+    };
+  };
   return (
     <>
       {/* Toolbar */}
@@ -134,6 +200,103 @@ export function DashboardUsersTable({
             <Plus className="h-4 w-4" />
             <span>Add User</span>
           </button>
+        </div>
+      </div>
+      {/* Role Segmented Filter Bar */}
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div className="dark:bg-brand-dark-surface/85 inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white p-1 shadow-xs backdrop-blur-md dark:border-white/10">
+          <button
+            type="button"
+            onClick={() => setRoleFilter('all')}
+            className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
+              roleFilter === 'all'
+                ? 'bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-950'
+                : 'text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-white/5'
+            }`}
+          >
+            <span>All</span>
+            <span
+              className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                roleFilter === 'all'
+                  ? 'bg-white/20 text-white dark:bg-black/20 dark:text-gray-900'
+                  : 'bg-gray-100 text-gray-500 dark:bg-white/10 dark:text-gray-400'
+              }`}
+            >
+              {roleCounts.all}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setRoleFilter('client')}
+            className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
+              roleFilter === 'client'
+                ? 'bg-blue-600 text-white shadow-sm dark:bg-blue-500 dark:text-white'
+                : 'text-gray-600 hover:bg-blue-50/60 dark:text-gray-400 dark:hover:bg-blue-500/10 dark:hover:text-blue-300'
+            }`}
+          >
+            <Users className="h-3.5 w-3.5" />
+            <span>Clients</span>
+            <span
+              className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                roleFilter === 'client'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-blue-50 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400'
+              }`}
+            >
+              {roleCounts.client}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setRoleFilter('employee')}
+            className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
+              roleFilter === 'employee'
+                ? 'bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-white'
+                : 'text-gray-600 hover:bg-emerald-50/60 dark:text-gray-400 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-300'
+            }`}
+          >
+            <Briefcase className="h-3.5 w-3.5" />
+            <span>Employees</span>
+            <span
+              className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                roleFilter === 'employee'
+                  ? 'bg-white/20 text-white'
+                  : 'bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400'
+              }`}
+            >
+              {roleCounts.employee}
+            </span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setRoleFilter('admin')}
+            className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
+              roleFilter === 'admin'
+                ? 'dark:bg-brand-gold dark:text-brand-navy bg-amber-500 text-gray-950 shadow-sm'
+                : 'text-gray-600 hover:bg-amber-50/60 dark:text-gray-400 dark:hover:bg-amber-500/10 dark:hover:text-amber-300'
+            }`}
+          >
+            <Shield className="h-3.5 w-3.5" />
+            <span>Admins</span>
+            <span
+              className={`py-0.2 rounded-full px-1.5 font-mono text-[10px] ${
+                roleFilter === 'admin'
+                  ? 'dark:text-brand-navy bg-black/15 text-gray-950 dark:bg-black/20'
+                  : 'dark:bg-brand-gold/15 dark:text-brand-gold bg-amber-50 text-amber-700'
+              }`}
+            >
+              {roleCounts.admin}
+            </span>
+          </button>
+        </div>
+
+        <div className="hidden text-xs text-gray-500 sm:block dark:text-gray-400">
+          Showing{' '}
+          <span className="font-semibold text-gray-800 dark:text-gray-200">{filtered.length}</span>{' '}
+          of {users.length} profiles
         </div>
       </div>
 
@@ -216,6 +379,8 @@ export function DashboardUsersTable({
               {filtered.map((u, i) => {
                 const cleanPhone = u.phone ? u.phone.replace(/\D/g, '') : '';
                 const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+                const theme = getRoleTheme(u.role);
+                const RoleIcon = theme.icon;
 
                 return (
                   <motion.div
@@ -223,18 +388,27 @@ export function DashboardUsersTable({
                     initial={{ opacity: 0, y: 8 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: i * 0.02, duration: 0.25 }}
-                    className={`flex flex-col gap-3 rounded-2xl bg-white/50 p-4 transition-all active:bg-gray-50/80 dark:bg-white/[0.02] dark:active:bg-white/[0.05] ${
+                    className={`flex flex-col gap-3 rounded-2xl bg-white/70 p-4 transition-all active:bg-gray-50/80 dark:bg-white/[0.02] dark:active:bg-white/[0.05] ${theme.accentBorder} ${
                       u.is_active === false ? 'opacity-70' : ''
                     }`}
                   >
                     {/* Card Header: Avatar, Name & Role */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
-                        <div className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gradient-to-br from-gray-100 to-gray-200 text-sm font-bold text-gray-700 shadow-2xs dark:border-white/10 dark:from-white/10 dark:to-white/5 dark:text-gray-200">
-                          {u.full_name?.charAt(0).toUpperCase() || 'U'}
+                        <div className="relative">
+                          <div
+                            className={`flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full border text-sm font-bold ${theme.avatarBorder}`}
+                          >
+                            {u.full_name?.charAt(0).toUpperCase() || 'U'}
+                          </div>
+                          <div
+                            className={`absolute -right-1 -bottom-1 flex h-4.5 w-4.5 items-center justify-center rounded-full border border-white dark:border-[#0f111a] ${theme.tagBg}`}
+                          >
+                            <RoleIcon className="h-2.5 w-2.5" />
+                          </div>
                         </div>
                         <div className="flex flex-col">
-                          <div className="flex items-center gap-1.5">
+                          <div className="flex flex-wrap items-center gap-1.5">
                             <span className="text-base font-bold text-gray-900 dark:text-white">
                               {u.full_name}
                             </span>
@@ -344,15 +518,29 @@ export function DashboardUsersTable({
                       ) : null}
                     </div>
 
-                    {/* Property Interests */}
-                    {u.property_interest && (
+                    {/* Property Interests / Context Info */}
+                    {u.property_interest ? (
                       <div className="pt-1">
                         <div className="mb-1 text-[11px] font-semibold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                           Interests
                         </div>
                         {renderPropertyInterestTags(u.property_interest, properties)}
                       </div>
-                    )}
+                    ) : u.role === 'employee' ? (
+                      <div className="pt-1">
+                        <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
+                          <Briefcase className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                          {u.department ? `${u.department} Team` : 'Internal Operations'}
+                        </span>
+                      </div>
+                    ) : u.role === 'admin' ? (
+                      <div className="pt-1">
+                        <span className="dark:border-brand-gold/20 dark:bg-brand-gold/10 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
+                          <Shield className="dark:text-brand-gold h-3 w-3 text-amber-600" />
+                          System Administrator
+                        </span>
+                      </div>
+                    ) : null}
 
                     {/* Card Footer: Joined Date & Action Buttons */}
                     <div className="mt-1 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/5">
@@ -424,7 +612,7 @@ export function DashboardUsersTable({
                     {[
                       'User Profile',
                       'Contact Info',
-                      'Property Interests',
+                      'Interests / Allocation',
                       'Joined Date',
                       'Actions',
                     ].map((h, idx) => (
@@ -441,6 +629,8 @@ export function DashboardUsersTable({
                   {filtered.map((u, i) => {
                     const cleanPhone = u.phone ? u.phone.replace(/\D/g, '') : '';
                     const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
+                    const theme = getRoleTheme(u.role);
+                    const RoleIcon = theme.icon;
 
                     return (
                       <motion.tr
@@ -448,7 +638,7 @@ export function DashboardUsersTable({
                         initial={{ opacity: 0, y: 5 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.02, duration: 0.3, ease: 'easeOut' }}
-                        className={`group transition-colors hover:bg-gray-50/50 dark:hover:bg-white/5 ${
+                        className={`group transition-all ${theme.hoverBg} ${theme.accentBorder} ${
                           u.is_active === false
                             ? 'bg-gray-50/30 opacity-70 dark:bg-white/[0.01]'
                             : ''
@@ -457,8 +647,17 @@ export function DashboardUsersTable({
                         {/* User Profile */}
                         <td className="px-6 py-4">
                           <div className="flex items-center gap-3.5">
-                            <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-gray-200 bg-gray-100 text-sm font-semibold text-gray-600 dark:border-white/10 dark:bg-white/10 dark:text-gray-300">
-                              {u.full_name?.charAt(0).toUpperCase() || 'U'}
+                            <div className="relative shrink-0">
+                              <div
+                                className={`flex h-10 w-10 items-center justify-center rounded-full border text-sm font-bold ${theme.avatarBorder}`}
+                              >
+                                {u.full_name?.charAt(0).toUpperCase() || 'U'}
+                              </div>
+                              <div
+                                className={`absolute -right-1 -bottom-1 flex h-4 w-4 items-center justify-center rounded-full border border-white dark:border-[#0f111a] ${theme.tagBg}`}
+                              >
+                                <RoleIcon className="h-2 w-2" />
+                              </div>
                             </div>
                             <div className="flex flex-col">
                               <div className="flex items-center gap-2">
@@ -572,10 +771,20 @@ export function DashboardUsersTable({
                           </div>
                         </td>
 
-                        {/* Property Interests */}
+                        {/* Property Interests / Role Context */}
                         <td className="w-[300px] px-6 py-4">
                           {u.property_interest ? (
                             renderPropertyInterestTags(u.property_interest, properties)
+                          ) : u.role === 'employee' ? (
+                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
+                              <Briefcase className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                              {u.department ? `${u.department} Team` : 'Internal Operations'}
+                            </span>
+                          ) : u.role === 'admin' ? (
+                            <span className="dark:border-brand-gold/20 dark:bg-brand-gold/10 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
+                              <Shield className="dark:text-brand-gold h-3 w-3 text-amber-600" />
+                              System Administrator
+                            </span>
                           ) : (
                             <span className="text-xs text-gray-400 dark:text-gray-600">—</span>
                           )}
