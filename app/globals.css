@@ -115,6 +115,90 @@
 }
 
 @layer utilities {
+  /* Quiet Luxury Interaction Tokens */
+  .touch-lux {
+    -webkit-tap-highlight-color: transparent;
+    transition:
+      transform 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 200ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 200ms ease;
+  }
+  .touch-lux:active:not(:disabled) {
+    transform: scale(0.978);
+    filter: brightness(0.96);
+  }
+  .dark .touch-lux:active:not(:disabled) {
+    filter: brightness(1.08);
+  }
+
+  .card-lux-hover {
+    transition:
+      transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 350ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 300ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .card-lux-hover:hover {
+      transform: translateY(-3px);
+      border-color: rgba(212, 175, 55, 0.38);
+      box-shadow:
+        0 16px 36px -12px rgba(0, 0, 0, 0.12),
+        0 0 20px -2px rgba(212, 175, 55, 0.08);
+    }
+    .dark .card-lux-hover:hover {
+      border-color: rgba(212, 175, 55, 0.45);
+      box-shadow:
+        0 18px 40px -12px rgba(0, 0, 0, 0.45),
+        0 0 24px -2px rgba(212, 175, 55, 0.12);
+    }
+  }
+
+  .btn-lux-primary {
+    position: relative;
+    overflow: hidden;
+    transition:
+      transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      box-shadow 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 200ms ease;
+  }
+  .btn-lux-primary:active:not(:disabled) {
+    transform: scale(0.975);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-lux-primary:hover {
+      box-shadow: 0 8px 24px -4px rgba(212, 175, 55, 0.35);
+      transform: translateY(-1px);
+    }
+  }
+
+  .btn-lux-outline {
+    transition:
+      transform 250ms cubic-bezier(0.22, 1, 0.36, 1),
+      border-color 250ms ease,
+      background-color 250ms ease,
+      box-shadow 250ms ease;
+  }
+  .btn-lux-outline:active:not(:disabled) {
+    transform: scale(0.975);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .btn-lux-outline:hover {
+      border-color: var(--color-brand-gold);
+      box-shadow: 0 0 16px -2px rgba(212, 175, 55, 0.18);
+      transform: translateY(-1px);
+    }
+  }
+
+  .dock-lux-item {
+    transition:
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      background-color 180ms ease,
+      color 180ms ease;
+  }
+  .dock-lux-item:active {
+    transform: scale(0.94);
+    background-color: rgba(212, 175, 55, 0.12);
+  }
   /* Gradient text */
   .text-gradient-gold {
     background: linear-gradient(
