@@ -77,7 +77,7 @@ export const COMMANDS: CommandItem[] = [
     id: '7',
     title: 'User Access & Permissions',
     category: 'Navigation',
-    href: '/admin/dashboard2',
+    href: '/admin/dashboard',
     icon: Shield,
   },
 ];

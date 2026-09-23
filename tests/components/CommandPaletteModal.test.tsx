@@ -62,11 +62,11 @@ describe('CommandPaletteModal', () => {
     const handleClose = vi.fn();
     render(<CommandPaletteModal isOpen={true} onClose={handleClose} />);
 
-    // Arrow up from 0 wraps to last item (User Access & Permissions -> /admin/dashboard2)
+    // Arrow up from 0 wraps to last item (User Access & Permissions -> /admin/dashboard)
     fireEvent.keyDown(window, { key: 'ArrowUp' });
     fireEvent.keyDown(window, { key: 'Enter' });
 
-    expect(mockPush).toHaveBeenCalledWith('/admin/dashboard2');
+    expect(mockPush).toHaveBeenCalledWith('/admin/dashboard');
     expect(handleClose).toHaveBeenCalled();
   });
 
