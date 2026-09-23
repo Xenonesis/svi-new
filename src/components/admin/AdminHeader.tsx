@@ -4,7 +4,8 @@ import { Menu, PanelLeft, PanelLeftClose, Moon, Search, Sun, Monitor } from 'luc
 import { useUIStore } from '@/src/stores/uiStore';
 import NotificationDropdown from './NotificationDropdown';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { CommandPaletteModal } from './dashboard/executive/CommandPaletteModal';
 interface AdminHeaderProps {
   isDark: boolean;
   toggleTheme: () => void;
@@ -39,7 +40,18 @@ export default function AdminHeader({
   const sidebarCollapsed = useUIStore((s) => s.sidebarCollapsed);
   const toggleSidebarCollapsed = useUIStore((s) => s.toggleSidebarCollapsed);
   const [_loggingOut, _setLoggingOut] = useState(false);
+  const [isCommandOpen, setIsCommandOpen] = useState(false);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setIsCommandOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
   const handleToggleNav = () => {
     if (typeof window !== 'undefined' && window.innerWidth < 768) {
       onMenuClick?.();
@@ -84,14 +96,17 @@ export default function AdminHeader({
 
         {/* Global Search & Actions */}
         <div className="flex flex-1 items-center justify-end gap-4">
-          <div className="relative mr-4 hidden w-full max-w-xs md:block">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400 dark:text-gray-500" />
-            <input
-              type="text"
-              placeholder="Quick search... (Ctrl+K)"
-              className="focus:border-brand-gold focus:ring-brand-gold/30 w-full rounded-full border border-transparent bg-gray-100 py-1.5 pr-4 pl-9 text-xs text-gray-900 placeholder-gray-500 transition-all focus:ring-1 focus:outline-none dark:border-white/5 dark:bg-[#111118] dark:text-white"
-            />
-          </div>
+          <button
+            type="button"
+            onClick={() => setIsCommandOpen(true)}
+            aria-label="Quick search (Ctrl+K)"
+            className="group hover:border-brand-gold/40 focus:border-brand-gold/50 focus:ring-brand-gold/20 mr-4 hidden w-full max-w-xs items-center gap-3 rounded-full border border-gray-200 bg-gray-100 px-4 py-1.5 text-xs text-gray-500 shadow-inner transition-all hover:bg-gray-200 hover:text-gray-900 focus:ring-2 focus:outline-none md:flex dark:border-white/10 dark:bg-[#090d16]/90 dark:text-gray-400 dark:hover:bg-[#0e1422] dark:hover:text-gray-200"
+          >
+            <Search className="group-hover:text-brand-gold h-3.5 w-3.5 text-gray-400 transition-colors dark:text-gray-400" />
+            <span className="font-normal text-gray-500 transition-colors group-hover:text-gray-900 dark:text-gray-400 dark:group-hover:text-gray-200">
+              Quick search... (Ctrl+K)
+            </span>
+          </button>
 
           {/* Notifications */}
           {userId && <NotificationDropdown userId={userId} />}
@@ -121,6 +136,9 @@ export default function AdminHeader({
             </span>
           </div>
         </div>
+
+        {/* Global Command Palette Spotlight */}
+        <CommandPaletteModal isOpen={isCommandOpen} onClose={() => setIsCommandOpen(false)} />
       </div>
     </header>
   );
