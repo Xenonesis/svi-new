@@ -77,3 +77,24 @@ describe('Mobile Sticky Dock & Header Interactive Upgrades', () => {
     expect(themeContent).toContain('touch-lux');
   });
 });
+
+describe('Hero Section & Project Showcase Interactive Upgrades', () => {
+  it('applies btn-lux-primary and touch-lux to Hero CTA', () => {
+    const heroContent = fs.readFileSync(
+      path.resolve(process.cwd(), 'src/components/home/hero/HeroContent.tsx'),
+      'utf-8'
+    );
+    expect(heroContent).toContain('btn-lux-primary');
+    expect(heroContent).toContain('touch-lux');
+  });
+
+  it('applies card-lux-hover and calm 700ms image zoom to ProjectCard', () => {
+    const cardContent = fs.readFileSync(
+      path.resolve(process.cwd(), 'src/components/home/ProjectCard.tsx'),
+      'utf-8'
+    );
+    expect(cardContent).toContain('card-lux-hover');
+    expect(cardContent).toContain('duration-700');
+    expect(cardContent).toContain('touch-lux');
+  });
+});

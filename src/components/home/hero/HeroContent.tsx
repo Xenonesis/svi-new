@@ -46,20 +46,20 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
         </p>
 
         <div className="animate-hero-4 mb-10 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
-          <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.98 }}>
+          <div>
             <Link
               href="/projects/current"
               onClick={() => {
                 import('@vercel/analytics').then(({ track }) => track('hero_cta_click'));
               }}
-              className="bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center px-10 text-[11px] font-bold tracking-[0.15em] uppercase shadow-lg transition-colors hover:bg-white"
+              className="btn-lux-primary touch-lux bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center rounded-xl px-10 text-[11px] font-bold tracking-[0.15em] uppercase shadow-lg transition-colors hover:bg-white"
             >
               {t('cta')}
             </Link>
-          </motion.div>
+          </div>
           <Link
             href="/registration"
-            className="group hover:text-brand-gold flex items-center gap-3 text-white/80 transition-colors"
+            className="touch-lux group hover:text-brand-gold flex min-h-[44px] items-center gap-3 text-white/80 transition-colors"
           >
             <span className="hover-underline-gold text-[11px] font-bold tracking-[0.15em] uppercase">
               {t('invest')}
