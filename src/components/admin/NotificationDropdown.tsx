@@ -161,7 +161,9 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
           .eq('user_id', userId)
           .order('created_at', { ascending: false })
           .limit(50),
-        fetch('/api/admin/dues').then((r) => (r.ok ? r.json() : { paymentDues: [] })),
+        fetch('/api/admin/dues')
+          .then((r) => (r.ok ? r.json() : { paymentDues: [] }))
+          .catch(() => ({ paymentDues: [] })),
       ]);
 
       if (notificationsRes.error) throw notificationsRes.error;

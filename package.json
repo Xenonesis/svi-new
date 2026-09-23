@@ -10,7 +10,7 @@
     "dev": "next dev --webpack --port 3001",
     "dev:turbo": "next dev --turbopack --port 3001",
     "prebuild": "node scripts/optimize-images.mjs",
-    "build": "tsc --noEmit && next build",
+    "build": "tsc --noEmit && next build --webpack",
     "analyze": "ANALYZE=true next build --webpack",
     "optimize:images": "node scripts/optimize-images.mjs",
     "perf:dev": "node scripts/perf-monitor.mjs",

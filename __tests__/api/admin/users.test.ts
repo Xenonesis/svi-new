@@ -47,16 +47,16 @@ describe('GET /api/admin/users', () => {
     expect(response.status).toBe(401);
   });
 
-  it('should use default pagination (page=1, limit=50)', async () => {
+  it('should use default pagination (page=1, limit=500)', async () => {
     const request = new NextRequest('http://localhost/api/admin/users');
     const response = await GET(request);
     const data = await response.json();
 
     expect(response.status).toBe(200);
     expect(data.page).toBe(1);
-    expect(data.limit).toBe(50);
+    expect(data.limit).toBe(500);
     expect(data.total).toBe(50);
-    expect(mockRange).toHaveBeenCalledWith(0, 49);
+    expect(mockRange).toHaveBeenCalledWith(0, 499);
   });
 
   it('should support custom page and limit', async () => {
@@ -70,13 +70,13 @@ describe('GET /api/admin/users', () => {
     expect(mockRange).toHaveBeenCalledWith(20, 29);
   });
 
-  it('should cap limit at 100', async () => {
-    const request = new NextRequest('http://localhost/api/admin/users?limit=500');
+  it('should cap limit at 500', async () => {
+    const request = new NextRequest('http://localhost/api/admin/users?limit=1000');
     const response = await GET(request);
     const data = await response.json();
 
-    expect(data.limit).toBe(100);
-    expect(mockRange).toHaveBeenCalledWith(0, 99);
+    expect(data.limit).toBe(500);
+    expect(mockRange).toHaveBeenCalledWith(0, 499);
   });
 
   it('should enforce minimum page of 1', async () => {
