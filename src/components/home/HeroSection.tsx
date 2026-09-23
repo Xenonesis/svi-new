@@ -115,8 +115,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative flex min-h-[90dvh] touch-pan-y items-center justify-center overflow-hidden pt-28 pb-16 sm:min-h-[85vh] sm:pt-32 sm:pb-20 md:min-h-[900px] lg:py-32"
-      role="region"
+      style={{ paddingTop: 'calc(var(--header-height, 100px) + 2rem)' }}
+      className="relative flex min-h-[90dvh] touch-pan-y items-center justify-center overflow-hidden pb-16 sm:min-h-[85vh] sm:pb-20 md:min-h-[900px] lg:pb-32"
       aria-label={t('ariaHeroSection')}
     >
       <HeroBackground

@@ -53,8 +53,7 @@ const DesktopNav = memo(function DesktopNav({
   const offersLink = NAV_LINKS.find((l) => l.path === '/exclusive-offers');
 
   return (
-    <nav className="flex items-center gap-2.5 xl:gap-3.5 2xl:gap-4.5">
-      {/* Home Link */}
+    <nav className="flex items-center gap-2 xl:gap-3 2xl:gap-3.5">
       {homeLink && (
         <NavLink
           href={homeLink.path}
@@ -116,24 +115,21 @@ const DesktopNav = memo(function DesktopNav({
         {t('contact')}
       </NavLink>
 
-      {/* Lucky Draw Badge */}
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`relative inline-flex items-center gap-1.5 rounded-full border border-amber-400/40 bg-amber-400/10 px-3 py-1 font-bold whitespace-nowrap uppercase transition-all duration-300 hover:scale-105 hover:border-amber-400 hover:bg-amber-400/20 xl:px-3.5 xl:py-1.5 ${
-            isHi
-              ? 'text-[12.5px] tracking-wide 2xl:text-[14px]'
-              : 'text-[10.5px] tracking-wider 2xl:text-[12px] 2xl:tracking-widest'
+          className={`relative inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 font-semibold whitespace-nowrap transition-all duration-300 hover:border-amber-400 hover:bg-amber-400/20 xl:px-3 xl:py-1 ${
+            isHi ? 'text-[12px] tracking-normal' : 'text-[11px] tracking-normal'
           } ${
             currentPath === '/lottery'
-              ? 'border-amber-400 bg-amber-400/25 text-amber-300 shadow-[0_0_12px_rgba(245,158,11,0.35)]'
-              : 'text-amber-400 hover:text-amber-300'
+              ? 'border-amber-400 bg-amber-400/20 text-amber-300'
+              : 'text-amber-400/90 hover:text-amber-300'
           }`}
           aria-label={t('luckyDraw')}
         >
-          <span className="relative flex h-2 w-2">
+          <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-amber-400 opacity-75"></span>
-            <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400"></span>
+            <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-amber-400"></span>
           </span>
           {t('luckyDraw')}
         </Link>

@@ -32,10 +32,10 @@ export function ProjectDropdown({
       onClick={onClick}
     >
       <span
-        className={`flex items-center gap-1 font-semibold whitespace-nowrap uppercase transition-colors duration-200 ${
+        className={`flex items-center gap-1 font-medium whitespace-nowrap transition-colors duration-200 ${
           isHi
-            ? '3xl:text-base text-[13px] tracking-wide xl:text-[14.5px] 2xl:text-[15.5px]'
-            : '3xl:text-sm text-[11px] tracking-wide xl:text-[12.5px] xl:tracking-wider 2xl:text-[13.5px] 2xl:tracking-widest'
+            ? 'text-[13.5px] tracking-normal xl:text-[14px] 2xl:text-[15px]'
+            : 'text-[12px] tracking-normal xl:text-[13px] 2xl:text-[14px]'
         } ${
           currentPath.includes('/projects')
             ? 'text-amber-400'

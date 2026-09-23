@@ -100,8 +100,8 @@ export default function Header() {
                 >
                   <Link
                     href="/"
-                    className={`group relative inline-flex shrink-0 items-center rounded-[22px] bg-white px-4 py-2 shadow-md transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
-                      h.isHomeTransparent ? 'bg-white/90' : ''
+                    className={`group relative inline-flex shrink-0 items-center rounded-2xl bg-white px-3.5 py-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
+                      h.isHomeTransparent ? 'bg-white/95 backdrop-blur-md' : ''
                     }`}
                     aria-label="Svi Infra Solutions Pvt. Ltd."
                   >
@@ -112,7 +112,7 @@ export default function Header() {
                       height={83}
                       quality={100}
                       priority
-                      className="h-7 w-auto object-contain transition-all duration-300 sm:h-8"
+                      className="h-7 w-auto object-contain transition-all duration-300 sm:h-7.5"
                     />
                   </Link>
                 </motion.div>

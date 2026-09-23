@@ -28,7 +28,7 @@ export default function ProjectCard({
       <motion.div
         whileTap={{ scale: 0.985 }}
         transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-        className="card-lux-hover group block touch-manipulation overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow duration-300 dark:border-gray-700 dark:bg-gray-800"
+        className="card-lux-hover hover-lift hover-gold-glow group block touch-manipulation overflow-hidden rounded-2xl border border-gray-200 bg-white transition-shadow duration-300 dark:border-gray-700 dark:bg-gray-800"
       >
         <div className="bg-brand-navy img-zoom-container relative h-52 overflow-hidden sm:h-64 md:h-72">
           <div className="from-brand-navy/60 absolute inset-0 z-10 bg-gradient-to-t via-transparent to-transparent transition-opacity group-hover:opacity-70" />
@@ -38,7 +38,7 @@ export default function ProjectCard({
             fill
             quality={85}
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-            className="object-cover opacity-90 transition-transform duration-700 ease-out group-hover:scale-[1.04] group-hover:opacity-100"
+            className="object-cover opacity-90 transition-transform duration-700 ease-out group-hover:scale-105 group-hover:opacity-100"
           />
           <div className="text-brand-navy absolute top-4 right-4 z-20 bg-white px-3 py-1 text-[10px] font-semibold tracking-wider uppercase shadow-sm">
             {completedLabel}
