@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, FileDown, Command } from 'lucide-react';
+import { Sparkles, FileDown, Search } from 'lucide-react';
 
 export interface ExecutiveBriefingBannerProps {
   collectionsTotal: number;
@@ -51,19 +51,18 @@ export function ExecutiveBriefingBanner({
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
             onClick={onOpenCommand}
-            className="hover:border-brand-gold/30 focus:ring-brand-gold/50 flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-gray-300 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:outline-none"
+            aria-label="Quick search (Ctrl+K)"
+            className="group hover:border-brand-gold/40 focus:border-brand-gold/50 focus:ring-brand-gold/20 flex w-full items-center gap-3 rounded-full border border-white/10 bg-[#090d16]/80 px-4 py-2 text-xs text-gray-400 shadow-inner backdrop-blur-md transition-all hover:bg-[#0e1422] hover:text-gray-200 focus:ring-2 focus:outline-none sm:w-64"
           >
-            <Command className="text-brand-gold h-3.5 w-3.5" />
-            <span>Search</span>
-            <kbd className="ml-1 rounded bg-black/40 px-1.5 py-0.5 text-[10px] text-gray-400">
-              Ctrl+K
-            </kbd>
+            <Search className="group-hover:text-brand-gold h-3.5 w-3.5 text-gray-400 transition-colors" />
+            <span className="font-normal text-gray-400 transition-colors group-hover:text-gray-200">
+              Quick search... (Ctrl+K)
+            </span>
           </button>
-
           <button
             type="button"
             onClick={onExportPdf}
