@@ -23,9 +23,13 @@ import {
   Sparkles,
   Phone,
   MessageCircle,
+  Calendar,
+  AlertTriangle,
+  Receipt,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 import { toast } from 'sonner';
+import type React from 'react';
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -58,7 +62,20 @@ interface NotificationDropdownProps {
   userId: string;
 }
 
-type TabType = 'alerts' | 'leads' | 'tasks' | 'sounds';
+export interface PaymentDueItem {
+  id: string;
+  customer_name: string;
+  plot_number: string;
+  amount_due: number;
+  due_date: string;
+  is_overdue: boolean;
+  document_type: 'bba' | 'quotation';
+  project_name?: string;
+  contact_phone?: string;
+  contact_email?: string;
+}
+
+type TabType = 'alerts' | 'leads' | 'dues' | 'tasks' | 'sounds';
 
 export default function NotificationDropdown({ userId }: NotificationDropdownProps) {
   const router = useRouter();
@@ -71,8 +88,10 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [selectedTone, setSelectedTone] = useState<SoundTone>('chime');
   const [revertingId, setRevertingId] = useState<string | null>(null);
+  const [paymentDues, setPaymentDues] = useState<PaymentDueItem[]>([]);
+  const [duesLoading, setDuesLoading] = useState(false);
+  const [remindedDueIds, setRemindedDueIds] = useState<Set<string>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
-
   // Close dropdown on click outside or Escape key
   useEffect(() => {
     if (!isOpen) return;
@@ -131,29 +150,43 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
     setSelectedTone(getNotificationSoundTone());
   }, []);
 
-  // Fetch notifications
+  // Fetch notifications and payment dues
   const fetchNotifications = async (showRefreshSpin = false) => {
     if (showRefreshSpin) setIsRefreshing(true);
     try {
-      const { data, error } = await supabase
-        .from('notifications')
-        .select('id, user_id, title, message, type, is_read, action_url, metadata, created_at')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(50);
+      const [notificationsRes, duesRes] = await Promise.all([
+        supabase
+          .from('notifications')
+          .select('id, user_id, title, message, type, is_read, action_url, metadata, created_at')
+          .eq('user_id', userId)
+          .order('created_at', { ascending: false })
+          .limit(50),
+        fetch('/api/admin/dues').then((r) => (r.ok ? r.json() : { paymentDues: [] })),
+      ]);
 
-      if (error) throw error;
+      if (notificationsRes.error) throw notificationsRes.error;
 
-      setNotifications(data || []);
-      setUnreadCount(data?.filter((n) => !n.is_read).length || 0);
+      setNotifications(notificationsRes.data || []);
+      setUnreadCount(notificationsRes.data?.filter((n) => !n.is_read).length || 0);
+      if (duesRes && Array.isArray(duesRes.paymentDues)) {
+        setPaymentDues(duesRes.paymentDues);
+      }
     } catch (error) {
-      console.error('Error fetching notifications:', error);
+      console.error('Error fetching notifications & dues:', error);
     } finally {
       setLoading(false);
       if (showRefreshSpin) {
         setTimeout(() => setIsRefreshing(false), 400);
       }
     }
+  };
+
+  const handleDueReminder = (due: PaymentDueItem, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setRemindedDueIds((prev) => new Set(prev).add(due.id));
+    toast.success(`Payment reminder sent to ${due.customer_name}`, {
+      description: `Plot ${due.plot_number} • ₹${(due.amount_due / 1000).toFixed(0)}k Due: ${due.due_date}`,
+    });
   };
 
   // Click notification to mark read, close dropdown, and redirect to origin
@@ -299,6 +332,10 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
     [leadNotifications]
   );
 
+  const overdueDuesCount = useMemo(
+    () => paymentDues.filter((d) => d.is_overdue).length,
+    [paymentDues]
+  );
   // Extract phone & name for 1-click Call / WhatsApp actions
   const extractLeadContact = (message: string) => {
     if (!message) return null;
@@ -605,6 +642,28 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
 
                 <button
                   type="button"
+                  onClick={() => setActiveTab('dues')}
+                  className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
+                    activeTab === 'dues'
+                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white dark:shadow-none'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  }`}
+                >
+                  <Calendar className="h-3.5 w-3.5" />
+                  <span>Dues</span>
+                  {overdueDuesCount > 0 ? (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[9px] font-bold text-white shadow-xs">
+                      {overdueDuesCount}
+                    </span>
+                  ) : paymentDues.length > 0 ? (
+                    <span className="bg-brand-gold/20 text-brand-gold flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold">
+                      {paymentDues.length}
+                    </span>
+                  ) : null}
+                </button>
+
+                <button
+                  type="button"
                   onClick={() => setActiveTab('tasks')}
                   className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
                     activeTab === 'tasks'
@@ -641,8 +700,102 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
 
               {/* Main Content Area */}
               <div className="hover:[&::-webkit-scrollbar-thumb]:bg-brand-gold/40 max-h-[27rem] scrollbar-thin [scrollbar-color:rgba(212,175,55,0.25)_transparent] overflow-y-auto [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-white/10 [&::-webkit-scrollbar-track]:bg-transparent">
-                {activeTab === 'sounds' ? (
-                  /* Sounds Settings View */
+                {activeTab === 'dues' ? (
+                  /* Payment Dues Radar View matching dashboard page */
+                  <div className="space-y-2.5 p-3.5">
+                    <div className="flex items-center justify-between px-1 pb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-1.5 text-rose-400">
+                          <Calendar className="h-3.5 w-3.5" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
+                            Payment Dues Radar
+                          </h4>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                            Upcoming client installments
+                          </p>
+                        </div>
+                      </div>
+                      {overdueDuesCount > 0 && (
+                        <span className="rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-400">
+                          {overdueDuesCount} Overdue
+                        </span>
+                      )}
+                    </div>
+
+                    {paymentDues.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500">
+                          <Check className="h-5 w-5" />
+                        </div>
+                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          No pending client dues
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+                          All client installments are up to date!
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {paymentDues.map((due) => {
+                          const isReminded = remindedDueIds.has(due.id);
+                          return (
+                            <div
+                              key={due.id}
+                              onClick={() => {
+                                setIsOpen(false);
+                                router.push('/admin/payment-receipt');
+                              }}
+                              className={`group hover:border-brand-gold/30 flex cursor-pointer items-center justify-between rounded-xl border p-3 text-xs transition-all ${
+                                due.is_overdue
+                                  ? 'border-rose-500/30 bg-rose-500/5 hover:bg-rose-500/10'
+                                  : 'border-gray-200/80 bg-gray-50/50 hover:bg-gray-100/60 dark:border-white/5 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]'
+                              }`}
+                            >
+                              <div className="min-w-0 pr-2">
+                                <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-white">
+                                  <span className="truncate">{due.customer_name}</span>
+                                  {due.is_overdue && (
+                                    <span className="flex shrink-0 items-center gap-0.5 rounded px-1 text-[10px] font-semibold text-rose-500 dark:text-rose-400">
+                                      <AlertTriangle className="h-3 w-3" /> Overdue
+                                    </span>
+                                  )}
+                                </div>
+                                <div className="mt-0.5 text-[11px] text-gray-500 dark:text-gray-400">
+                                  Plot {due.plot_number} • Due: {due.due_date}
+                                </div>
+                              </div>
+
+                              <div className="flex shrink-0 items-center gap-2">
+                                <span className="font-semibold text-gray-900 dark:text-white">
+                                  ₹{(due.amount_due / 1000).toFixed(0)}k
+                                </span>
+                                <button
+                                  type="button"
+                                  onClick={(e) => handleDueReminder(due, e)}
+                                  className={`rounded-lg border p-1.5 transition-colors ${
+                                    isReminded
+                                      ? 'border-emerald-500/40 bg-emerald-500/20 text-emerald-500 dark:text-emerald-400'
+                                      : 'hover:border-brand-gold/40 hover:text-brand-gold border-gray-300 bg-white text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300'
+                                  }`}
+                                  title={isReminded ? 'Reminder Sent' : 'Send Reminder'}
+                                  aria-label={`Send reminder to ${due.customer_name}`}
+                                >
+                                  {isReminded ? (
+                                    <Check className="h-3.5 w-3.5" />
+                                  ) : (
+                                    <Bell className="h-3.5 w-3.5" />
+                                  )}
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                ) : activeTab === 'sounds' ? (
                   <div className="space-y-3.5 p-4">
                     <div className="flex items-center justify-between rounded-xl border border-gray-100 bg-gray-50/70 p-3.5 dark:border-white/5 dark:bg-white/[0.02]">
                       <div className="flex items-center gap-3">
