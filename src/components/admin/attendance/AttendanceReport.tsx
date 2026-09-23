@@ -140,7 +140,67 @@ export default function AttendanceReport({ token, showToast, teams }: Attendance
       ) : (
         <div className="dark:bg-brand-dark-surface/65 overflow-hidden rounded-xl border border-gray-200 bg-white/80 shadow-2xl backdrop-blur-xl dark:border-white/8">
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
-          <div className="overflow-x-auto">
+          {/* Mobile Attendance Cards View (<md) */}
+          <div className="block divide-y divide-gray-100 md:hidden dark:divide-white/5">
+            {report.map((row) => (
+              <div key={`m-att-${row.user_id}`} className="space-y-3 p-4">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <h4 className="font-semibold text-gray-900 dark:text-white">{row.full_name}</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">{row.email}</p>
+                  </div>
+                  <span
+                    className={`inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-bold ${getPercentageColor(row.attendance_percentage)}`}
+                  >
+                    {row.attendance_percentage}%
+                  </span>
+                </div>
+
+                {/* Mini Stats Grid */}
+                <div className="grid grid-cols-4 gap-2 text-center">
+                  <div className="rounded-lg bg-emerald-500/10 p-2 dark:bg-emerald-500/5">
+                    <p className="text-[10px] font-semibold text-emerald-600 uppercase dark:text-emerald-400">
+                      Present
+                    </p>
+                    <p className="font-mono text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                      {row.present}
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-red-500/10 p-2 dark:bg-red-500/5">
+                    <p className="text-[10px] font-semibold text-red-600 uppercase dark:text-red-400">
+                      Absent
+                    </p>
+                    <p className="font-mono text-sm font-bold text-red-600 dark:text-red-400">
+                      {row.absent}
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-yellow-500/10 p-2 dark:bg-yellow-500/5">
+                    <p className="text-[10px] font-semibold text-yellow-600 uppercase dark:text-yellow-400">
+                      Half Day
+                    </p>
+                    <p className="font-mono text-sm font-bold text-yellow-600 dark:text-yellow-400">
+                      {row.half_day}
+                    </p>
+                  </div>
+                  <div className="rounded-lg bg-blue-500/10 p-2 dark:bg-blue-500/5">
+                    <p className="text-[10px] font-semibold text-blue-600 uppercase dark:text-blue-400">
+                      Leave
+                    </p>
+                    <p className="font-mono text-sm font-bold text-blue-600 dark:text-blue-400">
+                      {row.leave}
+                    </p>
+                  </div>
+                </div>
+                <p className="text-right text-[11px] text-gray-500 dark:text-gray-400">
+                  Total Working Days:{' '}
+                  <strong className="text-gray-800 dark:text-gray-200">{row.total_days}</strong>
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Desktop Table View (Hidden on mobile <md) */}
+          <div className="hidden overflow-x-auto md:block">
             <table className="w-full font-sans text-sm">
               <thead>
                 <tr className="dark:border-brand-gold/15 border-b border-gray-200 bg-gray-50/50 dark:bg-white/2">

@@ -2,5 +2,9 @@
     "snyk.advanced.autoSelectOrganization": true,
     "chat.tools.terminal.autoApprove": {
         "npx next": true
-    }
+    },
+    "Codegeex.Comment.LanguagePreference": "中文",
+    "Codegeex.Chat.LanguagePreference": "中文",
+    "Codegeex.GenerationPreference": "automatic",
+    "Codegeex.CommitMessage.LanguagePreference": "中文"
 }
