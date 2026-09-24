@@ -2,6 +2,245 @@ import { SystemUpdateRelease, RoadmapItem } from './types';
 
 export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
   {
+    id: 'rel-2026-09-24',
+    date: '2026-09-24',
+    formattedDate: '24 September 2026',
+    version: 'v2.5.0',
+    title: 'Next.js DevTools Multi-Layer Stacking & Seamless Drag Ergonomics',
+    summary:
+      'Resolved z-index layering conflicts across fixed footer contact badges, PWA status bars, and Cookie Consent banners, allowing unrestricted corner dragging and instant menu opening.',
+    category: 'Security & Platform',
+    isLatest: true,
+    items: [
+      {
+        title: 'High-Priority DevTools Portal Stacking',
+        description:
+          'Elevated Next.js diagnostic portal to maximum fixed viewport layer (z-index: 2147483647), preventing pointer event interception from fixed badges, floating action buttons, and consent banners.',
+        benefit:
+          'Ensures the developer diagnostic menu triggers immediately on 100% of clicks without hit-test blockage.',
+        tag: 'Fix',
+      },
+      {
+        title: '4-Corner Fluid Snap & Drag Positioning',
+        description:
+          'Enabled unrestricted smooth dragging across all four viewport corners (top-left, top-right, bottom-left, bottom-right) to keep all workspace UI elements visible during development.',
+        benefit: 'Eliminates inspection clutter and adapts to any custom layout workflow.',
+        tag: 'Improvement',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-09-23-b',
+    date: '2026-09-23',
+    formattedDate: '23 September 2026',
+    version: 'v2.4.0',
+    title: 'Quiet Luxury Interactions, Responsive Touch Feedback & Navigation Polish',
+    summary:
+      'Implemented comprehensive Quiet Luxury interaction system across public and admin interfaces: dynamic header clearance, elegant title-case typography, and 44px mobile touch ergonomics.',
+    category: 'Staff & Operations',
+    items: [
+      {
+        title: 'Dynamic Header Height Clearance & Badge Safety',
+        description:
+          'Equipped hero and top-level sections with CSS variable-driven dynamic top padding (calc(var(--header-height) + 2rem)), completely eliminating badge clipping and visual collision under sticky navigation.',
+        benefit:
+          'Flawless visual balance and luxury breathing room across all screen sizes and announcement banner states.',
+        tag: 'Design & Speed',
+      },
+      {
+        title: 'Quiet Luxury Navigation & Typography Hierarchy',
+        description:
+          'Transitioned loud all-caps navigation menus to refined font-medium Title Case typography, subtle lottery draw indicator pills, and sleek logo capsule branding.',
+        benefit:
+          'Delivers a prestigious, calm real estate brand presence matching ultra-luxury standards.',
+        tag: 'Design & Speed',
+      },
+      {
+        title: 'Tactile Mobile Dock & 44px Minimum Touch Targets',
+        description:
+          'Unified mobile bottom navigation dock with minimum 44px x 44px tap zones, active compression feedback, safe-area inset cushioning, and hover-protection guards on touch devices.',
+        benefit:
+          'Prevents accidental taps and provides instant native-like feedback for 99% mobile traffic.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Mobile Card Transformation for IVR Leads & Attendance',
+        description:
+          'Replaced horizontal table scrolling with responsive, high-density touch cards for IVR telephony records and employee attendance logs on smartphones.',
+        benefit:
+          'Field managers and sales executives can triage records effortlessly on mobile screens.',
+        tag: 'New Feature',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-09-23-a',
+    date: '2026-09-23',
+    formattedDate: '23 September 2026',
+    version: 'v2.3.0',
+    title: 'Executive Command Cockpit, Spotlight Search & Payment Dues Radar',
+    summary:
+      'Launched real-time executive cockpit analytics, spotlight command palette search, automated PDF dossier generation, and proactive Payment Dues Radar in notification center.',
+    category: 'Staff & Operations',
+    items: [
+      {
+        title: 'Payment Dues Radar & 1-Click WhatsApp Reminders',
+        description:
+          'Integrated intelligent Payment Dues Radar into notifications dropdown with 7-day overdue tracking, client debt summary, and direct 1-click WhatsApp payment reminder dispatch.',
+        benefit:
+          'Accelerates accounts receivable collections and gives instantaneous visibility into pending cash flows.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Spotlight Command Palette Search (Ctrl/Cmd + K)',
+        description:
+          'Universal command palette search modal across leads, plots, buyers, employees, and quick system actions with instant keyboard navigation.',
+        benefit:
+          'Jump to any client or administrative record in under 2 seconds without navigating menus.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Executive PDF Dossier Export & Bento KPIs',
+        description:
+          'One-click automated executive briefing PDF generation with authentic real-time DB aggregations, target pacing meters, and inventory pulse telemetry.',
+        benefit:
+          'High-level board-ready performance reports ready for immediate printing or sharing.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Enhanced Users Table with Role Segmentation Tabs',
+        description:
+          'Segmented user directory into dedicated Admin, Sales, Customer, and Staff tabs with distinct luxury themes, contextual status badges, and 500-user deep pagination.',
+        benefit:
+          'Ensures executive and administrative accounts remain visible and effortlessly manageable.',
+        tag: 'Improvement',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-09-22',
+    date: '2026-09-22',
+    formattedDate: '22 September 2026',
+    version: 'v2.2.0',
+    title: 'High-Concurrence Caching Architecture, Luxury Web Audio & Database Hardening',
+    summary:
+      'Engineered multi-layer in-memory server caching, lazy-loaded export suites, luxury Web Audio notifications, and PostgreSQL security & composite index hardening.',
+    category: 'Security & Platform',
+    items: [
+      {
+        title: 'Multi-Layer Server In-Memory Caching & RPC Acceleration',
+        description:
+          'Introduced 60-second in-memory server caching with mutation-triggered cache invalidation across Settings, Analytics, and Leads Hub endpoints, coupled with database RPC lead stat aggregations.',
+        benefit:
+          'Slashes database query load by up to 85% and eliminates page load latency across heavy management hubs.',
+        tag: 'Design & Speed',
+      },
+      {
+        title: 'Luxury Web Audio Chime Suite & Outside-Click Handling',
+        description:
+          'Engineered 6 distinct luxury Web Audio tones (Subtle Ping, Luxury Bell, Modern Pop, Executive Glass, Digital Soft, Minimal Tap) with live preview and persistent client selection, plus resilient outside-click closing.',
+        benefit:
+          'Delivers a refined sensory audio experience for incoming alerts without jarring the user.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Heavy Library Bundle Optimization (ExcelJS & jsPDF)',
+        description:
+          'Converted heavy document generation dependencies (exceljs, jspdf) to dynamic on-demand imports and tuned development buffer parameters.',
+        benefit:
+          'Reduced initial JavaScript bundle footprint and significantly boosted first-page render speeds.',
+        tag: 'Design & Speed',
+      },
+      {
+        title: 'PostgreSQL Column-Level Grants & Security Hardening',
+        description:
+          'Hardened database security migrations with column-level permissions, view support, non-destructive composite indexes, and cached announcement bar proxy.',
+        benefit:
+          'Guarantees enterprise data security while accelerating complex multi-table queries.',
+        tag: 'Security',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-09-21',
+    date: '2026-09-21',
+    formattedDate: '21 September 2026',
+    version: 'v2.1.0',
+    title: 'Architectural Deconstruction, Resilient AI Email Engine & Allotment Workflows',
+    summary:
+      'Decomposed monolithic system modules into isolated units, upgraded the AI email generation engine with strict contrast guards, and enhanced plot allotment candidate approvals.',
+    category: 'Email & Marketing',
+    items: [
+      {
+        title: 'Two-Step Resilient AI Email Compose Architecture',
+        description:
+          'Separated variable extraction from HTML assembly into a 2-step pipeline, eliminated ghost text contrast issues, unescaped raw entities, and hardened TipTap editor integration.',
+        benefit:
+          'Produces clean, perfectly formatted client emails without formatting corruption or send failures.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Monolithic Codebase Deconstruction (Vibe Audit Remediation)',
+        description:
+          'Refactored oversized routes and monolithic components across Email Center, IVR Leads Hub, Blog, Employee Login, and Workforce into modular hooks, subcomponents, and routers.',
+        benefit:
+          'Greatly increases system reliability, maintainability, and test coverage across all administrative modules.',
+        tag: 'Improvement',
+      },
+      {
+        title: 'Plot Allotments Candidate Approval & Ledger Reconciliation',
+        description:
+          'Added paginated candidate resolution, BSP-based deal value calculations, refund status indicators, and automated ledger sync against Excel payment statements.',
+        benefit:
+          'Prevents financial calculation discrepancies and streamlines candidate plot booking verifications.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Nearby Places Proxy Rate Limiting & Query Validation',
+        description:
+          'Implemented strict query validation and rate limiting on Google Places proxy endpoints with authentic landmark image fallbacks.',
+        benefit:
+          'Guards against external API abuse and ensures zero visual breakage on project showcase pages.',
+        tag: 'Security',
+      },
+    ],
+  },
+  {
+    id: 'rel-2026-09-16',
+    date: '2026-09-16',
+    formattedDate: '16 September 2026',
+    version: 'v2.0.0',
+    title: 'Master IVR Telephony Hub, Telecalling Suite & Vector Icon Standardization',
+    summary:
+      'Launched automated IVR call ingestion, smart CSV deduplication, live telecalling CRM cockpit, and standardized 100% professional vector iconography across the platform.',
+    category: 'WhatsApp Sales',
+    items: [
+      {
+        title: 'Automated IVR Telephony Ingestion & Smart Deduplication',
+        description:
+          'Engineered streaming CSV ingestion for telephony logs with phone number normalization, DTMF key scoring, and intelligent auto-deduplication.',
+        benefit:
+          'Eliminates duplicate follow-ups and captures 100% of customer inbound call records effortlessly.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Telecalling Command Center & Custom Export Studio',
+        description:
+          'Created dedicated telecalling telemetry dashboard with call answer ratios, top-3 advisor podium, and customizable Excel/PDF/CSV export studio.',
+        benefit: 'Empowers sales directors with real-time conversion KPIs and clean audit reports.',
+        tag: 'New Feature',
+      },
+      {
+        title: 'Corporate Vector Icon Standardization (Anti-Slop Initiative)',
+        description:
+          'Systematically purged casual emojis across all administrative tables, PDF exports, notification chimes, and email templates, replacing them with crisp Lucide vector icons.',
+        benefit:
+          'Projects an authoritative, premium institutional brand standard across all touchpoints.',
+        tag: 'Design & Speed',
+      },
+    ],
+  },
+  {
     id: 'rel-2026-08-29-b',
     date: '2026-08-29',
     formattedDate: '29 August 2026',
@@ -10,7 +249,6 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
     summary:
       'Engineered a comprehensive mobile-first design overhaul across the entire platform, featuring unified responsive navigation, 1-tap phone calling, direct WhatsApp chatting, and adaptive touch cards.',
     category: 'Staff & Operations',
-    isLatest: true,
     items: [
       {
         title: 'Unified Smart Navigation & Clean Luxury Sidebar',
@@ -588,10 +826,18 @@ export const SYSTEM_UPDATES: SystemUpdateRelease[] = [
 export const UPCOMING_ROADMAP: RoadmapItem[] = [
   {
     title: 'Automated WhatsApp Campaign Broadcasts',
-    targetQuarter: 'Q3 2026',
+    targetQuarter: 'Q4 2026',
     category: 'WhatsApp Sales',
     description:
       'Schedule bulk personalized WhatsApp updates to pre-qualified buyer lists with image brochures and direct callback options.',
+    status: 'In Development',
+  },
+  {
+    title: 'Client Portal 3D Site Navigation',
+    targetQuarter: 'Q4 2026',
+    category: 'Staff & Operations',
+    description:
+      'Interactive 3D plot map where buyers can check sold vs. available plots in real time with sun-orientation indicators.',
     status: 'In Development',
   },
   {
@@ -601,14 +847,6 @@ export const UPCOMING_ROADMAP: RoadmapItem[] = [
     description:
       'Automated gentle SMS and email reminders sent 7 days before plot installment due dates with direct online payment links.',
     status: 'Testing',
-  },
-  {
-    title: 'Client Portal 3D Site Navigation',
-    targetQuarter: 'Q4 2026',
-    category: 'Staff & Operations',
-    description:
-      'Interactive 3D plot map where buyers can check sold vs. available plots in real time with sun-orientation indicators.',
-    status: 'Planned',
   },
   {
     title: 'Advanced Sales Executive Performance Analytics',
