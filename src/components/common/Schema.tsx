@@ -128,6 +128,58 @@ export function RealEstateListingSchema({
   );
 }
 
+export function PlaceAndAreaSchema({
+  name,
+  description,
+  url,
+  latitude,
+  longitude,
+  addressLocality,
+  postalCode,
+  addressRegion = 'Rajasthan',
+  image = `${SITE_URL}/images/project1.png`,
+}: {
+  name: string;
+  description: string;
+  url: string;
+  latitude?: number;
+  longitude?: number;
+  addressLocality: string;
+  postalCode?: string;
+  addressRegion?: string;
+  image?: string;
+}) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'Place',
+    name,
+    description,
+    url,
+    image,
+    ...(latitude && longitude
+      ? {
+          geo: {
+            '@type': 'GeoCoordinates',
+            latitude,
+            longitude,
+          },
+        }
+      : {}),
+    address: {
+      '@type': 'PostalAddress',
+      addressLocality,
+      addressRegion,
+      ...(postalCode ? { postalCode } : {}),
+      addressCountry: 'IN',
+    },
+  };
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+}
 export function FAQSchema({ questions }: { questions: { question: string; answer: string }[] }) {
   const schema = {
     '@context': 'https://schema.org',

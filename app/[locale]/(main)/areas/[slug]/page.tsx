@@ -7,9 +7,10 @@ import { setRequestLocale, getTranslations } from 'next-intl/server';
 import { SITE_URL, SITE_NAME, buildAlternates, localizedUrl } from '@/src/lib/seo';
 import { AREAS_DATA } from '@/src/data/areas';
 import { PROJECTS_DB } from '@/src/data/projects';
-import { BreadcrumbSchema } from '@/src/components/common/Schema';
+import { BreadcrumbSchema, PlaceAndAreaSchema } from '@/src/components/common/Schema';
 import { EmiCalculator } from '@/src/components/properties/EmiCalculator';
 import AreaInquiryForm from '@/src/components/properties/AreaInquiryForm';
+import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
@@ -20,6 +21,12 @@ const PROJECT_SUMMARIES: Record<
   string,
   { title: string; type: string; img: string; status: string }
 > = {
+  'shivani-vatika-11th': {
+    title: 'Shivani Vatika 11th',
+    type: 'Premier Residential Plots',
+    img: '/Shivani Vatika 11/gate.webp',
+    status: 'Ongoing',
+  },
   'shyam-aangan': {
     title: 'Shyam Aangan',
     type: 'Integrated Township',
@@ -102,6 +109,17 @@ export default async function AreaDetailPage({ params }: Props) {
           { name: isHindi ? 'क्षेत्र' : 'Areas', item: '/areas' },
           { name: area.name, item: `/areas/${slug}` },
         ]}
+      />
+
+      <PlaceAndAreaSchema
+        name={area.name}
+        description={area.description}
+        url={localizedUrl(`/areas/${slug}`, locale)}
+        latitude={area.geo?.latitude}
+        longitude={area.geo?.longitude}
+        addressLocality={area.geo?.addressLocality || area.name}
+        postalCode={area.geo?.postalCode}
+        addressRegion={area.geo?.addressRegion || 'Rajasthan'}
       />
 
       {/* Area Hero Section */}
@@ -221,6 +239,9 @@ export default async function AreaDetailPage({ params }: Props) {
           </div>
         </div>
       </div>
+
+      {/* Floating Free Cab Site Visit Sticky Action */}
+      <SiteVisitPill areaName={area.name} defaultPickup="Jaipur City / Railway Station / Airport" />
     </div>
   );
 }

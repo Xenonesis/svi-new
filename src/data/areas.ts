@@ -10,6 +10,13 @@ export interface AreaInfo {
   content: string;
   highlights: string[];
   projects: string[]; // matching project IDs
+  geo?: {
+    latitude: number;
+    longitude: number;
+    addressLocality: string;
+    postalCode?: string;
+    addressRegion: string;
+  };
 }
 
 export const AREAS_DATA: Record<string, AreaInfo> = {
@@ -34,6 +41,13 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     content:
       'The Jaipur to Khatu Shyam Ji Highway corridor via Harsholi and Kishangarh Renwal has emerged as one of the most promising growth corridors in Rajasthan. Anchored by the expansion of the pilgrimage corridor, proximity to the RIICO Industrial Area, and seamless rail transit via Renwal Junction, property appreciation in this corridor is outperforming conventional suburbs. SVI Infra Solutions brings Shivani Vatika 11th to this strategic location with full legal documentation.',
     projects: ['shivani-vatika-11th'],
+    geo: {
+      latitude: 27.130247,
+      longitude: 75.422285,
+      addressLocality: 'Harsholi, Kishangarh Renwal',
+      postalCode: '303603',
+      addressRegion: 'Rajasthan',
+    },
   },
   'tonk-road-jaipur': {
     slug: 'tonk-road-jaipur',
@@ -78,6 +92,13 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     content:
       "Nayla is rapidly gaining popularity as a peaceful suburb of Jaipur. Surrounded by hills and greenery, it provides a perfect escape from city noise. SVI Infra's projects in this region focus on developing premium yet affordable gated residential plots equipped with modern infrastructure like paved roads, water connections, and landscaped parks, offering investors a secure asset in a beautiful setting.",
     projects: ['shivani-vatika'],
+    geo: {
+      latitude: 26.85,
+      longitude: 76.0,
+      addressLocality: 'Nayla, Jaipur',
+      postalCode: '303012',
+      addressRegion: 'Rajasthan',
+    },
   },
   'phulera-smart-city': {
     slug: 'phulera-smart-city',
@@ -100,5 +121,12 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     content:
       'Phulera is positioned at the intersection of major rail and freight routes, making it the focal point of the Delhi-Mumbai Industrial Corridor (DMIC) in Rajasthan. With massive governmental push for manufacturing zones and dry ports in the area, Phulera is transitioning into a modern smart city. Real estate here offers unmatched appreciation potential due to the influx of industrial developments and logistics parks.',
     projects: ['shivani-residency'],
+    geo: {
+      latitude: 26.9,
+      longitude: 75.18,
+      addressLocality: 'Phulera DMIC Corridor, Jaipur District',
+      postalCode: '303338',
+      addressRegion: 'Rajasthan',
+    },
   },
 };

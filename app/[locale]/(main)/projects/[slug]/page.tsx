@@ -20,7 +20,7 @@ import ProjectActions from '@/src/components/projects/ProjectActions';
 import ProjectLocationMap from '@/src/components/projects/ProjectLocationMap';
 import ProjectNearbyPlaces from '@/src/components/projects/ProjectNearbyPlaces';
 import ProjectShowcaseGallery from '@/src/components/projects/ProjectShowcaseGallery';
-
+import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
@@ -201,6 +201,12 @@ export default async function ProjectDetailPage({ params }: Props) {
       <div className="container mx-auto max-w-7xl px-4">
         <NewsSection />
       </div>
+
+      {/* Floating Free Cab Site Visit Sticky Action */}
+      <SiteVisitPill
+        areaName={`${project.title} (${project.location})`}
+        defaultPickup="Jaipur City / Railway Station / Airport"
+      />
     </div>
   );
 }
