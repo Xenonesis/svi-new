@@ -47,6 +47,7 @@ function getSitemapEntry(
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     ...getSitemapEntry('/', STATIC_LAST_MODIFIED, 'weekly', 1),
+    ...getSitemapEntry('/plots-in-jaipur', STATIC_LAST_MODIFIED, 'weekly', 1.0),
     ...getSitemapEntry('/about', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/careers', STATIC_LAST_MODIFIED, 'monthly', 0.6),
     ...getSitemapEntry('/faq', STATIC_LAST_MODIFIED, 'monthly', 0.7),

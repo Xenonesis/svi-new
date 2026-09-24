@@ -194,6 +194,14 @@ const Footer = memo(function Footer() {
               {t('footer.locations')}
             </h4>
             <ul className="flex flex-col gap-4">
+              <li>
+                <Link
+                  href="/plots-in-jaipur"
+                  className="text-brand-gold text-[11px] font-bold tracking-wider uppercase transition-colors hover:underline"
+                >
+                  ★ Plots in Jaipur (Verified Townships)
+                </Link>
+              </li>
               {[
                 { label: t('footer.khatuHighway'), href: '/projects/shivani-vatika-11th' },
                 { label: t('footer.nayla'), href: '/projects/shivani-vatika' },
