@@ -3,8 +3,9 @@
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import Link from 'next/link';
-import { ArrowRight, ShieldCheck, Check } from 'lucide-react';
+import { ArrowRight, ShieldCheck, Check, FileDown, Sparkles } from 'lucide-react';
 import AnimatedSection, { StaggerContainer } from '@/src/components/ui/AnimatedSection';
+import WhatsAppBrochureModal from '@/src/components/common/WhatsAppBrochureModal';
 import ProjectCard from './ProjectCard';
 import ProjectFilterTabs from './ProjectFilterTabs';
 
@@ -33,7 +34,13 @@ export default function ProjectsSection() {
   const t = useTranslations('portfolio');
   const tp = useTranslations('pages.projects');
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [brochureModalOpen, setBrochureModalOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState('Shivani Vatika-11th');
 
+  const handleOpenBrochure = (projectName: string) => {
+    setSelectedProject(projectName);
+    setBrochureModalOpen(true);
+  };
   const filteredProjects = ALL_PROJECTS.filter(
     (p) => activeCategory === 'all' || p.category === activeCategory
   );
@@ -77,6 +84,14 @@ export default function ProjectsSection() {
                   <ShieldCheck size={12} />
                   <span>Verified Project</span>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => handleOpenBrochure(title)}
+                  className="absolute right-4 bottom-4 z-20 flex items-center gap-1.5 rounded-xl border border-amber-500/40 bg-slate-950/85 px-3 py-1.5 text-[11px] font-bold text-amber-400 shadow-md backdrop-blur-md transition-all hover:border-amber-400 hover:bg-amber-500 hover:text-slate-950 md:right-6 md:bottom-6"
+                >
+                  <FileDown size={13} />
+                  <span>Get Brochure</span>
+                </button>
               </div>
             );
           })}
@@ -98,7 +113,39 @@ export default function ProjectsSection() {
             />
           </Link>
         </div>
+
+        {/* High-Intent Real Estate Lead Hook Banner */}
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/5 p-5 sm:flex-row sm:p-6 dark:from-amber-500/15 dark:via-slate-950 dark:to-amber-500/10">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+              <Sparkles size={20} />
+            </div>
+            <div>
+              <h4 className="font-serif text-base font-bold text-slate-900 sm:text-lg dark:text-white">
+                Want the latest layout map & verified price list?
+              </h4>
+              <p className="text-xs text-slate-600 dark:text-slate-300">
+                Download the official PDF & receive instantaneous WhatsApp payment breakdown
+                directly from SVI sales team.
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => handleOpenBrochure('Shivani Vatika-11th')}
+            className="inline-flex min-h-[44px] shrink-0 items-center justify-center gap-2 rounded-xl bg-amber-500 px-6 py-2.5 text-xs font-bold text-slate-950 shadow-md transition-all hover:bg-amber-400"
+          >
+            <FileDown size={15} />
+            <span>Instant WhatsApp Brochure</span>
+          </button>
+        </div>
       </div>
+
+      <WhatsAppBrochureModal
+        isOpen={brochureModalOpen}
+        onClose={() => setBrochureModalOpen(false)}
+        projectName={selectedProject}
+      />
     </section>
   );
 }

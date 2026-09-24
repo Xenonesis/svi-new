@@ -4,7 +4,8 @@ import { useState } from 'react';
 import { motion, MotionValue } from 'motion/react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowRight, Search, MapPin, Building, Banknote } from 'lucide-react';
+import { ArrowRight, Search, MapPin, Building, Banknote, FileDown } from 'lucide-react';
+import WhatsAppBrochureModal from '@/src/components/common/WhatsAppBrochureModal';
 import { useTranslations } from 'next-intl';
 
 interface HeroContentProps {
@@ -18,7 +19,7 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
   const [location, setLocation] = useState('all');
   const [propertyType, setPropertyType] = useState('all');
   const [budget, setBudget] = useState('all');
-
+  const [brochureModalOpen, setBrochureModalOpen] = useState(false);
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     router.push(`/projects/current?location=${location}&type=${propertyType}&budget=${budget}`);
@@ -45,18 +46,29 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           {t('subtitle')}
         </p>
 
-        <div className="animate-hero-4 mb-10 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+        <div className="animate-hero-4 mb-10 flex flex-wrap items-center gap-4 sm:gap-6">
           <div>
             <Link
               href="/projects/current"
               onClick={() => {
                 import('@vercel/analytics').then(({ track }) => track('hero_cta_click'));
               }}
-              className="btn-lux-primary touch-lux bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center rounded-xl px-10 text-[11px] font-bold tracking-[0.15em] uppercase shadow-lg transition-colors hover:bg-white"
+              className="btn-lux-primary touch-lux bg-brand-gold text-brand-navy inline-flex h-14 items-center justify-center rounded-xl px-9 text-[11px] font-bold tracking-[0.15em] uppercase shadow-lg transition-colors hover:bg-white"
             >
               {t('cta')}
             </Link>
           </div>
+          <button
+            type="button"
+            onClick={() => setBrochureModalOpen(true)}
+            className="touch-lux group inline-flex h-14 items-center gap-2.5 rounded-xl border border-white/25 bg-white/10 px-7 text-[11px] font-bold tracking-[0.15em] text-white uppercase shadow-lg backdrop-blur-md transition-all hover:border-amber-400 hover:bg-white/20 hover:text-amber-300"
+          >
+            <FileDown
+              size={16}
+              className="text-amber-400 transition-transform group-hover:-translate-y-0.5"
+            />
+            <span>Get Brochure & Price</span>
+          </button>
           <Link
             href="/registration"
             className="touch-lux group hover:text-brand-gold flex min-h-[44px] items-center gap-3 text-white/80 transition-colors"
@@ -178,6 +190,12 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
           </div>
         </form>
       </div>
+
+      <WhatsAppBrochureModal
+        isOpen={brochureModalOpen}
+        onClose={() => setBrochureModalOpen(false)}
+        projectName="Shivani Vatika-11th"
+      />
     </motion.div>
   );
 }
