@@ -218,6 +218,27 @@ export default async function PlotsInJaipurPage({ params }: Props) {
               )}
             </p>
 
+            <div className="mt-6 flex flex-wrap items-center justify-center gap-2">
+              <Link
+                href="/plots-near-renwal-railway-station"
+                className="rounded-full border border-amber-400/40 bg-amber-400/10 px-3.5 py-1 text-xs font-medium text-amber-200 hover:bg-amber-400/20"
+              >
+                📍 Plots Near Renwal Station →
+              </Link>
+              <Link
+                href="/plots-in-jaipur-under-20-lakhs"
+                className="rounded-full border border-amber-400/40 bg-amber-400/10 px-3.5 py-1 text-xs font-medium text-amber-200 hover:bg-amber-400/20"
+              >
+                💰 Budget Plots Under ₹ 20 Lakhs →
+              </Link>
+              <Link
+                href="/blog/jaipur-to-khatu-shyam-highway-land-rates-roi-2026"
+                className="rounded-full border border-white/20 bg-white/5 px-3.5 py-1 text-xs font-medium text-slate-300 hover:bg-white/10"
+              >
+                📊 Highway Land Rates Report 2026 →
+              </Link>
+            </div>
+
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <a
                 href="#projects-inventory"

@@ -48,6 +48,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
     ...getSitemapEntry('/', STATIC_LAST_MODIFIED, 'weekly', 1),
     ...getSitemapEntry('/plots-in-jaipur', STATIC_LAST_MODIFIED, 'weekly', 1.0),
+    ...getSitemapEntry('/plots-near-renwal-railway-station', STATIC_LAST_MODIFIED, 'weekly', 0.9),
+    ...getSitemapEntry('/plots-in-jaipur-under-20-lakhs', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/about', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/careers', STATIC_LAST_MODIFIED, 'monthly', 0.6),
     ...getSitemapEntry('/faq', STATIC_LAST_MODIFIED, 'monthly', 0.7),

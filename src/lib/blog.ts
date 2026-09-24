@@ -1470,6 +1470,146 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: '6 min read',
     readTimeHi: '6 मिनट पढ़ें',
   },
+  {
+    title:
+      'Jaipur to Khatu Shyam Ji 4-Lane Highway Expansion: Land Rates, Growth Corridors & ROI Report 2026',
+    titleHi:
+      'जयपुर से खाटू श्याम जी 4-लेन हाईवे विस्तार: ज़मीन के भाव, ग्रोथ कॉरिडोर और ROI रिपोर्ट 2026',
+    slug: 'jaipur-to-khatu-shyam-highway-land-rates-roi-2026',
+    excerpt:
+      'Detailed investor analysis of the Jaipur-Khatu Shyam Ji 4-lane highway expansion, land rate appreciation trends in Harsholi and Renwal, and projected 3-year returns on plotted townships.',
+    excerptHi:
+      'जयपुर-खाटू श्याम जी 4-लेन हाईवे विस्तार, हरसोली व रेनवाल में ज़मीनों के बढ़ते भाव, और गेटेड टाउनशिप्स पर 3-वर्षीय अनुमानित रिटर्न का विस्तृत निवेश विश्लेषण।',
+    content: `
+      <p>The <mark>Jaipur to Khatu Shyam Ji highway corridor</mark> has emerged as Rajasthan's premier high-velocity real estate growth zone. Driven by over 4 to 5 crore annual pilgrims visiting Shri Khatu Shyam Ji Temple and the ongoing 4-lane highway widening project, strategic land parcels along this route are experiencing historic capital appreciation.</p>
+      <h2>Key Growth Corridors: Harsholi & Renwal Hubs</h2>
+      <p>Strategically situated mid-way between Jaipur and Ringas, towns like <strong>Harsholi</strong> and <strong>Renwal</strong> are witnessing an industrial and residential renaissance:</p>
+      <ul>
+        <li><strong>RIICO Industrial Area Renwal:</strong> Creation of hundreds of micro and medium scale manufacturing enterprises driving immense white-collar workforce housing demand.</li>
+        <li><strong>Direct Railway Connectivity:</strong> Renwal Railway Station connects commuters directly to Jaipur Junction and Phulera Junction within 35 minutes.</li>
+        <li><strong>Commercial Strip Highway Real Estate:</strong> Gated residential townships situated within 500 meters of the highway boundary command 22% higher compound annual growth rate (CAGR).</li>
+      </ul>
+      <h2>Comparative Land Rates & Appreciation Curve (2024 - 2026)</h2>
+      <p>In 2024, average residential plot prices in plotted layouts ranged between ₹ 8,000 to ₹ 11,000 per sq. yd. In mid-2026, premium gated townships featuring grand entrance arches, boundary walls, underground electricity, and verified registry are trading between <strong>₹ 14,000 to ₹ 18,500 per sq. yd.</strong>, representing over 45% capital appreciation in 24 months.</p>
+      <h2>Why Verified Townships (Shivani Vatika 11th) Dominate Investor Demand</h2>
+      <p>Unlike unorganized agricultural plot cuttings that carry litigation and conversion risks, institutional developers like <strong>SVI Infra Solutions</strong> offer legally demarcated, registry-ready plots with clear documentation, providing institutional safety alongside high pilgrimage-driven appreciation.</p>
+    `,
+    contentHi: `
+      <p><mark>जयपुर से खाटू श्याम जी हाईवे कॉरिडोर</mark> राजस्थान का सबसे तेज़ी से बढ़ने वाला रियल एस्टेट निवेश हब बन चुका है। श्री खाटू श्याम जी मंदिर जाने वाले करोड़ों श्रद्धालुओं और 4-लेन चौड़ीकरण परियोजना के कारण इस रूट की ज़मीनों में ऐतिहासिक उछाल देखने को मिल रहा है।</p>
+      <h2>प्रमुख विकास क्षेत्र: हरसोली और रेनवाल</h2>
+      <p>जयपुर और रींगस के बीच स्थित <strong>हरसोली</strong> और <strong>रेनवाल</strong> आज निवेश का मुख्य केंद्र हैं:</p>
+      <ul>
+        <li><strong>रीको (RIICO) इंडस्ट्रियल एरिया रेनवाल:</strong> सैकड़ों औद्योगिक इकाइयों की स्थापना से आवासीय प्लॉट्स की मांग में भारी इज़ाफ़ा।</li>
+        <li><strong>रेलवे कनेक्टिविटी:</strong> रेनवाल रेलवे स्टेशन से मात्र 35 मिनट में जयपुर जंक्शन की सीधी कनेक्टिविटी।</li>
+        <li><strong>हाईवे से निकटता:</strong> हाईवे से 500 मीटर के दायरे में स्थित गेटेड टाउनशिप्स 22% से अधिक सालाना ग्रोथ रेट दर्ज कर रही हैं।</li>
+      </ul>
+      <h2>2026 में निवेश के फायदे</h2>
+      <p><strong>शिवानी वाटिका 11th</strong> जैसी प्रीमियम गेटेड टाउनशिप्स में 100% स्पष्ट रजिस्ट्री, पक्की डामर सड़कें, बाउंड्री वॉल और तुरंत पज़ेशन मिलने के कारण छोटे और बड़े दोनों निवेशकों के लिए यह सबसे सुरक्षित विकल्प बन गया है।</p>
+    `,
+    takeaways: [
+      'Annual highway pilgrimage footfall exceeds 4.5 crore travelers driving rental & commercial value',
+      'Harsholi and Renwal residential plots registered ~45% capital growth between 2024 and 2026',
+      'Verified registry and boundary demarcations protect buyers from conversion risks',
+      'Free doorstep cab site visits allow outstation buyers to inspect on-ground progress',
+    ],
+    takeawaysHi: [
+      'सालाना 4.5 करोड़ से अधिक श्रद्धालुओं की आवाजाही से हाईवे प्रॉपर्टीज की वैल्यू में रिकॉर्ड वृद्धि',
+      'हरसोली व रेनवाल में 2024 से 2026 के बीच 45% तक का कैपिटल एप्रिसिएशन',
+      '100% स्पष्ट रजिस्ट्री और बाउंड्री वॉल से सुरक्षित निवेश',
+      'जयपुर से फ्री कैब साइट विजिट सुविधा उपलब्ध',
+    ],
+    author: 'SVI Research Bureau',
+    date: '2026-09-24',
+    category: 'Market Analysis',
+    categoryHi: 'बाज़ार विश्लेषण',
+    image: '/Shivani Vatika 11/gate.webp',
+    tags: [
+      'Khatu Shyam Highway',
+      'Plots in Jaipur',
+      'Harsholi',
+      'Renwal',
+      'Land Investment',
+      'ROI 2026',
+    ],
+    tagsHi: [
+      'खाटू श्याम हाईवे',
+      'जयपुर में प्लॉट्स',
+      'हरसोली',
+      'रेनवाल',
+      'ज़मीन निवेश',
+      'ROI 2026',
+    ],
+    readTime: '5 min read',
+    readTimeHi: '5 मिनट पढ़ें',
+  },
+  {
+    title:
+      'JDA Approved vs 90A Registry Plots in Rajasthan: Complete Buyer Due Diligence Guide 2026',
+    titleHi:
+      'राजस्थान में JDA अप्रूव्ड बनाम 90A रजिस्ट्री प्लॉट्स: खरीदारों के लिए संपूर्ण कानूनी गाइड 2026',
+    slug: 'jda-approved-vs-90a-registry-plots-rajasthan-guide',
+    excerpt:
+      'Clear legal breakdown of JDA approval, Section 90-A conversion, registry documentation, and essential title checks before buying residential land in Jaipur.',
+    excerptHi:
+      'जयपुर और राजस्थान में आवासीय ज़मीन खरीदने से पहले JDA अप्रूवल, धारा 90-A कन्वर्जन, रजिस्ट्री दस्तावेज़ और टाइटल चेक की संपूर्ण कानूनी जानकारी।',
+    content: `
+      <p>Buying land in Jaipur is one of the highest returning investments in North India, but navigating legal terms like <em>JDA Approved</em>, <em>Section 90-A</em>, and <em>Khatedari Land</em> can be daunting for first-time buyers and NRI investors.</p>
+      <h2>What is Section 90-A Land Conversion in Rajasthan?</h2>
+      <p>Under the Rajasthan Land Revenue Act, agricultural land cannot be directly divided into residential plots. <strong>Section 90-A</strong> is the legal procedure whereby the state revenue authority formally converts agricultural land into non-agricultural (residential or commercial) use after surveying master plans and collecting conversion charges.</p>
+      <h2>Essential Buyer Due Diligence Checklist Before Paying Token Money</h2>
+      <ol>
+        <li><strong>Jamabandi (Record of Rights):</strong> Verify latest Jamabandi online via Rajasthan Apna Khata to confirm the owner's legal title.</li>
+        <li><strong>Mutation (Dakhil Kharij):</strong> Ensure that the land developer has completed mutation in the revenue records.</li>
+        <li><strong>Demarcated Site Plan & Layout Approval:</strong> Individual plots must have designated corner markers, clear road widths (minimum 30 to 40 feet), and open community spaces.</li>
+        <li><strong>Encumbrance Certificate:</strong> Confirm that the parcel is free from agricultural mortgage loans (KCC) or court stays.</li>
+      </ol>
+      <h2>How SVI Infra Solutions Ensures 100% Clean Title Deeds</h2>
+      <p>Every township delivered by SVI Infra undergoes a 5-tier legal audit by senior revenue advocates. All buyers receive registered sale deeds, undisputed mutation paperwork, and physical on-site possession with boundary demarcation.</p>
+    `,
+    contentHi: `
+      <p>राजस्थान में ज़मीन खरीदना सबसे लाभदायक निवेश माना जाता है, लेकिन <em>JDA अप्रूव्ड</em>, <em>धारा 90-A</em> और <em>खातेदारी ज़मीन</em> जैसे कानूनी शब्दों को समझना खरीदार के लिए बेहद आवश्यक है।</p>
+      <h2>राजस्थान में धारा 90-A कन्वर्जन क्या है?</h2>
+      <p>राजस्थान भू-राजस्व अधिनियम के तहत कृषि भूमि पर सीधे आवासीय प्लॉट नहीं काटे जा सकते। <strong>धारा 90-A</strong> वह कानूनी प्रक्रिया है जिसके ज़रिए राजस्व विभाग कृषि भूमि को गैर-कृषि (आवासीय/व्यावसायिक) में परिवर्तित करता है।</p>
+      <h2>प्लॉट खरीदने से पहले कानूनी चेकलिस्ट:</h2>
+      <ol>
+        <li><strong>जमाबंदी और खाता नकल:</strong> अपना खाता पोर्टल पर मालिक का नाम और खसरा नंबर चेक करें।</li>
+        <li><strong>दाखिल खारिज (Mutation):</strong> कन्वर्जन के बाद नाम हस्तांतरण सत्यापित करें।</li>
+        <li><strong>नक्शा और सीमांकन:</strong> 30-40 फीट चौड़ी सड़कें और प्लॉट्स के पक्के पिलर होने चाहिए।</li>
+        <li><strong>भार-मुक्त प्रमाण पत्र (NOC):</strong> सुनिश्चित करें कि ज़मीन पर कोई बैंक लोन (KCC) बकाया न हो।</li>
+      </ol>
+    `,
+    takeaways: [
+      'Section 90-A legally converts agricultural land to authorized residential or commercial use',
+      'Always inspect latest Jamabandi and verified revenue mutation before token payment',
+      'SVI Infra provides end-to-end legal title verification and direct sub-registrar deed execution',
+    ],
+    takeawaysHi: [
+      'धारा 90-A कृषि भूमि को कानूनी रूप से आवासीय उपयोग में परिवर्तित करती है',
+      'टोकन देने से पहले जमाबंदी और दाखिल खारिज का सत्यापन अनिवार्य है',
+      'SVI Infra Solutions द्वारा 100% स्पष्ट टाइटल और उप-पंजीयक कार्यालय में सीधी रजिस्ट्री दी जाती है',
+    ],
+    author: 'Legal & Regulatory Cell',
+    date: '2026-09-24',
+    category: 'Legal & Guidelines',
+    categoryHi: 'कानून और नियम',
+    image: '/images/project1.png',
+    tags: [
+      '90A Registry',
+      'JDA Approved',
+      'Jaipur Land Buying Guide',
+      'Legal Due Diligence',
+      'Rajasthan Real Estate',
+    ],
+    tagsHi: [
+      '90A रजिस्ट्री',
+      'JDA अप्रूव्ड',
+      'जयपुर ज़मीन गाइड',
+      'कानूनी सलाह',
+      'राजस्थान रियल एस्टेट',
+    ],
+    readTime: '6 min read',
+    readTimeHi: '6 मिनट पढ़ें',
+  },
 ];
 
 export const BLOG_POST_MAP = Object.fromEntries(BLOG_POSTS.map((post) => [post.slug, post]));
