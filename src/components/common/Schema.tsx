@@ -19,10 +19,32 @@ const ORG_SCHEMA = {
   },
   contactPoint: {
     '@type': 'ContactPoint',
-    telephone: '+91-9216014579',
+    telephone: '+91-73000-07643',
     contactType: 'sales',
     availableLanguage: ['English', 'Hindi'],
   },
+  areaServed: [
+    {
+      '@type': 'City',
+      name: 'Jaipur',
+      description:
+        'Primary residential township and plot developments (Khatu Shyam Highway, Nayla, Renwal)',
+    },
+    {
+      '@type': 'City',
+      name: 'Noida',
+      description: 'Corporate headquarters and North India operations',
+    },
+    {
+      '@type': 'AdministrativeArea',
+      name: 'Rajasthan',
+    },
+    {
+      '@type': 'City',
+      name: 'Phulera',
+      description: 'Smart city industrial and DMIC corridor projects',
+    },
+  ],
   sameAs: [
     'https://www.facebook.com/sviinfrasolutions',
     'https://www.instagram.com/sviinfrasolutions',
