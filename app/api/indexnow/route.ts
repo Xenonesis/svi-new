@@ -5,7 +5,7 @@ import { SITE_URL } from '@/src/lib/seo';
  * IndexNow Protocol Key
  * Allows real-time programmatic crawl notification to Bing, Yandex, Seznam, and participating search engines.
  */
-export const INDEXNOW_KEY = 'e57c6b9074d24177b9605809115f2e8f';
+const INDEXNOW_KEY = 'e57c6b9074d24177b9605809115f2e8f';
 
 export async function POST(request: Request) {
   try {
