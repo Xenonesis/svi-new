@@ -44,9 +44,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     : 'Plots for Sale in Phulera | Residential Plots in Phulera Smart City | SVI Infra';
 
   const description = isHindi
-    ? 'फुलेरा स्मार्ट सिटी (DMIC एवं वेस्टर्न DFC रेलवे कॉरिडोर) में 100% स्पष्ट रजिस्ट्री आवासीय व कमर्शियल प्लॉट्स। फुलेरा जंक्शन, जयपुर-अजमेर एक्सप्रेसवे से 45 मिनट, कम बजट में 15-20% उच्च वार्षिक रिटर्न और फ्री कैब साइट विजिट।'
-    : 'Buy premium residential & commercial plots in Phulera Smart City along the Delhi-Mumbai Industrial Corridor (DMIC) & Western DFC rail junction. Low-entry investment with 15-20% projected annual appreciation, clear registry & Jaipur expressway connectivity.';
-
+    ? 'फुलेरा स्मार्ट सिटी (DMIC एवं वेस्टर्न DFC रेलवे कॉरिडोर) में 100% स्पष्ट रजिस्ट्री आवासीय व कमर्शियल प्लॉट्स। फुलेरा जंक्शन, जयपुर-अजमेर एक्सप्रेसवे से 45 मिनट, उच्च विकास क्षमता, स्पष्ट टाइटल और फ्री कैब साइट विजिट।'
+    : 'Buy premium residential & commercial plots in Phulera Smart City along the Delhi-Mumbai Industrial Corridor (DMIC) & Western DFC rail junction. High-growth land with clear registry, master-planned amenities & Jaipur expressway connectivity.';
   return {
     title: {
       absolute: title,
@@ -92,7 +91,7 @@ const PHULERA_FAQS_EN: PhuleraFaqItem[] = [
   {
     question: 'Why are plots for sale in Phulera considered a high-growth real estate investment?',
     answer:
-      'Phulera is the principal logistics and freight intersection of the Delhi-Mumbai Industrial Corridor (DMIC) and the Western Dedicated Freight Corridor (DFC) in Rajasthan. With inland container depots, warehousing parks, and manufacturing clusters expanding rapidly, land in the Phulera corridor projects an estimated 15–20% annual capital appreciation rate.',
+      'Phulera is the principal logistics and freight intersection of the Delhi-Mumbai Industrial Corridor (DMIC) and the Western Dedicated Freight Corridor (DFC) in Rajasthan. With inland container depots, warehousing parks, and manufacturing clusters expanding rapidly, land in the Phulera corridor has historically exhibited strong appreciation trends (illustrative 15–20% estimate; actual property values depend on market dynamics, demand, and infrastructure development).',
   },
   {
     question: 'What plot sizes and categories are available in the Phulera Smart City corridor?',
@@ -127,7 +126,7 @@ const PHULERA_FAQS_HI: PhuleraFaqItem[] = [
   {
     question: 'फुलेरा में प्लॉट्स खरीदना भविष्य के लिए सबसे बेहतरीन निवेश क्यों है?',
     answer:
-      'फुलेरा दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) और वेस्टर्न डेडिकेटेड फ्रेट कॉरिडोर (DFC) का प्रमुख रणनीतिक केंद्र है। वेयरहाउसिंग, इनलैंड कंटेनर डिपो (ICD) और लॉजिस्टिक्स पार्क्स के तीव्र विस्तार के चलते यहाँ प्लॉट्स में 15–20% वार्षिक विकास दर (Capital Appreciation) का अनुमान है।',
+      'फुलेरा दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) और वेस्टर्न डेडिकेटेड फ्रेट कॉरिडोर (DFC) का प्रमुख रणनीतिक केंद्र है। वेयरहाउसिंग, इनलैंड कंटेनर डिपो (ICD) और लॉजिस्टिक्स पार्क्स के तीव्र विस्तार के चलते इस क्षेत्र में मजबूत विकास क्षमता देखी गई है (सांकेतिक 15–20% अनुमान; वास्तविक कीमतें बाजार परिस्थितियों और विकास पर निर्भर करती हैं)।',
   },
   {
     question: 'फुलेरा स्मार्ट सिटी कॉरिडोर में किस साइज के प्लॉट्स उपलब्ध हैं?',
@@ -311,18 +310,17 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                 <>
                   दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) और वेस्टर्न DFC रेलवे जंक्शन पर रणनीतिक
                   निवेश। 100% स्पष्ट रजिस्ट्री, 80 से 250 वर्ग गज के आवासीय व कमर्शियल प्लॉट्स,
-                  जयपुर से मात्र 45 मिनट की दूरी एवं 15-20% वार्षिक विकास दर।
+                  जयपुर से मात्र 45 मिनट की दूरी एवं उच्च विकास क्षमता।
                 </>
               ) : (
                 <>
                   Secure prime residential and commercial plots in Rajasthan&apos;s fastest-growing
                   multi-modal logistics hub. Strategically positioned on the Delhi-Mumbai Industrial
-                  Corridor (DMIC) with 15–20% projected annual appreciation, clear registry, and 45
-                  minutes connectivity to central Jaipur.
+                  Corridor (DMIC) with high growth potential, clear registry, and 45 minutes
+                  connectivity to central Jaipur.
                 </>
               )}
             </p>
-
             {/* Hero CTAs */}
             <div className="mt-8 flex flex-wrap items-center justify-center gap-4">
               <Link
@@ -366,8 +364,8 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                   icon: Compass,
                 },
                 {
-                  label: isHindi ? '15–20% वार्षिक ROI' : '15–20% Projected Growth',
-                  sub: isHindi ? 'तीव्र कैपिटल एप्रिसिएशन' : 'High Capital Appreciation',
+                  label: isHindi ? 'उच्च विकास क्षमता' : 'High Growth Corridor',
+                  sub: isHindi ? 'लॉजिस्टिक्स व DMIC हब' : 'Logistics & DMIC Hub',
                   icon: TrendingUp,
                 },
               ].map((h, i) => (
@@ -467,8 +465,8 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                   ? 'लाखों का रोजगार एवं आवास की भारी मांग'
                   : 'High Rental Yield & Sustained Appreciation',
                 desc: isHindi
-                  ? 'मैन्युफैक्चरिंग इकाइयों और लॉजिस्टिक्स कंपनियों से हज़ारों नए कर्मियों का आगमन आवासीय किराये और ज़मीन के मूल्यों को नई ऊँचाइयों पर ले जा रहा है।'
-                  : 'Sustained industrial employment drives steady residential rental yields and 15–20% year-on-year land valuation compounding.',
+                  ? 'मैन्युफैक्चरिंग इकाइयों और लॉजिस्टिक्स कंपनियों से नए कर्मियों का आगमन आवासीय किराये और ज़मीन के मूल्यों को निरंतर गति प्रदान कर रहा है।'
+                  : 'Sustained industrial employment drives steady residential rental yields and robust long-term land valuation growth.',
               },
             ].map((adv, i) => (
               <div

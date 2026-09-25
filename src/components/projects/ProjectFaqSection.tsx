@@ -45,9 +45,9 @@ export const SHIVANI_VATIKA_FAQS: ProjectFaqItem[] = [
     question: 'How far is Shivani Vatika 11th from Khatu Shyam Ji Temple?',
     questionHi: 'शिवानी वाटिका 11th से खाटू श्याम जी मंदिर कितनी दूरी पर है?',
     answer:
-      'Shivani Vatika 11th is located approximately 28 km from Shree Khatu Shyam Ji Mandir, translating to a smooth 20 to 25 minutes drive along the direct 4-lane highway corridor. Because the project sits directly on the primary pilgrimage route, it enjoys sustained commercial footfall, hospitality potential, and rapid capital appreciation.',
+      'Shivani Vatika 11th is located approximately 25 to 28 km from Shree Khatu Shyam Ji Mandir, translating to a smooth 20 to 25 minutes drive along the direct 4-lane highway corridor. Because the project sits directly on the primary pilgrimage route, it enjoys sustained commercial footfall, hospitality potential, and solid capital appreciation.',
     answerHi:
-      'शिवानी वाटिका 11th श्री खाटू श्याम जी मंदिर से लगभग 28 किमी की दूरी पर स्थित है, जहाँ सीधे 4-लेन राजमार्ग द्वारा केवल 20 से 25 मिनट में पहुँचा जा सकता है। तीर्थ यात्रा मार्ग पर मुख्य हाईवे फ्रंट पर होने के कारण यहाँ साल भर श्रद्धालुओं का आवागमन रहता है जिससे जमीन के दामों में निरंतर वृद्धि हो रही है।',
+      'शिवानी वाटिका 11th श्री खाटू श्याम जी मंदिर से लगभग 25 से 28 किमी की दूरी पर स्थित है, जहाँ सीधे 4-लेन राजमार्ग द्वारा केवल 20 से 25 मिनट में पहुँचा जा सकता है। तीर्थ यात्रा मार्ग पर मुख्य हाईवे फ्रंट पर होने के कारण यहाँ साल भर श्रद्धालुओं का आवागमन रहता है जिससे जमीन के दामों में निरंतर वृद्धि हो रही है।',
   },
   {
     id: 'plot-sizes-available',
@@ -67,9 +67,9 @@ export const SHIVANI_VATIKA_FAQS: ProjectFaqItem[] = [
     question: 'What are the pricing and payment options?',
     questionHi: 'प्लॉट्स की कीमतें और भुगतान के विकल्प क्या हैं?',
     answer:
-      'Plots at Shivani Vatika 11th start at affordable introductory brackets offering exceptional investment value compared to saturated Jaipur suburbs. SVI Infra Solutions guarantees transparent pricing without hidden brokerage or development fees, along with flexible construction-linked payment milestones and seamless home loan/land loan assistance through leading banking partners.',
+      'Residential plots at Shivani Vatika 11th start from ₹ 7,500 per sq. yd., meaning an 80 sq. yd. plot starts at approximately ₹ 15 Lakhs*. SVI Infra Solutions guarantees transparent developer pricing without brokerage or hidden development charges, along with flexible construction-linked payment milestones and seamless bank loan assistance.',
     answerHi:
-      'शिवानी वाटिका 11th में प्लॉट्स की कीमतें जयपुर के अन्य उपनगरों की तुलना में अत्यंत किफायती और उच्च रिटर्न (ROI) देने वाली हैं। एसवीआई इन्फ्रा सॉल्यूशंस बिना किसी छुपे शुल्क या ब्रोकरेज के 100% पारदर्शी मूल्य निर्धारण, आसान किस्त योजनाएं और प्रमुख बैंकों से त्वरित लोन सहायता प्रदान करता है।',
+      'शिवानी वाटिका 11th में आवासीय प्लॉट्स की कीमतें मात्र ₹ 7,500 प्रति वर्ग गज से शुरू होती हैं, यानी 80 वर्ग गज का प्लॉट लगभग ₹ 15 लाख* से उपलब्ध है। एसवीआई इन्फ्रा सॉल्यूशंस बिना किसी छुपे शुल्क या ब्रोकरेज के 100% पारदर्शी मूल्य निर्धारण, निर्माण-आधारित आसान किस्त योजनाएं और प्रमुख बैंकों से त्वरित लोन सहायता प्रदान करता है।',
   },
   {
     id: 'approvals-documentation',

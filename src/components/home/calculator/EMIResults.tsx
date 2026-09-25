@@ -93,8 +93,9 @@ export default function EMIResults({
             ₹ {projectedValuation.toLocaleString('en-IN')}
           </div>
           <p className="mt-1 text-[10px] text-gray-300">
-            Illustrative estimate based on ~14% historical growth trend. Real estate returns depend
-            on market conditions and are not guaranteed.
+            Illustrative projection based on an assumed annual growth rate. Actual property values
+            may vary depending on market conditions, demand, infrastructure development and other
+            factors. Real estate investments are subject to market risks.
           </p>
         </div>
       </div>

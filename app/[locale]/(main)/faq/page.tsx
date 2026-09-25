@@ -73,7 +73,13 @@ export default async function FAQPage({ params }: Props) {
       {/* FAQ Content */}
       <section className="bg-white py-16 dark:bg-gray-900">
         <div className="container mx-auto px-4">
-          <FAQSection items={faqs} variant="none" hideCTA={false} defaultActiveIndex={-1} />
+          <FAQSection
+            items={faqs}
+            variant="none"
+            hideCTA={false}
+            defaultActiveIndex={-1}
+            showStructuredData={false}
+          />
         </div>
       </section>
     </div>

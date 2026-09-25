@@ -382,6 +382,97 @@ export default async function PlotsInJaipurPage({ params }: Props) {
         </div>
       </section>
 
+      {/* Corridor Deep-Dive Interlinking Hub */}
+      <section className="border-t border-white/10 bg-slate-950/60 py-16">
+        <div className="container mx-auto px-4 sm:px-6">
+          <div className="mx-auto mb-10 max-w-3xl text-center">
+            <span className="text-xs font-bold tracking-widest text-amber-400 uppercase">
+              {isHindi ? 'विशिष्ट क्षेत्र व कॉरिडोर' : 'Explore Dedicated Corridors'}
+            </span>
+            <h2 className="mt-2 font-serif text-2xl font-bold text-white sm:text-3xl">
+              {isHindi
+                ? 'जयपुर क्षेत्र के प्रमुख निवेश गलियारे'
+                : 'Primary Jaipur Plotted Investment Corridors'}
+            </h2>
+            <p className="mt-2 text-xs text-slate-400 sm:text-sm">
+              {isHindi
+                ? 'सत्यापित कानूनी दस्तावेज़ों और सीधी कनेक्टिविटी वाले समर्पित कॉरिडोर पेजों पर जाएँ।'
+                : 'Direct access to high-intent location guides with verified revenue clearances and pricing.'}
+            </p>
+          </div>
+
+          <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <Link
+              href="/plots-for-sale-near-khatu-shyam-ji"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-900/50 p-6 transition-all duration-300 hover:border-amber-500/40 hover:bg-slate-900/80"
+            >
+              <div>
+                <span className="text-[10px] font-bold tracking-wider text-amber-400 uppercase">
+                  NHAI 4-Lane Belt
+                </span>
+                <h3 className="mt-2 font-serif text-lg font-bold text-white transition-colors group-hover:text-amber-200">
+                  {isHindi ? 'खाटू श्याम जी के पास प्लॉट्स' : 'Plots Near Khatu Shyam Ji'}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  {isHindi
+                    ? '4-लेन जयपुर-खाटू हाईवे, 20-25 मिनट मंदिर से दूरी, शिवानी वाटिका 11th टाउनशिप।'
+                    : '20-25 mins from sacred temple, 4-lane expressway corridor, Shivani Vatika 11th.'}
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                <span>{isHindi ? 'विस्तृत विवरण देखें' : 'View Corridor Plots'}</span>
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+
+            <Link
+              href="/plots-for-sale-in-phulera"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-900/50 p-6 transition-all duration-300 hover:border-amber-500/40 hover:bg-slate-900/80"
+            >
+              <div>
+                <span className="text-[10px] font-bold tracking-wider text-amber-400 uppercase">
+                  DMIC & DFC Freight Hub
+                </span>
+                <h3 className="mt-2 font-serif text-lg font-bold text-white transition-colors group-hover:text-amber-200">
+                  {isHindi ? 'फुलेरा स्मार्ट सिटी में प्लॉट्स' : 'Plots in Phulera Smart City'}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  {isHindi
+                    ? 'वेस्टर्न DFC रेलवे जंक्शन और सांभर लॉजिस्टिक्स पार्क के निकट आवासीय व औद्योगिक भूखंड।'
+                    : 'Western DFC freight junction, industrial logistics corridor, plots from ₹ 15 Lakhs*.'}
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                <span>{isHindi ? 'विस्तृत विवरण देखें' : 'View Corridor Plots'}</span>
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+
+            <Link
+              href="/plots-near-renwal-railway-station"
+              className="group flex flex-col justify-between rounded-2xl border border-white/10 bg-slate-900/50 p-6 transition-all duration-300 hover:border-amber-500/40 hover:bg-slate-900/80"
+            >
+              <div>
+                <span className="text-[10px] font-bold tracking-wider text-amber-400 uppercase">
+                  RIICO Industrial Zone
+                </span>
+                <h3 className="mt-2 font-serif text-lg font-bold text-white transition-colors group-hover:text-amber-200">
+                  {isHindi ? 'रेनवाल रेलवे स्टेशन के पास प्लॉट्स' : 'Plots Near Renwal Station'}
+                </h3>
+                <p className="mt-2 text-xs leading-relaxed text-slate-400">
+                  {isHindi
+                    ? 'जयपुर जंक्शन तक 35 मिनट की ट्रेन, 64 एकड़ रीको इंडस्ट्रियल एरिया से मात्र 1 किमी।'
+                    : '35 mins express train to Jaipur Junction, 1 km from 64-acre operational RIICO hub.'}
+                </p>
+              </div>
+              <div className="mt-4 flex items-center gap-1.5 text-xs font-bold text-amber-300">
+                <span>{isHindi ? 'विस्तृत विवरण देखें' : 'View Corridor Plots'}</span>
+                <ArrowRight size={14} className="transition-transform group-hover:translate-x-1" />
+              </div>
+            </Link>
+          </div>
+        </div>
+      </section>
       {/* FAQs Section */}
       <section className="border-t border-white/10 bg-slate-900/40 py-16 sm:py-24">
         <div className="container mx-auto px-4 sm:px-6">

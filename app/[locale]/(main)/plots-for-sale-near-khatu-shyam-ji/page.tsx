@@ -110,7 +110,7 @@ const KHATU_FAQS_EN: FAQItem[] = [
     question:
       'Why is the Jaipur–Khatu Shyam Ji Highway corridor experiencing rapid property appreciation?',
     answer:
-      'The corridor benefits from massive pilgrimage footfall exceeding 4.5 crore annual devotees, the ongoing 4-lane highway expansion, and its strategic location adjacent to the 64-acre operational RIICO Industrial Area Renwal (1 km) and corporate logistics hubs (Adani and Ambani warehousing). These factors generate 15% to 20% annual capital appreciation and strong rental yield demand.',
+      'The corridor benefits from substantial pilgrimage footfall (estimated up to 4–4.5 crore annual devotees during peak mela cycles), the ongoing 4-lane highway expansion, and its strategic location adjacent to the 64-acre operational RIICO Industrial Area Renwal (1 km) and corporate logistics hubs. These factors have historically driven strong capital appreciation trends (often estimated at 15% to 20% in market surveys, though actual property values depend on market dynamics, demand, and infrastructure delivery) along with consistent rental yield interest.',
   },
   {
     question:
@@ -151,7 +151,7 @@ const KHATU_FAQS_HI: FAQItem[] = [
     question:
       'जयपुर-खाटू श्याम जी हाईवे कॉरिडोर में प्रॉपर्टी की कीमतें तेजी से क्यों बढ़ रही हैं?',
     answer:
-      'खाटू धाम में प्रतिवर्ष 4.5+ करोड़ श्रद्धालुओं का आगमन, 4-लेन हाईवे का विस्तार, 1 किमी पर 64 एकड़ में विस्तृत रीको इंडस्ट्रियल एरिया, 5 मिनट पर रेणवाल रेलवे स्टेशन और पास में अडानी-अंबानी वेयरहाउसिंग हब इस कॉरिडोर को 15-20% वार्षिक पूंजीगत वृद्धि और मजबूत रेंटल डिमांड प्रदान करते हैं।',
+      'खाटू धाम में प्रतिवर्ष करोड़ों श्रद्धालुओं का आगमन (मेला चक्रों में 4-4.5 करोड़ तक अनुमानित), 4-लेन हाईवे का विस्तार, 1 किमी पर 64 एकड़ में विस्तृत रीको इंडस्ट्रियल एरिया, 5 मिनट पर रेणवाल रेलवे स्टेशन और पास में वेयरहाउसिंग हब इस कॉरिडोर में मजबूत निवेश मांग पैदा करते हैं (मार्केट अध्ययनों के अनुसार 15-20% की ऐतिहासिक वृद्धि दर, हालांकि भविष्य की कीमतें बाजार परिस्थितियों और इंफ्रास्ट्रक्चर प्रगति पर निर्भर करती हैं)।',
   },
   {
     question: 'शिवानी वाटिका 11th से रेणवाल रेलवे स्टेशन और रीको इंडस्ट्रियल एरिया कितना दूर है?',
