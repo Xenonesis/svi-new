@@ -28,7 +28,7 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
       'Direct highway corridor connecting Jaipur to the sacred Khatu Shyam Dham, adjacent to RIICO Industrial Area and Renwal Railway Station.',
     metaTitle: 'Plots on Jaipur to Khatu Shyam Ji Highway Harsholi | SVI Infra',
     metaDescription:
-      'Explore Shivani Vatika 11th on Jaipur to Khatu Shyam Ji Highway - Harsholi. RERA-approved plots with immediate highway connectivity, RIICO proximity, and clear documentation.',
+      'Explore Shivani Vatika 11th on Jaipur to Khatu Shyam Ji Highway - Harsholi. Section 90-A conversion approved plots with immediate highway connectivity, RIICO proximity, and clear registry title.',
     metaTitleHi: 'जयपुर से खाटू श्याम जी हाईवे हरसोली में प्लॉट्स | SVI Infra',
     metaDescriptionHi:
       'जयपुर से खाटू श्याम जी हाईवे - हरसोली (शिवानी वाटिका 11th) में आवासीय भूखंड। रीको औद्योगिक क्षेत्र और रेणवाल रेलवे स्टेशन के पास।',

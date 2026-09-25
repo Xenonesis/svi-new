@@ -203,9 +203,10 @@ const Footer = memo(function Footer() {
                 </Link>
               </li>
               {[
+                { label: 'Plots Near Khatu Shyam Ji', href: '/plots-for-sale-near-khatu-shyam-ji' },
+                { label: 'Plots in Phulera Smart City', href: '/plots-for-sale-in-phulera' },
                 { label: t('footer.khatuHighway'), href: '/projects/shivani-vatika-11th' },
                 { label: t('footer.nayla'), href: '/projects/shivani-vatika' },
-                { label: t('footer.phulera'), href: '/areas/phulera-smart-city' },
               ].map(({ label, href }) => (
                 <li key={href}>
                   <Link

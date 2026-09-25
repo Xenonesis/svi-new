@@ -50,6 +50,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...getSitemapEntry('/plots-in-jaipur', STATIC_LAST_MODIFIED, 'weekly', 1.0),
     ...getSitemapEntry('/plots-near-renwal-railway-station', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/plots-in-jaipur-under-20-lakhs', STATIC_LAST_MODIFIED, 'weekly', 0.9),
+    ...getSitemapEntry('/plots-for-sale-near-khatu-shyam-ji', STATIC_LAST_MODIFIED, 'weekly', 1.0),
+    ...getSitemapEntry('/plots-for-sale-in-phulera', STATIC_LAST_MODIFIED, 'weekly', 1.0),
     ...getSitemapEntry('/about', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/careers', STATIC_LAST_MODIFIED, 'monthly', 0.6),
     ...getSitemapEntry('/faq', STATIC_LAST_MODIFIED, 'monthly', 0.7),

@@ -21,6 +21,8 @@ import ProjectLocationMap from '@/src/components/projects/ProjectLocationMap';
 import ProjectNearbyPlaces from '@/src/components/projects/ProjectNearbyPlaces';
 import ProjectShowcaseGallery from '@/src/components/projects/ProjectShowcaseGallery';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
+import ProjectTransitMatrix from '@/src/components/projects/ProjectTransitMatrix';
+import ProjectFaqSection from '@/src/components/projects/ProjectFaqSection';
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
@@ -90,9 +92,15 @@ export default async function ProjectDetailPage({ params }: Props) {
     <div className="flex min-h-screen w-full flex-col bg-[#fdfbf7] pb-20 dark:bg-gray-900">
       <BreadcrumbSchema
         items={[
-          { name: 'Home', item: '/' },
-          { name: 'Projects', item: '/projects/current' },
-          { name: title, item: `/projects/${slug}` },
+          { name: isHindi ? 'होम' : 'Home', item: locale === 'en' ? '/' : `/${locale}` },
+          {
+            name: isHindi ? 'प्रोजेक्ट्स' : 'Projects',
+            item: locale === 'en' ? '/projects/current' : `/${locale}/projects/current`,
+          },
+          {
+            name: title,
+            item: locale === 'en' ? `/projects/${slug}` : `/${locale}/projects/${slug}`,
+          },
         ]}
       />
       <RealEstateListingSchema
@@ -101,7 +109,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         image={project.heroImage}
         location={location}
         status={project.status}
-        url={`${SITE_URL}/projects/${slug}`}
+        url={localizedUrl(`/projects/${slug}`, locale)}
       />
       <AnalyticsTracker event="project_view" data={{ slug }} />
 
@@ -191,11 +199,17 @@ export default async function ProjectDetailPage({ params }: Props) {
         subtitle={isHindi ? project.nearbySubheadlineHi : project.nearbySubheadline}
       />
 
+      {slug === 'shivani-vatika-11th' && <ProjectTransitMatrix isHindi={isHindi} />}
+
       <ProjectLocationMap
         mapEmbedUrl={project.mapEmbedUrl}
         mapUrl={project.mapUrl}
         isHindi={isHindi}
       />
+
+      {slug === 'shivani-vatika-11th' && (
+        <ProjectFaqSection isHindi={isHindi} projectName={title} />
+      )}
 
       {/* News Section */}
       <div className="container mx-auto max-w-7xl px-4">
