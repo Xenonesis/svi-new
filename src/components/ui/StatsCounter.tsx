@@ -23,7 +23,8 @@ export default function StatsCounter() {
     { end: 100, suffix: '%', label: t('successRate') },
   ];
 
-  const [counts, setCounts] = useState<number[]>(stats.map(() => 0));
+  // Initialize with target numbers to prevent "0+" SSR flash and ensure search crawlers index real numbers
+  const [counts, setCounts] = useState<number[]>(stats.map((s) => s.end));
   const sectionRef = useRef<HTMLDivElement>(null);
   const hasAnimated = useRef(false);
 
@@ -31,28 +32,37 @@ export default function StatsCounter() {
     const el = sectionRef.current;
     if (!el) return;
 
+    const startAnimation = () => {
+      if (hasAnimated.current) return;
+      hasAnimated.current = true;
+
+      const prefersReducedMotion =
+        typeof window !== 'undefined' &&
+        window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (prefersReducedMotion) return;
+
+      const duration = 2000;
+      const startTime = performance.now();
+
+      function animate(now: number) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = easeOutQuart(progress);
+
+        setCounts(stats.map((s) => Math.floor(eased * s.end)));
+
+        if (progress < 1) {
+          requestAnimationFrame(animate);
+        }
+      }
+
+      requestAnimationFrame(animate);
+    };
+
     const observer = new IntersectionObserver(
       ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          const duration = 2000;
-          const startValues = counts;
-          const startTime = performance.now();
-
-          function animate(now: number) {
-            const elapsed = now - startTime;
-            const progress = Math.min(elapsed / duration, 1);
-            const eased = easeOutQuart(progress);
-
-            const next = stats.map((s) => Math.floor(eased * s.end));
-            setCounts(next);
-
-            if (progress < 1) {
-              requestAnimationFrame(animate);
-            }
-          }
-
-          requestAnimationFrame(animate);
+        if (entry.isIntersecting) {
+          startAnimation();
         }
       },
       { threshold: 0.05 }
@@ -63,19 +73,7 @@ export default function StatsCounter() {
     // Fallback trigger for already-visible sections
     const fallback = setTimeout(() => {
       if (!hasAnimated.current && el.getBoundingClientRect().top < window.innerHeight) {
-        hasAnimated.current = true;
-        const startTime = performance.now();
-        const duration = 2000;
-
-        function animate(now: number) {
-          const elapsed = now - startTime;
-          const progress = Math.min(elapsed / duration, 1);
-          const eased = easeOutQuart(progress);
-          setCounts(stats.map((s) => Math.floor(eased * s.end)));
-          if (progress < 1) requestAnimationFrame(animate);
-        }
-
-        requestAnimationFrame(animate);
+        startAnimation();
       }
     }, 400);
 

@@ -26,12 +26,12 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     title: 'Premier Plotted Township on Jaipur – Khatu Shyam Ji Highway (Harsholi)',
     description:
       'Direct highway corridor connecting Jaipur to the sacred Khatu Shyam Dham, adjacent to RIICO Industrial Area and Renwal Railway Station.',
-    metaTitle: 'Plots on Jaipur to Khatu Shyam Ji Highway Harsholi | SVI Infra',
+    metaTitle: 'Jaipur to Khatu Shyam Ji Highway (Harsholi) Corridor & Area Guide',
     metaDescription:
-      'Explore Shivani Vatika 11th on Jaipur to Khatu Shyam Ji Highway - Harsholi. Section 90-A conversion approved plots with immediate highway connectivity, RIICO proximity, and clear registry title.',
-    metaTitleHi: 'जयपुर से खाटू श्याम जी हाईवे हरसोली में प्लॉट्स | SVI Infra',
+      'Comprehensive informational guide to the Jaipur to Khatu Shyam Ji Highway corridor at Harsholi. Explore RIICO industrial connectivity, Renwal rail transit, and regional infrastructure.',
+    metaTitleHi: 'जयपुर से खाटू श्याम जी हाईवे (हरसोली) - कॉरिडोर व क्षेत्र गाइड',
     metaDescriptionHi:
-      'जयपुर से खाटू श्याम जी हाईवे - हरसोली (शिवानी वाटिका 11th) में आवासीय भूखंड। रीको औद्योगिक क्षेत्र और रेणवाल रेलवे स्टेशन के पास।',
+      'जयपुर से खाटू श्याम जी हाईवे (हरसोली) कॉरिडोर की संपूर्ण सूचनात्मक गाइड: रीको औद्योगिक क्षेत्र, रेणवाल रेलवे कनेक्टिविटी और क्षेत्रीय विकास की पूरी जानकारी।',
     highlights: [
       'Direct frontage on Jaipur - Khatu Shyam Ji Highway',
       '1 km from 64-acre RIICO Industrial Area with 155+ planned units',
@@ -106,12 +106,12 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     title: 'Smart City Plots near Sambhar Lake & Phulera Junction',
     description:
       'Phulera is a mega industrial and logistics hub, situated strategically on the Delhi-Mumbai Industrial Corridor (DMIC).',
-    metaTitle: 'Plots in Phulera Smart City Jaipur | DMIC Corridor',
+    metaTitle: 'Phulera Smart City - DMIC Corridor & Regional Infrastructure Guide',
     metaDescription:
-      'Invest in Phulera Smart City, the logistics and industrial center of the Delhi-Mumbai Industrial Corridor. High ROI plots near Sambhar Lake.',
-    metaTitleHi: 'फुलेरा स्मार्ट सिटी जयपुर में प्लॉट्स | DMIC कॉरिडोर | SVI Infra',
+      'Complete regional profile of Phulera Smart City along the Delhi-Mumbai Industrial Corridor (DMIC). Detailed insights on the Western DFC rail hub and regional development.',
+    metaTitleHi: 'फुलेरा स्मार्ट सिटी - DMIC कॉरिडोर व क्षेत्रीय इंफ्रास्ट्रक्चर गाइड',
     metaDescriptionHi:
-      'फुलेरा स्मार्ट सिटी (DMIC कॉरिडोर) में आवासीय और कमर्शियल प्लॉट्स में निवेश करें। सांभर लेक के नजदीक उच्च विकास दर।',
+      'दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) के तहत फुलेरा स्मार्ट सिटी की संपूर्ण क्षेत्रीय प्रोफाइल। वेस्टर्न DFC रेल जंक्शन और क्षेत्रीय विकास की विस्तृत जानकारी।',
     highlights: [
       'Strategic location on the DMIC / Dedicated Freight Corridor (DFC)',
       "Near Phulera Junction, one of Rajasthan's busiest rail hubs",
