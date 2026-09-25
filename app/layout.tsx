@@ -121,6 +121,9 @@ export const metadata: Metadata = {
       'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
     images: [absoluteUrl('/og-image.jpg')],
   },
+  verification: {
+    google: 'google4cbc4b1a492a2b45',
+  },
 };
 
 export const viewport: Viewport = {

@@ -1,6 +1,12 @@
 {
   "cleanUrls": true,
   "trailingSlash": false,
+  "rewrites": [
+    {
+      "source": "/google4cbc4b1a492a2b45.html",
+      "destination": "/google4cbc4b1a492a2b45.html"
+    }
+  ],
   "framework": "nextjs",
   "buildCommand": "next build",
   "outputDirectory": ".next",
