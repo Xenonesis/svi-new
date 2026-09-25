@@ -37,9 +37,9 @@ export default function LeadershipSection() {
           </AnimatedSection>
 
           <AnimatedSection type="fadeLeft" className="w-full lg:w-7/12 lg:pl-12">
-            <h4 className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase sm:mb-4 dark:text-gray-500">
+            <p className="mb-3 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase sm:mb-4 dark:text-gray-500">
               {t('sectionTitle')}
-            </h4>
+            </p>
             <h2 className="text-brand-navy mb-6 font-serif text-3xl leading-tight sm:mb-8 sm:text-4xl md:text-5xl dark:text-gray-100">
               {t('heading')}
             </h2>

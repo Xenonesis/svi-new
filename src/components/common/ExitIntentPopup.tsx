@@ -117,6 +117,7 @@ export default function ExitIntentPopup() {
           >
             <button
               onClick={closeModal}
+              aria-label="Close offer dialog"
               className="absolute top-4 right-4 z-20 flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-gray-800 dark:hover:text-white"
             >
               <X size={18} />

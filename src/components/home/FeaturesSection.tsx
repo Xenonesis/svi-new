@@ -42,9 +42,9 @@ export default function FeaturesSection() {
           type="fadeUp"
           className="mx-auto mb-10 max-w-3xl text-center sm:mb-16 md:mb-20"
         >
-          <h4 className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-500 uppercase dark:text-gray-400">
+          <p className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-500 uppercase dark:text-gray-400">
             {t('sectionTitle')}
-          </h4>
+          </p>
           <h2 className="text-brand-navy mb-4 font-serif text-2xl sm:mb-6 sm:text-3xl md:text-5xl dark:text-gray-100">
             {t('heading')}
           </h2>

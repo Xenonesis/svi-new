@@ -65,9 +65,9 @@ export default function TimelineSection() {
 
       <div className="relative z-10 container mx-auto px-4">
         <div className="mb-10 text-center sm:mb-16 md:mb-20">
-          <h4 className="text-brand-gold mb-3 text-xs font-semibold tracking-[0.2em] uppercase sm:mb-4 sm:text-sm md:text-base">
+          <p className="text-brand-gold mb-3 text-xs font-semibold tracking-[0.2em] uppercase sm:mb-4 sm:text-sm md:text-base">
             {t('subtitle')}
-          </h4>
+          </p>
           <h2 className="font-serif text-2xl sm:text-3xl md:text-5xl">{t('title')}</h2>
         </div>
 

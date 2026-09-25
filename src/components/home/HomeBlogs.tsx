@@ -43,9 +43,9 @@ export default function HomeBlogs() {
         {/* Section header */}
         <div className="mb-10 flex flex-col gap-4 border-b border-gray-200 pb-6 sm:mb-16 sm:pb-8 md:flex-row md:items-end md:justify-between dark:border-gray-700">
           <AnimatedSection type="fadeLeft" className="max-w-2xl">
-            <h4 className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
+            <p className="mb-4 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
               {isHindi ? 'ब्लॉग एवं समाचार' : 'News & Insights'}
-            </h4>
+            </p>
             <h2 className="text-brand-navy mb-2 font-serif text-3xl md:text-5xl dark:text-gray-100">
               {t('heading')}
             </h2>

@@ -35,9 +35,9 @@ export default function TrustMetricsGrid() {
               <Icon size={24} />
             </div>
             <div>
-              <h3 className="font-serif text-base font-bold text-gray-900 dark:text-gray-100">
+              <h2 className="font-serif text-base font-bold text-gray-900 dark:text-gray-100">
                 {metric.title}
-              </h3>
+              </h2>
               <p className="mt-1 text-xs leading-relaxed font-normal text-gray-600 dark:text-gray-400">
                 {metric.desc}
               </p>

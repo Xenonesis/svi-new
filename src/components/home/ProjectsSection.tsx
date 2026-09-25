@@ -54,9 +54,9 @@ export default function ProjectsSection() {
       <div className="container mx-auto px-4">
         <div className="mb-10 flex flex-col gap-6 border-b border-gray-200 pb-6 sm:mb-12 sm:pb-8 md:flex-row md:items-end md:justify-between dark:border-gray-700">
           <AnimatedSection type="fadeLeft">
-            <h4 className="mb-2 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
+            <p className="mb-2 text-[10px] font-semibold tracking-[0.2em] text-gray-400 uppercase dark:text-gray-500">
               {t('sectionTitle')}
-            </h4>
+            </p>
             <h2 className="text-brand-navy font-serif text-3xl font-bold md:text-5xl dark:text-gray-100">
               {t('heading')}
             </h2>
