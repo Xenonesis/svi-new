@@ -140,6 +140,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   return (
     <html lang={locale} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head suppressHydrationWarning>
+        <meta name="google-site-verification" content="google4cbc4b1a492a2b45" />
         {/* OpenGraph & Social Image Fallback */}
         <link rel="image_src" href="https://www.sviinfrasolutions.com/og-image.jpg" />
         {/* Favicons and Touch Icons */}
