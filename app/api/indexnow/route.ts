@@ -15,10 +15,18 @@ export async function POST(request: Request) {
         ? body.urls
         : [
             `${SITE_URL}/plots-in-jaipur`,
+            `${SITE_URL}/plots-for-sale-near-khatu-shyam-ji`,
+            `${SITE_URL}/plots-for-sale-in-phulera`,
             `${SITE_URL}/plots-near-renwal-railway-station`,
             `${SITE_URL}/plots-in-jaipur-under-20-lakhs`,
-            `${SITE_URL}/blog/jaipur-to-khatu-shyam-highway-land-rates-roi-2026`,
-            `${SITE_URL}/blog/jda-approved-vs-90a-registry-plots-rajasthan-guide`,
+            `${SITE_URL}/blog/buy-residential-plots-near-khatu-shyam-ji-temple-guide`,
+            `${SITE_URL}/blog/plots-for-sale-in-phulera-smart-city-dmic-rates`,
+            `${SITE_URL}/blog/shivani-vatika-11th-official-price-list-master-plan-2026`,
+            `${SITE_URL}/blog/govt-approved-vs-90a-registry-plots-khatu-shyam-ji-checklist`,
+            `${SITE_URL}/blog/plots-near-renwal-railway-station-riico-industrial-guide`,
+            `${SITE_URL}/blog/jaipur-khatu-shyam-4-lane-highway-expansion-timeline-impact`,
+            `${SITE_URL}/blog/how-to-buy-residential-plot-rajasthan-nri-outstation-devotees`,
+            `${SITE_URL}/blog/top-5-high-appreciation-real-estate-corridors-jaipur-2026`,
           ];
 
     const host = new URL(SITE_URL).host;
