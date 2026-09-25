@@ -87,13 +87,14 @@ export default function EMIResults({
         <div className="mt-4 rounded-xl border border-amber-500/30 bg-white/10 p-4">
           <div className="dark:text-brand-gold mb-1 flex items-center gap-2 text-xs font-semibold text-amber-400">
             <TrendingUp size={16} />
-            <span>Projected 5-Year Property Value</span>
+            <span>Illustrative 5-Year Projection</span>
           </div>
           <div className="text-2xl font-bold text-emerald-400">
             ₹ {projectedValuation.toLocaleString('en-IN')}
           </div>
           <p className="mt-1 text-[10px] text-gray-300">
-            Based on ~14% avg historical growth in prime high-growth corridors.
+            Illustrative estimate based on ~14% historical growth trend. Real estate returns depend
+            on market conditions and are not guaranteed.
           </p>
         </div>
       </div>
