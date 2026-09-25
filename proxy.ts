@@ -9,9 +9,18 @@ const intlMiddleware = createMiddleware(routing);
 export default function middleware(request: NextRequest) {
   const url = request.nextUrl;
 
+  // Google Search Console HTML verification file handler (when cleanUrls strips .html)
+  if (url.pathname === '/google4cbc4b1a492a2b45') {
+    return new NextResponse('google-site-verification: google4cbc4b1a492a2b45.html', {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html; charset=utf-8',
+      },
+    });
+  }
+
   // Run intl middleware first so locale detection/redirect works
   const response = intlMiddleware(request);
-
   // Set CSRF cookie for registration page
   if (url.pathname.endsWith('/registration')) {
     const existing = request.cookies.get('csrf')?.value;
