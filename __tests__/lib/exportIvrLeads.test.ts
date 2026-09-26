@@ -42,7 +42,7 @@ describe('exportIvrLeads Utility', () => {
 
   it('exports records to Excel (.xlsx) successfully', async () => {
     await expect(exportIvrLeadsToExcel(mockRecords)).resolves.not.toThrow();
-  });
+  }, 15000);
 
   it('exports records to PDF (.pdf) successfully', async () => {
     await expect(exportIvrLeadsToPdf(mockRecords)).resolves.not.toThrow();

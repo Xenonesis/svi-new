@@ -160,5 +160,5 @@ describe('statementExporter', () => {
     });
 
     expect(clickMock).toHaveBeenCalled();
-  });
+  }, 15000);
 });

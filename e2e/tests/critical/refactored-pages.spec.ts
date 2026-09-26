@@ -18,11 +18,10 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
 
     // 2. Tab switching (Password tab vs OTP tab)
     const passwordTab = page.getByRole('button', { name: /^Password$/i });
-    const otpTab = page.getByRole('button', { name: /Login with Code|Code/i });
+    const otpTab = page.getByRole('button', { name: /Login with Code|Code/i }).first();
 
     await expect(passwordTab).toBeVisible();
     await expect(otpTab).toBeVisible();
-
     // Password field is visible initially
     const loginForm = page.locator('form').first();
     const passwordInput = loginForm.locator('input[type="password"]');

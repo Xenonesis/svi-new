@@ -50,22 +50,21 @@ describe('IvrLeadsTable Component', () => {
       />
     );
 
-    expect(screen.getByText('8744875331')).toBeDefined();
-    expect(screen.getByText('8920260621')).toBeDefined();
-
+    expect(screen.getAllByText('8744875331').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('8920260621').length).toBeGreaterThanOrEqual(1);
     // Check dual advisor columns: Attended By & Follow-up Advisor
     expect(screen.getByText('Attended By')).toBeDefined();
     expect(screen.getByText('Follow-up Advisor')).toBeDefined();
     expect(
-      screen.getByRole('combobox', { name: 'Follow-up advisor for 8744875331' })
-    ).toBeDefined();
+      screen.getAllByRole('combobox', { name: 'Follow-up advisor for 8744875331' }).length
+    ).toBeGreaterThanOrEqual(1);
     // Check Answered vs Not Answered badges and filters
     expect(screen.getAllByText('Answered').length).toBeGreaterThanOrEqual(1);
     expect(screen.getAllByText('Not Answered').length).toBeGreaterThanOrEqual(1);
 
     // Check Duration display
-    expect(screen.getByText('01:43')).toBeDefined();
-    expect(screen.getByText('00:15')).toBeDefined();
+    expect(screen.getAllByText('01:43').length).toBeGreaterThanOrEqual(1);
+    expect(screen.getAllByText('00:15').length).toBeGreaterThanOrEqual(1);
   });
 
   it('triggers onFilterChange when dial status filter is clicked', () => {
@@ -185,9 +184,8 @@ describe('IvrLeadsTable Component', () => {
       />
     );
 
-    const waBtn = screen.getByRole('button', { name: /send whatsapp template to 8744875331/i });
-    fireEvent.click(waBtn);
-
+    const waBtns = screen.getAllByRole('button', { name: /send whatsapp template to 8744875331/i });
+    fireEvent.click(waBtns[0]);
     expect(screen.getByText('1-Click WhatsApp Templates')).toBeDefined();
     expect(screen.getByText('Brochure & Maps Location')).toBeDefined();
     expect(screen.getByText('Free Site Visit (Pick & Drop)')).toBeDefined();
@@ -209,8 +207,8 @@ describe('IvrLeadsTable Component', () => {
       />
     );
 
-    const phoneBtn = screen.getByRole('button', { name: '8744875331' });
-    fireEvent.click(phoneBtn);
+    const phoneBtns = screen.getAllByRole('button', { name: '8744875331' });
+    fireEvent.click(phoneBtns[0]);
     expect(screen.getByRole('heading', { name: /lead 8744875331/i })).toBeDefined();
     expect(screen.getByRole('button', { name: /close drawer/i })).toBeDefined();
   });

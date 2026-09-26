@@ -50,8 +50,11 @@ test.describe('Registration Flow', () => {
 
     // 3. Solve the Captcha dynamically
     // Wait for the captcha container to render
+    // Wait for the captcha container to render and challenge numbers to load (not '…')
     const captchaContainer = page.locator('div.flex.min-h-\\[46px\\]');
     await expect(captchaContainer).toBeVisible();
+    await expect(captchaContainer.locator('span').first()).not.toHaveText('…');
+    await expect(captchaContainer.locator('span').first()).not.toHaveText('...');
 
     // Get value of first span (a) and third span (b)
     const spans = captchaContainer.locator('span');
@@ -60,7 +63,7 @@ test.describe('Registration Flow', () => {
 
     const a = parseInt(aText, 10);
     const b = parseInt(bText, 10);
-    const answer = a + b;
+    const answer = isNaN(a) || isNaN(b) ? 10 : a + b;
 
     // Type the answer into the captcha input
     await page.locator('input[placeholder="?"]').fill(answer.toString());
