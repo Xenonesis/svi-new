@@ -4,16 +4,16 @@
 
 ## Key Statistics
 
-- **Source files:** ~591 TS/TSX files
-- **Page routes:** 59 (22 public, 31+ admin & employee)
-- **API routes:** 68 REST endpoints
-- **React components:** 285+
+- **Source files:** ~620 TS/TSX files
+- **Page routes:** 67+ (including new commercial AEO corridor hubs & buyer guides)
+- **API routes:** 69 REST endpoints (including programmatic IndexNow real-time search engine pinging)
+- **React components:** 290+
 - **DB migrations:** 52
 - **Locales:** English & Hindi (951+ translation keys)
 
 ## Core Features
 
-1. **Public Site (Bilingual):** Hero, features, project listings, calculators, FAQ, chatbot, and lottery/giveaway system. Includes property pages, portals, and registration forms.
+1. **Public Site (Bilingual):** Hero, features, project listings, calculators, FAQ, chatbot, lottery/giveaway system, comprehensive high-intent commercial landing corridors (`/plots-in-jaipur`, `/plots-for-sale-near-khatu-shyam-ji`, `/plots-for-sale-in-phulera`, `/plots-near-renwal-railway-station`, `/plots-in-jaipur-under-20-lakhs`), and 29+ in-depth AEO buyer guides & topical authority articles with complete structured JSON-LD schemas.
 2. **Admin Dashboard:** A robust 31-page admin panel managing all aspects of the business:
    - **Records Management:** Allotment letters, Builder-Buyer Agreements (BBA), offer letters.
    - **Portal Allotments & Financial Ledgers:** Complete allotment tracking (`/admin/portal-allotments`) with live Sales Revenue KPI metrics (Booked Revenue, Collected Revenue, Receivables, Realization Rate), per-client financial ledgers & payment statement drawers with database-persisted agreed deal values and automatic rate per sq. yard calculations, and master overall ledger overview (`ReceiptLedgersModal`).
