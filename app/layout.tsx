@@ -31,10 +31,9 @@ const playfair = Playfair_Display({
 
 const notoSansDevanagari = Noto_Sans_Devanagari({
   subsets: ['devanagari'],
-  weight: ['400', '600', '700'],
+  weight: ['400', '700'],
   variable: '--font-hindi',
   display: 'swap',
-  preload: false,
 });
 
 export const metadata: Metadata = {
