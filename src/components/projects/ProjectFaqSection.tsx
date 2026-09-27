@@ -23,9 +23,9 @@ export const SHIVANI_VATIKA_FAQS: ProjectFaqItem[] = [
     question: 'What is Shivani Vatika 11th?',
     questionHi: 'शिवानी वाटिका 11th क्या है?',
     answer:
-      'Shivani Vatika 11th is a master-planned residential plotted township spread across 11.5 Bigha (approx. 30,480 sq. yds.) developed by SVI Infra Solutions. The township features 230 premium residential plots ranging from 80 sq. yds. to 250 sq. yds. It is equipped with essential modern infrastructure including a grand entrance gate, 24/7 security with CCTV surveillance, wide internal roads (30 ft and 24 ft), landscaped parks, reliable electrification, water supply, and complete boundary demarcation.',
+      'Shivani Vatika 11th is a master-planned residential plotted township spread across 11.5 Bigha (approx. 30,480 sq. yds.) developed by SVI Infra Solutions. The township features 230 premium residential plots ranging from 80 sq. yds. to 250 sq. yds. It is equipped with essential modern infrastructure including a grand entrance gate, 24/7 security with CCTV surveillance, wide internal roads (30 ft), landscaped parks, reliable electrification, water supply, and complete boundary demarcation.',
     answerHi:
-      'शिवानी वाटिका 11th एसवीआई इन्फ्रा सॉल्यूशंस (SVI Infra Solutions) द्वारा विकसित 11.5 बीघा (लगभग 30,480 वर्ग गज) में फैली एक सुनियोजित आवासीय टाउनशिप है। इसमें 80 से 250 वर्ग गज आकार के कुल 230 आवासीय भूखंड उपलब्ध हैं। यह टाउनशिप भव्य मुख्य प्रवेश द्वार, सीसीटीवी व 24/7 सुरक्षा, चौड़ी सड़कें (30 व 24 फीट), पार्क, बिजली-पानी आपूर्ति और बाउंड्री वॉल जैसी आधुनिक सुविधाओं से सुसज्जित है।',
+      'शिवानी वाटिका 11th एसवीआई इन्फ्रा सॉल्यूशंस (SVI Infra Solutions) द्वारा विकसित 11.5 बीघा (लगभग 30,480 वर्ग गज) में फैली एक सुनियोजित आवासीय टाउनशिप है। इसमें 80 से 250 वर्ग गज आकार के कुल 230 आवासीय भूखंड उपलब्ध हैं। यह टाउनशिप भव्य मुख्य प्रवेश द्वार, सीसीटीवी व 24/7 सुरक्षा, चौड़ी सड़कें (30 फीट), पार्क, बिजली-पानी आपूर्ति और बाउंड्री वॉल जैसी आधुनिक सुविधाओं से सुसज्जित है।',
   },
   {
     id: 'location-shivani-vatika-11th',

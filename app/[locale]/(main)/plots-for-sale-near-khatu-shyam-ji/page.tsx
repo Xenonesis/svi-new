@@ -92,14 +92,14 @@ const KHATU_FAQS_EN: FAQItem[] = [
   },
   {
     question:
-      'Are the plots on Jaipur - Khatu Shyam Ji Highway government approved and registry ready?',
+      'Are the plots on Jaipur - Khatu Shyam Ji Highway legally converted and registry ready?',
     answer:
-      'Yes, 100% of the plots at Shivani Vatika 11th are legally converted under Section 90-A of the Rajasthan Land Revenue Act for residential use. Each plot comes with verified Jamabandi land records, clean government revenue mutation (नामांतरण), and immediate individual sub-registrar registry.',
+      'Yes, plots at Shivani Vatika 11th are legally converted under Section 90-A of the Rajasthan Land Revenue Act for residential use. Each plot comes with verified Jamabandi land records, clean government revenue mutation (नामांतरण), and individual sub-registrar registry.',
   },
   {
     question: 'What plot sizes and configurations are available near Khatu Shyam Ji?',
     answer:
-      'The township offers demarcated residential plots ranging from 80 sq. yds. to 250 sq. yds. (including 80, 100, 150, 200, and 250 sq. yd. units) in an 11.5 Bigha (approx. 30,480 sq. yds.) gated society of 230 master-planned plots, served by 30-foot and 40-foot wide paved interlocked roads.',
+      'The township offers demarcated residential plots ranging from 80 sq. yds. to 250 sq. yds. (including 80, 100, 150, 200, and 250 sq. yd. units) in an 11.5 Bigha (approx. 30,480 sq. yds.) gated society of 230 master-planned plots, served by 30-foot wide paved interlocked roads.',
   },
   {
     question: 'What is the starting price for residential plots near Khatu Shyam Ji Highway?',
@@ -133,14 +133,14 @@ const KHATU_FAQS_HI: FAQItem[] = [
   },
   {
     question:
-      'क्या जयपुर-खाटू श्याम जी हाईवे पर स्थित प्लॉट्स सरकारी स्वीकृत और रजिस्ट्री योग्य हैं?',
+      'क्या जयपुर-खाटू श्याम जी हाईवे पर स्थित प्लॉट्स कानूनी रूप से रूपांतरित और रजिस्ट्री योग्य हैं?',
     answer:
-      'जी हाँ, शिवानी वाटिका 11th के 100% प्लॉट्स राजस्थान भू-राजस्व अधिनियम की धारा 90-A के तहत आवासीय प्रयोजन हेतु पूर्णतः रूपांतरित हैं। सभी भूखंडों की स्पष्ट जमाबंदी, सरकारी नामांतरण और उप-पंजीयक कार्यालय में तुरंत पक्की रजिस्ट्री उपलब्ध है।',
+      'जी हाँ, शिवानी वाटिका 11th के प्लॉट्स राजस्थान भू-राजस्व अधिनियम की धारा 90-A के तहत आवासीय प्रयोजन हेतु पूर्णतः रूपांतरित हैं। सभी भूखंडों की स्पष्ट जमाबंदी, सरकारी नामांतरण और उप-पंजीयक कार्यालय में रजिस्ट्री उपलब्ध है।',
   },
   {
     question: 'खाटू श्याम जी के पास कौन-से साइज के प्लॉट्स उपलब्ध हैं?',
     answer:
-      'टाउनशिप में 80 वर्ग गज से 250 वर्ग गज (80, 100, 150, 200 व 250 वर्ग गज) तक के सुनियोजित आवासीय प्लॉट्स उपलब्ध हैं। यह 11.5 बीघा (लगभग 30,480 वर्ग गज) में 230 प्लॉट्स की भव्य गेटेड टाउनशिप है जिसमें 30 और 40 फीट चौड़ी पक्की इंटरलॉकिंग सड़कें हैं।',
+      'टाउनशिप में 80 वर्ग गज से 250 वर्ग गज (80, 100, 150, 200 व 250 वर्ग गज) तक के सुनियोजित आवासीय प्लॉट्स उपलब्ध हैं। यह 11.5 बीघा (लगभग 30,480 वर्ग गज) में 230 प्लॉट्स की भव्य गेटेड टाउनशिप है जिसमें 30 फीट चौड़ी पक्की इंटरलॉकिंग सड़कें हैं।',
   },
   {
     question: 'खाटू श्याम जी हाईवे पर आवासीय प्लॉट्स की शुरुआती कीमत क्या है?',
@@ -517,11 +517,11 @@ export default async function PlotsNearKhatuShyamJiPage({ params }: Props) {
               },
               {
                 icon: Award,
-                title: isHindi ? '15–20% वार्षिक वृद्धि' : '15–20% Capital Growth',
-                subtitle: isHindi ? 'सुरक्षित उच्च-रिटर्न निवेश' : 'High-Appreciation Corridor',
+                title: isHindi ? 'उच्च पूंजीगत वृद्धि' : 'High Capital Growth',
+                subtitle: isHindi ? 'दीर्घकालिक मूल्य वृद्धि' : 'High-Appreciation Corridor',
                 text: isHindi
-                  ? 'जयपुर के सैचुरेटेड उपनगरों की तुलना में किफायती शुरुआती दरों (₹ 15 लाख*) पर स्पष्ट रजिस्ट्री प्लॉट्स, जो 15% से 20% तक सालाना मूल्य वृद्धि दे रहे हैं।'
-                  : 'Accessible entry prices starting around ₹ 15 Lakhs* deliver superior annual ROI compared to overvalued city suburbs, backed by freehold ownership and bank loans.',
+                  ? 'जयपुर के सैचुरेटेड उपनगरों की तुलना में किफायती शुरुआती दरों (₹ 15 लाख*) पर स्पष्ट रजिस्ट्री प्लॉट्स, जो मजबूत बुनियादी मांग और इंफ्रास्ट्रक्चर से संचालित हैं।'
+                  : 'Accessible entry prices starting around ₹ 15 Lakhs* offer strong growth potential compared to overvalued city suburbs, backed by freehold ownership and bank loans.',
               },
             ].map((card, i) => (
               <div
@@ -561,7 +561,7 @@ export default async function PlotsNearKhatuShyamJiPage({ params }: Props) {
                   priority
                 />
                 <div className="absolute top-3 left-3 z-10 rounded-full bg-emerald-500 px-3.5 py-1 text-xs font-bold text-slate-950 shadow-md">
-                  {isHindi ? 'कब्जा उपलब्ध (Ready)' : 'Ready Possession'}
+                  {isHindi ? 'चालू विकास (Ongoing)' : 'Ongoing Development'}
                 </div>
                 <div className="absolute top-3 right-3 z-10 rounded-full border border-amber-400/40 bg-slate-950/80 px-3 py-1 text-[11px] font-bold text-amber-300 backdrop-blur-md">
                   {isHindi ? 'प्रारंभिक ₹ 15 लाख*' : 'From ₹ 15 Lakhs*'}
@@ -602,7 +602,7 @@ export default async function PlotsNearKhatuShyamJiPage({ params }: Props) {
                     <>
                       Spread over 11.5 Bigha (approx. 30,480 sq. yds.) directly on the Jaipur–Khatu
                       Shyam Ji Highway, Shivani Vatika 11th features 230 demarcated residential
-                      plots from 80 to 250 sq. yds. with 30 & 40 ft interlocked paved roads, grand
+                      plots from 80 to 250 sq. yds. with 30 ft wide interlocked paved roads, grand
                       entrance arch, perimeter boundary, and complete civic amenities.
                     </>
                   )}
@@ -626,7 +626,7 @@ export default async function PlotsNearKhatuShyamJiPage({ params }: Props) {
                     <span className="block text-[11px] text-slate-400">
                       {isHindi ? 'आंतरिक सड़कें' : 'Internal Roads'}
                     </span>
-                    <strong className="text-white">30 & 40 Feet Wide Pavers</strong>
+                    <strong className="text-white">30 Feet Wide Pavers</strong>
                   </div>
                   <div>
                     <span className="block text-[11px] text-slate-400">

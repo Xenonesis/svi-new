@@ -535,7 +535,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <p>Reputed developers guarantee complete rectification of any <mark>structural defects or workmanship flaws</mark> within 5 years of possession handover without extra cost.</p>
 
       <h2>Conclusion: Secure Investing with SVI Infra</h2>
-      <p>Transparent guidelines bring peace of mind to property buyers. At SVI Infra Solutions, projects like <a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a> adhere to 100% legal due diligence, title-verified patta documentation, and immediate registry handovers. Before booking, plan your financing using our free <a href="/calculators">home loan and EMI calculators</a>.</p>
+      <p>Transparent guidelines bring peace of mind to property buyers. At SVI Infra Solutions, projects like <a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a> adhere to thorough legal due diligence, title-verified patta documentation, and sub-registrar registry handovers. Before booking, plan your financing using our free <a href="/calculators">home loan and EMI calculators</a>.</p>
     `,
     contentHi: `
       <p><mark>पारदर्शी रियल एस्टेट मानक और खरीदार सुरक्षा नियम</mark> प्रॉपर्टी खरीदारी को पूरी तरह सुरक्षित और सरल बनाते हैं। यह व्यवस्था खरीदारों को प्रोजेक्ट की देरी, अधूरे वादों और अस्पष्ट शर्तों से सुरक्षा प्रदान करती है।</p>
@@ -1783,10 +1783,10 @@ export const BLOG_POSTS: BlogPost[] = [
       </ul>
 
       <h2>5. Featured Opportunity: Shivani Vatika 11th (Harsholi)</h2>
-      <p>Developed by <strong>SVI Infra Solutions Pvt. Ltd.</strong>—backed by 17+ years of engineering and development legacy since 2009—<a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a> is the flagship master-planned township on the Jaipur–Khatu Shyam Ji Highway corridor. Spanning <strong>11.5 Bigha (approx. 30,480 sq. yds.)</strong> with <strong>230 master-planned plots</strong>, it features 30ft and 40ft wide blacktop roads, underground electrification, solar street security, and a fully landscaped family park.</p>
+      <p>Developed by <strong>SVI Infra Solutions Pvt. Ltd.</strong>—backed by 17+ years of engineering and development legacy since 2009—<a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a> is the flagship master-planned township on the Jaipur–Khatu Shyam Ji Highway corridor. Spanning <strong>11.5 Bigha (approx. 30,480 sq. yds.)</strong> with <strong>230 master-planned plots</strong>, it features 30ft wide blacktop roads, underground electrification, solar street security, and dedicated parks.</p>
 
       <h2>Conclusion & Next Steps</h2>
-      <p>Investing in clear-title plots near Khatu Shyam Ji Temple combines spiritual devotion with solid capital appreciation. By choosing legally converted Section 90-A townships, buyers secure guaranteed legal peace of mind while tapping into 4.5+ crore annual pilgrimage footfalls.</p>
+      <p>Investing in clear-title plots near Khatu Shyam Ji Temple combines spiritual devotion with solid capital appreciation. By choosing legally converted Section 90-A townships, buyers secure verified legal documentation while tapping into 4.5+ crore annual pilgrimage footfalls.</p>
       <p class="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4" className="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4"><strong>Investment & Regulatory Disclaimer:</strong> Capital appreciation projections, connectivity drive-times, and rental yields mentioned in this report are based on infrastructure development timelines and market assessments (2024–2026). Real estate investments carry market risks; prospective purchasers are strongly advised to perform independent title verification and due diligence before executing transactions.</p>
     `,
     contentHi: `
@@ -1838,15 +1838,15 @@ export const BLOG_POSTS: BlogPost[] = [
       'Over 4.5 crore annual devotees visiting Khatu Shyam Ji drive high commercial guest house demand',
       'Strategic highway location places plots just 20-25 minutes (~25 km) from the sacred temple',
       'Affordable 80 sq. yd. residential plots start at ₹ 15 Lakhs* (₹ 7,500/sq. yd.)',
-      'Section 90-A land conversion and clear sub-registrar registry ensure 100% legal security',
-      'Shivani Vatika 11th in Harsholi offers 230 master-planned plots with 30ft & 40ft wide roads',
+      'Section 90-A land conversion and clear sub-registrar registry ensure legal security and verified title',
+      'Shivani Vatika 11th in Harsholi offers 230 master-planned plots with 30ft wide roads',
     ],
     takeawaysHi: [
       'सालाना 4.5+ करोड़ श्रद्धालुओं की आवक से गेस्ट हाउस व धर्मशालाओं की भारी व्यावसायिक मांग',
       'रणनीतिक स्थिति के कारण खाटू श्याम जी मंदिर मात्र 20-25 मिनट (~25 किमी) की दूरी पर स्थित',
       '80 वर्ग गज के आवासीय प्लॉट्स मात्र ₹ 15 लाख* (₹ 7,500/वर्ग गज) से शुरू',
-      'धारा 90-A रूपांतरण और उप-पंजीयक पक्की रजिस्ट्री से 100% कानूनी सुरक्षा की गारंटी',
-      'हरसोली में शिवानी वाटिका 11th योजना में 30 और 40 फीट चौड़ी सड़कों के साथ 230 सुनियोजित प्लॉट्स',
+      'धारा 90-A रूपांतरण और उप-पंजीयक पक्की रजिस्ट्री से सुदृढ़ कानूनी सुरक्षा',
+      'हरसोली में शिवानी वाटिका 11th योजना में 30 फीट चौड़ी सड़कों के साथ 230 सुनियोजित प्लॉट्स',
     ],
     author: 'SVI Research & Intelligence Desk',
     date: '2026-09-25',
@@ -2193,15 +2193,15 @@ export const BLOG_POSTS: BlogPost[] = [
       'Shivani Vatika 11th is an 11.5 Bigha township offering 230 master-planned plots in Harsholi',
       'Transparent developer pricing fixed at ₹ 7,500/sq. yd. starting from ₹ 15 Lakhs* for 80 sq. yds.',
       'Prime connectivity: 20-25 mins to Khatu Shyam Ji Temple and 1 km to RIICO Industrial Area Renwal',
-      'High-grade infrastructure includes 30ft & 40ft wide roads, underground power cables, and solar lighting',
-      '100% legal security with Section 90-A land conversion, verified Jamabandi, and sub-registrar registry',
+      'High-grade infrastructure includes 30ft wide roads, underground power cables, and solar lighting',
+      'Verified legal compliance with Section 90-A land conversion, Jamabandi records, and sub-registrar registry',
     ],
     takeawaysHi: [
       'शिवानी वाटिका 11th हरसोली में 11.5 बीघा में फैली 230 मास्टर-प्लांड प्लॉट्स की एकीकृत टाउनशिप है',
       'पारदर्शी डेवलपर दर ₹ 7,500/वर्ग गज, 80 वर्ग गज के प्लॉट्स मात्र ₹ 15 लाख* से शुरू',
       'उत्कृष्ट कनेक्टिविटी: खाटू श्याम जी मंदिर मात्र 20-25 मिनट और रीको इंडस्ट्रियल एरिया रेनवाल मात्र 1 किमी',
-      '30 व 40 फीट चौड़ी सड़कें, भूमिगत बिजली केबल और सोलर स्ट्रीट लाइट जैसी आधुनिक सुविधाएं',
-      'धारा 90-A रूपांतरण, डिजिटल जमाबंदी और उप-पंजीयक पक्की रजिस्ट्री के साथ 100% कानूनी सुरक्षा',
+      '30 फीट चौड़ी सड़कें, भूमिगत बिजली केबल और सोलर स्ट्रीट लाइट जैसी आधुनिक सुविधाएं',
+      'धारा 90-A रूपांतरण, डिजिटल जमाबंदी और उप-पंजीयक पक्की रजिस्ट्री के साथ प्रमाणित कानूनी दस्तावेज',
     ],
     author: 'SVI Editorial Team',
     date: '2026-09-25',
@@ -2337,7 +2337,7 @@ export const BLOG_POSTS: BlogPost[] = [
       'Section 90-A conversion under Rajasthan Land Revenue Act is mandatory for residential use',
       'Always verify digital Jamabandi and mutation on Rajasthan Apna Khata portal',
       'Avoid unpartitioned agricultural land purchases on GPA or raw agreements to sell',
-      'Shivani Vatika 11th delivers 100% verified Section 90-A converted plots with direct registry',
+      'Shivani Vatika 11th delivers verified Section 90-A converted plots with direct registry readiness',
     ],
     takeawaysHi: [
       "राजस्थान में हाईवे व ग्रामीण जमीन के लिए 'सरकारी स्वीकृत' जैसा कोई शॉर्टकट कानून नहीं है",
@@ -2414,7 +2414,7 @@ export const BLOG_POSTS: BlogPost[] = [
           </ul>
         </li>
         <li><strong>Legal Security:</strong> Clear <strong>Section 90-A land conversion</strong> with verified Jamabandi revenue records and guaranteed individual sub-registrar registered title deeds.</li>
-        <li><strong>Township Infrastructure:</strong> 30-to-40 ft wide paved roads, boundary-walled gated perimeter, street illumination, dedicated parks, and rapid drinking water line connectivity.</li>
+        <li><strong>Township Infrastructure:</strong> 30 ft wide paved roads, boundary-walled gated perimeter, street illumination, dedicated parks, and rapid drinking water line connectivity.</li>
       </ul>
 
       <h2>5. Checklist Before Buying Plots Near Renwal</h2>
@@ -2467,7 +2467,7 @@ export const BLOG_POSTS: BlogPost[] = [
           </ul>
         </li>
         <li><strong>कानूनी सुरक्षा:</strong> राजस्थान सरकार की धारा <strong>90-A के तहत विधिवत रूपांतरित</strong>, सत्यापित ऑनलाइन जमाबंदी और उप-पंजीयक कार्यालय में 100% स्पष्ट रजिस्ट्री।</li>
-        <li><strong>टाउनशिप सुविधाएं:</strong> 30 से 40 फीट चौड़ी डामर सड़कें, बाउंड्री वॉल, स्ट्रीट लाइट्स, विकसित पार्क और शुद्ध मीठे पानी की आपूर्ति।</li>
+        <li><strong>टाउनशिप सुविधाएं:</strong> 30 फीट चौड़ी डामर सड़कें, बाउंड्री वॉल, स्ट्रीट लाइट्स, विकसित पार्क और शुद्ध मीठे पानी की आपूर्ति।</li>
       </ul>
 
       <h2>5. रेनवाल में प्लॉट खरीदते समय जरूरी कानूनी सावधानियां</h2>
@@ -2724,7 +2724,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <li><strong>Spiritual Proximity:</strong> Located just <strong>20–25 minutes (~25 km)</strong> from Shri Khatu Shyam Ji Temple and 5 minutes from Renwal Railway Station.</li>
         <li><strong>Peace of Mind:</strong> Developed by <strong>SVI Infra Solutions Pvt. Ltd.</strong> (Building Legacies Since 2009 with 17+ years of transparent operations).</li>
         <li><strong>Specifications:</strong> 11.5 Bigha (approx. 30,480 sq. yds.) gated township featuring 230 master-planned plots (80 to 250 sq. yds.) starting at ₹ 7,500/sq. yd. (₹ 15 Lakhs* for 80 sq. yds.).</li>
-        <li><strong>100% Legal Guarantee:</strong> Clear Section 90-A residential conversion with verified Jamabandi and individual registry title deeds.</li>
+        <li><strong>Legal Documentation:</strong> Clear Section 90-A residential conversion with verified Jamabandi and individual registry title deeds.</li>
       </ul>
 
       <h2>4. Post-Purchase Property Management & Caretaking</h2>
@@ -2791,7 +2791,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <li><strong>मंदिर से समीपता:</strong> श्री खाटू श्याम जी मंदिर से मात्र <strong>20–25 मिनट (~25 किमी)</strong> और रेनवाल रेलवे स्टेशन से मात्र 5 मिनट (7 किमी)।</li>
         <li><strong>विश्वसनीयता:</strong> 2009 से 17+ वर्षों की अटूट प्रतिष्ठा वाले <strong>SVI Infra Solutions Pvt. Ltd.</strong> द्वारा विकसित।</li>
         <li><strong>प्रोजेक्ट विवरण:</strong> 11.5 बीघा (लगभग 30,480 वर्ग गज) में 230 नियोजित भूखंड (80 से 250 वर्ग गज), कीमतें मात्र ₹ 7,500 प्रति वर्ग गज से शुरू (80 वर्ग गज का प्लॉट मात्र ₹ 15 लाख* से शुरू)।</li>
-        <li><strong>100% पक्की कानूनी सुरक्षा:</strong> धारा 90-A रूपांतरित, स्पष्ट जमाबंदी और व्यक्तिगत पक्की रजिस्ट्री।</li>
+        <li><strong>प्रमाणित कानूनी दस्तावेज:</strong> धारा 90-A रूपांतरित, स्पष्ट जमाबंदी और व्यक्तिगत पक्की रजिस्ट्री।</li>
       </ul>
 
       <h2>4. संपत्ति की देखभाल और सुरक्षा की गारंटी</h2>
@@ -2990,7 +2990,7 @@ export const BLOG_POSTS: BlogPost[] = [
         <li><strong>टाउनशिप का दायरा:</strong> 11.5 बीघा (लगभग 30,480 वर्ग गज) में 230 मास्टर-प्लांड प्लॉट्स।</li>
         <li><strong>प्लॉट के आकार व मूल्य:</strong> 80 से 250 वर्ग गज के प्लॉट्स मात्र ₹ 7,500 प्रति वर्ग गज से शुरू (80 वर्ग गज का प्लॉट मात्र ₹ 15 लाख* से शुरू)।</li>
         <li><strong>शानदार कनेक्टिविटी:</strong> रीको इंडस्ट्रियल एरिया से 1 किमी, रेनवाल रेलवे स्टेशन से 7 किमी (5 मिनट), श्री खाटू श्याम जी मंदिर से 20–25 मिनट, फुलेरा जंक्शन से 34 किमी और जयपुर से 45 मिनट।</li>
-        <li><strong>100% पक्की कानूनी सुरक्षा:</strong> सक्षम प्राधिकारी द्वारा धारा 90-A रूपांतरित, स्पष्ट जमाबंदी और व्यक्तिगत पक्की रजिस्ट्री।</li>
+        <li><strong>सत्यापित कानूनी सुरक्षा:</strong> सक्षम प्राधिकारी द्वारा धारा 90-A रूपांतरित, स्पष्ट जमाबंदी और व्यक्तिगत पक्की रजिस्ट्री।</li>
       </ul>
       <p>विभिन्न कॉरिडोर में अपने निवेश के संभावित रिटर्न की गणना के लिए हमारे <a href="/calculators">रियल एस्टेट ROI व ईएमआई कैलकुलेटर</a> का प्रयोग करें अथवा <a href="/plots-in-jaipur">जयपुर में अन्य प्लॉट्स</a> के विकल्प देखें।</p>
 

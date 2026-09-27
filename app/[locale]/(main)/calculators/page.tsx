@@ -55,8 +55,8 @@ export default async function CalculatorsPage({ params }: Props) {
               <span className="bg-brand-gold mt-1 h-2 w-2 shrink-0 rounded-full" />
               <span>
                 <strong className="text-brand-navy dark:text-gray-200">Rapid Appreciation:</strong>{' '}
-                Property values in DMIC/DFC corridors have shown 12–18% annual growth over the past
-                5 years.
+                Infrastructure-led growth along DMIC/DFC industrial and freight corridors has
+                historically supported strong land demand and value appreciation trends.
               </span>
             </li>
             <li className="flex items-start gap-3">

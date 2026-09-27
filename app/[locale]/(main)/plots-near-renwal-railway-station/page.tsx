@@ -189,7 +189,7 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
                   className="object-cover"
                 />
                 <div className="absolute top-3 left-3 rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-bold text-slate-950">
-                  Ready Possession
+                  Ongoing Development
                 </div>
               </div>
 
@@ -212,7 +212,7 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />
-                    <span>30 & 40 Feet Wide Interlocked Paved Roads</span>
+                    <span>30 Feet Wide Interlocked Paved Roads</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />

@@ -97,8 +97,8 @@ const COMMERCIAL_HUBS: Record<string, CommercialHubConfig> = {
       hi: 'फुलेरा स्मार्ट सिटी में उपलब्ध आवासीय एवं कमर्शियल प्लॉट्स देखें →',
     },
     description: {
-      en: 'High-growth plotted investment along the Delhi-Mumbai Industrial Corridor (DMIC) & Western DFC rail junction with projected 15-20% annual ROI.',
-      hi: 'दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) और वेस्टर्न DFC रेलवे जंक्शन पर 15-20% संभावित वार्षिक रिटर्न वाले स्पष्ट रजिस्ट्री प्लॉट्स।',
+      en: 'High-growth plotted investment along the Delhi-Mumbai Industrial Corridor (DMIC) & Western DFC rail junction with strong capital appreciation potential.',
+      hi: 'दिल्ली-मुंबई इंडस्ट्रियल कॉरिडोर (DMIC) और वेस्टर्न DFC रेलवे जंक्शन पर मजबूत पूंजी वृद्धि क्षमता वाले स्पष्ट रजिस्ट्री प्लॉट्स।',
     },
     ctaText: {
       en: 'Explore Phulera Plots →',

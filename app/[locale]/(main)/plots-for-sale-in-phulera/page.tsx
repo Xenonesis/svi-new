@@ -105,9 +105,9 @@ const PHULERA_FAQS_EN: PhuleraFaqItem[] = [
   },
   {
     question:
-      'Are residential plots in the Phulera corridor 100% legally approved with clear registry?',
+      'Are residential plots in the Phulera corridor legally approved with clear registry documentation?',
     answer:
-      'Yes. Plotted developments promoted by SVI Infra Solutions in this corridor feature legally verified title deeds, Section 90-A land conversion approvals, individual sub-registrar registration, and immediate mutation in government revenue records.',
+      'Yes. Plotted developments promoted by SVI Infra Solutions in this corridor feature Section 90-A land conversion approvals, sub-registrar registration readiness, verified revenue records, and assistance with due diligence.',
   },
   {
     question:
@@ -448,7 +448,7 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                   : '100% Clear Titles & 90-A Conversion',
                 desc: isHindi
                   ? 'सभी टाउनशिप कानूनी रूप से रूपांतरित, मास्टर प्लान स्वीकृत और सब-रजिस्ट्रार कार्यालय में तुरंत रजिस्ट्री व म्यूटेशन के साथ उपलब्ध हैं।'
-                  : 'Every plotted development adheres to Section 90-A conversion with clean revenue mutation, freehold deeds, and zero legal ambiguity.',
+                  : 'Every plotted development adheres to Section 90-A conversion with clean revenue mutation, freehold deeds, and verified documentation.',
               },
               {
                 icon: Building2,
@@ -518,7 +518,7 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                     className="object-cover transition-transform duration-500 hover:scale-105"
                   />
                   <div className="absolute top-3 left-3 rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-bold text-slate-950">
-                    {isHindi ? 'तुरंत कब्जा व रजिस्ट्री' : 'Ongoing / Ready Possession'}
+                    {isHindi ? 'चालू विकास (Ongoing)' : 'Ongoing Development'}
                   </div>
                   <div className="absolute right-3 bottom-3 rounded-full border border-black/40 bg-slate-950/80 px-3 py-1 text-[11px] font-semibold text-amber-300 backdrop-blur-md">
                     {isHindi ? '~34 किमी फुलेरा से' : '~34 km from Phulera'}
@@ -575,8 +575,8 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                       <CheckCircle2 size={15} className="shrink-0 text-emerald-400" />
                       <span>
                         {isHindi
-                          ? '30 व 40 फीट चौड़ी इंटरलॉकिंग पक्की सड़कें व 24/7 सुरक्षा'
-                          : '30 & 40 ft interlocked roads, grand entry arch & 24/7 gated security'}
+                          ? '30 फीट चौड़ी इंटरलॉकिंग पक्की सड़कें व 24/7 सुरक्षा'
+                          : '30 ft wide interlocked roads, grand entry arch & 24/7 gated security'}
                       </span>
                     </div>
                   </div>
@@ -746,7 +746,7 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
                     <span>
                       {isHindi
                         ? '100% सत्यापित दस्तावेज एवं जीरो स्पैम गारंटी'
-                        : '100% verified legal papers & zero spam guarantee'}
+                        : 'Verified legal papers & zero spam guarantee'}
                     </span>
                   </div>
                   <div className="flex items-center gap-2.5">

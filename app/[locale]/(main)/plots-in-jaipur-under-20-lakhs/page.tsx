@@ -62,7 +62,7 @@ const BUDGET_FAQS = [
   {
     question: 'What amenities are included in low-budget plotted townships?',
     answer:
-      'Even budget plots under 20 Lakhs include 30-40 ft wide paved roads, gated grand entry arches, underground water/electricity pipelines, green community parks, and round-the-clock security.',
+      'Even budget plots under 20 Lakhs include 30 ft wide paved roads, gated grand entry arches, underground water/electricity pipelines, green community parks, and round-the-clock security.',
   },
   {
     question: 'How do I arrange a free inspection visit from Jaipur?',

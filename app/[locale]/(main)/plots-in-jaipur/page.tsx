@@ -124,10 +124,9 @@ const JAIPUR_PROJECTS = [
 
 const JAIPUR_FAQS = [
   {
-    question:
-      'Are all residential plots in Jaipur legally verified with clear registry documentation?',
+    question: 'Are residential plots in Jaipur legally verified with clear registry documentation?',
     answer:
-      'Yes, 100% of plotted developments delivered by SVI Infra Solutions in Jaipur feature clear registry documentation, verified ownership titles, and demarcated boundaries with boundary walls and individual plot numbering.',
+      'Yes, plotted developments delivered by SVI Infra Solutions in the Jaipur region feature clear registry documentation, verified ownership titles, Section 90-A revenue clearances, and demarcated boundaries with boundary walls and individual plot numbering.',
   },
   {
     question:
