@@ -23,6 +23,7 @@ const WORKING_DAYS_OPTIONS = [
   { value: 'Monday to Friday', label: 'Monday to Friday (Saturday & Sunday Off - 5 Days)' },
   { value: 'Thursday to Tuesday', label: 'Thursday to Tuesday (Wednesday Off)' },
   { value: 'Tuesday to Sunday', label: 'Tuesday to Sunday (Monday Off)' },
+  { value: 'Saturday to Thursday', label: 'Saturday to Thursday (Friday Off)' },
   { value: 'Custom', label: 'Custom (Type manually below)' },
 ];
 
