@@ -21,12 +21,18 @@ const ORG_SCHEMA = {
     'Plots in Jaipur',
     'Residential Plots in Jaipur',
     'Plots in Jaipur Under 20 Lakhs',
+    'Plots in Jaipur Below 10 Lakhs',
+    'Freehold Residential Land Jaipur',
+    'JDA Approved Plots Jaipur',
     'Khatu Shyam Ji Highway Real Estate',
+    'Plots Near Khatu Shyam Ji Temple',
     'Shivani Vatika 11th',
     'Renwal Industrial Corridor Plots',
+    'Plots Near Renwal Railway Station',
     'Phulera Smart City DMIC Corridor',
     'Rajasthan Section 90-A Land Conversion',
-    'Township Development',
+    'Dakhil Kharij Revenue Mutation',
+    'Gated Township Development',
   ],
   address: {
     '@type': 'PostalAddress',
@@ -57,6 +63,11 @@ const ORG_SCHEMA = {
     {
       '@type': 'AdministrativeArea',
       name: 'Rajasthan',
+    },
+    {
+      '@type': 'City',
+      name: 'Kishangarh Renwal',
+      description: 'RIICO Industrial Area and Railway station plotted corridor',
     },
     {
       '@type': 'City',

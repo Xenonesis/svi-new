@@ -61,7 +61,12 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'industrial plots Phulera junction',
       'plots near Sambhar lake',
       'plots near Jaipur Ajmer expressway',
+      'plots near Phulera railway station',
       'SVI Infra Solutions',
+      'SVI Infra',
+      'फुलेरा में प्लॉट',
+      'फुलेरा स्मार्ट सिटी प्लॉट',
+      'डीएमआईसी कॉरिडोर फुलेरा',
     ],
     alternates: buildAlternates('/plots-for-sale-in-phulera', locale),
     openGraph: {

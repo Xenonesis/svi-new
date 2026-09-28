@@ -199,6 +199,8 @@ export function PortalAllotmentTableRow({
 
   const isRefundDone = Boolean(
     allotment.notes?.toLowerCase().includes('refund') ||
+    allotment.status?.toLowerCase().includes('refund') ||
+    allotment.status?.toLowerCase().includes('cancelled') ||
     (allotment.metadata?.status as string)?.toLowerCase().includes('refund') ||
     (allotment.metadata?.refund_status as string)?.toLowerCase().includes('refund') ||
     (allotment.metadata?.notes as string)?.toLowerCase().includes('refund') ||
