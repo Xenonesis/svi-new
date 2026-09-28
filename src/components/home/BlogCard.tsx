@@ -103,6 +103,7 @@ export default function BlogCard(props: BlogCardProps) {
         <div className="mt-4 border-t border-gray-100 pt-4 dark:border-gray-800">
           <Link
             href={href}
+            aria-label={`${isHindi ? 'पूरा पढ़ें' : 'Read full article'}: ${title}`}
             className="text-brand-navy dark:text-brand-gold inline-flex items-center gap-1.5 text-[11px] font-semibold tracking-wider uppercase transition-opacity hover:opacity-70"
           >
             {isHindi ? 'पूरा पढ़ें' : 'Read Full Article'}

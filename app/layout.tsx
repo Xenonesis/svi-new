@@ -196,9 +196,10 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/png" sizes="48x48" href="/favicons/favicon_48x48.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         {/* Preconnect to critical origins */}
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://*.supabase.co" />
+        <link rel="preconnect" href="https://supabase.co" />
+        <link rel="dns-prefetch" href="https://supabase.co" />
         <link rel="preconnect" href="https://maps.googleapis.com" />
+        <link rel="dns-prefetch" href="https://maps.googleapis.com" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -318,13 +319,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        {/* Preconnect to critical origins to reduce connection latency */}
-        <link rel="preconnect" href="https://supabase.co" />
-        <link rel="dns-prefetch" href="https://supabase.co" />
-        <link rel="preconnect" href="https://api.qrserver.com" />
+        {/* DNS prefetch for secondary origins */}
         <link rel="dns-prefetch" href="https://api.qrserver.com" />
-        <link rel="preconnect" href="https://maps.googleapis.com" />
-        <link rel="dns-prefetch" href="https://maps.googleapis.com" />
         {process.env.NODE_ENV === 'development' && (
           <script
             dangerouslySetInnerHTML={{

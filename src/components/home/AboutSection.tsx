@@ -65,13 +65,14 @@ export default function AboutSection() {
             <div className="border-brand-gold/15 absolute inset-0 translate-x-5 translate-y-5 border" />
             <div className="img-zoom-container relative shadow-2xl">
               <Image
-                src="/images/house1.png"
+                src="/images/house1.webp"
                 alt="Modern luxury home exterior showcasing SVI Infra architectural design quality"
                 loading="lazy"
                 width={800}
                 height={500}
+                sizes="(max-width: 640px) 380px, (max-width: 1024px) 500px, 640px"
                 className="h-[260px] w-full object-cover sm:h-[380px] lg:h-[500px]"
-                quality={85}
+                quality={80}
               />
             </div>
             <motion.div
