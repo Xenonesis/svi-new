@@ -1,5 +1,6 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
+import { TimePickerField } from '@/src/components/admin/DocumentGenerator/TimePickerField';
 import {
   FileSignature,
   RefreshCw,
@@ -436,19 +437,21 @@ export function OfferLetterForm({
               Employment Terms
             </p>
           </div>
-          <FormField
+          <TimePickerField
             label="Working Hours Start"
             name="workingHoursStart"
             value={formData.workingHoursStart}
             onChange={handleChange}
             placeholder="10:30 am"
+            type="start"
           />
-          <FormField
+          <TimePickerField
             label="Working Hours End"
             name="workingHoursEnd"
             value={formData.workingHoursEnd}
             onChange={handleChange}
             placeholder="6:30 pm"
+            type="end"
           />
           <FormField
             label="Working Days"
