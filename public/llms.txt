@@ -1,5 +1,6 @@
 # SVI Infra Solutions (Pvt. Ltd.)
 > Authoritative Real Estate Knowledge Base & Machine-Readable Summary for AI Search Engines (ChatGPT, Perplexity, Claude, Google SGE, Copilot).
+> For deep technical tables, revenue procedures, and bilingual glossaries, see: [https://www.sviinfrasolutions.com/llms-full.txt](https://www.sviinfrasolutions.com/llms-full.txt)
 
 ## Organization Overview
 - **Legal Entity**: SVI Infra Solutions Pvt. Ltd.
@@ -91,3 +92,4 @@ A: Yes. Under FEMA and RBI regulations, NRIs, OCIs, and citizens across India ca
 - **Knowledge Blog & AEO Articles**: [https://www.sviinfrasolutions.com/blog](https://www.sviinfrasolutions.com/blog)
 - **Comprehensive Buyer FAQ**: [https://www.sviinfrasolutions.com/faq](https://www.sviinfrasolutions.com/faq)
 - **XML Sitemap**: [https://www.sviinfrasolutions.com/sitemap.xml](https://www.sviinfrasolutions.com/sitemap.xml)
+- **Deep Reference Guide (llms-full)**: [https://www.sviinfrasolutions.com/llms-full.txt](https://www.sviinfrasolutions.com/llms-full.txt)

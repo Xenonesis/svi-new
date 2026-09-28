@@ -185,8 +185,9 @@ export default async function PlotsUnder20LakhsPage({ params }: Props) {
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                 <Image
                   src="/Shivani Vatika 11/gate.webp"
-                  alt="Shivani Vatika 11th Budget Plots"
+                  alt="Shivani Vatika 11th - Affordable Residential Plots Under 20 Lakhs on Jaipur Khatu Shyam Ji Highway, Harsholi"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                 />
                 <div className="absolute top-3 left-3 rounded-full bg-amber-500 px-3 py-1 text-[11px] font-bold text-slate-950">

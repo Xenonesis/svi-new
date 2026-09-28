@@ -184,8 +184,9 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl">
                 <Image
                   src="/Shivani Vatika 11/gate.webp"
-                  alt="Shivani Vatika 11th Gate near Renwal"
+                  alt="Shivani Vatika 11th - Main Grand Entrance Gate near Kishangarh Renwal Railway Station and RIICO Industrial Area"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover"
                 />
                 <div className="absolute top-3 left-3 rounded-full bg-emerald-500 px-3 py-1 text-[11px] font-bold text-slate-950">

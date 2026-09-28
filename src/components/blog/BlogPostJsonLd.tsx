@@ -17,7 +17,7 @@ export function BlogPostJsonLd({ post, locale, slug }: BlogPostJsonLdProps) {
 
   const articleJsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'Article',
+    '@type': 'BlogPosting',
     headline: title,
     description: excerpt,
     image: [absoluteUrl(post.image)],
@@ -26,14 +26,25 @@ export function BlogPostJsonLd({ post, locale, slug }: BlogPostJsonLdProps) {
     author: {
       '@type': 'Person',
       name: post.author,
+      jobTitle: 'Real Estate Research & Investment Analyst',
+      worksFor: {
+        '@type': 'Organization',
+        name: 'SVI Infra Solutions Pvt. Ltd.',
+        url: 'https://svi-infra.com',
+      },
+      description: isHindi
+        ? 'जयपुर, नोएडा और DMIC कॉरिडोर में 17+ वर्षों का रियल एस्टेट और टाउनशिप डेवलपमेंट अनुभव।'
+        : 'Real estate advisory and township development expert with 17+ years of experience across Jaipur, Noida, and DMIC corridors.',
     },
     publisher: {
       '@type': 'Organization',
-      name: 'SVI Infra Solutions',
+      name: 'SVI Infra Solutions Pvt. Ltd.',
+      url: 'https://svi-infra.com',
       logo: {
         '@type': 'ImageObject',
         url: absoluteUrl('/logo-app-badge.png'),
       },
+      sameAs: ['https://svi-infra.com', 'https://wa.me/917300007643'],
     },
     datePublished: new Date(post.date).toISOString(),
     dateModified: new Date(post.date).toISOString(),
