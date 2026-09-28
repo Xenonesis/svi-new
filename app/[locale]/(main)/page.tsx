@@ -8,6 +8,7 @@ import { createMetadata } from '@/src/lib/seo';
 export const revalidate = 300;
 
 import HeroSection from '@/src/components/home/HeroSection';
+import { OrganizationSchema, WebSiteSchema } from '@/src/components/common/Schema';
 import HomeSections from '@/src/components/home/HomeSections';
 import { StaggerTestimonials } from '@/src/components/ui/stagger-testimonials';
 
@@ -58,6 +59,21 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description,
     path: '/',
     locale,
+    keywords: [
+      'SVI',
+      'SVI Infra',
+      'SVI Infra Solutions',
+      'Plots in Jaipur',
+      'Jaipur Plots',
+      'Residential Plots Jaipur',
+      'Plots in Jaipur Under 20 Lakhs',
+      'Plots Near Khatu Shyam Ji',
+      'Plots Near Renwal Railway Station',
+      'Plots in Phulera Smart City',
+      'JDA Approved Plots Jaipur',
+      'एसवीआई',
+      'जयपुर में प्लॉट',
+    ],
   });
 }
 
@@ -66,6 +82,8 @@ export default async function Home({ params }: Props) {
   setRequestLocale(locale);
   return (
     <div className="page-transition flex w-full flex-col overflow-x-hidden">
+      <OrganizationSchema />
+      <WebSiteSchema />
       <HeroSection images={HERO_IMAGES} />
       <Suspense fallback={<div className="bg-brand-dark/20 h-96 w-full animate-pulse" />}>
         <HomeSections />

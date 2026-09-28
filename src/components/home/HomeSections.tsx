@@ -6,6 +6,7 @@ import AboutSection from '@/src/components/home/AboutSection';
 import TrustAndBanks from '@/src/components/home/TrustAndBanks';
 import FeaturesSection from '@/src/components/home/FeaturesSection';
 import ProjectsSection from '@/src/components/home/ProjectsSection';
+import CorridorDiscovery from '@/src/components/home/CorridorDiscovery';
 import StatsCounterSection from '@/src/components/home/StatsCounterSection';
 
 // Below-the-fold dynamic imports to reduce initial main-thread script execution & bootup time
@@ -30,6 +31,7 @@ export default function HomeSections() {
       <FeaturesSection />
       <TimelineSection />
       <ProjectsSection />
+      <CorridorDiscovery />
       <InteractiveCalculator />
       <LeadershipSection />
       <HomeBlogs />

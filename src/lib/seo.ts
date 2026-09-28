@@ -47,6 +47,7 @@ type SeoOptions = {
   noIndex?: boolean;
   type?: 'website' | 'article';
   locale?: string;
+  keywords?: string[] | string;
 };
 
 export function createMetadata({
@@ -57,6 +58,7 @@ export function createMetadata({
   noIndex = false,
   type = 'website',
   locale = 'en',
+  keywords,
 }: SeoOptions): Metadata {
   const url = localizedUrl(path, locale);
   const imageUrl = absoluteUrl(image);
@@ -65,6 +67,7 @@ export function createMetadata({
     // appends the brand once. Callers must NOT include the brand in `title`.
     title,
     description,
+    ...(keywords ? { keywords } : {}),
     alternates: buildAlternates(path, locale),
     robots: noIndex
       ? {

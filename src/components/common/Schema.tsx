@@ -4,11 +4,30 @@ const ORG_SCHEMA = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
   name: 'SVI Infra Solutions Pvt. Ltd.',
+  alternateName: [
+    'SVI',
+    'SVI Infra',
+    'SVI Infra Solutions',
+    'Svi Infra',
+    'एसवीआई',
+    'एसवीआई इन्फ्रा',
+  ],
   url: SITE_URL,
   logo: `${SITE_URL}/logo-app-badge.png`,
   image: `${SITE_URL}/logo-app-badge.png`,
   description:
     'Trusted real estate developer with 17+ years of experience. Premium residential and commercial properties in Jaipur, Noida, and DMIC corridors.',
+  knowsAbout: [
+    'Plots in Jaipur',
+    'Residential Plots in Jaipur',
+    'Plots in Jaipur Under 20 Lakhs',
+    'Khatu Shyam Ji Highway Real Estate',
+    'Shivani Vatika 11th',
+    'Renwal Industrial Corridor Plots',
+    'Phulera Smart City DMIC Corridor',
+    'Rajasthan Section 90-A Land Conversion',
+    'Township Development',
+  ],
   address: {
     '@type': 'PostalAddress',
     streetAddress: 'Block E-220, 2nd Floor, Sector 63',
@@ -68,12 +87,33 @@ interface RealEstateProps {
   url?: string;
   pdfUrl?: string;
 }
-
 export function OrganizationSchema() {
   return (
     <script
       type="application/ld+json"
       dangerouslySetInnerHTML={{ __html: JSON.stringify(ORG_SCHEMA) }}
+    />
+  );
+}
+
+export function WebSiteSchema() {
+  const websiteSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'SVI Infra Solutions',
+    alternateName: ['SVI', 'SVI Infra', 'Svi Infra Solutions'],
+    url: SITE_URL,
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${SITE_URL}/blog?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
     />
   );
 }

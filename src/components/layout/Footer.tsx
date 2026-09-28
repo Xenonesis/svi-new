@@ -199,14 +199,25 @@ const Footer = memo(function Footer() {
                   href="/plots-in-jaipur"
                   className="text-brand-gold text-[11px] font-bold tracking-wider uppercase transition-colors hover:underline"
                 >
-                  ★ Plots in Jaipur (Verified Townships)
+                  ★ Plots in Jaipur (All Townships)
                 </Link>
               </li>
               {[
-                { label: 'Plots Near Khatu Shyam Ji', href: '/plots-for-sale-near-khatu-shyam-ji' },
-                { label: 'Plots in Phulera Smart City', href: '/plots-for-sale-in-phulera' },
-                { label: t('footer.khatuHighway'), href: '/projects/shivani-vatika-11th' },
-                { label: t('footer.nayla'), href: '/projects/shivani-vatika' },
+                {
+                  label: 'Plots in Jaipur Under 20 Lakhs',
+                  href: '/plots-in-jaipur-under-20-lakhs',
+                },
+                {
+                  label: 'Plots Near Khatu Shyam Ji Highway',
+                  href: '/plots-for-sale-near-khatu-shyam-ji',
+                },
+                {
+                  label: 'Plots Near Renwal Railway Station',
+                  href: '/plots-near-renwal-railway-station',
+                },
+                { label: 'Plots in Phulera Smart City (DMIC)', href: '/plots-for-sale-in-phulera' },
+                { label: 'Shivani Vatika 11th (Harsholi)', href: '/projects/shivani-vatika-11th' },
+                { label: 'Shivani Vatika (Nayla)', href: '/projects/shivani-vatika' },
               ].map(({ label, href }) => (
                 <li key={href}>
                   <Link
