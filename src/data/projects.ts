@@ -37,6 +37,7 @@ export type ProjectData = {
   description: string;
   descriptionHi?: string;
   brochureUrl?: string;
+  pdfUrl?: string;
   nearbyHeadline?: string;
   nearbyHeadlineHi?: string;
   nearbySubheadline?: string;
@@ -67,6 +68,7 @@ export const PROJECTS_DB: Record<string, ProjectData> = {
     type: 'Premier Residential Plots',
     typeHi: 'प्रीमियर आवासीय प्लॉट्स',
     heroImage: '/Shivani Vatika 11/gate.webp',
+    pdfUrl: '/Shivani Vatika 11/master-plan-layout.pdf',
     gallery: [
       '/Shivani Vatika 11/gate.webp',
       '/Shivani Vatika 11/plot.webp',

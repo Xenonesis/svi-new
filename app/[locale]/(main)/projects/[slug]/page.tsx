@@ -110,6 +110,7 @@ export default async function ProjectDetailPage({ params }: Props) {
         location={location}
         status={project.status}
         url={localizedUrl(`/projects/${slug}`, locale)}
+        pdfUrl={project.pdfUrl}
       />
       <AnalyticsTracker event="project_view" data={{ slug }} />
 

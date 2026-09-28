@@ -22,7 +22,16 @@ export default function robots(): MetadataRoute.Robots {
       },
 
       {
-        userAgent: ['GPTBot', 'ClaudeBot', 'PerplexityBot', 'Google-Extended'],
+        userAgent: [
+          'GPTBot',
+          'ChatGPT-User',
+          'OAI-SearchBot',
+          'ClaudeBot',
+          'anthropic-ai',
+          'PerplexityBot',
+          'Google-Extended',
+          'Bingbot',
+        ],
         allow: '/',
         disallow: [
           '/admin',

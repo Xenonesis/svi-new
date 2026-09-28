@@ -66,6 +66,7 @@ interface RealEstateProps {
   status?: string;
   price?: string;
   url?: string;
+  pdfUrl?: string;
 }
 
 export function OrganizationSchema() {
@@ -116,6 +117,7 @@ export function RealEstateListingSchema({
   status = 'InStock',
   price,
   url = SITE_URL,
+  pdfUrl,
 }: RealEstateProps) {
   const schema = {
     '@context': 'https://schema.org',
@@ -141,6 +143,21 @@ export function RealEstateListingSchema({
       addressLocality: location,
       addressCountry: 'IN',
     },
+    ...(pdfUrl
+      ? {
+          hasMap: {
+            '@type': 'Map',
+            mapType: 'https://schema.org/VenueMap',
+            url: pdfUrl.startsWith('http') ? pdfUrl : `${SITE_URL}${pdfUrl}`,
+          },
+          subjectOf: {
+            '@type': 'DigitalDocument',
+            name: `${name} Official Master Plan Layout`,
+            encodingFormat: 'application/pdf',
+            url: pdfUrl.startsWith('http') ? pdfUrl : `${SITE_URL}${pdfUrl}`,
+          },
+        }
+      : {}),
   };
   return (
     <script

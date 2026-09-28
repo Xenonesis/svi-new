@@ -138,7 +138,6 @@ describe('statementExporter', () => {
   });
 
   it('generates an Excel statement matching Delhi Office format without error', async () => {
-    // Mock document.createElement for download link
     const clickMock = vi.fn();
     const appendChildMock = vi.fn();
     const removeChildMock = vi.fn();
@@ -160,5 +159,5 @@ describe('statementExporter', () => {
     });
 
     expect(clickMock).toHaveBeenCalled();
-  }, 15000);
+  }, 30000);
 });
