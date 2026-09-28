@@ -204,6 +204,10 @@ const Footer = memo(function Footer() {
               </li>
               {[
                 {
+                  label: '📖 Jaipur Plot Buying Guide 2026',
+                  href: '/blog/complete-guide-buying-plots-in-jaipur-2026',
+                },
+                {
                   label: 'Plots in Jaipur Under 20 Lakhs',
                   href: '/plots-in-jaipur-under-20-lakhs',
                 },

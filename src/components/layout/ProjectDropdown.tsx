@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Building2, CheckSquare } from 'lucide-react';
+import { ChevronDown, Building2, CheckSquare, MapPin } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { useLocale, useTranslations } from 'next-intl';
 
@@ -96,6 +96,26 @@ export function ProjectDropdown({
                 className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-400 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
               >
                 {t('completedProjectsDesc')}
+              </div>
+            </div>
+          </Link>
+          <Link
+            href="/plots-in-jaipur"
+            className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
+          >
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 text-amber-500 transition-colors group-hover/item:bg-slate-900 group-hover/item:text-white dark:group-hover/item:bg-amber-400 dark:group-hover/item:text-slate-950">
+              <MapPin size={15} />
+            </div>
+            <div>
+              <div
+                className={`font-semibold text-slate-900 uppercase transition-colors group-hover/item:text-amber-500 dark:text-slate-100 ${isHi ? 'text-[13.5px] tracking-wide' : 'text-[11px] tracking-widest'}`}
+              >
+                {t('plotsInJaipur')}
+              </div>
+              <div
+                className={`mt-0.5 leading-relaxed text-gray-500 dark:text-gray-400 ${isHi ? 'text-[12px]' : 'text-[9.5px]'}`}
+              >
+                {t('plotsInJaipurDesc')}
               </div>
             </div>
           </Link>

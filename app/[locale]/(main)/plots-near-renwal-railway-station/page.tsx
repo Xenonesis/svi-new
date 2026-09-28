@@ -4,7 +4,12 @@ import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 import { CheckCircle2, FileDown, ArrowRight, PhoneCall, Train } from 'lucide-react';
 import { SITE_URL, buildAlternates, localizedUrl } from '@/src/lib/seo';
-import { BreadcrumbSchema, FAQSchema, PlaceAndAreaSchema } from '@/src/components/common/Schema';
+import {
+  BreadcrumbSchema,
+  FAQSchema,
+  PlaceAndAreaSchema,
+  RealEstateListingSchema,
+} from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 
 export const revalidate = 86400;
@@ -121,6 +126,18 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
       />
 
       <FAQSchema questions={RENWAL_FAQS} />
+
+      <RealEstateListingSchema
+        name="Residential Plots Near Renwal Railway Station"
+        description="Gated plotted development near Kishangarh Renwal Railway Station and 64-acre RIICO Industrial Area with 30 ft wide blacktop roads and 80% bank loan approval."
+        image="/Shivani Vatika 11/gate.webp"
+        location="Renwal, Jaipur, Rajasthan"
+        status="InStock"
+        lowPrice="600000"
+        highPrice="1875000"
+        offerCount={230}
+        url={localizedUrl('/plots-near-renwal-railway-station', locale)}
+      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-amber-500/20 pt-28 pb-16 sm:pt-36 sm:pb-24">

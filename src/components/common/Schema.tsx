@@ -95,6 +95,9 @@ interface RealEstateProps {
   location: string;
   status?: string;
   price?: string;
+  lowPrice?: string;
+  highPrice?: string;
+  offerCount?: number;
   url?: string;
   pdfUrl?: string;
 }
@@ -167,6 +170,9 @@ export function RealEstateListingSchema({
   location,
   status = 'InStock',
   price,
+  lowPrice,
+  highPrice,
+  offerCount,
   url = SITE_URL,
   pdfUrl,
 }: RealEstateProps) {
@@ -182,12 +188,22 @@ export function RealEstateListingSchema({
       name,
       description,
       image: image.startsWith('http') ? image : `${SITE_URL}${image}`,
-      offers: {
-        '@type': 'Offer',
-        availability: `https://schema.org/${status === 'Under Construction' ? 'PreOrder' : 'InStock'}`,
-        priceCurrency: 'INR',
-        ...(price ? { price } : {}),
-      },
+      offers:
+        lowPrice && highPrice
+          ? {
+              '@type': 'AggregateOffer',
+              priceCurrency: 'INR',
+              lowPrice,
+              highPrice,
+              offerCount: offerCount || 230,
+              availability: `https://schema.org/${status === 'Under Construction' ? 'PreOrder' : 'InStock'}`,
+            }
+          : {
+              '@type': 'Offer',
+              availability: `https://schema.org/${status === 'Under Construction' ? 'PreOrder' : 'InStock'}`,
+              priceCurrency: 'INR',
+              ...(price ? { price } : {}),
+            },
     },
     address: {
       '@type': 'PostalAddress',

@@ -12,7 +12,12 @@ import {
   PhoneCall,
 } from 'lucide-react';
 import { SITE_URL, buildAlternates, localizedUrl } from '@/src/lib/seo';
-import { BreadcrumbSchema, FAQSchema, PlaceAndAreaSchema } from '@/src/components/common/Schema';
+import {
+  BreadcrumbSchema,
+  FAQSchema,
+  PlaceAndAreaSchema,
+  RealEstateListingSchema,
+} from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 
 export const revalidate = 86400;
@@ -203,6 +208,18 @@ export default async function PlotsInJaipurPage({ params }: Props) {
       />
 
       <FAQSchema questions={JAIPUR_FAQS} />
+
+      <RealEstateListingSchema
+        name="Residential Plots & Gated Townships in Jaipur"
+        description="Verified residential plots (80 to 250 sq. yds.) in master-planned gated townships across Jaipur, Khatu Shyam Highway, Renwal, and Phulera DMIC."
+        image="/images/project1.png"
+        location="Jaipur, Rajasthan"
+        status="InStock"
+        lowPrice="600000"
+        highPrice="2500000"
+        offerCount={230}
+        url={localizedUrl('/plots-in-jaipur', locale)}
+      />
 
       {/* Hero Header */}
       <section className="relative overflow-hidden border-b border-amber-500/20 pt-28 pb-16 sm:pt-36 sm:pb-24">

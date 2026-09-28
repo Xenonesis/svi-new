@@ -20,7 +20,12 @@ import {
 } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { SITE_URL, buildAlternates, localizedUrl } from '@/src/lib/seo';
-import { BreadcrumbSchema, FAQSchema, PlaceAndAreaSchema } from '@/src/components/common/Schema';
+import {
+  BreadcrumbSchema,
+  FAQSchema,
+  PlaceAndAreaSchema,
+  RealEstateListingSchema,
+} from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 import {
   PhuleraBrochureButton,
@@ -294,6 +299,18 @@ export default async function PlotsForSaleInPhuleraPage({ params }: Props) {
       />
 
       <FAQSchema questions={faqItems} />
+
+      <RealEstateListingSchema
+        name="Residential & Commercial Plots in Phulera Smart City"
+        description="Master-planned plots along the DMIC & Western DFC rail corridor near Phulera Junction with 80% bank loan approval, clear registry title, and logistical connectivity."
+        image="/images/landmarks/phulera-dmic.webp"
+        location="Phulera Smart City, Jaipur, Rajasthan"
+        status="InStock"
+        lowPrice="1500000"
+        highPrice="4500000"
+        offerCount={85}
+        url={localizedUrl('/plots-for-sale-in-phulera', locale)}
+      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-amber-500/20 pt-28 pb-16 sm:pt-36 sm:pb-24">

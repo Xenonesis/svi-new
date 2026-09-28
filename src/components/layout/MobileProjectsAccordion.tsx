@@ -1,6 +1,6 @@
 'use client';
 
-import { ChevronDown, Building2, CheckSquare } from 'lucide-react';
+import { ChevronDown, Building2, CheckSquare, MapPin } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { useTranslations } from 'next-intl';
 
@@ -53,6 +53,14 @@ export function MobileProjectsAccordion({
           >
             <CheckSquare size={15} className="text-brand-gold/70" />
             {t('completedProjects')}
+          </Link>
+          <Link
+            href="/plots-in-jaipur"
+            onClick={onClose}
+            className="hover:text-brand-gold flex items-center gap-2 py-2 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
+          >
+            <MapPin size={15} className="text-brand-gold/70" />
+            {t('plotsInJaipur')}
           </Link>
         </div>
       </div>

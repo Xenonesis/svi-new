@@ -4,7 +4,12 @@ import Link from 'next/link';
 import { setRequestLocale } from 'next-intl/server';
 import { CheckCircle2, FileDown, ArrowRight, PhoneCall, Tag } from 'lucide-react';
 import { SITE_URL, buildAlternates, localizedUrl } from '@/src/lib/seo';
-import { BreadcrumbSchema, FAQSchema, PlaceAndAreaSchema } from '@/src/components/common/Schema';
+import {
+  BreadcrumbSchema,
+  FAQSchema,
+  PlaceAndAreaSchema,
+  RealEstateListingSchema,
+} from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 
 export const revalidate = 86400;
@@ -129,6 +134,18 @@ export default async function PlotsUnder20LakhsPage({ params }: Props) {
       />
 
       <FAQSchema questions={BUDGET_FAQS} />
+
+      <RealEstateListingSchema
+        name="Residential Plots in Jaipur Under 20 Lakhs"
+        description="Affordable residential plots (80 to 150 sq. yds.) in Jaipur starting from ₹6 Lakhs to ₹15 Lakhs with 80% bank loan approval and clear 90-A patta registry."
+        image="/images/project1.png"
+        location="Jaipur, Rajasthan"
+        status="InStock"
+        lowPrice="600000"
+        highPrice="1500000"
+        offerCount={120}
+        url={localizedUrl('/plots-in-jaipur-under-20-lakhs', locale)}
+      />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden border-b border-amber-500/20 pt-28 pb-16 sm:pt-36 sm:pb-24">

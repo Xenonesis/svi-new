@@ -3902,6 +3902,239 @@ export const BLOG_POSTS: BlogPost[] = [
     readTime: '8 min read',
     readTimeHi: '8 मिनट पढ़ें',
   },
+  {
+    title:
+      'Complete Guide to Buying Plots in Jaipur 2026: JDA vs 90A, Gaj Calculations, Registry & Bank Loans',
+    titleHi:
+      'जयपुर में प्लॉट खरीदने की संपूर्ण गाइड 2026: JDA बनाम 90A, गज कैलकुलेशन, रजिस्ट्री व बैंक लोन',
+    slug: 'complete-guide-buying-plots-in-jaipur-2026',
+    excerpt:
+      'Everything you must know before buying residential land or plots in Jaipur in 2026. Detailed breakdown of JDA approval vs Section 90-A revenue conversion, square yards to Gaj calculation, sub-registrar dakhil kharij mutation, and 80% bank loan approval checklist.',
+    excerptHi:
+      '2026 में जयपुर में आवासीय जमीन या प्लॉट खरीदने से पहले जानने योग्य सभी कानूनी नियम। JDA अप्रूवल बनाम धारा 90-A रूपांतरण, गज और वर्ग गज का सटीक हिसाब, दाखिल-खारिज और 80% बैंक लोन की पूरी चेकलिस्ट।',
+    author: 'SVI Infra Advisory Board',
+    date: '2026-09-28',
+    category: 'Legal & Investment',
+    categoryHi: 'कानूनी व निवेश गाइड',
+    image: '/images/project1.png',
+    tags: [
+      'Plots in Jaipur',
+      'Best Plots in Jaipur',
+      'Cheap Plots in Jaipur',
+      'JDA Approved Plots Jaipur',
+      'Section 90A Registry Jaipur',
+      '100 Gaj Plot in Jaipur',
+      'Plots in Jaipur Under 20 Lakhs',
+      'Bank Loan Plots Jaipur',
+      'Dakhil Kharij Rajasthan',
+      'Khatu Shyam Highway Plots',
+    ],
+    tagsHi: [
+      'जयपुर में प्लॉट',
+      'जयपुर में सर्वश्रेष्ठ प्लॉट',
+      'जयपुर में सस्ते प्लॉट',
+      'JDA अप्रूव्ड प्लॉट जयपुर',
+      '90A पट्टा रजिस्ट्री जयपुर',
+      '100 गज प्लॉट जयपुर',
+      '20 लाख में प्लॉट जयपुर',
+      'बैंक लोन प्लॉट जयपुर',
+      'दाखिल खारिज राजस्थान',
+      'खाटू श्याम हाईवे प्लॉट्स',
+    ],
+    readTime: '12 min read',
+    readTimeHi: '12 मिनट पढ़ें',
+    takeaways: [
+      'JDA vs Section 90-A: Both provide 100% legal, non-agricultural ownership when backed by Tehsildar conversion and individual sub-registrar patta.',
+      'Standard Plot Units: In Rajasthan, 1 Gaj equals exactly 1 Square Yard (9 Square Feet). A 100 Gaj plot equals 900 Sq. Ft. (approx. 83.61 Sq. Meters).',
+      'Budget Advantage: Emerging growth corridors like Jaipur - Khatu Shyam Ji Highway (Harsholi/Renwal) offer plots from ₹7,500/sq. yd., allowing 100 Gaj plots under ₹8.5 Lakhs.',
+      'Bank Financing: Clear 90-A title plots qualify for up to 80% home loan/land purchase financing with SBI, HDFC, and leading nationalized banks.',
+      'Mutation (Dakhil Kharij): Always verify Apna Khata digital mutation within 30-45 days of sub-registrar deed registration.',
+    ],
+    takeawaysHi: [
+      'JDA बनाम धारा 90-A: दोनों ही तहसीलदार रूपांतरण और उप-पंजीयक पट्टे के बाद 100% वैध व गैर-कृषि मालिकाना हक प्रदान करते हैं।',
+      'सटीक जमीन माप: राजस्थान में 1 गज = 1 वर्ग गज (9 वर्ग फीट) होता है। 100 गज का प्लॉट 900 वर्ग फीट के बराबर होता है।',
+      'किफायती बजट: जयपुर - खाटू श्याम जी हाईवे (हरसोली/रेनवाल) पर ₹7,500/वर्ग गज से प्लॉट्स उपलब्ध हैं, यानी 100 गज का प्लॉट ₹8.5 लाख से कम में।',
+      'बैंक लोन: 90-A क्लियर टाइटल प्लॉट्स पर SBI व प्रमुख बैंकों से 80% तक फाइनेंस उपलब्ध है।',
+      'दाखिल खारिज: रजिस्ट्री के 30-45 दिनों के भीतर अपना खाता पोर्टल पर म्यूटेशन रिकॉर्ड अवश्य जांचें।',
+    ],
+    content: `
+      <p>Buying residential <a href="/plots-in-jaipur"><strong>plots in Jaipur</strong></a> has emerged as the highest return-generating real estate asset class across Northern India in 2026. However, navigating land titles, revenue approvals, unit measurements, and financing requires a clear, step-by-step understanding of Rajasthan's specific land revenue laws.</p>
+
+      <h2>1. Understanding Land Approvals: JDA Approved vs Section 90-A Converted</h2>
+      <p>The most common query among homebuyers is the distinction between JDA (Jaipur Development Authority) jurisdiction and Section 90-A conversion under the Rajasthan Land Revenue Act:</p>
+      <ul>
+        <li><strong>JDA Approved Plots:</strong> Situated directly within the master development perimeter administered by the Jaipur Development Authority. They carry a JDA Patta and standard developmental fees.</li>
+        <li><strong>Section 90-A Agricultural-to-Residential Converted Plots:</strong> Land legally surrendered to the State Government via the Tehsildar/SDO under Section 90-A, converted strictly for non-agricultural residential township use. These plots are 100% freehold, transferable, and recognized by nationalized banks for plot loans.</li>
+      </ul>
+      <p>Both categories guarantee ironclad ownership provided the developer delivers a registered Sub-Registrar Sale Deed and a sanctioned township master layout.</p>
+
+      <h2>2. Rajasthan Land Measurement: Square Yards, Gaj, and Square Feet Matrix</h2>
+      <p>In Rajasthan real estate, land is traditionally traded in <strong>Gaj (गज)</strong>, which is legally recognized as a <em>Square Yard</em>:</p>
+      <div class="overflow-x-auto my-6">
+        <table class="w-full border-collapse border border-slate-700 text-sm">
+          <thead class="bg-slate-800 text-amber-400">
+            <tr>
+              <th class="border border-slate-700 p-3 text-left">Plot Dimension (Gaj)</th>
+              <th class="border border-slate-700 p-3 text-left">Square Feet (Sq. Ft.)</th>
+              <th class="border border-slate-700 p-3 text-left">Square Meters (Sq. M.)</th>
+              <th class="border border-slate-700 p-3 text-left">Typical Plot Frontage x Depth</th>
+              <th class="border border-slate-700 p-3 text-left">Estimated Cost @ ₹7,500/Sq. Yd.</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">80 Gaj / Sq. Yds.</td>
+              <td class="p-3">720 Sq. Ft.</td>
+              <td class="p-3">66.89 Sq. M.</td>
+              <td class="p-3">18 ft x 40 ft</td>
+              <td class="p-3 font-semibold text-amber-300">₹6,00,000</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">100 Gaj / Sq. Yds.</td>
+              <td class="p-3">900 Sq. Ft.</td>
+              <td class="p-3">83.61 Sq. M.</td>
+              <td class="p-3">20 ft x 45 ft / 22.5 ft x 40 ft</td>
+              <td class="p-3 font-semibold text-amber-300">₹7,50,000</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">111.11 Gaj / Sq. Yds.</td>
+              <td class="p-3">1,000 Sq. Ft.</td>
+              <td class="p-3">92.90 Sq. M.</td>
+              <td class="p-3">20 ft x 50 ft / 25 ft x 40 ft</td>
+              <td class="p-3 font-semibold text-amber-300">₹8,33,325</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">150 Gaj / Sq. Yds.</td>
+              <td class="p-3">1,350 Sq. Ft.</td>
+              <td class="p-3">125.42 Sq. M.</td>
+              <td class="p-3">25 ft x 54 ft / 30 ft x 45 ft</td>
+              <td class="p-3 font-semibold text-amber-300">₹11,25,000</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">200 Gaj / Sq. Yds.</td>
+              <td class="p-3">1,800 Sq. Ft.</td>
+              <td class="p-3">167.22 Sq. M.</td>
+              <td class="p-3">30 ft x 60 ft</td>
+              <td class="p-3 font-semibold text-amber-300">₹15,00,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>3. Where to Buy: High-Appreciation Growth Corridors in Jaipur</h2>
+      <p>While central Jaipur colonies (Vaishali Nagar, Mansarovar, Jagatpura) demand steep prices exceeding ₹45,000 to ₹1,20,000 per sq. yd., rapid wealth multiplier opportunities exist along outward-expanding connectivity spines:</p>
+      <ol>
+        <li><strong>Jaipur - Khatu Shyam Ji Highway (Harsholi Corridor):</strong> Direct 4-lane access to NH-52, 230-plot master-planned communities like <a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a>, 160 ft and 30 ft blacktop roads, and 20-25 mins transit to Khatu Shyam Ji Dham. Learn more on our <a href="/plots-for-sale-near-khatu-shyam-ji">plots near Khatu Shyam Ji page</a>.</li>
+        <li><strong>Renwal Railway Station & RIICO Industrial Hub:</strong> Proximity to the 64-acre RIICO manufacturing zone and direct daily train connectivity to Jaipur Junction and Ringas. Explore <a href="/plots-near-renwal-railway-station">plots near Renwal Railway Station</a>.</li>
+        <li><strong>Phulera Smart City & DMIC Dedicated Freight Corridor:</strong> Massive dry-port logistics infrastructure connecting Delhi and Mumbai with rapid industrial capital growth. Inspect <a href="/plots-for-sale-in-phulera">plots in Phulera Smart City</a>.</li>
+        <li><strong>Budget-Friendly Hubs Under ₹20 Lakhs:</strong> For first-time investors looking for clear deeds below ₹20 Lakhs, browse our dedicated guide to <a href="/plots-in-jaipur-under-20-lakhs">plots in Jaipur under 20 Lakhs</a>.</li>
+      </ol>
+
+      <h2>4. Step-by-Step Purchase & Registration Checklist</h2>
+      <p>Before transferring booking funds or down payments, verify these 5 legal milestones:</p>
+      <ul>
+        <li><strong>Revenue Jamabandi (खतौनी / जमाबंदी):</strong> Verify via the official Rajasthan Apna Khata portal (apnakhata.rajasthan.gov.in) that the land has zero revenue encumbrance or agricultural tenancy claims.</li>
+        <li><strong>Section 90-A Order & Approved Map:</strong> Obtain the certified copy of the conversion order passed by the revenue authority and verify that the plot numbers match the sanctioned township blueprint.</li>
+        <li><strong>Sub-Registrar Deed Execution:</strong> Execute a registered sale deed at the local Sub-Registrar Office with proper stamp duty valuation.</li>
+        <li><strong>Dakhil Kharij (दाखिल खारिज / Mutation):</strong> Apply for name substitution in government revenue records within 30 days of registration.</li>
+        <li><strong>Physical Demarcation:</strong> Ensure individual boundary pillars, 30-foot minimum internal blacktop roads, and demarcation markings on-site.</li>
+      </ul>
+
+      <h2>5. Calculating EMIs and Bank Loans</h2>
+      <p>Leading commercial and housing finance institutions offer up to 75-80% loan-to-value (LTV) on verified Section 90-A residential townships. You can calculate your monthly repayments and 5-year capital appreciation projection using our interactive <a href="/calculators">Real Estate EMI & ROI Calculator</a>.</p>
+
+      <div class="my-8 rounded-2xl border border-amber-500/30 bg-slate-900/80 p-6 backdrop-blur-md">
+        <h3 class="text-xl font-bold text-amber-400">Schedule Your Complimentary Doorstep Cab Site Visit</h3>
+        <p class="mt-2 text-sm text-slate-300">
+          SVI Infra provides fully complimentary AC chauffeur cab pickups from anywhere in Jaipur directly to our gated townships on the Khatu Shyam Highway. Experience the roads, demarcated plots, and official documents firsthand with zero obligation.
+        </p>
+        <div class="mt-4 flex flex-wrap gap-4">
+          <a href="https://wa.me/917300007643?text=Namaste%20SVI%20Infra,%20I%20would%20like%20to%20book%20a%20site%20visit%20for%20plots%20in%20Jaipur." target="_blank" rel="noopener noreferrer" class="rounded-xl bg-amber-500 px-6 py-3 text-xs font-bold text-slate-950 uppercase tracking-wider hover:bg-amber-400 transition-colors">
+            Book Free Cab Visit
+          </a>
+          <a href="/plots-in-jaipur" class="rounded-xl border border-white/20 px-6 py-3 text-xs font-semibold text-white uppercase tracking-wider hover:border-amber-400 hover:bg-white/5 transition-colors">
+            Explore All Jaipur Plots
+          </a>
+        </div>
+      </div>
+    `,
+    contentHi: `
+      <p>2026 में <a href="/hi/plots-in-jaipur"><strong>जयपुर में आवासीय प्लॉट</strong></a> खरीदना उत्तर भारत में सबसे तेजी से बढ़ते और उच्चतम रिटर्न देने वाले निवेश विकल्पों में से एक बन चुका है। सही निर्णय लेने के लिए जमीन के कानूनी अप्रूवल, राजस्व नियम, गज और वर्ग गज के माप तथा बैंक लोन की स्पष्ट जानकारी होना आवश्यक है।</p>
+
+      <h2>1. लैंड अप्रूवल को समझें: JDA अप्रूव्ड बनाम धारा 90-A रूपांतरित प्लॉट्स</h2>
+      <p>प्रॉपर्टी खरीदारों के मन में सबसे आम सवाल JDA और धारा 90-A के अंतर को लेकर होता है:</p>
+      <ul>
+        <li><strong>JDA अप्रूव्ड प्लॉट्स:</strong> यह जमीन जयपुर विकास प्राधिकरण (JDA) के अधिकार क्षेत्र में आती है और इसका JDA पट्टा जारी किया जाता है।</li>
+        <li><strong>धारा 90-A रूपांतरित प्लॉट्स (Section 90-A):</strong> राजस्थान भू-राजस्व अधिनियम की धारा 90-A के तहत कृषि भूमि को सरकार के पास सरेंडर कर विधिवत गैर-कृषि (आवासीय टाउनशिप) उपयोग हेतु रूपांतरित किया जाता है। यह 100% फ्रीहोल्ड और कानूनी रूप से पूर्णतः सुरक्षित होती है, जिस पर सभी प्रमुख बैंक होम/प्लॉट लोन स्वीकृत करते हैं।</li>
+      </ul>
+
+      <h2>2. राजस्थान में जमीन का माप: गज, वर्ग गज और वर्ग फीट कैलकुलेशन</h2>
+      <p>राजस्थान में प्लॉट का सौदा पारंपरिक रूप से <strong>गज</strong> में होता है। 1 गज कानूनन 1 वर्ग गज (9 वर्ग फीट) के बराबर होता है:</p>
+      <div class="overflow-x-auto my-6">
+        <table class="w-full border-collapse border border-slate-700 text-sm">
+          <thead class="bg-slate-800 text-amber-400">
+            <tr>
+              <th class="border border-slate-700 p-3 text-left">प्लॉट साइज (गज)</th>
+              <th class="border border-slate-700 p-3 text-left">वर्ग फीट (Sq. Ft.)</th>
+              <th class="border border-slate-700 p-3 text-left">वर्ग मीटर (Sq. M.)</th>
+              <th class="border border-slate-700 p-3 text-left">अनुमानित कीमत (@ ₹7,500/गज)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">80 गज (वर्ग गज)</td>
+              <td class="p-3">720 वर्ग फीट</td>
+              <td class="p-3">66.89 वर्ग मीटर</td>
+              <td class="p-3 font-semibold text-amber-300">₹6,00,000</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">100 गज (वर्ग गज)</td>
+              <td class="p-3">900 वर्ग फीट</td>
+              <td class="p-3">83.61 वर्ग मीटर</td>
+              <td class="p-3 font-semibold text-amber-300">₹7,50,000</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">111.11 गज (वर्ग गज)</td>
+              <td class="p-3">1,000 वर्ग फीट</td>
+              <td class="p-3">92.90 वर्ग मीटर</td>
+              <td class="p-3 font-semibold text-amber-300">₹8,33,325</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">150 गज (वर्ग गज)</td>
+              <td class="p-3">1,350 वर्ग फीट</td>
+              <td class="p-3">125.42 वर्ग मीटर</td>
+              <td class="p-3 font-semibold text-amber-300">₹11,25,000</td>
+            </tr>
+            <tr class="border-b border-slate-800">
+              <td class="p-3 font-semibold text-white">200 गज (वर्ग गज)</td>
+              <td class="p-3">1,800 वर्ग फीट</td>
+              <td class="p-3">167.22 वर्ग मीटर</td>
+              <td class="p-3 font-semibold text-amber-300">₹15,00,000</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>3. जयपुर के प्रमुख विकास व निवेश कॉरिडोर</h2>
+      <ol>
+        <li><strong>जयपुर - खाटू श्याम जी हाईवे (हरसोली कॉरिडोर):</strong> 4-लेन हाईवे फ्रंट, 230 गेटेड प्लॉट्स वाली शिवानी वाटिका 11th, 30 फीट चौड़ी सड़कें और मंदिर से मात्र 20-25 मिनट की दूरी। देखें <a href="/hi/plots-for-sale-near-khatu-shyam-ji">खाटू श्याम जी के पास प्लॉट्स</a>।</li>
+        <li><strong>रेनवाल रेलवे स्टेशन व रीको इंडस्ट्रियल क्षेत्र:</strong> 64 एकड़ रीको औद्योगिक हब और सीधी ट्रेन कनेक्टिविटी। देखें <a href="/hi/plots-near-renwal-railway-station">रेनवाल रेलवे स्टेशन प्लॉट्स</a>।</li>
+        <li><strong>फुलेरा स्मार्ट सिटी (DMIC फ्रेट कॉरिडोर):</strong> वेस्टर्न डेडिकेटेड फ्रेट कॉरिडोर के साथ लॉजिस्टिक्स व वेयरहाउसिंग विकास। देखें <a href="/hi/plots-for-sale-in-phulera">फुलेरा स्मार्ट सिटी प्लॉट्स</a>।</li>
+        <li><strong>20 लाख के अंदर बजट प्लॉट्स:</strong> कम बजट में पक्की रजिस्ट्री के लिए देखें <a href="/hi/plots-in-jaipur-under-20-lakhs">जयपुर में 20 लाख में प्लॉट्स</a>।</li>
+      </ol>
+
+      <h2>4. प्लॉट रजिस्ट्री व दाखिल-खारिज चेकलिस्ट</h2>
+      <ul>
+        <li><strong>जमाबंदी खतौनी:</strong> राजस्थान 'अपना खाता' पोर्टल पर नामांतरण व बिना किसी बैंक भार की जांच करें।</li>
+        <li><strong>90-A रूपांतरण आदेश:</strong> तहसीलदार द्वारा स्वीकृत रूपांतरण ऑर्डर व टाउनशिप नक्शा सत्यापित करें।</li>
+        <li><strong>उप-पंजीयक कार्यालय में रजिस्ट्री:</strong> निर्धारित स्टैम्प ड्यूटी का भुगतान कर रजिस्ट्री कराएं।</li>
+        <li><strong>दाखिल खारिज (Mutation):</strong> रजिस्ट्री के पश्चात सरकारी राजस्व रिकॉर्ड में नाम दर्ज कराएं।</li>
+      </ul>
+
+      <h2>5. आसान ईएमआई और बैंक लोन सुविधा</h2>
+      <p>90-A अनुमोदित प्लॉट्स पर 80% तक बैंक लोन आसानी से प्राप्त होता है। अपनी मासिक किश्त और 5 वर्षों के अनुमानित रिटर्न की गणना हमारे <a href="/hi/calculators">प्रॉपर्टी EMI व ROI कैलकुलेटर</a> से करें।</p>
+    `,
+  },
 ];
 
 export const BLOG_POST_MAP = Object.fromEntries(BLOG_POSTS.map((post) => [post.slug, post]));

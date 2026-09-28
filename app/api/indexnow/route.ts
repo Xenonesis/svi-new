@@ -27,6 +27,13 @@ export async function POST(request: Request) {
             `${SITE_URL}/blog/jaipur-khatu-shyam-4-lane-highway-expansion-timeline-impact`,
             `${SITE_URL}/blog/how-to-buy-residential-plot-rajasthan-nri-outstation-devotees`,
             `${SITE_URL}/blog/top-5-high-appreciation-real-estate-corridors-jaipur-2026`,
+            `${SITE_URL}/blog/complete-guide-buying-plots-in-jaipur-2026`,
+            `${SITE_URL}/hi/plots-in-jaipur`,
+            `${SITE_URL}/hi/plots-for-sale-near-khatu-shyam-ji`,
+            `${SITE_URL}/hi/plots-for-sale-in-phulera`,
+            `${SITE_URL}/hi/plots-near-renwal-railway-station`,
+            `${SITE_URL}/hi/plots-in-jaipur-under-20-lakhs`,
+            `${SITE_URL}/hi/blog/complete-guide-buying-plots-in-jaipur-2026`,
           ];
 
     const host = new URL(SITE_URL).host;
