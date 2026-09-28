@@ -65,6 +65,7 @@ export interface AllotmentFormData {
   total_cost: string;
   booking_date: string;
   advisor_name?: string;
+  ticket_id?: string;
 }
 
 export interface PaymentMilestoneDraft {

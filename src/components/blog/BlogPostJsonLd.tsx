@@ -30,7 +30,7 @@ export function BlogPostJsonLd({ post, locale, slug }: BlogPostJsonLdProps) {
       worksFor: {
         '@type': 'Organization',
         name: 'SVI Infra Solutions Pvt. Ltd.',
-        url: 'https://svi-infra.com',
+        url: 'https://www.sviinfrasolutions.com',
       },
       description: isHindi
         ? 'जयपुर, नोएडा और DMIC कॉरिडोर में 17+ वर्षों का रियल एस्टेट और टाउनशिप डेवलपमेंट अनुभव।'
@@ -39,12 +39,12 @@ export function BlogPostJsonLd({ post, locale, slug }: BlogPostJsonLdProps) {
     publisher: {
       '@type': 'Organization',
       name: 'SVI Infra Solutions Pvt. Ltd.',
-      url: 'https://svi-infra.com',
+      url: 'https://www.sviinfrasolutions.com',
       logo: {
         '@type': 'ImageObject',
         url: absoluteUrl('/logo-app-badge.png'),
       },
-      sameAs: ['https://svi-infra.com', 'https://wa.me/917300007643'],
+      sameAs: ['https://www.sviinfrasolutions.com', 'https://wa.me/917300007643'],
     },
     datePublished: new Date(post.date).toISOString(),
     dateModified: new Date(post.date).toISOString(),

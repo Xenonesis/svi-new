@@ -15,6 +15,7 @@ import BlogPostJsonLd from '@/src/components/blog/BlogPostJsonLd';
 import BlogPostHero from '@/src/components/blog/BlogPostHero';
 import BlogPostTakeaways from '@/src/components/blog/BlogPostTakeaways';
 import { BlogPostAuthorCard, BlogPostCta } from '@/src/components/blog/BlogPostAuthorCard';
+import BlogInteractiveContent from './BlogInteractiveContent';
 
 export const revalidate = 3600;
 
@@ -116,9 +117,16 @@ export default async function BlogPost({ params }: Props) {
 
             <BlogPostTakeaways takeaways={takeaways} isHindi={isHindi} />
 
-            <div
-              className="blog-content max-w-none"
-              dangerouslySetInnerHTML={{ __html: content }}
+            <BlogInteractiveContent
+              content={content}
+              projectName={
+                post.title.includes('Shivani Vatika') ? 'Shivani Vatika 11th' : post.title
+              }
+              pdfUrl={
+                post.slug.includes('shivani-vatika-11th')
+                  ? '/Shivani Vatika 11/master-plan-layout.pdf'
+                  : undefined
+              }
             />
 
             {tags && tags.length > 0 && (

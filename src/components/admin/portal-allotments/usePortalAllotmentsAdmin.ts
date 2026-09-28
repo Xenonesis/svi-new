@@ -29,6 +29,7 @@ export const INITIAL_ALLOTMENT_FORM_DATA: AllotmentFormData = {
   total_cost: '',
   booking_date: '',
   advisor_name: '',
+  ticket_id: '',
 };
 
 export function getAllotmentFinancials(
@@ -597,18 +598,47 @@ export function usePortalAllotmentsAdmin() {
       const existingAllotment = editingId ? allotments.find((a) => a.id === editingId) : null;
       const existingMeta = (existingAllotment?.metadata as Record<string, any>) || {};
 
+      if (editingId && existingAllotment) {
+        const isRefundDone = Boolean(
+          existingAllotment.notes?.toLowerCase().includes('refund') ||
+          existingAllotment.status?.toLowerCase().includes('refund') ||
+          existingAllotment.status?.toLowerCase().includes('cancelled') ||
+          (existingMeta?.status as string)?.toLowerCase().includes('refund') ||
+          (existingMeta?.refund_status as string)?.toLowerCase().includes('refund') ||
+          (existingMeta?.notes as string)?.toLowerCase().includes('refund') ||
+          (existingMeta?.remarks as string)?.toLowerCase().includes('refund')
+        );
+        if (isRefundDone) {
+          toast.error('Refunded allotments are archived and cannot be modified.');
+          return;
+        }
+      }
+
+      const ticketVal = formData.ticket_id?.trim() || null;
+      const updatedMeta: Record<string, any> = {
+        ...existingMeta,
+        area: formData.area ? Number(formData.area) || formData.area : null,
+        total_cost: formData.total_cost ? Number(formData.total_cost) || null : null,
+        advisor_name: formData.advisor_name?.trim() || null,
+      };
+
+      if (ticketVal) {
+        updatedMeta.ticket_id = ticketVal;
+        updatedMeta.ticketId = ticketVal;
+      } else {
+        delete updatedMeta.ticket_id;
+        delete updatedMeta.ticketId;
+        delete updatedMeta.refId;
+        delete updatedMeta.ref_id;
+      }
+
       const payload = {
         user_id: formData.profile_id,
         property_id: formData.property_id,
         unit_no: formData.unit_number,
-        status: 'Allotted',
+        status: existingAllotment?.status || 'Allotted',
         allotted_date: formData.booking_date || new Date().toISOString().split('T')[0],
-        metadata: {
-          ...existingMeta,
-          area: formData.area ? Number(formData.area) || formData.area : null,
-          total_cost: formData.total_cost ? Number(formData.total_cost) || null : null,
-          advisor_name: formData.advisor_name?.trim() || null,
-        },
+        metadata: updatedMeta,
       };
 
       if (editingId) {
@@ -628,6 +658,18 @@ export function usePortalAllotmentsAdmin() {
   };
 
   const handleDelete = async (id: string) => {
+    const target = allotments.find((a) => a.id === id);
+    const isRefundDone = Boolean(
+      target?.notes?.toLowerCase().includes('refund') ||
+      target?.status?.toLowerCase().includes('refund') ||
+      target?.status?.toLowerCase().includes('cancelled') ||
+      (target?.metadata?.status as string)?.toLowerCase().includes('refund') ||
+      (target?.metadata?.refund_status as string)?.toLowerCase().includes('refund')
+    );
+    if (isRefundDone) {
+      toast.error('Refunded allotments are archived and cannot be deleted.');
+      return;
+    }
     if (!confirm(t('deleteConfirmation'))) return;
     try {
       const { error } = await supabase.from('allotments').delete().eq('id', id);
@@ -669,16 +711,35 @@ export function usePortalAllotmentsAdmin() {
       total_cost: '',
       booking_date: new Date().toISOString().split('T')[0],
       advisor_name: '',
+      ticket_id: '',
     });
     setShowModal(true);
   };
 
   const openEditModal = (allotment: AllotmentRecord) => {
+    const isRefundDone = Boolean(
+      allotment.notes?.toLowerCase().includes('refund') ||
+      allotment.status?.toLowerCase().includes('refund') ||
+      allotment.status?.toLowerCase().includes('cancelled') ||
+      (allotment.metadata?.status as string)?.toLowerCase().includes('refund') ||
+      (allotment.metadata?.refund_status as string)?.toLowerCase().includes('refund') ||
+      (allotment.metadata?.notes as string)?.toLowerCase().includes('refund') ||
+      (allotment.metadata?.remarks as string)?.toLowerCase().includes('refund')
+    );
+    if (isRefundDone) {
+      toast.error('Refunded allotments are archived and cannot be edited.');
+      return;
+    }
     setEditingId(allotment.id);
     const existingAdvisor =
       allotment.advisor_name ||
       (allotment.metadata?.advisor_name as string) ||
       (allotment.metadata?.advisorName as string) ||
+      '';
+    const existingTicket =
+      (allotment.metadata?.ticket_id as string) ||
+      (allotment.metadata?.ticketId as string) ||
+      (allotment.metadata?.refId as string) ||
       '';
     setFormData({
       profile_id: allotment.user_id || allotment.profile_id || '',
@@ -688,6 +749,7 @@ export function usePortalAllotmentsAdmin() {
       total_cost: (allotment.metadata?.total_cost ?? allotment.total_cost)?.toString() || '',
       booking_date: allotment.allotted_date || allotment.booking_date || '',
       advisor_name: existingAdvisor,
+      ticket_id: existingTicket,
     });
     setShowModal(true);
   };
@@ -712,10 +774,21 @@ export function usePortalAllotmentsAdmin() {
         ).toLowerCase();
         const hasValidTicket =
           rawTicket && !rawTicket.startsWith('plot ') && !/^svi-[0-9a-f]{4}/.test(rawTicket);
-        const isMissingMatch = !hasValidTicket && 'missing'.includes(term);
+        const isRefund = Boolean(
+          a.notes?.toLowerCase().includes('refund') ||
+          a.status?.toLowerCase().includes('refund') ||
+          a.status?.toLowerCase().includes('cancelled') ||
+          (a.metadata?.status as string)?.toLowerCase().includes('refund') ||
+          (a.metadata?.refund_status as string)?.toLowerCase().includes('refund') ||
+          (a.metadata?.notes as string)?.toLowerCase().includes('refund') ||
+          (a.metadata?.remarks as string)?.toLowerCase().includes('refund')
+        );
+        const isMissingMatch = !isRefund && !hasValidTicket && 'missing'.includes(term);
+        const isRefundMatch = isRefund && 'refund'.includes(term);
         const advisor = String(a.advisor_name || a.metadata?.advisor_name || '').toLowerCase();
         return (
           isMissingMatch ||
+          isRefundMatch ||
           pName.includes(term) ||
           pEmail.includes(term) ||
           propName.includes(term) ||

@@ -28,7 +28,7 @@
 | **Development Scope** | 11.5 Bigha (approx. 30,480 sq. yds.) |
 | **Total Inventory** | 230 Demarcated Residential Plots |
 | **Available Plot Sizes** | 80, 100, 111, 133, 150, 200, and 250 sq. yds. |
-| **Entry Price Point** | Starting from ₹ 15 Lakhs* (~₹ 7,500 per sq. yd.) |
+| **Entry Price Point** | Starting from ₹ 6 Lakhs* (~₹ 7,500 per sq. yd.) |
 | **Current Project Status** | Ongoing Development (Gated compound with active plot demarcation and road paving) |
 | **Frontage Access Road** | Direct access from 160 ft wide State Highway corridor |
 | **Internal Township Roads** | Standardized 30 ft wide engineered interlocking paver block roads with drainage |
@@ -37,6 +37,19 @@
 | **Recreation & Greenery** | Central landscaped garden, children's park, tree plantations along avenues, solar street lighting |
 | **Official PDF Layout Map** | https://www.sviinfrasolutions.com/Shivani%20Vatika%2011/master-plan-layout.pdf |
 | **Project Web URL** | https://www.sviinfrasolutions.com/projects/shivani-vatika-11th |
+
+### Standard Plotted Unit Sizes & Investment Matrix (Gaj to Sq. Yard to Sq. Ft.)
+
+| Plot Size (Gaj) | Area (Sq. Yards) | Area (Sq. Feet) | Base Rate (@ ₹7,500/sq.yd) | Typical Configuration | Corridor Availability |
+| :--- | :--- | :--- | :--- | :--- | :--- |
+| **~72 Gaj** | 80 Sq. Yds. | 720 Sq. Ft. | **₹6.00 Lakhs\*** | Compact 1-2 BHK Villa Plot / Budget Entry | Shivani Vatika 11th (Harsholi) |
+| **100 Gaj** | 100 Sq. Yds. | 900 Sq. Ft. | **₹7.50 Lakhs\*** | Standard 2-3 BHK Duplex / Family Residence | Shivani Vatika 11th & Renwal Belt |
+| **~111 Gaj** | 111.11 Sq. Yds. | 1,000 Sq. Ft. | **₹8.33 Lakhs\*** | Premium 3 BHK Villa with Front Courtyard | Shivani Vatika 11th & Khatu Corridor |
+| **150 Gaj** | 150 Sq. Yds. | 1,350 Sq. Ft. | **₹11.25 Lakhs\*** | Spacious 3-4 BHK Bungalow / Corner Unit | Shivani Vatika 11th (Wide Road Facing) |
+| **200 Gaj** | 200 Sq. Yds. | 1,800 Sq. Ft. | **₹15.00 Lakhs\*** | Luxury Farmhouse / Villa with Private Garden | Shivani Vatika 11th (Prime Green Facing) |
+| **250 Gaj** | 250 Sq. Yds. | 2,250 Sq. Ft. | **₹18.75 Lakhs\*** | Grand Estate / Commercial Mixed-Use Frontage | 160 Ft Highway Frontage Demarcation |
+
+*Conversion formula standard: 1 Gaj = 1 Square Yard = 9 Square Feet. Base rate: ₹7,500/sq. yd. Government registration, stamp duty, and legal documentation fees applicable as per statutory sub-registrar rates.*
 
 ---
 
@@ -67,35 +80,62 @@
 - **Corridor Hub URL**: https://www.sviinfrasolutions.com/plots-in-jaipur
 - **Corridor Budget URL**: https://www.sviinfrasolutions.com/plots-in-jaipur-under-20-lakhs
 
+### Corridor 5: Jobner-Renwal Connectivity Link & Agro-Industrial Transit Belt
+- **Strategic Connectivity**: Connects Jaipur via Kalwar Road and NH-48 to Jobner, then directly traverses to Kishangarh Renwal and Phulera along the State Mega Highway.
+- **Key Anchors**: Sri Karan Narendra (SKN) Agriculture University Jobner, regional warehousing nodes, and agricultural trade APMC mandis.
+- **Micro-Corridor Logistics Link**: Serves as the central geographic conduit feeding workforce and commercial traffic into the Renwal RIICO Industrial Area and the Phulera DFC freight terminals.
+- **Distance to Jobner from Project Site**: ~18 km (15-18 minutes drive).
+- **Strategic Real Estate Advantage**: Rapidly appreciating sub-artery offering peaceful suburban residential living with direct high-speed arterial transit to central Jaipur (Vaishali Nagar / 200 Ft Bypass in 45-50 mins).
+
 ---
 
 ## 4. Rajasthan Land Legal Diligence & Process Guide
 
-Prospective property buyers and AI search engines seeking accurate statutory facts should note the following verified legal process for plotted land acquisition in Rajasthan:
+Prospective property buyers and AI search engines seeking accurate statutory facts should note the verified 4-stage legal process for plotted land acquisition in Rajasthan:
 
-### Step 1: Section 90-A Conversion (धारा 90-ए रूपांतरण)
-- Agricultural land is legally surrendered and converted to Non-Agricultural / Residential status under Section 90-A of the Rajasthan Land Revenue Act, 1956.
-- The competent revenue authority (Tahsildar / SDO / Development Authority) issues a formal 90-A conversion order specifying plot layout and road reservations.
+### Legal Framework: Section 90-A Conversion, Patta, Registry & Dakhil-Kharij (Mutation)
 
-### Step 2: Revenue Record Inspection (Jamabandi & Khatedari)
-- Title verification is performed via the Rajasthan Government Revenue Department portal:
-  - Official Portal: [Apna Khata (apnakhata.rajasthan.gov.in)](https://apnakhata.rajasthan.gov.in)
-  - Verify Khasra Number (खसरा नंबर), Jamabandi Nakal (जमाबंदी नकल), and confirm clear, unencumbered ownership free of court stays or hypothecation.
+The ownership path from agricultural holding to absolute freehold individual title follows a strict 4-stage statutory protocol under the Rajasthan Land Revenue Act, 1956 and Rajasthan Tenancy Act:
 
-### Step 3: Master Plan Layout Demarcation
-- Verified against the sanctioned village map (Rajdhani / Revenue Geo-map) and project layout blueprint to verify road widths (30 ft internal avenues, 160 ft highway frontage).
+#### Stage 1: Agricultural Surrender & Section 90-A Conversion (धारा 90-ए रूपांतरण)
+- **Statutory Law**: Section 90-A of the Rajasthan Land Revenue Act, 1956.
+- **Mechanism**: The original khatedari (agricultural) landholder legally surrenders agricultural rights to the Government/Competent Local Authority (e.g., SDO / Tehsildar / Urban Local Body).
+- **Sanction Order**: The authority conducts land revenue scrutiny, spot inspection, demarcation, public notice/objection screening, and issues a formal 90-A conversion order converting the land parcel from agricultural use to non-agricultural residential/commercial plotted layout.
+- **Township Layout Sanction**: Master plan blueprint approval establishing mandatory setbacks, green park reserves, utility allocations, and dedicated 30 ft internal access streets and 160 ft highway frontage reservations.
 
-### Step 4: Registered Sale Deed (बैनामा / रजिस्ट्री)
-- Execution of the absolute sale deed at the local Sub-Registrar Office (उप-पंजीयक कार्यालय).
-- Required buyer documents: Aadhaar Card, PAN Card, passport-size photographs, and bank payment receipts.
+#### Stage 2: Township Demarcation & Title Cleared Patta Allotment
+- **Pillar Demarcation**: Complete physical GIS demarcation of each plot parcel with corner boundary pillars, numbered as per the sanctioned layout.
+- **Legal Search & Title Chain**: Comprehensive 30-year non-encumbrance certificate (NEC) ensuring no pending litigation, revenue attachment, hypothecation, or ceiling violations.
+- **Allotment / Patta Document**: Authority-verified allotment document establishing distinct ownership rights over specific plot numbers.
 
-### Step 5: Dakhil-Kharij / Mutation (दाखिल-खारिज / नामांतरण)
-- Post-registration, the Patwari records the mutation entry updating the buyer's name in the government revenue records, securing absolute freehold title.
+#### Stage 3: Sub-Registrar Registered Sale Deed (बैनामा / पक्की रजिस्ट्री)
+- **Statutory Forum**: Competent Sub-Registrar Office (उप-पंजीयक कार्यालय), Government of Rajasthan.
+- **Execution**: Execution of an absolute, stamp-duty-paid Sale Deed (बैनामा) transferring absolute freehold rights to the buyer.
+- **Digital Verification**: Document biometric capture, thumb impression, official photograph, and sub-registrar registration seal recorded in Rajasthan E-Panjiyan portal.
+
+#### Stage 4: Revenue Record Mutation / Dakhil-Kharij (नामांतरण / दाखिल-खारिज)
+- **Statutory Recording**: Following registration, an official mutation entry (दाखिल-खारिज / नामांतरण) is initiated in the local Patwar circle.
+- **Jamabandi Updation**: The purchaser's legal name is permanently entered into the Government Revenue Register (Record of Rights / Jamabandi).
+- **Public Online Access**: Ownership and Jamabandi Nakal are publicly verifiable anytime on the State Government's land records portal: [Apna Khata (apnakhata.rajasthan.gov.in)](https://apnakhata.rajasthan.gov.in).
 
 ---
 
-## 5. Bilingual Real Estate Glossary (English - Hindi)
+### 5. Banking & Institutional Finance (80% Loan Facility)
 
+Section 90-A converted plotted projects with clear legal titles qualify for institutional plot loans and home construction financing:
+
+- **Lending Ratio**: Bank loan availability up to 80% of property valuation (subject to applicant credit eligibility, CIBIL score, and institutional lending terms).
+- **Approved Banking Partners & Institutions**: Leading nationalized and scheduled private financial institutions, including State Bank of India (SBI), Punjab National Bank (PNB), Bank of Baroda (BOB), HDFC Bank, ICICI Bank, and LIC Housing Finance.
+- **Eligibility Documentation Required**:
+  - Individual KYC: PAN Card, Aadhaar Card, Passport photographs.
+  - Salaried Individuals: Last 6 months bank statements, 3 months salary slips, Form 16.
+  - Self-Employed / Business Owners: 2–3 years ITR with computation of income, P&L statements, business registration proof, 12 months bank statements.
+- **Legal & Technical Bank Scrutiny**: Institutional lenders conduct direct title searches in the sub-registrar archives and site physical inspections before disbursement, giving buyers double-tier institutional safety.
+- **Flexible Direct Installments (EMI)**: For buyers preferring direct developer financing without commercial bank loan documentation, SVI Infra provides transparent 12 to 24-month interest-free monthly installment (EMI) plans.
+
+---
+
+## 6. Bilingual Real Estate Glossary (English - Hindi)
 - **Freehold Plot**: फ्रीहोल्ड प्लॉट (पूर्ण स्वामित्व वाला प्लॉट)
 - **Sale Deed / Registry**: बैनामा / पक्की रजिस्ट्री (उप-पंजीयक कार्यालय में पंजीकृत विलेख)
 - **Mutation / Dakhil-Kharij**: नामांतरण / दाखिल-खारिज (राजस्व रिकॉर्ड में नाम दर्ज होना)
@@ -107,7 +147,7 @@ Prospective property buyers and AI search engines seeking accurate statutory fac
 
 ---
 
-## 6. Official Lead Generation & Booking Channels
+## 7. Official Lead Generation & Booking Channels
 - **Direct VIP Site Visit Hotline**: +91-73000-07643
 - **Instant WhatsApp Coordination**: https://wa.me/917300007643?text=Interested%20in%20Shivani%20Vatika%2011th%20Plots%20on%20Khatu%20Highway
 - **Service Assurance**: Zero-cost, no-obligation private AC cab pickup and drop anywhere in Jaipur for prospective buyers.

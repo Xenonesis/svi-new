@@ -4,9 +4,10 @@ import { PROJECTS_DB } from '@/src/data/projects';
 import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/src/lib/seo';
 
-// Bump this when static page content actually changes. Build-time `new Date()`
-// produced identical, ever-shifting timestamps that give crawlers no signal.
+// Bump this when static page content actually changes.
 const STATIC_LAST_MODIFIED = new Date('2026-08-16T00:00:00.000Z');
+// Dynamic freshness timestamp for updated corridor hubs and high-intent landing pages
+const CORRIDOR_LAST_MODIFIED = new Date('2026-09-28T00:00:00.000Z');
 
 function getSitemapEntry(
   path: string,
@@ -46,12 +47,17 @@ function getSitemapEntry(
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const staticRoutes: MetadataRoute.Sitemap = [
-    ...getSitemapEntry('/', STATIC_LAST_MODIFIED, 'weekly', 1),
-    ...getSitemapEntry('/plots-in-jaipur', STATIC_LAST_MODIFIED, 'weekly', 1.0),
-    ...getSitemapEntry('/plots-near-renwal-railway-station', STATIC_LAST_MODIFIED, 'weekly', 0.9),
-    ...getSitemapEntry('/plots-in-jaipur-under-20-lakhs', STATIC_LAST_MODIFIED, 'weekly', 0.9),
-    ...getSitemapEntry('/plots-for-sale-near-khatu-shyam-ji', STATIC_LAST_MODIFIED, 'weekly', 1.0),
-    ...getSitemapEntry('/plots-for-sale-in-phulera', STATIC_LAST_MODIFIED, 'weekly', 1.0),
+    ...getSitemapEntry('/', CORRIDOR_LAST_MODIFIED, 'weekly', 1),
+    ...getSitemapEntry('/plots-in-jaipur', CORRIDOR_LAST_MODIFIED, 'weekly', 1.0),
+    ...getSitemapEntry('/plots-near-renwal-railway-station', CORRIDOR_LAST_MODIFIED, 'weekly', 0.9),
+    ...getSitemapEntry('/plots-in-jaipur-under-20-lakhs', CORRIDOR_LAST_MODIFIED, 'weekly', 0.9),
+    ...getSitemapEntry(
+      '/plots-for-sale-near-khatu-shyam-ji',
+      CORRIDOR_LAST_MODIFIED,
+      'weekly',
+      1.0
+    ),
+    ...getSitemapEntry('/plots-for-sale-in-phulera', CORRIDOR_LAST_MODIFIED, 'weekly', 1.0),
     ...getSitemapEntry('/about', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/careers', STATIC_LAST_MODIFIED, 'monthly', 0.6),
     ...getSitemapEntry('/faq', STATIC_LAST_MODIFIED, 'monthly', 0.7),
@@ -73,20 +79,20 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   // Money pages: project detail and area landing pages (previously missing).
   const projectRoutes: MetadataRoute.Sitemap = Object.keys(PROJECTS_DB).flatMap((slug) =>
-    getSitemapEntry(`/projects/${slug}`, STATIC_LAST_MODIFIED, 'weekly', 0.9)
+    getSitemapEntry(`/projects/${slug}`, CORRIDOR_LAST_MODIFIED, 'weekly', 0.9)
   );
 
   const areaRoutes: MetadataRoute.Sitemap = Object.keys(AREAS_DATA).flatMap((slug) =>
-    getSitemapEntry(`/areas/${slug}`, STATIC_LAST_MODIFIED, 'monthly', 0.9)
+    getSitemapEntry(`/areas/${slug}`, CORRIDOR_LAST_MODIFIED, 'weekly', 0.9)
   );
 
   // English-only brochure page — no /hi alternate (content is not translated).
   const brochureRoutes: MetadataRoute.Sitemap = [
     {
       url: `${SITE_URL}/brochure/shivani-vatika-11`,
-      lastModified: STATIC_LAST_MODIFIED,
-      changeFrequency: 'monthly',
-      priority: 0.5,
+      lastModified: CORRIDOR_LAST_MODIFIED,
+      changeFrequency: 'weekly',
+      priority: 0.6,
     },
   ];
 

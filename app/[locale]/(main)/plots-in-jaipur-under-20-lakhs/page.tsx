@@ -37,6 +37,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       'Low budget residential plots in Jaipur',
       'Budget plots in Jaipur',
       'Cheap plots in Jaipur with registry',
+      '100 gaj plot in jaipur',
+      '111 gaj plot in jaipur',
+      '150 gaj plots near renwal',
+      '200 gaj plots jaipur',
+      '80% bank loan plots in jaipur',
+      'sbi approved plot loan jaipur',
+      'plots near jobner jaipur',
+      'jobner renwal road plots',
+      'patta registry plots in jaipur',
+      'dakhil kharij plots jaipur',
+      '100 गज प्लॉट जयपुर',
+      'जयपुर में 100 गज का प्लॉट',
+      'पट्टा रजिस्ट्री प्लॉट जयपुर',
       'Plots on Khatu Shyam highway under 20 lakhs',
       'Plots in Renwal under 20 lakhs',
       'EMI plots in Jaipur',
@@ -60,9 +73,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const BUDGET_FAQS = [
   {
+    question: 'Can I buy a 100 Gaj plot in Jaipur under 20 Lakhs with bank loan?',
+    answer:
+      'Yes, absolutely. At our prime residential projects such as Shivani Vatika 11th, base pricing starts at ₹7,500/sq. yd. A standard 100 Gaj (approx. 111.11 sq. yds.) plot comes out to approximately ₹8.33 Lakhs, well within a ₹20 Lakhs budget. Furthermore, up to 80% bank loan financing is available through leading nationalized and private banks (subject to standard bank credit scrutiny and borrower eligibility), meaning you can secure your freehold plot with minimal initial down payment.',
+  },
+  {
     question: 'Can I really get a legally verified residential plot in Jaipur under 20 Lakhs?',
     answer:
-      'Yes. At Shivani Vatika 11th (Harsholi on Jaipur-Khatu Shyam highway), 80 sq. yd. residential plots start around ₹ 15 Lakhs* with complete sub-registrar registry and demarcated boundary walls.',
+      'Yes. At Shivani Vatika 11th (Harsholi on Jaipur-Khatu Shyam highway), 80 sq. yd. residential plots start around ₹6 Lakhs (at ₹7,500/sq. yd.) with Section 90-A legal approvals, freehold registry, and demarcated boundary walls.',
   },
   {
     question: 'Are there interest-free monthly installment (EMI) schemes available?',

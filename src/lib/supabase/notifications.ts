@@ -421,4 +421,15 @@ export const NotificationHelper = {
       metadata: { event: 'chat_lead_created', name, phone },
     });
   },
+
+  // ─── Portal Allotments Notifications ─────────────────────────────────
+  allotmentMissingTicketReminder: async (count: number, plotList: string[]) => {
+    return createNotificationForAllAdmins({
+      title: 'Action Required: Missing Ticket / Ref IDs',
+      message: `${count} active allotment(s) (${plotList.join(', ')}) are missing official Ticket/Ref IDs. Please review and update them.`,
+      type: 'warning',
+      action_url: '/admin/portal-allotments',
+      metadata: { event: 'missing_ticket_ids', subType: 'allotments', count, plotList },
+    });
+  },
 };

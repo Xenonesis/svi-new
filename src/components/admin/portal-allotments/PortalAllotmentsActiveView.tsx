@@ -9,6 +9,7 @@ import {
   Building2,
   Layers,
   SearchX,
+  AlertTriangle,
 } from 'lucide-react';
 import { PortalAllotmentTableRow } from './PortalAllotmentTableRow';
 import { PortalAllotmentScheduleDrawer } from './PortalAllotmentScheduleDrawer';
@@ -32,6 +33,7 @@ export interface PortalAllotmentsActiveViewProps {
   loadingText: string;
   noAllotmentsFoundText: string;
   filteredAllotments: AllotmentRecord[];
+  allotments?: AllotmentRecord[];
   getAllotmentFinancials: (allotment: AllotmentRecord) => AllotmentFinancials;
   expandedAllotment: string | null;
   onToggleExpand: (id: string) => void;
@@ -81,6 +83,7 @@ export function PortalAllotmentsActiveView({
   loadingText,
   noAllotmentsFoundText,
   filteredAllotments,
+  allotments,
   getAllotmentFinancials,
   expandedAllotment,
   onToggleExpand,
@@ -146,6 +149,32 @@ export function PortalAllotmentsActiveView({
     );
   };
 
+  const missingIdAllotments = React.useMemo(() => {
+    const list = allotments || filteredAllotments;
+    return list.filter((a) => {
+      const isRefund = Boolean(
+        a.notes?.toLowerCase().includes('refund') ||
+        a.status?.toLowerCase().includes('refund') ||
+        a.status?.toLowerCase().includes('cancelled') ||
+        (a.metadata?.status as string)?.toLowerCase().includes('refund') ||
+        (a.metadata?.refund_status as string)?.toLowerCase().includes('refund') ||
+        (a.metadata?.notes as string)?.toLowerCase().includes('refund') ||
+        (a.metadata?.remarks as string)?.toLowerCase().includes('refund')
+      );
+      if (isRefund) return false;
+      const rawTicketId =
+        (a.metadata?.ticket_id as string) ||
+        (a.metadata?.ticketId as string) ||
+        (a.metadata?.refId as string) ||
+        (a.metadata?.ref_id as string);
+      const hasValid =
+        rawTicketId &&
+        !rawTicketId.toLowerCase().startsWith('plot ') &&
+        !/^svi-[0-9a-f]{4}/i.test(rawTicketId);
+      return !hasValid;
+    });
+  }, [allotments, filteredAllotments]);
+
   return (
     <div className="space-y-4">
       {/* 1. Multi-Dimension Filter Bar */}
@@ -168,6 +197,41 @@ export function PortalAllotmentsActiveView({
         viewMode={viewMode}
         onViewModeChange={setViewMode}
       />
+
+      {/* 2. Missing Ticket ID Notification Reminder Banner */}
+      {missingIdAllotments.length > 0 && !searchTerm.toLowerCase().includes('missing') && (
+        <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 shadow-2xs sm:flex-row sm:items-center dark:border-amber-500/40 dark:bg-amber-950/40">
+          <div className="flex items-center gap-3">
+            <div className="rounded-xl bg-amber-500/20 p-2 text-amber-700 dark:text-amber-300">
+              <AlertTriangle className="h-5 w-5" />
+            </div>
+            <div>
+              <div className="text-xs font-bold text-amber-900 dark:text-amber-100">
+                Action Required: {missingIdAllotments.length} Active Allotment(s) Missing Official
+                Ticket ID
+              </div>
+              <p className="mt-0.5 text-[11px] text-amber-700 dark:text-amber-300">
+                {missingIdAllotments
+                  .map(
+                    (a) =>
+                      `Unit ${a.unit_no || a.unit_number} (${a.profiles?.full_name || 'Client'})`
+                  )
+                  .join(' • ')}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => onSearchChange('missing')}
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-500/30 bg-white px-3 py-1.5 text-xs font-bold text-amber-800 shadow-2xs transition-all hover:bg-amber-50 hover:shadow-xs active:scale-95 dark:border-white/10 dark:bg-gray-800 dark:text-amber-200 dark:hover:bg-gray-700"
+          >
+            <span>Review & Update</span>
+            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold">
+              {missingIdAllotments.length}
+            </span>
+          </button>
+        </div>
+      )}
 
       {/* 3. Main Data Presentation (Table or Cards) */}
       {loading ? (

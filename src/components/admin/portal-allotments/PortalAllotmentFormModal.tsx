@@ -169,6 +169,20 @@ export function PortalAllotmentFormModal({
                 </div>
               </div>
 
+              <div className="space-y-1">
+                <label className="flex items-center justify-between text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <span>Official Ticket / Ref ID</span>
+                  <span className="text-xs font-normal text-gray-400">e.g. SVI2001, PL2001</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Leave empty if ID is pending/missing"
+                  value={formData.ticket_id || ''}
+                  onChange={(e) => setFormData({ ...formData, ticket_id: e.target.value })}
+                  className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 font-mono text-sm text-gray-900 uppercase outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                />
+              </div>
+
               <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">
                 <button
                   type="button"

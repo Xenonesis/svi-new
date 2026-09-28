@@ -1996,231 +1996,1101 @@ export const BLOG_POSTS: BlogPost[] = [
     readTimeHi: '7 मिनट पढ़ें',
   },
   {
-    title: 'Shivani Vatika 11th Official Price List, Master Plan & Plot Sizes 2026',
-    titleHi: 'शिवानी वाटिका 11th आधिकारिक मूल्य सूची, मास्टर प्लान व प्लॉट साइज 2026',
+    title: 'Shivani Vatika 11th: Price List, Master Plan & Plot Sizes 2026',
+    titleHi: 'शिवानी वाटिका 11th: मूल्य सूची, मास्टर प्लान व प्लॉट साइज 2026',
     slug: 'shivani-vatika-11th-official-price-list-master-plan-2026',
     excerpt:
-      'Official 2026 price list, master plan, and layout specifications for Shivani Vatika 11th by SVI Infra Solutions. Verified Section 90-A residential plots from 80 to 250 sq. yds. starting at ₹ 7,500/sq. yd.',
+      'Explore Shivani Vatika 11th in Kaladera, Jaipur — plot sizes from 80–250 Sq. Yds., 2026 price plans, payment options, master plan, road widths and project details near Khatu Shyam Ji.',
     excerptHi:
-      'SVI Infra Solutions द्वारा विकसित शिवानी वाटिका 11th की आधिकारिक 2026 मूल्य सूची, मास्टर प्लान और प्लॉट साइज। धारा 90-ए स्वीकृत 80 से 250 वर्ग गज के आवासीय प्लॉट्स मात्र ₹ 7,500/वर्ग गज से।',
+      'कालाडेरा, जयपुर में शिवानी वाटिका 11th की संपूर्ण जानकारी — 80 से 250 वर्ग गज के प्लॉट साइज, 2026 भुगतान योजनाएं, मास्टर प्लान, सड़क चौड़ाई और खाटू श्याम जी के समीप प्रोजेक्ट विवरण।',
     content: `
-      <p>Welcome to the official developer guide and price breakdown for <mark>Shivani Vatika 11th</mark>, the flagship integrated residential township developed exclusively by <strong>SVI Infra Solutions Pvt. Ltd.</strong> (Building Legacies Since 2009 / 17+ Years Legacy). Located strategically at Harsholi on the Jaipur to Khatu Shyam Ji Highway, this project sets the gold standard for legally secure peri-urban plotting in Rajasthan.</p>
+      <p>Welcome to the comprehensive project guide and pricing analysis for <mark>Shivani Vatika 11th</mark>, a premium residential plotted township developed by <strong>SVI Infra Solutions Pvt. Ltd.</strong> Spread across <strong>11.5 Bigha</strong> in Kaladera, Jaipur, Rajasthan, this gated development provides <strong>230 demarcated residential plots</strong> ranging from <strong>80 to 250 Sq. Yards</strong> near the sacred pilgrimage hub of Khatu Shyam Ji.</p>
 
-      <blockquote>
-        <strong>Developer Advisory Notice:</strong> Shivani Vatika 11th is conceptualized, engineered, and marketed directly by SVI Infra Solutions Pvt. Ltd. Buyers are advised to consult directly through official developer channels to prevent misrepresentation by unauthorized third-party broker networks (including unverified listings by NavBharat or regional intermediaries).
-      </blockquote>
+      <h2>1. Shivani Vatika 11th Overview</h2>
+      <p>Shivani Vatika 11th is conceptualized as an integrated, secure residential plotted enclave catering to both families seeking peaceful living and long-term land purchasers. The township layout and infrastructure are designed around core civic necessities, open circulation, and legal transparency:</p>
+      <div class="my-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Total Area</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">11.5 Bigha</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">~30,480 Sq. Yds.</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Inventory</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">230 Plots</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Demarcated Units</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Plot Sizes</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">80 – 250 Sq. Yd.</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Modular Layouts</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Internal Roads</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">30 ft & 40 ft</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Wide Avenues</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Highway Access</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">160 ft Road</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Khatu Shyam Ji Hwy</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Loan Facility</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">Available</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">Bank Approved</span>
+        </div>
+      </div>
 
-      <h2>1. Master Plan Specifications & Layout Highlights</h2>
-      <p>Shivani Vatika 11th has been master-planned according to modern town planning principles, prioritizing open spaces, wide circulation roads, and robust civic infrastructure:</p>
-      <ul>
-        <li><strong>Total Land Area:</strong> 11.5 Bigha (approx. 30,480 sq. yds. of prime converted land).</li>
-        <li><strong>Total Inventory:</strong> 230 demarcated residential and selective commercial-mix plots.</li>
-        <li><strong>Road Network:</strong> Generous 30-foot and 40-foot wide blacktop and interlocking paver internal avenues designed for effortless two-way vehicular flow.</li>
-        <li><strong>Civic Infrastructure:</strong> Underground electric conduit lines, 24/7 solar-assisted street lighting, boom-barrier gated security, rainwater harvesting, overhead water storage, and an expansive landscaped family park with tree plantations.</li>
-      </ul>
-
-      <h2>2. Official 2026 Price List & Plot Dimensions</h2>
-      <p>SVI Infra Solutions maintains 100% price transparency with no hidden development surcharges. The basic selling price (BSP) is fixed at <strong>₹ 7,500 per sq. yd.</strong> across standard residential sectors:</p>
+      <h2>2. Shivani Vatika 11th Price List 2026</h2>
+      <p>SVI Infra Solutions offers transparent payment structures tailored to different buyer horizons. Pricing is structured transparently across three straightforward options based on payment timeline:</p>
       <div class="overflow-x-auto my-6">
         <table class="min-w-full text-left border border-gray-200 text-sm">
           <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
             <tr>
-              <th class="p-3">Plot Dimension (Sq. Yds.)</th>
-              <th class="p-3">Size in Sq. Feet</th>
-              <th class="p-3">Base Price (₹ 7,500/sq. yd.)</th>
-              <th class="p-3">Ideal Usage</th>
+              <th class="p-3">Plan</th>
+              <th class="p-3 text-right">Rate / Sq. Yd.</th>
+              <th class="p-3 text-right">Upfront</th>
+              <th class="p-3 text-right">Balance</th>
+              <th class="p-3 text-right">Tenure</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr>
-              <td class="p-3 font-medium">80 Sq. Yds.</td>
-              <td class="p-3">720 sq. ft.</td>
-              <td class="p-3">₹ 15,00,000* (₹ 15 Lakhs)</td>
-              <td class="p-3">Entry Investor / Compact 2BHK Home</td>
+              <td class="p-3 font-medium">One-Time Payment</td>
+              <td class="p-3 text-right font-semibold">₹7,500</td>
+              <td class="p-3 text-right">100%</td>
+              <td class="p-3 text-right">—</td>
+              <td class="p-3 text-right">One-Time</td>
             </tr>
             <tr>
-              <td class="p-3 font-medium">100 Sq. Yds.</td>
-              <td class="p-3">900 sq. ft.</td>
-              <td class="p-3">₹ 18,75,000* (₹ 18.75 Lakhs)</td>
-              <td class="p-3">Standard Family Villa / 3BHK Duplex</td>
+              <td class="p-3 font-medium">12-Month Plan</td>
+              <td class="p-3 text-right font-semibold">₹7,750</td>
+              <td class="p-3 text-right">30%</td>
+              <td class="p-3 text-right">70%</td>
+              <td class="p-3 text-right">12 Months</td>
             </tr>
             <tr>
-              <td class="p-3 font-medium">111 Sq. Yds.</td>
-              <td class="p-3">999 sq. ft.</td>
-              <td class="p-3">₹ 20,81,250* (₹ 20.81 Lakhs)</td>
-              <td class="p-3">Vastu-Optimized 3BHK Home</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">150 Sq. Yds.</td>
-              <td class="p-3">1,350 sq. ft.</td>
-              <td class="p-3">₹ 28,12,500* (₹ 28.12 Lakhs)</td>
-              <td class="p-3">Spiritual Holiday Home / Guest House</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">200 Sq. Yds.</td>
-              <td class="p-3">1,800 sq. ft.</td>
-              <td class="p-3">₹ 37,50,000* (₹ 37.50 Lakhs)</td>
-              <td class="p-3">Luxury Villa / Private Homestay</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">250 Sq. Yds.</td>
-              <td class="p-3">2,250 sq. ft.</td>
-              <td class="p-3">₹ 46,87,500* (₹ 46.87 Lakhs)</td>
-              <td class="p-3">Prime Corner / Commercial Guest House</td>
+              <td class="p-3 font-medium">24-Month Plan</td>
+              <td class="p-3 text-right font-semibold">₹8,000</td>
+              <td class="p-3 text-right">30%</td>
+              <td class="p-3 text-right">70%</td>
+              <td class="p-3 text-right">24 Months</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p><em>*Note: Government registration charges, stamp duty, and applicable utility connection fees are payable as per state government norms at the time of deed registration.</em></p>
+      <p class="text-xs text-gray-500 italic">*Note: Government registration charges, stamp duty, and statutory documentation fees are payable separately as per government regulations at the time of deed execution.</p>
 
-      <h2>3. Geographical Positioning & Connectivity Matrix</h2>
-      <p>Shivani Vatika 11th is positioned at the intersection of spiritual tourism and industrial logistics:</p>
+      <h2>3. Payment Plans Explained</h2>
+      <p>Understanding the exact mathematical calculation behind each payment plan ensures complete financial clarity:</p>
       <ul>
-        <li><strong>Khatu Shyam Ji Mandir:</strong> 20–25 minutes drive (~25 km via state highway).</li>
-        <li><strong>RIICO Industrial Area Renwal:</strong> 1 km (2 minutes drive), generating high residential tenancy demand.</li>
-        <li><strong>Renwal Railway Station:</strong> 7 km (5 minutes drive).</li>
-        <li><strong>Phulera Junction & DMIC Cargo Hub:</strong> 34 km via direct arterial connection.</li>
-        <li><strong>Jaipur City Center:</strong> 45 minutes smooth commute via 4-lane highway.</li>
-      </ul>
-      <p>Discover more details on our dedicated <a href="/projects/shivani-vatika-11th">Shivani Vatika 11th project page</a> or download the comprehensive <a href="/brochure/shivani-vatika-11">Shivani Vatika 11th brochure</a>.</p>
-
-      <h2>4. Legal Certification: Section 90-A & Clear Registry Title</h2>
-      <p>Every single plot in Shivani Vatika 11th is delivered with an unassailable legal foundation:</p>
-      <ul>
-        <li><mark>Section 90-A Land Conversion:</mark> Complete statutory non-agricultural residential conversion orders approved by the competent revenue authority.</li>
-        <li><mark>Apna Khata Jamabandi & Mutation:</mark> Clear government revenue record trail with no agricultural liens or disputes.</li>
-        <li><mark>Sub-Registrar Registry:</mark> Direct biometric registration of the sale deed at the local Sub-Registrar office with clear individual title deeds.</li>
+        <li><strong>One-Time Payment (₹7,500 per Sq. Yd.):</strong> Full purchase consideration is calculated at the base rate of ₹7,500 per Sq. Yd. payable upfront as per the purchase agreement.</li>
+        <li><strong>12-Month Plan (₹7,750 per Sq. Yd.):</strong> Total plot cost is calculated directly at ₹7,750 per Sq. Yd. A 30% upfront booking amount is paid at this ₹7,750 rate, and the remaining 70% balance is payable in 12 equal monthly instalments at the same ₹7,750 rate.</li>
+        <li><strong>24-Month Plan (₹8,000 per Sq. Yd.):</strong> Total plot cost is calculated directly at ₹8,000 per Sq. Yd. A 30% upfront booking amount is paid at this ₹8,000 rate, and the remaining 70% balance is payable in 24 equal monthly instalments at the same ₹8,000 rate.</li>
       </ul>
 
-      <h2>Conclusion</h2>
-      <p>Shivani Vatika 11th offers the ultimate combination of prime highway location, institutional development standards, and ironclad legal safety. Connect with SVI Infra Solutions today to schedule an official on-site inspection.</p>
-      <p class="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4" className="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4"><strong>Investment & Regulatory Disclaimer:</strong> Capital appreciation projections, connectivity drive-times, and rental yields mentioned in this report are based on infrastructure development timelines and market assessments (2024–2026). Real estate investments carry market risks; prospective purchasers are strongly advised to perform independent title verification and due diligence before executing transactions.</p>
+      <h2>4. Plot Sizes: 80–250 Sq. Yards</h2>
+      <p>Shivani Vatika 11th accommodates varying lifestyle and budget requirements with standardized plot dimensions:</p>
+      <ul>
+        <li><strong>80 to 100 Sq. Yards:</strong> Compact, high-efficiency layouts suitable for starter homes or initial land acquisitions.</li>
+        <li><strong>111 to 150 Sq. Yards:</strong> Popular mid-sized residential parcels accommodating standard 3BHK to 4BHK independent villa configurations with front parking and garden space.</li>
+        <li><strong>200 to 250 Sq. Yards:</strong> Expansive villa plots offering generous frontages, suitable for spacious estate living, private lawns, or semi-commercial guest accommodation.</li>
+      </ul>
+
+      <h2>5. 100, 150, 200 & 250 Sq. Yd. Price Examples</h2>
+      <p>Below is a precise, mathematically verified breakdown of standard plot sizes across the One-Time, 12-Month, and 24-Month plans:</p>
+
+      <h3>Example A: 100 Sq. Yd. Plot</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">Component</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. Total Price</td>
+              <td class="p-2.5 text-right font-semibold">₹7,50,000</td>
+              <td class="p-2.5 text-right font-semibold">₹7,75,000</td>
+              <td class="p-2.5 text-right font-semibold">₹8,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% Upfront Amount</td>
+              <td class="p-2.5 text-right">₹7,50,000 (100%)</td>
+              <td class="p-2.5 text-right">₹2,32,500</td>
+              <td class="p-2.5 text-right">₹2,40,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. Remaining 70% Balance</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹5,42,500</td>
+              <td class="p-2.5 text-right">₹5,60,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. Monthly EMI (12 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹45,208 / mo</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. Monthly EMI (24 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹23,333 / mo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Example B: 150 Sq. Yd. Plot</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">Component</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. Total Price</td>
+              <td class="p-2.5 text-right font-semibold">₹11,25,000</td>
+              <td class="p-2.5 text-right font-semibold">₹11,62,500</td>
+              <td class="p-2.5 text-right font-semibold">₹12,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% Upfront Amount</td>
+              <td class="p-2.5 text-right">₹11,25,000 (100%)</td>
+              <td class="p-2.5 text-right">₹3,48,750</td>
+              <td class="p-2.5 text-right">₹3,60,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. Remaining 70% Balance</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹8,13,750</td>
+              <td class="p-2.5 text-right">₹8,40,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. Monthly EMI (12 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹67,813 / mo</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. Monthly EMI (24 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹35,000 / mo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Example C: 200 Sq. Yd. Plot</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">Component</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. Total Price</td>
+              <td class="p-2.5 text-right font-semibold">₹15,00,000</td>
+              <td class="p-2.5 text-right font-semibold">₹15,50,000</td>
+              <td class="p-2.5 text-right font-semibold">₹16,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% Upfront Amount</td>
+              <td class="p-2.5 text-right">₹15,00,000 (100%)</td>
+              <td class="p-2.5 text-right">₹4,65,000</td>
+              <td class="p-2.5 text-right">₹4,80,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. Remaining 70% Balance</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹10,85,000</td>
+              <td class="p-2.5 text-right">₹11,20,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. Monthly EMI (12 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹90,417 / mo</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. Monthly EMI (24 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹46,667 / mo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Example D: 250 Sq. Yd. Plot</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">Component</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. Total Price</td>
+              <td class="p-2.5 text-right font-semibold">₹18,75,000</td>
+              <td class="p-2.5 text-right font-semibold">₹19,37,500</td>
+              <td class="p-2.5 text-right font-semibold">₹20,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% Upfront Amount</td>
+              <td class="p-2.5 text-right">₹18,75,000 (100%)</td>
+              <td class="p-2.5 text-right">₹5,81,250</td>
+              <td class="p-2.5 text-right">₹6,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. Remaining 70% Balance</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹13,56,250</td>
+              <td class="p-2.5 text-right">₹14,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. Monthly EMI (12 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹1,13,021 / mo</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. Monthly EMI (24 Months)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹58,333 / mo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>6. Shivani Vatika 11th Master Plan</h2>
+      <p>The township master plan is designed for optimal land efficiency, wide circulation, and secure perimeter enclosure. The demarcated layout provides designated avenues, entrance gate security, and seamless movement throughout all 230 plots.</p>
+
+      <div class="my-8 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xl dark:border-white/10 dark:bg-slate-900/60 blueprint-container">
+        <div class="border-b border-gray-200/80 bg-gray-50/80 px-5 py-4 flex flex-wrap items-center justify-between gap-3 dark:border-white/10 dark:bg-white/[0.02]">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-amber-500 uppercase dark:text-amber-400">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Protected Document
+              </span>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white">Official Proposed Layout Plan — Shivani Vatika 11th</h4>
+            </div>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">At Harsoli, Jaipur to Khatu Shyam Ji Road (Raj.) | 160'-0" Highway Access</p>
+          </div>
+          <button
+            type="button"
+            data-unlock-blueprint="true"
+            class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-amber-600/10 px-4 py-2 text-xs font-bold text-amber-600 transition-all hover:border-amber-500 hover:bg-amber-500 hover:text-slate-950 dark:text-amber-300 dark:hover:text-slate-950"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Unlock Full Blueprint PDF
+          </button>
+        </div>
+
+        <div class="relative bg-slate-950/5 dark:bg-slate-950/40 flex justify-center items-center min-h-[380px] sm:min-h-[460px]">
+          <div class="p-2 sm:p-4 w-full flex justify-center items-center blueprint-preview-wrapper transition-all duration-300">
+            <img
+              src="/Shivani Vatika 11/master-plan-layout.webp"
+              alt="Shivani Vatika 11th master plan layout preview in Kaladera Jaipur"
+              class="w-full max-w-4xl h-auto object-contain rounded-lg filter blur-sm select-none pointer-events-none"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-950/40 backdrop-blur-[2px] transition-all blueprint-gate-overlay">
+            <div class="relative max-w-md rounded-2xl border border-amber-400/30 bg-[#080d19]/90 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+              <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-400/40 bg-amber-400/15 text-amber-400 shadow-lg shadow-amber-400/20">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <span class="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 font-mono text-[10px] font-bold tracking-wider text-amber-300 uppercase">
+                Verified Buyer Access
+              </span>
+              <h5 class="mt-3 font-serif text-lg font-bold text-white sm:text-xl">
+                Unlock Demarcated Master Plan
+              </h5>
+              <p class="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
+                Enter your name and WhatsApp number to instantly receive the unblurred architectural master plan, available plot numbers, and official developer pricing.
+              </p>
+              <button
+                type="button"
+                data-unlock-blueprint="true"
+                class="cursor-pointer mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 py-3 px-5 text-xs font-bold tracking-wider text-slate-950 uppercase shadow-lg shadow-amber-500/25 transition-all hover:from-amber-300 hover:to-amber-400 hover:shadow-xl sm:text-sm"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                Send Blueprint &amp; Details on WhatsApp
+              </button>
+              <p class="mt-3 text-[11px] text-slate-400">
+                Free Instant Access • Direct from Developer Desk • No Spam
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200/80 bg-gray-50/60 p-4 text-xs text-gray-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-gray-400">
+          <p><strong>Layout Highlights:</strong> Clearly marked 30'-0" internal cross roads, central arterial spine, demarcated A-Block residential plots, and direct entry from the 160'-0" wide Khatu Shyam Ji Highway.</p>
+        </div>
+      </div>
+
+      <figure class="my-8 overflow-hidden rounded-xl border border-gray-200 shadow-md dark:border-gray-700">
+        <img
+          src="/Shivani Vatika 11/plot.webp"
+          alt="On-ground demarcated residential plots at Shivani Vatika 11th Kaladera Jaipur"
+          class="w-full h-auto object-cover"
+          loading="lazy"
+        />
+        <figcaption class="p-3 text-center text-xs text-gray-500 italic dark:text-gray-400 bg-gray-50 dark:bg-gray-800">
+          On-ground plot demarcation and peaceful green surroundings at Shivani Vatika 11th
+        </figcaption>
+      </figure>
+
+      <h2>7. Internal Roads & Project Infrastructure</h2>
+      <p>Shivani Vatika 11th incorporates essential civic infrastructure supported directly by the project brochure:</p>
+      <ul>
+        <li><strong>Internal Road Network:</strong> 30 ft & 40 ft wide internal roads facilitating smooth two-way vehicular transit and residential parking access.</li>
+        <li><strong>Water Supply:</strong> Integrated water distribution infrastructure serving residential plots.</li>
+        <li><strong>Drainage System:</strong> Planned drainage system designed for effective runoff management and community sanitation.</li>
+        <li><strong>Electricity & Electrification:</strong> Complete electrical network and feeder infrastructure.</li>
+        <li><strong>LED Street Lights:</strong> Well-distributed LED street lighting installed along all 30 ft and 40 ft internal avenues.</li>
+        <li><strong>Boundary Wall:</strong> Secure perimeter boundary wall defining the township boundaries.</li>
+        <li><strong>Loan Facility:</strong> Institutional loan facility available from leading banks subject to borrower qualification and bank criteria.</li>
+      </ul>
+
+      <h2>8. Location & Connectivity</h2>
+      <p>Shivani Vatika 11th is positioned at <strong>Kaladera, Jaipur, Rajasthan</strong>, near the pilgrimage destination of <strong>Khatu Shyam Ji</strong>. This strategic location provides balanced connectivity across regional religious corridors and Jaipur highway transit routes:</p>
+      <ul>
+        <li><strong>Primary Location:</strong> Kaladera, Jaipur, Rajasthan</li>
+        <li><strong>Prominent Landmark:</strong> Near Khatu Shyam Ji</li>
+        <li><strong>Key Distances:</strong> Khatu Shyam Ji Temple (~32 km), Chomu Pulia Jaipur (~42 km), Chomu City (~23 km), Renwal Railway Station (~10 km).</li>
+        <li><strong>Regional Transit:</strong> Convenient road connectivity linking Kaladera with Jaipur city routes and neighboring rural growth centers.</li>
+      </ul>
+      <p>To learn more about residential plot opportunities in the wider district, explore our guides on <a href="/plots-in-jaipur">plots in Jaipur</a>, <a href="/plots-in-jaipur-under-20-lakhs">plots in Jaipur under 20 lakhs</a>, and <a href="/plots-for-sale-near-khatu-shyam-ji">plots for sale near Khatu Shyam Ji</a>.</p>
+
+      <h2>9. Frequently Asked Questions</h2>
+      <div class="blog-faq-list">
+        <details class="blog-faq-item" open>
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Location</span>
+              Where is Shivani Vatika 11th located?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>Shivani Vatika 11th is located in Kaladera, Jaipur, Rajasthan, along the Khatu Shyam Ji road corridor near Harsoli and Hingoniya (~32 km from Khatu Shyam Ji Temple and ~42 km from Chomu Pulia Jaipur).</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Master Plan</span>
+              How many total plots are available in the township?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>The township spans across 11.5 Bigha (~30,480 Sq. Yds.) and contains exactly 230 demarcated residential plots.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Sizes</span>
+              What are the available plot sizes?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>Plots range from 80 Sq. Yds. to 250 Sq. Yds., with standard denominations of 100, 150, 200, and 250 Sq. Yds. catering to compact and spacious villas alike.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Pricing</span>
+              What is the One-Time payment rate?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>The One-Time upfront rate is ₹7,500 per Sq. Yard, with 100% purchase consideration payable upon booking and agreement execution.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Installment</span>
+              How does the 12-Month payment plan work?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>Under the 12-month tenure, the rate is ₹7,750 per Sq. Yard. Buyers pay 30% upfront (computed on the ₹7,750 rate) and the remaining 70% balance in 12 equal monthly instalments.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Installment</span>
+              How does the 24-Month payment plan work?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>Under the 24-month tenure, the rate is ₹8,000 per Sq. Yard. Buyers pay 30% upfront (computed on the ₹8,000 rate) and the remaining 70% balance in 24 equal monthly instalments.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Roads</span>
+              What are the internal road widths?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>The internal roads inside the township are 30 ft and 40 ft wide demarcated avenues, connected directly to the 160 ft wide Khatu Shyam Ji corridor main road.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Blueprint</span>
+              Where can I inspect the official master plan?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>You can view the high-resolution blueprint layout right on this page above, explore the <a href="/projects/shivani-vatika-11th" class="text-amber-600 hover:underline">project page</a>, or download the official <a href="/Shivani Vatika 11/master-plan-layout.pdf" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:underline">master plan layout PDF</a>.</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">Site Visit</span>
+              How do I book a site visit?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>You can schedule a complimentary site visit through our <a href="/contact?project=shivani-vatika-11th" class="text-amber-600 hover:underline">contact page</a> or by reaching out to our advisory team via phone or WhatsApp.</p>
+          </div>
+        </details>
+      </div>
+
+      <h2>10. Site Visit / Enquiry</h2>
+      <p>Shivani Vatika 11th provides demarcated residential plots with planned infrastructure and flexible payment plans in Kaladera, Jaipur. Prospective buyers can inspect the on-ground internal roads, boundary perimeter, and layout demarcation by booking a guided on-site visit.</p>
+      <p>To schedule an inspection, verify plot availability, or consult on payment plans, visit our <a href="/contact?project=shivani-vatika-11th">contact page</a> or reach out through official SVI Infra Solutions advisory channels.</p>
+
+      <p class="mt-8 text-xs text-gray-500 italic border-t border-gray-200 pt-4 dark:border-gray-700"><strong>Disclaimer:</strong> Plot pricing, payment plan tenures, and development specifications are based on official project documentation. All institutional loans are subject to individual bank underwriting and credit criteria. Purchasers are encouraged to conduct personal due diligence prior to booking.</p>
     `,
     contentHi: `
-      <p><strong>SVI Infra Solutions Pvt. Ltd.</strong> (2009 से 17+ वर्षों की अटूट विश्वसनीयता) द्वारा विशेष रूप से विकसित <mark>शिवानी वाटिका 11th</mark> की आधिकारिक मूल्य सूची और मास्टर प्लान गाइड में आपका स्वागत है। जयपुर से खाटू श्याम जी हाईवे पर हरसोली में स्थित यह प्रोजेक्ट राजस्थान में कानूनी रूप से सुरक्षित आवासीय टाउनशिप का नया मानक स्थापित करता है।</p>
+      <p><strong>SVI Infra Solutions Pvt. Ltd.</strong> द्वारा प्रस्तुत <mark>शिवानी वाटिका 11th</mark> की व्यापक प्रोजेक्ट व मूल्य गाइड में आपका स्वागत है। कालाडेरा, जयपुर, राजस्थान में <strong>11.5 बीघा</strong> में फैली यह आवासीय टाउनशिप खाटू श्याम जी के समीप <strong>80 से 250 वर्ग गज</strong> के <strong>230 सीमांकित (demarcated) प्लॉट्स</strong> प्रदान करती है।</p>
 
-      <blockquote>
-        <strong>डेवलपर आधिकारिक सूचना:</strong> शिवानी वाटिका 11th का निर्माण, इंजीनियरिंग और विपणन केवल SVI Infra Solutions Pvt. Ltd. द्वारा सीधे किया जाता है। खरीदारों को सलाह दी जाती है कि वे किसी भी अनधिकृत तीसरे पक्ष या ब्रोकर नेटवर्क (जैसे नवभारत या अन्य अनाधिकृत पोर्टल) के बहकावे में न आएं और केवल कंपनी के आधिकारिक कार्यालय से ही संपर्क करें।
-      </blockquote>
+      <h2>1. Shivani Vatika 11th Overview</h2>
+      <p>शिवानी वाटिका 11th को आधुनिक टाउनशिप मानकों के अनुरूप डिजाइन किया गया है, जो शांत पारिवारिक जीवन और दीर्घकालिक भूमि स्वामित्व दोनों के लिए उपयुक्त है:</p>
+      <div class="my-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">कुल क्षेत्रफल</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">11.5 बीघा</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">~30,480 वर्ग गज</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">कुल प्लॉट्स</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">230 प्लॉट्स</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">सीमांकित भूखंड</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">प्लॉट साइज</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">80 – 250 वर्ग गज</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">मानक विन्यास</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">आंतरिक सड़कें</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">30 व 40 फीट</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">चौड़े रास्ते</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">हाईवे संपर्क</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">160 फीट रोड</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">खाटू श्याम जी रोड</span>
+        </div>
+        <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
+          <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">बैंक लोन</span>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">उपलब्ध</p>
+          <span class="text-xs text-gray-500 dark:text-gray-400">नियमानुसार</span>
+        </div>
+      </div>
 
-      <h2>1. मास्टर प्लान विनिर्देश और टाउनशिप सुविधाएं</h2>
-      <p>शिवानी वाटिका 11th को आधुनिक नगर नियोजन सिद्धांतों के आधार पर तैयार किया गया है, जिसमें चौड़ी सड़कों, खुली हरियाली और उच्चस्तरीय नागरिक सुविधाओं को प्राथमिकता दी गई है:</p>
-      <ul>
-        <li><strong>कुल क्षेत्रफल:</strong> 11.5 बीघा (लगभग 30,480 वर्ग गज रूपांतरित भूमि)।</li>
-        <li><strong>कुल इन्वेंट्री:</strong> 230 सुनियोजित आवासीय एवं कमर्शियल भूखंड।</li>
-        <li><strong>सड़कों का जाल:</strong> दोतरफा सुगम यातायात के लिए 30 फीट और 40 फीट चौड़ी पक्की डामर व इंटरलॉकिंग पेवर सड़कें।</li>
-        <li><strong>नागरिक सुविधाएं:</strong> भूमिगत विद्युत केबल लाइन, 24/7 सोलर स्ट्रीट लाइट, बूम-बैरियर युक्त गेटेड सुरक्षा, वर्षा जल संचयन (रेनवाटर हार्वेस्टिंग), ओवरहेड वाटर टैंक और वृक्षारोपण से सुसज्जित भव्य फैमिली पार्क।</li>
-      </ul>
-
-      <h2>2. आधिकारिक 2026 मूल्य सूची व प्लॉट साइज</h2>
-      <p>SVI Infra Solutions पूर्ण पारदर्शिता में विश्वास रखती है और यहां कोई छिपा हुआ विकास शुल्क नहीं है। आवासीय प्लॉट्स का मूल विक्रय मूल्य <strong>₹ 7,500 प्रति वर्ग गज</strong> निर्धारित है:</p>
+      <h2>2. Shivani Vatika 11th Price List 2026</h2>
+      <p>खरीदारों की सुविधा और विभिन्न वित्तीय प्राथमिकताओं के लिए तीन पारदर्शी भुगतान विकल्प उपलब्ध हैं:</p>
       <div class="overflow-x-auto my-6">
         <table class="min-w-full text-left border border-gray-200 text-sm">
           <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
             <tr>
-              <th class="p-3">प्लॉट साइज (वर्ग गज)</th>
-              <th class="p-3">क्षेत्रफल (वर्ग फीट)</th>
-              <th class="p-3">मूल्य (₹ 7,500/वर्ग गज)</th>
-              <th class="p-3">उपयुक्तता</th>
+              <th class="p-3">Plan</th>
+              <th class="p-3 text-right">Rate / Sq. Yd.</th>
+              <th class="p-3 text-right">Upfront</th>
+              <th class="p-3 text-right">Balance</th>
+              <th class="p-3 text-right">Tenure</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-200">
             <tr>
-              <td class="p-3 font-medium">80 वर्ग गज</td>
-              <td class="p-3">720 वर्ग फीट</td>
-              <td class="p-3">₹ 15,00,000* (₹ 15 लाख)</td>
-              <td class="p-3">किफायती निवेश / कॉम्पैक्ट 2BHK घर</td>
+              <td class="p-3 font-medium">One-Time</td>
+              <td class="p-3 text-right font-semibold">₹7,500</td>
+              <td class="p-3 text-right">100%</td>
+              <td class="p-3 text-right">—</td>
+              <td class="p-3 text-right">One-Time</td>
             </tr>
             <tr>
-              <td class="p-3 font-medium">100 वर्ग गज</td>
-              <td class="p-3">900 वर्ग फीट</td>
-              <td class="p-3">₹ 18,75,000* (₹ 18.75 लाख)</td>
-              <td class="p-3">आदर्श फैमिली विला / 3BHK डुप्लेक्स</td>
+              <td class="p-3 font-medium">12 Months</td>
+              <td class="p-3 text-right font-semibold">₹7,750</td>
+              <td class="p-3 text-right">30%</td>
+              <td class="p-3 text-right">70%</td>
+              <td class="p-3 text-right">12 Months</td>
             </tr>
             <tr>
-              <td class="p-3 font-medium">111 वर्ग गज</td>
-              <td class="p-3">999 वर्ग फीट</td>
-              <td class="p-3">₹ 20,81,250* (₹ 20.81 लाख)</td>
-              <td class="p-3">वास्तु सम्मत 3BHK सुंदर आवास</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">150 वर्ग गज</td>
-              <td class="p-3">1,350 वर्ग फीट</td>
-              <td class="p-3">₹ 28,12,500* (₹ 28.12 लाख)</td>
-              <td class="p-3">स्पिरिचुअल हॉलिडे होम / गेस्ट हाउस</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">200 वर्ग गज</td>
-              <td class="p-3">1,800 वर्ग फीट</td>
-              <td class="p-3">₹ 37,50,000* (₹ 37.50 लाख)</td>
-              <td class="p-3">लक्जरी विला / प्राइवेट होमस्टे</td>
-            </tr>
-            <tr>
-              <td class="p-3 font-medium">250 वर्ग गज</td>
-              <td class="p-3">2,250 वर्ग फीट</td>
-              <td class="p-3">₹ 46,87,500* (₹ 46.87 लाख)</td>
-              <td class="p-3">प्राइम कॉर्नर / कमर्शियल गेस्ट हाउस</td>
+              <td class="p-3 font-medium">24 Months</td>
+              <td class="p-3 text-right font-semibold">₹8,000</td>
+              <td class="p-3 text-right">30%</td>
+              <td class="p-3 text-right">70%</td>
+              <td class="p-3 text-right">24 Months</td>
             </tr>
           </tbody>
         </table>
       </div>
-      <p><em>*नोट: सरकारी निबंधन शुल्क (Registry Charges), स्टाम्प ड्यूटी और विद्युत-पानी कनेक्शन शुल्क रजिस्ट्री के समय सरकारी नियमानुसार देय होंगे।</em></p>
+      <p class="text-xs text-gray-500 italic">*नोट: सरकारी निबंधन शुल्क (Registry Charges), स्टाम्प ड्यूटी और कानूनी दस्तावेज शुल्क रजिस्ट्री के समय सरकारी नियमानुसार अलग से देय होंगे।</p>
 
-      <h2>3. भौगोलिक स्थिति व कनेक्टिविटी मैट्रिक्स</h2>
-      <p>शिवानी वाटिका 11th धार्मिक पर्यटन और औद्योगिक विकास के संगम पर स्थित है:</p>
+      <h2>3. Payment Plans Explained</h2>
+      <p>प्रत्येक भुगतान योजना की गणना स्पष्ट और पारदर्शी है:</p>
       <ul>
-        <li><strong>खाटू श्याम जी मंदिर:</strong> मात्र 20–25 मिनट (लगभग 25 किमी सुगम हाईवे)।</li>
-        <li><strong>रीको (RIICO) इंडस्ट्रियल एरिया रेनवाल:</strong> मात्र 1 किमी (2 मिनट), जिससे यहां किराए की भारी मांग रहती है।</li>
-        <li><strong>रेनवाल रेलवे स्टेशन:</strong> मात्र 7 किमी (5 मिनट की दूरी)।</li>
-        <li><strong>फुलेरा जंक्शन व DMIC कार्गो हब:</strong> 34 किमी सीधी पक्की सड़क।</li>
-        <li><strong>जयपुर शहर:</strong> 4-लेन हाईवे द्वारा मात्र 45 मिनट का आरामदायक सफर।</li>
-      </ul>
-      <p>अधिक जानकारी के लिए हमारे समर्पित <a href="/projects/shivani-vatika-11th">शिवानी वाटिका 11th प्रोजेक्ट पेज</a> पर जाएं अथवा आधिकारिक <a href="/brochure/shivani-vatika-11">प्रोजेक्ट ब्रोशर डाउनलोड करें</a>।</p>
-
-      <h2>4. कानूनी दस्तावेज: धारा 90-A और स्पष्ट रजिस्ट्री</h2>
-      <p>शिवानी वाटिका 11th का प्रत्येक प्लॉट शत-प्रतिशत कानूनी सुरक्षा के साथ उपलब्ध है:</p>
-      <ul>
-        <li><mark>धारा 90-A भूमि रूपांतरण:</mark> सक्षम राजस्व अधिकारी द्वारा अनुमोदित गैर-कृषि आवासीय रूपांतरण आदेश।</li>
-        <li><mark>अपना खाता जमाबंदी व नामांतरण:</mark> सरकारी रिकॉर्ड में दर्ज बेदाग स्वामित्व और स्पष्ट खसरा विवरण।</li>
-        <li><mark>उप-पंजीयक कार्यालय में रजिस्ट्री:</mark> उप-पंजीयक कार्यालय में खरीदार के नाम पर सीधी बायोमेट्रिक पक्की रजिस्ट्री।</li>
+        <li><strong>One-Time Payment (₹7,500 प्रति वर्ग गज):</strong> प्लॉट की पूरी कीमत ₹7,500 प्रति वर्ग गज की मूल दर पर तय होती है, जिसका 100% भुगतान अनुबंध के अनुसार किया जाता है।</li>
+        <li><strong>12-Month Plan (₹7,750 प्रति वर्ग गज):</strong> कुल कीमत ₹7,750 प्रति वर्ग गज की दर से निकाली जाती है। 30% अग्रिम राशि इसी ₹7,750 की दर पर दी जाती है और शेष 70% राशि 12 समान मासिक किस्तों में इसी दर पर देय होती है।</li>
+        <li><strong>24-Month Plan (₹8,000 प्रति वर्ग गज):</strong> कुल कीमत ₹8,000 प्रति वर्ग गज की दर से निकाली जाती है। 30% अग्रिम राशि इसी ₹8,000 की दर पर दी जाती है और शेष 70% राशि 24 समान मासिक किस्तों में इसी दर पर देय होती है।</li>
       </ul>
 
-      <h2>निष्कर्ष</h2>
-      <p>शिवानी वाटिका 11th उत्कृष्ट हाईवे लोकेशन, उच्चस्तरीय विकास मानकों और संपूर्ण कानूनी सुरक्षा का अद्वितीय संगम है। आज ही SVI Infra Solutions की आधिकारिक टीम से संपर्क कर अपनी साइट विजिट बुक करें।</p>
-      <p class="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4" className="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4"><strong>निवेश एवं विनियामक अस्वीकरण (Disclaimer):</strong> इस रिपोर्ट में उल्लिखित पूंजीगत मूल्य वृद्धि (Capital Appreciation) और रेंटल यील्ड ऐतिहासिक भूमि लेन-देन और बुनियादी ढांचा विकास रुझानों (2024–2026) पर आधारित हैं। रियल एस्टेट मूल्य बाजार की स्थितियों और विनियामक स्वीकृतियों के अधीन हैं; संभावित खरीदारों को कोई भी वित्तीय प्रतिबद्धता करने से पहले स्वतंत्र कानूनी जांच (Due Diligence) करने की सलाह दी जाती है।</p>
+      <h2>4. Plot Sizes: 80–250 Sq. Yards</h2>
+      <p>टाउनशिप में विभिन्न आवश्यकताओं के अनुसार प्लॉट साइज उपलब्ध हैं:</p>
+      <ul>
+        <li><strong>80 से 100 वर्ग गज:</strong> किफायती बजट और कॉम्पैक्ट आवासीय निर्माण हेतु उपयुक्त।</li>
+        <li><strong>111 से 150 वर्ग गज:</strong> 3BHK से 4BHK स्वतंत्र विला, पार्किंग और पारिवारिक आवास के लिए लोकप्रिय साइज।</li>
+        <li><strong>200 से 250 वर्ग गज:</strong> बड़े विला, निजी गार्डन या हॉलिडे होम के लिए शानदार चौड़े फ्रंट वाले प्लॉट्स।</li>
+      </ul>
+
+      <h2>5. 100, 150, 200 & 250 Sq. Yd. Price Examples</h2>
+      <p>नीचे मानक प्लॉट आकारों के अनुसार तीनों भुगतान योजनाओं की सटीक गणना दी गई है:</p>
+
+      <h3>उदाहरण A: 100 वर्ग गज प्लॉट</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">विवरण</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. कुल मूल्य (Total Price)</td>
+              <td class="p-2.5 text-right font-semibold">₹7,50,000</td>
+              <td class="p-2.5 text-right font-semibold">₹7,75,000</td>
+              <td class="p-2.5 text-right font-semibold">₹8,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% अग्रिम राशि (Upfront)</td>
+              <td class="p-2.5 text-right">₹7,50,000 (100%)</td>
+              <td class="p-2.5 text-right">₹2,32,500</td>
+              <td class="p-2.5 text-right">₹2,40,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. शेष 70% राशि (Balance)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹5,42,500</td>
+              <td class="p-2.5 text-right">₹5,60,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. मासिक किस्त (12 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹45,208 / माह</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. मासिक किस्त (24 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹23,333 / माह</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>उदाहरण B: 150 वर्ग गज प्लॉट</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">विवरण</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. कुल मूल्य (Total Price)</td>
+              <td class="p-2.5 text-right font-semibold">₹11,25,000</td>
+              <td class="p-2.5 text-right font-semibold">₹11,62,500</td>
+              <td class="p-2.5 text-right font-semibold">₹12,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% अग्रिम राशि (Upfront)</td>
+              <td class="p-2.5 text-right">₹11,25,000 (100%)</td>
+              <td class="p-2.5 text-right">₹3,48,750</td>
+              <td class="p-2.5 text-right">₹3,60,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. शेष 70% राशि (Balance)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹8,13,750</td>
+              <td class="p-2.5 text-right">₹8,40,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. मासिक किस्त (12 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹67,813 / माह</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. मासिक किस्त (24 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹35,000 / माह</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>उदाहरण C: 200 वर्ग गज प्लॉट</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">विवरण</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. कुल मूल्य (Total Price)</td>
+              <td class="p-2.5 text-right font-semibold">₹15,00,000</td>
+              <td class="p-2.5 text-right font-semibold">₹15,50,000</td>
+              <td class="p-2.5 text-right font-semibold">₹16,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% अग्रिम राशि (Upfront)</td>
+              <td class="p-2.5 text-right">₹15,00,000 (100%)</td>
+              <td class="p-2.5 text-right">₹4,65,000</td>
+              <td class="p-2.5 text-right">₹4,80,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. शेष 70% राशि (Balance)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹10,85,000</td>
+              <td class="p-2.5 text-right">₹11,20,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. मासिक किस्त (12 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹90,417 / माह</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. मासिक किस्त (24 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹46,667 / माह</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>उदाहरण D: 250 वर्ग गज प्लॉट</h3>
+      <div class="overflow-x-auto my-4">
+        <table class="min-w-full text-left border border-gray-200 text-sm">
+          <thead class="bg-gray-100 font-semibold text-gray-800 border-b">
+            <tr>
+              <th class="p-2.5">विवरण</th>
+              <th class="p-2.5 text-right">One-Time Plan (@ ₹7,500)</th>
+              <th class="p-2.5 text-right">12-Month Plan (@ ₹7,750)</th>
+              <th class="p-2.5 text-right">24-Month Plan (@ ₹8,000)</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-200">
+            <tr>
+              <td class="p-2.5 font-medium">1. कुल मूल्य (Total Price)</td>
+              <td class="p-2.5 text-right font-semibold">₹18,75,000</td>
+              <td class="p-2.5 text-right font-semibold">₹19,37,500</td>
+              <td class="p-2.5 text-right font-semibold">₹20,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">2. 30% अग्रिम राशि (Upfront)</td>
+              <td class="p-2.5 text-right">₹18,75,000 (100%)</td>
+              <td class="p-2.5 text-right">₹5,81,250</td>
+              <td class="p-2.5 text-right">₹6,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">3. शेष 70% राशि (Balance)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">₹13,56,250</td>
+              <td class="p-2.5 text-right">₹14,00,000</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">4. मासिक किस्त (12 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹1,13,021 / माह</td>
+              <td class="p-2.5 text-right">—</td>
+            </tr>
+            <tr>
+              <td class="p-2.5">5. मासिक किस्त (24 महीने)</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right">—</td>
+              <td class="p-2.5 text-right font-semibold">₹58,333 / माह</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2>6. Shivani Vatika 11th Master Plan</h2>
+      <p>टाउनशिप का मास्टर प्लान भूमि के कुशल उपयोग, चौड़ी सड़कों और सुरक्षित चारदीवारी को ध्यान में रखकर तैयार किया गया है। 230 प्लॉट्स का यह सुनियोजित लेआउट स्पष्ट आवागमन और खुली जगह प्रदान करता है।</p>
+
+      <div class="my-8 overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xl dark:border-white/10 dark:bg-slate-900/60 blueprint-container">
+        <div class="border-b border-gray-200/80 bg-gray-50/80 px-5 py-4 flex flex-wrap items-center justify-between gap-3 dark:border-white/10 dark:bg-white/[0.02]">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="inline-flex items-center gap-1 rounded-full border border-amber-500/30 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-amber-500 uppercase dark:text-amber-400">
+                <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                सुरक्षित दस्तावेज
+              </span>
+              <h4 class="text-sm font-bold text-gray-900 dark:text-white">आधिकारिक प्रस्तावित लेआउट प्लान — शिवानी वाटिका 11th</h4>
+            </div>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">हरसोली, जयपुर - खाटू श्याम जी रोड (राज.) | 160'-0" हाईवे संपर्क</p>
+          </div>
+          <button
+            type="button"
+            data-unlock-blueprint="true"
+            class="cursor-pointer inline-flex items-center gap-2 rounded-xl border border-amber-500/40 bg-gradient-to-r from-amber-500/20 to-amber-600/10 px-4 py-2 text-xs font-bold text-amber-600 transition-all hover:border-amber-500 hover:bg-amber-500 hover:text-slate-950 dark:text-amber-300 dark:hover:text-slate-950"
+          >
+            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            मास्टर प्लान अनलॉक करें
+          </button>
+        </div>
+
+        <div class="relative bg-slate-950/5 dark:bg-slate-950/40 flex justify-center items-center min-h-[380px] sm:min-h-[460px]">
+          <div class="p-2 sm:p-4 w-full flex justify-center items-center blueprint-preview-wrapper transition-all duration-300">
+            <img
+              src="/Shivani Vatika 11/master-plan-layout.webp"
+              alt="शिवानी वाटिका 11th मास्टर प्लान लेआउट प्रीव्यू कालाडेरा जयपुर"
+              class="w-full max-w-4xl h-auto object-contain rounded-lg filter blur-sm select-none pointer-events-none"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="absolute inset-0 flex flex-col items-center justify-center p-6 text-center bg-slate-950/40 backdrop-blur-[2px] transition-all blueprint-gate-overlay">
+            <div class="relative max-w-md rounded-2xl border border-amber-400/30 bg-[#080d19]/90 p-6 shadow-2xl backdrop-blur-xl sm:p-8">
+              <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl border border-amber-400/40 bg-amber-400/15 text-amber-400 shadow-lg shadow-amber-400/20">
+                <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              </div>
+              <span class="inline-block rounded-full border border-amber-400/30 bg-amber-400/10 px-3 py-1 font-mono text-[10px] font-bold tracking-wider text-amber-300 uppercase">
+                वेरिफाइड बायर एक्सेस
+              </span>
+              <h5 class="mt-3 font-serif text-lg font-bold text-white sm:text-xl">
+                सीमांकित मास्टर प्लान अनलॉक करें
+              </h5>
+              <p class="mt-2 text-xs leading-relaxed text-slate-300 sm:text-sm">
+                अपना नाम और व्हाट्सएप नंबर दर्ज करें और तत्काल हाई-रेजोल्यूशन लेआउट मैप, उपलब्ध प्लॉट नंबर और आधिकारिक दरें सीधे व्हाट्सएप पर प्राप्त करें।
+              </p>
+              <button
+                type="button"
+                data-unlock-blueprint="true"
+                class="cursor-pointer mt-5 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-amber-400 to-amber-500 py-3 px-5 text-xs font-bold tracking-wider text-slate-950 uppercase shadow-lg shadow-amber-500/25 transition-all hover:from-amber-300 hover:to-amber-400 hover:shadow-xl sm:text-sm"
+              >
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                व्हाट्सएप पर मैप और रेट प्राप्त करें
+              </button>
+              <p class="mt-3 text-[11px] text-slate-400">
+                निःशुल्क तत्काल एक्सेस • सीधा डेवलपर डेस्क से • नो स्पैम
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="border-t border-gray-200/80 bg-gray-50/60 p-4 text-xs text-gray-600 dark:border-white/10 dark:bg-white/[0.02] dark:text-gray-400">
+          <p><strong>लेआउट मुख्य विशेषताएं:</strong> स्पष्ट रूप से चिह्नित 30'-0" आंतरिक सड़कें, केंद्रीय मुख्य मार्ग, सीमांकित ए-ब्लॉक आवासीय भूखंड और 160'-0" चौड़े खाटू श्याम जी हाईवे से सीधा प्रवेश।</p>
+        </div>
+      </div>
+
+      <figure class="my-8 overflow-hidden rounded-xl border border-gray-200 shadow-md dark:border-gray-700">
+        <img
+          src="/Shivani Vatika 11/plot.webp"
+          alt="शिवानी वाटिका 11th कालाडेरा जयपुर में सीमांकित आवासीय भूखंड"
+          class="w-full h-auto object-cover"
+          loading="lazy"
+        />
+        <figcaption class="p-3 text-center text-xs text-gray-500 italic dark:text-gray-400 bg-gray-50 dark:bg-gray-800">
+          शिवानी वाटिका 11th में ऑन-ग्राउंड प्लॉट सीमांकन और हरा-भरा प्राकृतिक वातावरण
+        </figcaption>
+      </figure>
+      <h2>7. Internal Roads & Project Infrastructure</h2>
+      <p>ब्रोशर के अनुसार शिवानी वाटिका 11th में आवश्यक नागरिक सुविधाएं विकसित की गई हैं:</p>
+      <ul>
+        <li><strong>आंतरिक सड़कें:</strong> 30 फीट व 40 फीट चौड़ी आंतरिक सड़कें जो सुगम आवागमन सुनिश्चित करती हैं।</li>
+        <li><strong>पानी की आपूर्ति:</strong> टाउनशिप में समर्पित वाटर सप्लाई नेटवर्क।</li>
+        <li><strong>ड्रेनेज सिस्टम:</strong> बरसाती व घरेलू पानी निकासी के लिए व्यवस्थित ड्रेनेज प्रणाली।</li>
+        <li><strong>बिजली व विद्युतीकरण:</strong> पूरी टाउनशिप में व्यवस्थित विद्युत लाइन नेटवर्क।</li>
+        <li><strong>एलईडी स्ट्रीट लाइट्स:</strong> 30 फीट और 40 फीट सड़कों पर समुचित एलईडी स्ट्रीट लाइट व्यवस्था।</li>
+        <li><strong>बाउंड्री वॉल:</strong> संपूर्ण टाउनशिप को सुरक्षित करने वाली पक्की चारदीवारी।</li>
+        <li><strong>बैंक लोन सुविधा:</strong> वित्तीय संस्थानों व बैंकों द्वारा नियमानुसार ऋण (लोन) सुविधा उपलब्ध।</li>
+      </ul>
+
+      <h2>8. Location & Connectivity</h2>
+      <p>शिवानी वाटिका 11th <strong>कालाडेरा, जयपुर, राजस्थान</strong> में <strong>खाटू श्याम जी</strong> के समीप स्थित है। यह स्थान धार्मिक पर्यटन और जयपुर शहर के संपर्क मार्गों के बीच संतुलित कनेक्टिविटी प्रदान करता है:</p>
+      <ul>
+        <li><strong>स्थान:</strong> कालाडेरा, जयपुर, राजस्थान</li>
+        <li><strong>समीप लैंडमार्क:</strong> खाटू श्याम जी के समीप</li>
+        <li><strong>सड़क संपर्क:</strong> कालाडेरा से जयपुर मुख्य मार्गों तक सुगम आवागमन।</li>
+      </ul>
+      <p>क्षेत्र के अन्य आवासीय अवसरों को समझने के लिए हमारे गाइड्स <a href="/plots-in-jaipur">plots in Jaipur</a>, <a href="/plots-in-jaipur-under-20-lakhs">plots in Jaipur under 20 lakhs</a>, और <a href="/plots-for-sale-near-khatu-shyam-ji">plots for sale near Khatu Shyam Ji</a> पढ़ें।</p>
+
+      <h2>9. Frequently Asked Questions</h2>
+      <div class="blog-faq-list">
+        <details class="blog-faq-item" open>
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">लोकेशन</span>
+              Shivani Vatika 11th कहाँ स्थित है?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>Shivani Vatika 11th कालाडेरा, जयपुर, राजस्थान में खाटू श्याम जी रोड कॉरिडोर पर हरसोली व हिंगोनिया के पास स्थित है (~32 किमी खाटू श्याम जी मंदिर और ~42 किमी चोमू पुलिया जयपुर)।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">मास्टर प्लान</span>
+              Shivani Vatika 11th में कितने plots हैं?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>टाउनशिप कुल 11.5 बीघा (~30,480 वर्ग गज) में फैली हुई है और इसमें कुल 230 सीमांकित (demarcated) आवासीय प्लॉट्स हैं।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">प्लॉट साइज</span>
+              Plot sizes क्या हैं?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>प्रोजेक्ट में 80 वर्ग गज से लेकर 250 वर्ग गज तक के आवासीय प्लॉट साइज (100, 150, 200, 250 वर्ग गज) उपलब्ध हैं।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">मूल्य दर</span>
+              One-time payment rate क्या है?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>एकमुश्त (One-Time) भुगतान पर प्लॉट की दर ₹7,500 प्रति वर्ग गज है, जिसमें 100% भुगतान खरीद अनुबंध के अनुसार देय होता है।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">12 माह प्लान</span>
+              12-month payment plan कैसे काम करता है?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>12 महीने की योजना में कुल मूल्य ₹7,750 प्रति वर्ग गज की दर से तय होता है। इसमें 30% अग्रिम राशि (upfront) उसी ₹7,750 की दर पर देय होती है तथा शेष 70% राशि 12 मासिक किस्तों में देय होती है।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">24 माह प्लान</span>
+              24-month payment plan कैसे काम करता है?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>24 महीने की योजना में कुल मूल्य ₹8,000 प्रति वर्ग गज की दर से तय होता है। इसमें 30% अग्रिम राशि (upfront) उसी ₹8,000 की दर पर देय होती है तथा शेष 70% राशि 24 मासिक किस्तों में देय होती है।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">सड़कें</span>
+              Internal road widths कितनी हैं?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>टाउनशिप के अंदर 30 फीट और 40 फीट चौड़ी आंतरिक सड़कें (internal roads) विकसित की गई हैं, जो सीधे 160 फीट मुख्य खाटू श्याम जी कॉरिडोर मार्ग से जुड़ती हैं।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">ब्लूप्रिंट</span>
+              Master plan कहाँ देख सकते हैं?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>मास्टर प्लान इसी पेज पर ऊपर देखा जा सकता है, अथवा आधिकारिक <a href="/projects/shivani-vatika-11th" class="text-amber-600 hover:underline">प्रोजेक्ट पेज</a> और डाउनलोड करने योग्य <a href="/Shivani Vatika 11/master-plan-layout.pdf" target="_blank" rel="noopener noreferrer" class="text-amber-600 hover:underline">मास्टर प्लान पीडीएफ</a> में उपलब्ध है।</p>
+          </div>
+        </details>
+
+        <details class="blog-faq-item">
+          <summary class="blog-faq-trigger">
+            <span class="blog-faq-question">
+              <span class="blog-faq-badge">विजिट</span>
+              Site visit कैसे book करें?
+            </span>
+            <span class="blog-faq-icon" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </span>
+          </summary>
+          <div class="blog-faq-content">
+            <p>आप SVI Infra Solutions के <a href="/contact?project=shivani-vatika-11th" class="text-amber-600 hover:underline">संपर्क पेज</a> पर जाकर या आधिकारिक ग्राहक सेवा नंबर पर कॉल करके ऑन-साइट विजिट शेड्यूल कर सकते हैं।</p>
+          </div>
+        </details>
+      </div>
+
+      <h2>10. Site Visit / Enquiry</h2>
+      <p>शिवानी वाटिका 11th कालाडेरा, जयपुर में सुनियोजित बुनियादी ढांचे और सुविधाजनक भुगतान योजनाओं के साथ सीमांकित आवासीय भूखंड प्रदान करती है। संभावित खरीदार ऑन-ग्राउंड आंतरिक सड़कों, बाउंड्री वॉल और लेआउट की जांच के लिए साइट विजिट बुक कर सकते हैं।</p>
+      <p>साइट विजिट बुक करने, प्लॉट की उपलब्धता जांचने या भुगतान योजनाओं की जानकारी के लिए हमारे <a href="/contact?project=shivani-vatika-11th">संपर्क पेज</a> पर जाएं अथवा आधिकारिक परामर्श टीम से संपर्क करें।</p>
+
+      <p class="mt-8 text-xs text-gray-500 italic border-t border-gray-200 pt-4 dark:border-gray-700"><strong>अस्वीकरण:</strong> प्लॉट की कीमतें, भुगतान योजनाएं और बुनियादी ढांचा विनिर्देश आधिकारिक प्रोजेक्ट ब्रोशर पर आधारित हैं। सभी संस्थागत बैंक ऋण बैंक के क्रेडिट मानकों के अधीन हैं। खरीदारों को बुकिंग से पूर्व व्यक्तिगत जांच करने की सलाह दी जाती है।</p>
     `,
     takeaways: [
-      'Shivani Vatika 11th is an 11.5 Bigha township offering 230 master-planned plots in Harsholi',
-      'Transparent developer pricing fixed at ₹ 7,500/sq. yd. starting from ₹ 15 Lakhs* for 80 sq. yds.',
-      'Prime connectivity: 20-25 mins to Khatu Shyam Ji Temple and 1 km to RIICO Industrial Area Renwal',
-      'High-grade infrastructure includes 30ft wide roads, underground power cables, and solar lighting',
-      'Verified legal compliance with Section 90-A land conversion, Jamabandi records, and sub-registrar registry',
+      'Shivani Vatika 11th is an 11.5 Bigha township offering 230 residential plots in Kaladera, Jaipur',
+      'Plot sizes range from 80 to 250 Sq. Yards near Khatu Shyam Ji',
+      'Clear payment plans: One-Time at ₹7,500/sq.yd., 12 Months at ₹7,750/sq.yd. (30% upfront, 70% in 12 EMIs), 24 Months at ₹8,000/sq.yd. (30% upfront, 70% in 24 EMIs)',
+      '30 ft & 40 ft wide internal roads with electricity, water supply, drainage, LED street lights, and boundary wall',
+      'Institutional loan facility available from leading banks',
     ],
     takeawaysHi: [
-      'शिवानी वाटिका 11th हरसोली में 11.5 बीघा में फैली 230 मास्टर-प्लांड प्लॉट्स की एकीकृत टाउनशिप है',
-      'पारदर्शी डेवलपर दर ₹ 7,500/वर्ग गज, 80 वर्ग गज के प्लॉट्स मात्र ₹ 15 लाख* से शुरू',
-      'उत्कृष्ट कनेक्टिविटी: खाटू श्याम जी मंदिर मात्र 20-25 मिनट और रीको इंडस्ट्रियल एरिया रेनवाल मात्र 1 किमी',
-      '30 फीट चौड़ी सड़कें, भूमिगत बिजली केबल और सोलर स्ट्रीट लाइट जैसी आधुनिक सुविधाएं',
-      'धारा 90-A रूपांतरण, डिजिटल जमाबंदी और उप-पंजीयक पक्की रजिस्ट्री के साथ प्रमाणित कानूनी दस्तावेज',
+      'शिवानी वाटिका 11th कालाडेरा, जयपुर में 11.5 बीघा में फैली 230 आवासीय प्लॉट्स की टाउनशिप है',
+      'खाटू श्याम जी के समीप 80 से 250 वर्ग गज तक के प्लॉट साइज उपलब्ध हैं',
+      'स्पष्ट भुगतान योजनाएं: One-Time ₹7,500/वर्ग गज, 12 महीने ₹7,750/वर्ग गज (30% अग्रिम, 70% 12 किस्तों में), 24 महीने ₹8,000/वर्ग गज (30% अग्रिम, 70% 24 किस्तों में)',
+      '30 फीट व 40 फीट चौड़ी आंतरिक सड़कें, बिजली, पानी, ड्रेनेज, एलईडी स्ट्रीट लाइट्स और बाउंड्री वॉल',
+      'प्रमुख बैंकों से संस्थागत ऋण (लोन) सुविधा उपलब्ध',
     ],
     author: 'SVI Editorial Team',
-    date: '2026-09-25',
+    date: '2026-09-28',
     category: 'Project Showcase',
     categoryHi: 'प्रोजेक्ट विवरण',
     image: '/images/shivani-vatika-11th.webp',
     tags: [
-      'shivani vatika 11th price',
+      'shivani vatika 11th',
+      'shivani vatika 11th price list',
       'shivani vatika 11th plot sizes',
-      'shivani vatika 11 master plan',
-      'khatu shyam highway plots',
-      'svi infra solutions',
+      'shivani vatika 11th master plan',
+      'plots in kaladera jaipur',
+      'plots near khatu shyam ji',
     ],
     tagsHi: [
-      'शिवानी वाटिका 11th रेट',
+      'शिवानी वाटिका 11th',
+      'शिवानी वाटिका 11th मूल्य सूची',
       'शिवानी वाटिका 11th प्लॉट साइज',
-      'शिवानी वाटिका 11 मास्टर प्लान',
-      'खाटू श्याम हाईवे प्लॉट्स',
-      'SVI इन्फ्रा सॉल्यूशंस',
+      'शिवानी वाटिका 11th मास्टर प्लान',
+      'कालाडेरा जयपुर में प्लॉट',
+      'खाटू श्याम जी के पास प्लॉट',
     ],
     readTime: '8 min read',
     readTimeHi: '8 मिनट पढ़ें',
