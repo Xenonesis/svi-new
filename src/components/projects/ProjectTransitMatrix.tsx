@@ -157,14 +157,14 @@ export default function ProjectTransitMatrix({
     <section id="transit-matrix" className="mt-20 w-full scroll-mt-24">
       <div className="container mx-auto max-w-7xl px-4">
         {/* Section Header */}
-        <div className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-br from-[#0c1220] via-[#080d19] to-[#050811] p-6 shadow-2xl sm:p-10">
-          <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl" />
+        <div className="light:from-white light:via-amber-50/30 light:to-slate-50 light:border-amber-500/25 light:shadow-xl relative overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-br from-[#0c1220] via-[#080d19] to-[#050811] p-6 shadow-2xl transition-colors duration-300 sm:p-10 dark:border-amber-500/20 dark:bg-gradient-to-br dark:from-[#0c1220] dark:via-[#080d19] dark:to-[#050811] [html:not(.dark)_&]:border-amber-500/25 [html:not(.dark)_&]:bg-gradient-to-br [html:not(.dark)_&]:from-white [html:not(.dark)_&]:via-amber-50/40 [html:not(.dark)_&]:to-slate-100/80 [html:not(.dark)_&]:shadow-xl">
+          <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-amber-500/10 blur-3xl [html:not(.dark)_&]:bg-amber-500/15" />
+          <div className="pointer-events-none absolute -bottom-24 -left-24 h-72 w-72 rounded-full bg-emerald-500/10 blur-3xl [html:not(.dark)_&]:bg-emerald-500/10" />
 
-          <div className="relative z-10 flex flex-col gap-4 border-b border-white/10 pb-8 md:flex-row md:items-end md:justify-between">
+          <div className="relative z-10 flex flex-col gap-4 border-b border-white/10 pb-8 md:flex-row md:items-end md:justify-between [html:not(.dark)_&]:border-slate-200">
             <div className="max-w-3xl">
-              <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1 text-xs font-bold tracking-wider text-amber-300 uppercase">
-                <Navigation className="h-3.5 w-3.5 text-amber-400" />
+              <div className="inline-flex items-center gap-2 rounded-full border border-amber-400/30 bg-amber-400/10 px-3.5 py-1 text-xs font-bold tracking-wider text-amber-400 uppercase [html:not(.dark)_&]:border-amber-600/30 [html:not(.dark)_&]:bg-amber-100 [html:not(.dark)_&]:text-amber-900">
+                <Navigation className="h-3.5 w-3.5 text-amber-400 [html:not(.dark)_&]:text-amber-700" />
                 <span>
                   {isHindi
                     ? 'सत्यापित ट्रांजिट एवं दूरी मैट्रिक्स'
@@ -172,37 +172,36 @@ export default function ProjectTransitMatrix({
                 </span>
               </div>
 
-              <h2 className="mt-3.5 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl">
+              <h2 className="mt-3.5 font-serif text-2xl font-bold tracking-tight text-white sm:text-3xl lg:text-4xl [html:not(.dark)_&]:text-slate-900">
                 {isHindi
                   ? 'शिवानी वाटिका 11th से रणनीतिक दूरियां एवं आवागमन समय'
                   : 'Strategic Connectivity & Commute Matrix from Shivani Vatika 11th'}
               </h2>
 
-              <p className="mt-2.5 text-sm leading-relaxed text-slate-300 sm:text-base">
+              <p className="mt-2.5 text-sm leading-relaxed text-slate-300 sm:text-base [html:not(.dark)_&]:text-slate-600">
                 {isHindi
                   ? 'जयपुर से खाटू श्याम जी 4-लेन राजमार्ग पर स्थित इस टाउनशिप से प्रमुख तीर्थ स्थल, रीको औद्योगिक क्षेत्र, रेलवे स्टेशन एवं जयपुर शहर की सटीक सत्यापित दूरियां।'
                   : 'Directly fronting the Jaipur–Khatu Shyam Ji highway corridor at Harsholi. Real verified commute times and road distances to prime spiritual, industrial, rail, and urban destinations.'}
               </p>
             </div>
 
-            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-amber-300/90 sm:justify-end">
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md">
-                <ShieldCheck className="h-4 w-4 text-emerald-400" />
+            <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-amber-300/90 sm:justify-end [html:not(.dark)_&]:text-slate-700">
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:bg-white/80 [html:not(.dark)_&]:text-slate-800 [html:not(.dark)_&]:shadow-xs">
+                <ShieldCheck className="h-4 w-4 text-emerald-400 [html:not(.dark)_&]:text-emerald-600" />
                 <span>{isHindi ? '100% सत्यापित दूरियां' : '100% GPS Verified'}</span>
               </span>
-              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md">
-                <Clock className="h-4 w-4 text-amber-400" />
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 backdrop-blur-md [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:bg-white/80 [html:not(.dark)_&]:text-slate-800 [html:not(.dark)_&]:shadow-xs">
+                <Clock className="h-4 w-4 text-amber-400 [html:not(.dark)_&]:text-amber-700" />
                 <span>{isHindi ? 'औसत ड्राइव समय' : 'Avg Drive Times'}</span>
               </span>
             </div>
           </div>
-
           {/* Desktop & Tablet Table (md and up) */}
-          <div className="relative z-10 mt-8 hidden overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 shadow-xl backdrop-blur-md md:block">
+          <div className="relative z-10 mt-8 hidden overflow-hidden rounded-2xl border border-white/10 bg-slate-900/60 shadow-xl backdrop-blur-md md:block [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:bg-white/90 [html:not(.dark)_&]:shadow-lg">
             <div className="overflow-x-auto">
               <table className="w-full border-collapse text-left">
                 <thead>
-                  <tr className="border-b border-white/10 bg-white/[0.04] text-[11px] font-bold tracking-widest text-slate-300 uppercase">
+                  <tr className="border-b border-white/10 bg-white/[0.04] text-[11px] font-bold tracking-widest text-slate-300 uppercase [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:bg-slate-50 [html:not(.dark)_&]:text-slate-700">
                     <th scope="col" className="px-6 py-4">
                       {isHindi ? 'गंतव्य स्थल / लैंडमार्क' : 'Destination / Landmark'}
                     </th>
@@ -220,24 +219,24 @@ export default function ProjectTransitMatrix({
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-white/5 text-sm">
+                <tbody className="divide-y divide-white/5 text-sm [html:not(.dark)_&]:divide-slate-100">
                   {destinations.map((item) => {
                     const IconComponent = item.icon;
                     return (
                       <tr
                         key={item.id}
-                        className="group transition-colors duration-150 hover:bg-white/[0.04]"
+                        className="group transition-colors duration-150 hover:bg-white/[0.04] [html:not(.dark)_&]:hover:bg-amber-50/40"
                       >
-                        <td className="px-6 py-4.5 font-medium text-white">
+                        <td className="px-6 py-4.5 font-medium text-white [html:not(.dark)_&]:text-slate-900">
                           <div className="flex items-center gap-3">
-                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-amber-400 transition-colors group-hover:border-amber-400/40 group-hover:bg-amber-400/20">
+                            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-amber-400 transition-colors group-hover:border-amber-400/40 group-hover:bg-amber-400/20 [html:not(.dark)_&]:border-amber-500/30 [html:not(.dark)_&]:bg-amber-50 [html:not(.dark)_&]:text-amber-700">
                               <IconComponent className="h-5 w-5" />
                             </div>
                             <div>
-                              <p className="font-serif text-base font-bold text-white transition-colors group-hover:text-amber-300">
+                              <p className="font-serif text-base font-bold text-white transition-colors group-hover:text-amber-300 [html:not(.dark)_&]:text-slate-900 [html:not(.dark)_&]:group-hover:text-amber-700">
                                 {isHindi ? item.nameHi : item.name}
                               </p>
-                              <p className="text-xs text-slate-400">
+                              <p className="text-xs text-slate-400 [html:not(.dark)_&]:text-slate-500">
                                 {isHindi ? item.categoryHi : item.category}
                               </p>
                             </div>
@@ -251,8 +250,8 @@ export default function ProjectTransitMatrix({
                           </span>
                         </td>
                         <td className="px-6 py-4.5 text-center">
-                          <span className="inline-flex items-center gap-1 font-mono text-base font-bold text-amber-300">
-                            <Milestone className="h-3.5 w-3.5 text-amber-400" />
+                          <span className="inline-flex items-center gap-1 font-mono text-base font-bold text-amber-300 [html:not(.dark)_&]:text-amber-700">
+                            <Milestone className="h-3.5 w-3.5 text-amber-400 [html:not(.dark)_&]:text-amber-600" />
                             {isHindi ? item.distanceHi : item.distance}
                           </span>
                         </td>
@@ -264,7 +263,7 @@ export default function ProjectTransitMatrix({
                             {isHindi ? item.timeHi : item.time}
                           </span>
                         </td>
-                        <td className="max-w-sm px-6 py-4.5 text-xs leading-relaxed text-slate-300">
+                        <td className="max-w-sm px-6 py-4.5 text-xs leading-relaxed text-slate-300 [html:not(.dark)_&]:text-slate-600">
                           {isHindi ? item.advantageHi : item.advantage}
                         </td>
                       </tr>
@@ -282,18 +281,18 @@ export default function ProjectTransitMatrix({
               return (
                 <div
                   key={item.id}
-                  className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 shadow-lg backdrop-blur-md"
+                  className="rounded-2xl border border-white/10 bg-slate-900/80 p-5 shadow-lg backdrop-blur-md [html:not(.dark)_&]:border-slate-200 [html:not(.dark)_&]:bg-white [html:not(.dark)_&]:shadow-md"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-amber-400">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-amber-400/20 bg-amber-400/10 text-amber-400 [html:not(.dark)_&]:border-amber-500/30 [html:not(.dark)_&]:bg-amber-50 [html:not(.dark)_&]:text-amber-700">
                         <IconComponent className="h-5 w-5" />
                       </div>
                       <div>
-                        <h3 className="font-serif text-base font-bold text-white">
+                        <h3 className="font-serif text-base font-bold text-white [html:not(.dark)_&]:text-slate-900">
                           {isHindi ? item.nameHi : item.name}
                         </h3>
-                        <p className="text-xs text-slate-400">
+                        <p className="text-xs text-slate-400 [html:not(.dark)_&]:text-slate-500">
                           {isHindi ? item.categoryHi : item.category}
                         </p>
                       </div>
@@ -301,8 +300,8 @@ export default function ProjectTransitMatrix({
                   </div>
 
                   <div className="mt-4 flex flex-wrap items-center gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 font-mono text-xs font-bold text-amber-300">
-                      <Milestone className="h-3 w-3 text-amber-400" />
+                    <span className="inline-flex items-center gap-1 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 font-mono text-xs font-bold text-amber-300 [html:not(.dark)_&]:border-amber-500/30 [html:not(.dark)_&]:bg-amber-50 [html:not(.dark)_&]:text-amber-800">
+                      <Milestone className="h-3 w-3 text-amber-400 [html:not(.dark)_&]:text-amber-600" />
                       <span>{isHindi ? item.distanceHi : item.distance}</span>
                     </span>
                     <span
@@ -313,7 +312,7 @@ export default function ProjectTransitMatrix({
                     </span>
                   </div>
 
-                  <p className="mt-3 text-xs leading-relaxed text-slate-300">
+                  <p className="mt-3 text-xs leading-relaxed text-slate-300 [html:not(.dark)_&]:text-slate-600">
                     {isHindi ? item.advantageHi : item.advantage}
                   </p>
                 </div>
@@ -322,11 +321,11 @@ export default function ProjectTransitMatrix({
           </div>
 
           {/* Bottom Trust & Proximity Callout */}
-          <div className="relative z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 px-6 py-4 backdrop-blur-md sm:flex-row">
+          <div className="relative z-10 mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/20 bg-amber-500/5 px-6 py-4 backdrop-blur-md sm:flex-row [html:not(.dark)_&]:border-amber-500/30 [html:not(.dark)_&]:bg-amber-100/60">
             <div className="flex items-center gap-3 text-left">
-              <CheckCircle2 className="h-5 w-5 shrink-0 text-amber-400" />
-              <p className="text-xs text-slate-200 sm:text-sm">
-                <span className="font-bold text-amber-300">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-amber-400 [html:not(.dark)_&]:text-amber-700" />
+              <p className="text-xs text-slate-200 sm:text-sm [html:not(.dark)_&]:text-slate-800">
+                <span className="font-bold text-amber-300 [html:not(.dark)_&]:text-amber-800">
                   {isHindi ? 'त्वरित कनेक्टिविटी:' : 'Direct Highway Access:'}
                 </span>{' '}
                 {isHindi
@@ -336,7 +335,7 @@ export default function ProjectTransitMatrix({
             </div>
             <Link
               href="/contact?project=shivani-vatika-11th"
-              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-2.5 text-xs font-bold tracking-wider text-slate-950 uppercase shadow-lg shadow-amber-500/20 transition-all hover:from-amber-400 hover:to-amber-500"
+              className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-5 py-2.5 text-xs font-bold tracking-wider text-slate-950 uppercase shadow-lg shadow-amber-500/20 transition-all hover:from-amber-400 hover:to-amber-500 [html:not(.dark)_&]:from-amber-600 [html:not(.dark)_&]:to-amber-700 [html:not(.dark)_&]:text-white"
             >
               <MapPin className="h-3.5 w-3.5" />
               <span>{isHindi ? 'साइट विजिट बुक करें' : 'Book Free Site Cab'}</span>
