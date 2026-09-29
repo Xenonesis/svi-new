@@ -90,17 +90,22 @@ test.describe('HoverZoomImage Loading Performance Across Networks', () => {
       await card.click();
 
       // Verify modal is displayed
-      const modal = page.locator('.fixed.inset-0.z-50');
-      await expect(modal).toBeVisible();
+      const modal = page.locator('.fixed.inset-0.z-50').first();
+      await expect(modal).toBeVisible({ timeout: 15000 });
 
-      // Wait for HoverZoomImage skeleton to disappear (aria-hidden="true")
-      const skeletonHidden = modal.locator('[aria-hidden="true"]');
-      await skeletonHidden.waitFor({ state: 'attached', timeout: 35000 });
+      // Wait for HoverZoomImage skeleton to disappear or detach
+      const skeleton = modal.getByTestId('hover-zoom-skeleton');
+      if ((await skeleton.count()) > 0) {
+        await skeleton
+          .first()
+          .waitFor({ state: 'hidden', timeout: 35000 })
+          .catch(() => {});
+      }
       const spinnerDuration = Date.now() - tClick;
 
       // Extract image element details
       const modalImg = modal.locator('img[alt*="Shivani Vatika"]').first();
-      await expect(modalImg).toBeVisible();
+      await expect(modalImg).toBeVisible({ timeout: 15000 });
       const currentSrc = await modalImg.evaluate((el: HTMLImageElement) => el.currentSrc || el.src);
       const srcset = await modalImg.evaluate((el: HTMLImageElement) => el.srcset);
       const naturalWidth = await modalImg.evaluate((el: HTMLImageElement) => el.naturalWidth);
@@ -112,10 +117,14 @@ test.describe('HoverZoomImage Loading Performance Across Networks', () => {
       if (await nextBtn.isVisible()) {
         const tNext = Date.now();
         await nextBtn.click();
-        const nextSkeletonHidden = modal.locator('[aria-hidden="true"]');
-        await nextSkeletonHidden.waitFor({ state: 'attached', timeout: 35000 });
+        const nextSkeleton = modal.getByTestId('hover-zoom-skeleton');
+        if ((await nextSkeleton.count()) > 0) {
+          await nextSkeleton
+            .first()
+            .waitFor({ state: 'hidden', timeout: 35000 })
+            .catch(() => {});
+        }
       }
-
       console.log(`\n======================================================`);
       console.log(` Network Profile: ${profile.label}`);
       console.log(

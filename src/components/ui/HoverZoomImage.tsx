@@ -145,6 +145,7 @@ const HoverZoomImage = memo(function HoverZoomImage({
       {/* Premium Shimmer Skeleton Loader */}
       {!hasError && showSkeleton && renderSkeleton && (
         <div
+          data-testid="hover-zoom-skeleton"
           className={`absolute inset-0 z-10 flex flex-col items-center justify-center overflow-hidden bg-[#0c121e] transition-all duration-500 ease-out ${
             isLoaded ? 'pointer-events-none invisible opacity-0' : 'visible opacity-100'
           }`}

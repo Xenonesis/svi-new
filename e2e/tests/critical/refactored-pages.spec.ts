@@ -29,9 +29,8 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
 
     // Switch to OTP tab
     await otpTab.click();
-    await expect(page.getByRole('button', { name: /Send Code/i })).toBeVisible();
+    await expect(page.getByRole('button', { name: /Send Code|कोड भेजें/i })).toBeVisible();
     await expect(loginForm.locator('input[type="password"]')).toHaveCount(0);
-
     // Switch back to Password tab
     await passwordTab.click();
     await expect(loginForm.locator('input[type="password"]')).toBeVisible();
@@ -199,8 +198,7 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
     await page.waitForLoadState('domcontentloaded');
 
     // 1. Verify title, Search input, and "Create Allotment" button render
-    await expect(page.locator('h1')).toContainText(/Portal Allotments/i);
-
+    await expect(page.locator('h1')).toContainText(/Portal Allotments|Plots Allotments/i);
     const searchInput = page.locator('input[placeholder*="Search"]');
     await expect(searchInput).toBeVisible();
 

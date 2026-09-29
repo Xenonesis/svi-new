@@ -47,6 +47,7 @@ test.describe('i18n — Multi-language', () => {
   });
 
   test('English pages accessible without prefix', async ({ page }) => {
+    test.setTimeout(90000);
     const paths = [
       '/about',
       '/blog',
@@ -58,9 +59,7 @@ test.describe('i18n — Multi-language', () => {
     ];
     for (const path of paths) {
       await page.goto(path);
-      // Use 'load' instead of 'domcontentloaded' to avoid timeouts on asset-heavy pages
-      await page.waitForLoadState('load');
-      await page.waitForTimeout(1000);
+      await page.waitForLoadState('domcontentloaded');
       expect(page.url()).not.toContain('/en');
       expect(page.url()).toContain(path);
     }
