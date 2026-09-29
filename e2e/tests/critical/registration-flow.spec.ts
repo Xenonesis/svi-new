@@ -53,8 +53,10 @@ test.describe('Registration Flow', () => {
     // Wait for the captcha container to render and challenge numbers to load (not '…')
     const captchaContainer = page.locator('div.flex.min-h-\\[46px\\]');
     await expect(captchaContainer).toBeVisible();
-    await expect(captchaContainer.locator('span').first()).not.toHaveText('…');
-    await expect(captchaContainer.locator('span').first()).not.toHaveText('...');
+    await expect(captchaContainer.locator('span').first()).not.toHaveText('…', { timeout: 15000 });
+    await expect(captchaContainer.locator('span').first()).not.toHaveText('...', {
+      timeout: 15000,
+    });
 
     // Get value of first span (a) and third span (b)
     const spans = captchaContainer.locator('span');

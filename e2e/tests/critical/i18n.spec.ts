@@ -58,8 +58,7 @@ test.describe('i18n — Multi-language', () => {
       '/terms-conditions',
     ];
     for (const path of paths) {
-      await page.goto(path);
-      await page.waitForLoadState('domcontentloaded');
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
       expect(page.url()).not.toContain('/en');
       expect(page.url()).toContain(path);
     }
@@ -68,8 +67,7 @@ test.describe('i18n — Multi-language', () => {
   test('Hindi pages accessible with /hi prefix', async ({ page }) => {
     const paths = ['/about', '/blog', '/faq', '/contact'];
     for (const path of paths) {
-      await page.goto(`/hi${path}`);
-      await page.waitForLoadState('domcontentloaded');
+      await page.goto(`/hi${path}`, { waitUntil: 'domcontentloaded' });
       expect(page.url()).toContain('/hi');
     }
   });

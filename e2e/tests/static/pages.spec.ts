@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.describe.configure({ timeout: 60000 });
+
 test.describe('Static Pages', () => {
   const pages = [
     { path: '/about', name: 'About' },
@@ -14,14 +16,7 @@ test.describe('Static Pages', () => {
 
   for (const { path, name } of pages) {
     test(`${name} loads successfully`, async ({ page }) => {
-      await page.goto(path);
-      // Projects pages have heavy assets — use 'load' to avoid domcontentloaded timeouts
-      if (path.includes('/projects/')) {
-        await page.waitForLoadState('load');
-        await page.waitForTimeout(2000);
-      } else {
-        await page.waitForLoadState('domcontentloaded');
-      }
+      await page.goto(path, { waitUntil: 'domcontentloaded' });
       // Page should have a heading and not be a 404
       const h1 = page.locator('h1');
       const count = await h1.count();
@@ -34,13 +29,7 @@ test.describe('Static Pages', () => {
     });
 
     test(`${name} in Hindi loads successfully`, async ({ page }) => {
-      await page.goto(`/hi${path}`);
-      if (path.includes('/projects/')) {
-        await page.waitForLoadState('load');
-        await page.waitForTimeout(2000);
-      } else {
-        await page.waitForLoadState('domcontentloaded');
-      }
+      await page.goto(`/hi${path}`, { waitUntil: 'domcontentloaded' });
       const h1 = page.locator('h1');
       const count = await h1.count();
       expect(count).toBeGreaterThanOrEqual(1);

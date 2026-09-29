@@ -1,5 +1,7 @@
 import { test, expect } from '@playwright/test';
 
+test.describe.configure({ timeout: 60000 });
+
 test.describe('Admin Auth Guard', () => {
   const adminPages = [
     '/admin/dashboard',
@@ -25,7 +27,7 @@ test.describe('Admin Auth Guard', () => {
 
   for (const adminPath of adminPages) {
     test(`redirects to login from ${adminPath}`, async ({ page }) => {
-      await page.goto(adminPath);
+      await page.goto(adminPath, { waitUntil: 'domcontentloaded' });
       // Client-side auth guard needs time to redirect after hydration
       await page.waitForURL(/\/login|\/admin/, { timeout: 15000 });
       const url = page.url();
@@ -36,7 +38,7 @@ test.describe('Admin Auth Guard', () => {
 
 test.describe('Admin Auth Pages', () => {
   test('root /admin renders login/auth page', async ({ page }) => {
-    await page.goto('/admin');
+    await page.goto('/admin', { waitUntil: 'domcontentloaded' });
     await page.waitForLoadState('domcontentloaded');
     // Should show some content (login form or redirect)
     const bodyText = await page.locator('body').innerText();

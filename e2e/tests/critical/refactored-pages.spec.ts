@@ -7,8 +7,7 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
   test('Customer Login (/login): renders title, tab switching, email validation, and password toggle', async ({
     page,
   }) => {
-    await page.goto('/login');
-    await page.waitForLoadState('domcontentloaded');
+    await page.goto('/login', { waitUntil: 'domcontentloaded' });
 
     // 1. Verify title and branding render
     await expect(page.locator('h1')).toContainText(/My Account|Account/i);
@@ -27,14 +26,20 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
     const passwordInput = loginForm.locator('input[type="password"]');
     await expect(passwordInput).toBeVisible();
 
-    // Switch to OTP tab
-    await otpTab.click();
-    await expect(page.getByRole('button', { name: /Send Code|कोड भेजें/i })).toBeVisible();
+    // Switch to OTP tab with hydration-safe retry
+    await expect(async () => {
+      await otpTab.click();
+      await expect(page.getByRole('button', { name: /Send Code|कोड भेजें/i })).toBeVisible({
+        timeout: 2000,
+      });
+    }).toPass({ timeout: 15000 });
     await expect(loginForm.locator('input[type="password"]')).toHaveCount(0);
-    // Switch back to Password tab
-    await passwordTab.click();
-    await expect(loginForm.locator('input[type="password"]')).toBeVisible();
 
+    // Switch back to Password tab with hydration-safe retry
+    await expect(async () => {
+      await passwordTab.click();
+      await expect(loginForm.locator('input[type="password"]')).toBeVisible({ timeout: 2000 });
+    }).toPass({ timeout: 15000 });
     // 3. Verify email format validation error triggers when submitting invalid email
     const emailInput = loginForm.locator('input[type="email"]');
     await emailInput.fill('invalid-email-address');

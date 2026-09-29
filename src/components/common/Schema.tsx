@@ -190,6 +190,15 @@ export function RealEstateListingSchema({
     description,
     image: image.startsWith('http') ? image : `${SITE_URL}${image}`,
     url,
+    ...(amenities && amenities.length > 0
+      ? {
+          amenityFeature: amenities.map((item) => ({
+            '@type': 'LocationFeatureSpecification',
+            name: item.name,
+            value: item.value ?? true,
+          })),
+        }
+      : {}),
     itemOffered: {
       '@type': 'Product',
       name,

@@ -87,7 +87,7 @@ test.describe('HoverZoomImage Loading Performance Across Networks', () => {
       imageEvents.length = 0;
 
       const tClick = Date.now();
-      await card.click();
+      await card.locator('img').first().click();
 
       // Verify modal is displayed
       const modal = page.locator('.fixed.inset-0.z-50').first();
