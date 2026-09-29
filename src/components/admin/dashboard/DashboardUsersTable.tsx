@@ -23,6 +23,10 @@ import {
   Shield,
   Building2,
   Sparkles,
+  ChevronLeft,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import type { UserProfile } from '@/src/lib/supabase/types';
@@ -67,7 +71,8 @@ export function DashboardUsersTable({
 }: DashboardUsersTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [roleFilter, setRoleFilter] = useState<'all' | 'client' | 'employee' | 'admin'>('all');
-
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 10;
   const copyToClipboard = (text: string, id: string, label = 'Copied') => {
     if (!text) return;
     navigator.clipboard.writeText(text);
@@ -107,7 +112,19 @@ export function DashboardUsersTable({
       );
     });
   }, [users, roleFilter, search]);
-  // Role styling helper functions
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+
+  // Auto clamp currentPage if filtered list changes
+  const validCurrentPage = Math.min(currentPage, totalPages);
+  if (currentPage !== validCurrentPage) {
+    setCurrentPage(validCurrentPage);
+  }
+
+  const paginatedUsers = useMemo(() => {
+    const start = (validCurrentPage - 1) * pageSize;
+    return filtered.slice(start, start + pageSize);
+  }, [filtered, validCurrentPage, pageSize]);
   const getRoleTheme = (role?: string) => {
     const r = (role || 'client').toLowerCase();
     if (r === 'admin') {
@@ -154,13 +171,19 @@ export function DashboardUsersTable({
           <input
             type="text"
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => {
+              setSearch(e.target.value);
+              setCurrentPage(1);
+            }}
             placeholder="Search by name, email or phone..."
             className="focus:border-brand-gold focus:ring-brand-gold/15 dark:bg-brand-dark-surface/85 w-full rounded-xl border border-gray-200 bg-white py-2.5 pr-10 pl-10 text-sm text-gray-900 placeholder-gray-400 transition-all focus:ring-2 focus:outline-none dark:border-white/10 dark:text-white dark:placeholder-gray-600"
           />
           {search && (
             <button
-              onClick={() => setSearch('')}
+              onClick={() => {
+                setSearch('');
+                setCurrentPage(1);
+              }}
               aria-label="Clear search"
               className="hover:text-brand-gold absolute top-1/2 right-3.5 -translate-y-1/2 cursor-pointer text-gray-500"
             >
@@ -207,7 +230,10 @@ export function DashboardUsersTable({
         <div className="dark:bg-brand-dark-surface/85 inline-flex items-center gap-1 rounded-xl border border-gray-200 bg-white p-1 shadow-xs backdrop-blur-md dark:border-white/10">
           <button
             type="button"
-            onClick={() => setRoleFilter('all')}
+            onClick={() => {
+              setRoleFilter('all');
+              setCurrentPage(1);
+            }}
             className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
               roleFilter === 'all'
                 ? 'bg-gray-900 text-white shadow-sm dark:bg-white dark:text-gray-950'
@@ -228,7 +254,10 @@ export function DashboardUsersTable({
 
           <button
             type="button"
-            onClick={() => setRoleFilter('client')}
+            onClick={() => {
+              setRoleFilter('client');
+              setCurrentPage(1);
+            }}
             className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
               roleFilter === 'client'
                 ? 'bg-blue-600 text-white shadow-sm dark:bg-blue-500 dark:text-white'
@@ -250,7 +279,10 @@ export function DashboardUsersTable({
 
           <button
             type="button"
-            onClick={() => setRoleFilter('employee')}
+            onClick={() => {
+              setRoleFilter('employee');
+              setCurrentPage(1);
+            }}
             className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
               roleFilter === 'employee'
                 ? 'bg-emerald-600 text-white shadow-sm dark:bg-emerald-500 dark:text-white'
@@ -272,7 +304,10 @@ export function DashboardUsersTable({
 
           <button
             type="button"
-            onClick={() => setRoleFilter('admin')}
+            onClick={() => {
+              setRoleFilter('admin');
+              setCurrentPage(1);
+            }}
             className={`inline-flex items-center gap-2 rounded-lg px-3 py-1.5 text-xs font-bold tracking-wide transition-all active:scale-95 ${
               roleFilter === 'admin'
                 ? 'dark:bg-brand-gold dark:text-brand-navy bg-amber-500 text-gray-950 shadow-sm'
@@ -295,8 +330,19 @@ export function DashboardUsersTable({
 
         <div className="hidden text-xs text-gray-500 sm:block dark:text-gray-400">
           Showing{' '}
+          <span className="font-semibold text-gray-800 dark:text-gray-200">
+            {filtered.length > 0
+              ? `${(validCurrentPage - 1) * pageSize + 1}–${Math.min(validCurrentPage * pageSize, filtered.length)}`
+              : 0}
+          </span>{' '}
+          of{' '}
           <span className="font-semibold text-gray-800 dark:text-gray-200">{filtered.length}</span>{' '}
-          of {users.length} profiles
+          profiles
+          {totalPages > 1 && (
+            <span className="ml-1.5 rounded-md bg-gray-100 px-1.5 py-0.5 font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
+              Page {validCurrentPage} of {totalPages}
+            </span>
+          )}
         </div>
       </div>
 
@@ -376,7 +422,7 @@ export function DashboardUsersTable({
           <>
             {/* Mobile Adaptive Cards View (< md) */}
             <div className="divide-y divide-gray-100 p-3 md:hidden dark:divide-white/5">
-              {filtered.map((u, i) => {
+              {paginatedUsers.map((u, i) => {
                 const cleanPhone = u.phone ? u.phone.replace(/\D/g, '') : '';
                 const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
                 const theme = getRoleTheme(u.role);
@@ -626,7 +672,7 @@ export function DashboardUsersTable({
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                  {filtered.map((u, i) => {
+                  {paginatedUsers.map((u, i) => {
                     const cleanPhone = u.phone ? u.phone.replace(/\D/g, '') : '';
                     const waPhone = cleanPhone.startsWith('91') ? cleanPhone : `91${cleanPhone}`;
                     const theme = getRoleTheme(u.role);
@@ -852,6 +898,121 @@ export function DashboardUsersTable({
                 </tbody>
               </table>
             </div>
+
+            {/* Luxury Responsive Pagination Footer */}
+            {totalPages > 1 && (
+              <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-100 bg-gray-50/60 px-5 py-3.5 sm:flex-row dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="text-xs text-gray-500 dark:text-gray-400">
+                  Showing{' '}
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {(validCurrentPage - 1) * pageSize + 1}
+                  </span>{' '}
+                  to{' '}
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {Math.min(validCurrentPage * pageSize, filtered.length)}
+                  </span>{' '}
+                  of{' '}
+                  <span className="font-semibold text-gray-900 dark:text-white">
+                    {filtered.length}
+                  </span>{' '}
+                  profiles
+                </div>
+
+                <div className="flex items-center gap-1.5">
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage(1)}
+                    disabled={validCurrentPage === 1}
+                    className="hover:border-brand-gold hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors disabled:pointer-events-none disabled:opacity-30 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+                    title="First Page"
+                    aria-label="First page"
+                  >
+                    <ChevronsLeft className="h-4 w-4" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                    disabled={validCurrentPage === 1}
+                    className="hover:border-brand-gold hover:text-brand-gold flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 text-xs font-medium text-gray-600 transition-colors disabled:pointer-events-none disabled:opacity-30 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+                    title="Previous Page"
+                    aria-label="Previous page"
+                  >
+                    <ChevronLeft className="h-3.5 w-3.5" />
+                    <span className="hidden sm:inline">Prev</span>
+                  </button>
+
+                  <div className="flex items-center gap-1 px-1">
+                    {Array.from({ length: totalPages }, (_, idx) => idx + 1)
+                      .filter((p) => {
+                        if (totalPages <= 5) return true;
+                        if (p === 1 || p === totalPages) return true;
+                        return Math.abs(p - validCurrentPage) <= 1;
+                      })
+                      .reduce<Array<number | '...'>>((acc, p, index, arr) => {
+                        if (index > 0 && typeof arr[index - 1] === 'number') {
+                          const prev = arr[index - 1] as number;
+                          if (p - prev > 1) {
+                            acc.push('...');
+                          }
+                        }
+                        acc.push(p);
+                        return acc;
+                      }, [])
+                      .map((p, idx) => {
+                        if (p === '...') {
+                          return (
+                            <span
+                              key={`ellipsis-${idx}`}
+                              className="px-1 text-xs text-gray-400 select-none"
+                            >
+                              …
+                            </span>
+                          );
+                        }
+                        const isCurrent = p === validCurrentPage;
+                        return (
+                          <button
+                            key={p}
+                            type="button"
+                            onClick={() => setCurrentPage(p)}
+                            className={`flex h-8 min-w-[32px] items-center justify-center rounded-lg px-2 text-xs font-semibold transition-all ${
+                              isCurrent
+                                ? 'bg-brand-gold text-brand-navy shadow-sm'
+                                : 'hover:border-brand-gold hover:text-brand-gold border border-gray-200 bg-white text-gray-600 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400'
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        );
+                      })}
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                    disabled={validCurrentPage === totalPages}
+                    className="hover:border-brand-gold hover:text-brand-gold flex h-8 items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 text-xs font-medium text-gray-600 transition-colors disabled:pointer-events-none disabled:opacity-30 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+                    title="Next Page"
+                    aria-label="Next page"
+                  >
+                    <span className="hidden sm:inline">Next</span>
+                    <ChevronRight className="h-3.5 w-3.5" />
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setCurrentPage(totalPages)}
+                    disabled={validCurrentPage === totalPages}
+                    className="hover:border-brand-gold hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200 bg-white text-gray-600 transition-colors disabled:pointer-events-none disabled:opacity-30 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+                    title="Last Page"
+                    aria-label="Last page"
+                  >
+                    <ChevronsRight className="h-4 w-4" />
+                  </button>
+                </div>
+              </div>
+            )}
           </>
         )}
       </div>
