@@ -8,6 +8,7 @@ import {
   RealEstateListingSchema,
 } from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
+import { CORRIDOR_COMMON_AMENITIES } from '@/src/data/corridorAmenities';
 import {
   BUDGET_PAGE_KEYWORDS,
   BUDGET_PAGE_META,
@@ -87,6 +88,7 @@ export default async function PlotsUnder20LakhsPage({ params }: Props) {
         offerCount={120}
         url={localizedUrl('/plots-in-jaipur-under-20-lakhs', locale)}
         pdfUrl="/Shivani Vatika 11/master-plan-layout.pdf"
+        amenities={CORRIDOR_COMMON_AMENITIES}
       />
 
       <PlotsUnder20LakhsHero isHindi={isHindi} />

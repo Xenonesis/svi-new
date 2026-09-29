@@ -88,6 +88,11 @@ interface BreadcrumbItem {
   path?: string;
 }
 
+export interface AmenityFeatureItem {
+  name: string;
+  value?: string | boolean;
+}
+
 interface RealEstateProps {
   name: string;
   description: string;
@@ -100,6 +105,7 @@ interface RealEstateProps {
   offerCount?: number;
   url?: string;
   pdfUrl?: string;
+  amenities?: AmenityFeatureItem[];
 }
 export function OrganizationSchema() {
   return (
@@ -175,6 +181,7 @@ export function RealEstateListingSchema({
   offerCount,
   url = SITE_URL,
   pdfUrl,
+  amenities,
 }: RealEstateProps) {
   const schema = {
     '@context': 'https://schema.org',
@@ -188,6 +195,15 @@ export function RealEstateListingSchema({
       name,
       description,
       image: image.startsWith('http') ? image : `${SITE_URL}${image}`,
+      ...(amenities && amenities.length > 0
+        ? {
+            amenityFeature: amenities.map((item) => ({
+              '@type': 'LocationFeatureSpecification',
+              name: item.name,
+              value: item.value ?? true,
+            })),
+          }
+        : {}),
       offers:
         lowPrice && highPrice
           ? {

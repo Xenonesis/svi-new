@@ -8,6 +8,8 @@ import {
   RealEstateListingSchema,
 } from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
+import { CorridorEmiWidget } from '@/src/components/plots/common/CorridorEmiWidget';
+import { CORRIDOR_COMMON_AMENITIES } from '@/src/data/corridorAmenities';
 import {
   KHATU_PAGE_KEYWORDS,
   KHATU_PAGE_META,
@@ -102,12 +104,21 @@ export default async function PlotsNearKhatuShyamJiPage({ params }: Props) {
         price="1500000"
         url={localizedUrl('/plots-for-sale-near-khatu-shyam-ji', locale)}
         pdfUrl="/Shivani Vatika 11/master-plan-layout.pdf"
+        amenities={CORRIDOR_COMMON_AMENITIES}
       />
       <FAQSchema questions={faqs} />
       <KhatuHeroSection isHindi={isHindi} />
       <KhatuStrategicGrowthSection isHindi={isHindi} />
       <KhatuTownshipSpotlight isHindi={isHindi} />
       <KhatuTransitMatrixSection isHindi={isHindi} />
+      <div className="container mx-auto px-4">
+        <CorridorEmiWidget
+          corridorName={
+            isHindi ? 'खाटू श्याम जी हाईवे (हर्षोली)' : 'Khatu Shyam Ji Highway (Harsholi)'
+          }
+          isHindi={isHindi}
+        />
+      </div>
       <KhatuDueDiligenceSection isHindi={isHindi} />
       <KhatuFaqAccordion isHindi={isHindi} faqs={faqs} />
       <KhatuCtaBanner isHindi={isHindi} />

@@ -1,13 +1,29 @@
 'use client';
 
-import React from 'react';
-import { SavedReceipt } from './ReceiptTypes';
-import { ReceiptDeleteModal } from './ReceiptDeleteModal';
-import { ReceiptViewModal } from './ReceiptViewModal';
-import { ReceiptWhatsAppModal } from './ReceiptWhatsAppModal';
-import { ReceiptLedgerDrawer } from './ReceiptLedgerDrawer';
-import { ReceiptLedgersModal } from './ReceiptLedgersModal';
+import dynamic from 'next/dynamic';
+import type { SavedReceipt } from './ReceiptTypes';
 import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
+
+const ReceiptDeleteModal = dynamic(
+  () => import('./ReceiptDeleteModal').then((m) => m.ReceiptDeleteModal),
+  { ssr: false }
+);
+const ReceiptViewModal = dynamic(
+  () => import('./ReceiptViewModal').then((m) => m.ReceiptViewModal),
+  { ssr: false }
+);
+const ReceiptWhatsAppModal = dynamic(
+  () => import('./ReceiptWhatsAppModal').then((m) => m.ReceiptWhatsAppModal),
+  { ssr: false }
+);
+const ReceiptLedgerDrawer = dynamic(
+  () => import('./ReceiptLedgerDrawer').then((m) => m.ReceiptLedgerDrawer),
+  { ssr: false }
+);
+const ReceiptLedgersModal = dynamic(
+  () => import('./ReceiptLedgersModal').then((m) => m.ReceiptLedgersModal),
+  { ssr: false }
+);
 
 export interface ReceiptModalsContainerProps {
   receipts: SavedReceipt[];

@@ -1,11 +1,28 @@
-import React from 'react';
-import { PortalAllotmentFormModal } from './PortalAllotmentFormModal';
-import { ReceiptViewModal } from '../payment-receipts/ReceiptViewModal';
-import { ReceiptWhatsAppModal } from '../payment-receipts/ReceiptWhatsAppModal';
-import { ReceiptLedgersModal } from '../payment-receipts/ReceiptLedgersModal';
-import { ReceiptLedgerDrawer } from '../payment-receipts/ReceiptLedgerDrawer';
+import type React from 'react';
+import dynamic from 'next/dynamic';
 import type { AllotmentFormData, ProfileSummary, PropertySummary } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
+
+const PortalAllotmentFormModal = dynamic(
+  () => import('./PortalAllotmentFormModal').then((m) => m.PortalAllotmentFormModal),
+  { ssr: false }
+);
+const ReceiptViewModal = dynamic(
+  () => import('../payment-receipts/ReceiptViewModal').then((m) => m.ReceiptViewModal),
+  { ssr: false }
+);
+const ReceiptWhatsAppModal = dynamic(
+  () => import('../payment-receipts/ReceiptWhatsAppModal').then((m) => m.ReceiptWhatsAppModal),
+  { ssr: false }
+);
+const ReceiptLedgersModal = dynamic(
+  () => import('../payment-receipts/ReceiptLedgersModal').then((m) => m.ReceiptLedgersModal),
+  { ssr: false }
+);
+const ReceiptLedgerDrawer = dynamic(
+  () => import('../payment-receipts/ReceiptLedgerDrawer').then((m) => m.ReceiptLedgerDrawer),
+  { ssr: false }
+);
 
 export interface PortalAllotmentsModalsContainerProps {
   // Manual Allotment Modal

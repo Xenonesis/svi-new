@@ -8,6 +8,8 @@ import {
   RealEstateListingSchema,
 } from '@/src/components/common/Schema';
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
+import { CorridorEmiWidget } from '@/src/components/plots/common/CorridorEmiWidget';
+import { CORRIDOR_COMMON_AMENITIES } from '@/src/data/corridorAmenities';
 import {
   RENWAL_PAGE_KEYWORDS,
   RENWAL_PAGE_META,
@@ -87,10 +89,21 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
         offerCount={230}
         url={localizedUrl('/plots-near-renwal-railway-station', locale)}
         pdfUrl="/Shivani Vatika 11/master-plan-layout.pdf"
+        amenities={CORRIDOR_COMMON_AMENITIES}
       />
 
       <PlotsRenwalHero isHindi={isHindi} />
       <PlotsRenwalFeatured isHindi={isHindi} />
+      <div className="container mx-auto px-4">
+        <CorridorEmiWidget
+          corridorName={
+            isHindi
+              ? 'रेनवाल रेलवे स्टेशन व रीको इंडस्ट्रियल एरिया'
+              : 'Renwal Railway Station & RIICO Industrial Hub'
+          }
+          isHindi={isHindi}
+        />
+      </div>
       <PlotsRenwalFaq isHindi={isHindi} />
 
       <SiteVisitPill areaName="Plots Near Renwal" defaultPickup="Doorstep in Jaipur City" />

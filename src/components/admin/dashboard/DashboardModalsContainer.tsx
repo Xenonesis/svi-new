@@ -4,13 +4,32 @@ import type React from 'react';
 import { AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
 
+import dynamic from 'next/dynamic';
 import type { UserProfile } from '@/src/lib/supabase/types';
-import { CreateUserModal } from '@/src/components/admin/modals/CreateUserModal';
-import { EditUserModal } from '@/src/components/admin/modals/EditUserModal';
-import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
-import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
-import { AddEmployeeModal } from '@/src/components/admin/modals/AddEmployeeModal';
 
+const CreateUserModal = dynamic(
+  () => import('@/src/components/admin/modals/CreateUserModal').then((m) => m.CreateUserModal),
+  { ssr: false }
+);
+const EditUserModal = dynamic(
+  () => import('@/src/components/admin/modals/EditUserModal').then((m) => m.EditUserModal),
+  { ssr: false }
+);
+const DeleteConfirm = dynamic(
+  () => import('@/src/components/admin/modals/DeleteConfirm').then((m) => m.DeleteConfirm),
+  { ssr: false }
+);
+const AdvisorSettingsModal = dynamic(
+  () =>
+    import('@/src/components/admin/modals/AdvisorSettingsModal').then(
+      (m) => m.AdvisorSettingsModal
+    ),
+  { ssr: false }
+);
+const AddEmployeeModal = dynamic(
+  () => import('@/src/components/admin/modals/AddEmployeeModal').then((m) => m.AddEmployeeModal),
+  { ssr: false }
+);
 export interface DashboardModalsContainerProps {
   token: string | null;
   properties: Array<{ name: string; slug: string }>;
