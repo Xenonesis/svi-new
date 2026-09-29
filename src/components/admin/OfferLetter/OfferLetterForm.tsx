@@ -325,11 +325,21 @@ export function OfferLetterForm({
             <SlabSelector
               salaryCtc={formData.salaryCtc}
               salaryType={formData.salaryType || 'CTC'}
+              isFixedSalary={Boolean(formData.isFixedSalary)}
               target={formData.target}
               targetUnit={formData.targetUnit || 'Sq. Yd.'}
               offerSlab={formData.offerSlab}
               onSalaryChange={handleSalaryChange}
               onSalaryTypeChange={(val) => setFormData((prev) => ({ ...prev, salaryType: val }))}
+              onToggleFixedSalary={(isFixed) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  isFixedSalary: isFixed,
+                  target: isFixed ? '' : prev.target,
+                  offerSlab: isFixed ? '' : prev.offerSlab,
+                  includeSalesPolicyBox: isFixed ? false : prev.includeSalesPolicyBox,
+                }))
+              }
               onTargetChange={handleTargetChange}
               onTargetUnitChange={(val) => setFormData((prev) => ({ ...prev, targetUnit: val }))}
               onOfferSlabChange={(value) => setFormData((prev) => ({ ...prev, offerSlab: value }))}
@@ -408,6 +418,7 @@ export function OfferLetterForm({
                 subsistenceAllowance={formData.subsistenceAllowance}
                 customSalaryPercent={formData.customSalaryPercent}
                 meetingsPerMonth={formData.meetingsPerMonth}
+                includeMeetingsTarget={formData.includeMeetingsTarget}
                 salaryCtc={formData.salaryCtc}
                 target={formData.target}
                 gracePeriodMonths={formData.gracePeriodMonths}

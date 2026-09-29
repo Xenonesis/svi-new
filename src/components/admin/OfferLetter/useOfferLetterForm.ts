@@ -22,6 +22,7 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   location: '',
   salaryCtc: '',
   salaryType: 'CTC',
+  isFixedSalary: false,
   target: '',
   targetUnit: 'Sq. Yd.',
   offerSlab: '',
@@ -34,6 +35,7 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   customSalaryPercent: '',
   subsistenceAllowance: '',
   meetingsPerMonth: '15',
+  includeMeetingsTarget: false,
   gracePeriodMonths: '',
   reducedSalaryPercent: '',
   enablePartialTargetRule: false,
@@ -137,17 +139,18 @@ export function useOfferLetterForm() {
   };
 
   const handleSalaryChange = (value: string) => {
-    setFormData((prev) => ({ ...prev, salaryCtc: value }));
-    const slab = findSlabByValue(value, 'salary');
-    if (slab) {
-      setFormData((prev) => ({
-        ...prev,
-        target: slab.target.toString(),
-        offerSlab: slab.offerSlab.replace('%', ''),
-      }));
-    }
+    setFormData((prev) => {
+      const next = { ...prev, salaryCtc: value };
+      if (!prev.isFixedSalary) {
+        const slab = findSlabByValue(value, 'salary');
+        if (slab) {
+          next.target = slab.target.toString();
+          next.offerSlab = slab.offerSlab.replace('%', '');
+        }
+      }
+      return next;
+    });
   };
-
   const handleTargetChange = (value: string) => {
     setFormData((prev) => ({ ...prev, target: value }));
     const slab = findSlabByValue(value, 'target');

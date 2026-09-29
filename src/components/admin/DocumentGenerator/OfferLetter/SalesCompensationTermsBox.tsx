@@ -22,10 +22,19 @@ export default function SalesCompensationTermsBox({
     return null;
   }
 
+  if (formData.isFixedSalary) {
+    // If fixed salary and meetings per month is specified, only render meetings; else omit box entirely
+    if (!formData.meetingsPerMonth) {
+      return null;
+    }
+  }
+
+  const hasQuota =
+    !formData.isFixedSalary &&
+    (Boolean(formData.target) || Boolean(matchedSlab) || Boolean(formData.offerSlab));
+
   const shouldRender =
-    formData.target ||
-    matchedSlab ||
-    formData.offerSlab ||
+    hasQuota ||
     (isSalesDepartment &&
       (formData.salesCompensationType ||
         formData.enablePartialTargetRule ||
@@ -38,7 +47,7 @@ export default function SalesCompensationTermsBox({
   return (
     <div className="mt-1.5 space-y-1.5 rounded border border-gray-300 bg-gray-50/90 p-2 text-[10.5px] leading-[1.45] shadow-xs">
       {/* Quota */}
-      {(formData.target || matchedSlab || formData.offerSlab) && (
+      {hasQuota && (
         <div>
           <p className="font-bold text-[#1e3a8a]">
             {language === 'hi'

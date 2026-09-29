@@ -12,6 +12,7 @@ export interface OfferLetterFormData {
   location: string;
   salaryCtc: string;
   salaryType?: 'CTC' | 'in_hand' | string;
+  isFixedSalary?: boolean;
   target: string;
   targetUnit?: 'Sq. Yd.' | 'Sq. Ft.' | 'Lakhs' | 'Crores' | string;
   offerSlab: string;
@@ -24,6 +25,7 @@ export interface OfferLetterFormData {
   customSalaryPercent: string;
   subsistenceAllowance: string;
   meetingsPerMonth: string;
+  includeMeetingsTarget?: boolean;
   gracePeriodMonths?: string;
   reducedSalaryPercent?: string;
   enablePartialTargetRule?: boolean | string;

@@ -27,11 +27,13 @@ export const SALARY_SLABS: SalarySlabType[] = [
 interface SlabSelectorProps {
   salaryCtc: string;
   salaryType?: string;
+  isFixedSalary?: boolean;
   target: string;
   targetUnit?: string;
   offerSlab: string;
   onSalaryChange: (value: string) => void;
   onSalaryTypeChange?: (value: string) => void;
+  onToggleFixedSalary?: (isFixed: boolean) => void;
   onTargetChange: (value: string) => void;
   onTargetUnitChange?: (value: string) => void;
   onOfferSlabChange: (value: string) => void;
@@ -42,11 +44,13 @@ interface SlabSelectorProps {
 export function SlabSelector({
   salaryCtc,
   salaryType = 'CTC',
+  isFixedSalary = false,
   target,
   targetUnit = 'Sq. Yd.',
   offerSlab,
   onSalaryChange,
   onSalaryTypeChange,
+  onToggleFixedSalary,
   onTargetChange,
   onTargetUnitChange,
   onOfferSlabChange,
@@ -92,10 +96,31 @@ export function SlabSelector({
     <>
       {/* Salary Input */}
       <div ref={salaryRef} className="relative">
-        <div className="mb-1.5 flex items-center justify-between">
-          <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-            Salary ({salaryType === 'in_hand' ? 'In-Hand' : 'CTC'}) / month
-          </label>
+        <div className="mb-1.5 flex flex-wrap items-center justify-between gap-1.5">
+          <div className="flex items-center gap-2">
+            <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+              Salary ({salaryType === 'in_hand' ? 'In-Hand' : 'CTC'}) / month
+            </label>
+            {onToggleFixedSalary && (
+              <button
+                type="button"
+                onClick={() => onToggleFixedSalary(!isFixedSalary)}
+                className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold transition-all ${
+                  isFixedSalary
+                    ? 'border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                    : 'border border-gray-200 bg-gray-50 text-gray-500 hover:border-gray-300 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
+                }`}
+                title="Toggle purely fixed salary without target or commission slab"
+              >
+                <span
+                  className={`h-1.5 w-1.5 rounded-full ${
+                    isFixedSalary ? 'animate-pulse bg-amber-500' : 'bg-gray-400'
+                  }`}
+                />
+                {isFixedSalary ? 'Fixed Salary (No Quota)' : 'Target Slab Linked'}
+              </button>
+            )}
+          </div>
           {onSalaryTypeChange && (
             <div className="flex items-center rounded-md bg-gray-100 p-0.5 dark:bg-white/10">
               <button
@@ -128,17 +153,17 @@ export function SlabSelector({
           name="salaryCtc"
           value={salaryCtc}
           onChange={(e) => onSalaryChange(e.target.value)}
-          onFocus={() => salaryCtc && setSalaryOpen(true)}
+          onFocus={() => !isFixedSalary && salaryCtc && setSalaryOpen(true)}
           className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
         />
-        {salaryCtc && matchedSlab && (
+        {!isFixedSalary && salaryCtc && matchedSlab && (
           <div className="absolute top-7 right-2.5">
             <span className="inline-block rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] leading-tight font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
               {matchedSlab.target} Sq.Yd
             </span>
           </div>
         )}
-        {salaryOpen && salaryCtc && (
+        {!isFixedSalary && salaryOpen && salaryCtc && (
           <div className="absolute z-50 mt-0.5 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-[#1a1a23]">
             <div className="py-1">
               {salarySuggestions.map((s) => {
@@ -166,12 +191,18 @@ export function SlabSelector({
       </div>
 
       {/* Target Input */}
-      <div ref={targetRef} className="relative">
+      <div
+        ref={targetRef}
+        className={`relative transition-opacity ${isFixedSalary ? 'pointer-events-none opacity-40' : ''}`}
+      >
         <div className="mb-1.5 flex items-center justify-between">
           <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-            Target ({targetUnit})
+            Target ({targetUnit}){' '}
+            {isFixedSalary && (
+              <span className="text-[9px] text-amber-500 lowercase">(disabled - fixed salary)</span>
+            )}
           </label>
-          {onTargetUnitChange && (
+          {!isFixedSalary && onTargetUnitChange && (
             <div className="flex items-center rounded-md bg-gray-100 p-0.5 dark:bg-white/10">
               {['Sq. Yd.', 'Sq. Ft.', 'Lakhs', 'Crores'].map((unit) => (
                 <button
@@ -193,19 +224,21 @@ export function SlabSelector({
         <input
           type="number"
           name="target"
-          value={target}
+          value={isFixedSalary ? '' : target}
+          disabled={isFixedSalary}
+          placeholder={isFixedSalary ? 'N/A (Fixed Salary)' : 'e.g. 180'}
           onChange={(e) => onTargetChange(e.target.value)}
-          onFocus={() => target && setTargetOpen(true)}
-          className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+          onFocus={() => !isFixedSalary && target && setTargetOpen(true)}
+          className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none disabled:bg-gray-100 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:disabled:bg-white/5"
         />
-        {target && matchedSlab && (
+        {!isFixedSalary && target && matchedSlab && (
           <div className="absolute top-7 right-2.5">
             <span className="inline-block rounded bg-emerald-50 px-1.5 py-0.5 text-[10px] leading-tight font-medium text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-400">
               ₹{matchedSlab.salary.toLocaleString('en-IN')}
             </span>
           </div>
         )}
-        {targetOpen && target && (
+        {!isFixedSalary && targetOpen && target && (
           <div className="absolute z-50 mt-0.5 w-full overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg dark:border-white/10 dark:bg-[#1a1a23]">
             <div className="py-1">
               {targetSuggestions.map((s) => {
@@ -233,18 +266,25 @@ export function SlabSelector({
       </div>
 
       {/* Offer Slab Input */}
-      <div>
+      <div
+        className={`transition-opacity ${isFixedSalary ? 'pointer-events-none opacity-40' : ''}`}
+      >
         <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-          Offer Slab (%)
+          Offer Slab (%){' '}
+          {isFixedSalary && (
+            <span className="text-[9px] text-amber-500 lowercase">(disabled - fixed salary)</span>
+          )}
         </label>
         <input
           type="number"
           name="offerSlab"
-          value={offerSlab}
+          value={isFixedSalary ? '' : offerSlab}
+          disabled={isFixedSalary}
+          placeholder={isFixedSalary ? 'N/A' : '3'}
           onChange={(e) => onOfferSlabChange(e.target.value)}
           min="0"
           step="any"
-          className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+          className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 font-sans text-sm text-gray-900 transition-all focus:ring-1 focus:outline-none disabled:bg-gray-100 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:disabled:bg-white/5"
         />
       </div>
     </>

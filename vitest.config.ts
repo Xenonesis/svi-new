@@ -15,6 +15,8 @@ export default defineConfig({
       '__tests__/**/*.test.tsx',
       'tests/**/*.test.ts',
       'tests/**/*.test.tsx',
+      'src/**/*.test.ts',
+      'src/**/*.test.tsx',
     ],
   },
   resolve: {

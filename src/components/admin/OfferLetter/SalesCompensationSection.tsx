@@ -22,6 +22,7 @@ interface SalesCompensationSectionProps {
   subsistenceAllowance: string;
   customSalaryPercent: string;
   meetingsPerMonth: string;
+  includeMeetingsTarget?: boolean;
   salaryCtc: string;
   target?: string;
   gracePeriodMonths?: string;
@@ -49,6 +50,7 @@ export function SalesCompensationSection({
   subsistenceAllowance,
   customSalaryPercent,
   meetingsPerMonth,
+  includeMeetingsTarget,
   salaryCtc,
   target,
   gracePeriodMonths,
@@ -741,16 +743,44 @@ export function SalesCompensationSection({
           )}
         </div>
 
-        {/* ── Telecaller Monthly Meetings Target ── */}
-        {designation === 'Telecaller' && (
-          <div className="border-t border-gray-100 pt-5 dark:border-white/10">
-            <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
-              Monthly Meetings Target
-            </label>
-            <p className="mb-2 text-[10px] text-gray-500 dark:text-gray-400">
-              Minimum number of meetings the telecaller must complete per month.
-            </p>
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+        {/* ── Monthly Meetings Target (Customizable for any sales role) ── */}
+        <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <div>
+              <label className="block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                Monthly Meetings Target {designation ? `(${designation})` : ''}
+              </label>
+              <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
+                Minimum validated client meetings required per month (Clause 3.2).
+              </p>
+            </div>
+            {designation !== 'Telecaller' && (
+              <label className="flex cursor-pointer items-center gap-2">
+                <input
+                  type="checkbox"
+                  name="includeMeetingsTarget"
+                  checked={Boolean(includeMeetingsTarget ?? Boolean(meetingsPerMonth))}
+                  onChange={(e) => {
+                    const enabled = e.target.checked;
+                    onValueChange('includeMeetingsTarget', enabled);
+                    if (!enabled) {
+                      onValueChange('meetingsPerMonth', '');
+                    } else if (!meetingsPerMonth) {
+                      onValueChange('meetingsPerMonth', '15');
+                    }
+                  }}
+                  className="text-brand-gold focus:ring-brand-gold/50 h-4 w-4 rounded border-gray-300 dark:border-white/20 dark:bg-[#111118]"
+                />
+                <span className="text-[11px] font-medium text-gray-700 dark:text-gray-300">
+                  Enable Clause 3.2
+                </span>
+              </label>
+            )}
+          </div>
+
+          {(designation === 'Telecaller' ||
+            Boolean(includeMeetingsTarget ?? Boolean(meetingsPerMonth))) && (
+            <div className="mt-3 flex flex-wrap items-center gap-2">
               <input
                 type="number"
                 name="meetingsPerMonth"
@@ -760,17 +790,31 @@ export function SalesCompensationSection({
                 min="1"
                 className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white px-3 py-2.5 font-sans text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none sm:w-28 dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
               />
+              {[10, 15, 20, 25, 30].map((preset) => (
+                <button
+                  key={preset}
+                  type="button"
+                  onClick={() => onValueChange('meetingsPerMonth', preset.toString())}
+                  className={`rounded-lg border px-2.5 py-1.5 text-[10px] font-medium transition-all ${
+                    meetingsPerMonth === preset.toString()
+                      ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
+                      : 'border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400 dark:hover:border-white/20'
+                  }`}
+                >
+                  {preset} Meetings
+                </button>
+              ))}
               <button
                 type="button"
                 onClick={() => onValueChange('meetingsPerMonth', '15')}
                 className="hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold inline-flex w-fit items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-1.5 text-[10px] font-medium text-gray-600 transition-all dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
               >
                 <RefreshCw className="h-3 w-3" />
-                Reset to 15
+                Reset 15
               </button>
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
