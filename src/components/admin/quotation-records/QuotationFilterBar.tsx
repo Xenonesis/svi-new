@@ -1,4 +1,4 @@
-import { Search, X, Filter } from 'lucide-react';
+import { Search, X } from 'lucide-react';
 
 interface QuotationFilterBarProps {
   searchQuery: string;

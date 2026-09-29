@@ -3,19 +3,7 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
 import Link from 'next/link';
-import {
-  Eye,
-  Copy,
-  Check,
-  Trash2,
-  WifiOff,
-  FileText,
-  Building2,
-  Calendar,
-  Plus,
-  Layers,
-  Mail,
-} from 'lucide-react';
+import { Eye, Copy, Check, Trash2, WifiOff, FileText, Plus, Mail } from 'lucide-react';
 import { toast } from 'sonner';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
 import type { SavedQuotation } from '@/src/lib/quotation/types';
