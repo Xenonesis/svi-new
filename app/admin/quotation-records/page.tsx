@@ -1,270 +1,66 @@
 'use client';
 
-import { useAuthStore } from '@/src/stores/authStore';
-import { useEffect, useState, useCallback } from 'react';
-import Link from 'next/link';
-import { toast } from 'sonner';
-import { FileText, RefreshCw } from 'lucide-react';
-
-import QuotationViewModal from '@/src/components/admin/quotation/QuotationViewModal';
 import {
+  QuotationHeader,
   QuotationStatsGrid,
   QuotationFilterBar,
   QuotationRecordsTable,
   QuotationDeleteDialog,
+  QuotationDetailsModal,
+  useQuotationRecords,
 } from '@/src/components/admin/quotation-records';
 
-import type { SavedQuotation, CompanyInfo } from '@/src/lib/quotation/types';
-import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
-
-const DEFAULT_COMPANY_INFO: CompanyInfo = {
-  company_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
-  company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
-  company_email: 'info@sviinfrasolutions.com',
-  company_phone: '+91 9216014579',
-  company_website: 'www.sviinfrasolutions.in',
-  bank_name: 'IDBI Bank Ltd.',
-  bank_account_no: '0894102000013837',
-  bank_ifsc: 'IBKL0000894',
-  bank_account_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
-};
-
 export default function QuotationRecordsPage() {
-  const { token } = useAuthStore();
-  const [quotations, setQuotations] = useState<SavedQuotation[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedQuotation, setSelectedQuotation] = useState<SavedQuotation | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<SavedQuotation | null>(null);
-  const [deleteLoading, setDeleteLoading] = useState(false);
-  const [pdfLoading, setPdfLoading] = useState(false);
-  const [imageLoading, setImageLoading] = useState(false);
-  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(DEFAULT_COMPANY_INFO);
-
-  const fetchQuotations = useCallback(() => {
-    if (!token) return;
-    setLoading(true);
-    setError(null);
-    fetch('/api/admin/documents?type=quotation&limit=1000', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error('Failed to fetch quotations');
-        return res.json();
-      })
-      .then((json) => {
-        if (json.documents) setQuotations(json.documents);
-      })
-      .catch((err) => {
-        console.error(err);
-        setError(err.message || 'Failed to load quotation records');
-      })
-      .finally(() => setLoading(false));
-  }, [token]);
-
-  useEffect(() => {
-    fetchQuotations();
-  }, [fetchQuotations]);
-
-  useEffect(() => {
-    if (!token) return;
-    fetch('/api/admin/settings?key=company_info', {
-      headers: { Authorization: `Bearer ${token}` },
-    })
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.value) setCompanyInfo({ ...DEFAULT_COMPANY_INFO, ...json.value });
-      })
-      .catch(() => {});
-  }, [token]);
-
-  // Stats
-  const totalCount = quotations.length;
-  const totalValue = quotations.reduce(
-    (sum, q) => sum + (q.form_data?.calculation?.grandTotal ?? 0),
-    0
-  );
-  const completedCount = quotations.filter((q) => q.status === 'completed').length;
-  const draftCount = quotations.filter((q) => q.status === 'draft').length;
-
-  // Filtering
-  const filtered = quotations.filter((q) => {
-    // Status filter
-    if (statusFilter !== 'all' && q.status !== statusFilter) {
-      return false;
-    }
-
-    if (!searchQuery.trim()) return true;
-
-    const query = searchQuery.toLowerCase();
-    const fd = q.form_data;
-    return (
-      (fd?.quotationNo || '').toLowerCase().includes(query) ||
-      (fd?.customerName || '').toLowerCase().includes(query) ||
-      (fd?.customerPhone || '').toLowerCase().includes(query) ||
-      (fd?.projectName || '').toLowerCase().includes(query) ||
-      (fd?.plotNo || '').toLowerCase().includes(query) ||
-      (fd?.area || '').toLowerCase().includes(query)
-    );
-  });
-
-  const handleDelete = async () => {
-    if (!deleteTarget || !token) return;
-    setDeleteLoading(true);
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-    try {
-      const res = await fetch(`/api/admin/documents/${deleteTarget.id}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-        signal: controller.signal,
-      });
-      if (!res.ok) throw new Error('Delete failed');
-      setQuotations((prev) => prev.filter((q) => q.id !== deleteTarget.id));
-      setDeleteTarget(null);
-      toast.success('Quotation deleted.');
-    } catch (err: unknown) {
-      const isAbort = err instanceof Error && err.name === 'AbortError';
-      toast.error(
-        isAbort ? 'Request timed out while deleting quotation.' : 'Unable to delete quotation.'
-      );
-    } finally {
-      clearTimeout(timeoutId);
-      setDeleteLoading(false);
-    }
-  };
-
-  const handleModalDownloadPDF = async () => {
-    if (!selectedQuotation) return;
-    setPdfLoading(true);
-    try {
-      const safeNo = (selectedQuotation.form_data?.quotationNo || 'Quotation').replace(
-        /[^a-zA-Z0-9-]/g,
-        '_'
-      );
-      await exportToPDF({
-        elementId: 'modalQuotationPreview',
-        filename: `SVI_Quotation_${safeNo}.pdf`,
-      });
-      if (token) {
-        await fetch(`/api/admin/documents/${selectedQuotation.id}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ status: 'completed' }),
-        }).catch(() => {});
-      }
-    } catch {
-      toast.error('PDF generation failed.');
-    } finally {
-      setPdfLoading(false);
-    }
-  };
-
-  const handleModalDownloadPNG = async () => {
-    if (!selectedQuotation) return;
-    setImageLoading(true);
-    try {
-      const safeNo = (selectedQuotation.form_data?.quotationNo || 'Quotation').replace(
-        /[^a-zA-Z0-9-]/g,
-        '_'
-      );
-      await exportToImage({
-        elementId: 'modalQuotationPreview',
-        filename: `SVI_Quotation_${safeNo}.png`,
-      });
-    } catch {
-      toast.error('PNG generation failed.');
-    } finally {
-      setImageLoading(false);
-    }
-  };
+  const records = useQuotationRecords();
 
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between sm:mb-8">
-        <div>
-          <h1 className="text-brand-navy mb-1 font-serif text-2xl tracking-tight sm:mb-2 sm:text-3xl dark:text-white">
-            Quotation <span className="text-brand-gold italic">Records</span>
-          </h1>
-          <p className="text-xs text-gray-500 sm:text-sm dark:text-gray-400">
-            View, search, and manage all generated quotation documents.
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Link
-            href="/admin/quotation"
-            className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold uppercase shadow-md transition-all sm:rounded-xl sm:px-4 sm:py-2 sm:text-xs"
-          >
-            <FileText className="h-3.5 w-3.5" />
-            <span className="hidden sm:inline">New Quotation</span>
-            <span className="sm:hidden">New</span>
-          </Link>
-          <button
-            onClick={fetchQuotations}
-            disabled={loading}
-            className="dark:bg-brand-dark-surface/50 flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 bg-white shadow-sm transition-all hover:bg-gray-50 disabled:opacity-50 sm:h-10 sm:w-10 sm:rounded-xl dark:border-white/10 dark:hover:bg-white/5"
-            title="Refresh"
-          >
-            <RefreshCw
-              className={`h-3.5 w-3.5 text-gray-600 sm:h-4 sm:w-4 dark:text-gray-400 ${loading ? 'animate-spin' : ''}`}
-            />
-          </button>
-        </div>
-      </div>
+      <QuotationHeader onRefresh={records.fetchQuotations} loading={records.loading} />
 
-      {/* Stats Summary Grid */}
       <QuotationStatsGrid
-        totalCount={totalCount}
-        totalValue={totalValue}
-        completedCount={completedCount}
+        totalCount={records.totalCount}
+        totalValue={records.totalValue}
+        completedCount={records.completedCount}
       />
 
-      {/* Search & Filter Bar */}
       <QuotationFilterBar
-        searchQuery={searchQuery}
-        onSearchChange={setSearchQuery}
-        statusFilter={statusFilter}
-        onStatusFilterChange={setStatusFilter}
+        searchQuery={records.searchQuery}
+        onSearchChange={records.setSearchQuery}
+        statusFilter={records.statusFilter}
+        onStatusFilterChange={records.setStatusFilter}
         counts={{
-          all: totalCount,
-          completed: completedCount,
-          draft: draftCount,
+          all: records.totalCount,
+          completed: records.completedCount,
+          draft: records.draftCount,
         }}
       />
+
       <QuotationRecordsTable
-        loading={loading}
-        error={error}
-        records={filtered}
-        searchQuery={searchQuery}
-        onRetry={fetchQuotations}
-        onSelect={setSelectedQuotation}
-        onDeleteTarget={setDeleteTarget}
+        loading={records.loading}
+        error={records.error}
+        records={records.filtered}
+        searchQuery={records.searchQuery}
+        onRetry={records.fetchQuotations}
+        onSelect={records.setSelectedQuotation}
+        onDeleteTarget={records.setDeleteTarget}
       />
 
-      {/* Delete Confirmation Modal */}
       <QuotationDeleteDialog
-        target={deleteTarget}
-        loading={deleteLoading}
-        onCancel={() => setDeleteTarget(null)}
-        onConfirm={handleDelete}
+        target={records.deleteTarget}
+        loading={records.deleteLoading}
+        onCancel={() => records.setDeleteTarget(null)}
+        onConfirm={records.handleDelete}
       />
 
-      {/* View Details Modal & Export Container */}
-      {selectedQuotation && (
-        <QuotationViewModal
-          quotation={selectedQuotation}
-          companyInfo={companyInfo}
-          onClose={() => setSelectedQuotation(null)}
-          onDownloadPDF={handleModalDownloadPDF}
-          onDownloadPNG={handleModalDownloadPNG}
-          pdfLoading={pdfLoading}
-          imageLoading={imageLoading}
-        />
-      )}
+      <QuotationDetailsModal
+        quotation={records.selectedQuotation}
+        companyInfo={records.companyInfo}
+        onClose={() => records.setSelectedQuotation(null)}
+        onDownloadPDF={records.handleModalDownloadPDF}
+        onDownloadPNG={records.handleModalDownloadPNG}
+        pdfLoading={records.pdfLoading}
+        imageLoading={records.imageLoading}
+      />
     </div>
   );
 }
