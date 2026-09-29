@@ -101,6 +101,7 @@ export default async function PlotsNearKhatuShyamJiPage({ params }: Props) {
         status="InStock"
         price="1500000"
         url={localizedUrl('/plots-for-sale-near-khatu-shyam-ji', locale)}
+        pdfUrl="/Shivani Vatika 11/master-plan-layout.pdf"
       />
       <FAQSchema questions={faqs} />
       <KhatuHeroSection isHindi={isHindi} />

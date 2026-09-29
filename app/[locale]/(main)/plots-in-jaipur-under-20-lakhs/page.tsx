@@ -86,6 +86,7 @@ export default async function PlotsUnder20LakhsPage({ params }: Props) {
         highPrice="1500000"
         offerCount={120}
         url={localizedUrl('/plots-in-jaipur-under-20-lakhs', locale)}
+        pdfUrl="/Shivani Vatika 11/master-plan-layout.pdf"
       />
 
       <PlotsUnder20LakhsHero isHindi={isHindi} />

@@ -86,6 +86,7 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
         highPrice="1875000"
         offerCount={230}
         url={localizedUrl('/plots-near-renwal-railway-station', locale)}
+        pdfUrl="/Shivani Vatika 11/master-plan-layout.pdf"
       />
 
       <PlotsRenwalHero isHindi={isHindi} />
