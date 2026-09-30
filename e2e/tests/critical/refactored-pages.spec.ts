@@ -195,11 +195,11 @@ test.describe('Refactored Modular Pages E2E Suite', () => {
     await expect(planPreview).toContainText(/Installment 12/i);
   });
 
-  // Test 5: Admin Portal Allotments (/admin/portal-allotments)
-  test('Admin Portal Allotments (/admin/portal-allotments): renders title, search input responsiveness, and opens create allotment modal', async ({
+  // Test 5: Admin Plots Allotments (/admin/plots-allotments)
+  test('Admin Plots Allotments (/admin/plots-allotments): renders title, search input responsiveness, and opens create allotment modal', async ({
     page,
   }) => {
-    await page.goto('/admin/portal-allotments');
+    await page.goto('/admin/plots-allotments');
     await page.waitForLoadState('domcontentloaded');
 
     // 1. Verify title, Search input, and "Create Allotment" button render

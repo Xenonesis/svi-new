@@ -10,6 +10,7 @@ import {
   FileText,
   Settings,
   Shield,
+  Building2,
   X,
   ArrowRight,
   type LucideIcon,
@@ -65,6 +66,13 @@ export const COMMANDS: CommandItem[] = [
     category: 'Records',
     href: '/admin/allotment-records',
     icon: FileText,
+  },
+  {
+    id: 'plots-allotments',
+    title: 'Plots Allotments',
+    category: 'Navigation',
+    href: '/admin/plots-allotments',
+    icon: Building2,
   },
   {
     id: '6',
