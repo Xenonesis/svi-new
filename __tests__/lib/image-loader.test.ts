@@ -75,6 +75,12 @@ describe('supabaseImageLoader', () => {
         width: 640,
       })
     ).toBe('/images/hero1_new-640w.webp');
+    expect(
+      supabaseImageLoader({
+        src: '/images/hero1_new.png',
+        width: 768,
+      })
+    ).toBe('/images/hero1_new-640w.webp');
 
     expect(
       supabaseImageLoader({

@@ -77,8 +77,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           setCurrentHeroIndex((prev) => (prev + 1) % images.length);
         });
       }, 6000);
-    }, 8000);
-
+    }, 18000);
     return () => {
       clearTimeout(initialDelay);
       clearInterval(timer);

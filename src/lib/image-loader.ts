@@ -67,18 +67,20 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
   if (isResponsiveDir) {
     const basePath = cleanSrc.replace(/\.(png|jpg|jpeg|webp|avif)$/i, '');
 
-    // Only use responsive variants for sizes we know always exist (≤1024w)
-    const match = SAFE_RESPONSIVE_SIZES.find((s) => s >= width);
-    if (match) {
-      return encodeURI(`${basePath}-${match}w.webp`);
+    // Optimized responsive breakpoints:
+    // - width ≤ 384px (compact mobile): serve 320w (~18 KB)
+    // - width ≤ 800px (standard mobile & 2x DPR mobile): serve 640w (~59 KB)
+    // - width ≤ 1200px (tablet & desktop): serve 1024w (~120 KB)
+    // - width > 1200px (ultra-wide/retina desktop): serve full-size WebP
+    if (width <= 384) {
+      return encodeURI(`${basePath}-320w.webp`);
     }
-
-    // For 1200w device requests, cap to the 1024w variant if not a full hero, saving up to 80% payload
+    if (width <= 800) {
+      return encodeURI(`${basePath}-640w.webp`);
+    }
     if (width <= 1200) {
       return encodeURI(`${basePath}-1024w.webp`);
     }
-
-    // For larger requests (1920w), use full-size WebP to avoid 404s
     return encodeURI(`${basePath}.webp?w=${width}`);
   }
   // Other local images (e.g. /logo.png, /signature.png, etc.)
