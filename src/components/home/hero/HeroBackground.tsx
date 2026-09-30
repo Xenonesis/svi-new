@@ -30,7 +30,7 @@ export default function HeroBackground({
       <AnimatePresence mode="popLayout" initial={false}>
         <motion.div
           key={currentHeroIndex}
-          initial={{ opacity: 0, scale: 1 }}
+          initial={currentHeroIndex === 0 ? false : { opacity: 0, scale: 1 }}
           animate={{ opacity: 1, scale: isMobile ? 1 : 1.04 }}
           exit={{ opacity: 0, scale: isMobile ? 1 : 1.04 }}
           transition={{
@@ -47,7 +47,7 @@ export default function HeroBackground({
             fetchPriority={currentHeroIndex === 0 ? 'high' : 'low'}
             loading={currentHeroIndex === 0 ? 'eager' : 'lazy'}
             quality={isMobile ? 75 : 82}
-            sizes="(max-width: 640px) 640px, (max-width: 1024px) 1024px, 1920px"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1920px"
             className="object-cover object-center brightness-[1.04] contrast-[1.02]"
             placeholder={currentImage.blurDataURL ? 'blur' : 'empty'}
             blurDataURL={currentImage.blurDataURL}

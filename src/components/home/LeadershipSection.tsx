@@ -24,9 +24,11 @@ export default function LeadershipSection() {
                 src="/images/hero2.png"
                 alt="SVI Infra Solutions Founder and Executive Leadership"
                 fill
-                sizes="(max-width: 1024px) 100vw, 40vw"
+                loading="lazy"
+                decoding="async"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 40vw"
                 className="object-cover"
-                quality={85}
+                quality={78}
               />
               <div className="from-brand-navy/90 absolute inset-0 bg-gradient-to-t via-transparent to-transparent" />
               <div className="absolute bottom-6 left-6 text-white">

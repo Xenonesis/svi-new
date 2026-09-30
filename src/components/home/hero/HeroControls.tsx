@@ -1,8 +1,6 @@
 'use client';
-import { motion } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
-
 interface HeroControlsProps {
   imagesCount: number;
   currentHeroIndex: number;
@@ -47,18 +45,16 @@ export default function HeroControls({
         aria-label={t('ariaSlideNav')}
       >
         {Array.from({ length: imagesCount }).map((_, idx) => (
-          <motion.button
+          <button
             key={idx}
+            type="button"
             onClick={() => onSelect(idx)}
             aria-label={t('ariaGoToSlide', { number: idx + 1 })}
             aria-selected={idx === currentHeroIndex}
             role="tab"
-            animate={{
-              width: idx === currentHeroIndex ? 36 : 12,
-              backgroundColor: idx === currentHeroIndex ? '#d4af37' : 'rgba(255,255,255,0.4)',
-            }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="h-1 rounded-full"
+            className={`h-1 rounded-full transition-all duration-300 ${
+              idx === currentHeroIndex ? 'w-9 bg-[#d4af37]' : 'w-3 bg-white/40'
+            }`}
           />
         ))}
       </div>

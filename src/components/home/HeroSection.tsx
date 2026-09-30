@@ -66,7 +66,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
   }, []);
 
   useEffect(() => {
-    if (!isAutoPlaying || prefersReducedMotion) return;
+    // Disable background autoplay on mobile screens to preserve CPU, battery, and mobile bandwidth
+    if (isMobile || !isAutoPlaying || prefersReducedMotion) return;
     let timer: NodeJS.Timeout;
     const initialDelay = setTimeout(() => {
       startTransition(() => {
@@ -77,12 +78,13 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
           setCurrentHeroIndex((prev) => (prev + 1) % images.length);
         });
       }, 6000);
-    }, 18000);
+    }, 6000);
+
     return () => {
       clearTimeout(initialDelay);
       clearInterval(timer);
     };
-  }, [isAutoPlaying, prefersReducedMotion, images.length]);
+  }, [isMobile, isAutoPlaying, prefersReducedMotion, images.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
