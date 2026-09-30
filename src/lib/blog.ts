@@ -1309,7 +1309,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <h2>2. पक्की आधुनिक सुविधाएँ</h2>
       <p>मास्टर-प्लांड टाउनशिप में ये सुविधाएँ मिलती हैं:</p>
       <ul>
-        <li>30 फीट से 60 फीट चौड़ी पक्की डामर सड़कें और नालियाँ।</li>
+        <li>40 फीट से 60 फीट चौड़ी पक्की डामर सड़कें और नालियाँ।</li>
         <li>भूमिगत बिजली तार और व्यवस्थित पानी की पाइपलाइन।</li>
         <li>पार्क, कम्युनिटी सेंटर और स्ट्रीट लाइट व्यवस्था।</li>
       </ul>
@@ -1319,7 +1319,7 @@ export const BLOG_POSTS: BlogPost[] = [
     `,
     takeaways: [
       'Master-planned plots qualify for 80-90% instant land loans from all major nationalized banks',
-      'Mandated 30-60 ft asphalt roads, underground utilities, and park development in planned townships',
+      'Mandated 40-60 ft asphalt roads, underground utilities, and park development in planned townships',
       'Official registered deeds guarantee complete ownership security and peace of mind',
     ],
     takeawaysHi: [
@@ -1783,8 +1783,7 @@ export const BLOG_POSTS: BlogPost[] = [
       </ul>
 
       <h2>5. Featured Opportunity: Shivani Vatika 11th (Harsholi)</h2>
-      <p>Developed by <strong>SVI Infra Solutions Pvt. Ltd.</strong>—backed by 17+ years of engineering and development legacy since 2009—<a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a> is the flagship master-planned township on the Jaipur–Khatu Shyam Ji Highway corridor. Spanning <strong>11.5 Bigha (approx. 30,480 sq. yds.)</strong> with <strong>230 master-planned plots</strong>, it features 30ft wide blacktop roads, underground electrification, solar street security, and dedicated parks.</p>
-
+      <p>Developed by <strong>SVI Infra Solutions Pvt. Ltd.</strong>—backed by 17+ years of engineering and development legacy since 2009—<a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a> is the flagship master-planned township on the Jaipur–Khatu Shyam Ji Highway corridor. Spanning <strong>11.5 Bigha (approx. 30,480 sq. yds.)</strong> with <strong>230 master-planned plots</strong>, it features 40ft wide blacktop roads, underground electrification, solar street security, and dedicated parks.</p>
       <h2>Conclusion & Next Steps</h2>
       <p>Investing in clear-title plots near Khatu Shyam Ji Temple combines spiritual devotion with solid capital appreciation. By choosing legally converted Section 90-A townships, buyers secure verified legal documentation while tapping into 4.5+ crore annual pilgrimage footfalls.</p>
       <p class="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4" className="mt-6 text-xs text-gray-500 italic border-t border-gray-200 pt-4"><strong>Investment & Regulatory Disclaimer:</strong> Capital appreciation projections, connectivity drive-times, and rental yields mentioned in this report are based on infrastructure development timelines and market assessments (2024–2026). Real estate investments carry market risks; prospective purchasers are strongly advised to perform independent title verification and due diligence before executing transactions.</p>
@@ -1839,14 +1838,14 @@ export const BLOG_POSTS: BlogPost[] = [
       'Strategic highway location places plots just 20-25 minutes (~25 km) from the sacred temple',
       'Affordable 80 sq. yd. residential plots start at ₹ 15 Lakhs* (₹ 7,500/sq. yd.)',
       'Section 90-A land conversion and clear sub-registrar registry ensure legal security and verified title',
-      'Shivani Vatika 11th in Harsholi offers 230 master-planned plots with 30ft wide roads',
+      'Shivani Vatika 11th in Harsholi offers 230 master-planned plots with 40ft wide roads',
     ],
     takeawaysHi: [
       'सालाना 4.5+ करोड़ श्रद्धालुओं की आवक से गेस्ट हाउस व धर्मशालाओं की भारी व्यावसायिक मांग',
       'रणनीतिक स्थिति के कारण खाटू श्याम जी मंदिर मात्र 20-25 मिनट (~25 किमी) की दूरी पर स्थित',
       '80 वर्ग गज के आवासीय प्लॉट्स मात्र ₹ 15 लाख* (₹ 7,500/वर्ग गज) से शुरू',
       'धारा 90-A रूपांतरण और उप-पंजीयक पक्की रजिस्ट्री से सुदृढ़ कानूनी सुरक्षा',
-      'हरसोली में शिवानी वाटिका 11th योजना में 30 फीट चौड़ी सड़कों के साथ 230 सुनियोजित प्लॉट्स',
+      'हरसोली में शिवानी वाटिका 11th योजना में 40 फीट चौड़ी सड़कों के साथ 230 सुनियोजित प्लॉट्स',
     ],
     author: 'SVI Research & Intelligence Desk',
     date: '2026-09-25',
@@ -2026,7 +2025,7 @@ export const BLOG_POSTS: BlogPost[] = [
         </div>
         <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
           <span class="text-xs font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">Internal Roads</span>
-          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">30 ft & 40 ft</p>
+          <p class="mt-1 text-base font-bold text-gray-900 dark:text-white">40 ft</p>
           <span class="text-xs text-gray-500 dark:text-gray-400">Wide Avenues</span>
         </div>
         <div class="rounded-xl border border-gray-200/80 bg-gray-50/60 p-4 transition-all hover:border-brand-gold/40 dark:border-white/10 dark:bg-white/[0.03]">
@@ -2368,11 +2367,11 @@ export const BLOG_POSTS: BlogPost[] = [
       <h2>7. Internal Roads & Project Infrastructure</h2>
       <p>Shivani Vatika 11th incorporates essential civic infrastructure supported directly by the project brochure:</p>
       <ul>
-        <li><strong>Internal Road Network:</strong> 30 ft & 40 ft wide internal roads facilitating smooth two-way vehicular transit and residential parking access.</li>
+        <li><strong>Internal Road Network:</strong> 40 ft wide internal roads facilitating smooth two-way vehicular transit and residential parking access.</li>
         <li><strong>Water Supply:</strong> Integrated water distribution infrastructure serving residential plots.</li>
         <li><strong>Drainage System:</strong> Planned drainage system designed for effective runoff management and community sanitation.</li>
         <li><strong>Electricity & Electrification:</strong> Complete electrical network and feeder infrastructure.</li>
-        <li><strong>LED Street Lights:</strong> Well-distributed LED street lighting installed along all 30 ft and 40 ft internal avenues.</li>
+        <li><strong>LED Street Lights:</strong> Well-distributed LED street lighting installed along all 40 ft internal avenues.</li>
         <li><strong>Boundary Wall:</strong> Secure perimeter boundary wall defining the township boundaries.</li>
         <li><strong>Loan Facility:</strong> Institutional loan facility available from leading banks subject to borrower qualification and bank criteria.</li>
       </ul>
@@ -2490,7 +2489,7 @@ export const BLOG_POSTS: BlogPost[] = [
             </span>
           </summary>
           <div class="blog-faq-content">
-            <p>The internal roads inside the township are 30 ft and 40 ft wide demarcated avenues, connected directly to the 160 ft wide Khatu Shyam Ji corridor main road.</p>
+            <p>The internal roads inside the township are 40 ft wide demarcated avenues, connected directly to the 160 ft wide Khatu Shyam Ji corridor main road.</p>
           </div>
         </details>
 
@@ -2895,11 +2894,11 @@ export const BLOG_POSTS: BlogPost[] = [
       <h2>7. Internal Roads & Project Infrastructure</h2>
       <p>ब्रोशर के अनुसार शिवानी वाटिका 11th में आवश्यक नागरिक सुविधाएं विकसित की गई हैं:</p>
       <ul>
-        <li><strong>आंतरिक सड़कें:</strong> 30 फीट व 40 फीट चौड़ी आंतरिक सड़कें जो सुगम आवागमन सुनिश्चित करती हैं।</li>
+        <li><strong>आंतरिक सड़कें:</strong> 40 फीट चौड़ी आंतरिक सड़कें जो सुगम आवागमन सुनिश्चित करती हैं।</li>
         <li><strong>पानी की आपूर्ति:</strong> टाउनशिप में समर्पित वाटर सप्लाई नेटवर्क।</li>
         <li><strong>ड्रेनेज सिस्टम:</strong> बरसाती व घरेलू पानी निकासी के लिए व्यवस्थित ड्रेनेज प्रणाली।</li>
         <li><strong>बिजली व विद्युतीकरण:</strong> पूरी टाउनशिप में व्यवस्थित विद्युत लाइन नेटवर्क।</li>
-        <li><strong>एलईडी स्ट्रीट लाइट्स:</strong> 30 फीट और 40 फीट सड़कों पर समुचित एलईडी स्ट्रीट लाइट व्यवस्था।</li>
+        <li><strong>एलईडी स्ट्रीट लाइट्स:</strong> 40 फीट सड़कों पर समुचित एलईडी स्ट्रीट लाइट व्यवस्था।</li>
         <li><strong>बाउंड्री वॉल:</strong> संपूर्ण टाउनशिप को सुरक्षित करने वाली पक्की चारदीवारी।</li>
         <li><strong>बैंक लोन सुविधा:</strong> वित्तीय संस्थानों व बैंकों द्वारा नियमानुसार ऋण (लोन) सुविधा उपलब्ध।</li>
       </ul>
@@ -3016,7 +3015,7 @@ export const BLOG_POSTS: BlogPost[] = [
             </span>
           </summary>
           <div class="blog-faq-content">
-            <p>टाउनशिप के अंदर 30 फीट और 40 फीट चौड़ी आंतरिक सड़कें (internal roads) विकसित की गई हैं, जो सीधे 160 फीट मुख्य खाटू श्याम जी कॉरिडोर मार्ग से जुड़ती हैं।</p>
+            <p>टाउनशिप के अंदर 40 फीट चौड़ी आंतरिक सड़कें (internal roads) विकसित की गई हैं, जो सीधे 160 फीट मुख्य खाटू श्याम जी कॉरिडोर मार्ग से जुड़ती हैं।</p>
           </div>
         </details>
 
@@ -3061,14 +3060,14 @@ export const BLOG_POSTS: BlogPost[] = [
       'Shivani Vatika 11th is an 11.5 Bigha township offering 230 residential plots in Kaladera, Jaipur',
       'Plot sizes range from 80 to 250 Sq. Yards near Khatu Shyam Ji',
       'Clear payment plans: One-Time at ₹7,500/sq.yd., 12 Months at ₹7,750/sq.yd. (30% upfront, 70% in 12 EMIs), 24 Months at ₹8,000/sq.yd. (30% upfront, 70% in 24 EMIs)',
-      '30 ft & 40 ft wide internal roads with electricity, water supply, drainage, LED street lights, and boundary wall',
+      '40 ft wide internal roads with electricity, water supply, drainage, LED street lights, and boundary wall',
       'Institutional loan facility available from leading banks',
     ],
     takeawaysHi: [
       'शिवानी वाटिका 11th कालाडेरा, जयपुर में 11.5 बीघा में फैली 230 आवासीय प्लॉट्स की टाउनशिप है',
       'खाटू श्याम जी के समीप 80 से 250 वर्ग गज तक के प्लॉट साइज उपलब्ध हैं',
       'स्पष्ट भुगतान योजनाएं: One-Time ₹7,500/वर्ग गज, 12 महीने ₹7,750/वर्ग गज (30% अग्रिम, 70% 12 किस्तों में), 24 महीने ₹8,000/वर्ग गज (30% अग्रिम, 70% 24 किस्तों में)',
-      '30 फीट व 40 फीट चौड़ी आंतरिक सड़कें, बिजली, पानी, ड्रेनेज, एलईडी स्ट्रीट लाइट्स और बाउंड्री वॉल',
+      '40 फीट चौड़ी आंतरिक सड़कें, बिजली, पानी, ड्रेनेज, एलईडी स्ट्रीट लाइट्स और बाउंड्री वॉल',
       'प्रमुख बैंकों से संस्थागत ऋण (लोन) सुविधा उपलब्ध',
     ],
     author: 'SVI Editorial Team',
@@ -3179,7 +3178,7 @@ export const BLOG_POSTS: BlogPost[] = [
           <strong>अपना खाता (E-Dharti) पर डिजिटल जमाबंदी:</strong> राजस्थान सरकार के आधिकारिक पोर्टल पर खसरा नंबर डालकर ऑनलाइन जमाबंदी देखें कि खातेदार का नाम और गैर-कृषि दर्ज स्थिति सही है।
         </li>
         <li>
-          <strong>अनुमोदित लेआउट नक्शा (नक्शा निविया):</strong> टाउनशिप का अनुमोदित नक्शा देखें जिसमें न्यूनतम 30 फीट या 40 फीट चौड़ी सड़कें और पार्क स्पष्ट रूप से दर्शाए गए हों।
+          <strong>अनुमोदित लेआउट नक्शा (नक्शा निविया):</strong> टाउनशिप का अनुमोदित नक्शा देखें जिसमें न्यूनतम 40 फीट चौड़ी सड़कें और पार्क स्पष्ट रूप से दर्शाए गए हों।
         </li>
         <li>
           <strong>13 वर्षीय भार-मुक्त प्रमाण पत्र (NEC):</strong> उप-पंजीयक कार्यालय में जांचें कि जमीन किसी बैंक में गिरवी तो नहीं है अथवा कोई पारिवारिक विवाद तो नहीं चल रहा।
@@ -3284,7 +3283,7 @@ export const BLOG_POSTS: BlogPost[] = [
           </ul>
         </li>
         <li><strong>Legal Security:</strong> Clear <strong>Section 90-A land conversion</strong> with verified Jamabandi revenue records and guaranteed individual sub-registrar registered title deeds.</li>
-        <li><strong>Township Infrastructure:</strong> 30 ft wide paved roads, boundary-walled gated perimeter, street illumination, dedicated parks, and rapid drinking water line connectivity.</li>
+        <li><strong>Township Infrastructure:</strong> 40 ft wide paved roads, boundary-walled gated perimeter, street illumination, dedicated parks, and rapid drinking water line connectivity.</li>
       </ul>
 
       <h2>5. Checklist Before Buying Plots Near Renwal</h2>
@@ -3292,7 +3291,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <ul>
         <li>Ensure land is legally converted under Section 90-A for residential/commercial use, not unapproved agricultural farmland (Khasra bits).</li>
         <li>Inspect the latest online revenue Jamabandi (Khasra Naksha) on Apna Khata Rajasthan to ensure zero active bank hypothecation or civil litigation.</li>
-        <li>Confirm dedicated public road access of at least 30 ft directly connected to state highway PWD feeder routes.</li>
+        <li>Confirm dedicated public road access of at least 40 ft directly connected to state highway PWD feeder routes.</li>
       </ul>
 
       <h2>Conclusion: Why Renwal is 2026's Smart Industrial Satellite Investment</h2>
@@ -3337,7 +3336,7 @@ export const BLOG_POSTS: BlogPost[] = [
           </ul>
         </li>
         <li><strong>कानूनी सुरक्षा:</strong> राजस्थान सरकार की धारा <strong>90-A के तहत विधिवत रूपांतरित</strong>, सत्यापित ऑनलाइन जमाबंदी और उप-पंजीयक कार्यालय में 100% स्पष्ट रजिस्ट्री।</li>
-        <li><strong>टाउनशिप सुविधाएं:</strong> 30 फीट चौड़ी डामर सड़कें, बाउंड्री वॉल, स्ट्रीट लाइट्स, विकसित पार्क और शुद्ध मीठे पानी की आपूर्ति।</li>
+        <li><strong>टाउनशिप सुविधाएं:</strong> 40 फीट चौड़ी डामर सड़कें, बाउंड्री वॉल, स्ट्रीट लाइट्स, विकसित पार्क और शुद्ध मीठे पानी की आपूर्ति।</li>
       </ul>
 
       <h2>5. रेनवाल में प्लॉट खरीदते समय जरूरी कानूनी सावधानियां</h2>
@@ -3437,7 +3436,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <ul>
         <li><strong>Check NHAI/PWD ROW Demarcation:</strong> Verify that the township boundary falls strictly outside the government's notified highway acquisition zone (typically 45–60 meters from the centerline).</li>
         <li><strong>Insist on Section 90-A Conversion:</strong> Agricultural Khasra lands cannot be legally constructed upon or mortgaged with commercial banks. Only buy officially converted plots.</li>
-        <li><strong>Verify Direct Road Width:</strong> Ensure the township features internal 30-to-40 ft wide roads that connect seamlessly to the highway service road.</li>
+        <li><strong>Verify Direct Road Width:</strong> Ensure the township features internal 40 ft wide roads that connect seamlessly to the highway service road.</li>
       </ul>
 
       <h2>Conclusion: Capitalizing on the 4-Lane Transformation</h2>
@@ -3774,7 +3773,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <ul>
         <li><strong>Section 90-A Conversion Mandate:</strong> Never buy raw agricultural Khasra shares. Ensure the developer holds an official Section 90-A residential conversion order issued by the competent authority.</li>
         <li><strong>Government Portal Revenue Verification:</strong> Verify the Khasra number on Rajasthan's official <em>Apna Khata</em> portal to confirm a clean Jamabandi free of government acquisition notices or court injunctions.</li>
-        <li><strong>Direct Paved Infrastructure:</strong> Insist on minimum 30-to-40 ft internal asphalt roads, demarcated boundary markers, and verified electricity connections.</li>
+        <li><strong>Direct Paved Infrastructure:</strong> Insist on minimum 40 ft internal asphalt roads, demarcated boundary markers, and verified electricity connections.</li>
       </ul>
 
       <h2>4. Featured Plotted Development: Shivani Vatika 11th (Harsholi)</h2>
@@ -4024,7 +4023,7 @@ export const BLOG_POSTS: BlogPost[] = [
       <h2>3. Where to Buy: High-Appreciation Growth Corridors in Jaipur</h2>
       <p>While central Jaipur colonies (Vaishali Nagar, Mansarovar, Jagatpura) demand steep prices exceeding ₹45,000 to ₹1,20,000 per sq. yd., rapid wealth multiplier opportunities exist along outward-expanding connectivity spines:</p>
       <ol>
-        <li><strong>Jaipur - Khatu Shyam Ji Highway (Harsholi Corridor):</strong> Direct 4-lane access to NH-52, 230-plot master-planned communities like <a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a>, 160 ft and 30 ft blacktop roads, and 20-25 mins transit to Khatu Shyam Ji Dham. Learn more on our <a href="/plots-for-sale-near-khatu-shyam-ji">plots near Khatu Shyam Ji page</a>.</li>
+        <li><strong>Jaipur - Khatu Shyam Ji Highway (Harsholi Corridor):</strong> Direct 4-lane access to NH-52, 230-plot master-planned communities like <a href="/projects/shivani-vatika-11th">Shivani Vatika 11th</a>, 160 ft and 40 ft blacktop roads, and 20-25 mins transit to Khatu Shyam Ji Dham. Learn more on our <a href="/plots-for-sale-near-khatu-shyam-ji">plots near Khatu Shyam Ji page</a>.</li>
         <li><strong>Renwal Railway Station & RIICO Industrial Hub:</strong> Proximity to the 64-acre RIICO manufacturing zone and direct daily train connectivity to Jaipur Junction and Ringas. Explore <a href="/plots-near-renwal-railway-station">plots near Renwal Railway Station</a>.</li>
         <li><strong>Phulera Smart City & DMIC Dedicated Freight Corridor:</strong> Massive dry-port logistics infrastructure connecting Delhi and Mumbai with rapid industrial capital growth. Inspect <a href="/plots-for-sale-in-phulera">plots in Phulera Smart City</a>.</li>
         <li><strong>Budget-Friendly Hubs Under ₹20 Lakhs:</strong> For first-time investors looking for clear deeds below ₹20 Lakhs, browse our dedicated guide to <a href="/plots-in-jaipur-under-20-lakhs">plots in Jaipur under 20 Lakhs</a>.</li>
@@ -4117,7 +4116,7 @@ export const BLOG_POSTS: BlogPost[] = [
 
       <h2>3. जयपुर के प्रमुख विकास व निवेश कॉरिडोर</h2>
       <ol>
-        <li><strong>जयपुर - खाटू श्याम जी हाईवे (हरसोली कॉरिडोर):</strong> 4-लेन हाईवे फ्रंट, 230 गेटेड प्लॉट्स वाली शिवानी वाटिका 11th, 30 फीट चौड़ी सड़कें और मंदिर से मात्र 20-25 मिनट की दूरी। देखें <a href="/hi/plots-for-sale-near-khatu-shyam-ji">खाटू श्याम जी के पास प्लॉट्स</a>।</li>
+        <li><strong>जयपुर - खाटू श्याम जी हाईवे (हरसोली कॉरिडोर):</strong> 4-लेन हाईवे फ्रंट, 230 गेटेड प्लॉट्स वाली शिवानी वाटिका 11th, 40 फीट चौड़ी सड़कें और मंदिर से मात्र 20-25 मिनट की दूरी। देखें <a href="/hi/plots-for-sale-near-khatu-shyam-ji">खाटू श्याम जी के पास प्लॉट्स</a>।</li>
         <li><strong>रेनवाल रेलवे स्टेशन व रीको इंडस्ट्रियल क्षेत्र:</strong> 64 एकड़ रीको औद्योगिक हब और सीधी ट्रेन कनेक्टिविटी। देखें <a href="/hi/plots-near-renwal-railway-station">रेनवाल रेलवे स्टेशन प्लॉट्स</a>।</li>
         <li><strong>फुलेरा स्मार्ट सिटी (DMIC फ्रेट कॉरिडोर):</strong> वेस्टर्न डेडिकेटेड फ्रेट कॉरिडोर के साथ लॉजिस्टिक्स व वेयरहाउसिंग विकास। देखें <a href="/hi/plots-for-sale-in-phulera">फुलेरा स्मार्ट सिटी प्लॉट्स</a>।</li>
         <li><strong>20 लाख के अंदर बजट प्लॉट्स:</strong> कम बजट में पक्की रजिस्ट्री के लिए देखें <a href="/hi/plots-in-jaipur-under-20-lakhs">जयपुर में 20 लाख में प्लॉट्स</a>।</li>

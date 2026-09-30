@@ -26,9 +26,9 @@ describe('RealEstateListingSchema with amenityFeature', () => {
     expect(data.itemOffered.amenityFeature.length).toBe(CORRIDOR_COMMON_AMENITIES.length);
 
     const roadAmenity = data.itemOffered.amenityFeature.find(
-      (a: { name: string }) => a.name === '30 ft Wide Blacktop Roads'
+      (a: { name: string }) => a.name === '40 ft Wide Blacktop Roads'
     );
     expect(roadAmenity).toBeDefined();
-    expect(roadAmenity.value).toBe('30 ft');
+    expect(roadAmenity.value).toBe('40 ft');
   });
 });

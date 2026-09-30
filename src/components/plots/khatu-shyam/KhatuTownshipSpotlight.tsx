@@ -64,7 +64,7 @@ export function KhatuTownshipSpotlight({ isHindi }: KhatuTownshipSpotlightProps)
                   <>
                     Spread over 11.5 Bigha (approx. 30,480 sq. yds.) directly on the Jaipur–Khatu
                     Shyam Ji Highway, Shivani Vatika 11th features 230 demarcated residential plots
-                    from 80 to 250 sq. yds. with 30 ft wide interlocked paved roads, grand entrance
+                    from 80 to 250 sq. yds. with 40 ft wide interlocked paved roads, grand entrance
                     arch, perimeter boundary, and complete civic amenities.
                   </>
                 )}

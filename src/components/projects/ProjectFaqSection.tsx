@@ -23,9 +23,9 @@ export const SHIVANI_VATIKA_FAQS: ProjectFaqItem[] = [
     question: 'What is Shivani Vatika 11th?',
     questionHi: 'शिवानी वाटिका 11th क्या है?',
     answer:
-      'Shivani Vatika 11th is a master-planned residential plotted township spread across 11.5 Bigha (approx. 30,480 sq. yds.) developed by SVI Infra Solutions. The township features 230 premium residential plots ranging from 80 sq. yds. to 250 sq. yds. It is equipped with essential modern infrastructure including a grand entrance gate, 24/7 security with CCTV surveillance, wide internal roads (30 ft), landscaped parks, reliable electrification, water supply, and complete boundary demarcation.',
+      'Shivani Vatika 11th is a master-planned residential plotted township spread across 11.5 Bigha (approx. 30,480 sq. yds.) developed by SVI Infra Solutions. The township features 230 premium residential plots ranging from 80 sq. yds. to 250 sq. yds. It is equipped with essential modern infrastructure including a grand entrance gate, 24/7 security with CCTV surveillance, wide internal roads (40 ft), landscaped parks, reliable electrification, water supply, and complete boundary demarcation.',
     answerHi:
-      'शिवानी वाटिका 11th एसवीआई इन्फ्रा सॉल्यूशंस (SVI Infra Solutions) द्वारा विकसित 11.5 बीघा (लगभग 30,480 वर्ग गज) में फैली एक सुनियोजित आवासीय टाउनशिप है। इसमें 80 से 250 वर्ग गज आकार के कुल 230 आवासीय भूखंड उपलब्ध हैं। यह टाउनशिप भव्य मुख्य प्रवेश द्वार, सीसीटीवी व 24/7 सुरक्षा, चौड़ी सड़कें (30 फीट), पार्क, बिजली-पानी आपूर्ति और बाउंड्री वॉल जैसी आधुनिक सुविधाओं से सुसज्जित है।',
+      'शिवानी वाटिका 11th एसवीआई इन्फ्रा सॉल्यूशंस (SVI Infra Solutions) द्वारा विकसित 11.5 बीघा (लगभग 30,480 वर्ग गज) में फैली एक सुनियोजित आवासीय टाउनशिप है। इसमें 80 से 250 वर्ग गज आकार के कुल 230 आवासीय भूखंड उपलब्ध हैं। यह टाउनशिप भव्य प्रवेश द्वार, सीसीटीवी युक्त 24/7 सुरक्षा, चौड़ी आंतरिक सड़कें (40 फीट), पार्क्स, विद्युतीकरण, पानी की समुचित व्यवस्था और चारदीवारी जैसी आवश्यक सुविधाओं से सुसज्जित है।',
   },
   {
     id: 'location-shivani-vatika-11th',
@@ -56,9 +56,9 @@ export const SHIVANI_VATIKA_FAQS: ProjectFaqItem[] = [
     question: 'What plot sizes are available in Shivani Vatika 11th?',
     questionHi: 'शिवानी वाटिका 11th में कौन-कौन से प्लॉट साइज उपलब्ध हैं?',
     answer:
-      'The township offers 230 well-demarcated residential plots catering to varied residential and investment requirements, ranging from 80 sq. yds. to 250 sq. yds. Options include compact villa plots (80–150 Sq. Yds.), standard family plots (150–200 Sq. Yds.), and spacious corner/wide-frontage plots (200–250 Sq. Yds.) adjacent to 30-foot arterial roads.',
+      'The township offers 230 well-demarcated residential plots catering to varied residential and investment requirements, ranging from 80 sq. yds. to 250 sq. yds. Options include compact villa plots (80–150 Sq. Yds.), standard family plots (150–200 Sq. Yds.), and spacious corner/wide-frontage plots (200–250 Sq. Yds.) adjacent to 40-foot arterial roads.',
     answerHi:
-      'टाउनशिप में विभिन्न परिवारों और निवेशकों की आवश्यकताओं के अनुकूल 80 वर्ग गज से लेकर 250 वर्ग गज तक के 230 आवासीय भूखंड उपलब्ध हैं। इनमें कॉम्पैक्ट विला प्लॉट्स (80-150 वर्ग गज), मानक आवासीय प्लॉट्स (150-200 वर्ग गज), और 30 फीट चौड़ी सड़कों के पास स्थित बड़े कॉर्नर प्लॉट्स (200-250 वर्ग गज) के विकल्प शामिल हैं।',
+      'टाउनशिप में विभिन्न परिवारों और निवेशकों की आवश्यकताओं के अनुकूल 80 वर्ग गज से लेकर 250 वर्ग गज तक के 230 आवासीय भूखंड उपलब्ध हैं। इनमें कॉम्पैक्ट विला प्लॉट्स (80-150 वर्ग गज), मानक आवासीय प्लॉट्स (150-200 वर्ग गज), और 40 फीट चौड़ी सड़कों के पास स्थित बड़े कॉर्नर प्लॉट्स (200-250 वर्ग गज) के विकल्प शामिल हैं।',
   },
   {
     id: 'pricing-payment-options',

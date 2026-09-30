@@ -43,8 +43,8 @@ export function PlotsRenwalFeatured({ isHindi }: PlotsRenwalFeaturedProps) {
                   <CheckCircle2 size={16} className="shrink-0 text-emerald-400" />
                   <span>
                     {isHindi
-                      ? '30 फीट चौड़ी डामर सड़कें एवं डिमार्केटेड कॉर्नर पिलर्स'
-                      : '30 ft wide blacktop roads & demarcated corner pillars'}
+                      ? '40 फीट चौड़ी डामर सड़कें एवं डिमार्केटेड कॉर्नर पिलर्स'
+                      : '40 ft wide blacktop roads & demarcated corner pillars'}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">

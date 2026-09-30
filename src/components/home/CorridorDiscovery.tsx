@@ -21,8 +21,8 @@ const CORRIDORS: CorridorItem[] = [
     title: { en: 'All Jaipur Plotted Townships', hi: 'जयपुर के सभी आवासीय प्लॉट्स' },
     price: { en: 'From ₹7,500 / sq. yd.', hi: '₹7,500 / वर्ग गज से' },
     highlight: {
-      en: 'Master-planned townships with 160 ft & 30 ft paved roads, clear registry & mutation.',
-      hi: '160 फीट व 30 फीट चौड़ी पक्की सड़कें, 90-A पक्की रजिस्ट्री व दाखिल खारिज।',
+      en: 'Master-planned townships with 160 ft & 40 ft paved roads, clear registry & mutation.',
+      hi: '160 फीट व 40 फीट चौड़ी पक्की सड़कें, 90-A पक्की रजिस्ट्री व दाखिल खारिज।',
     },
     distance: { en: 'Citywide Corridors', hi: 'संपूर्ण जयपुर क्षेत्र' },
     icon: Compass,

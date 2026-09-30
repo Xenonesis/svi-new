@@ -352,8 +352,8 @@ export const TOWNSHIP_FEATURES: TownshipFeature[] = [
     textHi: 'श्री खाटू श्याम जी मंदिर तक मात्र 20-25 मिनट की सुगम ड्राइव',
   },
   {
-    textEn: '30 ft wide interlocked roads, grand entry arch & 24/7 gated security',
-    textHi: '30 फीट चौड़ी इंटरलॉकिंग पक्की सड़कें व 24/7 सुरक्षा',
+    textEn: '40 ft wide interlocked roads, grand entry arch & 24/7 gated security',
+    textHi: '40 फीट चौड़ी इंटरलॉकिंग पक्की सड़कें व 24/7 सुरक्षा',
   },
 ];
 

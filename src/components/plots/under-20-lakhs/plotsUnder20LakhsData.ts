@@ -71,7 +71,7 @@ export const BUDGET_FAQS: BudgetFaq[] = [
   {
     question: 'What amenities are included in low-budget plotted townships?',
     answer:
-      'Even in entry-level ticket sizes, townships feature 30-foot-wide blacktop/paved internal roads, systematic demarcated plot boundary corner pillars, functional overhead electrical lines, continuous water line provision, lush landscaped green spaces, and a grand gated archway with round-the-clock security surveillance.',
+      'Even in entry-level ticket sizes, townships feature 40-foot-wide blacktop/paved internal roads, systematic demarcated plot boundary corner pillars, functional overhead electrical lines, continuous water line provision, lush landscaped green spaces, and a grand gated archway with round-the-clock security surveillance.',
   },
   {
     question: 'How do I arrange a free inspection visit from Jaipur?',

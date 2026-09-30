@@ -68,7 +68,7 @@ export const RENWAL_FAQS: RenwalFaq[] = [
   {
     question: 'What amenities are provided in the township?',
     answer:
-      'The project features a grand entry arch, 30 ft wide internal asphalt roads, demarcated plot boundaries, functional underground water and electricity lines, rainwater harvesting, landscaped parks, and full security.',
+      'The project features a grand entry arch, 40 ft wide internal asphalt roads, demarcated plot boundaries, functional underground water and electricity lines, rainwater harvesting, landscaped parks, and full security.',
   },
   {
     question: 'Can I get a bank loan on plots near Renwal?',

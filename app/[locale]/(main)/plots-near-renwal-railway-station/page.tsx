@@ -80,7 +80,7 @@ export default async function PlotsNearRenwalPage({ params }: Props) {
 
       <RealEstateListingSchema
         name="Residential Plots Near Renwal Railway Station"
-        description="Gated plotted development near Kishangarh Renwal Railway Station and 64-acre RIICO Industrial Area with 30 ft wide blacktop roads and 80% bank loan approval."
+        description="Gated plotted development near Kishangarh Renwal Railway Station and 64-acre RIICO Industrial Area with 40 ft wide blacktop roads and 80% bank loan approval."
         image="/Shivani Vatika 11/gate.webp"
         location="Renwal, Jaipur, Rajasthan"
         status="InStock"

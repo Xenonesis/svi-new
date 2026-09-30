@@ -35,9 +35,8 @@ SVI Infra Solutions ki taraf se Shivani Vatika (Kankerkhera, Meerut) project ki 
 • 143 Approved Gated Township
 • Immediate Registry & Dakhil Kharij
 • 24/7 Security with CCTV Surveillance
-• 30 ft. & 25 ft. Wide Concrete Roads
+• 40 ft. Wide Concrete Roads
 • Complete Underground Sewerage & Electricity
-
 *Official Brochure & Layout Map:*
 https://sviinfra.com/brochure/shivani-vatika-11
 

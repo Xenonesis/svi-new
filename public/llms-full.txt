@@ -31,7 +31,7 @@
 | **Entry Price Point** | Starting from ₹ 6 Lakhs* (~₹ 7,500 per sq. yd.) |
 | **Current Project Status** | Ongoing Development (Gated compound with active plot demarcation and road paving) |
 | **Frontage Access Road** | Direct access from 160 ft wide State Highway corridor |
-| **Internal Township Roads** | Standardized 30 ft wide engineered interlocking paver block roads with drainage |
+| **Internal Township Roads** | Standardized 40 ft wide engineered interlocking paver block roads with drainage |
 | **Security & Perimeter** | Complete perimeter boundary fencing, grand arch main gate, 24/7 guard cabin, CCTV |
 | **Water & Electrical Utilities**| Dedicated underground water storage lines, tube well source, electrical transformer conduits |
 | **Recreation & Greenery** | Central landscaped garden, children's park, tree plantations along avenues, solar street lighting |
@@ -101,7 +101,7 @@ The ownership path from agricultural holding to absolute freehold individual tit
 - **Statutory Law**: Section 90-A of the Rajasthan Land Revenue Act, 1956.
 - **Mechanism**: The original khatedari (agricultural) landholder legally surrenders agricultural rights to the Government/Competent Local Authority (e.g., SDO / Tehsildar / Urban Local Body).
 - **Sanction Order**: The authority conducts land revenue scrutiny, spot inspection, demarcation, public notice/objection screening, and issues a formal 90-A conversion order converting the land parcel from agricultural use to non-agricultural residential/commercial plotted layout.
-- **Township Layout Sanction**: Master plan blueprint approval establishing mandatory setbacks, green park reserves, utility allocations, and dedicated 30 ft internal access streets and 160 ft highway frontage reservations.
+- **Township Layout Sanction**: Master plan blueprint approval establishing mandatory setbacks, green park reserves, utility allocations, and dedicated 40 ft internal access streets and 160 ft highway frontage reservations.
 
 #### Stage 2: Township Demarcation & Title Cleared Patta Allotment
 - **Pillar Demarcation**: Complete physical GIS demarcation of each plot parcel with corner boundary pillars, numbered as per the sanctioned layout.
@@ -142,7 +142,7 @@ Section 90-A converted plotted projects with clear legal titles qualify for inst
 - **Jamabandi Nakal**: जमाबंदी नकल (सरकारी अधिकार अभिलेख / ROR)
 - **Khasra Number**: खसरा संख्या (राजस्व भूमि पार्सल पहचान संख्या)
 - **Township Layout**: टाउनशिप मास्टर प्लान लेआउट (सड़क, पार्क, और भूखंडों का नक्शा)
-- **Road Width**: 30 फीट चौड़ी पक्की डामर/ब्लॉक सड़कें (30 ft wide paved avenues)
+- **Road Width**: 40 फीट चौड़ी पक्की डामर/ब्लॉक सड़कें (40 ft wide paved avenues)
 - **Highway Access**: 160 फीट चौड़ा स्टेट हाईवे (160 ft direct highway frontage)
 
 ---

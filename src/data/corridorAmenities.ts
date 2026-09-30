@@ -1,7 +1,7 @@
 import type { AmenityFeatureItem } from '@/src/components/common/Schema';
 
 export const CORRIDOR_COMMON_AMENITIES: AmenityFeatureItem[] = [
-  { name: '30 ft Wide Blacktop Roads', value: '30 ft' },
+  { name: '40 ft Wide Blacktop Roads', value: '40 ft' },
   { name: 'Underground Water Pipelines & Drainage', value: true },
   { name: 'Solar LED Street Lighting', value: true },
   { name: 'Gated Township with Grand Entrance Arch & CCTV', value: true },
