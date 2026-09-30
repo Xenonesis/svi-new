@@ -67,11 +67,6 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
   if (isResponsiveDir) {
     const basePath = cleanSrc.replace(/\.(png|jpg|jpeg|webp|avif)$/i, '');
 
-    // For hero background images, serve full-size high-resolution WebP directly
-    if (cleanSrc.includes('hero')) {
-      return encodeURI(`${basePath}.webp?w=${width}`);
-    }
-
     // Only use responsive variants for sizes we know always exist (≤1024w)
     const match = SAFE_RESPONSIVE_SIZES.find((s) => s >= width);
     if (match) {

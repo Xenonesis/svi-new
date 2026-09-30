@@ -43,11 +43,17 @@ function ThemeAwareBackground() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    // Defer DotField canvas rendering to free main thread for critical work
-    if (typeof requestIdleCallback !== 'undefined') {
-      requestIdleCallback(() => setReady(true), { timeout: 2000 });
+    // Defer DotField canvas rendering until idle (or 2.5s timeout) to avoid main-thread congestion
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      const handle = window.requestIdleCallback(() => setReady(true), { timeout: 2500 });
+      return () => {
+        if (typeof window.cancelIdleCallback === 'function') {
+          window.cancelIdleCallback(handle);
+        }
+      };
     } else {
-      setTimeout(() => setReady(true), 500);
+      const timer = setTimeout(() => setReady(true), 2500);
+      return () => clearTimeout(timer);
     }
   }, []);
 

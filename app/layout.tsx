@@ -195,11 +195,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="icon" type="image/png" sizes="32x32" href="/favicons/favicon_32x32.png" />
         <link rel="icon" type="image/png" sizes="48x48" href="/favicons/favicon_48x48.png" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        {/* Preconnect to critical origins */}
-        <link rel="preconnect" href="https://supabase.co" />
-        <link rel="dns-prefetch" href="https://supabase.co" />
-        <link rel="preconnect" href="https://maps.googleapis.com" />
-        <link rel="dns-prefetch" href="https://maps.googleapis.com" />
+        {/* Critical origins handled by Next.js font/analytics */}
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

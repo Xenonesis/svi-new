@@ -61,12 +61,41 @@ describe('supabaseImageLoader', () => {
     expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7.webp?w=1920');
   });
 
-  it('serves full-size webp for hero background images', () => {
-    const result = supabaseImageLoader({
-      src: '/images/hero-desktop.png',
-      width: 640,
-    });
-    expect(result).toBe('/images/hero-desktop.webp?w=640');
+  it('selects safe responsive variants for hero background images', () => {
+    expect(
+      supabaseImageLoader({
+        src: '/images/hero1_new.png',
+        width: 320,
+      })
+    ).toBe('/images/hero1_new-320w.webp');
+
+    expect(
+      supabaseImageLoader({
+        src: '/images/hero1_new.png',
+        width: 640,
+      })
+    ).toBe('/images/hero1_new-640w.webp');
+
+    expect(
+      supabaseImageLoader({
+        src: '/images/hero1_new.png',
+        width: 1024,
+      })
+    ).toBe('/images/hero1_new-1024w.webp');
+
+    expect(
+      supabaseImageLoader({
+        src: '/images/hero1_new.png',
+        width: 1200,
+      })
+    ).toBe('/images/hero1_new-1024w.webp');
+
+    expect(
+      supabaseImageLoader({
+        src: '/images/hero1_new.png',
+        width: 1920,
+      })
+    ).toBe('/images/hero1_new.webp?w=1920');
   });
 
   it('encodes non-responsive local images with spaces in path', () => {

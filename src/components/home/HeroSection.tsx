@@ -67,12 +67,22 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
 
   useEffect(() => {
     if (!isAutoPlaying || prefersReducedMotion) return;
-    const timer = setInterval(() => {
+    let timer: NodeJS.Timeout;
+    const initialDelay = setTimeout(() => {
       startTransition(() => {
         setCurrentHeroIndex((prev) => (prev + 1) % images.length);
       });
-    }, 6000);
-    return () => clearInterval(timer);
+      timer = setInterval(() => {
+        startTransition(() => {
+          setCurrentHeroIndex((prev) => (prev + 1) % images.length);
+        });
+      }, 6000);
+    }, 8000);
+
+    return () => {
+      clearTimeout(initialDelay);
+      clearInterval(timer);
+    };
   }, [isAutoPlaying, prefersReducedMotion, images.length]);
 
   useEffect(() => {

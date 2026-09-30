@@ -22,7 +22,7 @@ export default function AboutSection() {
       <div className="container mx-auto px-4">
         <div className="flex flex-col items-center gap-16 lg:flex-row">
           <AnimatedSection type="fadeLeft" className="w-full lg:w-1/2">
-            <h4 className="text-brand-gold mb-3 text-base font-semibold tracking-[0.2em] uppercase sm:mb-4 sm:text-lg md:text-xl">
+            <h4 className="dark:text-brand-gold mb-3 text-base font-semibold tracking-[0.2em] text-amber-800 uppercase sm:mb-4 sm:text-lg md:text-xl">
               {t('welcomeTitle')}
             </h4>
             <div className="bg-brand-gold/40 mx-auto mb-6 h-0.5 w-16 sm:mb-8" />
@@ -70,9 +70,9 @@ export default function AboutSection() {
                 loading="lazy"
                 width={800}
                 height={500}
-                sizes="(max-width: 640px) 380px, (max-width: 1024px) 500px, 640px"
+                sizes="(max-width: 640px) 320px, (max-width: 1024px) 500px, 640px"
                 className="h-[260px] w-full object-cover sm:h-[380px] lg:h-[500px]"
-                quality={80}
+                quality={75}
               />
             </div>
             <motion.div

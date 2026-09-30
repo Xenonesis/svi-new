@@ -88,6 +88,59 @@ const DotField = memo(
         clearTimeout(resizeTimer);
         resizeTimer = setTimeout(doResize, 100);
       }
+      function buildDots(w: number, h: number) {
+        const p = propsRef.current;
+        const r = p.dotRadius ?? 1.5;
+        const s = p.dotSpacing ?? 14;
+        const step = r + s;
+        const cols = Math.floor(w / step);
+        const rows = Math.floor(h / step);
+        const padX = (w % step) / 2;
+        const padY = (h % step) / 2;
+        const dots = new Array<Dot>(rows * cols);
+        let idx = 0;
+
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const ax = padX + col * step + step / 2;
+            const ay = padY + row * step + step / 2;
+            dots[idx++] = { ax, ay, sx: ax, sy: ay, vx: 0, vy: 0, x: ax, y: ay };
+          }
+        }
+        dotsRef.current = dots;
+      }
+      function drawStatic() {
+        if (!canvas) return;
+        const { w, h } = sizeRef.current;
+        if (w === 0 || h === 0) return;
+        const dots = dotsRef.current;
+        const p = propsRef.current;
+        const len = dots.length;
+        const rad = (p.dotRadius ?? 1.5) / 2;
+        const waveAmp = p.waveAmplitude ?? 0;
+
+        ctx.clearRect(0, 0, w, h);
+
+        const grad = ctx.createLinearGradient(0, 0, w, h);
+        grad.addColorStop(0, p.gradientFrom ?? 'rgba(168, 85, 247, 0.35)');
+        grad.addColorStop(1, p.gradientTo ?? 'rgba(180, 151, 207, 0.25)');
+        ctx.fillStyle = grad;
+
+        ctx.beginPath();
+        for (let i = 0; i < len; i++) {
+          const d = dots[i];
+          if (!d) continue;
+          let drawX = d.ax;
+          let drawY = d.ay;
+          if (waveAmp > 0) {
+            drawY += Math.sin(d.ax * 0.03) * waveAmp;
+            drawX += Math.cos(d.ay * 0.03) * waveAmp * 0.5;
+          }
+          ctx.moveTo(drawX + rad, drawY);
+          ctx.arc(drawX, drawY, rad, 0, TWO_PI);
+        }
+        ctx.fill();
+      }
 
       function doResize() {
         if (!canvas) return;
@@ -111,40 +164,34 @@ const DotField = memo(
         };
 
         buildDots(w, h);
+        drawStatic();
       }
 
-      function buildDots(w: number, h: number) {
-        const p = propsRef.current;
-        const r = p.dotRadius ?? 1.5;
-        const s = p.dotSpacing ?? 14;
-        const step = r + s;
-        const cols = Math.floor(w / step);
-        const rows = Math.floor(h / step);
-        const padX = (w % step) / 2;
-        const padY = (h % step) / 2;
-        const dots = new Array<Dot>(rows * cols);
-        let idx = 0;
+      const isTouch =
+        typeof window !== 'undefined' &&
+        (window.matchMedia('(pointer: coarse)').matches ||
+          !window.matchMedia('(hover: hover)').matches);
 
-        for (let row = 0; row < rows; row++) {
-          for (let col = 0; col < cols; col++) {
-            const ax = padX + col * step + step / 2;
-            const ay = padY + row * step + step / 2;
-            dots[idx++] = { ax, ay, sx: ax, sy: ay, vx: 0, vy: 0, x: ax, y: ay };
+      if (isTouch) {
+        doResize();
+        window.addEventListener('resize', resize);
+
+        rebuildRef.current = () => {
+          const { w, h } = sizeRef.current;
+          if (w > 0 && h > 0) {
+            buildDots(w, h);
+            drawStatic();
           }
-        }
-        dotsRef.current = dots;
+        };
+
+        return () => {
+          clearTimeout(resizeTimer);
+          window.removeEventListener('resize', resize);
+        };
       }
 
-      function onMouseMove(e: MouseEvent) {
-        const s = sizeRef.current;
-        if (fixed) {
-          mouseRef.current.x = e.clientX;
-          mouseRef.current.y = e.clientY;
-        } else {
-          mouseRef.current.x = e.pageX - s.offsetX;
-          mouseRef.current.y = e.pageY - s.offsetY;
-        }
-      }
+      let isSleeping = !((propsRef.current.waveAmplitude ?? 0) > 0 || propsRef.current.sparkle);
+      let frameCount = 0;
 
       function updateMouseSpeed() {
         const m = mouseRef.current;
@@ -157,22 +204,53 @@ const DotField = memo(
         m.prevY = m.y;
       }
 
-      speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
+      function wakeUp() {
+        if (isSleeping) {
+          isSleeping = false;
+          if (!speedIntervalRef.current && !isPaused) {
+            speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
+          }
+          if (!rafRef.current && !isPaused) {
+            rafRef.current = requestAnimationFrame(tick);
+          }
+        }
+      }
+
+      function onMouseMove(e: MouseEvent) {
+        const s = sizeRef.current;
+        const newX = fixed ? e.clientX : e.pageX - s.offsetX;
+        const newY = fixed ? e.clientY : e.pageY - s.offsetY;
+
+        const m = mouseRef.current;
+        if (isSleeping || m.x === -9999) {
+          m.prevX = newX;
+          m.prevY = newY;
+        }
+        m.x = newX;
+        m.y = newY;
+
+        wakeUp();
+      }
 
       function onVisibilityChange() {
         if (document.hidden) {
           isPaused = true;
-          if (rafRef.current) cancelAnimationFrame(rafRef.current);
-          if (speedIntervalRef.current) clearInterval(speedIntervalRef.current);
+          if (rafRef.current) {
+            cancelAnimationFrame(rafRef.current);
+            rafRef.current = null;
+          }
+          if (speedIntervalRef.current) {
+            clearInterval(speedIntervalRef.current);
+            speedIntervalRef.current = undefined;
+          }
         } else {
           isPaused = false;
-          speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
-          rafRef.current = requestAnimationFrame(tick);
+          if (!isSleeping) {
+            speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
+            rafRef.current = requestAnimationFrame(tick);
+          }
         }
       }
-      document.addEventListener('visibilitychange', onVisibilityChange);
-
-      let frameCount = 0;
 
       function tick() {
         if (isPaused) {
@@ -274,22 +352,71 @@ const DotField = memo(
 
         ctx.fill();
 
+        // Put RAF loop to sleep when idle: engagement is 0, glow is faded, wave is 0, not sparkling
+        if (
+          engagement.current === 0 &&
+          glowOpacity.current < 0.01 &&
+          (p.waveAmplitude ?? 0) === 0 &&
+          !p.sparkle
+        ) {
+          glowOpacity.current = 0;
+          if (glowEl) {
+            glowEl.style.opacity = '0';
+          }
+          if (speedIntervalRef.current) {
+            clearInterval(speedIntervalRef.current);
+            speedIntervalRef.current = undefined;
+          }
+          // Reset any tiny residual sub-pixel displacement
+          for (let i = 0; i < len; i++) {
+            const d = dots[i];
+            if (d) {
+              d.sx = d.ax;
+              d.sy = d.ay;
+              d.vx = 0;
+              d.vy = 0;
+            }
+          }
+          isSleeping = true;
+          rafRef.current = null;
+          return;
+        }
+
         rafRef.current = requestAnimationFrame(tick);
       }
 
       doResize();
       window.addEventListener('resize', resize);
       window.addEventListener('mousemove', onMouseMove, { passive: true });
-      rafRef.current = requestAnimationFrame(tick);
+      document.addEventListener('visibilitychange', onVisibilityChange);
+
+      if (!isSleeping) {
+        speedIntervalRef.current = setInterval(updateMouseSpeed, 20);
+        rafRef.current = requestAnimationFrame(tick);
+      }
 
       rebuildRef.current = () => {
         const { w, h } = sizeRef.current;
-        if (w > 0 && h > 0) buildDots(w, h);
+        if (w > 0 && h > 0) {
+          buildDots(w, h);
+          const p = propsRef.current;
+          if ((p.waveAmplitude ?? 0) > 0 || p.sparkle) {
+            wakeUp();
+          } else if (isSleeping) {
+            drawStatic();
+          }
+        }
       };
 
       return () => {
-        if (rafRef.current) cancelAnimationFrame(rafRef.current);
-        if (speedIntervalRef.current) clearInterval(speedIntervalRef.current);
+        if (rafRef.current) {
+          cancelAnimationFrame(rafRef.current);
+          rafRef.current = null;
+        }
+        if (speedIntervalRef.current) {
+          clearInterval(speedIntervalRef.current);
+          speedIntervalRef.current = undefined;
+        }
         clearTimeout(resizeTimer);
         document.removeEventListener('visibilitychange', onVisibilityChange);
         window.removeEventListener('resize', resize);
@@ -299,8 +426,7 @@ const DotField = memo(
 
     useEffect(() => {
       rebuildRef.current?.();
-    }, [dotRadius, dotSpacing]);
-
+    }, [dotRadius, dotSpacing, gradientFrom, gradientTo, waveAmplitude, sparkle]);
     return (
       <div
         className={`relative h-full w-full ${className}`}

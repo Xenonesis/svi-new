@@ -89,7 +89,7 @@ export default function StatsCounter() {
       <div className="divide-brand-navy/10 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-8 md:divide-x dark:divide-white/10">
         {stats.map((s, i) => (
           <div key={i} className="p-5 text-center md:p-8">
-            <div className="text-brand-gold mb-3 font-serif text-3xl font-bold sm:text-4xl md:text-5xl">
+            <div className="dark:text-brand-gold mb-3 font-serif text-3xl font-bold text-amber-800 sm:text-4xl md:text-5xl">
               {counts[i]}
               {s.suffix}
             </div>
