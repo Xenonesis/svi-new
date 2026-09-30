@@ -134,7 +134,7 @@ export function PortalAllotmentsActiveView({
           type="button"
           onClick={() => onSort?.(field)}
           aria-label={`Sort by ${title}`}
-          className="group inline-flex items-center gap-1.5 font-bold tracking-wider uppercase hover:text-gray-900 dark:hover:text-white"
+          className="group inline-flex items-center gap-1.5 font-bold tracking-wider uppercase hover:text-slate-900 dark:hover:text-white"
         >
           <span>{title}</span>
           {isSorted && sortDirection === 'asc' ? (
@@ -200,17 +200,17 @@ export function PortalAllotmentsActiveView({
 
       {/* 2. Missing Ticket ID Notification Reminder Banner */}
       {missingIdAllotments.length > 0 && !searchTerm.toLowerCase().includes('missing') && (
-        <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-3.5 shadow-2xs sm:flex-row sm:items-center dark:border-amber-500/40 dark:bg-amber-950/40">
+        <div className="flex flex-col items-start justify-between gap-3 rounded-2xl border border-amber-500/30 bg-amber-50/80 p-3.5 shadow-2xs sm:flex-row sm:items-center dark:border-amber-500/20 dark:bg-[#161411]">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-amber-500/20 p-2 text-amber-700 dark:text-amber-300">
+            <div className="rounded-xl border border-amber-500/30 bg-amber-500/20 p-2 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
               <AlertTriangle className="h-5 w-5" />
             </div>
             <div>
-              <div className="text-xs font-bold text-amber-900 dark:text-amber-100">
+              <div className="text-xs font-bold text-amber-900 dark:text-amber-200">
                 Action Required: {missingIdAllotments.length} Active Allotment(s) Missing Official
                 Ticket ID
               </div>
-              <p className="mt-0.5 text-[11px] text-amber-700 dark:text-amber-300">
+              <p className="mt-0.5 text-[11px] text-amber-700/90 dark:text-amber-400/80">
                 {missingIdAllotments
                   .map(
                     (a) =>
@@ -223,10 +223,10 @@ export function PortalAllotmentsActiveView({
           <button
             type="button"
             onClick={() => onSearchChange('missing')}
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-500/30 bg-white px-3 py-1.5 text-xs font-bold text-amber-800 shadow-2xs transition-all hover:bg-amber-50 hover:shadow-xs active:scale-95 dark:border-white/10 dark:bg-gray-800 dark:text-amber-200 dark:hover:bg-gray-700"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-xl border border-amber-500/30 bg-white px-3 py-1.5 text-xs font-bold text-amber-800 shadow-2xs transition-all hover:bg-amber-50 hover:shadow-xs active:scale-95 dark:border-amber-500/30 dark:bg-[#1b1713] dark:text-amber-300 dark:hover:bg-[#221c17]"
           >
             <span>Review & Update</span>
-            <span className="rounded-full bg-amber-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold">
+            <span className="rounded-full border border-amber-500/30 bg-amber-500/20 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-800 dark:text-amber-300">
               {missingIdAllotments.length}
             </span>
           </button>
@@ -239,11 +239,11 @@ export function PortalAllotmentsActiveView({
           /* TABLE SHIMMER SKELETON (10 Columns x 5 Rows) */
           <div
             data-testid="allotments-table-skeleton"
-            className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xs dark:border-white/10 dark:bg-gray-800"
+            className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-white/[0.08] dark:bg-[#0c1017]"
           >
             <div className="overflow-x-auto">
               <table className="w-full min-w-[1100px] text-left text-xs">
-                <thead className="border-b border-gray-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-400">
+                <thead className="border-b border-slate-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-slate-500 uppercase backdrop-blur-md dark:border-white/[0.08] dark:bg-[#111622]/95 dark:text-slate-400">
                   <tr>
                     <th className="w-[44px] px-3 py-3.5 text-center">
                       <span className="sr-only">Select</span>
@@ -259,7 +259,7 @@ export function PortalAllotmentsActiveView({
                     <th className="px-4 py-3.5 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+                <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse" data-testid="skeleton-row">
                       <td className="w-[44px] px-3 py-3.5 text-center">
@@ -323,7 +323,7 @@ export function PortalAllotmentsActiveView({
               <div
                 key={i}
                 data-testid="skeleton-card"
-                className="animate-pulse rounded-2xl border border-gray-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-white/10 dark:bg-gray-800"
+                className="animate-pulse rounded-2xl border border-slate-200/80 bg-white p-4 shadow-xs sm:p-5 dark:border-white/[0.08] dark:bg-[#111622]"
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex items-start gap-3">
@@ -347,7 +347,7 @@ export function PortalAllotmentsActiveView({
                   <div className="h-4 w-20 rounded bg-gray-200 dark:bg-gray-700/60" />
                   <div className="h-4 w-24 rounded bg-gray-200 dark:bg-gray-700/60" />
                 </div>
-                <div className="mt-4 rounded-xl border border-gray-100 bg-slate-50/90 p-3 dark:border-white/5 dark:bg-white/[0.02]">
+                <div className="mt-4 rounded-xl border border-slate-100 bg-slate-50/90 p-3 dark:border-white/[0.04] dark:bg-[#161D2C]/60">
                   <div className="grid grid-cols-3 gap-2">
                     <div className="space-y-1.5">
                       <div className="h-3 w-12 rounded bg-gray-200 dark:bg-gray-700/60" />
@@ -363,8 +363,7 @@ export function PortalAllotmentsActiveView({
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 flex justify-between border-t border-gray-100 pt-3 dark:border-white/5">
-                  <div className="h-8 w-20 rounded-xl bg-gray-200 dark:bg-gray-700/60" />
+                <div className="mt-4 flex justify-between border-t border-slate-100 pt-3 dark:border-white/[0.04]">
                   <div className="h-8 w-28 rounded-xl bg-gray-200 dark:bg-gray-700/60" />
                 </div>
               </div>
@@ -373,7 +372,7 @@ export function PortalAllotmentsActiveView({
         )
       ) : filteredAllotments.length === 0 ? (
         /* ARCHITECTURAL EMPTY STATE */
-        <div className="rounded-2xl border border-gray-200/80 bg-white px-6 py-16 text-center shadow-xs dark:border-white/10 dark:bg-gray-800">
+        <div className="rounded-2xl border border-slate-200/80 bg-white px-6 py-16 text-center shadow-xs dark:border-white/[0.08] dark:bg-[#0c1017]">
           <div className="bg-brand-gold/10 text-brand-gold dark:bg-brand-gold/20 mx-auto flex h-16 w-16 items-center justify-center rounded-2xl">
             {activeFilterCount > 0 ? (
               <SearchX className="h-8 w-8" />
@@ -384,10 +383,10 @@ export function PortalAllotmentsActiveView({
               </div>
             )}
           </div>
-          <h3 className="mt-4 text-base font-bold text-gray-900 dark:text-white">
+          <h3 className="mt-4 text-base font-bold text-slate-900 dark:text-white">
             No Allotments Found
           </h3>
-          <p className="mx-auto mt-1.5 max-w-md text-xs text-gray-500 dark:text-gray-400">
+          <p className="mx-auto mt-1.5 max-w-md text-xs text-slate-500 dark:text-slate-400">
             {activeFilterCount > 0
               ? 'No plot allotments match your current filter criteria. Try clearing filters or refining your search.'
               : 'No active plot allotments have been created yet.'}
@@ -404,15 +403,15 @@ export function PortalAllotmentsActiveView({
         </div>
       ) : viewMode === 'table' ? (
         /* TABLE PRESENTATION */
-        <div className="overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-xs dark:border-white/10 dark:bg-gray-800">
+        <div className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-xs dark:border-white/[0.08] dark:bg-[#0c1017]">
           {/* Subtle mobile hint for horizontal scrolling on narrow screens */}
-          <div className="block border-b border-gray-100 bg-slate-50 px-3 py-1.5 text-right text-[11px] text-gray-500 lg:hidden dark:border-white/5 dark:bg-white/[0.02] dark:text-gray-400">
+          <div className="block border-b border-slate-200/60 bg-slate-50/80 px-3 py-1.5 text-right text-[11px] text-slate-500 lg:hidden dark:border-white/[0.04] dark:bg-[#0c1017] dark:text-slate-400">
             Swipe table horizontally to view full columns ⇄
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full min-w-[1100px] text-left text-xs">
-              <thead className="border-b border-gray-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-gray-500 uppercase dark:border-white/10 dark:bg-white/[0.03] dark:text-gray-400">
+              <thead className="border-b border-slate-200 bg-slate-50/90 text-[11px] font-bold tracking-wider text-slate-500 uppercase backdrop-blur-md dark:border-white/[0.08] dark:bg-[#111622]/95 dark:text-slate-400">
                 <tr>
                   <th className="w-[44px] px-3 py-3.5 text-center">
                     <input
@@ -423,7 +422,7 @@ export function PortalAllotmentsActiveView({
                       }}
                       onChange={onToggleSelectAll}
                       aria-label="Select all allotments"
-                      className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+                      className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-slate-300 dark:border-white/20 dark:bg-[#161D2C]"
                     />
                   </th>
                   {renderSortableHeader('ref_id', 'Ref ID', 'w-[130px] px-4 py-3.5')}
@@ -437,7 +436,7 @@ export function PortalAllotmentsActiveView({
                   <th className="px-4 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 dark:divide-white/5">
+              <tbody className="divide-y divide-slate-100 dark:divide-white/[0.04]">
                 {filteredAllotments.map((allotment) => (
                   <PortalAllotmentTableRow
                     key={allotment.id}

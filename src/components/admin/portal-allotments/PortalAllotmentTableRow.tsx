@@ -60,54 +60,54 @@ export function PortalAllotmentTableRow({
   const renderClientPopover = () => {
     if (!showClientPopover) return null;
     return (
-      <div className="absolute top-full left-0 z-30 mt-1.5 w-72 rounded-2xl border border-gray-200 bg-white p-4 text-left shadow-xl dark:border-white/10 dark:bg-gray-900">
-        <div className="flex items-center justify-between border-b border-gray-100 pb-2 dark:border-white/10">
-          <span className="text-xs font-bold text-gray-900 dark:text-white">
+      <div className="absolute top-full left-0 z-30 mt-1.5 w-72 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-xl shadow-black/20 backdrop-blur-xl dark:border-white/[0.1] dark:bg-[#161D2C]">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.08]">
+          <span className="text-xs font-bold text-slate-900 dark:text-white">
             Client Portfolio Details
           </span>
           <button
             type="button"
             onClick={() => setShowClientPopover(false)}
             aria-label="Close client details"
-            className="rounded p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+            className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/[0.06] dark:hover:text-slate-200"
           >
             <X className="h-3.5 w-3.5" />
           </button>
         </div>
         <div className="mt-2.5 space-y-2">
-          <div className="text-xs font-semibold text-gray-900 dark:text-white">
+          <div className="text-xs font-semibold text-slate-900 dark:text-white">
             {allotment.profiles?.full_name || 'Client'}
           </div>
           {clientAddress && (
-            <div className="flex items-start gap-1.5 text-[11px] break-words text-gray-600 dark:text-gray-300">
-              <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-amber-600 dark:text-amber-400" />
+            <div className="flex items-start gap-1.5 text-[11px] break-words text-slate-600 dark:text-slate-300">
+              <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
               <span className="break-words">{clientAddress}</span>
             </div>
           )}
           {clientEmail && (
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-600 dark:text-gray-300">
-              <Mail className="h-3 w-3 shrink-0 text-sky-600 dark:text-sky-400" />
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
+              <Mail className="h-3 w-3 shrink-0 text-sky-500" />
               <a href={`mailto:${clientEmail}`} className="truncate hover:underline">
                 {clientEmail}
               </a>
             </div>
           )}
           {clientPhone && (
-            <div className="flex items-center gap-1.5 font-mono text-[11px] text-gray-600 dark:text-gray-300">
-              <Phone className="h-3 w-3 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+              <Phone className="h-3 w-3 shrink-0 text-emerald-500" />
               <a href={`tel:${clientPhone}`} className="hover:underline">
                 {clientPhone}
               </a>
             </div>
           )}
           {advisorName && (
-            <div className="flex items-center gap-1.5 text-[11px] text-gray-600 dark:text-gray-300">
-              <Users className="h-3 w-3 shrink-0 text-blue-600 dark:text-blue-400" />
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
+              <Users className="h-3 w-3 shrink-0 text-blue-500" />
               <span>{advisorName}</span>
             </div>
           )}
           <div className="pt-1">
-            <span className="inline-flex items-center gap-1 rounded bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-gray-600 dark:bg-gray-800 dark:text-gray-300">
+            <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-slate-300">
               ID: {ticketId || (isRefundDone ? 'Refunded' : 'Missing')}
             </span>
           </div>
@@ -213,36 +213,35 @@ export function PortalAllotmentTableRow({
     return (
       <React.Fragment>
         <tr
-          className={`group border-b border-gray-100 transition-colors hover:bg-slate-50/70 dark:border-white/5 dark:hover:bg-white/[0.02] ${
+          className={`group border-b border-slate-100 transition-colors hover:bg-slate-50/80 dark:border-white/[0.04] dark:hover:bg-white/[0.02] ${
             isSelected ? 'bg-brand-gold/10 dark:bg-brand-gold/15' : ''
           }`}
         >
           {/* 0. Selection Checkbox */}
-          <td className="w-[44px] px-3 py-3.5 text-center align-top">
+          <td className="w-[44px] px-3 py-2.5 text-center align-middle">
             <input
               type="checkbox"
               checked={isSelected}
               onChange={() => onToggleSelect?.(allotment.id)}
               aria-label={`Select unit ${unitNumber}`}
-              className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+              className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-slate-300 dark:border-white/20 dark:bg-[#161D2C]"
             />
           </td>
-
           {/* 1. Ref ID (Ticket / Booking Ref) */}
-          <td className="w-[130px] px-4 py-3.5 align-top whitespace-nowrap">
+          <td className="w-[130px] px-4 py-2.5 align-middle whitespace-nowrap">
             <div className="flex flex-col items-start gap-1">
               {ticketId ? (
-                <span className="inline-flex items-center gap-1 rounded bg-[#0f2942] px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs dark:bg-gray-900">
+                <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-800 shadow-2xs dark:border-white/[0.1] dark:bg-[#161D2C] dark:text-slate-200">
                   <Tag className="text-brand-gold h-2.5 w-2.5" />
                   {ticketId}
                 </span>
               ) : isRefundDone ? (
-                <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
+                <span className="inline-flex items-center gap-1 rounded-md border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
                   Refunded
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                  <AlertCircle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+                <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/40 dark:text-amber-300">
+                  <AlertCircle className="h-2.5 w-2.5 text-amber-500" />
                   Ref: Missing
                 </span>
               )}
@@ -250,43 +249,47 @@ export function PortalAllotmentTableRow({
           </td>
 
           {/* 2. Unit & Property */}
-          <td className="px-4 py-3.5 align-top">
-            <div className="flex flex-col gap-1">
+          <td className="px-4 py-2.5 align-middle">
+            <div className="flex flex-col gap-0.5">
               <div className="flex items-center">
-                <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-bold">
+                <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2 py-0.5 font-mono text-xs font-bold shadow-2xs">
                   Unit {unitNumber}
                 </span>
               </div>
-              <div className="text-xs font-semibold text-gray-900 dark:text-white">
+              <div className="max-w-[180px] truncate text-xs font-semibold text-slate-900 dark:text-white">
                 {allotment.properties?.name || 'Assigned Property'}
               </div>
               {area !== null && area !== undefined && area !== '' && (
-                <div className="text-[11px] text-gray-500 dark:text-gray-400">{area} Sq. Yds.</div>
+                <div className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                  {area} Sq. Yds.
+                </div>
               )}
             </div>
           </td>
-          {/* 2. Sale Mode (Direct Sell / Draw) */}
-          <td className="w-[140px] px-4 py-3.5 align-top whitespace-nowrap">
+          {/* 3. Sale Mode (Direct Sell / Draw) */}
+          <td className="w-[140px] px-4 py-2.5 align-middle whitespace-nowrap">
             <div className="flex flex-col items-start gap-1">
               {allotmentMode === 'Direct Sell' ? (
                 <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 font-sans text-[10.5px] font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/40 dark:text-indigo-300">
-                  <Target className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                  <Target className="h-3 w-3 text-indigo-500 dark:text-indigo-400" />
                   Direct Sell
                 </span>
               ) : allotmentMode === 'Draw' ? (
                 <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-sans text-[10.5px] font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                  <Shuffle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                  <Shuffle className="h-3 w-3 text-amber-500 dark:text-amber-400" />
                   Draw
                 </span>
               ) : (
-                <span className="text-xs text-gray-400">—</span>
+                <span className="font-mono text-xs text-slate-400 select-none dark:text-slate-600">
+                  —
+                </span>
               )}
               {drawDate && drawDate !== 'Direct sell' ? (
-                <span className="font-mono text-[10.5px] text-gray-500 dark:text-gray-400">
+                <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">
                   {drawDate}
                 </span>
               ) : allotmentDate ? (
-                <span className="font-mono text-[10.5px] text-gray-500 dark:text-gray-400">
+                <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">
                   {allotmentDate}
                 </span>
               ) : null}
@@ -294,69 +297,74 @@ export function PortalAllotmentTableRow({
           </td>
 
           {/* 2. Client & Contact */}
-          <td className="relative px-4 py-3.5 align-top">
-            <div className="flex flex-col gap-1">
+          <td className="relative px-4 py-2.5 align-middle">
+            <div className="flex max-w-[200px] flex-col gap-0.5">
               <div className="relative flex items-center gap-1">
-                <span className="text-xs font-bold text-gray-900 dark:text-white">
+                <span className="truncate text-xs font-bold text-slate-900 dark:text-white">
                   {allotment.profiles?.full_name || 'Client'}
                 </span>
                 <button
                   type="button"
                   onClick={() => setShowClientPopover(!showClientPopover)}
                   aria-label="View client details"
-                  className="hover:text-brand-gold hover:bg-brand-gold/10 rounded p-1 text-gray-400 transition-colors"
+                  className="hover:text-brand-gold hover:bg-brand-gold/10 shrink-0 rounded p-1 text-slate-400 transition-colors"
                 >
                   <Info className="h-3 w-3" />
                 </button>
                 {renderClientPopover()}
               </div>
-              {clientPhone && (
-                <a
-                  href={`tel:${clientPhone}`}
-                  className="inline-flex items-center gap-1 font-mono text-[11px] font-medium text-emerald-600 hover:underline dark:text-emerald-400"
-                >
-                  <Phone className="h-2.5 w-2.5" />
-                  {clientPhone}
-                </a>
-              )}
-              {clientEmail && (
-                <a
-                  href={`mailto:${clientEmail}`}
-                  title={clientEmail}
-                  className="inline-flex max-w-[180px] items-center gap-1 truncate text-[11px] text-gray-500 hover:underline dark:text-gray-400"
-                >
-                  <Mail className="h-2.5 w-2.5 shrink-0" />
-                  <span className="truncate">{clientEmail}</span>
-                </a>
-              )}
+              <div className="flex flex-wrap items-center gap-2">
+                {clientPhone && (
+                  <a
+                    href={`tel:${clientPhone}`}
+                    className="inline-flex items-center gap-1 font-mono text-[11px] font-medium text-emerald-600 hover:underline dark:text-emerald-400"
+                  >
+                    <Phone className="h-2.5 w-2.5" />
+                    {clientPhone}
+                  </a>
+                )}
+                {clientEmail && (
+                  <a
+                    href={`mailto:${clientEmail}`}
+                    title={clientEmail}
+                    className="inline-flex max-w-[140px] items-center gap-1 truncate text-[11px] text-slate-500 hover:underline dark:text-slate-400"
+                  >
+                    <Mail className="h-2.5 w-2.5 shrink-0" />
+                    <span className="truncate">{clientEmail}</span>
+                  </a>
+                )}
+              </div>
               {clientAddress && (
                 <div
                   title={clientAddress}
-                  className="flex max-w-[240px] items-start gap-1 text-[10px] leading-tight break-words text-amber-700 dark:text-amber-300"
+                  className="flex max-w-[190px] items-center gap-1 truncate text-[10px] text-amber-700/90 dark:text-amber-400/90"
                 >
-                  <MapPin className="mt-0.5 h-2.5 w-2.5 shrink-0" />
-                  <span className="break-words">{clientAddress}</span>
+                  <MapPin className="h-2.5 w-2.5 shrink-0" />
+                  <span className="truncate">{clientAddress}</span>
                 </div>
               )}
             </div>
           </td>
 
           {/* 3. Advisor */}
-          <td className="px-4 py-3.5 align-top">
+          {/* 5. Advisor */}
+          <td className="px-4 py-2.5 align-middle">
             {advisorName ? (
-              <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-                <UserCheck className="h-3 w-3 shrink-0" />
+              <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-2 py-0.5 text-[11px] font-medium text-blue-700 dark:text-blue-300">
+                <UserCheck className="h-3 w-3 shrink-0 text-blue-600 dark:text-blue-400" />
                 <span className="max-w-[120px] truncate">{advisorName}</span>
               </span>
             ) : (
-              <span className="text-xs text-gray-400">—</span>
+              <span className="font-mono text-xs text-slate-400 select-none dark:text-slate-600">
+                —
+              </span>
             )}
           </td>
 
-          {/* 4. Deal Value & Rate */}
-          <td className="px-4 py-3.5 align-top">
+          {/* 6. Deal Value & Rate */}
+          <td className="px-4 py-2.5 align-middle">
             <div className="flex flex-col">
-              <span className="font-mono text-xs font-bold text-gray-900 dark:text-white">
+              <span className="font-mono text-xs font-bold text-slate-900 tabular-nums dark:text-white">
                 {dealValue > 0
                   ? `₹${dealValue.toLocaleString('en-IN')}`
                   : !isNaN(totalCost) && totalCost > 0
@@ -364,28 +372,30 @@ export function PortalAllotmentTableRow({
                     : '—'}
               </span>
               {dealValue > 0 && Number(area) > 0 && (
-                <span className="text-[10px] text-sky-600 dark:text-sky-400">
+                <span className="font-mono text-[10px] text-slate-500 dark:text-slate-400">
                   @ ₹{Math.round(dealValue / Number(area)).toLocaleString('en-IN')}/yd
                 </span>
               )}
               {bookingDate && (
-                <span className="text-[10px] text-gray-400">Booked: {bookingDate}</span>
+                <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                  Booked: {bookingDate}
+                </span>
               )}
             </div>
           </td>
 
-          {/* 5. Received & Progress */}
-          <td className="px-4 py-3.5 align-top">
+          {/* 7. Received & Progress */}
+          <td className="px-4 py-2.5 align-middle">
             <div className="flex flex-col gap-1">
               <div className="flex items-baseline justify-between gap-1">
-                <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                <span className="font-mono text-xs font-bold text-emerald-600 tabular-nums dark:text-emerald-400">
                   ₹{totalPaid.toLocaleString('en-IN')}
                 </span>
-                <span className="font-mono text-[10px] font-semibold text-gray-600 dark:text-gray-300">
+                <span className="font-mono text-[10px] font-semibold text-slate-600 dark:text-slate-300">
                   {Math.round(clampedPct)}%
                 </span>
               </div>
-              <div className="mt-1.5 h-1.5 w-full max-w-[120px] min-w-[70px] overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+              <div className="mt-1 h-1 w-full max-w-[120px] min-w-[70px] overflow-hidden rounded-full bg-slate-100 dark:bg-white/[0.08]">
                 <div
                   className={`h-full rounded-full transition-all duration-300 ${
                     clampedPct >= 100
@@ -400,29 +410,29 @@ export function PortalAllotmentTableRow({
             </div>
           </td>
 
-          {/* 6. Balance Due */}
-          <td className="px-4 py-3.5 align-top">
+          {/* 8. Balance Due */}
+          <td className="px-4 py-2.5 align-middle">
             <div className="flex flex-col items-start gap-1">
               {isRefundDone ? (
                 <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[10px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
                   Refund Done
                 </span>
               ) : (
-                <span className="font-mono text-xs font-bold text-amber-600 dark:text-amber-400">
+                <span className="font-mono text-xs font-bold text-amber-600 tabular-nums dark:text-amber-400">
                   {dealValue > 0 ? `₹${balanceDue.toLocaleString('en-IN')}` : '—'}
                 </span>
               )}
               {isOverdue && (
-                <span className="mt-1 inline-flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9.5px] font-bold text-amber-700 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
+                <span className="mt-0.5 inline-flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 font-mono text-[9.5px] font-bold text-amber-700 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
                   <AlertTriangle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
                   Overdue: {overdueDateStr}
                 </span>
               )}
             </div>
           </td>
-
           {/* 7. Actions */}
-          <td className="px-4 py-3.5 text-right align-top">
+          {/* 9. Actions */}
+          <td className="px-4 py-2.5 text-right align-middle">
             <div className="flex items-center justify-end gap-1.5">
               {onOpenLedger && (
                 <button
@@ -430,7 +440,7 @@ export function PortalAllotmentTableRow({
                   onClick={() => onOpenLedger(allotment)}
                   aria-label="View Client Ledger"
                   title="Open Customer Ledger Statement"
-                  className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold transition-all active:scale-95"
+                  className="border-brand-gold/40 bg-brand-gold/10 hover:bg-brand-gold/20 text-brand-navy dark:text-brand-gold inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-bold shadow-2xs transition-all active:scale-95"
                 >
                   <BookOpen className="h-3.5 w-3.5" />
                   <span className="hidden sm:inline">Ledger</span>
@@ -440,7 +450,7 @@ export function PortalAllotmentTableRow({
               <button
                 type="button"
                 onClick={onToggleExpand}
-                className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-2.5 py-1.5 text-xs font-medium text-gray-700 transition-colors hover:bg-gray-200 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+                className="inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-slate-100 px-2.5 py-1.5 text-xs font-medium text-slate-700 transition-colors hover:bg-slate-200 dark:border-white/[0.08] dark:bg-[#161D2C] dark:text-slate-300 dark:hover:bg-white/[0.08]"
               >
                 <span className="hidden sm:inline">
                   {isExpanded ? t('hidePayments') : t('viewPayments')}
@@ -455,7 +465,7 @@ export function PortalAllotmentTableRow({
               {isRefundDone ? (
                 <span
                   title="Refunded Allotment (Archived & Non-Editable)"
-                  className="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-[11px] font-semibold text-gray-400 dark:border-white/10 dark:bg-white/5 dark:text-gray-500"
+                  className="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] font-semibold text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
                 >
                   <Lock className="h-3 w-3" />
                   <span className="hidden sm:inline">Locked</span>
@@ -466,7 +476,7 @@ export function PortalAllotmentTableRow({
                     type="button"
                     onClick={() => onEdit(allotment)}
                     aria-label={t('editAllotment')}
-                    className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
+                    className="rounded-lg p-1.5 text-slate-400 transition-all hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
                   >
                     <Edit className="h-3.5 w-3.5" />
                   </button>
@@ -475,7 +485,7 @@ export function PortalAllotmentTableRow({
                     type="button"
                     onClick={() => onDelete(allotment.id)}
                     aria-label="Delete"
-                    className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+                    className="rounded-lg p-1.5 text-slate-400 transition-all hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
                   >
                     <Trash2 className="h-3.5 w-3.5" />
                   </button>
@@ -486,7 +496,7 @@ export function PortalAllotmentTableRow({
         </tr>
 
         {isExpanded && children && (
-          <tr className="border-b border-gray-100 bg-slate-50/60 dark:border-white/5 dark:bg-black/20">
+          <tr className="border-b border-slate-100 bg-slate-50/60 dark:border-white/[0.04] dark:bg-[#0c1017]/80">
             <td colSpan={10} className="px-4 py-4">
               {children}
             </td>
@@ -502,7 +512,7 @@ export function PortalAllotmentTableRow({
       className={`rounded-2xl border p-4 shadow-xs transition-all hover:shadow-md sm:p-5 ${
         isSelected
           ? 'border-brand-gold/60 ring-brand-gold/40 bg-brand-gold/5 dark:bg-brand-gold/10 ring-1'
-          : 'hover:border-brand-gold/30 border-gray-200/80 bg-white dark:border-white/10 dark:bg-gray-800'
+          : 'hover:border-brand-gold/30 border-slate-200/80 bg-white dark:border-white/[0.08] dark:bg-[#111622]'
       }`}
     >
       {/* Top Header Row: Unit, Property & Direct Actions */}
@@ -515,41 +525,41 @@ export function PortalAllotmentTableRow({
               checked={isSelected}
               onChange={() => onToggleSelect?.(allotment.id)}
               aria-label={`Select unit ${unitNumber}`}
-              className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700"
+              className="text-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-slate-300 dark:border-white/20 dark:bg-[#161D2C]"
             />
           </div>
-          <div className="bg-brand-gold/10 hidden rounded-xl p-2.5 sm:block">
+          <div className="border-brand-gold/20 bg-brand-gold/10 hidden rounded-xl border p-2.5 sm:block">
             <Building2 className="text-brand-gold h-5 w-5" />
           </div>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-1.5">
-              <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2.5 py-0.5 font-mono text-xs font-bold">
+              <span className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold inline-flex items-center rounded-md border px-2.5 py-0.5 font-mono text-xs font-bold shadow-2xs">
                 Unit {unitNumber}
               </span>
               {ticketId ? (
-                <span className="inline-flex items-center gap-1 rounded bg-[#0f2942] px-2 py-0.5 font-mono text-[11px] font-bold text-white shadow-2xs dark:bg-gray-900">
+                <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[11px] font-bold text-slate-800 shadow-2xs dark:border-white/[0.1] dark:bg-[#161D2C] dark:text-slate-200">
                   <Tag className="text-brand-gold h-2.5 w-2.5" />
                   Ref ID: {ticketId}
                 </span>
               ) : isRefundDone ? (
-                <span className="inline-flex items-center gap-1 rounded border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
+                <span className="inline-flex items-center gap-1 rounded-md border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-rose-600 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-400">
                   Refunded
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 rounded border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-700 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                  <AlertCircle className="h-3 w-3 text-amber-600 dark:text-amber-400" />
+                <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-700 dark:border-amber-500/30 dark:bg-amber-950/40 dark:text-amber-300">
+                  <AlertCircle className="h-3 w-3 text-amber-500" />
                   Ref ID: Missing
                 </span>
               )}
               {allotmentMode === 'Direct Sell' && (
                 <span className="inline-flex items-center gap-1 rounded-md border border-indigo-500/30 bg-indigo-500/10 px-2 py-0.5 font-sans text-xs font-bold text-indigo-700 dark:border-indigo-500/40 dark:bg-indigo-950/40 dark:text-indigo-300">
-                  <Target className="h-3 w-3 text-indigo-600 dark:text-indigo-400" />
+                  <Target className="h-3 w-3 text-indigo-500 dark:text-indigo-400" />
                   Direct Sell {allotmentDate ? `• ${allotmentDate}` : ''}
                 </span>
               )}
               {allotmentMode === 'Draw' && (
                 <span className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 font-sans text-xs font-bold text-amber-800 dark:border-amber-500/40 dark:bg-amber-950/40 dark:text-amber-300">
-                  <Shuffle className="h-3 w-3 text-amber-600 dark:text-amber-400" /> Draw Allotment{' '}
+                  <Shuffle className="h-3 w-3 text-amber-500 dark:text-amber-400" /> Draw Allotment{' '}
                   {drawDate && drawDate !== 'Direct sell'
                     ? `• ${drawDate}`
                     : allotmentDate
@@ -566,10 +576,10 @@ export function PortalAllotmentTableRow({
 
             <div className="relative mt-1.5">
               <div className="flex items-center gap-1.5">
-                <h3 className="truncate text-sm font-bold text-gray-900 sm:text-base dark:text-white">
+                <h3 className="truncate text-sm font-bold text-slate-900 sm:text-base dark:text-white">
                   {allotment.profiles?.full_name || 'Client'}
                   {allotment.profiles?.email && (
-                    <span className="ml-1.5 text-xs font-normal text-gray-400">
+                    <span className="ml-1.5 text-xs font-normal text-slate-400">
                       ({allotment.profiles?.email})
                     </span>
                   )}
@@ -578,7 +588,7 @@ export function PortalAllotmentTableRow({
                   type="button"
                   onClick={() => setShowClientPopover(!showClientPopover)}
                   aria-label="View client details"
-                  className="hover:text-brand-gold hover:bg-brand-gold/10 rounded p-1 text-gray-400 transition-colors"
+                  className="hover:text-brand-gold hover:bg-brand-gold/10 rounded p-1 text-slate-400 transition-colors"
                 >
                   <Info className="h-3 w-3" />
                 </button>
@@ -593,7 +603,7 @@ export function PortalAllotmentTableRow({
           {isRefundDone ? (
             <span
               title="Refunded Allotment (Archived & Non-Editable)"
-              className="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-gray-200 bg-gray-50 px-2 py-1 text-xs font-semibold text-gray-400 dark:border-white/10 dark:bg-white/5 dark:text-gray-500"
+              className="inline-flex cursor-not-allowed items-center gap-1 rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-400 dark:border-white/10 dark:bg-white/5 dark:text-slate-500"
             >
               <Lock className="h-3.5 w-3.5" />
               <span>Locked</span>
@@ -604,7 +614,7 @@ export function PortalAllotmentTableRow({
                 type="button"
                 onClick={() => onEdit(allotment)}
                 aria-label={t('editAllotment')}
-                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-950/30"
+                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
               >
                 <Edit className="h-4 w-4" />
               </button>
@@ -612,7 +622,7 @@ export function PortalAllotmentTableRow({
                 type="button"
                 onClick={() => onDelete(allotment.id)}
                 aria-label="Delete"
-                className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-950/30"
+                className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
               >
                 <Trash2 className="h-4 w-4" />
               </button>
@@ -622,27 +632,27 @@ export function PortalAllotmentTableRow({
       </div>
 
       {/* Property & Specs Meta Info */}
-      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-gray-600 dark:text-gray-400">
+      <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-600 dark:text-slate-400">
         <p>
-          <strong className="text-gray-900 dark:text-gray-300">{t('propertyLabel')}:</strong>{' '}
+          <strong className="text-slate-900 dark:text-slate-300">{t('propertyLabel')}:</strong>{' '}
           {allotment.properties?.name || 'Assigned Property'}
         </p>
         <p>
-          <strong className="text-gray-900 dark:text-gray-300">{t('unitLabel')}:</strong>{' '}
-          <span className="font-semibold text-gray-900 dark:text-white">{unitNumber}</span>
+          <strong className="text-slate-900 dark:text-slate-300">{t('unitLabel')}:</strong>{' '}
+          <span className="font-semibold text-slate-900 dark:text-white">{unitNumber}</span>
         </p>
         {area !== null && area !== undefined && area !== '' && (
           <p>
-            <strong className="text-gray-900 dark:text-gray-300">{t('area')}:</strong>{' '}
+            <strong className="text-slate-900 dark:text-slate-300">{t('area')}:</strong>{' '}
             <span>{area}</span> Sq. Yds.
           </p>
         )}
         {!isNaN(totalCost) && totalCost > 0 && (
           <p>
-            <strong className="text-gray-900 dark:text-gray-300">{t('totalCostLabel')}:</strong>{' '}
-            <span>₹{totalCost.toLocaleString('en-IN')}</span>
+            <strong className="text-slate-900 dark:text-slate-300">{t('totalCostLabel')}:</strong>{' '}
+            <span className="font-mono font-bold">₹{totalCost.toLocaleString('en-IN')}</span>
             {Number(area) > 0 && (
-              <span className="ml-1 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
+              <span className="ml-1 font-mono text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                 (@ ₹{Math.round(totalCost / Number(area)).toLocaleString('en-IN')}/sq.yd.)
               </span>
             )}
@@ -650,13 +660,13 @@ export function PortalAllotmentTableRow({
         )}
         {bookingDate && (
           <p>
-            <strong className="text-gray-900 dark:text-gray-300">{t('bookingDate')}:</strong>{' '}
+            <strong className="text-slate-900 dark:text-slate-300">{t('bookingDate')}:</strong>{' '}
             <span>{bookingDate}</span>
           </p>
         )}
         {allotmentMode && (
           <p className="flex items-center gap-1">
-            <strong className="text-gray-900 dark:text-gray-300">Mode:</strong>{' '}
+            <strong className="text-slate-900 dark:text-slate-300">Mode:</strong>{' '}
             <span
               className={
                 allotmentMode === 'Direct Sell'
@@ -665,9 +675,9 @@ export function PortalAllotmentTableRow({
               }
             >
               {allotmentMode === 'Direct Sell' ? (
-                <Target className="h-2.5 w-2.5 text-indigo-600 dark:text-indigo-400" />
+                <Target className="h-2.5 w-2.5 text-indigo-500 dark:text-indigo-400" />
               ) : (
-                <Shuffle className="h-2.5 w-2.5 text-amber-600 dark:text-amber-400" />
+                <Shuffle className="h-2.5 w-2.5 text-amber-500 dark:text-amber-400" />
               )}
               {allotmentMode === 'Direct Sell' ? 'Direct Sell' : 'Draw'}
               {drawDate && drawDate !== 'Direct sell'
@@ -680,9 +690,9 @@ export function PortalAllotmentTableRow({
         )}
         {advisorName && (
           <p className="flex items-center gap-1">
-            <strong className="text-gray-900 dark:text-gray-300">{t('advisorLabel')}:</strong>{' '}
-            <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 dark:bg-blue-950/40 dark:text-blue-300">
-              <UserCheck className="h-3 w-3" />
+            <strong className="text-slate-900 dark:text-slate-300">{t('advisorLabel')}:</strong>{' '}
+            <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-blue-700 dark:text-blue-300">
+              <UserCheck className="h-3 w-3 text-blue-500" />
               <span>{advisorName}</span>
             </span>
           </p>
@@ -690,7 +700,7 @@ export function PortalAllotmentTableRow({
         {clientPhone && (
           <a
             href={`tel:${clientPhone}`}
-            className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 hover:underline dark:bg-emerald-950/40 dark:text-emerald-300"
+            className="inline-flex items-center gap-1 rounded-md bg-emerald-500/10 px-1.5 py-0.5 font-mono text-[11px] font-semibold text-emerald-700 hover:underline dark:text-emerald-300"
           >
             <Phone className="h-3 w-3" />
             {clientPhone}
@@ -699,7 +709,7 @@ export function PortalAllotmentTableRow({
         {clientEmail && (
           <a
             href={`mailto:${clientEmail}`}
-            className="inline-flex items-center gap-1 rounded-md bg-sky-50 px-1.5 py-0.5 text-[11px] text-sky-700 hover:underline dark:bg-sky-950/40 dark:text-sky-300"
+            className="inline-flex items-center gap-1 rounded-md bg-sky-500/10 px-1.5 py-0.5 text-[11px] text-sky-700 hover:underline dark:text-sky-300"
           >
             <Mail className="h-3 w-3" />
             {clientEmail}
@@ -708,7 +718,7 @@ export function PortalAllotmentTableRow({
         {clientAddress && (
           <span
             title={clientAddress}
-            className="inline-flex items-start gap-1 rounded-md bg-amber-50 px-1.5 py-0.5 text-[11px] leading-snug break-words text-amber-800 dark:bg-amber-950/40 dark:text-amber-300"
+            className="inline-flex items-start gap-1 rounded-md bg-amber-500/10 px-1.5 py-0.5 text-[11px] leading-snug break-words text-amber-800 dark:text-amber-300"
           >
             <MapPin className="mt-0.5 h-3 w-3 shrink-0" />
             <span className="break-words">{clientAddress}</span>
@@ -717,15 +727,15 @@ export function PortalAllotmentTableRow({
       </div>
 
       {/* 3-Column Financial Realization Meter */}
-      <div className="mt-3.5 rounded-xl border border-gray-100 bg-slate-50/90 p-3 text-xs dark:border-white/5 dark:bg-white/[0.02]">
+      <div className="mt-3.5 rounded-xl border border-slate-100 bg-slate-50/90 p-3 text-xs dark:border-white/[0.06] dark:bg-[#161D2C]/60">
         <div className="grid grid-cols-3 gap-2 text-center sm:gap-4 sm:text-left">
           {/* Col 1: Deal Value */}
           <div>
-            <div className="flex items-center justify-center gap-1 text-[11px] text-gray-500 sm:justify-start dark:text-gray-400">
+            <div className="flex items-center justify-center gap-1 text-[11px] text-slate-500 sm:justify-start dark:text-slate-400">
               <TrendingUp className="h-3 w-3 text-blue-500" />
               <span>Deal Value</span>
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold text-gray-900 sm:text-sm dark:text-white">
+            <div className="mt-0.5 font-mono text-xs font-bold text-slate-900 tabular-nums sm:text-sm dark:text-white">
               {dealValue > 0 ? `₹${dealValue.toLocaleString('en-IN')}` : 'Not Set'}
             </div>
           </div>
@@ -736,10 +746,10 @@ export function PortalAllotmentTableRow({
               <Wallet className="h-3 w-3" />
               <span>Received</span>
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold text-emerald-600 sm:text-sm dark:text-emerald-400">
+            <div className="mt-0.5 font-mono text-xs font-bold text-emerald-600 tabular-nums sm:text-sm dark:text-emerald-400">
               ₹{totalPaid.toLocaleString('en-IN')}
             </div>
-            <div className="mx-auto mt-1.5 h-1.5 w-full max-w-[120px] min-w-[70px] overflow-hidden rounded-full bg-gray-100 sm:mx-0 dark:bg-gray-700">
+            <div className="mx-auto mt-1.5 h-1.5 w-full max-w-[120px] min-w-[70px] overflow-hidden rounded-full bg-slate-100 sm:mx-0 dark:bg-white/[0.08]">
               <div
                 className={`h-full rounded-full transition-all duration-300 ${
                   clampedPct >= 100
@@ -759,7 +769,7 @@ export function PortalAllotmentTableRow({
               <Clock className="h-3 w-3" />
               <span>Balance</span>
             </div>
-            <div className="mt-0.5 font-mono text-xs font-bold text-amber-600 sm:text-sm dark:text-amber-400">
+            <div className="mt-0.5 font-mono text-xs font-bold text-amber-600 tabular-nums sm:text-sm dark:text-amber-400">
               {isRefundDone
                 ? 'Refunded'
                 : dealValue > 0
@@ -777,8 +787,8 @@ export function PortalAllotmentTableRow({
 
         {/* Progress Bar & Realization Percentage */}
         {dealValue > 0 && (
-          <div className="mt-2.5 flex items-center gap-2 border-t border-gray-200/60 pt-2 dark:border-white/5">
-            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-gray-700">
+          <div className="mt-2.5 flex items-center gap-2 border-t border-slate-200/60 pt-2 dark:border-white/[0.06]">
+            <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-100 dark:bg-white/[0.08]">
               <div
                 className={`h-full rounded-full transition-all duration-300 ${
                   clampedPct >= 100
@@ -790,7 +800,7 @@ export function PortalAllotmentTableRow({
                 style={{ width: `${clampedPct}%` }}
               />
             </div>
-            <span className="font-mono text-[11px] font-semibold text-gray-600 dark:text-gray-300">
+            <span className="font-mono text-[11px] font-semibold text-slate-600 dark:text-slate-300">
               {Math.round(clampedPct)}% Realized
             </span>
           </div>
@@ -798,14 +808,14 @@ export function PortalAllotmentTableRow({
       </div>
 
       {/* Action Bar */}
-      <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-gray-100 pt-3 dark:border-white/5">
+      <div className="mt-3.5 flex items-center justify-between gap-2 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
         {onOpenLedger ? (
           <button
             type="button"
             onClick={() => onOpenLedger(allotment)}
             aria-label="View Client Ledger"
             title="Open Customer Ledger Statement"
-            className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold transition-all active:scale-95"
+            className="border-brand-gold/40 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold shadow-2xs transition-all active:scale-95"
           >
             <BookOpen className="h-3.5 w-3.5" />
             <span>Ledger</span>
@@ -817,7 +827,7 @@ export function PortalAllotmentTableRow({
         <button
           type="button"
           onClick={onToggleExpand}
-          className="bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-xl px-3.5 py-2 text-xs font-semibold transition-colors"
+          className="border-brand-gold/30 bg-brand-gold/10 text-brand-navy hover:bg-brand-gold/20 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-xl border px-3.5 py-2 text-xs font-semibold transition-colors"
         >
           <span>{isExpanded ? t('hidePayments') : t('viewPayments')}</span>
           {isExpanded ? (
@@ -830,7 +840,9 @@ export function PortalAllotmentTableRow({
 
       {/* Expandable Schedule Drawer */}
       {isExpanded && children && (
-        <div className="mt-3 border-t border-gray-100 pt-3 dark:border-white/5">{children}</div>
+        <div className="mt-3 border-t border-slate-100 pt-3 dark:border-white/[0.06]">
+          {children}
+        </div>
       )}
     </div>
   );
