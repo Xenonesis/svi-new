@@ -61,6 +61,7 @@ export function ProjectDropdown({
         <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white/95 p-2 shadow-lg backdrop-blur-md dark:border-white/10 dark:bg-slate-900/95">
           <Link
             href="/projects/current"
+            prefetch={false}
             className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 text-amber-500 transition-colors group-hover/item:bg-slate-900 group-hover/item:text-white dark:group-hover/item:bg-amber-400 dark:group-hover/item:text-slate-950">
@@ -81,6 +82,7 @@ export function ProjectDropdown({
           </Link>
           <Link
             href="/projects/completed"
+            prefetch={false}
             className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 text-amber-500 transition-colors group-hover/item:bg-slate-900 group-hover/item:text-white dark:group-hover/item:bg-amber-400 dark:group-hover/item:text-slate-950">
@@ -101,6 +103,7 @@ export function ProjectDropdown({
           </Link>
           <Link
             href="/plots-in-jaipur"
+            prefetch={false}
             className="group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 hover:bg-gray-50 dark:hover:bg-white/10"
           >
             <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-400/10 text-amber-500 transition-colors group-hover/item:bg-slate-900 group-hover/item:text-white dark:group-hover/item:bg-amber-400 dark:group-hover/item:text-slate-950">

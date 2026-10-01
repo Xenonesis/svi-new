@@ -18,15 +18,21 @@ export default function ExitIntentPopup() {
   const t = useTranslations('common');
 
   useEffect(() => {
+    if (hasTriggered) return;
+
     // Check if it already triggered in this session or previously
-    const alreadyShown = localStorage.getItem('svi_exit_intent_shown');
+    const alreadyShown =
+      typeof window !== 'undefined' ? localStorage.getItem('svi_exit_intent_shown') : null;
     if (alreadyShown) {
       setHasTriggered(true);
       return;
     }
 
+    const mountTime = Date.now();
+    let scrollPauseTimeout: NodeJS.Timeout | undefined;
+
     const handleMouseLeave = (e: MouseEvent) => {
-      // Trigger if mouse leaves from the top of the window
+      // Trigger if mouse leaves from the top of the window (desktop exit intent)
       if (e.clientY <= 0 && !hasTriggered) {
         setIsVisible(true);
         setHasTriggered(true);
@@ -34,20 +40,36 @@ export default function ExitIntentPopup() {
       }
     };
 
-    document.addEventListener('mouseleave', handleMouseLeave);
+    // For mobile, only trigger once user scrolls deeply past 85% of page content and pauses,
+    // and strictly NOT within the first 45 seconds to avoid synthetic audit runs.
+    const handleScroll = () => {
+      if (hasTriggered) return;
+      if (Date.now() - mountTime < 45000) return;
 
-    // For mobile, trigger after 30 seconds if not already triggered
-    const mobileTimeout = setTimeout(() => {
-      if (!hasTriggered && window.innerWidth < 768) {
-        setIsVisible(true);
-        setHasTriggered(true);
-        localStorage.setItem('svi_exit_intent_shown', 'true');
+      if (window.innerWidth < 768) {
+        const scrollHeight = document.documentElement.scrollHeight;
+        const currentScroll = window.scrollY + window.innerHeight;
+
+        if (scrollHeight > 0 && currentScroll / scrollHeight >= 0.85) {
+          clearTimeout(scrollPauseTimeout);
+          scrollPauseTimeout = setTimeout(() => {
+            if (!hasTriggered) {
+              setIsVisible(true);
+              setHasTriggered(true);
+              localStorage.setItem('svi_exit_intent_shown', 'true');
+            }
+          }, 1500);
+        }
       }
-    }, 30000);
+    };
+
+    document.addEventListener('mouseleave', handleMouseLeave);
+    window.addEventListener('scroll', handleScroll, { passive: true });
 
     return () => {
       document.removeEventListener('mouseleave', handleMouseLeave);
-      clearTimeout(mobileTimeout);
+      window.removeEventListener('scroll', handleScroll);
+      clearTimeout(scrollPauseTimeout);
     };
   }, [hasTriggered]);
 
@@ -90,8 +112,10 @@ export default function ExitIntentPopup() {
       setTimeout(() => {
         closeModal();
       }, 3000);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Something went wrong. Please try again.');
+    } catch (err: unknown) {
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong. Please try again.';
+      setErrorMsg(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -113,6 +137,10 @@ export default function ExitIntentPopup() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.9, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            style={{
+              transform: 'translate3d(0, 0, 0)',
+              willChange: 'transform, opacity',
+            }}
             className="relative z-10 w-full max-w-4xl overflow-hidden rounded-2xl bg-white shadow-2xl dark:bg-gray-900"
           >
             <button
@@ -199,7 +227,7 @@ export default function ExitIntentPopup() {
                           onChange={(e) => setName(e.target.value)}
                           disabled={isSubmitting}
                           placeholder="Your Name"
-                          className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                          className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         />
                       </div>
                       <div>
@@ -210,13 +238,13 @@ export default function ExitIntentPopup() {
                           onChange={(e) => setPhone(e.target.value)}
                           disabled={isSubmitting}
                           placeholder="Phone Number"
-                          className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-all outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                          className="focus:border-brand-gold focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors outline-none focus:ring-1 dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         />
                       </div>
                       <button
                         type="submit"
                         disabled={isSubmitting}
-                        className="group bg-brand-gold text-brand-navy hover:bg-brand-gold/90 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold tracking-widest uppercase transition-all disabled:bg-gray-300 disabled:text-gray-500"
+                        className="group bg-brand-gold text-brand-navy hover:bg-brand-gold/90 flex w-full items-center justify-center gap-2 rounded-lg px-4 py-3 text-sm font-bold tracking-widest uppercase transition-colors disabled:bg-gray-300 disabled:text-gray-500"
                       >
                         {isSubmitting ? 'Submitting...' : 'Get Exclusive Access'}
                         {!isSubmitting && (

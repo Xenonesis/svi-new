@@ -70,9 +70,9 @@ export default function AboutSection() {
                 loading="lazy"
                 width={800}
                 height={500}
-                sizes="(max-width: 640px) 320px, (max-width: 1024px) 500px, 640px"
+                sizes="(max-width: 640px) 90vw, (max-width: 1024px) 45vw, 600px"
                 className="h-[260px] w-full object-cover sm:h-[380px] lg:h-[500px]"
-                quality={75}
+                quality={70}
               />
             </div>
             <motion.div

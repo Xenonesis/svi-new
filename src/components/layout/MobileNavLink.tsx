@@ -16,7 +16,7 @@ export function MobileNavLink({ href, children, isActive }: MobileNavLinkProps) 
   return (
     <LinkComp
       href={href}
-      prefetch={isUnlocalized ? false : undefined}
+      prefetch={false}
       className={`block py-2.5 text-[clamp(15px,4vw,18px)] font-semibold tracking-wide transition-colors ${
         isActive
           ? 'text-brand-gold'

@@ -48,7 +48,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
     <div
       onClick={() => handleMove(position)}
       className={cn(
-        'absolute top-1/2 left-1/2 cursor-pointer border-2 p-8 transition-all duration-300 ease-out',
+        'absolute top-1/2 left-1/2 cursor-pointer border-2 p-8 transition-[transform,opacity,background-color,border-color,color,box-shadow] duration-300 ease-out',
         isCenter
           ? 'bg-brand-gold text-brand-navy border-brand-gold z-10'
           : 'text-brand-navy dark:bg-brand-dark-surface dark:border-brand-dark-border hover:border-brand-gold/50 z-0 border-gray-200 bg-white dark:text-gray-100'
@@ -66,6 +66,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
         boxShadow: isCenter
           ? '0px 8px 0px 4px var(--color-brand-dark-border)'
           : '0px 0px 0px 0px transparent',
+        willChange: 'transform',
       }}
     >
       <span
@@ -86,7 +87,7 @@ const TestimonialCard: React.FC<TestimonialCardProps> = ({
           alt={`${t(`list.t${testimonial.id}.by`).split(',')[0]}`}
           fill
           sizes="48px"
-          className="object-cover object-top grayscale transition-all duration-300 hover:grayscale-0"
+          className="object-cover object-top grayscale transition-[filter] duration-300 hover:grayscale-0"
         />
       </div>
       <h3
@@ -114,7 +115,7 @@ export const StaggerTestimonials: React.FC = () => {
   const [cardSize, setCardSize] = useState(365);
   const [rotationOffset, setRotationOffset] = useState(0);
   const [reducedMotion, setReducedMotion] = useState(false);
-  const autoPlayRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
+  const autoPlayRef = useRef<NodeJS.Timeout | undefined>(undefined);
 
   // Check prefers-reduced-motion on mount
   useEffect(() => {

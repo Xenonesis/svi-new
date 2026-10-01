@@ -112,7 +112,7 @@ export function MoreDropdown({
               <LinkComp
                 key={item.path}
                 href={item.path}
-                prefetch={isUnlocalized ? false : undefined}
+                prefetch={false}
                 className={`group/item flex items-start gap-3 rounded-xl p-2.5 transition-all duration-200 ${
                   isActive ? 'bg-amber-500/10' : 'hover:bg-gray-50 dark:hover:bg-white/10'
                 }`}

@@ -35,6 +35,7 @@ const Footer = memo(function Footer() {
           <div>
             <Link
               href="/"
+              prefetch={false}
               className="mb-6 inline-block transition-all duration-300 dark:inline-flex dark:rounded-xl dark:bg-white dark:px-3 dark:py-1.5 dark:shadow-sm dark:hover:scale-[1.02]"
             >
               <Image
@@ -84,6 +85,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('nav.home')}
@@ -92,6 +94,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/about"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('nav.aboutUs')}
@@ -100,6 +103,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/leadership"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('nav.leadership')}
@@ -108,6 +112,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/faq"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('nav.faq')}
@@ -116,6 +121,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/projects/completed"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('nav.completedProjects')}
@@ -124,6 +130,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/registration"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('footer.register')}
@@ -132,6 +139,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/contact"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('nav.contactUs')}
@@ -140,6 +148,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/changelog"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('footer.changelog')}
@@ -156,6 +165,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/payment"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('footer.payOnline')}
@@ -164,6 +174,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/grievance"
+                  prefetch={false}
                   className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                 >
                   {t('footer.raiseGrievance')}
@@ -172,6 +183,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/employee/login"
+                  prefetch={false}
                   className="text-[11px] font-bold tracking-wider text-blue-600 uppercase transition-colors hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300"
                 >
                   Staff & Employee Portal →
@@ -197,6 +209,7 @@ const Footer = memo(function Footer() {
               <li>
                 <Link
                   href="/plots-in-jaipur"
+                  prefetch={false}
                   className="dark:text-brand-gold text-[11px] font-bold tracking-wider text-amber-800 uppercase transition-colors hover:underline"
                 >
                   ★ Plots in Jaipur (All Townships)
@@ -226,6 +239,7 @@ const Footer = memo(function Footer() {
                 <li key={href}>
                   <Link
                     href={href}
+                    prefetch={false}
                     className="text-brand-navy hover:text-brand-gold dark:hover:text-brand-gold text-[11px] font-semibold tracking-wider uppercase transition-colors dark:text-gray-200"
                   >
                     {label}
@@ -355,10 +369,18 @@ const Footer = memo(function Footer() {
             &copy; {CURRENT_YEAR} SVI Infra Solutions.
           </p>
           <div className="flex gap-6 text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-            <Link href="/privacy-policy" className="hover:text-brand-gold transition-colors">
+            <Link
+              href="/privacy-policy"
+              prefetch={false}
+              className="hover:text-brand-gold transition-colors"
+            >
               {t('footer.privacy')}
             </Link>
-            <Link href="/terms-conditions" className="hover:text-brand-gold transition-colors">
+            <Link
+              href="/terms-conditions"
+              prefetch={false}
+              className="hover:text-brand-gold transition-colors"
+            >
               {t('footer.terms')}
             </Link>
           </div>

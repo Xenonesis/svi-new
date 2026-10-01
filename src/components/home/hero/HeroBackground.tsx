@@ -46,8 +46,8 @@ export default function HeroBackground({
             priority={currentHeroIndex === 0}
             fetchPriority={currentHeroIndex === 0 ? 'high' : 'low'}
             loading={currentHeroIndex === 0 ? 'eager' : 'lazy'}
-            quality={isMobile ? 75 : 82}
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1920px"
+            quality={isMobile ? 75 : 80}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 100vw"
             className="object-cover object-center brightness-[1.04] contrast-[1.02]"
             placeholder={currentImage.blurDataURL ? 'blur' : 'empty'}
             blurDataURL={currentImage.blurDataURL}
