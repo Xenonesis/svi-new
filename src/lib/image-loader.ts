@@ -84,6 +84,9 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
     return encodeURI(`${basePath}.webp?w=${width}`);
   }
   // Other local images (e.g. /logo.png, /signature.png, etc.)
+  if (cleanSrc === '/logo.png' || cleanSrc === 'logo.png') {
+    return '/logo.webp';
+  }
   // Always encodeURI so spaces never break HTML srcset parsing
   return encodeURI(`${cleanSrc}?w=${width}`);
 }
