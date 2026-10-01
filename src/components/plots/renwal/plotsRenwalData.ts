@@ -39,8 +39,8 @@ export const RENWAL_PAGE_KEYWORDS = [
 ];
 
 export const RENWAL_PAGE_META = {
-  titleHi: 'रेनवाल रेलवे स्टेशन व रीको एरिया के पास प्लॉट्स | जयपुर - खाटू हाईवे',
-  titleEn: 'Plots Near Renwal Railway Station & RIICO Industrial Area | Jaipur - Khatu Highway',
+  titleHi: 'रेनवाल रेलवे स्टेशन के पास प्लॉट्स',
+  titleEn: 'Plots Near Renwal Railway Station',
   descHi:
     'रेनवाल रेलवे स्टेशन और रीको इंडस्ट्रियल एरिया के पास 100% स्पष्ट रजिस्ट्री आवासीय प्लॉट्स। 35 मिनट में जयपुर जंक्शन, पक्की सड़कें, बाउंड्री वॉल और फ्री कैब साइट विजिट।',
   descEn:

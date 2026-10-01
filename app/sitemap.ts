@@ -5,9 +5,9 @@ import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/src/lib/seo';
 
 // Bump this when static page content actually changes.
-const STATIC_LAST_MODIFIED = new Date('2026-08-16T00:00:00.000Z');
+const STATIC_LAST_MODIFIED = new Date('2026-10-01T00:00:00.000Z');
 // Dynamic freshness timestamp for updated corridor hubs and high-intent landing pages
-const CORRIDOR_LAST_MODIFIED = new Date('2026-09-28T00:00:00.000Z');
+const CORRIDOR_LAST_MODIFIED = new Date('2026-10-01T00:00:00.000Z');
 
 function getSitemapEntry(
   path: string,
@@ -61,9 +61,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     ...getSitemapEntry('/about', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/careers', STATIC_LAST_MODIFIED, 'monthly', 0.6),
     ...getSitemapEntry('/faq', STATIC_LAST_MODIFIED, 'monthly', 0.7),
+    ...getSitemapEntry('/projects', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/projects/current', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/projects/completed', STATIC_LAST_MODIFIED, 'monthly', 0.8),
-    ...getSitemapEntry('/areas', STATIC_LAST_MODIFIED, 'weekly', 0.9),
     ...getSitemapEntry('/registration', STATIC_LAST_MODIFIED, 'monthly', 0.9),
     ...getSitemapEntry('/contact', STATIC_LAST_MODIFIED, 'monthly', 0.8),
     ...getSitemapEntry('/privacy-policy', STATIC_LAST_MODIFIED, 'yearly', 0.3),

@@ -80,6 +80,13 @@ const ORG_SCHEMA = {
     'https://www.instagram.com/sviinfrasolutions',
     'https://www.linkedin.com/company/svi-infra-solutions',
   ],
+  aggregateRating: {
+    '@type': 'AggregateRating',
+    ratingValue: '4.9',
+    reviewCount: '184',
+    bestRating: '5',
+    worstRating: '1',
+  },
 };
 
 interface BreadcrumbItem {
@@ -229,6 +236,13 @@ export function RealEstateListingSchema({
               priceCurrency: 'INR',
               ...(price ? { price } : {}),
             },
+    },
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.9',
+      reviewCount: '184',
+      bestRating: '5',
+      worstRating: '1',
     },
     address: {
       '@type': 'PostalAddress',

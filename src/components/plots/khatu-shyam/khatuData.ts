@@ -111,8 +111,8 @@ export const KHATU_PAGE_KEYWORDS: string[] = [
 ];
 
 export const KHATU_PAGE_META = {
-  titleEn: 'Plots for Sale Near Khatu Shyam Ji | Residential Plots on Highway | SVI Infra',
-  titleHi: 'खाटू श्याम जी के पास आवासीय प्लॉट्स | जयपुर खाटू हाईवे प्लॉट्स | SVI Infra',
+  titleEn: 'Plots for Sale Near Khatu Shyam Ji',
+  titleHi: 'खाटू श्याम जी हाईवे पर आवासीय प्लॉट्स',
   descEn:
     'Buy verified residential plots for sale near Khatu Shyam Ji on the 4-lane Jaipur-Khatu Highway corridor. Just 20-25 mins from temple, featuring Shivani Vatika 11th with 230 master-planned plots (80-250 sq. yds.), clear 90-A registry, and free cab site visits.',
   descHi:

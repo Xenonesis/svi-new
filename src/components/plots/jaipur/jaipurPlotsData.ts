@@ -47,8 +47,8 @@ export const JAIPUR_CONTACT = {
 } as const;
 
 export const JAIPUR_PAGE_META = {
-  titleEn: 'Plots in Jaipur - Verified Residential Plots & Gated Townships for Sale',
-  titleHi: 'जयपुर में प्लॉट्स और आवासीय भूमि | 100% स्पष्ट रजिस्ट्री टाउनशिप',
+  titleEn: 'Plots in Jaipur & Gated Townships',
+  titleHi: 'जयपुर में प्लॉट्स व गेटेड टाउनशिप',
   descEn:
     'Buy verified residential plots and gated township land in Jaipur across prime growth corridors: Khatu Shyam Highway, Nayla & Phulera DMIC. Clear registry, bank loan assistance, and complimentary cab site visits.',
   descHi:

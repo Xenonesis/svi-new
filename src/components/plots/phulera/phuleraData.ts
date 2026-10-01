@@ -51,8 +51,8 @@ export const PHULERA_CONTACT = {
 };
 
 export const PHULERA_PAGE_META = {
-  titleEn: 'Plots for Sale in Phulera | Residential Plots in Phulera Smart City | SVI Infra',
-  titleHi: 'फुलेरा में आवासीय प्लॉट्स | फुलेरा स्मार्ट सिटी प्लॉट्स जयपुर | SVI Infra',
+  titleEn: 'Plots for Sale in Phulera Smart City',
+  titleHi: 'फुलेरा स्मार्ट सिटी में आवासीय प्लॉट्स',
   descEn:
     'Buy premium residential & commercial plots in Phulera Smart City along the Delhi-Mumbai Industrial Corridor (DMIC) & Western DFC rail junction. High-growth land with clear registry, master-planned amenities & Jaipur expressway connectivity.',
   descHi:

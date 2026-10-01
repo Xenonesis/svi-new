@@ -55,10 +55,10 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     title: 'Premier Residential Living in Nayla, Jaipur',
     description:
       "Located in the serene landscapes of Nayla, Shivani Vatika is redefining modern community living. Offering uniquely crafted residential spaces equipped with essential urban facilities, this project reflects SVI Infra Solutions' commitment to quality, timely delivery, and producing environments that foster active and peaceful lifestyles. With excellent connectivity and promising growth potential, Shivani Vatika is an ideal choice for families seeking a balanced lifestyle.",
-    metaTitle: 'Shivani Vatika in Nayla, Jaipur - Premier Residential Plots | SVI Infra',
+    metaTitle: 'Shivani Vatika in Nayla, Jaipur - Premier Residential Plots',
     metaDescription:
       'Located in the serene landscapes of Nayla, Shivani Vatika offers uniquely crafted residential spaces with essential urban facilities, excellent connectivity and growth potential.',
-    metaTitleHi: 'शिवानी वाटिका नायला, जयपुर - प्रीमियर आवासीय प्लॉट्स | SVI Infra',
+    metaTitleHi: 'शिवानी वाटिका नायला, जयपुर - प्रीमियर आवासीय प्लॉट्स',
     metaDescriptionHi:
       'नायला, जयपुर में शिवानी वाटिका - आधुनिक सुविधाओं, उत्कृष्ट कनेक्टिविटी और प्राकृतिक शांत परिवेश में प्रीमियम आवासीय प्लॉट्स।',
     highlights: [
@@ -80,7 +80,7 @@ export const AREAS_DATA: Record<string, AreaInfo> = {
     metaTitle: 'Plots and Residential Properties in Nayla Jaipur',
     metaDescription:
       'Find your dream home or plot in Nayla, Jaipur. Peaceful community living with essential urban utilities and high ROI potential.',
-    metaTitleHi: 'नायला जयपुर में प्लॉट्स और आवासीय प्रॉपर्टीज | SVI Infra',
+    metaTitleHi: 'नायला जयपुर में प्लॉट्स और आवासीय प्रॉपर्टीज',
     metaDescriptionHi:
       'नायला, जयपुर में शांतिपूर्ण और प्राकृतिक वातावरण में गेटेड टाउनशिप प्लॉट्स। बेहतर कनेक्टिविटी और उच्च रिटर्न की गारंटी।',
     highlights: [

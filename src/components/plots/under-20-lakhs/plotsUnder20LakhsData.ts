@@ -42,8 +42,8 @@ export const BUDGET_PAGE_KEYWORDS = [
 ];
 
 export const BUDGET_PAGE_META = {
-  titleHi: 'जयपुर में 20 लाख के अंदर प्लॉट्स | आसान किश्तें व स्पष्ट रजिस्ट्री',
-  titleEn: 'Plots in Jaipur Under 20 Lakhs - Affordable Residential Plots & Townships',
+  titleHi: 'जयपुर में 20 लाख के अंदर प्लॉट्स',
+  titleEn: 'Plots in Jaipur Under 20 Lakhs',
   descHi:
     'जयपुर में 20 लाख रुपये के बजट में 100% स्पष्ट रजिस्ट्री आवासीय प्लॉट्स खरीदें। खाटू श्याम जी हाईवे, हरसोली व फुलेरा कॉरिडोर में 80 से 150 गज के प्लॉट्स, आसान EMI और फ्री कैब साइट विजिट।',
   descEn:
