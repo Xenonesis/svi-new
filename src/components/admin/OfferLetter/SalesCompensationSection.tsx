@@ -11,6 +11,7 @@ import {
   Car,
   MapPin,
   AlertTriangle,
+  HandCoins,
 } from 'lucide-react';
 
 interface SalesCompensationSectionProps {
@@ -36,11 +37,19 @@ interface SalesCompensationSectionProps {
   includeConveyanceAllowance?: boolean | string;
   conveyanceAllowanceAmount?: string;
   includeSalesPolicyBox?: boolean;
+  includeSupportAmount?: boolean | string;
+  supportAmount?: string;
+  supportDeductionTerms?: string;
   onValueChange: (name: string, value: string | boolean) => void;
   onToggleType: (
-    type: 'no_sale_no_salary' | 'custom_percent' | 'grace_period_reduced_percent'
+    type:
+      | 'no_sale_no_salary'
+      | 'custom_percent'
+      | 'grace_period_reduced_percent'
+      | 'support_amount_deducted_from_incentives'
   ) => void;
 }
+
 export function SalesCompensationSection({
   department,
   designation,
@@ -64,11 +73,13 @@ export function SalesCompensationSection({
   includeConveyanceAllowance = false,
   conveyanceAllowanceAmount = '',
   includeSalesPolicyBox = true,
+  includeSupportAmount = false,
+  supportAmount = '',
+  supportDeductionTerms = '',
   onValueChange,
   onToggleType,
 }: SalesCompensationSectionProps) {
   if (department !== 'Sales') return null;
-
   return (
     <div className="mt-1 overflow-hidden rounded-2xl border border-gray-200 bg-gradient-to-br from-gray-50/80 to-white shadow-sm dark:border-white/10 dark:from-white/5 dark:to-transparent">
       {/* Header */}
@@ -125,7 +136,7 @@ export function SalesCompensationSection({
           <label className="mb-2 block text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
             Compensation Type
           </label>
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
             {/* No Sale No Salary card */}
             <button
               type="button"
@@ -250,6 +261,49 @@ export function SalesCompensationSection({
                   </p>
                   <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
                     Baseline retainership during gestation; indexed revision post-tenure
+                  </p>
+                </div>
+              </div>
+            </button>
+
+            {/* Support Amount (Incentive Recovery) card */}
+            <button
+              type="button"
+              onClick={() => onToggleType('support_amount_deducted_from_incentives')}
+              className={`group relative overflow-hidden rounded-xl border-2 p-4 text-left transition-all duration-200 ${
+                salesCompensationType === 'support_amount_deducted_from_incentives'
+                  ? 'border-brand-gold bg-brand-gold/5 shadow-sm'
+                  : 'border-gray-200 bg-white hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:hover:border-white/20'
+              }`}
+            >
+              <div className="flex items-start gap-3">
+                <div
+                  className={`mt-0.5 flex h-5 w-5 items-center justify-center rounded-full border-2 transition-colors ${
+                    salesCompensationType === 'support_amount_deducted_from_incentives'
+                      ? 'border-brand-gold bg-brand-gold'
+                      : 'border-gray-300 dark:border-white/20'
+                  }`}
+                >
+                  {salesCompensationType === 'support_amount_deducted_from_incentives' && (
+                    <svg
+                      className="text-brand-navy h-3 w-3"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                    >
+                      <path d="M5 12l5 5L20 7" />
+                    </svg>
+                  )}
+                </div>
+                <div>
+                  <p
+                    className={`text-xs font-semibold ${salesCompensationType === 'support_amount_deducted_from_incentives' ? 'text-brand-navy dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}
+                  >
+                    Support Amount
+                  </p>
+                  <p className="mt-0.5 text-[10px] text-gray-500 dark:text-gray-400">
+                    Monthly support provided; deducted from incentives
                   </p>
                 </div>
               </div>
@@ -738,6 +792,138 @@ export function SalesCompensationSection({
                 >
                   Set ₹3,000/mo
                 </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* ── Sales Support Amount (Deducted from Incentives) Option ── */}
+        <div className="border-t border-gray-100 pt-5 dark:border-white/10">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <HandCoins className="text-brand-gold h-4 w-4" />
+              <div>
+                <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase dark:text-gray-400">
+                  Sales Support Amount (Deducted from Incentives)
+                </label>
+                <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                  Support amount will be provided and that amount will be deducted from sales
+                  incentives
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => {
+                  onValueChange('includeSupportAmount', true);
+                  if (!supportAmount) {
+                    onValueChange('supportAmount', '10000');
+                  }
+                }}
+                className={`rounded-md px-3 py-1 text-xs font-bold transition-all ${
+                  includeSupportAmount ||
+                  salesCompensationType === 'support_amount_deducted_from_incentives'
+                    ? 'bg-brand-gold text-brand-navy shadow-sm'
+                    : 'border border-gray-200 bg-white text-gray-600 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400'
+                }`}
+              >
+                Yes
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onValueChange('includeSupportAmount', false);
+                  if (salesCompensationType === 'support_amount_deducted_from_incentives') {
+                    onToggleType('support_amount_deducted_from_incentives');
+                  }
+                }}
+                className={`rounded-md px-3 py-1 text-xs font-bold transition-all ${
+                  !(
+                    includeSupportAmount ||
+                    salesCompensationType === 'support_amount_deducted_from_incentives'
+                  )
+                    ? 'bg-gray-200 text-gray-900 dark:bg-white/20 dark:text-white'
+                    : 'border border-gray-200 bg-white text-gray-600 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400'
+                }`}
+              >
+                No
+              </button>
+            </div>
+          </div>
+
+          {Boolean(
+            includeSupportAmount ||
+            salesCompensationType === 'support_amount_deducted_from_incentives'
+          ) && (
+            <div className="mt-3.5 space-y-3 rounded-xl border border-gray-200 bg-white/80 p-4 dark:border-white/10 dark:bg-[#111118]/80">
+              <div>
+                <label className="mb-1.5 block text-[10px] font-semibold text-gray-700 dark:text-gray-300">
+                  Monthly Support Amount (₹)
+                </label>
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="relative w-full sm:w-36">
+                    <span className="absolute top-1/2 left-3 -translate-y-1/2 text-xs font-medium text-gray-500 dark:text-gray-400">
+                      ₹
+                    </span>
+                    <input
+                      type="number"
+                      name="supportAmount"
+                      value={supportAmount || ''}
+                      onChange={(e) => onValueChange('supportAmount', e.target.value)}
+                      placeholder="10000"
+                      min="0"
+                      className="focus:border-brand-gold focus:ring-brand-gold/50 w-full rounded-lg border border-gray-200 bg-white py-2 pr-3 pl-7 font-sans text-sm text-gray-900 placeholder-gray-400 focus:ring-1 focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white dark:placeholder-gray-600"
+                    />
+                  </div>
+                  {['5000', '10000', '15000', '20000'].map((amt) => (
+                    <button
+                      key={amt}
+                      type="button"
+                      onClick={() => onValueChange('supportAmount', amt)}
+                      className={`rounded-lg border px-2.5 py-1.5 text-[10px] font-medium transition-all ${
+                        supportAmount === amt
+                          ? 'border-brand-gold bg-brand-gold/10 text-brand-gold'
+                          : 'border border-gray-200 bg-white text-gray-600 hover:border-gray-300 dark:border-white/10 dark:bg-[#111118] dark:text-gray-400 dark:hover:border-white/20'
+                      }`}
+                    >
+                      ₹{parseInt(amt).toLocaleString('en-IN')}
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => onValueChange('supportAmount', '10000')}
+                    className="hover:border-brand-gold hover:text-brand-gold dark:hover:border-brand-gold dark:hover:text-brand-gold inline-flex items-center gap-1 rounded-lg border border-gray-200 bg-white px-2.5 py-1.5 text-[10px] font-medium text-gray-600 transition-all dark:border-white/10 dark:bg-[#111118] dark:text-gray-400"
+                  >
+                    <RefreshCw className="h-3 w-3" />
+                    Reset ₹10k
+                  </button>
+                </div>
+              </div>
+
+              {/* Policy Explanation Card */}
+              <div className="rounded-lg border border-blue-200 bg-blue-50/70 p-3 dark:border-blue-500/20 dark:bg-blue-500/10">
+                <p className="text-[10px] font-bold text-blue-700 uppercase dark:text-blue-300">
+                  Support Amount &amp; Incentive Adjustment Policy
+                </p>
+                <p className="mt-1 text-xs text-gray-700 dark:text-gray-300">
+                  {supportAmount && parseFloat(supportAmount) > 0 ? (
+                    <>
+                      A monthly support amount of{' '}
+                      <span className="font-bold text-blue-900 dark:text-blue-200">
+                        ₹{parseFloat(supportAmount).toLocaleString('en-IN')}
+                      </span>{' '}
+                      will be provided to the sales employee to support operational and field
+                      expenses. This disbursed amount will be{' '}
+                      <span className="font-bold text-blue-900 dark:text-blue-200">
+                        adjusted and deducted from sales incentives / commissions
+                      </span>{' '}
+                      earned upon deal realization.
+                    </>
+                  ) : (
+                    'Support amount will be provided and that amount will be deducted from incentives.'
+                  )}
+                </p>
               </div>
             </div>
           )}

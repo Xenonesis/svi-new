@@ -417,4 +417,41 @@ describe('OfferLetterPreviewContent', () => {
     expect(screen.queryByText(/\(in_hand\)/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/वार्षिक सीटीसी/i)).not.toBeInTheDocument();
   });
+
+  it('renders Sales Support Amount clause in English with deduction from incentives', () => {
+    const supportData = {
+      ...baseFormData,
+      salesCompensationType: 'support_amount_deducted_from_incentives',
+      includeSupportAmount: true,
+      supportAmount: '12000',
+    };
+
+    render(<OfferLetterPreviewContent formData={supportData} companyInfo={mockCompanyInfo} />);
+
+    expect(
+      screen.getByText(/Clause 3\.1 — Sales Support Amount & Incentive Recovery Framework:/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Support amount will be provided/i)).toBeInTheDocument();
+    expect(screen.getByText(/That amount will be deducted from incentives/i)).toBeInTheDocument();
+    expect(screen.getByText(/₹ 12,000\.00 per month/i)).toBeInTheDocument();
+  });
+
+  it('renders Sales Support Amount clause in Hindi with deduction from incentives', () => {
+    const supportHindiData = {
+      ...baseFormData,
+      language: 'hi' as const,
+      salesCompensationType: 'support_amount_deducted_from_incentives',
+      includeSupportAmount: true,
+      supportAmount: '15000',
+    };
+
+    render(<OfferLetterPreviewContent formData={supportHindiData} companyInfo={mockCompanyInfo} />);
+
+    expect(
+      screen.getByText(/खंड ३\.१ — बिक्री सहायता राशि एवं प्रोत्साहन कटौती \/ समायोजन नियम/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Support amount will be provided/i)).toBeInTheDocument();
+    expect(screen.getByText(/That amount will be deducted from incentives/i)).toBeInTheDocument();
+    expect(screen.getByText(/₹ 15,000\.00 प्रति माह/i)).toBeInTheDocument();
+  });
 });

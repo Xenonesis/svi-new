@@ -34,6 +34,9 @@ interface OfferLetterData {
     reducedSalaryPercent?: string;
     enablePartialTargetRule?: boolean | string;
     partialTargetSalaryPercent?: string;
+    includeSupportAmount?: boolean | string;
+    supportAmount?: string;
+    supportDeductionTerms?: string;
   };
 }
 

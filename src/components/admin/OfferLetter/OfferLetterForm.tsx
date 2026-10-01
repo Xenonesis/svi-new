@@ -432,12 +432,28 @@ export function OfferLetterForm({
                 includeConveyanceAllowance={Boolean(formData.includeConveyanceAllowance)}
                 conveyanceAllowanceAmount={formData.conveyanceAllowanceAmount}
                 includeSalesPolicyBox={formData.includeSalesPolicyBox !== false}
+                includeSupportAmount={Boolean(formData.includeSupportAmount)}
+                supportAmount={formData.supportAmount}
+                supportDeductionTerms={formData.supportDeductionTerms}
                 onValueChange={(name, value) => setFormData((prev) => ({ ...prev, [name]: value }))}
                 onToggleType={(type) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    salesCompensationType: prev.salesCompensationType === type ? '' : type,
-                  }))
+                  setFormData((prev) => {
+                    const isActivating = prev.salesCompensationType !== type;
+                    return {
+                      ...prev,
+                      salesCompensationType: isActivating ? type : '',
+                      includeSupportAmount:
+                        type === 'support_amount_deducted_from_incentives'
+                          ? isActivating
+                          : prev.includeSupportAmount,
+                      supportAmount:
+                        type === 'support_amount_deducted_from_incentives' &&
+                        isActivating &&
+                        !prev.supportAmount
+                          ? '10000'
+                          : prev.supportAmount,
+                    };
+                  })
                 }
               />
             </div>

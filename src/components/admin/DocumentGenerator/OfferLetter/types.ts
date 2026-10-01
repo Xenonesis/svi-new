@@ -41,6 +41,9 @@ export interface OfferLetterFormData {
   includeSalesPolicyBox?: boolean;
   includeDocumentationBox?: boolean;
   includeCandidateParticularsBox?: boolean;
+  includeSupportAmount?: boolean | string;
+  supportAmount?: string;
+  supportDeductionTerms?: string;
   language?: 'en' | 'hi';
 }
 

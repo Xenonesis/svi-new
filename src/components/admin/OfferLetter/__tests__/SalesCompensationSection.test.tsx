@@ -34,6 +34,7 @@ describe('SalesCompensationSection', () => {
     expect(screen.getByText('No Sale No Salary')).toBeInTheDocument();
     expect(screen.getByText('Custom % of Salary')).toBeInTheDocument();
     expect(screen.getByText('Gestation Window + Adjusted Retainer')).toBeInTheDocument();
+    expect(screen.getByText('Support Amount')).toBeInTheDocument();
   });
 
   it('calls onToggleType when compensation type is clicked', () => {
@@ -44,6 +45,9 @@ describe('SalesCompensationSection', () => {
 
     fireEvent.click(screen.getByText('Gestation Window + Adjusted Retainer'));
     expect(mockProps.onToggleType).toHaveBeenCalledWith('grace_period_reduced_percent');
+
+    fireEvent.click(screen.getByText('Support Amount'));
+    expect(mockProps.onToggleType).toHaveBeenCalledWith('support_amount_deducted_from_incentives');
   });
 
   it('shows No Sale No Salary options when selected', () => {
@@ -135,5 +139,28 @@ describe('SalesCompensationSection', () => {
     expect(screen.getByText(/Zero Transaction Closure/i)).toBeInTheDocument();
     expect(screen.getByText(/₹15,000/i)).toBeInTheDocument();
     expect(screen.getAllByText(/Remuneration Abeyance/i).length).toBeGreaterThan(0);
+  });
+
+  it('renders Sales Support Amount section and handles toggle and presets', () => {
+    render(
+      <SalesCompensationSection {...mockProps} includeSupportAmount={true} supportAmount="10000" />
+    );
+
+    expect(
+      screen.getByText(/Sales Support Amount \(Deducted from Incentives\)/i)
+    ).toBeInTheDocument();
+    expect(screen.getByText(/Support Amount & Incentive Adjustment Policy/i)).toBeInTheDocument();
+    expect(screen.getByText(/adjusted and deducted from sales incentives/i)).toBeInTheDocument();
+
+    const amountInput = document.querySelector('[name="supportAmount"]') as HTMLInputElement;
+    expect(amountInput).toBeInTheDocument();
+    expect(amountInput.value).toBe('10000');
+
+    fireEvent.change(amountInput, { target: { value: '15000' } });
+    expect(mockProps.onValueChange).toHaveBeenCalledWith('supportAmount', '15000');
+
+    const presetBtn = screen.getByRole('button', { name: '₹20,000' });
+    fireEvent.click(presetBtn);
+    expect(mockProps.onValueChange).toHaveBeenCalledWith('supportAmount', '20000');
   });
 });

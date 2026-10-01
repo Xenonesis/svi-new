@@ -49,6 +49,9 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
   includeSalesPolicyBox: true,
   includeDocumentationBox: true,
   includeCandidateParticularsBox: true,
+  includeSupportAmount: false,
+  supportAmount: '',
+  supportDeductionTerms: 'Deducted from future sales incentives/commissions',
   language: 'en',
 };
 

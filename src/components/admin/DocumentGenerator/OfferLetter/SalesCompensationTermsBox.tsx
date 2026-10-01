@@ -33,13 +33,17 @@ export default function SalesCompensationTermsBox({
     !formData.isFixedSalary &&
     (Boolean(formData.target) || Boolean(matchedSlab) || Boolean(formData.offerSlab));
 
+  const hasSupportAmount =
+    Boolean(formData.includeSupportAmount) ||
+    formData.salesCompensationType === 'support_amount_deducted_from_incentives' ||
+    Boolean(formData.supportAmount && parseFloat(formData.supportAmount || '0') > 0);
   const shouldRender =
     hasQuota ||
     (isSalesDepartment &&
       (formData.salesCompensationType ||
         formData.enablePartialTargetRule ||
-        formData.meetingsPerMonth));
-
+        formData.meetingsPerMonth ||
+        hasSupportAmount));
   if (!shouldRender) {
     return null;
   }
@@ -393,6 +397,61 @@ export default function SalesCompensationTermsBox({
                 Upon achieving confirmed sales closures and fulfilling benchmark quotas, standard
                 unabated contractual baseline salary disbursement shall immediately be reinstated
                 for the applicable billing period.
+              </>
+            )}
+          </p>
+        </div>
+      )}
+
+      {/* Sales Support Amount (Deducted from Incentives) Clause */}
+      {isSalesDepartment && hasSupportAmount && (
+        <div className="border-t border-gray-300 pt-1 text-gray-900">
+          <p className="font-bold text-[#1e3a8a]">
+            {language === 'hi'
+              ? formData.salesCompensationType === 'support_amount_deducted_from_incentives'
+                ? 'खंड ३.१ — बिक्री सहायता राशि एवं प्रोत्साहन कटौती / समायोजन नियम (Support Amount & Incentive Recovery):'
+                : 'बिक्री सहायता राशि एवं प्रोत्साहन कटौती नीति (Support Amount & Incentive Recovery):'
+              : formData.salesCompensationType === 'support_amount_deducted_from_incentives'
+                ? 'Clause 3.1 — Sales Support Amount & Incentive Recovery Framework:'
+                : 'Sales Support Amount & Incentive Recovery Terms:'}
+          </p>
+          <p className="mt-0.5 text-gray-800">
+            {language === 'hi' ? (
+              <>
+                सेल्स विभाग में आपकी नियुक्ति के तहत, कंपनी द्वारा मासिक फील्ड, यात्रा एवं परिचालन
+                संबंधी व्ययों की पूर्ति हेतु आपको{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.supportAmount && parseFloat(formData.supportAmount) > 0
+                    ? `₹ ${formatINR(formData.supportAmount)} प्रति माह`
+                    : 'निर्धारित सहायता राशि'}
+                </span>{' '}
+                की सहायता राशि प्रदान की जाएगी (Support amount will be provided)। यह स्पष्ट रूप से
+                अनुबंधित एवं सहमत है कि यह सहायता राशि कार्य-प्रदर्शन के विरुद्ध एक अग्रिम वित्तीय
+                सहयोग (Advance against Incentives) है, तथा कंपनी द्वारा प्रदान की गई इस समस्त सहायता
+                राशि का पूर्ण समायोजन एवं कटौती आपके द्वारा भविष्य में अर्जित किए जाने वाले बिक्री
+                प्रोत्साहनों (Incentives / Commissions) से की जाएगी (That amount will be deducted
+                from incentives)। यदि किसी माह में अर्जित प्रोत्साहन राशि सहायता राशि से कम रहती है,
+                तो अवशिष्ट सहायता राशि को अगले महीनों के प्रोत्साहनों से तब तक काटा व समायोजित किया
+                जाएगा जब तक कि पूर्ण वसूली न हो जाए।
+              </>
+            ) : (
+              <>
+                In consideration of your appointment within the Sales Department, the Company shall
+                provide you with a monthly Support Amount of{' '}
+                <span className="font-bold text-gray-900">
+                  {formData.supportAmount && parseFloat(formData.supportAmount) > 0
+                    ? `₹ ${formatINR(formData.supportAmount)} per month`
+                    : 'the designated support amount'}
+                </span>{' '}
+                to assist with operational, travel, and business development requirements (Support
+                amount will be provided). It is expressly agreed and understood that this support
+                amount is an advance financial provision against sales performance, and the entire
+                support amount disbursed by the Company shall be adjusted and deducted in full from
+                your accrued and subsequent sales incentives / commissions upon realization of
+                customer payments (That amount will be deducted from incentives). In the event
+                earned incentives in any evaluation cycle are insufficient to cover the disbursed
+                support amount, the unadjusted balance shall carry forward to subsequent cycles
+                until fully recovered.
               </>
             )}
           </p>
