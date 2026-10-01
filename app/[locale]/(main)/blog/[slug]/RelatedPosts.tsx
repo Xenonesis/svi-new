@@ -54,7 +54,7 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                   />
                 </Link>
                 <div className="flex min-w-0 flex-1 flex-col">
-                  <span className="text-brand-gold mb-1 text-[10px] font-bold tracking-wider uppercase">
+                  <span className="dark:text-brand-gold mb-1 text-[10px] font-bold tracking-wider text-amber-800 uppercase">
                     {category}
                   </span>
                   <h3 className="text-brand-navy group-hover:text-brand-gold mb-1 truncate font-serif text-base leading-snug transition-colors dark:text-gray-100">
@@ -70,7 +70,8 @@ export default function RelatedPosts({ posts, locale }: RelatedPostsProps) {
                     </span>
                     <Link
                       href={`/blog/${post.slug}`}
-                      className="text-brand-gold hover:text-brand-navy inline-flex items-center gap-1 text-[10px] font-bold tracking-wider uppercase transition-colors"
+                      aria-label={isHindi ? `${title} पढ़ें` : `Read article: ${title}`}
+                      className="dark:text-brand-gold hover:text-brand-navy inline-flex items-center gap-1 text-[10px] font-bold tracking-wider text-amber-800 uppercase transition-colors"
                     >
                       {isHindi ? 'पढ़ें' : 'Read'}
                       <ArrowRight

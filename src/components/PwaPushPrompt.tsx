@@ -115,7 +115,7 @@ export default function PwaPushPrompt() {
               </button>
               <button
                 onClick={() => setDismissed(true)}
-                className="hover:text-brand-navy font-sans text-xs font-medium tracking-wide text-gray-400 underline-offset-2 hover:underline dark:hover:text-gray-300"
+                className="hover:text-brand-navy font-sans text-xs font-medium tracking-wide text-gray-600 underline-offset-2 hover:underline dark:text-gray-400 dark:hover:text-gray-200"
               >
                 Not now
               </button>
@@ -124,7 +124,7 @@ export default function PwaPushPrompt() {
 
           <button
             onClick={() => setDismissed(true)}
-            className="shrink-0 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400"
+            className="shrink-0 text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
             aria-label="Dismiss"
           >
             <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

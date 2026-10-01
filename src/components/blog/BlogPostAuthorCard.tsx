@@ -23,7 +23,7 @@ export function BlogPostAuthorCard({
         S
       </div>
       <div>
-        <h4 className="text-brand-navy mb-0.5 text-sm font-bold dark:text-gray-100">{author}</h4>
+        <p className="text-brand-navy mb-0.5 text-sm font-bold dark:text-gray-100">{author}</p>
         <p className="text-xs leading-relaxed text-gray-500 dark:text-gray-400">
           {hindi
             ? 'जयपुर, नोएडा और DMIC कॉरिडोर में 17+ साल के एक्सपीरियंस वाला रियल एस्टेट एक्सपर्ट।'

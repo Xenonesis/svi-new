@@ -913,12 +913,24 @@ input::-ms-clear {
 }
 
 .blog-content a {
-  color: var(--color-brand-gold);
-  text-decoration: none;
+  color: #855f11;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 500;
+  transition: color 0.2s ease;
 }
 
 .blog-content a:hover {
+  color: #634608;
   text-decoration: underline;
+}
+
+.dark .blog-content a {
+  color: var(--color-brand-gold);
+}
+
+.dark .blog-content a:hover {
+  color: #f5d77f;
 }
 
 

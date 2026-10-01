@@ -218,7 +218,7 @@ export function FloatingContact() {
             size={19}
             className="text-[#25D366] transition-transform group-hover:scale-110"
           />
-          <span className="text-[10px] font-semibold tracking-wider text-[#25D366] uppercase">
+          <span className="text-[10px] font-semibold tracking-wider text-emerald-700 uppercase dark:text-[#25D366]">
             {t('whatsapp')}
           </span>
         </a>
@@ -228,8 +228,8 @@ export function FloatingContact() {
           className="dock-lux-item text-brand-navy dark:text-brand-gold hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors"
           aria-label={t('aiAssistant')}
         >
-          <Bot size={19} className="dark:text-brand-gold text-amber-500" />
-          <span className="dark:text-brand-gold text-[10px] font-semibold tracking-wider text-amber-600 uppercase">
+          <Bot size={19} className="dark:text-brand-gold text-amber-800" />
+          <span className="dark:text-brand-gold text-[10px] font-semibold tracking-wider text-amber-800 uppercase">
             {t('aiAssistant')}
           </span>
         </button>

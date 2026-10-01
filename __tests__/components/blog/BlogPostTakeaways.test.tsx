@@ -19,7 +19,7 @@ describe('BlogPostTakeaways', () => {
     const takeaways = ['First takeaway', 'Second takeaway'];
     render(<BlogPostTakeaways takeaways={takeaways} />);
 
-    expect(screen.getByRole('heading', { level: 3, name: /Key Takeaways/i })).toBeDefined();
+    expect(screen.getByRole('heading', { level: 2, name: /Key Takeaways/i })).toBeDefined();
     expect(screen.getByText('First takeaway')).toBeDefined();
     expect(screen.getByText('Second takeaway')).toBeDefined();
     expect(screen.getByText('1')).toBeDefined();
@@ -30,12 +30,12 @@ describe('BlogPostTakeaways', () => {
     const takeaways = ['पहला बिंदु', 'दूसरा बिंदु'];
     const { rerender } = render(<BlogPostTakeaways takeaways={takeaways} isHindi={true} />);
 
-    expect(screen.getByRole('heading', { level: 3, name: /ज़रूरी बातें/i })).toBeDefined();
+    expect(screen.getByRole('heading', { level: 2, name: /ज़रूरी बातें/i })).toBeDefined();
     expect(screen.getByText('पहला बिंदु')).toBeDefined();
     expect(screen.getByText('दूसरा बिंदु')).toBeDefined();
 
     rerender(<BlogPostTakeaways takeaways={takeaways} locale="hi" />);
-    expect(screen.getByRole('heading', { level: 3, name: /ज़रूरी बातें/i })).toBeDefined();
+    expect(screen.getByRole('heading', { level: 2, name: /ज़रूरी बातें/i })).toBeDefined();
   });
 
   it('renders correct number badges corresponding to item index', () => {

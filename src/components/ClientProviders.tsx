@@ -43,6 +43,17 @@ function ThemeAwareBackground() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
+    // Skip DotField canvas entirely on mobile/touch screens (no cursor interactions, saves CPU & canvas memory)
+    if (typeof window !== 'undefined') {
+      const isMobileOrTouch =
+        window.innerWidth < 768 ||
+        window.matchMedia('(pointer: coarse)').matches ||
+        !window.matchMedia('(hover: hover)').matches;
+      if (isMobileOrTouch) {
+        return;
+      }
+    }
+
     // Defer DotField canvas rendering until idle (or 2.5s timeout) to avoid main-thread congestion
     if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
       const handle = window.requestIdleCallback(() => setReady(true), { timeout: 2500 });

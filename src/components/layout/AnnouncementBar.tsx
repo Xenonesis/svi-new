@@ -10,13 +10,13 @@ const STORAGE_DISMISS_KEY = 'svi_announcement_dismissed_v1';
 
 export default function AnnouncementBar() {
   const [config, setConfig] = useState<AnnouncementConfig>(defaultAnnouncementConfig);
-  const [isVisible, setIsVisible] = useState(false);
-
+  const [isVisible, setIsVisible] = useState(defaultAnnouncementConfig.enabled);
   useEffect(() => {
     // Check local storage dismissal
     try {
       const dismissed = sessionStorage.getItem(STORAGE_DISMISS_KEY);
       if (dismissed === 'true') {
+        setIsVisible(false);
         return;
       }
     } catch {
@@ -75,9 +75,8 @@ export default function AnnouncementBar() {
     <AnimatePresence>
       {isVisible && (
         <motion.aside
-          initial={{ height: 0, opacity: 0 }}
+          initial={false}
           animate={{ height: 'auto', opacity: 1 }}
-          exit={{ height: 0, opacity: 0 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           aria-label="Announcement"
           className="relative z-50 w-full overflow-hidden border-b border-[#d4af37]/25 bg-[#070b14]/95 text-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"

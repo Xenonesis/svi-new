@@ -77,7 +77,7 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
+            <h4 className="dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] text-amber-800 uppercase">
               {t('footer.quickLinks')}
             </h4>
             <ul className="flex flex-col gap-4">
@@ -149,7 +149,7 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
+            <h4 className="dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] text-amber-800 uppercase">
               {t('footer.servicesSupport')}
             </h4>
             <ul className="flex flex-col gap-4">
@@ -177,27 +177,27 @@ const Footer = memo(function Footer() {
                   Staff & Employee Portal →
                 </Link>
               </li>
-              <li className="text-brand-gold dark:text-brand-gold text-[11px] font-semibold tracking-wider uppercase">
+              <li className="dark:text-brand-gold text-[11px] font-semibold tracking-wider text-amber-800 uppercase">
                 {t('footer.residentialProperties')}
               </li>
-              <li className="text-brand-gold dark:text-brand-gold text-[11px] font-semibold tracking-wider uppercase">
+              <li className="dark:text-brand-gold text-[11px] font-semibold tracking-wider text-amber-800 uppercase">
                 {t('footer.commercialProperties')}
               </li>
-              <li className="text-brand-gold dark:text-brand-gold text-[11px] font-semibold tracking-wider uppercase">
+              <li className="dark:text-brand-gold text-[11px] font-semibold tracking-wider text-amber-800 uppercase">
                 {t('footer.propertyManagement')}
               </li>
             </ul>
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
+            <h4 className="dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] text-amber-800 uppercase">
               {t('footer.locations')}
             </h4>
             <ul className="flex flex-col gap-4">
               <li>
                 <Link
                   href="/plots-in-jaipur"
-                  className="text-brand-gold text-[11px] font-bold tracking-wider uppercase transition-colors hover:underline"
+                  className="dark:text-brand-gold text-[11px] font-bold tracking-wider text-amber-800 uppercase transition-colors hover:underline"
                 >
                   ★ Plots in Jaipur (All Townships)
                 </Link>
@@ -236,7 +236,7 @@ const Footer = memo(function Footer() {
           </div>
 
           <div>
-            <h4 className="text-brand-gold dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] uppercase">
+            <h4 className="dark:text-brand-gold mb-5 text-xs font-bold tracking-[0.2em] text-amber-800 uppercase">
               {t('footer.contactInfo')}
             </h4>
             <ul className="flex flex-col gap-5">
@@ -245,7 +245,7 @@ const Footer = memo(function Footer() {
                   <MapPin className="text-brand-gold" size={16} strokeWidth={2} />
                 </span>
                 <div className="min-w-0 flex-1 pt-0.5">
-                  <p className="text-brand-gold mb-1 text-[9px] font-bold tracking-[0.18em] uppercase">
+                  <p className="dark:text-brand-gold mb-1 text-[9px] font-bold tracking-[0.18em] text-amber-800 uppercase">
                     Visit Us
                   </p>
                   <a

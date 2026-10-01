@@ -13,12 +13,15 @@ export function BlogPostTakeaways({ takeaways, isHindi, locale }: BlogPostTakeaw
 
   return (
     <div className="blog-takeaways">
-      <h3 className="text-brand-navy mb-3 flex items-center gap-2 font-serif text-lg font-bold dark:text-gray-100">
-        <span className="bg-brand-gold text-brand-navy flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold">
+      <h2 className="text-brand-navy mb-3 flex items-center gap-2 font-serif text-lg font-bold dark:text-gray-100">
+        <span
+          className="bg-brand-gold text-brand-navy flex h-6 w-6 items-center justify-center rounded-full text-xs font-bold"
+          aria-hidden="true"
+        >
           !
         </span>
         {hindi ? 'ज़रूरी बातें' : 'Key Takeaways'}
-      </h3>
+      </h2>
       <ul className="space-y-2">
         {takeaways.map((t, i) => (
           <li

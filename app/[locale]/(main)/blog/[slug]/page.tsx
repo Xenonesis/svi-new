@@ -102,10 +102,11 @@ export default async function BlogPost({ params }: Props) {
                 src={post.image}
                 alt={title}
                 fill
-                sizes="(max-width: 1200px) 100vw, 1200px"
+                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 100vw, 1200px"
                 className="object-cover"
                 priority
-                quality={90}
+                fetchPriority="high"
+                quality={78}
               />
             </div>
 
