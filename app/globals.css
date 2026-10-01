@@ -566,6 +566,22 @@
   animation: hero-fade-in 1s ease-out 1.2s both;
 }
 
+/* On mobile and reduced-motion, eliminate initial opacity: 0 and animation delays for immediate LCP */
+@media (max-width: 768px), (prefers-reduced-motion: reduce) {
+  .animate-hero-h1,
+  .animate-hero-divider,
+  .animate-hero-subtitle,
+  .animate-hero-1,
+  .animate-hero-2,
+  .animate-hero-3,
+  .animate-hero-4,
+  .animate-hero-5 {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
 @keyframes bg-pan {
   0% {
     background-position: 0% 50%;
