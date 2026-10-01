@@ -118,12 +118,12 @@ const DesktopNav = memo(function DesktopNav({
       {lotteryVisible && (
         <Link
           href="/lottery"
-          className={`relative inline-flex items-center gap-1.5 rounded-full border border-amber-400/30 bg-amber-400/10 px-2.5 py-1 font-semibold whitespace-nowrap transition-all duration-300 hover:border-amber-400 hover:bg-amber-400/20 xl:px-3 xl:py-1 ${
+          className={`relative inline-flex items-center gap-1.5 rounded-full border border-amber-600/30 bg-amber-500/10 px-2.5 py-1 font-semibold whitespace-nowrap transition-all duration-300 hover:border-amber-600 hover:bg-amber-500/20 xl:px-3 xl:py-1 dark:border-amber-400/30 dark:bg-amber-400/10 dark:hover:border-amber-400 dark:hover:bg-amber-400/20 ${
             isHi ? 'text-[12px] tracking-normal' : 'text-[11px] tracking-normal'
           } ${
             currentPath === '/lottery'
-              ? 'border-amber-400 bg-amber-400/20 text-amber-300'
-              : 'text-amber-400/90 hover:text-amber-300'
+              ? 'border-amber-700 bg-amber-500/20 text-amber-900 dark:border-amber-400 dark:bg-amber-400/20 dark:text-amber-300'
+              : 'text-amber-800 hover:text-amber-950 dark:text-amber-400/90 dark:hover:text-amber-300'
           }`}
           aria-label={t('luckyDraw')}
         >

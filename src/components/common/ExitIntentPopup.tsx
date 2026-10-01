@@ -175,7 +175,7 @@ export default function ExitIntentPopup() {
                 ) : (
                   <>
                     <div className="mb-8">
-                      <span className="bg-brand-gold/10 text-brand-gold mb-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold tracking-widest uppercase">
+                      <span className="bg-brand-gold/10 dark:text-brand-gold mb-2 inline-block rounded-full px-3 py-1 text-[10px] font-bold tracking-widest text-amber-800 uppercase">
                         Limited Time Offer
                       </span>
                       <h2 className="mb-3 font-serif text-2xl text-gray-900 md:text-3xl dark:text-white">
