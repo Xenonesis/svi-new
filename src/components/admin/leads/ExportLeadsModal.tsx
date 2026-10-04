@@ -260,11 +260,21 @@ export function ExportLeadsModal({
             <select
               value={advisorId}
               onChange={(e) => setAdvisorId(e.target.value)}
-              className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-800 shadow-sm transition-colors focus:outline-none dark:border-white/10 dark:bg-[#161622] dark:text-gray-200"
+              style={{ colorScheme: 'dark light' }}
+              className="focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-medium text-gray-800 shadow-sm transition-colors focus:outline-none dark:border-white/10 dark:bg-[#161622] dark:text-gray-200 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
             >
-              <option value="all">All Advisors (Full Team)</option>
+              <option
+                value="all"
+                className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
+              >
+                All Advisors (Full Team)
+              </option>
               {employees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
+                <option
+                  key={emp.id}
+                  value={emp.id}
+                  className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
+                >
                   {emp.full_name}
                 </option>
               ))}

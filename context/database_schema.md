@@ -1,6 +1,6 @@
 # Database Schema (Supabase / PostgreSQL)
 
-The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 66 migrations, including non-destructive composite performance indexes on high-traffic tables (`chat_leads`, `attendance_records`, `documents`, `notifications`, and `profiles`).
+The project uses Supabase for PostgreSQL, Authentication, Row Level Security (RLS), and Realtime features. There are currently 67 migrations, including non-destructive composite & partial performance indexes on high-traffic tables (`chat_leads`, `attendance_records`, `documents`, `notifications`, `ivr_call_records`, and `profiles`) and optimized single-scan CTE aggregation RPCs.
 
 ## Core Tables
 

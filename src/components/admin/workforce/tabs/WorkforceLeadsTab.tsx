@@ -32,6 +32,7 @@ import {
   MapPin,
   CalendarCheck,
   Send,
+  Globe,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { toast } from 'sonner';
@@ -106,6 +107,8 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
     hot: 0,
     chatbot: 0,
     site_visits: 0,
+    exit_intent: 0,
+    website_inquiries: 0,
   });
 
   // Filters
@@ -396,17 +399,27 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
           <div className="via-brand-gold/40 absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent to-transparent" />
           <div className="flex items-center justify-between">
             <span className="text-[10px] font-bold tracking-wider text-gray-500 uppercase dark:text-gray-400">
-              {fixedSource === 'chatbot' ? 'Chatbot Inquiries' : 'Total Inquiries'}
+              {fixedSource === 'chatbot' || fixedSource === 'website_inquiries'
+                ? 'Website & Online Inquiries'
+                : 'Total Inquiries'}
             </span>
             <div className="bg-brand-gold/10 text-brand-gold rounded-lg p-1.5">
-              <MessageSquare className="h-3.5 w-3.5" />
+              {fixedSource === 'chatbot' || fixedSource === 'website_inquiries' ? (
+                <Globe className="h-3.5 w-3.5" />
+              ) : (
+                <MessageSquare className="h-3.5 w-3.5" />
+              )}
             </div>
           </div>
           <div className="text-brand-navy mt-2 font-serif text-2xl font-bold dark:text-white">
-            {fixedSource === 'chatbot' ? counts.chatbot || total : counts.total}
+            {fixedSource === 'chatbot' || fixedSource === 'website_inquiries'
+              ? counts.website_inquiries || total
+              : counts.total}
           </div>
           <p className="text-[10px] text-gray-500 dark:text-gray-400">
-            {fixedSource === 'chatbot' ? 'Direct from AI Chatbot' : 'All captured channels'}
+            {fixedSource === 'chatbot' || fixedSource === 'website_inquiries'
+              ? 'Direct from website popups & forms'
+              : 'All captured channels'}
           </p>
         </div>
         {/* Hot Leads */}
@@ -446,19 +459,25 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
         {/* Site Visits */}
         <div className="hover-lift-sm relative overflow-hidden rounded-xl border border-emerald-200/50 bg-emerald-50/30 p-4 shadow-xs backdrop-blur-md dark:border-emerald-500/20 dark:bg-emerald-500/5">
           <div className="absolute top-0 right-0 left-0 h-[1.5px] bg-gradient-to-r from-transparent via-emerald-500/40 to-transparent" />
-          <div className="flex items-center justify-between">
-            <span className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
-              Site Visits
-            </span>
-            <div className="rounded-lg bg-emerald-500/10 p-1.5 text-emerald-500">
-              <CalendarCheck className="h-3.5 w-3.5" />
-            </div>
+          <span className="text-[10px] font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
+            {fixedSource === 'chatbot' || fixedSource === 'website_inquiries'
+              ? 'Site Visit Bookings'
+              : 'Website Inquiries'}
+          </span>
+          <div className="rounded-lg bg-emerald-500/10 p-1.5 text-emerald-500">
+            <CalendarCheck className="h-3.5 w-3.5" />
           </div>
-          <div className="mt-2 font-serif text-2xl font-bold text-emerald-600 dark:text-emerald-400">
-            {counts.site_visits}
-          </div>
-          <p className="text-[10px] text-gray-500 dark:text-gray-400">Tours booked</p>
         </div>
+        <div className="mt-2 font-serif text-2xl font-bold text-emerald-600 dark:text-emerald-400">
+          {fixedSource === 'chatbot' || fixedSource === 'website_inquiries'
+            ? counts.site_visits
+            : counts.website_inquiries || counts.site_visits + (counts.exit_intent || 0)}
+        </div>
+        <p className="text-[10px] text-gray-500 dark:text-gray-400">
+          {fixedSource === 'chatbot' || fixedSource === 'website_inquiries'
+            ? 'Tours booked'
+            : 'Direct website visitors'}
+        </p>
       </div>
 
       {/* Filter & Search Bar */}
@@ -548,13 +567,57 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
                 setSourceFilter(e.target.value);
                 setPage(1);
               }}
-              className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200"
+              style={{ colorScheme: 'dark light' }}
+              className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161D2C] dark:[&>option]:text-white"
             >
-              <option value="all">All Sources</option>
-              <option value="chatbot">AI Chatbot</option>
-              <option value="site_visit">Site Visit Form</option>
-              <option value="whatsapp">WhatsApp Sales</option>
-              <option value="manual">Manual Entry</option>
+              <option
+                value="all"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                All Sources
+              </option>
+              <option
+                value="website_inquiries"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                🌐 Website Inquiries (All Web Visitors)
+              </option>
+              <option
+                value="exit_intent"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                Website Exit-Intent Popup
+              </option>
+              <option
+                value="site_visit"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                Website Site Visit Bookings
+              </option>
+              <option
+                value="chatbot"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                AI Chatbot Leads
+              </option>
+              <option
+                value="ivr"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                IVR Dialer Campaigns
+              </option>
+              <option
+                value="whatsapp"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                WhatsApp Sales
+              </option>
+              <option
+                value="manual"
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
+                Manual Entry
+              </option>
             </select>
           )}
 
@@ -565,10 +628,15 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200"
+            style={{ colorScheme: 'dark light' }}
+            className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161D2C] dark:[&>option]:text-white"
           >
             {LIFECYCLE_STATUS_OPTIONS.map((opt) => (
-              <option key={opt.value} value={opt.value}>
+              <option
+                key={opt.value}
+                value={opt.value}
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
                 {opt.label}
               </option>
             ))}
@@ -581,12 +649,27 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
               setAssignedFilter(e.target.value);
               setPage(1);
             }}
-            className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200"
+            style={{ colorScheme: 'dark light' }}
+            className="rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-700 focus:outline-none dark:border-white/10 dark:bg-[#1a1a26] dark:text-gray-200 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161D2C] dark:[&>option]:text-white"
           >
-            <option value="all">All Assignees</option>
-            <option value="unassigned">Unassigned Only</option>
+            <option
+              value="all"
+              className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+            >
+              All Assignees
+            </option>
+            <option
+              value="unassigned"
+              className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+            >
+              Unassigned Only
+            </option>
             {employees.map((emp) => (
-              <option key={emp.id} value={emp.id}>
+              <option
+                key={emp.id}
+                value={emp.id}
+                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+              >
                 {emp.full_name}
               </option>
             ))}
@@ -699,17 +782,27 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
                                 ? 'bg-purple-100 text-purple-700 dark:bg-purple-500/15 dark:text-purple-300'
                                 : lead.source === 'site_visit'
                                   ? 'bg-blue-100 text-blue-700 dark:bg-blue-500/15 dark:text-blue-300'
-                                  : lead.source === 'whatsapp'
-                                    ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
-                                    : 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'
+                                  : lead.source === 'exit_intent'
+                                    ? 'bg-amber-100 text-amber-800 dark:bg-amber-500/15 dark:text-amber-300'
+                                    : lead.source === 'whatsapp'
+                                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300'
+                                      : lead.source === 'ivr'
+                                        ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-500/15 dark:text-indigo-300'
+                                        : 'bg-gray-100 text-gray-700 dark:bg-white/10 dark:text-gray-300'
                             }`}
                           >
                             {lead.source === 'chatbot' && <Bot className="h-2.5 w-2.5" />}
                             {lead.source === 'site_visit' && (
                               <CalendarCheck className="h-2.5 w-2.5" />
                             )}
+                            {lead.source === 'exit_intent' && <Globe className="h-2.5 w-2.5" />}
                             {lead.source === 'whatsapp' && <Send className="h-2.5 w-2.5" />}
-                            {lead.source.replace('_', ' ')}
+                            {lead.source === 'ivr' && <PhoneCall className="h-2.5 w-2.5" />}
+                            {lead.source === 'exit_intent'
+                              ? 'Web Popup'
+                              : lead.source === 'site_visit'
+                                ? 'Site Visit'
+                                : lead.source.replace('_', ' ')}
                           </span>
 
                           <div className="font-medium text-gray-800 dark:text-gray-200">

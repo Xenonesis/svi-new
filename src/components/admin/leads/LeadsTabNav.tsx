@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, PhoneCall, Bot, Users } from 'lucide-react';
+import { BarChart3, PhoneCall, Globe, Users } from 'lucide-react';
 
 export type LeadsTabType = 'dashboard' | 'ivr' | 'chatbot' | 'all';
 
@@ -9,12 +9,14 @@ export interface LeadsTabNavProps {
   activeTab: LeadsTabType;
   onTabChange: (tab: LeadsTabType) => void;
   ivrTotalCount: number;
+  websiteCount?: number;
 }
 
 export function LeadsTabNav({
   activeTab,
   onTabChange,
   ivrTotalCount,
+  websiteCount,
 }: LeadsTabNavProps): React.JSX.Element {
   return (
     <div className="flex flex-wrap items-center gap-2 border-b border-gray-100 pb-2 dark:border-white/5">
@@ -59,10 +61,14 @@ export function LeadsTabNav({
             : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
         }`}
       >
-        <Bot className="h-3.5 w-3.5" />
-        <span>AI Chatbot Leads</span>
+        <Globe className="h-3.5 w-3.5" />
+        <span>Website Inquiries</span>
+        {websiteCount !== undefined && websiteCount > 0 && (
+          <span className="bg-brand-gold/20 py-0.2 text-brand-gold rounded-full px-1.5 text-[10px] font-bold">
+            {websiteCount}
+          </span>
+        )}
       </button>
-
       <button
         type="button"
         onClick={() => onTabChange('all')}

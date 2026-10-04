@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '@/src/stores/authStore';
 import { RefreshCw, UploadCloud } from 'lucide-react';
 import { IvrLeadsTable } from '@/src/components/admin/leads/IvrLeadsTable';
@@ -12,7 +13,6 @@ import { IvrStatsKpiGrid } from '@/src/components/admin/leads/IvrStatsKpiGrid';
 import { LeadsTabNav } from '@/src/components/admin/leads/LeadsTabNav';
 import type { LeadsTabType } from '@/src/components/admin/leads/LeadsTabNav';
 import dynamic from 'next/dynamic';
-
 const WorkforceLeadsTab = dynamic(
   () =>
     import('@/src/components/admin/workforce/tabs/WorkforceLeadsTab').then(
@@ -67,6 +67,20 @@ export default function AdminLeadsPage() {
     handleReassignAdvisor,
   } = useIvrLeadsManagement(token, activeTab);
 
+  const { data: leadsSummaryData } = useQuery({
+    queryKey: ['admin', 'leads', 'website-inquiries-count'],
+    queryFn: async () => {
+      const res = await fetch('/api/admin/leads?limit=1', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data?.counts || null;
+    },
+    enabled: !!token,
+    staleTime: 1000 * 45,
+  });
+  const websiteInquiryCount = leadsSummaryData?.website_inquiries ?? 0;
   if (authLoading) {
     return (
       <div className="flex min-h-[60vh] items-center justify-center">
@@ -117,8 +131,12 @@ export default function AdminLeadsPage() {
       </div>
 
       {/* Main Tabs Navigation */}
-      <LeadsTabNav activeTab={activeTab} onTabChange={setActiveTab} ivrTotalCount={ivrTotalCount} />
-
+      <LeadsTabNav
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        ivrTotalCount={ivrTotalCount}
+        websiteCount={websiteInquiryCount}
+      />
       {/* Tab Panels */}
       {activeTab === 'dashboard' && (
         <TelecallingDashboard
@@ -155,7 +173,7 @@ export default function AdminLeadsPage() {
 
       {activeTab === 'chatbot' && token && (
         <div className="rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
-          <WorkforceLeadsTab token={token} employees={employees} fixedSource="chatbot" />
+          <WorkforceLeadsTab token={token} employees={employees} fixedSource="website_inquiries" />
         </div>
       )}
 

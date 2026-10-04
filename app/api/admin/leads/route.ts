@@ -14,6 +14,8 @@ interface CachedChatLeadsCounts {
     hot: number;
     chatbot: number;
     site_visits: number;
+    exit_intent: number;
+    website_inquiries: number;
   };
   timestamp: number;
 }
@@ -41,8 +43,9 @@ export async function GET(request: NextRequest) {
     let query = supabaseAdmin
       .from('chat_leads')
       .select('*, profiles:assigned_to(id, full_name, email, phone)', { count: 'exact' });
-
-    if (source && source !== 'all') {
+    if (source === 'website_inquiries' || source === 'website') {
+      query = query.in('source', ['exit_intent', 'site_visit', 'chatbot', 'website']);
+    } else if (source && source !== 'all') {
       query = query.eq('source', source);
     }
     if (temperature && temperature !== 'all') {
@@ -73,7 +76,6 @@ export async function GET(request: NextRequest) {
         .select('*', { count: 'exact' })
         .order('created_at', { ascending: false })
         .range(offset, offset + limit - 1);
-
       const fallbackRes = await fallbackQuery;
       data = fallbackRes.data;
       error = fallbackRes.error;
@@ -144,6 +146,8 @@ export async function GET(request: NextRequest) {
       hot: 0,
       chatbot: 0,
       site_visits: 0,
+      exit_intent: 0,
+      website_inquiries: 0,
     };
 
     const now = Date.now();
@@ -156,12 +160,23 @@ export async function GET(request: NextRequest) {
         );
         if (!summaryErr && summaryData && typeof summaryData === 'object') {
           const s = summaryData as Record<string, number>;
+          const { count: exitIntentCount } = await supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .eq('source', 'exit_intent');
+
+          const chatbotCount = Number(s.chatbot) || 0;
+          const siteVisitCount = Number(s.site_visits) || 0;
+          const exitCount = exitIntentCount || 0;
+
           counts = {
             total: Number(s.total) || 0,
             unassigned: Number(s.unassigned) || 0,
             hot: Number(s.hot) || 0,
-            chatbot: Number(s.chatbot) || 0,
-            site_visits: Number(s.site_visits) || 0,
+            chatbot: chatbotCount,
+            site_visits: siteVisitCount,
+            exit_intent: exitCount,
+            website_inquiries: chatbotCount + siteVisitCount + exitCount,
           };
           cachedChatLeadsCounts = { counts, timestamp: now };
         } else {
@@ -169,37 +184,47 @@ export async function GET(request: NextRequest) {
         }
       } catch {
         // Graceful fallback if migration is pending
-        const [totalRes, unassignedRes, hotRes, chatbotRes, siteVisitRes] = await Promise.all([
-          supabaseAdmin.from('chat_leads').select('id', { count: 'exact', head: true }),
-          supabaseAdmin
-            .from('chat_leads')
-            .select('id', { count: 'exact', head: true })
-            .is('assigned_to', null),
-          supabaseAdmin
-            .from('chat_leads')
-            .select('id', { count: 'exact', head: true })
-            .eq('temperature', 'hot'),
-          supabaseAdmin
-            .from('chat_leads')
-            .select('id', { count: 'exact', head: true })
-            .eq('source', 'chatbot'),
-          supabaseAdmin
-            .from('chat_leads')
-            .select('id', { count: 'exact', head: true })
-            .eq('source', 'site_visit'),
-        ]);
+        const [totalRes, unassignedRes, hotRes, chatbotRes, siteVisitRes, exitIntentRes] =
+          await Promise.all([
+            supabaseAdmin.from('chat_leads').select('id', { count: 'exact', head: true }),
+            supabaseAdmin
+              .from('chat_leads')
+              .select('id', { count: 'exact', head: true })
+              .is('assigned_to', null),
+            supabaseAdmin
+              .from('chat_leads')
+              .select('id', { count: 'exact', head: true })
+              .eq('temperature', 'hot'),
+            supabaseAdmin
+              .from('chat_leads')
+              .select('id', { count: 'exact', head: true })
+              .eq('source', 'chatbot'),
+            supabaseAdmin
+              .from('chat_leads')
+              .select('id', { count: 'exact', head: true })
+              .eq('source', 'site_visit'),
+            supabaseAdmin
+              .from('chat_leads')
+              .select('id', { count: 'exact', head: true })
+              .eq('source', 'exit_intent'),
+          ]);
+
+        const chatbotCount = chatbotRes.count || 0;
+        const siteVisitCount = siteVisitRes.count || 0;
+        const exitIntentCount = exitIntentRes.count || 0;
 
         counts = {
           total: totalRes.count || 0,
           unassigned: unassignedRes.count || 0,
           hot: hotRes.count || 0,
-          chatbot: chatbotRes.count || 0,
-          site_visits: siteVisitRes.count || 0,
+          chatbot: chatbotCount,
+          site_visits: siteVisitCount,
+          exit_intent: exitIntentCount,
+          website_inquiries: chatbotCount + siteVisitCount + exitIntentCount,
         };
         cachedChatLeadsCounts = { counts, timestamp: now };
       }
     }
-
     return NextResponse.json({
       success: true,
       leads: enrichedLeads,

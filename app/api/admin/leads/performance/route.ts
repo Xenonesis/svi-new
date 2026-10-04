@@ -130,8 +130,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       const { data: siteVisitLeads } = await supabaseAdmin
         .from('chat_leads')
         .select('assigned_to')
-        .not('site_visit_at', 'is', null);
-
+        .eq('source', 'site_visit');
       if (siteVisitLeads) {
         for (const lead of siteVisitLeads) {
           if (lead.assigned_to && advisorMap.has(lead.assigned_to)) {

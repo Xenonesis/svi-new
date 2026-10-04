@@ -842,13 +842,39 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value as SortField)}
-                className="focus:border-brand-gold rounded-xl border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors focus:outline-hidden dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
+                style={{ colorScheme: 'dark light' }}
+                className="focus:border-brand-gold rounded-xl border border-gray-200 bg-gray-50 px-2.5 py-1.5 text-xs font-semibold text-gray-700 transition-colors focus:outline-hidden dark:border-white/10 dark:bg-white/5 dark:text-gray-200 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161D2C] dark:[&>option]:text-white"
               >
-                <option value="answered_calls">Most Answered</option>
-                <option value="total_calls">Most Total Calls</option>
-                <option value="answer_rate">Highest Answer Rate</option>
-                <option value="total_talk_time_sec">Most Talk Time</option>
-                <option value="hot_leads">Most Hot Leads</option>
+                <option
+                  value="answered_calls"
+                  className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+                >
+                  Most Answered
+                </option>
+                <option
+                  value="total_calls"
+                  className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+                >
+                  Most Total Calls
+                </option>
+                <option
+                  value="answer_rate"
+                  className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+                >
+                  Highest Answer Rate
+                </option>
+                <option
+                  value="total_talk_time_sec"
+                  className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+                >
+                  Most Talk Time
+                </option>
+                <option
+                  value="hot_leads"
+                  className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
+                >
+                  Most Hot Leads
+                </option>
               </select>
             </div>
           </div>
