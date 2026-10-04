@@ -67,15 +67,44 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     if (cached && requestNow - cached.timestamp < PERFORMANCE_TTL_MS) {
       return NextResponse.json(cached.payload);
     }
-    // 1. Fetch employees & advisors (including disabled ones so their historical data/leads are displayed)
-    const { data: employees } = await supabaseAdmin
-      .from('profiles')
-      .select('id, full_name, phone, role, is_active')
-      .in('role', ['employee', 'admin']);
+    // 1. Compute ISO cutoff timestamp for database filter push-down
+    let timeCutoffIso: string | null = null;
+    const now = new Date();
+    if (timeRange === 'today') {
+      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      timeCutoffIso = startOfDay.toISOString();
+    } else if (timeRange === 'week') {
+      timeCutoffIso = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    } else if (timeRange === 'month') {
+      timeCutoffIso = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
+    }
+
+    const advisorUuid = advisorFilter !== 'all' ? advisorFilter : null;
+
+    // 2. Parallel Primary Execution: Fetch profiles, aggregate RPC, and site visits concurrently
+    const [empRes, rpcRes, siteVisitRes] = await Promise.all([
+      supabaseAdmin
+        .from('profiles')
+        .select('id, full_name, phone, role, is_active')
+        .in('role', ['employee', 'admin']),
+      supabaseAdmin.rpc('get_telecalling_performance', {
+        p_time_cutoff: timeCutoffIso,
+        p_advisor_id: advisorUuid,
+      }),
+      supabaseAdmin.from('chat_leads').select('assigned_to').eq('source', 'site_visit'),
+    ]);
+
+    const employees = (empRes.data || []) as Array<{
+      id: string;
+      full_name: string;
+      phone: string | null;
+      role: string;
+      is_active: boolean | null;
+    }>;
     const advisorMap = new Map<string, AdvisorPerformanceMetric>();
     const nameToId = new Map<string, string>();
 
-    (employees || []).forEach((emp) => {
+    employees.forEach((emp) => {
       advisorMap.set(emp.id, {
         advisor_id: emp.id,
         advisor_name: emp.full_name.trim(),
@@ -95,42 +124,14 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       nameToId.set(emp.full_name.toLowerCase().trim(), emp.id);
     });
 
-    // 2. Compute ISO cutoff timestamp for database filter push-down
-    let timeCutoffIso: string | null = null;
-    const now = new Date();
-    if (timeRange === 'today') {
-      const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-      timeCutoffIso = startOfDay.toISOString();
-    } else if (timeRange === 'week') {
-      timeCutoffIso = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000).toISOString();
-    } else if (timeRange === 'month') {
-      timeCutoffIso = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000).toISOString();
-    }
-
-    const advisorUuid = advisorFilter !== 'all' ? advisorFilter : null;
-
-    // 3. Primary Path: Execute high-speed PostgreSQL RPC function
     let rpcData: RpcPerformanceResult | null = null;
-    try {
-      const { data, error } = await supabaseAdmin.rpc('get_telecalling_performance', {
-        p_time_cutoff: timeCutoffIso,
-        p_advisor_id: advisorUuid,
-      });
-
-      if (!error && data && typeof data === 'object') {
-        rpcData = data as RpcPerformanceResult;
-      }
-    } catch {
-      // Fall through to direct query fallback
+    if (!rpcRes.error && rpcRes.data && typeof rpcRes.data === 'object') {
+      rpcData = rpcRes.data as RpcPerformanceResult;
     }
 
-    // 4. If RPC succeeded, build response with site visits in <50ms
+    // 3. If RPC succeeded, build response with site visits in <50ms
     if (rpcData && rpcData.summary) {
-      // Fetch site visits from chat_leads
-      const { data: siteVisitLeads } = await supabaseAdmin
-        .from('chat_leads')
-        .select('assigned_to')
-        .eq('source', 'site_visit');
+      const siteVisitLeads = siteVisitRes.data;
       if (siteVisitLeads) {
         for (const lead of siteVisitLeads) {
           if (lead.assigned_to && advisorMap.has(lead.assigned_to)) {
@@ -140,7 +141,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         }
       }
 
-      // Merge RPC advisor metrics into advisorMap
+      // Merge RPC advisor metrics into advisorMap by accumulating counts across aliases
       (rpcData.advisors || []).forEach((adv) => {
         let empId = adv.advisor_id;
         if (!empId || !advisorMap.has(empId)) {
@@ -152,16 +153,16 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
 
         if (empId && advisorMap.has(empId)) {
           const m = advisorMap.get(empId)!;
-          m.total_calls = adv.total_calls;
-          m.answered_calls = adv.answered_calls;
-          m.missed_calls = adv.missed_calls;
-          m.total_talk_time_sec = adv.total_talk_time_sec;
+          m.total_calls += adv.total_calls;
+          m.answered_calls += adv.answered_calls;
+          m.missed_calls += adv.missed_calls;
+          m.total_talk_time_sec += adv.total_talk_time_sec;
           m.avg_talk_time_sec =
-            adv.answered_calls > 0 ? Math.round(adv.total_talk_time_sec / adv.answered_calls) : 0;
+            m.answered_calls > 0 ? Math.round(m.total_talk_time_sec / m.answered_calls) : 0;
           m.answer_rate =
-            adv.total_calls > 0 ? Math.round((adv.answered_calls / adv.total_calls) * 100) : 0;
-          m.hot_leads = adv.hot_leads;
-          m.key1_count = adv.key1_count;
+            m.total_calls > 0 ? Math.round((m.answered_calls / m.total_calls) * 100) : 0;
+          m.hot_leads += adv.hot_leads;
+          m.key1_count += adv.key1_count;
         } else if (empId) {
           // Unassigned or legacy profile
           advisorMap.set(empId, {
@@ -183,7 +184,6 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
           });
         }
       });
-
       const leaderboard: AdvisorPerformanceMetric[] = Array.from(advisorMap.values());
       leaderboard.sort((a, b) => {
         if (b.answered_calls !== a.answered_calls) {

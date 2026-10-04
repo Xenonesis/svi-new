@@ -141,8 +141,8 @@ To maintain sub-50ms query execution across growing datasets without destructive
 
 ## High-Performance RPC Functions
 
-| Function Name                       | Parameters                                     | Purpose                                                                                                                             |
-| :---------------------------------- | :--------------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------------- |
-| `get_telecalling_performance`       | `p_time_cutoff TIMESTAMPTZ, p_advisor_id UUID` | Instant PostgreSQL aggregation of IVR call records, campaigns, advisor metrics, and hot calls, replacing in-memory 15,000-row loops |
-| `get_distinct_registration_filters` | None                                           | Fast SQL-inlined distinct values for registration filter bars                                                                       |
-| `get_next_quotation_number`         | None                                           | Atomic sequence generation for quotation documents                                                                                  |
+| Function Name                       | Parameters                                     | Purpose                                                                                                                         |
+| :---------------------------------- | :--------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| `get_telecalling_performance`       | `p_time_cutoff TIMESTAMPTZ, p_advisor_id UUID` | Instant PostgreSQL aggregation of IVR call records, campaigns, advisor metrics, and hot calls (`dial_status = 'ANSWER'` filter) |
+| `get_distinct_registration_filters` | None                                           | Fast SQL-inlined distinct values for registration filter bars                                                                   |
+| `get_next_quotation_number`         | None                                           | Atomic sequence generation for quotation documents                                                                              |

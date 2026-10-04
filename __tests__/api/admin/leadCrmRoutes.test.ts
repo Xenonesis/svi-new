@@ -51,6 +51,23 @@ vi.mock('@/src/lib/supabase/admin', () => ({
       })),
       upsert: vi.fn().mockResolvedValue({ error: null }),
     })),
+    rpc: vi.fn().mockResolvedValue({
+      data: {
+        summary: {
+          total_calls: 10,
+          answered_calls: 8,
+          missed_calls: 2,
+          total_talk_time_sec: 120,
+          avg_talk_time_sec: 15,
+          hot_leads: 1,
+          key1_count: 0,
+        },
+        advisors: [],
+        campaigns: [],
+        recent_hot_calls: [],
+      },
+      error: null,
+    }),
   },
 }));
 
