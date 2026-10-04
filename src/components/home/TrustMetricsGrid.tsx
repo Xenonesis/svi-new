@@ -10,13 +10,13 @@ const TRUST_METRICS = [
   },
   {
     icon: Landmark,
-    title: 'Easy Bank Financing',
-    desc: 'Instant assistance with SBI, HDFC, ICICI & more',
+    title: 'Transparent Pricing',
+    desc: 'Zero hidden charges & clear documentation guaranteed',
   },
   {
     icon: Award,
-    title: 'ISO 9001:2015',
-    desc: 'Certified quality construction & township planning',
+    title: 'Ready For Possession',
+    desc: 'Immediate registry & 30ft internal road gated planning',
   },
   { icon: Building2, title: '17+ Years Legacy', desc: '5,000+ satisfied family home buyers' },
 ];
