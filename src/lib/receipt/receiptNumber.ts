@@ -35,6 +35,24 @@ export function getNextReceiptNumber(receipts?: ReceiptLike[] | null): string {
 
   return String(maxNumber + 1);
 }
+/**
+ * Queries the database to calculate and return the next unique payment receipt number.
+ */
+export async function getNextReceiptNumberFromDb(supabaseClient: {
+  from: (table: string) => any;
+}): Promise<string> {
+  const { data, error } = await supabaseClient
+    .from('documents')
+    .select('form_data')
+    .eq('document_type', 'payment_receipt')
+    .limit(5000);
+
+  if (error || !data) {
+    return String(BASE_RECEIPT_NUMBER);
+  }
+
+  return getNextReceiptNumber(data as ReceiptLike[]);
+}
 
 /**
  * Validates if a given receipt number is a valid positive integer string/number.

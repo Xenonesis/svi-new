@@ -34,7 +34,7 @@ export interface CompanyInfoLike {
 }
 
 export const getInitialFormData = (): PaymentReceiptFormData => ({
-  receiptNo: getNextReceiptNumber([]),
+  receiptNo: '',
   date: new Date().toISOString().split('T')[0],
   salutation: 'Mr.',
   name: '',
@@ -78,10 +78,11 @@ export function usePaymentReceiptForm() {
       const json = await res.json();
       if (json.documents) {
         setReceipts(json.documents);
-        // Only initialize receiptNo if it is currently unset
+        // Initialize receiptNo if unset or if it matches fallback base
         setFormData((prev) => {
-          if (!prev.receiptNo) {
-            return { ...prev, receiptNo: getNextReceiptNumber(json.documents) };
+          const nextNumber = getNextReceiptNumber(json.documents);
+          if (!prev.receiptNo || prev.receiptNo === '2056') {
+            return { ...prev, receiptNo: nextNumber };
           }
           return prev;
         });

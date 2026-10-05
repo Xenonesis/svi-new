@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { getNextQuotationNumberFromDb } from '@/src/lib/quotation/quotationNumber';
+import { getNextReceiptNumberFromDb } from '@/src/lib/receipt/receiptNumber';
 const VALID_DOC_TYPES = [
   'allotment_letter',
   'payment_receipt',
@@ -94,6 +95,32 @@ export async function POST(request: NextRequest) {
           );
         }
         finalFormData = { ...form_data, quotationNo: rawQuotationNo };
+      }
+    }
+
+    if (document_type === 'payment_receipt') {
+      const rawReceiptNo = form_data?.receiptNo ? String(form_data.receiptNo).trim() : '';
+
+      // Check if rawReceiptNo is already taken by an active payment receipt
+      let isTaken = false;
+      if (rawReceiptNo) {
+        const { data: existingReceipt } = await supabaseAdmin
+          .from('documents')
+          .select('id')
+          .eq('document_type', 'payment_receipt')
+          .filter('form_data->>receiptNo', 'eq', rawReceiptNo)
+          .is('metadata->is_trashed', null)
+          .maybeSingle();
+
+        isTaken = !!existingReceipt;
+      }
+
+      // If unset, empty, or duplicate number, auto-generate sequential number from DB
+      if (!rawReceiptNo || isTaken) {
+        const generatedNo = await getNextReceiptNumberFromDb(supabaseAdmin);
+        finalFormData = { ...form_data, receiptNo: generatedNo };
+      } else {
+        finalFormData = { ...form_data, receiptNo: rawReceiptNo };
       }
     }
 
