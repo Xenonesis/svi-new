@@ -109,6 +109,10 @@ export default function ReceiptRecordsPage() {
         activeTab={records.activeTab}
         setActiveTab={records.setActiveTab}
         trashedCount={records.trashedReceipts.length}
+        pageSize={records.pageSize}
+        setPageSize={records.setPageSize}
+        totalCount={records.totalCount}
+        totalFiltered={records.filteredReceipts.length}
       />
 
       <ReceiptsTable
@@ -125,6 +129,11 @@ export default function ReceiptRecordsPage() {
         onRestore={records.handleRestore}
         setIsPermanentDelete={records.setIsPermanentDelete}
         onEmptyTrash={records.handleEmptyTrash}
+        paginatedReceipts={records.paginatedReceipts}
+        currentPage={records.currentPage}
+        setCurrentPage={records.setCurrentPage}
+        pageSize={records.pageSize}
+        totalPages={records.totalPages}
       />
 
       <ReceiptModalsContainer {...records} />

@@ -1,9 +1,9 @@
+'use client';
+
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import {
   Eye,
-  FileText,
-  Mail,
   Trash2,
   WifiOff,
   RefreshCw,
@@ -14,30 +14,31 @@ import {
   Calendar,
   CreditCard,
   MessageSquare,
-  BookOpen,
   RotateCcw,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
 import { SavedReceipt } from './ReceiptTypes';
+import { ReceiptRowActionMenu } from './ReceiptRowActionMenu';
 
 export function TableSkeleton() {
   return (
     <div className="animate-pulse divide-y divide-gray-100 dark:divide-white/5">
-      {[...Array(6)].map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-6 py-4">
-          <SkeletonBlock className="h-4 w-20 rounded-lg" />
-          <SkeletonBlock className="h-4 w-20 rounded-lg" />
-          <SkeletonBlock className="h-4 w-32" />
-          <SkeletonBlock className="h-4 w-24" />
-          <SkeletonBlock className="h-4 w-16 rounded-full" />
-          <SkeletonBlock className="h-4 w-36" />
-          <div className="ml-auto flex gap-1.5">
-            <SkeletonBlock className="h-8 w-8 rounded-lg" />
-            <SkeletonBlock className="h-8 w-8 rounded-lg" />
-            <SkeletonBlock className="h-8 w-8 rounded-lg" />
-            <SkeletonBlock className="h-8 w-8 rounded-lg" />
+      {[1, 2, 3, 4, 5].map((i) => (
+        <div key={i} className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center gap-4">
+            <SkeletonBlock className="h-4 w-24" />
+            <SkeletonBlock className="h-4 w-20" />
+            <SkeletonBlock className="h-4 w-32" />
+          </div>
+          <div className="flex items-center gap-4">
+            <SkeletonBlock className="h-4 w-20" />
+            <SkeletonBlock className="h-4 w-16" />
+            <SkeletonBlock className="h-6 w-16 rounded-full" />
+            <SkeletonBlock className="h-6 w-20" />
           </div>
         </div>
       ))}
@@ -45,7 +46,7 @@ export function TableSkeleton() {
   );
 }
 
-interface ReceiptsTableProps {
+export interface ReceiptsTableProps {
   loading: boolean;
   error: string | null;
   filteredReceipts: SavedReceipt[];
@@ -59,6 +60,24 @@ interface ReceiptsTableProps {
   onRestore?: (receipt: SavedReceipt) => void;
   setIsPermanentDelete?: (val: boolean) => void;
   onEmptyTrash?: () => void;
+  currentPage?: number;
+  setCurrentPage?: (page: number) => void;
+  pageSize?: number;
+  totalPages?: number;
+  paginatedReceipts?: SavedReceipt[];
+}
+
+function getPageNumbers(current: number, total: number): (number | 'ellipsis')[] {
+  if (total <= 7) {
+    return Array.from({ length: total }, (_, i) => i + 1);
+  }
+  if (current <= 4) {
+    return [1, 2, 3, 4, 5, 'ellipsis', total];
+  }
+  if (current >= total - 3) {
+    return [1, 'ellipsis', total - 4, total - 3, total - 2, total - 1, total];
+  }
+  return [1, 'ellipsis', current - 1, current, current + 1, 'ellipsis', total];
 }
 
 export function ReceiptsTable({
@@ -75,8 +94,23 @@ export function ReceiptsTable({
   onRestore,
   setIsPermanentDelete,
   onEmptyTrash,
+  currentPage = 1,
+  setCurrentPage,
+  pageSize = 25,
+  totalPages,
+  paginatedReceipts,
 }: ReceiptsTableProps) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+
+  const displayReceipts = paginatedReceipts ?? filteredReceipts;
+  const totalItems = filteredReceipts.length;
+  const page = currentPage || 1;
+  const size = pageSize || 25;
+  const pagesCount = totalPages ?? Math.max(1, Math.ceil(totalItems / size));
+
+  const startItem = totalItems === 0 ? 0 : (page - 1) * size + 1;
+  const endItem = totalItems === 0 ? 0 : Math.min(page * size, totalItems);
+  const pageNumbers = getPageNumbers(page, pagesCount);
 
   const handleCopyReceiptNo = (receiptNo: string, id: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -97,18 +131,18 @@ export function ReceiptsTable({
   const getMethodBadgeStyle = (method?: string) => {
     const m = (method || '').toLowerCase();
     if (m.includes('upi')) {
-      return 'border-purple-500/25 bg-purple-500/10 text-purple-600 dark:text-purple-400';
+      return 'border-purple-500/20 bg-purple-500/10 text-purple-600 dark:text-purple-400';
     }
     if (m.includes('cash')) {
-      return 'border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
+      return 'border-emerald-500/20 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400';
     }
     if (m.includes('cheque') || m.includes('dd') || m.includes('check')) {
-      return 'border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-400';
+      return 'border-amber-500/20 bg-amber-500/10 text-amber-600 dark:text-amber-400';
     }
     if (m.includes('bank') || m.includes('neft') || m.includes('rtgs') || m.includes('imps')) {
-      return 'border-blue-500/25 bg-blue-500/10 text-blue-600 dark:text-blue-400';
+      return 'border-blue-500/20 bg-blue-500/10 text-blue-600 dark:text-blue-400';
     }
-    return 'border-gray-300 bg-gray-100 text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300';
+    return 'border-gray-200 bg-gray-100/80 text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300';
   };
 
   const formatDateDisplay = (dateStr?: string) => {
@@ -233,7 +267,7 @@ export function ReceiptsTable({
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-                {filteredReceipts.map((receipt, i) => {
+                {displayReceipts.map((receipt, i) => {
                   const amountVal = parseFloat(receipt.form_data?.amount || '0');
                   const formattedAmount = amountVal.toLocaleString('en-IN', {
                     style: 'currency',
@@ -245,21 +279,26 @@ export function ReceiptsTable({
                   const isCopiedReceipt = receiptNo && copiedKey === `${receipt.id}-receipt`;
                   const isCopiedRef = refId && copiedKey === `${receipt.id}-ref`;
 
+                  const isRefund =
+                    receipt.form_data?.refundStatus === 'Refund Done' ||
+                    receipt.form_data?.notes?.toLowerCase().includes('refund') ||
+                    receipt.form_data?.remarks?.toLowerCase().includes('refund');
+
                   return (
                     <motion.tr
                       key={receipt.id}
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
-                      className="group transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.03]"
+                      className="group h-[52px] transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                     >
                       {/* Receipt No */}
-                      <td className="px-5 py-3.5 align-middle">
+                      <td className="px-5 py-2.5 align-middle">
                         {receiptNo ? (
                           <button
                             type="button"
                             onClick={(e) => handleCopyReceiptNo(receiptNo, receipt.id, e)}
-                            className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 hover:border-brand-gold/50 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
+                            className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:border-brand-gold/50 hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
                             title="Click to copy receipt number"
                           >
                             <span>{receiptNo}</span>
@@ -275,7 +314,7 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Ref ID */}
-                      <td className="px-5 py-3.5 align-middle">
+                      <td className="px-5 py-2.5 align-middle">
                         {refId ? (
                           <div className="inline-flex items-center gap-1">
                             <button
@@ -305,18 +344,11 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Client Name */}
-                      <td className="px-5 py-3.5 align-middle">
+                      <td className="px-5 py-2.5 align-middle">
                         <div className="min-w-0">
                           <div className="flex items-center gap-1.5 truncate font-semibold text-gray-900 capitalize dark:text-white">
                             <span>{receipt.form_data?.name || 'N/A'}</span>
-                            {((receipt.form_data as Record<string, any>)?.refundStatus ===
-                              'Refund Done' ||
-                              (receipt.form_data as Record<string, any>)?.notes
-                                ?.toLowerCase()
-                                .includes('refund') ||
-                              (receipt.form_data as Record<string, any>)?.remarks
-                                ?.toLowerCase()
-                                .includes('refund')) && (
+                            {isRefund && (
                               <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
                                 Refund Done
                               </span>
@@ -331,7 +363,7 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Date */}
-                      <td className="px-5 py-3.5 align-middle whitespace-nowrap">
+                      <td className="px-5 py-2.5 align-middle whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <Calendar className="h-3.5 w-3.5 text-gray-400" />
                           <span className="font-mono text-[11px] font-medium text-gray-800 tabular-nums dark:text-gray-200">
@@ -341,14 +373,14 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Amount */}
-                      <td className="px-5 py-3.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
+                      <td className="px-5 py-2.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
                         {formattedAmount}
                       </td>
 
                       {/* Method */}
-                      <td className="px-5 py-3.5 text-center align-middle">
+                      <td className="px-5 py-2.5 text-center align-middle">
                         <span
-                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap uppercase ${getMethodBadgeStyle(
+                          className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap uppercase backdrop-blur-xs ${getMethodBadgeStyle(
                             receipt.form_data?.paymentMethod
                           )}`}
                         >
@@ -358,7 +390,7 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Plot Info */}
-                      <td className="px-5 py-3.5 align-middle">
+                      <td className="px-5 py-2.5 align-middle">
                         {receipt.form_data?.plotNo ? (
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className="rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-mono text-[10px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
@@ -376,7 +408,7 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Actions */}
-                      <td className="px-5 py-3.5 text-right align-middle">
+                      <td className="px-5 py-2.5 text-right align-middle">
                         {activeTab === 'trash' ? (
                           <div className="flex items-center justify-end gap-1.5">
                             {onRestore && (
@@ -405,7 +437,9 @@ export function ReceiptsTable({
                           </div>
                         ) : (
                           <div className="flex items-center justify-end gap-1">
+                            {/* Quick Eye button (View & Print) */}
                             <button
+                              type="button"
                               onClick={() => setSelectedReceipt(receipt)}
                               className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
                               title="View & Print Payment Receipt"
@@ -413,31 +447,11 @@ export function ReceiptsTable({
                             >
                               <Eye className="h-3.5 w-3.5" />
                             </button>
-                            <Link
-                              href={`/admin/payment-receipt?templateId=${receipt.id}`}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
-                              title="Use as Template"
-                              aria-label="Use as Template"
-                            >
-                              <FileText className="h-3.5 w-3.5" />
-                            </Link>
-                            <button
-                              onClick={() => {
-                                sessionStorage.setItem(
-                                  'emailPrefillRecord',
-                                  JSON.stringify(receipt)
-                                );
-                                window.location.href =
-                                  '/admin/email?tab=compose&prefillReceipt=true';
-                              }}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
-                              title="Email Receipt to Client"
-                              aria-label="Email Receipt"
-                            >
-                              <Mail className="h-3.5 w-3.5" />
-                            </button>
+
+                            {/* Quick MessageSquare button (WhatsApp) */}
                             {onShareWhatsApp && (
                               <button
+                                type="button"
                                 onClick={() => onShareWhatsApp(receipt)}
                                 className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
                                 title="Share via WhatsApp"
@@ -446,27 +460,17 @@ export function ReceiptsTable({
                                 <MessageSquare className="h-3.5 w-3.5" />
                               </button>
                             )}
-                            {onOpenLedger && receipt.form_data?.refId && (
-                              <button
-                                onClick={() => onOpenLedger(receipt.form_data.refId)}
-                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-sky-500/30 hover:bg-sky-500/10 hover:text-sky-500 active:scale-95"
-                                title="Customer Ledger"
-                                aria-label="Customer Ledger"
-                              >
-                                <BookOpen className="h-3.5 w-3.5" />
-                              </button>
-                            )}
-                            <button
-                              onClick={() => {
+
+                            {/* ReceiptRowActionMenu (•••) */}
+                            <ReceiptRowActionMenu
+                              receipt={receipt}
+                              onOpenLedger={onOpenLedger}
+                              onDelete={(r) => {
                                 setIsPermanentDelete?.(false);
-                                setDeleteTarget(receipt);
+                                setDeleteTarget(r);
                               }}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
-                              title="Delete Receipt"
-                              aria-label="Delete Receipt"
-                            >
-                              <Trash2 className="h-3.5 w-3.5" />
-                            </button>
+                              onShareWhatsApp={onShareWhatsApp}
+                            />
                           </div>
                         )}
                       </td>
@@ -478,6 +482,69 @@ export function ReceiptsTable({
           </>
         )}
       </div>
+
+      {/* Enterprise Bottom Pagination Bar */}
+      {filteredReceipts.length > 0 && (
+        <div className="flex flex-col items-center justify-between gap-3 border-t border-gray-200/80 bg-gray-50/50 px-6 py-3.5 sm:flex-row dark:border-white/10 dark:bg-white/[0.02]">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            Showing <span className="font-bold text-slate-900 dark:text-white">{startItem}</span> to{' '}
+            <span className="font-bold text-slate-900 dark:text-white">{endItem}</span> of{' '}
+            <span className="font-bold text-slate-900 dark:text-white">{totalItems}</span> receipts
+          </div>
+
+          <div className="flex items-center gap-1.5">
+            <button
+              type="button"
+              disabled={page <= 1}
+              onClick={() => setCurrentPage?.(Math.max(1, page - 1))}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+              aria-label="Previous page"
+            >
+              <ChevronLeft className="h-4 w-4" />
+            </button>
+
+            {pageNumbers.map((p, idx) => {
+              if (p === 'ellipsis') {
+                return (
+                  <span
+                    key={`ellipsis-${idx}`}
+                    className="flex h-8 w-8 items-center justify-center text-xs text-slate-400"
+                  >
+                    …
+                  </span>
+                );
+              }
+
+              const isActive = p === page;
+              return (
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => setCurrentPage?.(p)}
+                  className={`flex h-8 min-w-[32px] items-center justify-center rounded-lg px-2 text-xs font-semibold transition-all ${
+                    isActive
+                      ? 'bg-brand-gold text-brand-navy font-bold shadow-xs'
+                      : 'border border-transparent text-slate-600 hover:border-slate-200 hover:bg-slate-100 hover:text-slate-900 dark:text-slate-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-white'
+                  }`}
+                  aria-current={isActive ? 'page' : undefined}
+                >
+                  {p}
+                </button>
+              );
+            })}
+
+            <button
+              type="button"
+              disabled={page >= pagesCount}
+              onClick={() => setCurrentPage?.(Math.min(pagesCount, page + 1))}
+              className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 transition-all hover:bg-slate-100 hover:text-slate-900 disabled:cursor-not-allowed disabled:opacity-40 dark:border-white/10 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10 dark:hover:text-white"
+              aria-label="Next page"
+            >
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

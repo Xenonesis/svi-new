@@ -53,6 +53,12 @@ export interface UsePaymentReceiptsRecordsReturn {
   setDateRange: React.Dispatch<React.SetStateAction<DateRange>>;
   handleClearFilters: () => void;
   filteredReceipts: SavedReceipt[];
+  currentPage: number;
+  setCurrentPage: React.Dispatch<React.SetStateAction<number>>;
+  pageSize: number;
+  setPageSize: React.Dispatch<React.SetStateAction<number>>;
+  totalPages: number;
+  paginatedReceipts: SavedReceipt[];
   totalAmount: number;
   totalCount: number;
   upiCount: number;
@@ -109,6 +115,8 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     direction: 'desc',
   });
   const [dateRange, setDateRange] = useState<DateRange>({ start: '', end: '' });
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(25);
 
   const [activeTab, setActiveTab] = useState<'active' | 'trash'>('active');
   const [trashedReceipts, setTrashedReceipts] = useState<SavedReceipt[]>([]);
@@ -563,6 +571,29 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
         return 0;
       });
   }, [activeTab, receipts, trashedReceipts, searchQuery, methodFilter, sortConfig, dateRange]);
+  const totalPages = Math.max(
+    1,
+    Math.ceil(filteredReceipts.length / (pageSize === 0 ? filteredReceipts.length || 1 : pageSize))
+  );
+
+  const paginatedReceipts = useMemo(() => {
+    if (pageSize === 0) return filteredReceipts;
+    const start = (currentPage - 1) * pageSize;
+    return filteredReceipts.slice(start, start + pageSize);
+  }, [filteredReceipts, currentPage, pageSize]);
+
+  // Reset page to 1 when filters or active tab change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, methodFilter, dateRange, activeTab]);
+
+  // Auto-clamp currentPage if totalPages shrinks below currentPage
+  useEffect(() => {
+    if (currentPage > totalPages) {
+      setCurrentPage(totalPages);
+    }
+  }, [currentPage, totalPages]);
+
   const handleExportCSV = useCallback(
     (filename?: string) => {
       if (filteredReceipts.length === 0) {
@@ -602,6 +633,12 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
     setDateRange,
     handleClearFilters,
     filteredReceipts,
+    currentPage,
+    setCurrentPage,
+    pageSize,
+    setPageSize,
+    totalPages,
+    paginatedReceipts,
     totalAmount,
     totalCount,
     upiCount,

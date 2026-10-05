@@ -19,6 +19,10 @@ export interface SavedReceipt {
     account: string;
     paymentMethod: string;
     clientPhone?: string;
+    refundStatus?: string;
+    notes?: string;
+    remarks?: string;
+    [key: string]: unknown;
   };
   metadata?: {
     is_trashed?: boolean;

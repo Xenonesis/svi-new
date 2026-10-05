@@ -519,4 +519,189 @@ describe('usePaymentReceiptsRecords', () => {
     expect(result.current.receipts).toHaveLength(3);
     expect(toast.success).toHaveBeenCalledWith('Payment receipt permanently deleted.');
   });
+
+  describe('pagination pipeline and page controls', () => {
+    it('initializes with currentPage = 1, pageSize = 25, and default totalPages = 1', async () => {
+      const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      expect(result.current.currentPage).toBe(1);
+      expect(result.current.pageSize).toBe(25);
+      expect(result.current.totalPages).toBe(1);
+      expect(result.current.paginatedReceipts).toHaveLength(4);
+    });
+
+    it('slices paginatedReceipts correctly according to pageSize and currentPage', async () => {
+      const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      act(() => {
+        result.current.setPageSize(2);
+      });
+
+      expect(result.current.pageSize).toBe(2);
+      expect(result.current.totalPages).toBe(2);
+      expect(result.current.paginatedReceipts).toHaveLength(2);
+      expect(result.current.paginatedReceipts[0].id).toBe(result.current.filteredReceipts[0].id);
+      expect(result.current.paginatedReceipts[1].id).toBe(result.current.filteredReceipts[1].id);
+
+      act(() => {
+        result.current.setCurrentPage(2);
+      });
+
+      expect(result.current.currentPage).toBe(2);
+      expect(result.current.paginatedReceipts).toHaveLength(2);
+      expect(result.current.paginatedReceipts[0].id).toBe(result.current.filteredReceipts[2].id);
+      expect(result.current.paginatedReceipts[1].id).toBe(result.current.filteredReceipts[3].id);
+    });
+
+    it('supports pageSize = 0 for displaying all receipts on page 1', async () => {
+      const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      act(() => {
+        result.current.setPageSize(2);
+        result.current.setCurrentPage(2);
+      });
+      expect(result.current.currentPage).toBe(2);
+
+      act(() => {
+        result.current.setPageSize(0);
+      });
+
+      expect(result.current.pageSize).toBe(0);
+      expect(result.current.totalPages).toBe(1);
+      expect(result.current.currentPage).toBe(1);
+      expect(result.current.paginatedReceipts).toHaveLength(4);
+      expect(result.current.paginatedReceipts).toEqual(result.current.filteredReceipts);
+    });
+
+    it('resets currentPage to 1 when filters or active tab change', async () => {
+      const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      // Change page to 2 with pageSize 2
+      act(() => {
+        result.current.setPageSize(2);
+        result.current.setCurrentPage(2);
+      });
+      expect(result.current.currentPage).toBe(2);
+
+      // 1. Changing searchQuery resets currentPage to 1
+      act(() => {
+        result.current.setSearchQuery('Doe');
+      });
+      expect(result.current.currentPage).toBe(1);
+      expect(result.current.paginatedReceipts).toHaveLength(1);
+
+      // Reset query (which triggers reset effect to 1) and then go to page 2
+      act(() => {
+        result.current.setSearchQuery('');
+      });
+      expect(result.current.currentPage).toBe(1);
+      act(() => {
+        result.current.setCurrentPage(2);
+      });
+      expect(result.current.currentPage).toBe(2);
+
+      // 2. Changing methodFilter resets currentPage to 1
+      act(() => {
+        result.current.setMethodFilter('UPI');
+      });
+      expect(result.current.currentPage).toBe(1);
+
+      // Reset method and then go to page 2
+      act(() => {
+        result.current.setMethodFilter('');
+      });
+      expect(result.current.currentPage).toBe(1);
+      act(() => {
+        result.current.setCurrentPage(2);
+      });
+      expect(result.current.currentPage).toBe(2);
+
+      // 3. Changing dateRange resets currentPage to 1
+      act(() => {
+        result.current.setDateRange({ start: '2026-06-12', end: '2026-06-22' });
+      });
+      expect(result.current.currentPage).toBe(1);
+
+      // Reset dateRange and then go to page 2
+      act(() => {
+        result.current.setDateRange({ start: '', end: '' });
+      });
+      expect(result.current.currentPage).toBe(1);
+      act(() => {
+        result.current.setCurrentPage(2);
+      });
+      expect(result.current.currentPage).toBe(2);
+
+      // 4. Changing activeTab resets currentPage to 1
+      act(() => {
+        result.current.setActiveTab('trash');
+      });
+      expect(result.current.currentPage).toBe(1);
+    });
+
+    it('auto-clamps currentPage if totalPages shrinks below currentPage', async () => {
+      const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      act(() => {
+        result.current.setPageSize(1);
+      });
+      expect(result.current.totalPages).toBe(4);
+
+      act(() => {
+        result.current.setCurrentPage(4);
+      });
+      expect(result.current.currentPage).toBe(4);
+
+      // Changing pageSize to 2 reduces totalPages to 2, currentPage should clamp to 2
+      act(() => {
+        result.current.setPageSize(2);
+      });
+      expect(result.current.totalPages).toBe(2);
+      expect(result.current.currentPage).toBe(2);
+
+      // Changing pageSize to 25 reduces totalPages to 1, currentPage should clamp to 1
+      act(() => {
+        result.current.setPageSize(25);
+      });
+      expect(result.current.totalPages).toBe(1);
+      expect(result.current.currentPage).toBe(1);
+    });
+
+    it('calculates totalPages as 1 when filteredReceipts is empty', async () => {
+      const { result } = renderHook(() => usePaymentReceiptsRecords());
+
+      await waitFor(() => {
+        expect(result.current.loading).toBe(false);
+      });
+
+      act(() => {
+        result.current.setSearchQuery('NonExistentReceipt');
+      });
+
+      expect(result.current.filteredReceipts).toHaveLength(0);
+      expect(result.current.totalPages).toBe(1);
+      expect(result.current.paginatedReceipts).toHaveLength(0);
+      expect(result.current.currentPage).toBe(1);
+    });
+  });
 });
