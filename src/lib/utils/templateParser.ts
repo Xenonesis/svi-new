@@ -339,6 +339,12 @@ export type EmailTemplateType =
 export interface LuxuryEmailVars {
   name?: string;
   subject?: string;
+  // Header banner customization
+  badge?: string;
+  subtitle?: string;
+  // CTA customization
+  cta_text?: string;
+  cta_url?: string;
   // Financial
   amount?: string;
   transaction_id?: string;
@@ -352,7 +358,7 @@ export interface LuxuryEmailVars {
   booking_date?: string;
   // Links
   portal_url?: string;
-  // Generic body paragraph
+  // Generic body paragraph / HTML content
   body_text?: string;
   // Extra rows: key=label, value=text
   [key: string]: string | undefined;
@@ -528,15 +534,30 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
       };
     }
     // general
+    const generalBadge = vars.badge || '📋 Official Communication';
+    const generalSubtitle = vars.subtitle || 'SVI Infra Solutions — Corporate Notice';
+    const buttonLabel = vars.cta_text || 'Visit Portal';
+    const buttonLink = vars.cta_url || portalUrl;
+    const hasCta = vars.cta_text !== '' && buttonLabel.toLowerCase() !== 'none';
+    const bodyContent = vars.body_text
+      ? vars.body_text.trim()
+      : '<p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;">Please find the details of your communication below.</p>';
+
+    // Check if bodyContent already starts with a greeting or custom HTML
+    const hasGreeting =
+      /dear\s+/i.test(bodyContent) ||
+      /hello\s+/i.test(bodyContent) ||
+      /respected\s+/i.test(bodyContent);
+    const greetingHtml = hasGreeting
+      ? ''
+      : `<h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>`;
+
     return {
-      headerHtml: headerBanner(
-        '📋 Official Communication',
-        'SVI Infra Solutions — Corporate Notice'
-      ),
+      headerHtml: headerBanner(generalBadge, generalSubtitle),
       bodyInnerHtml: `
-        <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
-        <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${vars.body_text || 'Please find the details of your communication below.'}</p>
-        ${ctaButton(portalUrl, 'Visit Portal')}`,
+        ${greetingHtml}
+        <div style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${bodyContent}</div>
+        ${hasCta ? ctaButton(buttonLink, buttonLabel) : ''}`,
     };
   }
 

@@ -232,21 +232,26 @@ export async function POST(request: NextRequest) {
 
       // ── Step 1: AI extracts variables only (small JSON, fast) ──────────────
       const extractPrompt = [
-        'You are an email data extractor for SVI Infra Solutions.',
+        'You are an expert AI corporate email writer and data extractor for SVI Infra Solutions Pvt. Ltd., a premier real estate developer.',
         '',
         'EXISTING TEMPLATES:',
         templatesList,
         '',
         'TASK:',
-        'Analyze the user prompt and extract structured data. Respond ONLY with valid JSON.',
+        'Analyze the user prompt, determine the best template or compose rich corporate content, and respond ONLY with valid JSON.',
         '',
-        'OUTPUT SCHEMA (Return ONLY concrete values, NEVER output text enclosed in angle brackets):',
+        'OUTPUT SCHEMA (Return ONLY concrete values, NEVER output placeholder angle brackets):',
         '{',
         '  "action": "template_match" or "ai_template",',
         '  "templateId": "_ai_generated",',
-        '  "templateName": "Refund Acknowledgment",',
-        '  "subject": "Official Refund Acknowledgment - SVI Infra Solutions",',
-        '  "emailType": "refund_confirmation",',
+        '  "templateName": "Residential Property Inquiry",',
+        '  "subject": "Residential Property Options Near Khatu Shyam - SVI Infra Solutions",',
+        '  "emailType": "general",',
+        '  "badge": "Residential Property Inquiry",',
+        '  "subtitle": "Exclusive Residential Plots & Living Options",',
+        '  "body_text": "<p>Thank you for expressing interest in our residential properties near Khatu Shyam Ji...</p><p>We are pleased to introduce our premier gated township options featuring 30ft internal roads, clear titles, and immediate registry...</p>",',
+        '  "cta_text": "Schedule Site Visit",',
+        '  "cta_url": "https://www.sviinfrasolutions.com",',
         '  "variables": {',
         '    "name": "Valued Customer",',
         '    "amount": "2,100",',
@@ -258,18 +263,22 @@ export async function POST(request: NextRequest) {
         '}',
         '',
         'RULES:',
-        '1. CRITICAL: NEVER output placeholder strings with angle brackets like "<transaction id>" or "{{variable}}". If a value is not mentioned in the prompt, DO NOT include the key in the variables object.',
-        '2. For refunds: emailType = refund_confirmation. Set status = "CREDITED" always for refund emails.',
-        '3. For payments received: emailType = payment_confirmation. Set status = "RECEIVED" always for payment emails.',
-        '4. Extract UTR / Transaction ID from any UTR number, TXN ID, reference number, or 10-18 digit numeric code in the prompt.',
-        '5. Extract Event / Scheme from phrases like "lucky draw", "diwali scheme", "allotment", etc.',
-        '6. For bookings or allotments: emailType = booking_confirmation.',
-        '7. For payment dues or reminders: emailType = payment_reminder.',
-        '8. For everything else: emailType = general.',
-        '9. For payment_mode: if prompt mentions UPI/gpay/phonepe/paytm → "UPI", bank/NEFT/RTGS/IMPS → "Bank Transfer", cash → "Cash", card → "Card Payment", one-time/onetime → "One-Time Payment".',
-        '10. If subject or prompt matches an EXISTING TEMPLATE set action = template_match and provide that templateId. Otherwise action = ai_template.',
-        '11. IMPORTANT: Do NOT match lucky_draw or other event templates for refund/payment emails.',
-        '12. Respond with ONLY the JSON object. No explanation, no markdown fences.',
+        '1. CRITICAL: For general inquiries, outreach, property options, invitations, follow-ups, or custom prompts (where no exact existing transaction template matches), you MUST generate a thorough, polished, high-converting HTML body in "body_text" using clean semantic HTML tags (<p>, <ul>, <li>, <strong>). NEVER leave body_text blank or generic ("Please find details below"). Address the prompt directly and professionally.',
+        '2. "badge": 2-4 word uppercase/title badge for the header banner (e.g. "Residential Property Inquiry", "Exclusive Living Options", "Payment Acknowledgment").',
+        '3. "subtitle": A crisp corporate subtitle describing the communication.',
+        '4. "cta_text": Contextual action button (e.g. "Schedule Site Visit", "Explore Properties", "Connect With Advisor", or empty string if no CTA is needed).',
+        '5. "cta_url": Website link (defaults to "https://www.sviinfrasolutions.com").',
+        '6. NEVER output placeholder strings with angle brackets like "<transaction id>" or "{{variable}}". If a value is not mentioned in the prompt, DO NOT include the key in the variables object.',
+        '7. For refunds: emailType = refund_confirmation. Set status = "CREDITED" always for refund emails.',
+        '8. For payments received: emailType = payment_confirmation. Set status = "RECEIVED" always for payment emails.',
+        '9. Extract UTR / Transaction ID from any UTR number, TXN ID, reference number, or 10-18 digit numeric code in the prompt.',
+        '10. Extract Event / Scheme from phrases like "lucky draw", "diwali scheme", "allotment", etc.',
+        '11. For bookings or allotments: emailType = booking_confirmation.',
+        '12. For payment dues or reminders: emailType = payment_reminder.',
+        '13. For everything else: emailType = general.',
+        '14. For payment_mode: if prompt mentions UPI/gpay/phonepe/paytm → "UPI", bank/NEFT/RTGS/IMPS → "Bank Transfer", cash → "Cash", card → "Card Payment", one-time/onetime → "One-Time Payment".',
+        '15. If subject or prompt matches an EXISTING TEMPLATE set action = template_match and provide that templateId. Otherwise action = ai_template.',
+        '16. Respond with ONLY the JSON object. No explanation, no markdown fences.',
         '',
         'RECIPIENT DATA:',
         JSON.stringify(recipientData),
@@ -282,14 +291,13 @@ export async function POST(request: NextRequest) {
         '',
         `Tone: ${tone || 'Professional'}`,
       ].join('\n');
-
       let extractedText = '';
       try {
         extractedText = await safeGenerateText({
           system:
             'You are a JSON data extractor. Output ONLY valid JSON. No markdown, no HTML, no explanation.',
           prompt: extractPrompt,
-          maxOutputTokens: 600,
+          maxOutputTokens: 1200,
         });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'AI service temporarily unavailable';
@@ -306,6 +314,11 @@ export async function POST(request: NextRequest) {
         templateName: string;
         subject: string;
         emailType: EmailTemplateType;
+        badge?: string;
+        subtitle?: string;
+        body_text?: string;
+        cta_text?: string;
+        cta_url?: string;
         variables: LuxuryEmailVars;
       };
       const extracted = safeParseJson<ExtractedPayload>(extractedText, {
@@ -402,6 +415,11 @@ export async function POST(request: NextRequest) {
 
       const vars: LuxuryEmailVars = {
         portal_url: 'https://www.sviinfrasolutions.com',
+        badge: extracted.badge,
+        subtitle: extracted.subtitle,
+        body_text: extracted.body_text,
+        cta_text: extracted.cta_text,
+        cta_url: extracted.cta_url,
         ...cleanedVars,
         subject: extracted.subject || subject || 'Official Communication',
       };
