@@ -14,7 +14,6 @@ import {
   ChevronDown,
   Check,
   Sparkles,
-  Bot,
 } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { PHONE_HREF, WHATSAPP_URL } from '@/src/lib/constants';
@@ -121,11 +120,6 @@ export function FloatingContact() {
     setIsModalOpen(true);
   };
 
-  const handleOpenChat = () => {
-    track('chat_launcher_open');
-    window.dispatchEvent(new CustomEvent('open-svi-chat'));
-  };
-
   const handleResetAndClose = () => {
     setIsModalOpen(false);
     setTimeout(() => {
@@ -195,57 +189,6 @@ export function FloatingContact() {
 
   return (
     <>
-      {/* Mobile Sticky Bar */}
-      <div className="fixed right-0 bottom-0 left-0 z-50 flex h-[calc(4.25rem+env(safe-area-inset-bottom,0px))] w-full items-center justify-around border-t border-gray-200/80 bg-white/95 px-2 pt-1 pb-[max(0.35rem,env(safe-area-inset-bottom,0px))] shadow-[0_-4px_16px_rgba(0,0,0,0.08)] backdrop-blur-xl md:hidden dark:border-white/10 dark:bg-[#0b0f19]/95">
-        <a
-          href={PHONE_HREF}
-          onClick={handleCallClick}
-          className="dock-lux-item hover:text-brand-gold flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 text-gray-700 transition-colors active:bg-gray-100 dark:text-gray-300 dark:active:bg-white/5"
-          aria-label={t('call')}
-        >
-          <Phone size={19} />
-          <span className="text-[10px] font-semibold tracking-wider uppercase">{t('call')}</span>
-        </a>
-        <a
-          href={WHATSAPP_URL}
-          target="_blank"
-          rel="noopener noreferrer"
-          onClick={handleWhatsAppClick}
-          className="dock-lux-item group flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 text-gray-700 transition-colors hover:text-emerald-600 active:bg-green-50 dark:text-gray-300 dark:hover:text-emerald-400 dark:active:bg-green-950/20"
-          aria-label={t('whatsapp')}
-        >
-          <MessageCircle
-            size={19}
-            className="text-[#25D366] transition-transform group-hover:scale-110"
-          />
-          <span className="text-[10px] font-semibold tracking-wider text-emerald-700 uppercase dark:text-[#25D366]">
-            {t('whatsapp')}
-          </span>
-        </a>
-        <button
-          type="button"
-          onClick={handleOpenChat}
-          className="dock-lux-item text-brand-navy dark:text-brand-gold hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors"
-          aria-label={t('aiAssistant')}
-        >
-          <Bot size={19} className="dark:text-brand-gold text-amber-800" />
-          <span className="dark:text-brand-gold text-[10px] font-semibold tracking-wider text-amber-800 uppercase">
-            {t('aiAssistant')}
-          </span>
-        </button>
-        <button
-          type="button"
-          onClick={handleBookVisitOpen}
-          className="dock-lux-item text-brand-navy hover:text-brand-gold active:bg-brand-gold/10 flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1 rounded-xl py-1 font-semibold transition-colors dark:text-gray-100"
-          aria-label={t('bookVisit')}
-        >
-          <Calendar size={19} />
-          <span className="text-[10px] font-semibold tracking-wider uppercase">
-            {t('bookVisit')}
-          </span>
-        </button>
-      </div>
-
       {/* Desktop Floating Badges */}
       <div className="fixed right-8 bottom-8 z-50 hidden flex-col items-end gap-4 md:flex">
         <div className="group relative">
