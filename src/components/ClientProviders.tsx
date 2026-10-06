@@ -22,6 +22,13 @@ const FloatingContact = dynamic(
     import('@/src/components/layout/FloatingContact').then((m) => ({ default: m.FloatingContact })),
   { ssr: false }
 );
+const MobileConversionDock = dynamic(
+  () =>
+    import('@/src/components/layout/MobileConversionDock').then((m) => ({
+      default: m.MobileConversionDock,
+    })),
+  { ssr: false }
+);
 
 const PropertyComparisonTray = dynamic(
   () => import('@/src/components/properties/PropertyComparisonTray'),
@@ -120,6 +127,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         <main className="flex min-h-screen flex-grow flex-col overflow-x-hidden">{children}</main>
         <Footer />
         <FloatingContact />
+        <MobileConversionDock />
         <ChatLauncher />
         <BackToTop />
         <ExitIntentPopup />
