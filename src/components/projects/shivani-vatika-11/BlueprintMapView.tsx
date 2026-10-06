@@ -5,13 +5,11 @@ import Image from 'next/image';
 import {
   ZoomIn,
   ZoomOut,
-  RotateCcw,
   Download,
   Building2,
   Trees,
   Compass,
   ArrowRight,
-  Maximize2,
   Sparkles,
 } from 'lucide-react';
 

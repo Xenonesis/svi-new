@@ -163,4 +163,48 @@ describe('ShivaniVatika11MasterPlan', () => {
     fireEvent.click(closeBtn);
     expect(screen.queryByRole('dialog', { name: /plot #1/i })).not.toBeInTheDocument();
   });
+
+  it('opens SiteVisitModal with correct plot number without duplicate prefix', () => {
+    render(<ShivaniVatika11MasterPlan />);
+    const gridBtn = screen.getByRole('button', { name: /plot grid matrix/i });
+    fireEvent.click(gridBtn);
+
+    // Click Plot #1 card to open drawer
+    const plotCard = screen.getByRole('button', { name: /plot #1/i });
+    fireEvent.click(plotCard);
+
+    // Click "Visit This Plot in Free Cab" inside drawer
+    const bookBtn = screen.getByRole('button', { name: /visit this plot in free cab/i });
+    fireEvent.click(bookBtn);
+
+    // Site visit modal should open and display "Plot #1" (in modal as well as card), never "Plot #Plot #1"
+    expect(screen.getAllByText('Plot #1').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByText(/selected plot:/i)).toBeInTheDocument();
+    expect(screen.queryByText(/Plot #Plot #/)).not.toBeInTheDocument();
+  });
+
+  it('resets selected block when switching to grid view without block filter', () => {
+    render(<ShivaniVatika11MasterPlan />);
+
+    // In Blueprint view, click "Explore in Grid" on the Commercial sector card
+    const exploreButtons = screen.getAllByRole('button', { name: /explore in grid/i });
+    // First sector is Commercial in SECTORS array
+    fireEvent.click(exploreButtons[0]);
+
+    // Now in Grid view with Commercial selected
+    expect(screen.getByText('Shop-4')).toBeInTheDocument();
+    expect(screen.queryByText('A-15')).not.toBeInTheDocument();
+
+    // Switch back to Blueprint view
+    const blueprintBtn = screen.getByRole('button', { name: /blueprint view/i });
+    fireEvent.click(blueprintBtn);
+
+    // Click "View all 230 plots in Grid" which calls onSwitchToGrid() without argument
+    const viewAllBtn = screen.getByRole('button', { name: /view all 230 plots in grid/i });
+    fireEvent.click(viewAllBtn);
+
+    // Grid view should now show all plots because block was reset to 'All'
+    expect(screen.getByText('Shop-4')).toBeInTheDocument();
+    expect(screen.getByText('A-15')).toBeInTheDocument();
+  });
 });

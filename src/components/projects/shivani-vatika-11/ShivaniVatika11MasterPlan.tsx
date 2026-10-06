@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import type { PlotData } from '@/src/data/shivaniVatika11Plots';
+import type { PlotData, PlotBlock } from '@/src/data/shivaniVatika11Plots';
 import { SHIVANI_VATIKA_11_PLOTS } from '@/src/data/shivaniVatika11Plots';
 import { useLivePlotStatus } from '@/src/lib/hooks/useLivePlotStatus';
 import { PlotMatrixGrid } from './PlotMatrixGrid';
@@ -26,18 +26,10 @@ export function ShivaniVatika11MasterPlan({
   const [siteVisitPlot, setSiteVisitPlot] = useState<PlotData | null>(null);
   const [isSiteVisitOpen, setIsSiteVisitOpen] = useState<boolean>(false);
 
-  const handleSwitchToGrid = (block?: string): void => {
-    if (block) {
-      setSelectedBlock(block);
-    }
+  const handleSwitchToGrid = (block?: PlotBlock | string): void => {
+    setSelectedBlock(block ?? 'All');
     setActiveView('grid');
   };
-
-  const formattedSiteVisitPlotNo = siteVisitPlot
-    ? siteVisitPlot.plotNo.startsWith('A-') || siteVisitPlot.plotNo.startsWith('Shop-')
-      ? siteVisitPlot.plotNo
-      : `Plot #${siteVisitPlot.plotNo}`
-    : undefined;
 
   return (
     <section
@@ -172,7 +164,7 @@ export function ShivaniVatika11MasterPlan({
           setSiteVisitPlot(null);
         }}
         prefilledProject="Shivani Vatika 11th"
-        prefilledPlot={formattedSiteVisitPlotNo}
+        prefilledPlot={siteVisitPlot?.plotNo}
       />
     </section>
   );
