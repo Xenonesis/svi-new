@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
+import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { Resend } from 'resend';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
@@ -15,8 +16,9 @@ function getResend() {
 
 export async function GET(request: NextRequest) {
   try {
-    const admin = await verifyAdmin(request);
-    if (!admin) throw AppError.unauthorized();
+    const user = (await verifyAdmin(request)) || (await verifyEmployee(request))?.user;
+    if (!user) throw AppError.unauthorized();
+    const admin = user;
 
     const resend = getResend();
     const url = new URL(request.url);
@@ -701,8 +703,9 @@ export async function GET(request: NextRequest) {
 // POST /api/admin/email - Send an email via Resend
 export async function POST(request: NextRequest) {
   try {
-    const admin = await verifyAdmin(request);
-    if (!admin) throw AppError.unauthorized();
+    const user = (await verifyAdmin(request)) || (await verifyEmployee(request))?.user;
+    if (!user) throw AppError.unauthorized();
+    const admin = user;
 
     // Support direct multipart attachment upload (prevents large base64 payloads)
     const contentType = request.headers.get('content-type') || '';

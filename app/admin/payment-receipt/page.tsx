@@ -19,6 +19,8 @@ export default function PaymentReceiptPage() {
     handleSubmit,
     handleDownloadPDF,
     handleDownloadImage,
+    refIdProfiles,
+    handleSelectRefProfile,
   } = usePaymentReceiptForm();
 
   return (
@@ -34,6 +36,8 @@ export default function PaymentReceiptPage() {
           termsAccepted={termsAccepted}
           setTermsAccepted={setTermsAccepted}
           isSubmitting={isSubmitting}
+          refIdProfiles={refIdProfiles}
+          onSelectRefProfile={handleSelectRefProfile}
         />
 
         {/* Preview Section */}

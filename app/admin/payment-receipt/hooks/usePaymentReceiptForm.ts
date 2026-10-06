@@ -1,12 +1,17 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { toast } from 'sonner';
 import { useAuthStore } from '@/src/stores/authStore';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { getNextReceiptNumber, ReceiptLike } from '@/src/lib/receipt/receiptNumber';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { numberToWords } from '@/src/lib/receipt/numberToWords';
+import {
+  buildRefIdProfiles,
+  RefIdProfile,
+  CandidateSourceLike,
+} from '@/src/lib/receipt/refIdProfiles';
 
 export interface PaymentReceiptFormData {
   receiptNo: string;
@@ -66,6 +71,7 @@ export function usePaymentReceiptForm() {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [receipts, setReceipts] = useState<ReceiptLike[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [candidates, setCandidates] = useState<CandidateSourceLike[]>([]);
   const [companyInfo, setCompanyInfo] = useState<CompanyInfoLike>(DEFAULT_COMPANY_INFO);
 
   const fetchReceipts = useCallback(async () => {
@@ -89,6 +95,22 @@ export function usePaymentReceiptForm() {
       }
     } catch (err) {
       console.error('Error fetching receipts:', err);
+    }
+  }, [token]);
+
+  const fetchCandidates = useCallback(async () => {
+    if (!token) return;
+    try {
+      const res = await fetch('/api/admin/portal-allotments/candidates', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) return;
+      const json = await res.json();
+      if (json && Array.isArray(json.candidates)) {
+        setCandidates(json.candidates);
+      }
+    } catch {
+      // Silent error fallback
     }
   }, [token]);
 
@@ -136,7 +158,8 @@ export function usePaymentReceiptForm() {
       .catch((err) => console.error('Error fetching company info:', err));
 
     fetchReceipts();
-  }, [token, fetchReceipts]);
+    fetchCandidates();
+  }, [token, fetchReceipts, fetchCandidates]);
 
   // Handle templateId from URL (e.g. from Receipt Records "Use as Template")
   const templateProcessed = useRef(false);
@@ -366,6 +389,25 @@ export function usePaymentReceiptForm() {
     }
   };
 
+  const refIdProfiles = useMemo(
+    () => buildRefIdProfiles(receipts, candidates),
+    [receipts, candidates]
+  );
+
+  const handleSelectRefProfile = useCallback((profile: RefIdProfile) => {
+    setFormData((prev) => ({
+      ...prev,
+      refId: profile.refId,
+      name: profile.name || prev.name,
+      salutation: profile.salutation || prev.salutation || 'Mr.',
+      clientPhone: profile.clientPhone || prev.clientPhone,
+      plotNo: profile.plotNo || prev.plotNo,
+      plotSize: profile.plotSize || prev.plotSize,
+      account: profile.account || prev.account,
+    }));
+    toast.success(`Auto-filled details for ${profile.refId}`);
+  }, []);
+
   return {
     formData,
     setFormData,
@@ -376,6 +418,8 @@ export function usePaymentReceiptForm() {
     termsAccepted,
     setTermsAccepted,
     receipts,
+    refIdProfiles,
+    handleSelectRefProfile,
     companyInfo,
     isSubmitting,
     handleChange,

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
+import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import type { Contact } from '@/src/components/admin/email/types';
 
@@ -29,7 +30,9 @@ interface ProfileRow {
 export async function GET(request: NextRequest) {
   try {
     const admin = await verifyAdmin(request);
-    if (!admin) throw AppError.unauthorized();
+    const employee = !admin ? await verifyEmployee(request) : null;
+    const user = admin || employee?.user;
+    if (!user) throw AppError.unauthorized();
 
     const { searchParams } = new URL(request.url);
     const search = searchParams.get('search')?.trim();

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
+import { verifyEmployee } from '@/src/lib/supabase/verifyEmployee';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
@@ -200,7 +201,9 @@ export async function POST(request: NextRequest) {
 
   try {
     const admin = await verifyAdmin(request);
-    if (!admin) throw AppError.unauthorized();
+    const employee = !admin ? await verifyEmployee(request) : null;
+    const user = admin || employee?.user;
+    if (!user) throw AppError.unauthorized();
 
     const body = await request.json();
     const { action } = body;

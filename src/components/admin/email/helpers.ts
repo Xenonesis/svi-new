@@ -1,12 +1,19 @@
 import { supabase } from '@/src/lib/supabase/client';
+import { useAuthStore } from '@/src/stores/authStore';
 import type { DraftData, EmailAttachment } from './types';
 
 export async function getToken(): Promise<string> {
-  const { useAuthStore } = await import('@/src/stores/authStore');
-  const storeToken = useAuthStore.getState().token;
-  if (storeToken) return storeToken;
-  const { data } = await supabase.auth.getSession();
-  return data.session?.access_token || '';
+  try {
+    const { data, error } = await supabase.auth.getSession();
+    if (!error && data.session?.access_token) {
+      const freshToken = data.session.access_token;
+      useAuthStore.setState({ token: freshToken });
+      return freshToken;
+    }
+  } catch {
+    // Ignore getSession errors and fall back to store
+  }
+  return useAuthStore.getState().token || '';
 }
 
 export function formatTime(dateString: string): string {

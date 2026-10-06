@@ -2,8 +2,9 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
+import { supabase } from '@/src/lib/supabase/client';
+import { useAuthStore } from '@/src/stores/authStore';
 import { getToken } from '../helpers';
-
 interface GenerateOptions {
   prompt: string;
   tone?: string;
@@ -50,8 +51,8 @@ export function useAIEmail() {
   }, []);
 
   const apiCall = useCallback(async (body: Record<string, unknown>, signal?: AbortSignal) => {
-    const token = await getToken();
-    const res = await fetch('/api/admin/email/ai', {
+    let token = await getToken();
+    let res = await fetch('/api/admin/email/ai', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -60,6 +61,27 @@ export function useAIEmail() {
       body: JSON.stringify(body),
       signal,
     });
+
+    if (res.status === 401) {
+      try {
+        const { data } = await supabase.auth.refreshSession();
+        if (data.session?.access_token) {
+          token = data.session.access_token;
+          useAuthStore.setState({ token });
+          res = await fetch('/api/admin/email/ai', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+            signal,
+          });
+        }
+      } catch {
+        // Refresh failed, proceed to error check
+      }
+    }
 
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));

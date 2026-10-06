@@ -1,6 +1,8 @@
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
 import { Receipt, RefreshCw } from 'lucide-react';
 import React from 'react';
+import RefIdAutocomplete from './RefIdAutocomplete';
+import type { RefIdProfile } from '@/src/lib/receipt/refIdProfiles';
 
 interface PaymentReceiptFormProps {
   formData: {
@@ -26,6 +28,8 @@ interface PaymentReceiptFormProps {
   termsAccepted: boolean;
   setTermsAccepted: (accepted: boolean) => void;
   isSubmitting?: boolean;
+  refIdProfiles?: RefIdProfile[];
+  onSelectRefProfile?: (profile: RefIdProfile) => void;
 }
 
 export default function PaymentReceiptForm({
@@ -35,6 +39,8 @@ export default function PaymentReceiptForm({
   termsAccepted,
   setTermsAccepted,
   isSubmitting = false,
+  refIdProfiles = [],
+  onSelectRefProfile,
 }: PaymentReceiptFormProps) {
   return (
     <div className="dark:bg-brand-dark-surface/65 relative h-fit overflow-hidden rounded-2xl border border-gray-200 bg-white/80 p-6 shadow-xl backdrop-blur-xl dark:border-white/8">
@@ -85,13 +91,28 @@ export default function PaymentReceiptForm({
             onChange={handleChange}
             required
           />
-          <FormField
-            label="Ref. Id"
-            name="refId"
-            value={formData.refId}
-            onChange={handleChange}
-            required
-          />
+          <div className="flex flex-col gap-1.5">
+            <label
+              htmlFor="receipt-ref-id"
+              className="text-xs font-semibold tracking-wider text-gray-700 uppercase dark:text-gray-300"
+            >
+              Ref. Id <span className="text-red-500">*</span>
+            </label>
+            <RefIdAutocomplete
+              id="receipt-ref-id"
+              name="refId"
+              value={formData.refId}
+              onChange={(newRefId) => {
+                handleChange({
+                  target: { name: 'refId', value: newRefId },
+                } as unknown as React.ChangeEvent<HTMLInputElement>);
+              }}
+              onSelectProfile={onSelectRefProfile}
+              profiles={refIdProfiles}
+              required
+              disabled={isSubmitting}
+            />
+          </div>
           <FormField
             label="Client Mobile / WhatsApp"
             name="clientPhone"
