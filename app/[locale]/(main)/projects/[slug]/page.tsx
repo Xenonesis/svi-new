@@ -23,6 +23,7 @@ import ProjectShowcaseGallery from '@/src/components/projects/ProjectShowcaseGal
 import SiteVisitPill from '@/src/components/common/SiteVisitPill';
 import ProjectTransitMatrix from '@/src/components/projects/ProjectTransitMatrix';
 import ProjectFaqSection from '@/src/components/projects/ProjectFaqSection';
+import { ShivaniVatika11MasterPlan } from '@/src/components/projects/shivani-vatika-11/ShivaniVatika11MasterPlan';
 type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
@@ -166,6 +167,9 @@ export default async function ProjectDetailPage({ params }: Props) {
       {project.showcaseGallery && project.showcaseGallery.length > 0 && (
         <ProjectShowcaseGallery items={project.showcaseGallery} isHindi={isHindi} />
       )}
+
+      {/* Interactive Master Plan & Live Plot Availability Grid */}
+      {slug === 'shivani-vatika-11th' && <ShivaniVatika11MasterPlan isHindi={isHindi} />}
 
       {/* Area cross-link: helps crawlers discover the orphaned /areas/* pages */}
       {(() => {
