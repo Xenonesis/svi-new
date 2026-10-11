@@ -76,7 +76,12 @@ export default function RegistrationReview({
         <div className="grid grid-cols-1 gap-x-8 gap-y-2 sm:grid-cols-2">
           <ReviewRow label={t('state')} value={formData.state} />
           <ReviewRow label={t('city')} value={formData.city} />
-          <ReviewRow label={t('address')} value={formData.address} className="sm:col-span-2" />
+          {formData.pincode ? <ReviewRow label={t('pincode')} value={formData.pincode} /> : null}
+          <ReviewRow
+            label={t('address')}
+            value={formData.address}
+            className={formData.pincode ? undefined : 'sm:col-span-2'}
+          />
         </div>
       </div>
 

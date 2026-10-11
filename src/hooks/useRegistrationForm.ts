@@ -133,20 +133,30 @@ export function useRegistrationForm(t: (key: string) => string) {
     if (!formData.dob) {
       newErrors.dob = t('validation.dobRequired');
     } else {
-      const birthDate = new Date(formData.dob);
-      const today = new Date();
-      let age = today.getFullYear() - birthDate.getFullYear();
-      const m = today.getMonth() - birthDate.getMonth();
-      if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
-        age--;
-      }
-
-      if (birthDate > today) {
-        newErrors.dob = t('validation.dobFuture');
-      } else if (age < 18) {
-        newErrors.dob = t('validation.dobAge');
-      } else if (age > 100) {
+      const [y, m, d] = formData.dob.split('-').map(Number);
+      if (!y || !m || !d || isNaN(y) || isNaN(m) || isNaN(d)) {
         newErrors.dob = t('validation.dobInvalid');
+      } else {
+        const today = new Date();
+        const currentYear = today.getFullYear();
+        const currentMonth = today.getMonth() + 1; // 1-indexed
+        const currentDay = today.getDate();
+
+        let age = currentYear - y;
+        if (currentMonth < m || (currentMonth === m && currentDay < d)) {
+          age--;
+        }
+
+        if (
+          y > currentYear ||
+          (y === currentYear && (m > currentMonth || (m === currentMonth && d > currentDay)))
+        ) {
+          newErrors.dob = t('validation.dobFuture');
+        } else if (age < 18) {
+          newErrors.dob = t('validation.dobAge');
+        } else if (age > 100) {
+          newErrors.dob = t('validation.dobInvalid');
+        }
       }
     }
 
@@ -167,6 +177,11 @@ export function useRegistrationForm(t: (key: string) => string) {
 
     if (!formData.state.trim()) newErrors.state = t('validation.stateRequired');
     if (!formData.city.trim()) newErrors.city = t('validation.cityRequired');
+    if (formData.pincode && formData.pincode.trim()) {
+      if (!/^[1-9]\d{5}$/.test(formData.pincode.trim())) {
+        newErrors.pincode = t('validation.pincodeFormat');
+      }
+    }
     if (!formData.address.trim()) newErrors.address = t('validation.addressRequired');
     if (!formData.advisorName) newErrors.advisorName = t('validation.advisorRequired');
     if (!formData.project) newErrors.project = t('validation.projectRequired');

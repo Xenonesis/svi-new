@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { AlertCircle, Calendar } from 'lucide-react';
+import { CITIES_BY_STATE_OR_UT, OTHER_CITY_VALUE } from '@/src/lib/constants';
 export const INPUT_CLASS = (field: string, errors: Record<string, string>, attempted?: boolean) => {
   if (errors[field])
     return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-red-500';
@@ -129,9 +130,8 @@ export function FormDateInput({
 
   useEffect(() => {
     if (value) {
-      setDisplayValue(isoToDisplayDate(value));
-    } else if (!displayValue || displayValue.length === 10) {
-      setDisplayValue('');
+      const display = isoToDisplayDate(value);
+      setDisplayValue((prev) => (prev === display ? prev : display));
     }
   }, [value]);
 
@@ -146,10 +146,9 @@ export function FormDateInput({
         name,
         value: iso,
       },
-    } as React.ChangeEvent<HTMLInputElement>;
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
     onChange(syntheticEvent);
   };
-
   const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     const digits = displayValue.replace(/\D/g, '');
     if (digits.length === 6) {
@@ -174,8 +173,13 @@ export function FormDateInput({
 
   const handlePickerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const chosenIso = e.target.value;
+    if (!chosenIso) return;
     setDisplayValue(isoToDisplayDate(chosenIso));
-    onChange(e);
+    const syntheticEvent = {
+      ...e,
+      target: { ...e.target, name, value: chosenIso },
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    onChange(syntheticEvent);
   };
 
   return (
@@ -340,6 +344,163 @@ export function FormRelationInput({
   );
 }
 
+interface FormCityInputProps extends FormInputProps {
+  stateValue?: string;
+  customCityPlaceholder?: string;
+  otherOptionLabel?: string;
+}
+
+export function FormCityInput({
+  name,
+  label,
+  value,
+  errors,
+  onChange,
+  placeholder = 'Select city',
+  customCityPlaceholder = 'Enter your city / town / village',
+  otherOptionLabel = 'Other / Custom City',
+  hint,
+  attempted,
+  required = true,
+  stateValue,
+}: FormCityInputProps) {
+  const availableCities =
+    stateValue && CITIES_BY_STATE_OR_UT[stateValue] ? CITIES_BY_STATE_OR_UT[stateValue] : [];
+  const hasPredefinedCities = availableCities.length > 0;
+
+  // Determine if the current value is a predefined city or custom
+  const isKnownPredefined = hasPredefinedCities && availableCities.includes(value);
+  const [isCustomMode, setIsCustomMode] = useState<boolean>(
+    !hasPredefinedCities || (value !== '' && !isKnownPredefined)
+  );
+  const [customCityText, setCustomCityText] = useState<string>(
+    !hasPredefinedCities || !isKnownPredefined ? value : ''
+  );
+
+  // Keep custom city text in sync when external value changes
+  useEffect(() => {
+    if (!hasPredefinedCities) {
+      setIsCustomMode(true);
+      setCustomCityText(value);
+    } else if (availableCities.includes(value)) {
+      setIsCustomMode(false);
+      setCustomCityText('');
+    } else if (value) {
+      setIsCustomMode(true);
+      setCustomCityText(value);
+    }
+  }, [value, stateValue, hasPredefinedCities, availableCities]);
+
+  const emitChange = (val: string) => {
+    const syntheticEvent = {
+      target: {
+        name,
+        value: val,
+      },
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    onChange(syntheticEvent);
+  };
+
+  const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected === OTHER_CITY_VALUE) {
+      setIsCustomMode(true);
+      emitChange(customCityText);
+    } else {
+      setIsCustomMode(false);
+      emitChange(selected);
+    }
+  };
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const next = e.target.value;
+    setCustomCityText(next);
+    emitChange(next);
+  };
+
+  const errorId = `${name}-error`;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label
+          htmlFor={hasPredefinedCities && !isCustomMode ? `${name}-select` : name}
+          className={LABEL_CLASS}
+        >
+          {label}
+          {required && ' *'}
+        </label>
+        {hasPredefinedCities && isCustomMode && (
+          <button
+            type="button"
+            onClick={() => {
+              setIsCustomMode(false);
+              emitChange('');
+            }}
+            className="text-brand-gold text-[10px] font-semibold hover:underline"
+          >
+            Back to city list
+          </button>
+        )}
+      </div>
+
+      {hasPredefinedCities && !isCustomMode ? (
+        <div className="relative">
+          <select
+            id={`${name}-select`}
+            name={name}
+            value={isKnownPredefined ? value : ''}
+            onChange={handleSelectChange}
+            className={`appearance-none ${INPUT_CLASS(name, errors, attempted)} pr-10`}
+            aria-invalid={errors[name] ? 'true' : undefined}
+            aria-describedby={errors[name] ? errorId : undefined}
+          >
+            <option value="">{placeholder}</option>
+            {availableCities.map((city) => (
+              <option key={city} value={city}>
+                {city}
+              </option>
+            ))}
+            <option value={OTHER_CITY_VALUE}>+ {otherOptionLabel}</option>
+          </select>
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <polyline points="6 9 12 15 18 9" />
+            </svg>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          <input
+            type="text"
+            id={name}
+            name={name}
+            value={customCityText}
+            onChange={handleTextChange}
+            className={INPUT_CLASS(name, errors, attempted)}
+            placeholder={hasPredefinedCities ? customCityPlaceholder : placeholder}
+            autoComplete="address-level2"
+            aria-invalid={errors[name] ? 'true' : undefined}
+            aria-describedby={errors[name] ? errorId : undefined}
+          />
+        </div>
+      )}
+
+      {hint && !errors[name] && <p className="text-[10px] text-gray-400">{hint}</p>}
+      <FieldError field={name} errors={errors} />
+    </div>
+  );
+}
 export function FormInput(props: FormInputProps) {
   if (props.type === 'date') {
     return <FormDateInput {...props} />;
@@ -397,12 +558,16 @@ interface FormSelectProps {
   name: string;
   label: string;
   value: string;
-  options: { value: string; label: string }[] | string[];
+  options:
+    | { value: string; label: string }[]
+    | string[]
+    | readonly { readonly value: string; readonly label: string }[];
   errors: Record<string, string>;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
   placeholder: string;
+  hint?: string;
   attempted?: boolean;
 }
 
@@ -414,6 +579,7 @@ export function FormSelect({
   errors,
   onChange,
   placeholder,
+  hint,
   attempted,
 }: FormSelectProps) {
   const errorId = `${name}-error`;
@@ -461,6 +627,7 @@ export function FormSelect({
           </svg>
         </div>
       </div>
+      {hint && !errors[name] && <p className="text-[10px] text-gray-400">{hint}</p>}
       <FieldError field={name} errors={errors} />
     </div>
   );

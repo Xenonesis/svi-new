@@ -106,6 +106,14 @@ export const RegistrationSchema = z.object({
     .default(''),
   state: z.string().trim().min(2, 'State is required').max(50, 'State must be ≤ 50 chars'),
   city: z.string().trim().min(2, 'City is required').max(50, 'City must be ≤ 50 chars'),
+  pincode: z
+    .string()
+    .trim()
+    .refine((v) => !v || /^[1-9]\d{5}$/.test(v), {
+      message: 'PIN code must be a valid 6-digit postal code',
+    })
+    .optional()
+    .default(''),
   address: z
     .string()
     .trim()

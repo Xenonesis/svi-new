@@ -127,6 +127,7 @@ export async function POST(request: NextRequest) {
       'panNumber',
       'state',
       'city',
+      'pincode',
       'address',
       'advisorName',
       'project',
@@ -164,6 +165,7 @@ export async function POST(request: NextRequest) {
       panNumber,
       state,
       city,
+      pincode,
       address,
       advisorName,
       project,
@@ -262,7 +264,18 @@ export async function POST(request: NextRequest) {
           pan_card_file_url: panCardFileUrl,
           state,
           city,
-          address,
+          address: (() => {
+            const cleanAddr = address.trim();
+            const cityStatePin = [city, state].filter(Boolean).join(', ');
+            const suffix = pincode
+              ? cityStatePin
+                ? `${cityStatePin} - ${pincode}`
+                : pincode
+              : cityStatePin;
+            if (!cleanAddr) return suffix;
+            if (cleanAddr.includes(state) || (city && cleanAddr.includes(city))) return cleanAddr;
+            return suffix ? `${cleanAddr}, ${suffix}` : cleanAddr;
+          })(),
           advisor_name: advisorName,
           project,
           property_size: propertySize,
