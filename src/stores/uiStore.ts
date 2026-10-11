@@ -21,6 +21,8 @@ interface UIState {
   setIsDark: (dark: boolean) => void;
 }
 
+const THEME_STORAGE_KEY = 'svi-theme-v1';
+
 function applyThemeClass(theme: Theme) {
   if (typeof window === 'undefined') return;
   const root = document.documentElement;
@@ -30,6 +32,11 @@ function applyThemeClass(theme: Theme) {
     root.classList.add(isDark ? 'dark' : 'light');
   } else {
     root.classList.add(theme);
+  }
+  try {
+    localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore localStorage write failures (e.g. private browsing or restricted quota)
   }
 }
 
@@ -73,6 +80,22 @@ export const useUIStore = create<UIState>()(
       name: 'svi-ui-store',
       partialize: (state) => ({ theme: state.theme }),
       onRehydrateStorage: () => (state) => {
+        // Reconcile with ThemeProvider's single source of truth in localStorage if available
+        if (typeof window !== 'undefined') {
+          try {
+            const providerTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+            if (
+              providerTheme &&
+              (providerTheme === 'light' || providerTheme === 'dark' || providerTheme === 'system')
+            ) {
+              if (state) {
+                state.theme = providerTheme;
+              }
+            }
+          } catch {
+            // Ignore localStorage read errors
+          }
+        }
         // Apply theme on store rehydration
         if (state) {
           const isDark = themeToIsDark(state.theme);

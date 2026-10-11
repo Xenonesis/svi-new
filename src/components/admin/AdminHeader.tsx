@@ -113,7 +113,20 @@ export default function AdminHeader({
 
           <button
             onClick={toggleTheme}
-            aria-label="Toggle theme"
+            aria-label={
+              theme === 'system'
+                ? 'System theme (click for light)'
+                : theme === 'dark' || (theme === undefined && isDark)
+                  ? 'Dark theme (click for system)'
+                  : 'Light theme (click for dark)'
+            }
+            title={
+              theme === 'system'
+                ? 'System Theme'
+                : theme === 'dark' || (theme === undefined && isDark)
+                  ? 'Dark Theme'
+                  : 'Light Theme'
+            }
             className="hover:text-brand-gold cursor-pointer p-2 text-gray-500 transition-colors"
           >
             {theme === 'system' ? (

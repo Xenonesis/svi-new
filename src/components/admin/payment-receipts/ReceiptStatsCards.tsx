@@ -76,20 +76,20 @@ export function ReceiptStatsCards({
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05, duration: 0.3 }}
-        className="border-brand-gold/30 from-brand-gold/15 hover:border-brand-gold/50 rounded-2xl border bg-gradient-to-br via-[#161D2C] to-[#111622] p-5 shadow-xs transition-all hover:shadow-md"
+        className="dark:border-brand-gold/30 dark:from-brand-gold/15 rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-500/[0.03] to-white p-5 shadow-xs transition-all hover:border-amber-500/50 hover:shadow-md dark:via-[#161D2C] dark:to-[#111622]"
       >
         <div className="flex items-center justify-between">
-          <span className="text-brand-gold text-xs font-semibold tracking-wider uppercase">
+          <span className="dark:text-brand-gold text-xs font-semibold tracking-wider text-amber-700 uppercase">
             Total Collected
           </span>
-          <div className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:border-brand-gold/40 dark:bg-brand-gold/15 flex h-9 w-9 items-center justify-center rounded-xl border transition-colors">
+          <div className="dark:border-brand-gold/40 dark:bg-brand-gold/15 dark:text-brand-gold flex h-9 w-9 items-center justify-center rounded-xl border border-amber-500/30 bg-amber-500/10 text-amber-600 transition-colors">
             <IndianRupee className="h-4 w-4" />
           </div>
         </div>
-        <div className="mt-3 font-mono text-2xl font-bold tracking-tight text-white tabular-nums">
+        <div className="mt-3 font-mono text-2xl font-bold tracking-tight text-slate-900 tabular-nums dark:text-white">
           ₹{totalAmount.toLocaleString('en-IN', { maximumFractionDigits: 0 })}
         </div>
-        <p className="text-brand-gold/80 dark:text-brand-gold/70 mt-1 text-xs">
+        <p className="dark:text-brand-gold/70 mt-1 text-xs text-amber-700/80">
           Audited real estate payments
         </p>
       </motion.div>

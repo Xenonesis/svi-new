@@ -6,7 +6,7 @@ import AdminHeader from '@/src/components/admin/AdminHeader';
 import AdminSidebar from '@/src/components/admin/AdminSidebar';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
-import { ThemeProvider } from '@/src/components/ThemeProvider';
+import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
 import { useAuthStore } from '@/src/stores/authStore';
 import { useUIStore } from '@/src/stores/uiStore';
 import { supabase } from '@/src/lib/supabase/client';
@@ -85,30 +85,29 @@ function AdminLayoutInner({ children }: { children: ReactNode }) {
   const profile = useAuthStore((s) => s.profile);
   const initialize = useAuthStore((s) => s.initialize);
 
-  // UI store
-  const isDark = useUIStore((s) => s.isDark);
+  // Theme provider & UI store
+  const { theme, setTheme } = useTheme();
   const mobileSidebarOpen = useUIStore((s) => s.mobileSidebarOpen);
   const setMobileSidebarOpen = useUIStore((s) => s.setMobileSidebarOpen);
-  const toggleTheme = useUIStore((s) => s.toggleTheme);
-  const theme = useUIStore((s) => s.theme);
 
+  const toggleTheme = () => {
+    const nextTheme = theme === 'light' ? 'dark' : theme === 'dark' ? 'system' : 'light';
+    setTheme(nextTheme);
+  };
+
+  const isDark =
+    theme === 'dark' ||
+    (theme === 'system' &&
+      (typeof window !== 'undefined'
+        ? window.matchMedia('(prefers-color-scheme: dark)').matches
+        : false));
   useEffect(() => {
     initialize();
   }, [initialize]);
 
-  // Sync isDark with system preference when theme is 'system'
+  // Keep useUIStore in sync with the unified theme
   useEffect(() => {
-    if (theme !== 'system') return;
-
-    const updateDark = () => {
-      const isSystemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      useUIStore.getState().setIsDark(isSystemDark);
-    };
-
-    updateDark();
-    const mq = window.matchMedia('(prefers-color-scheme: dark)');
-    mq.addEventListener('change', updateDark);
-    return () => mq.removeEventListener('change', updateDark);
+    useUIStore.getState().setTheme(theme);
   }, [theme]);
 
   // If on the admin login page, completely bypass the admin panel outer frame (header & sidebar)

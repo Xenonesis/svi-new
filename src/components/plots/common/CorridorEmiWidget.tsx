@@ -137,35 +137,35 @@ export function CorridorEmiWidget({ corridorName, isHindi = false }: CorridorEmi
         {/* Calculated Results Cards */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:col-span-6">
           {/* Monthly EMI Card */}
-          <div className="flex flex-col justify-between rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 to-slate-900/60 p-5">
+          <div className="flex flex-col justify-between rounded-xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-50/50 to-white p-5 dark:from-amber-500/10 dark:via-slate-900/40 dark:to-slate-900/80">
             <div>
               <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-amber-400 uppercase">
                 <IndianRupee className="h-3.5 w-3.5" />
                 {isHindi ? 'मासिक ईएमआई' : 'Estimated Monthly EMI'}
               </span>
-              <div className="mt-2 text-3xl font-extrabold text-white">
+              <div className="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">
                 ₹{monthlyEmi.toLocaleString('en-IN')}
-                <span className="text-xs font-normal text-slate-400"> /mo</span>
+                <span className="text-xs font-normal text-slate-500 dark:text-slate-400"> /mo</span>
               </div>
             </div>
-            <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-400">
+            <p className="mt-3 flex items-center gap-1.5 text-xs text-slate-600 dark:text-slate-400">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
               {isHindi ? '80% तक बैंक लोन स्वीकृत' : 'Nationalized banks approved'}
             </p>
           </div>
 
           {/* 5-Year Appreciation Card */}
-          <div className="flex flex-col justify-between rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-500/10 to-slate-900/60 p-5">
+          <div className="flex flex-col justify-between rounded-xl border border-blue-500/30 bg-gradient-to-br from-blue-500/10 via-blue-50/50 to-white p-5 dark:from-blue-500/10 dark:via-slate-900/40 dark:to-slate-900/80">
             <div>
               <span className="flex items-center gap-1.5 text-xs font-semibold tracking-wide text-blue-400 uppercase">
                 <TrendingUp className="h-3.5 w-3.5" />
                 {isHindi ? '5-वर्ष अनुमानित मूल्य' : '5-Yr Estimated Value'}
               </span>
-              <div className="mt-2 text-3xl font-extrabold text-white">
+              <div className="mt-2 text-3xl font-extrabold text-slate-900 dark:text-white">
                 ₹{(projectedValuation / 100000).toFixed(1)} Lakhs
               </div>
             </div>
-            <p className="mt-3 text-xs text-slate-400">
+            <p className="mt-3 text-xs text-slate-600 dark:text-slate-400">
               {isHindi ? '15% वार्षिक कॉरिडोर विकास दर पर' : 'At ~15% p.a. infrastructure CAGR'}
             </p>
           </div>

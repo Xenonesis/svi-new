@@ -48,7 +48,7 @@ export default function Login() {
   } = useLoginForm();
 
   return (
-    <div className="bg-brand-navy relative flex min-h-screen items-center justify-center pt-24 pb-20 dark:bg-gray-950">
+    <div className="relative flex min-h-screen items-center justify-center bg-slate-50 pt-24 pb-20 dark:bg-gray-950">
       <div
         className="pointer-events-none absolute top-0 left-0 h-full w-full opacity-10"
         style={{

@@ -80,17 +80,17 @@ export function PortalAllotmentsStatsGrid({
       </div>
 
       {/* Realization Rate & Quick Master Ledger */}
-      <div className="border-brand-gold/30 from-brand-gold/15 hover:border-brand-gold/50 flex flex-col justify-between rounded-2xl border bg-gradient-to-br via-[#161D2C] to-[#111622] p-5 shadow-xs transition-all hover:shadow-md">
+      <div className="dark:border-brand-gold/30 dark:from-brand-gold/15 flex flex-col justify-between rounded-2xl border border-amber-500/30 bg-gradient-to-br from-amber-500/10 via-amber-500/[0.03] to-white p-5 shadow-xs transition-all hover:border-amber-500/50 hover:shadow-md dark:via-[#161D2C] dark:to-[#111622]">
         <div>
           <div className="flex items-center justify-between">
-            <span className="text-brand-gold text-xs font-bold tracking-wider uppercase">
+            <span className="dark:text-brand-gold text-xs font-bold tracking-wider text-amber-700 uppercase">
               Realization Rate
             </span>
-            <span className="dark:text-brand-gold font-mono text-xs font-bold text-slate-200 tabular-nums">
+            <span className="dark:text-brand-gold font-mono text-xs font-bold text-slate-700 tabular-nums">
               {stats.realizationRate}%
             </span>
           </div>
-          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-800/80 dark:bg-white/[0.08]">
+          <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-slate-200/80 dark:bg-white/[0.08]">
             <div
               className="bg-brand-gold shadow-brand-gold/50 h-full rounded-full shadow-xs transition-all duration-500"
               style={{ width: `${Math.min(100, stats.realizationRate)}%` }}
@@ -101,9 +101,9 @@ export function PortalAllotmentsStatsGrid({
         <button
           type="button"
           onClick={onOpenLedgersModal}
-          className="group border-brand-gold/40 text-brand-gold hover:border-brand-gold hover:bg-brand-gold/15 hover:shadow-brand-gold/10 mt-3 flex items-center justify-center gap-2 rounded-xl border bg-[#161D2C] px-4 py-2.5 text-xs font-bold shadow-xs transition-all hover:shadow-md active:scale-[0.98]"
+          className="group dark:border-brand-gold/40 dark:text-brand-gold dark:hover:bg-brand-gold/15 mt-3 flex items-center justify-center gap-2 rounded-xl border border-amber-500/40 bg-amber-50/80 px-4 py-2.5 text-xs font-bold text-amber-700 shadow-xs transition-all hover:border-amber-500 hover:bg-amber-100 hover:shadow-md active:scale-[0.98] dark:bg-[#161D2C]"
         >
-          <BookOpen className="text-brand-gold h-3.5 w-3.5 transition-transform group-hover:scale-110" />
+          <BookOpen className="dark:text-brand-gold h-3.5 w-3.5 text-amber-700 transition-transform group-hover:scale-110" />
           <span>Master Ledger Overview</span>
         </button>
       </div>

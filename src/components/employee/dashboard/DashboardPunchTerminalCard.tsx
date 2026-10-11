@@ -73,9 +73,9 @@ export function DashboardPunchTerminalCard({
       className={clsx(
         'relative overflow-hidden rounded-3xl border p-5 shadow-sm transition-all sm:p-6',
         punchStatus === 'punched_in'
-          ? 'border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-slate-900/60 to-slate-950/80 backdrop-blur-xl dark:border-emerald-500/30 dark:from-emerald-950/40 dark:via-slate-950/80 dark:to-slate-950'
+          ? 'border-emerald-500/30 bg-gradient-to-br from-emerald-500/15 via-emerald-500/[0.04] to-white backdrop-blur-xl dark:border-emerald-500/30 dark:from-emerald-950/40 dark:via-slate-950/80 dark:to-slate-950'
           : punchStatus === 'punched_out'
-            ? 'border-blue-500/30 bg-gradient-to-br from-blue-500/10 via-slate-900/60 to-slate-950/80 backdrop-blur-xl dark:border-blue-500/30 dark:from-blue-950/40 dark:via-slate-950/80 dark:to-slate-950'
+            ? 'border-blue-500/30 bg-gradient-to-br from-blue-500/15 via-blue-500/[0.04] to-white backdrop-blur-xl dark:border-blue-500/30 dark:from-blue-950/40 dark:via-slate-950/80 dark:to-slate-950'
             : 'border-slate-200/90 bg-white/95 shadow-slate-200/50 backdrop-blur-xl dark:border-white/10 dark:bg-slate-900/80 dark:shadow-none'
       )}
     >

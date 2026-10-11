@@ -82,30 +82,32 @@ export default function CorridorDiscovery() {
   const isHindi = locale === 'hi';
 
   return (
-    <section className="relative overflow-hidden bg-slate-950 py-16 text-slate-100 sm:py-24">
+    <section className="relative overflow-hidden py-16 transition-colors duration-300 sm:py-24 dark:bg-slate-950">
       {/* Background Ambience */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.08),transparent_50%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(30,58,138,0.12),transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.06),transparent_50%)] dark:bg-[radial-gradient(circle_at_top_right,rgba(212,175,55,0.08),transparent_50%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(245,158,11,0.04),transparent_50%)] dark:bg-[radial-gradient(circle_at_bottom_left,rgba(30,58,138,0.12),transparent_50%)]" />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl text-center">
-          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-amber-300 uppercase backdrop-blur-md">
-            <Compass size={14} className="text-amber-400" />
+          <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1.5 text-xs font-semibold tracking-widest text-amber-800 uppercase backdrop-blur-md dark:text-amber-300">
+            <Compass size={14} className="text-amber-600 dark:text-amber-400" />
             {isHindi ? 'जयपुर प्राइम प्लॉट्स कॉरिडोर' : 'Explore Prime Jaipur Plotted Corridors'}
           </div>
-          <h2 className="mt-4 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
+          <h2 className="mt-4 font-serif text-3xl font-bold tracking-tight text-slate-900 sm:text-4xl lg:text-5xl dark:text-white">
             {isHindi ? (
               <>
-                रणनीतिक स्थानों पर <span className="text-amber-400">वेरिफाइड प्लॉट्स</span> खोजें
+                रणनीतिक स्थानों पर{' '}
+                <span className="text-amber-600 dark:text-amber-400">वेरिफाइड प्लॉट्स</span> खोजें
               </>
             ) : (
               <>
-                Discover Strategic <span className="text-amber-400">Plotted Corridors</span> in
+                Discover Strategic{' '}
+                <span className="text-amber-600 dark:text-amber-400">Plotted Corridors</span> in{' '}
                 Jaipur
               </>
             )}
           </h2>
-          <p className="mt-4 text-sm leading-relaxed text-slate-400 sm:text-base">
+          <p className="mt-4 text-sm leading-relaxed text-slate-600 sm:text-base dark:text-slate-400">
             {isHindi
               ? 'खाटू श्याम जी हाईवे, फुलेरा स्मार्ट सिटी और रेनवाल रीको औद्योगिक क्षेत्र के साथ जयपुर के सभी प्रमुख विकास गलियारों में 100% पक्की रजिस्ट्री वाले प्लॉट्स।'
               : 'Direct access to government-recognized Section 90-A converted plots with transparent registry across Jaipur’s fastest-growing highway nodes.'}
@@ -122,39 +124,39 @@ export default function CorridorDiscovery() {
               <Link
                 key={corridor.slug}
                 href={corridor.slug}
-                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 p-6 shadow-xl backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/50 hover:bg-slate-900/90 hover:shadow-2xl hover:shadow-amber-500/10 ${isFullWidthMobile}`}
+                className={`group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white/90 p-6 shadow-md backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-amber-500/40 hover:bg-white hover:shadow-xl hover:shadow-amber-500/10 dark:border-slate-800/80 dark:bg-slate-900/60 dark:hover:border-amber-500/50 dark:hover:bg-slate-900/90 ${isFullWidthMobile}`}
               >
                 <div>
                   <div className="flex items-center justify-between gap-2">
-                    <span className="rounded-full border border-amber-500/20 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-amber-300 uppercase">
+                    <span className="rounded-full border border-amber-500/25 bg-amber-500/10 px-2.5 py-0.5 text-[10px] font-bold tracking-wider text-amber-800 uppercase dark:text-amber-300">
                       {isHindi ? corridor.badge.hi : corridor.badge.en}
                     </span>
-                    <span className="flex items-center gap-1 text-[11px] font-medium text-slate-400">
-                      <MapPin size={12} className="text-amber-400" />
+                    <span className="flex items-center gap-1 text-[11px] font-medium text-slate-500 dark:text-slate-400">
+                      <MapPin size={12} className="text-amber-600 dark:text-amber-400" />
                       {isHindi ? corridor.distance.hi : corridor.distance.en}
                     </span>
                   </div>
 
                   <div className="mt-5 flex items-start gap-3">
-                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-amber-400 transition-colors group-hover:border-amber-500/40 group-hover:bg-amber-500/10">
+                    <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-100 text-amber-600 transition-colors group-hover:border-amber-500/40 group-hover:bg-amber-500/10 dark:border-slate-700 dark:bg-slate-800 dark:text-amber-400">
                       <Icon size={20} />
                     </div>
                     <div>
-                      <h3 className="font-serif text-lg font-bold text-white transition-colors group-hover:text-amber-300">
+                      <h3 className="font-serif text-lg font-bold text-slate-900 transition-colors group-hover:text-amber-600 dark:text-white dark:group-hover:text-amber-300">
                         {isHindi ? corridor.title.hi : corridor.title.en}
                       </h3>
-                      <p className="text-xs font-semibold text-amber-400/90">
+                      <p className="text-xs font-semibold text-amber-700 dark:text-amber-400/90">
                         {isHindi ? corridor.price.hi : corridor.price.en}
                       </p>
                     </div>
                   </div>
 
-                  <p className="mt-4 text-xs leading-relaxed text-slate-300">
+                  <p className="mt-4 text-xs leading-relaxed text-slate-600 dark:text-slate-300">
                     {isHindi ? corridor.highlight.hi : corridor.highlight.en}
                   </p>
                 </div>
 
-                <div className="mt-6 flex items-center justify-between border-t border-slate-800/80 pt-4 text-xs font-semibold text-slate-400 transition-colors group-hover:text-amber-300">
+                <div className="mt-6 flex items-center justify-between border-t border-slate-200/80 pt-4 text-xs font-semibold text-slate-500 transition-colors group-hover:text-amber-600 dark:border-slate-800/80 dark:text-slate-400 dark:group-hover:text-amber-300">
                   <span>{isHindi ? 'प्लॉट व लेआउट देखें' : 'View Plots & Corridor Details'}</span>
                   <ArrowRight
                     size={15}

@@ -115,7 +115,7 @@ export default function ProjectsSection() {
         </div>
 
         {/* High-Intent Real Estate Lead Hook Banner */}
-        <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-slate-900 to-amber-500/5 p-5 sm:flex-row sm:p-6 dark:from-amber-500/15 dark:via-slate-950 dark:to-amber-500/10">
+        <div className="mt-8 flex flex-col items-center justify-between gap-4 rounded-2xl border border-amber-500/25 bg-gradient-to-r from-amber-500/10 via-amber-50/80 to-amber-500/5 p-5 sm:flex-row sm:p-6 dark:from-amber-500/15 dark:via-slate-950 dark:to-amber-500/10">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
               <Sparkles size={20} />
