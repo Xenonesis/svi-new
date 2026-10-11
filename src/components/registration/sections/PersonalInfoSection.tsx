@@ -1,5 +1,5 @@
 import React, { ChangeEvent } from 'react';
-import { FormInput } from '../FormElements';
+import { FormInput, FormRelationInput } from '../FormElements';
 import { FormData } from '@/src/types/registration';
 
 interface PersonalInfoSectionProps {
@@ -71,7 +71,7 @@ export default function PersonalInfoSection({
         placeholder={t('emailPlaceholder')}
       />
 
-      <FormInput
+      <FormRelationInput
         attempted={attempted}
         name="soWoDo"
         hint={t('soWoDoHint')}
@@ -79,7 +79,6 @@ export default function PersonalInfoSection({
         value={formData.soWoDo}
         errors={errors}
         onChange={onChange}
-        type="text"
         placeholder={t('soWoDoPlaceholder')}
       />
       <FormInput

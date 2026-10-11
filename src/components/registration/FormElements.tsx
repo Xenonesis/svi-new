@@ -223,6 +223,122 @@ export function FormDateInput({
     </div>
   );
 }
+const RELATION_PREFIXES = ['S/O', 'W/O', 'D/O'] as const;
+type RelationPrefix = (typeof RELATION_PREFIXES)[number];
+
+function splitRelationValue(raw: string): { prefix: RelationPrefix; name: string } {
+  const trimmed = raw.trim();
+  for (const prefix of RELATION_PREFIXES) {
+    const pattern = new RegExp(`^${prefix}\\s*`, 'i');
+    if (pattern.test(trimmed)) {
+      return {
+        prefix,
+        name: trimmed.replace(pattern, ''),
+      };
+    }
+  }
+  return { prefix: 'S/O', name: raw };
+}
+
+export function FormRelationInput({
+  name,
+  label,
+  value,
+  errors,
+  onChange,
+  placeholder = "Enter relative's name",
+  hint,
+  attempted,
+  required = true,
+}: FormInputProps) {
+  const parsed = splitRelationValue(value || '');
+  const [prefix, setPrefix] = useState<RelationPrefix>(parsed.prefix);
+  const [relativeName, setRelativeName] = useState<string>(parsed.name);
+
+  useEffect(() => {
+    const next = splitRelationValue(value || '');
+    setPrefix(next.prefix);
+    setRelativeName(next.name);
+  }, [value]);
+
+  const emitChange = (nextPrefix: RelationPrefix, nextName: string) => {
+    const formatted = nextName.trim() ? `${nextPrefix} ${nextName.trim()}` : '';
+    const syntheticEvent = {
+      target: {
+        name,
+        value: formatted,
+      },
+    } as unknown as React.ChangeEvent<HTMLInputElement>;
+    onChange(syntheticEvent);
+  };
+
+  const handlePrefixChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const nextPrefix = e.target.value as RelationPrefix;
+    setPrefix(nextPrefix);
+    emitChange(nextPrefix, relativeName);
+  };
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const nextName = e.target.value;
+    setRelativeName(nextName);
+    emitChange(prefix, nextName);
+  };
+
+  const errorId = `${name}-error`;
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label htmlFor={`${name}-input`} className={LABEL_CLASS}>
+          {label}
+          {required && ' *'}
+        </label>
+      </div>
+      <div
+        className={`flex overflow-hidden transition-colors ${
+          errors[name]
+            ? 'border border-red-500 bg-gray-50/50 dark:bg-gray-900'
+            : attempted
+              ? 'border border-green-500 bg-gray-50/50 focus-within:border-green-500 dark:border-green-500 dark:bg-gray-900'
+              : 'focus-within:border-brand-gold dark:focus-within:border-brand-gold border border-gray-200 bg-gray-50/50 dark:border-gray-700 dark:bg-gray-900'
+        }`}
+      >
+        <label htmlFor={`${name}-prefix`} className="sr-only">
+          Relation prefix
+        </label>
+        <select
+          id={`${name}-prefix`}
+          value={prefix}
+          onChange={handlePrefixChange}
+          aria-label="Relation prefix"
+          className="cursor-pointer border-r border-gray-200 bg-gray-100/80 px-3 py-3 text-xs font-semibold tracking-wider text-gray-700 transition-colors outline-none hover:bg-gray-200/70 focus:bg-white dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200 dark:hover:bg-gray-700/60 dark:focus:bg-gray-800"
+        >
+          {RELATION_PREFIXES.map((opt) => (
+            <option
+              key={opt}
+              value={opt}
+              className="bg-white text-gray-900 dark:bg-gray-800 dark:text-white"
+            >
+              {opt}
+            </option>
+          ))}
+        </select>
+        <input
+          id={`${name}-input`}
+          type="text"
+          value={relativeName}
+          placeholder={placeholder}
+          onChange={handleNameChange}
+          aria-invalid={!!errors[name]}
+          aria-describedby={errors[name] ? errorId : undefined}
+          className="w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-white"
+        />
+      </div>
+      {hint && !errors[name] && <p className="text-[10px] text-gray-400">{hint}</p>}
+      <FieldError field={name} errors={errors} />
+    </div>
+  );
+}
 
 export function FormInput(props: FormInputProps) {
   if (props.type === 'date') {
