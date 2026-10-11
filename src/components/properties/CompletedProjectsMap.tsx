@@ -1,7 +1,7 @@
 'use client';
 
 import { memo, useEffect, useRef, useState, useCallback } from 'react';
-import * as maplibregl from 'maplibre-gl';
+import * as maplibregl from '@/src/lib/maplibre';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
   fetchNearbyPlaces,

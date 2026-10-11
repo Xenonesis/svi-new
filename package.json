@@ -9,7 +9,8 @@
   "scripts": {
     "dev": "next dev --webpack --port 3001",
     "dev:turbo": "next dev --turbopack --port 3001",
-    "prebuild": "node scripts/optimize-images.mjs",
+    "prebuild": "node scripts/copy-maplibre-assets.mjs && node scripts/optimize-images.mjs",
+    "postinstall": "node scripts/copy-maplibre-assets.mjs",
     "build": "tsc --noEmit && next build --webpack",
     "analyze": "ANALYZE=true next build --webpack",
     "optimize:images": "node scripts/optimize-images.mjs",

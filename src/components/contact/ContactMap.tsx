@@ -1,6 +1,9 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import * as maplibregl from '@/src/lib/maplibre';
+import 'maplibre-gl/dist/maplibre-gl.css';
+import type { Map as MapInstance, Marker } from 'maplibre-gl';
 import { MapPin, Layers, Navigation, X } from 'lucide-react';
 import {
   fetchNearbyPlaces,
@@ -15,9 +18,8 @@ const OFFICE_LOCATION = { lat: 28.624047, lng: 77.387221 };
 
 export default function ContactMap() {
   const mapContainerRef = useRef<HTMLDivElement>(null);
-  const mapRef = useRef<any>(null);
-  const markersRef = useRef<any[]>([]);
-  const maplibreglRef = useRef<any>(null);
+  const mapRef = useRef<MapInstance | null>(null);
+  const markersRef = useRef<Marker[]>([]);
   const [mapLoaded, setMapLoaded] = useState(false);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlace[]>([]);
   const [loadingPlaces, setLoadingPlaces] = useState(false);
@@ -27,41 +29,31 @@ export default function ContactMap() {
   useEffect(() => {
     if (!mapContainerRef.current || mapRef.current) return;
 
-    let cancelled = false;
-
-    (async () => {
-      const maplibregl = await import('maplibre-gl');
-      await import('maplibre-gl/dist/maplibre-gl.css');
-      if (cancelled || !mapContainerRef.current) return;
-
-      maplibreglRef.current = maplibregl;
-
-      const map = new maplibregl.Map({
-        container: mapContainerRef.current,
-        style: {
-          version: 8,
-          sources: {
-            osm: {
-              type: 'raster',
-              tiles: ['/api/map-tiles/{z}/{x}/{y}'],
-              tileSize: 256,
-              maxzoom: 19,
-              attribution:
-                '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-            },
+    const map = new maplibregl.Map({
+      container: mapContainerRef.current,
+      style: {
+        version: 8,
+        sources: {
+          osm: {
+            type: 'raster',
+            tiles: ['/api/map-tiles/{z}/{x}/{y}'],
+            tileSize: 256,
+            maxzoom: 19,
+            attribution:
+              '&copy; <a href="https://openstreetmap.org/copyright">OpenStreetMap</a> contributors',
           },
-          layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
         },
-        center: [OFFICE_LOCATION.lng, OFFICE_LOCATION.lat],
-        zoom: 15,
-      });
+        layers: [{ id: 'osm', type: 'raster', source: 'osm' }],
+      },
+      center: [OFFICE_LOCATION.lng, OFFICE_LOCATION.lat],
+      zoom: 15,
+    });
+    // Custom styled navigation control
+    map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
 
-      // Custom styled navigation control
-      map.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'bottom-right');
-
-      // Premium pulse marker
-      const el = document.createElement('div');
-      el.innerHTML = `
+    // Premium pulse marker
+    const el = document.createElement('div');
+    el.innerHTML = `
         <div style="position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;">
           <div style="
             position:absolute;inset:0;border-radius:50%;
@@ -85,32 +77,29 @@ export default function ContactMap() {
           @keyframes pulse-ring{0%{transform:scale(0.85);opacity:0.8}70%{transform:scale(1.4);opacity:0}100%{transform:scale(1.4);opacity:0}}
         </style>
       `;
-      el.style.cssText = 'width:48px;height:48px;cursor:pointer;';
+    el.style.cssText = 'width:48px;height:48px;cursor:pointer;';
 
-      new maplibregl.Marker({ element: el })
-        .setLngLat([OFFICE_LOCATION.lng, OFFICE_LOCATION.lat])
-        .addTo(map);
+    new maplibregl.Marker({ element: el })
+      .setLngLat([OFFICE_LOCATION.lng, OFFICE_LOCATION.lat])
+      .addTo(map);
 
-      map.on('load', () => {
-        if (!cancelled) setMapLoaded(true);
-      });
+    map.on('load', () => {
+      setMapLoaded(true);
+    });
 
-      mapRef.current = map;
-    })();
+    mapRef.current = map;
 
     return () => {
-      cancelled = true;
       if (mapRef.current) {
         mapRef.current.remove();
         mapRef.current = null;
       }
-      maplibreglRef.current = null;
     };
   }, []);
 
   useEffect(() => {
     if (!mapLoaded || !showNearby) {
-      markersRef.current.forEach((m: any) => m.remove());
+      markersRef.current.forEach((m) => m.remove());
       markersRef.current = [];
       if (!showNearby) setNearbyPlaces([]);
       return;
@@ -122,11 +111,9 @@ export default function ContactMap() {
     fetchNearbyPlaces(OFFICE_LOCATION.lat, OFFICE_LOCATION.lng, 1000, controller.signal)
       .then((places) => {
         setNearbyPlaces(places);
-        markersRef.current.forEach((m: any) => m.remove());
+        markersRef.current.forEach((m) => m.remove());
         markersRef.current = [];
         if (!mapRef.current) return;
-        const maplibregl = maplibreglRef.current;
-        if (!maplibregl) return;
 
         places.forEach((place) => {
           const cat = getCategoryInfo(place.category);
