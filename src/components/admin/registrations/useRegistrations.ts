@@ -161,13 +161,24 @@ export function useRegistrations() {
   // Mutations
   const statusMutation = useMutation({
     mutationFn: async ({ id, status }: { id: string; status: string }) => {
+      let authToken = token;
+      if (!authToken) {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        authToken = session?.access_token || '';
+      }
+      const normalizedStatus = status.toLowerCase();
       const res = await fetch('/api/admin/registrations', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ id, status }),
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+        body: JSON.stringify({ id, status: normalizedStatus }),
       });
-      if (!res.ok) throw new Error('Failed to update status');
-      return { id, status };
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.error || 'Failed to update status');
+      }
+      return { id, status: normalizedStatus };
     },
     onSuccess: (data) => {
       showToast('success', `Status updated to ${data.status}`);
@@ -176,7 +187,7 @@ export function useRegistrations() {
         setSelectedReg((prev) => (prev ? { ...prev, status: data.status } : null));
       }
     },
-    onError: () => showToast('error', 'Failed to update status'),
+    onError: (err: Error) => showToast('error', err?.message || 'Failed to update status'),
   });
 
   const deleteMutation = useMutation({

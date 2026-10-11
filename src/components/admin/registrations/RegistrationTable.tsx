@@ -321,13 +321,13 @@ export function RegistrationTable({
                       >
                         <div
                           className={`mr-2 h-2 w-2 rounded-full ${
-                            status.value === 'Approved'
+                            status.value === 'approved'
                               ? 'bg-emerald-500'
-                              : status.value === 'Pending'
+                              : status.value === 'pending'
                                 ? 'bg-amber-500'
-                                : status.value === 'Rejected'
+                                : status.value === 'rejected'
                                   ? 'bg-red-500'
-                                  : 'bg-gray-400'
+                                  : 'bg-blue-500'
                           }`}
                         />
                         {status.label}

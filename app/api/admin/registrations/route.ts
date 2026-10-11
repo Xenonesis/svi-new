@@ -9,7 +9,11 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 const patchSchema = z
   .object({
     id: z.string().uuid('id must be a valid UUID'),
-    status: z.enum(['pending', 'contacted', 'approved', 'rejected']).optional(),
+    status: z
+      .string()
+      .transform((val) => val.toLowerCase())
+      .pipe(z.enum(['pending', 'contacted', 'approved', 'rejected']))
+      .optional(),
     is_important: z.boolean().optional(),
   })
   .refine((d) => d.status !== undefined || d.is_important !== undefined, {

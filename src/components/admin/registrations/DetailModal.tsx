@@ -66,13 +66,13 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
                       >
                         <div
                           className={`mr-2 h-2 w-2 rounded-full ${
-                            status.value === 'Approved'
+                            status.value === 'approved'
                               ? 'bg-emerald-500'
-                              : status.value === 'Pending'
+                              : status.value === 'pending'
                                 ? 'bg-amber-500'
-                                : status.value === 'Rejected'
+                                : status.value === 'rejected'
                                   ? 'bg-red-500'
-                                  : 'bg-gray-400'
+                                  : 'bg-blue-500'
                           }`}
                         />
                         {status.label}
@@ -206,14 +206,14 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
           <div className="flex flex-col gap-2.5 sm:flex-row">
             <button
               type="button"
-              onClick={() => onStatusChange(reg.id, 'Approved')}
+              onClick={() => onStatusChange(reg.id, 'approved')}
               className="btn-tactile flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl bg-emerald-600 px-4 py-3 text-xs font-bold tracking-wider text-white uppercase shadow-lg shadow-emerald-600/20 transition-all hover:bg-emerald-500"
             >
               Approve
             </button>
             <button
               type="button"
-              onClick={() => onStatusChange(reg.id, 'Rejected')}
+              onClick={() => onStatusChange(reg.id, 'rejected')}
               className="btn-tactile flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold tracking-wider text-rose-700 uppercase transition-all hover:bg-rose-100 dark:border-rose-900/50 dark:bg-rose-950/30 dark:text-rose-300 dark:hover:bg-rose-900/40"
             >
               Reject
