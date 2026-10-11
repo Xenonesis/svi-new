@@ -44,7 +44,14 @@ export default function RegistrationReview({
           <ReviewRow label={t('mobileNo')} value={formData.mobileNo} />
           <ReviewRow label={t('email')} value={formData.email} />
           <ReviewRow label={t('soWoDo')} value={formData.soWoDo} />
-          <ReviewRow label={t('dob')} value={formData.dob} />
+          <ReviewRow
+            label={t('dob')}
+            value={
+              formData.dob && /^\d{4}-\d{2}-\d{2}$/.test(formData.dob)
+                ? `${formData.dob.split('-')[2]}/${formData.dob.split('-')[1]}/${formData.dob.split('-')[0]}`
+                : formData.dob || '—'
+            }
+          />
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 'use client';
 
-import { AlertCircle } from 'lucide-react';
-
+import React, { useState, useEffect } from 'react';
+import { AlertCircle, Calendar } from 'lucide-react';
 export const INPUT_CLASS = (field: string, errors: Record<string, string>, attempted?: boolean) => {
   if (errors[field])
     return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-red-500';
@@ -61,27 +61,194 @@ interface FormInputProps {
   maxLen?: number;
   autoComplete?: string;
   attempted?: boolean;
+  required?: boolean;
 }
 
-export function FormInput({
+function formatDigitsAsDate(input: string): string {
+  const digits = input.replace(/\D/g, '').slice(0, 8);
+  if (digits.length <= 2) return digits;
+  if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+  return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+}
+
+function parseDisplayToIso(display: string): string {
+  const digits = display.replace(/\D/g, '');
+  let dd: number;
+  let mm: number;
+  let yyyy: number;
+
+  if (digits.length === 8) {
+    dd = Number(digits.slice(0, 2));
+    mm = Number(digits.slice(2, 4));
+    yyyy = Number(digits.slice(4, 8));
+  } else if (digits.length === 6) {
+    dd = Number(digits.slice(0, 2));
+    mm = Number(digits.slice(2, 4));
+    const yy = Number(digits.slice(4, 6));
+    yyyy = yy > 26 ? 1900 + yy : 2000 + yy;
+  } else {
+    return '';
+  }
+
+  if (mm < 1 || mm > 12 || dd < 1 || dd > 31 || yyyy < 1920) {
+    return '';
+  }
+
+  const daysInMonth = new Date(yyyy, mm, 0).getDate();
+  if (dd > daysInMonth) {
+    return '';
+  }
+
+  const mmStr = String(mm).padStart(2, '0');
+  const ddStr = String(dd).padStart(2, '0');
+  return `${yyyy}-${mmStr}-${ddStr}`;
+}
+
+function isoToDisplayDate(iso: string): string {
+  if (!iso) return '';
+  const match = iso.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+  if (!match) return iso;
+  const [, yyyy, mm, dd] = match;
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+export function FormDateInput({
   name,
   label,
   value,
   errors,
   onChange,
-  type = 'text',
-  placeholder = '',
+  placeholder = 'DD/MM/YYYY',
   hint,
-  maxLen,
-  autoComplete,
+  autoComplete = 'bday',
   attempted,
+  required = true,
 }: FormInputProps) {
+  const errorId = `${name}-error`;
+  const [displayValue, setDisplayValue] = useState(() => isoToDisplayDate(value));
+
+  useEffect(() => {
+    if (value) {
+      setDisplayValue(isoToDisplayDate(value));
+    } else if (!displayValue || displayValue.length === 10) {
+      setDisplayValue('');
+    }
+  }, [value]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatDigitsAsDate(e.target.value);
+    setDisplayValue(formatted);
+    const iso = parseDisplayToIso(formatted);
+    const syntheticEvent = {
+      ...e,
+      target: {
+        ...e.target,
+        name,
+        value: iso,
+      },
+    } as React.ChangeEvent<HTMLInputElement>;
+    onChange(syntheticEvent);
+  };
+
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
+    const digits = displayValue.replace(/\D/g, '');
+    if (digits.length === 6) {
+      const dd = digits.slice(0, 2);
+      const mm = digits.slice(2, 4);
+      const yy = Number(digits.slice(4, 6));
+      const yyyy = yy > 26 ? 1900 + yy : 2000 + yy;
+      const expanded = `${dd}/${mm}/${yyyy}`;
+      setDisplayValue(expanded);
+      const iso = `${yyyy}-${mm}-${dd}`;
+      const syntheticEvent = {
+        ...e,
+        target: {
+          ...e.target,
+          name,
+          value: iso,
+        },
+      } as unknown as React.ChangeEvent<HTMLInputElement>;
+      onChange(syntheticEvent);
+    }
+  };
+
+  const handlePickerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const chosenIso = e.target.value;
+    setDisplayValue(isoToDisplayDate(chosenIso));
+    onChange(e);
+  };
+
+  return (
+    <div className="space-y-2">
+      <div className="flex items-center justify-between">
+        <label htmlFor={name} className={LABEL_CLASS}>
+          {label}
+          {required && ' *'}
+        </label>
+      </div>
+      <div className="relative">
+        <input
+          type="text"
+          id={name}
+          name={name}
+          inputMode="numeric"
+          value={displayValue}
+          onChange={handleTextChange}
+          onBlur={handleBlur}
+          className={`${INPUT_CLASS(name, errors, attempted)} pr-11`}
+          placeholder={placeholder}
+          maxLength={10}
+          autoComplete={autoComplete}
+          aria-invalid={errors[name] ? 'true' : undefined}
+          aria-describedby={errors[name] ? errorId : undefined}
+        />
+        <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+          <div className="relative flex items-center justify-center p-1">
+            <Calendar className="h-4 w-4 text-gray-400" />
+            <input
+              type="date"
+              tabIndex={-1}
+              aria-label="Pick date"
+              value={value || ''}
+              max={new Date().toISOString().split('T')[0]}
+              min="1920-01-01"
+              onChange={handlePickerChange}
+              className="pointer-events-auto absolute inset-0 cursor-pointer opacity-0"
+            />
+          </div>
+        </div>
+      </div>
+      {hint && !errors[name] && <p className="text-[10px] text-gray-400">{hint}</p>}
+      <FieldError field={name} errors={errors} />
+    </div>
+  );
+}
+
+export function FormInput(props: FormInputProps) {
+  if (props.type === 'date') {
+    return <FormDateInput {...props} />;
+  }
+  const {
+    name,
+    label,
+    value,
+    errors,
+    onChange,
+    type = 'text',
+    placeholder = '',
+    hint,
+    maxLen,
+    autoComplete,
+    attempted,
+    required = true,
+  } = props;
   const errorId = `${name}-error`;
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
         <label htmlFor={name} className={LABEL_CLASS}>
-          {label} *
+          {label}
+          {required && ' *'}
         </label>
         {maxLen && value.length > 0 && (
           <span

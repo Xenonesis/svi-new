@@ -42,6 +42,7 @@ export default function PersonalInfoSection({
         onChange={onChange}
         type="text"
         placeholder={t('lastNamePlaceholder')}
+        required={false}
       />
 
       <FormInput
@@ -90,6 +91,7 @@ export default function PersonalInfoSection({
         errors={errors}
         onChange={onChange}
         type="date"
+        hint="DD/MM/YYYY"
       />
     </>
   );
