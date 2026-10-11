@@ -58,12 +58,23 @@ export function EditCampaignModal({
 
   const loadParticipants = async (l: Lottery) => {
     setPartsLoading(true);
-    const { data } = await supabase
+    const { data: initialData, error } = await supabase
       .from('lottery_participants')
       .select('id, name, ticket_number, phone, email, is_winner')
       .eq('lottery_id', l.id)
       .order('is_winner', { ascending: false })
       .order('name');
+
+    let data = initialData;
+    if (error) {
+      const fallback = await supabase
+        .from('lottery_participants')
+        .select('id, name, ticket_number, is_winner')
+        .eq('lottery_id', l.id)
+        .order('is_winner', { ascending: false })
+        .order('name');
+      data = (fallback.data as typeof initialData) || null;
+    }
     setParticipants(data || []);
     setPartsLoading(false);
   };

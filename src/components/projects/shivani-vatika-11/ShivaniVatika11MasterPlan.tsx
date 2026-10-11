@@ -133,7 +133,7 @@ export function ShivaniVatika11MasterPlan({
         {/* View Mode Canvas */}
         <div className="mt-10">
           {activeView === 'blueprint' ? (
-            <BlueprintMapView onSwitchToGrid={handleSwitchToGrid} isHindi={isHindi} />
+            <BlueprintMapView onSwitchToGrid={handleSwitchToGrid} plots={plots} isHindi={isHindi} />
           ) : (
             <PlotMatrixGrid
               plots={plots}

@@ -48,13 +48,16 @@ export function useLotteryData(): UseLotteryDataReturn {
 
       if (lError) throw lError;
 
+      // Query granted non-sensitive winner columns (id, lottery_id, name, ticket_number, is_winner)
+      // to avoid Postgres column-level PII rejection on anon / public role
       const { data: participantsData, error: pError } = await supabase
         .from('lottery_participants')
-        .select('id, lottery_id, name, ticket_number, phone, email, is_winner')
+        .select('id, lottery_id, name, ticket_number, is_winner')
         .eq('is_winner', true);
 
-      if (pError) throw pError;
-
+      if (pError) {
+        console.warn('Non-fatal warning fetching lottery winners:', pError);
+      }
       const formattedLotteries: Lottery[] = (lotteriesData || []).map((l) => {
         const campaignWinners = participantsData?.filter((p) => p.lottery_id === l.id) || [];
         const firstWinner = campaignWinners[0];
@@ -69,16 +72,16 @@ export function useLotteryData(): UseLotteryDataReturn {
                 id: firstWinner.id,
                 name: firstWinner.name,
                 ticket_number: firstWinner.ticket_number,
-                phone: firstWinner.phone,
-                email: firstWinner.email,
+                phone: undefined,
+                email: undefined,
               }
             : null,
           winners: campaignWinners.map((w) => ({
             id: w.id,
             name: w.name,
             ticket_number: w.ticket_number,
-            phone: w.phone,
-            email: w.email,
+            phone: undefined,
+            email: undefined,
           })),
         };
       });
@@ -99,10 +102,9 @@ export function useLotteryData(): UseLotteryDataReturn {
 
         const { data: activeWinnersData, error: wError } = await supabase
           .from('lottery_participants')
-          .select('id, lottery_id, name, ticket_number, phone, email, is_winner')
+          .select('id, lottery_id, name, ticket_number, is_winner')
           .eq('lottery_id', active.id)
           .eq('is_winner', true);
-
         if (!wError) {
           setActiveWinners(activeWinnersData || []);
         }

@@ -1,7 +1,23 @@
 import { useState } from 'react';
-import { Award, Eye, Edit2, Mail, RefreshCw, Trash2, ChevronDown } from 'lucide-react';
+import {
+  Award,
+  Eye,
+  Edit2,
+  Mail,
+  RefreshCw,
+  Trash2,
+  ChevronDown,
+  FileSpreadsheet,
+  FileText,
+  FileDown,
+  Loader2,
+} from 'lucide-react';
 import type { Lottery } from './types';
-
+import {
+  exportLotteryToCSV,
+  exportLotteryToExcel,
+  exportLotteryToPDF,
+} from '@/src/lib/lottery/exportLotteryHistory';
 interface HistoryTableProps {
   lotteries: Lottery[];
   isPending: boolean;
@@ -24,6 +40,35 @@ export function HistoryTable({
   onStatusChange,
 }: HistoryTableProps) {
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
+  const [exportingType, setExportingType] = useState<'csv' | 'excel' | 'pdf' | null>(null);
+
+  const handleExportCSV = () => {
+    try {
+      setExportingType('csv');
+      exportLotteryToCSV(lotteries);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleExportExcel = async () => {
+    try {
+      setExportingType('excel');
+      await exportLotteryToExcel(lotteries);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
+  const handleExportPDF = async () => {
+    try {
+      setExportingType('pdf');
+      await exportLotteryToPDF(lotteries);
+    } finally {
+      setExportingType(null);
+    }
+  };
+
   if (!lotteries || lotteries.length === 0) {
     return (
       <div className="space-y-6">
@@ -39,9 +84,71 @@ export function HistoryTable({
 
   return (
     <div className="space-y-6">
-      <h3 className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
-        Archive & History
-      </h3>
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <h3 className="font-serif text-2xl font-bold text-slate-900 dark:text-white">
+            Archive & History
+          </h3>
+          <p className="mt-1 text-xs text-slate-500 dark:text-gray-400">
+            Historical draw records, campaign winners, and verified audit records.
+          </p>
+        </div>
+
+        {/* Luxury Export Controls: CSV, Excel, PDF */}
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-gray-500">
+            Export:
+          </span>
+
+          {/* CSV Export */}
+          <button
+            type="button"
+            onClick={handleExportCSV}
+            disabled={exportingType !== null}
+            title="Export archive as CSV"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-slate-300 hover:bg-slate-50 active:scale-95 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
+          >
+            {exportingType === 'csv' ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-slate-500" />
+            ) : (
+              <FileText className="h-3.5 w-3.5 text-blue-500" />
+            )}
+            <span>CSV</span>
+          </button>
+
+          {/* Excel Export */}
+          <button
+            type="button"
+            onClick={handleExportExcel}
+            disabled={exportingType !== null}
+            title="Export archive as formatted Microsoft Excel (.xlsx)"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-emerald-300 hover:bg-emerald-50/50 hover:text-emerald-700 active:scale-95 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:border-emerald-500/40 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-300"
+          >
+            {exportingType === 'excel' ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-emerald-500" />
+            ) : (
+              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-600 dark:text-emerald-400" />
+            )}
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* PDF Export */}
+          <button
+            type="button"
+            onClick={handleExportPDF}
+            disabled={exportingType !== null}
+            title="Export archive as printable Executive PDF report"
+            className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition-all hover:border-rose-300 hover:bg-rose-50/50 hover:text-rose-700 active:scale-95 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:border-rose-500/40 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
+          >
+            {exportingType === 'pdf' ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin text-rose-500" />
+            ) : (
+              <FileDown className="h-3.5 w-3.5 text-rose-600 dark:text-rose-400" />
+            )}
+            <span>PDF</span>
+          </button>
+        </div>
+      </div>
       <div className="dark:bg-brand-dark-surface/60 overflow-hidden rounded-3xl border border-slate-200 bg-white backdrop-blur-md dark:border-white/10">
         <div className="overflow-x-auto">
           <table className="w-full border-collapse text-left text-sm text-slate-600 dark:text-gray-300">

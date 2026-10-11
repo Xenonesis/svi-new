@@ -34,12 +34,24 @@ export function ViewParticipantsModal({
   const loadParticipants = async (lotteryId: string) => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      let { data, error } = await supabase
         .from('lottery_participants')
         .select('id, name, ticket_number, phone, email, is_winner')
         .eq('lottery_id', lotteryId)
         .order('is_winner', { ascending: false })
         .order('name');
+
+      if (error) {
+        const fallback = await supabase
+          .from('lottery_participants')
+          .select('id, name, ticket_number, is_winner')
+          .eq('lottery_id', lotteryId)
+          .order('is_winner', { ascending: false })
+          .order('name');
+        data = (fallback.data as typeof data) || null;
+        error = fallback.error;
+      }
+
       if (error) throw error;
       setParticipants(data || []);
     } catch {
