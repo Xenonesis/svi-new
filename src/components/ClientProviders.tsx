@@ -11,6 +11,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
 import ExitIntentPopup from '@/src/components/common/ExitIntentPopup';
+import { MobileConversionDock } from '@/src/components/layout/MobileConversionDock';
 
 const ChatLauncher = dynamic(() => import('@/src/components/home/ChatLauncher'), {
   ssr: false,
@@ -20,13 +21,6 @@ const ChatLauncher = dynamic(() => import('@/src/components/home/ChatLauncher'),
 const FloatingContact = dynamic(
   () =>
     import('@/src/components/layout/FloatingContact').then((m) => ({ default: m.FloatingContact })),
-  { ssr: false }
-);
-const MobileConversionDock = dynamic(
-  () =>
-    import('@/src/components/layout/MobileConversionDock').then((m) => ({
-      default: m.MobileConversionDock,
-    })),
   { ssr: false }
 );
 

@@ -30,7 +30,7 @@ export function MobileConversionDock(): JSX.Element {
     <>
       <nav
         aria-label="Mobile quick actions"
-        className="fixed right-0 bottom-0 left-0 z-40 flex h-[calc(3.75rem+env(safe-area-inset-bottom,12px))] w-full items-center justify-between border-t border-[#d4af37]/20 bg-[#080b11]/95 px-3 pt-1 pb-[max(12px,env(safe-area-inset-bottom,12px))] shadow-[0_-4px_20px_rgba(0,0,0,0.5)] backdrop-blur-xl md:hidden"
+        className="fixed right-0 bottom-0 left-0 z-50 flex h-[calc(3.75rem+env(safe-area-inset-bottom,12px))] w-full items-center justify-between border-t border-[#d4af37]/20 bg-[#080b11]/95 px-3 pt-1 pb-[max(12px,env(safe-area-inset-bottom,12px))] shadow-[0_-4px_20px_rgba(0,0,0,0.5)] backdrop-blur-xl md:hidden"
       >
         {/* 1. Call Advisor */}
         <a

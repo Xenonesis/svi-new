@@ -166,10 +166,11 @@ export function BlueprintMapView({
           >
             <div className="relative aspect-[16/10] w-full max-w-4xl overflow-hidden rounded-xl border border-white/5 bg-black/40">
               <Image
-                src="/Shivani%20Vatika%2011/master-plan-layout.webp"
+                src="/Shivani Vatika 11/master-plan-layout.webp"
                 alt="Shivani Vatika 11th Master Plan Layout Blueprint"
                 fill
                 priority
+                unoptimized
                 sizes="(max-width: 1024px) 100vw, 1200px"
                 className="object-contain"
               />
