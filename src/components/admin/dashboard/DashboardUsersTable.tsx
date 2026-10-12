@@ -546,8 +546,8 @@ export function DashboardUsersTable({
                             href={`mailto:${u.real_email}`}
                             className="touch-target inline-flex items-center gap-1.5 rounded-xl border border-blue-500/20 bg-blue-500/10 px-3 py-2 text-xs font-medium text-blue-700 transition-all hover:bg-blue-500/20 active:scale-95 dark:border-blue-400/20 dark:bg-blue-400/10 dark:text-blue-300"
                           >
-                            <Mail className="h-3.5 w-3.5 text-blue-600 dark:text-blue-400" />
-                            <span className="max-w-[170px] truncate">{u.real_email}</span>
+                            <Mail className="h-3.5 w-3.5 shrink-0 text-blue-600 dark:text-blue-400" />
+                            <span className="font-medium break-all select-all">{u.real_email}</span>
                           </a>
                           <button
                             onClick={() => copyToClipboard(u.real_email!, `email-${u.id}`, 'Email')}
@@ -791,11 +791,11 @@ export function DashboardUsersTable({
                               <div className="flex items-center gap-1.5 text-xs">
                                 <a
                                   href={`mailto:${u.real_email}`}
-                                  className="hover:text-brand-gold inline-flex items-center gap-1.5 text-gray-600 dark:text-gray-400 dark:hover:text-amber-400"
+                                  className="hover:text-brand-gold inline-flex items-center gap-1.5 text-gray-600 transition-colors dark:text-gray-400 dark:hover:text-amber-400"
                                   title="Email user"
                                 >
-                                  <Mail className="h-3.5 w-3.5 text-gray-400" />
-                                  <span className="max-w-[150px] truncate" title={u.real_email}>
+                                  <Mail className="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                                  <span className="font-medium select-all" title={u.real_email}>
                                     {u.real_email}
                                   </span>
                                 </a>
