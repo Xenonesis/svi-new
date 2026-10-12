@@ -60,7 +60,7 @@ export async function GET(request: NextRequest) {
       { data: regsData, error: regsErr },
       { data: propsData, error: propsErr },
     ] = await Promise.all([
-      supabaseAdmin.from('allotments').select('id, metadata'),
+      supabaseAdmin.from('allotments').select('id, unit_no, property_id, allotted_date, metadata'),
       supabaseAdmin
         .from('documents')
         .select('id, document_type, form_data, created_at')
@@ -95,19 +95,46 @@ export async function GET(request: NextRequest) {
       return match ? match.id : null;
     };
 
-    // 1. Identify already approved ticket IDs in allotments table
+    // 1. Identify already approved ticket IDs and index approved allotments
     const approvedNormalizedIds = new Set<string>();
+    const candidatesMap = new Map<string, CandidateClient>();
+
     (allotmentsData || []).forEach((a) => {
       const meta = (a.metadata as Record<string, unknown>) || {};
       const tId = (meta.ticket_id || meta.ticketId) as string | undefined;
-      if (tId) {
-        approvedNormalizedIds.add(normalizeTicketId(tId));
+      const normId = normalizeTicketId(tId);
+      if (normId) {
+        approvedNormalizedIds.add(normId);
+
+        if (!candidatesMap.has(normId)) {
+          const prop = properties.find((p) => p.id === a.property_id);
+          const clientName = String(
+            meta.client_name || meta.applicant_name || meta.clientName || ''
+          ).trim();
+          const rawDate = (meta.booking_date as string) || (a.allotted_date as string) || '';
+
+          candidatesMap.set(normId, {
+            ticketId: tId?.trim() || normId,
+            normalizedId: normId,
+            clientName,
+            email: String(meta.client_email || meta.email || '').trim(),
+            phone: String(meta.client_phone || meta.phone || '').trim(),
+            projectName: prop ? prop.name : String(meta.project || meta.projectName || ''),
+            propertyId: a.property_id || null,
+            unitNo: String(a.unit_no || meta.plotNo || meta.unitNo || ''),
+            area: (meta.area || meta.plotSize || '') as string | number,
+            totalCost: Number(meta.total_cost || meta.totalCost) || 0,
+            bookingDate: safeIsoDate(rawDate),
+            documentCount: 0,
+            sources: ['Approved Allotment'],
+            paymentMilestones: [],
+            advisorName: meta.advisor_name ? String(meta.advisor_name).trim() : '',
+          });
+        }
       }
     });
 
-    // 2. Aggregate candidates by normalized ticket ID
-    const candidatesMap = new Map<string, CandidateClient>();
-
+    // 2. Aggregate candidates from registrations and documents
     // Process registrations
     (regsData || []).forEach((r) => {
       const rawId = r.submission_id;
@@ -231,14 +258,16 @@ export async function GET(request: NextRequest) {
       }
     });
 
-    // 3. Filter out candidates that are ALREADY approved
+    // 3. Filter out candidates that are ALREADY approved unless ?all=true is requested
+    const isAll = request.nextUrl.searchParams.get('all') === 'true';
     const allCandidates = Array.from(candidatesMap.values());
     const pendingCandidates = allCandidates.filter(
       (c) => !approvedNormalizedIds.has(c.normalizedId)
     );
+    const returnedCandidates = isAll ? allCandidates : pendingCandidates;
 
     return NextResponse.json({
-      candidates: pendingCandidates,
+      candidates: returnedCandidates,
       totalPending: pendingCandidates.length,
       approvedCount: approvedNormalizedIds.size,
       totalUniqueClients: allCandidates.length,

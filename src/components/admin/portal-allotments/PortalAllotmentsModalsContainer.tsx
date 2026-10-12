@@ -1,6 +1,11 @@
 import type React from 'react';
 import dynamic from 'next/dynamic';
-import type { AllotmentFormData, ProfileSummary, PropertySummary } from './types';
+import type {
+  AllotmentCandidate,
+  AllotmentFormData,
+  ProfileSummary,
+  PropertySummary,
+} from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
 
 const PortalAllotmentFormModal = dynamic(
@@ -34,6 +39,7 @@ export interface PortalAllotmentsModalsContainerProps {
   profiles: ProfileSummary[];
   properties: PropertySummary[];
   advisors: string[];
+  candidates?: AllotmentCandidate[];
   handleSave: (e: React.FormEvent) => Promise<void> | void;
 
   // View & Print Receipt Modal
@@ -76,6 +82,7 @@ export function PortalAllotmentsModalsContainer({
   profiles,
   properties,
   advisors,
+  candidates,
   handleSave,
   selectedReceipt,
   setSelectedReceipt,
@@ -108,6 +115,7 @@ export function PortalAllotmentsModalsContainer({
         profiles={profiles}
         properties={properties}
         advisors={advisors}
+        candidates={candidates}
         onSave={handleSave}
       />
 

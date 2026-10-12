@@ -2,7 +2,12 @@
 
 import { motion, AnimatePresence } from 'motion/react';
 import { useTranslations } from 'next-intl';
-import type { AllotmentFormData, ProfileSummary, PropertySummary } from './types';
+import type {
+  AllotmentCandidate,
+  AllotmentFormData,
+  ProfileSummary,
+  PropertySummary,
+} from './types';
 
 export interface PortalAllotmentFormModalProps {
   isOpen?: boolean;
@@ -14,6 +19,7 @@ export interface PortalAllotmentFormModalProps {
   profiles: ProfileSummary[];
   properties: PropertySummary[];
   advisors?: string[];
+  candidates?: AllotmentCandidate[];
   onSave: (e: React.FormEvent) => Promise<void> | void;
 }
 
@@ -27,11 +33,43 @@ export function PortalAllotmentFormModal({
   profiles,
   properties,
   advisors = [],
+  candidates = [],
   onSave,
 }: PortalAllotmentFormModalProps) {
   const t = useTranslations('pages.adminPortalAllotments');
   const visible = isOpen ?? showModal ?? false;
 
+  const handleTicketChange = (val: string) => {
+    const clean = val.trim().toUpperCase();
+    const matched = candidates.find(
+      (c) =>
+        c.ticketId.toUpperCase() === clean ||
+        c.normalizedId.toUpperCase() === clean.replace(/[^A-Z0-9]/g, '')
+    );
+
+    if (matched) {
+      const matchedPropId =
+        matched.propertyId ||
+        properties.find(
+          (p) =>
+            p.name.toLowerCase() === matched.projectName.toLowerCase() ||
+            (Boolean(p.slug) && p.slug?.toLowerCase() === matched.projectName.toLowerCase())
+        )?.id;
+
+      setFormData((prev) => ({
+        ...prev,
+        ticket_id: matched.ticketId,
+        unit_number: matched.unitNo || prev.unit_number,
+        area: matched.area ? String(matched.area) : prev.area,
+        total_cost: matched.totalCost ? String(matched.totalCost) : prev.total_cost,
+        booking_date: matched.bookingDate || prev.booking_date,
+        advisor_name: matched.advisorName || prev.advisor_name,
+        property_id: matchedPropId || prev.property_id,
+      }));
+    } else {
+      setFormData((prev) => ({ ...prev, ticket_id: val }));
+    }
+  };
   return (
     <AnimatePresence>
       {visible && (
@@ -174,13 +212,29 @@ export function PortalAllotmentFormModal({
                   <span>Official Ticket / Ref ID</span>
                   <span className="text-xs font-normal text-gray-400">e.g. SVI2001, PL2001</span>
                 </label>
-                <input
-                  type="text"
-                  placeholder="Leave empty if ID is pending/missing"
-                  value={formData.ticket_id || ''}
-                  onChange={(e) => setFormData({ ...formData, ticket_id: e.target.value })}
-                  className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 font-mono text-sm text-gray-900 uppercase outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
-                />
+                <div className="relative">
+                  <input
+                    type="text"
+                    list="ticket-candidates-datalist"
+                    placeholder="Search candidate ticket or enter Ref ID..."
+                    value={formData.ticket_id || ''}
+                    onChange={(e) => handleTicketChange(e.target.value)}
+                    className="focus:ring-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 p-2.5 font-mono text-sm text-gray-900 uppercase outline-none focus:ring-2 dark:border-gray-700 dark:bg-gray-900 dark:text-white"
+                  />
+                  {candidates.length > 0 && (
+                    <datalist id="ticket-candidates-datalist">
+                      {candidates.map((c) => (
+                        <option
+                          key={c.normalizedId}
+                          value={c.ticketId}
+                          label={`${c.clientName} • Unit: ${c.unitNo || 'N/A'} • ${c.projectName || ''}`}
+                        >
+                          {c.clientName} ({c.phone})
+                        </option>
+                      ))}
+                    </datalist>
+                  )}
+                </div>
               </div>
 
               <div className="flex justify-end gap-3 border-t border-gray-100 pt-4 dark:border-gray-700">

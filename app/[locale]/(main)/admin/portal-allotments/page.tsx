@@ -187,6 +187,7 @@ export default function PortalAllotmentsAdmin() {
         profiles={profiles}
         properties={properties}
         advisors={advisors}
+        candidates={candidates}
         handleSave={handleSave}
         selectedReceipt={selectedReceipt}
         setSelectedReceipt={setSelectedReceipt}

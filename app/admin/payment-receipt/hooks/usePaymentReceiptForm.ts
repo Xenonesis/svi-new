@@ -101,7 +101,7 @@ export function usePaymentReceiptForm() {
   const fetchCandidates = useCallback(async () => {
     if (!token) return;
     try {
-      const res = await fetch('/api/admin/portal-allotments/candidates', {
+      const res = await fetch('/api/admin/portal-allotments/candidates?all=true', {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (!res.ok) return;

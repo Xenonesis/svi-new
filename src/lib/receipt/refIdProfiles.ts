@@ -65,6 +65,25 @@ export function extractRefIdNumber(refId?: string | null): number {
   return match ? parseInt(match[0], 10) : 0;
 }
 
+export function parseSalutationAndName(rawName?: string | null): {
+  salutation: string;
+  name: string;
+} {
+  if (!rawName) return { salutation: '', name: '' };
+  const trimmed = rawName.trim();
+  const match = trimmed.match(/^(Mr\.|Mrs\.|Ms\.|M\/s|Shri|Smt\.?|Dr\.)\s+(.+)$/i);
+  if (match) {
+    let sal = match[1];
+    if (sal.toLowerCase() === 'shri') sal = 'Mr.';
+    if (sal.toLowerCase().startsWith('smt')) sal = 'Mrs.';
+    return {
+      salutation: sal,
+      name: match[2].trim(),
+    };
+  }
+  return { salutation: '', name: trimmed };
+}
+
 export type RefIdSourceFilter = 'all' | 'receipt' | 'candidate';
 
 export type RefIdSortOption =
@@ -155,11 +174,12 @@ export function buildRefIdProfiles(
 
       const existing = profileMap.get(normId);
       if (!existing || (!existing.isReceipt && score > existing.score)) {
+        const parsed = parseSalutationAndName(c.clientName);
         profileMap.set(normId, {
           profile: {
             refId: displayRefId,
-            name: String(c.clientName || '').trim(),
-            salutation: String(c.salutation || '').trim(),
+            name: parsed.salutation ? parsed.name : String(c.clientName || '').trim(),
+            salutation: String(c.salutation || parsed.salutation || '').trim(),
             clientPhone: String(c.phone || '').trim(),
             plotNo: String(c.unitNo || '').trim(),
             plotSize: c.area !== undefined && c.area !== null ? String(c.area).trim() : '',
@@ -192,11 +212,12 @@ export function buildRefIdProfiles(
 
       const existing = profileMap.get(normId);
       if (!existing || !existing.isReceipt || score > existing.score) {
+        const parsed = parseSalutationAndName(fd.name);
         profileMap.set(normId, {
           profile: {
             refId: displayRefId,
-            name: String(fd.name || '').trim(),
-            salutation: String(fd.salutation || '').trim(),
+            name: parsed.salutation ? parsed.name : String(fd.name || '').trim(),
+            salutation: String(fd.salutation || parsed.salutation || '').trim(),
             clientPhone: String(fd.clientPhone || fd.phone || '').trim(),
             plotNo: String(fd.plotNo || fd.unitNo || '').trim(),
             plotSize:

@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 import {
   normalizeRefId,
   extractRefIdNumber,
+  parseSalutationAndName,
   buildRefIdProfiles,
   searchRefIdProfiles,
   compareProfilesBySortOption,
@@ -21,6 +22,48 @@ describe('refIdProfiles', () => {
       expect(normalizeRefId(null)).toBe('');
       expect(normalizeRefId(undefined)).toBe('');
       expect(normalizeRefId('   ---   ')).toBe('');
+    });
+  });
+
+  describe('parseSalutationAndName', () => {
+    it('parses Mr. salutation and name cleanly', () => {
+      expect(parseSalutationAndName('Mr. Rajesh Kumar')).toEqual({
+        salutation: 'Mr.',
+        name: 'Rajesh Kumar',
+      });
+    });
+
+    it('parses Mrs. and Ms. salutations', () => {
+      expect(parseSalutationAndName('Mrs. Sunita Sharma')).toEqual({
+        salutation: 'Mrs.',
+        name: 'Sunita Sharma',
+      });
+      expect(parseSalutationAndName('Ms. Vimlesh Devi')).toEqual({
+        salutation: 'Ms.',
+        name: 'Vimlesh Devi',
+      });
+    });
+
+    it('normalizes Shri and Smt. to standard Mr. and Mrs.', () => {
+      expect(parseSalutationAndName('Shri Alok Verma')).toEqual({
+        salutation: 'Mr.',
+        name: 'Alok Verma',
+      });
+      expect(parseSalutationAndName('Smt. Sarla Devi')).toEqual({
+        salutation: 'Mrs.',
+        name: 'Sarla Devi',
+      });
+    });
+
+    it('returns empty salutation if name has no prefix', () => {
+      expect(parseSalutationAndName('Kundan Kumar')).toEqual({
+        salutation: '',
+        name: 'Kundan Kumar',
+      });
+      expect(parseSalutationAndName('')).toEqual({
+        salutation: '',
+        name: '',
+      });
     });
   });
 

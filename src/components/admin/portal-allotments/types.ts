@@ -9,6 +9,7 @@ export interface ProfileSummary {
 export interface PropertySummary {
   id: string;
   name: string;
+  slug?: string;
   active?: boolean;
 }
 
