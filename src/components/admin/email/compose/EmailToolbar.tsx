@@ -1,5 +1,15 @@
 import { motion } from 'motion/react';
-import { Loader2, Check, Send, Sparkles, Wand2, Lightbulb, Paperclip, Trash2 } from 'lucide-react';
+import {
+  Loader2,
+  Check,
+  Send,
+  Sparkles,
+  Wand2,
+  Lightbulb,
+  Paperclip,
+  Trash2,
+  Clock,
+} from 'lucide-react';
 import { TemplatePicker } from './TemplatePicker';
 
 interface EmailToolbarProps {
@@ -13,6 +23,7 @@ interface EmailToolbarProps {
   subjectSuggestions: string[] | null;
   fileInputRef: React.RefObject<HTMLInputElement | null>;
   subject?: string;
+  scheduledAt?: string | null;
   autoComposing?: boolean;
   onAutoCompose?: () => void;
   onSend: () => void;
@@ -36,6 +47,7 @@ export function EmailToolbar({
   subjectSuggestions,
   fileInputRef,
   subject,
+  scheduledAt,
   autoComposing,
   onAutoCompose,
   onSend,
@@ -50,28 +62,44 @@ export function EmailToolbar({
   return (
     <div className="flex flex-col items-stretch justify-between gap-4 border-t border-gray-100 px-4 py-4 sm:flex-row sm:items-center sm:gap-0 sm:px-6 dark:border-gray-800">
       <div className="flex items-center justify-center gap-1 sm:justify-start">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          onClick={onSend}
-          disabled={sending || sent}
-          className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold tracking-wide shadow-sm transition-all duration-300 disabled:opacity-70 ${
-            sent
-              ? 'bg-emerald-500 text-white shadow-emerald-500/20'
-              : 'bg-brand-gold text-brand-navy glow-gold hover:opacity-95'
-          }`}
-        >
-          {sending ? (
-            <Loader2 className="h-4 w-4 animate-spin" />
-          ) : sent ? (
-            <Check className="h-4 w-4" />
-          ) : (
-            <Send className="h-4 w-4" />
-          )}
-          {sent ? 'Sent!' : sending ? 'Sending...' : 'Send'}
-        </motion.button>
+        {(() => {
+          const isScheduled = Boolean(scheduledAt);
+          return (
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={onSend}
+              disabled={sending || sent}
+              className={`flex items-center gap-2 rounded-xl px-5 py-2.5 text-sm font-bold tracking-wide shadow-sm transition-all duration-300 disabled:opacity-70 ${
+                sent
+                  ? 'bg-emerald-500 text-white shadow-emerald-500/20'
+                  : 'bg-brand-gold text-brand-navy glow-gold hover:opacity-95'
+              }`}
+            >
+              {sending ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : sent ? (
+                <Check className="h-4 w-4" />
+              ) : isScheduled ? (
+                <Clock className="h-4 w-4" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+              {sent
+                ? isScheduled
+                  ? 'Scheduled!'
+                  : 'Sent!'
+                : sending
+                  ? isScheduled
+                    ? 'Scheduling...'
+                    : 'Sending...'
+                  : isScheduled
+                    ? 'Schedule Email'
+                    : 'Send'}
+            </motion.button>
+          );
+        })()}
       </div>
-
       <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
         {onAutoCompose && (
           <button

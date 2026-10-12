@@ -35,12 +35,53 @@ export async function GET(request: Request) {
     let processedCount = 0;
 
     for (const email of pendingEmails) {
-      // Mark as processing immediately to prevent duplicate sends
+      // If email has resend_id, Resend's native scheduler has already dispatched or queued it.
+      // Reconcile status rather than sending a duplicate email.
+      if (email.metadata?.resend_id) {
+        try {
+          const resendStatus = await resend.emails.get(email.metadata.resend_id);
+          const emailData = resendStatus.data as unknown as { last_event?: string } | null;
+          const lastEvent = emailData?.last_event || 'delivered';
+          const sentNow = new Date().toISOString();
+          await supabaseAdmin
+            .from('scheduled_emails')
+            .update({
+              status: lastEvent === 'bounced' ? 'failed' : 'sent',
+              sent_at: sentNow,
+            })
+            .eq('id', email.id);
+
+          try {
+            await supabaseAdmin.from('email_messages').insert({
+              resend_id: email.metadata.resend_id,
+              subject: email.subject,
+              from_email: email.metadata?.from || 'SVI Infra <noreply@sviiinfrasolutions.com>',
+              to_emails: email.to_emails,
+              status: lastEvent === 'bounced' ? 'failed' : 'sent',
+              sent_at: sentNow,
+              metadata: {
+                ...email.metadata,
+                source: 'scheduled_emails',
+              },
+            });
+          } catch (archiveErr) {
+            console.error('Failed to permanently archive scheduled email:', archiveErr);
+          }
+          processedCount++;
+          continue;
+        } catch (resendGetErr) {
+          console.warn(
+            `Could not check Resend status for scheduled email ${email.id}:`,
+            resendGetErr
+          );
+        }
+      }
+
+      // Mark as processing immediately to prevent duplicate sends (fallback path)
       await supabaseAdmin
         .from('scheduled_emails')
         .update({ status: 'processing' })
         .eq('id', email.id);
-
       // Fetch attachments
       const { data: attachmentsData } = await supabaseAdmin
         .from('email_attachments')

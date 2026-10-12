@@ -440,6 +440,10 @@ export function ComposeTab({
       setError('Some recipient email addresses are invalid.');
       return;
     }
+    if (scheduledAt && new Date(scheduledAt) <= new Date()) {
+      setError('Scheduled time must be in the future.');
+      return;
+    }
     setSending(true);
     setError(null);
     try {
@@ -462,6 +466,7 @@ export function ComposeTab({
           replyTo: replyTo || undefined,
           inReplyTo: inReplyToMessageId || undefined,
           from: `${fromName} <noreply@sviiinfrasolutions.com>`,
+          scheduledAt: scheduledAt ? new Date(scheduledAt).toISOString() : undefined,
           attachments:
             attachments.length > 0
               ? attachments.map((a) => ({
@@ -485,7 +490,7 @@ export function ComposeTab({
       } else {
         setSent(true);
         await clearDraft();
-        toast.success('Email sent successfully');
+        toast.success(scheduledAt ? 'Email scheduled successfully!' : 'Email sent successfully');
 
         // Suggest follow-up in background
         const finalBody = getPreviewHtml() || html;
@@ -871,6 +876,7 @@ export function ComposeTab({
           subjectSuggestions={subjectSuggestions}
           fileInputRef={fileInputRef}
           subject={subject}
+          scheduledAt={scheduledAt}
           autoComposing={aiLoading}
           onAutoCompose={handleAutoCompose}
           onSend={handleSend}
