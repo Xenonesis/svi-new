@@ -31,6 +31,13 @@ export interface UseEmailPrefillProps {
   onClearPrefill?: () => void;
   setters: EmailPrefillSetters;
 }
+const toTitleCase = (val: string) =>
+  val
+    ? val
+        .trim()
+        .toLowerCase()
+        .replace(/\b\w/g, (c) => c.toUpperCase())
+    : '';
 
 export function useEmailPrefill({
   adminEmail,
@@ -651,8 +658,8 @@ export function useEmailPrefill({
               setSelectedTemplate('offer_letter');
 
               const vars: Record<string, string> = {
-                name: fd.name || '',
-                designation: fd.designation || '',
+                name: toTitleCase(fd.name || ''),
+                designation: (fd.designation || '').trim(),
                 department: fd.department || '',
                 reportingTo: fd.reportingTo || '',
                 appointmentDate: fd.appointmentDate
@@ -942,9 +949,6 @@ export function useEmailPrefill({
                   : 0;
 
             const tpl = EMAIL_TEMPLATES.find((t) => t.id === 'quotation_document');
-            const toTitleCase = (val: string) =>
-              val ? val.trim().replace(/\b\w/g, (c) => c.toUpperCase()) : '';
-
             const projectName = toTitleCase(fd.projectName || 'SVI Project');
             const quotationNo = fd.quotationNo || 'N/A';
             const customerName = toTitleCase(fd.customerName || 'Valued Client');

@@ -41,7 +41,11 @@ export default function AdminHeader({
   const toggleSidebarCollapsed = useUIStore((s) => s.toggleSidebarCollapsed);
   const [_loggingOut, _setLoggingOut] = useState(false);
   const [isCommandOpen, setIsCommandOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'k') {
@@ -113,23 +117,30 @@ export default function AdminHeader({
 
           <button
             onClick={toggleTheme}
+            suppressHydrationWarning
             aria-label={
-              theme === 'system'
-                ? 'System theme (click for light)'
-                : theme === 'dark' || (theme === undefined && isDark)
-                  ? 'Dark theme (click for system)'
-                  : 'Light theme (click for dark)'
+              !mounted
+                ? 'Toggle theme'
+                : theme === 'system'
+                  ? 'System theme (click for light)'
+                  : theme === 'dark' || (theme === undefined && isDark)
+                    ? 'Dark theme (click for system)'
+                    : 'Light theme (click for dark)'
             }
             title={
-              theme === 'system'
-                ? 'System Theme'
-                : theme === 'dark' || (theme === undefined && isDark)
-                  ? 'Dark Theme'
-                  : 'Light Theme'
+              !mounted
+                ? 'Toggle Theme'
+                : theme === 'system'
+                  ? 'System Theme'
+                  : theme === 'dark' || (theme === undefined && isDark)
+                    ? 'Dark Theme'
+                    : 'Light Theme'
             }
             className="hover:text-brand-gold cursor-pointer p-2 text-gray-500 transition-colors"
           >
-            {theme === 'system' ? (
+            {!mounted ? (
+              <span className="inline-block h-5 w-5" aria-hidden="true" />
+            ) : theme === 'system' ? (
               <Monitor className="h-5 w-5" />
             ) : theme === 'dark' || (theme === undefined && isDark) ? (
               <Moon className="h-5 w-5" />

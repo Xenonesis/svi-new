@@ -61,7 +61,11 @@ export default function EmployeeHeader() {
     email?: string;
     role?: string;
   } | null>(null);
+  const [mounted, setMounted] = useState(false);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
   useEffect(() => {
     async function loadProfile() {
       const {
@@ -206,16 +210,18 @@ export default function EmployeeHeader() {
           {/* Theme Switcher */}
           <button
             onClick={toggleTheme}
+            suppressHydrationWarning
             aria-label="Toggle color theme"
             className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 text-slate-600 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-400 dark:hover:bg-slate-800/60"
           >
-            {theme === 'dark' ? (
+            {!mounted ? (
+              <span className="inline-block h-4 w-4" aria-hidden="true" />
+            ) : theme === 'dark' ? (
               <Sun className="h-4 w-4 text-amber-400" />
             ) : (
               <Moon className="h-4 w-4 text-slate-700" />
             )}
           </button>
-
           {/* Mobile Profile Link */}
           <Link
             href="/employee/profile"

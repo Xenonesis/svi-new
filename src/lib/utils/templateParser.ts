@@ -92,6 +92,18 @@ export const sanitizeEmailHtml = (html: string | null | undefined): string => {
     }
   );
 
+  // 8. Auto-strip deprecated "Next Steps Roadmap" & "View & Sign Offer Letter" CTA if present in offer letter HTML/drafts
+  if (/Next Steps to Finalize Your Onboarding|View\s*&\s*Sign\s*Offer\s*Letter/i.test(result)) {
+    result = result.replace(
+      /(?:<!--\s*Next Steps Roadmap\s*-->\s*)?<div[^>]*>[\s\S]*?Next Steps to Finalize Your Onboarding[\s\S]*?<\/div>/gi,
+      ''
+    );
+    result = result.replace(
+      /<div[^>]*>[\s\S]*?(?:View\s*&\s*Sign\s*Offer\s*Letter|Access\s*via\s*SVI\s*Secure\s*Portal)[\s\S]*?<\/div>/gi,
+      ''
+    );
+  }
+
   return result.trim();
 };
 
@@ -123,11 +135,18 @@ export const getPreviewHtml = (
       '\\{\\{(?:<[^>]+>)*' + escapeRegExp(key) + '(?:<[^>]+>)*\\}\\}',
       'gi'
     );
-    result = result.replace(
-      pattern,
-      value !== undefined && value !== null && value.trim() !== '' ? value : '{{' + key + '}}'
-    );
+    const cleanValue =
+      typeof value === 'string'
+        ? value.trim()
+        : value !== undefined && value !== null
+          ? String(value)
+          : '';
+    result = result.replace(pattern, cleanValue !== '' ? cleanValue : '{{' + key + '}}');
   });
+
+  // Clean typographical space before comma (e.g. "Dear Rohit Gupta ," -> "Dear Rohit Gupta,")
+  result = result.replace(/([a-zA-Z0-9])\s+,/g, '$1,');
+
   return result;
 };
 

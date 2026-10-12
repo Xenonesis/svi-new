@@ -1,7 +1,7 @@
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';
 import type { DraftData, EmailAttachment } from './types';
-
+import { sanitizeEmailHtml } from '@/src/lib/utils/templateParser';
 export async function getToken(): Promise<string> {
   try {
     const { data, error } = await supabase.auth.getSession();
@@ -369,12 +369,12 @@ export async function loadDraft(): Promise<DraftData | null> {
           cc: parsed.cc || '',
           bcc: parsed.bcc || '',
           subject: parsed.subject || '',
-          html: parsed.html || '',
+          html: parsed.html ? sanitizeEmailHtml(parsed.html) : '',
           quotedHtml: parsed.quotedHtml,
           replyTo: parsed.replyTo || '',
           fromName: parsed.fromName || 'SVI Infra',
           savedAt: parsed.savedAt || Date.now(),
-          templateHtml: parsed.templateHtml ?? null,
+          templateHtml: parsed.templateHtml ? sanitizeEmailHtml(parsed.templateHtml) : null,
           selectedTemplate: parsed.selectedTemplate ?? null,
           templateVars: parsed.templateVars ?? {},
           previewMode: parsed.previewMode ?? false,
