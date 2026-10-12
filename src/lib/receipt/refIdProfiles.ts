@@ -71,11 +71,12 @@ export function parseSalutationAndName(rawName?: string | null): {
 } {
   if (!rawName) return { salutation: '', name: '' };
   const trimmed = rawName.trim();
-  const match = trimmed.match(/^(Mr\.|Mrs\.|Ms\.|M\/s|Shri|Smt\.?|Dr\.)\s+(.+)$/i);
+  const match = trimmed.match(/^(Mr\.|Mrs\.|Ms\.|M\/s|Shri|Smt\.?|Dr\.?)\s+(.+)$/i);
   if (match) {
     let sal = match[1];
     if (sal.toLowerCase() === 'shri') sal = 'Mr.';
     if (sal.toLowerCase().startsWith('smt')) sal = 'Mrs.';
+    if (sal.toLowerCase().startsWith('dr')) sal = 'Dr.';
     return {
       salutation: sal,
       name: match[2].trim(),

@@ -55,6 +55,17 @@ describe('refIdProfiles', () => {
       });
     });
 
+    it('parses Dr. salutation with or without dot', () => {
+      expect(parseSalutationAndName('Dr. Sanjeev Gupta')).toEqual({
+        salutation: 'Dr.',
+        name: 'Sanjeev Gupta',
+      });
+      expect(parseSalutationAndName('Dr Priya Sharma')).toEqual({
+        salutation: 'Dr.',
+        name: 'Priya Sharma',
+      });
+    });
+
     it('returns empty salutation if name has no prefix', () => {
       expect(parseSalutationAndName('Kundan Kumar')).toEqual({
         salutation: '',

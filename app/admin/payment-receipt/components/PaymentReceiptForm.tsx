@@ -81,6 +81,7 @@ export default function PaymentReceiptForm({
               { value: 'Mr.', label: 'Mr.' },
               { value: 'Mrs.', label: 'Mrs.' },
               { value: 'Ms.', label: 'Ms.' },
+              { value: 'Dr.', label: 'Dr.' },
               { value: 'M/s', label: 'M/s' },
             ]}
           />
