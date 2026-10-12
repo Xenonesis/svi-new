@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { saveDraft, loadDraft, clearDraft } from '../helpers';
 import type { EmailAttachment } from '../types';
 
@@ -77,6 +77,8 @@ export function useEmailDraft({
   setInReplyToMessageId,
   setAttachments,
 }: UseEmailDraftProps) {
+  const lastSavedFingerprintRef = useRef<string>('');
+
   // Check if draft exists on mount
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -110,7 +112,7 @@ export function useEmailDraft({
     });
   }, [setHasDraft]);
 
-  // Continuous auto-save (instant local + interval backend)
+  // Continuous auto-save (instant local + debounced dirty-check backend)
   useEffect(() => {
     const hasContent = Boolean(
       to ||
@@ -124,29 +126,33 @@ export function useEmailDraft({
     );
     if (!hasContent) return;
 
+    const draftPayload = {
+      to,
+      cc,
+      bcc,
+      subject,
+      html,
+      quotedHtml,
+      replyTo,
+      fromName,
+      templateHtml,
+      selectedTemplate,
+      templateVars,
+      previewMode,
+      subjectTemplate,
+      toRecipients,
+      ccRecipients,
+      bccRecipients,
+      inReplyToMessageId,
+      attachments,
+    };
+
     // Immediate local save
     try {
       localStorage.setItem(
         'svi-email-active-draft',
         JSON.stringify({
-          to,
-          cc,
-          bcc,
-          subject,
-          html,
-          quotedHtml,
-          replyTo,
-          fromName,
-          templateHtml,
-          selectedTemplate,
-          templateVars,
-          previewMode,
-          subjectTemplate,
-          toRecipients,
-          ccRecipients,
-          bccRecipients,
-          inReplyToMessageId,
-          attachments,
+          ...draftPayload,
           savedAt: Date.now(),
         })
       );
@@ -154,31 +160,25 @@ export function useEmailDraft({
       // ignore
     }
 
-    const timer = setInterval(() => {
-      saveDraft({
-        to,
-        cc,
-        bcc,
-        subject,
-        html,
-        quotedHtml,
-        replyTo,
-        fromName,
-        templateHtml,
-        selectedTemplate,
-        templateVars,
-        previewMode,
-        subjectTemplate,
-        toRecipients,
-        ccRecipients,
-        bccRecipients,
-        inReplyToMessageId,
-        attachments,
-      }).then();
-      setDraftSaved(true);
-      setTimeout(() => setDraftSaved(false), 2000);
-    }, 5000);
-    return () => clearInterval(timer);
+    // Compute fingerprint to avoid redundant database writes
+    const currentFingerprint = JSON.stringify(draftPayload);
+    if (currentFingerprint === lastSavedFingerprintRef.current) {
+      return;
+    }
+
+    // Debounced backend save: fires 1500ms after user stops typing
+    const timer = setTimeout(async () => {
+      try {
+        await saveDraft(draftPayload);
+        lastSavedFingerprintRef.current = currentFingerprint;
+        setDraftSaved(true);
+        setTimeout(() => setDraftSaved(false), 2000);
+      } catch {
+        // Network or session error handled gracefully
+      }
+    }, 1500);
+
+    return () => clearTimeout(timer);
   }, [
     to,
     cc,
@@ -230,12 +230,34 @@ export function useEmailDraft({
         setAttachments?.(saved.attachments);
       }
       setEditorKey?.((prev: number) => prev + 1);
+      // Update fingerprint so restore doesn't immediately re-save to backend
+      lastSavedFingerprintRef.current = JSON.stringify({
+        to: saved.to || '',
+        cc: saved.cc || '',
+        bcc: saved.bcc || '',
+        subject: saved.subjectTemplate || saved.subject || '',
+        html: saved.html || '',
+        quotedHtml: saved.quotedHtml || null,
+        replyTo: saved.replyTo || '',
+        fromName: saved.fromName || 'SVI Infra',
+        templateHtml: saved.templateHtml || null,
+        selectedTemplate: saved.selectedTemplate || null,
+        templateVars: saved.templateVars || {},
+        previewMode: saved.previewMode ?? false,
+        subjectTemplate: saved.subjectTemplate || saved.subject || '',
+        toRecipients: saved.toRecipients,
+        ccRecipients: saved.ccRecipients,
+        bccRecipients: saved.bccRecipients,
+        inReplyToMessageId: saved.inReplyToMessageId,
+        attachments: saved.attachments,
+      });
       setHasDraft(false);
     }
   };
 
   const handleClearDraft = async () => {
     await clearDraft();
+    lastSavedFingerprintRef.current = '';
     setHasDraft(false);
   };
 
