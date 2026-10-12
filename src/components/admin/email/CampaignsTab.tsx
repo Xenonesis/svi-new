@@ -46,8 +46,11 @@ export function CampaignsTab() {
 
   useEffect(() => {
     fetchCampaigns();
+    const interval = setInterval(() => {
+      fetchCampaigns();
+    }, 30000);
+    return () => clearInterval(interval);
   }, [fetchCampaigns]);
-
   const doSendImmediately = async (id: string) => {
     try {
       const token = await getToken();

@@ -4,7 +4,7 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { emailCampaignSchema } from '@/src/lib/api/schemas';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
+import { dispatchDueCampaigns, executeCampaignSend } from '@/src/lib/email/campaignDispatcher';
 /**
  * DELETE /api/admin/campaigns?lottery_id=xxx
  * Delete all campaigns linked to a lottery
@@ -47,9 +47,15 @@ export async function GET(request: NextRequest) {
   const admin = await verifyAdmin(request);
   if (!admin) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  // Auto-dispatch any scheduled campaigns whose send time has arrived
+  try {
+    await dispatchDueCampaigns(admin.id, admin.email);
+  } catch (dispatchErr) {
+    console.error('Error auto-dispatching due campaigns:', dispatchErr);
+  }
+
   const url = new URL(request.url);
   const status = url.searchParams.get('status'); // optional filter
-
   let query = supabaseAdmin
     .from('email_campaigns')
     .select(
@@ -212,6 +218,14 @@ export async function POST(request: NextRequest) {
       await NotificationHelper.campaignCreated(title, adminName);
     } catch (notifErr) {
       console.error('Failed to create campaign creation notification:', notifErr);
+    }
+
+    if (scheduled_at) {
+      try {
+        await executeCampaignSend(campaign.id, admin.id, admin.email, true);
+      } catch (scheduleErr) {
+        console.error('Error pre-queueing campaign with Resend:', scheduleErr);
+      }
     }
 
     return NextResponse.json({ campaign });

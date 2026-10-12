@@ -80,6 +80,11 @@ export function CampaignCard({
 
   const failedCount =
     c.failed_count ?? (c.status === 'sent' ? Math.max(0, attemptedCount - successfulCount) : 0);
+
+  const isDue =
+    c.status === 'scheduled' &&
+    Boolean(c.scheduled_at && new Date(c.scheduled_at).getTime() <= Date.now());
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -141,9 +146,15 @@ export function CampaignCard({
                   {attemptedCount}
                 </span>
               ) : c.status === 'scheduled' ? (
-                <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
-                  <Clock className="h-3 w-3" /> Scheduled
-                </span>
+                isDue ? (
+                  <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-1.5 py-0.5 text-[11px] font-bold text-amber-600 dark:text-amber-400">
+                    <Clock className="h-3 w-3 animate-spin" /> Due to Send
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                    <Clock className="h-3 w-3" /> Scheduled
+                  </span>
+                )
               ) : (
                 <span className="inline-flex items-center gap-1 rounded bg-gray-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
                   Draft
@@ -261,10 +272,14 @@ export function CampaignCard({
               </button>
               <button
                 onClick={onSendNow}
-                className="bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-colors"
+                className={`inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-[11px] font-bold transition-all ${
+                  isDue
+                    ? 'bg-brand-gold text-brand-navy animate-pulse shadow-sm'
+                    : 'bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20'
+                }`}
                 title="Send Now"
               >
-                <Play className="h-3 w-3" /> Send Now
+                <Play className="h-3 w-3 fill-current" /> {isDue ? 'Dispatch Now' : 'Send Now'}
               </button>
             </>
           )}

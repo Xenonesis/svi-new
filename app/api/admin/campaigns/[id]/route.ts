@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
-
+import { executeCampaignSend } from '@/src/lib/email/campaignDispatcher';
 type Params = { params: Promise<{ id: string }> };
 
 // GET /api/admin/campaigns/[id]
@@ -105,6 +105,14 @@ export async function PUT(request: NextRequest, { params }: Params) {
       await NotificationHelper.campaignUpdated(existing.title, adminName);
     } catch (notifErr) {
       console.error('Failed to create campaign update notification:', notifErr);
+    }
+
+    if (scheduled_at) {
+      try {
+        await executeCampaignSend(id, admin.id, admin.email, true);
+      } catch (scheduleErr) {
+        console.error('Error pre-queueing campaign with Resend:', scheduleErr);
+      }
     }
 
     return NextResponse.json({ campaign: updated });
