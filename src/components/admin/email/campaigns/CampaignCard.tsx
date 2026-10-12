@@ -1,7 +1,19 @@
 'use client';
 
 import { motion } from 'motion/react';
-import { Mail, Calendar, Clock, Edit3, Play, Copy, Trash2, Trophy, Ticket } from 'lucide-react';
+import {
+  Mail,
+  Calendar,
+  Clock,
+  Edit3,
+  Play,
+  Copy,
+  Trash2,
+  Trophy,
+  Ticket,
+  CheckCircle2,
+  XCircle,
+} from 'lucide-react';
 import type { Campaign } from '../types';
 
 const statusConfig: Record<string, { color: string; dot: string; accent: string }> = {
@@ -57,6 +69,17 @@ export function CampaignCard({
 }: CampaignCardProps) {
   const cfg = statusConfig[c.status] || statusConfig.draft;
 
+  const targetCount =
+    c.target_count ??
+    (c.recipient_group === 'custom' ? (c.custom_emails?.length ?? 0) : c.recipient_count);
+
+  const attemptedCount =
+    c.attempted_count ?? (c.status === 'sent' ? Math.max(targetCount, c.recipient_count) : 0);
+
+  const successfulCount = c.successful_count ?? (c.status === 'sent' ? c.recipient_count : 0);
+
+  const failedCount =
+    c.failed_count ?? (c.status === 'sent' ? Math.max(0, attemptedCount - successfulCount) : 0);
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
@@ -94,24 +117,98 @@ export function CampaignCard({
           </span>
         </div>
 
-        <div className="mt-4 grid grid-cols-2 gap-3 rounded-lg bg-gray-50/80 p-3 dark:bg-gray-800/30">
+        {/* Delivery Analytics Matrix */}
+        <div className="mt-4 grid grid-cols-2 gap-2.5 rounded-xl border border-gray-100 bg-gray-50/70 p-3 sm:grid-cols-4 dark:border-gray-800 dark:bg-gray-800/30">
           <div>
-            <span className="block font-mono text-[9px] tracking-wider text-gray-400 uppercase">
-              Recipients
+            <span className="block font-mono text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
+              Target (Bhejne The)
             </span>
-            <span className="mt-0.5 block text-xs font-semibold text-gray-700 capitalize dark:text-gray-300">
-              {c.recipient_group.replace(/_/g, ' ')}
-            </span>
+            <div className="mt-1 flex items-baseline gap-1">
+              <span className="text-sm font-bold text-gray-900 dark:text-white">{targetCount}</span>
+              <span className="text-[10px] text-gray-500 capitalize">
+                ({c.recipient_group.replace(/_/g, ' ')})
+              </span>
+            </div>
           </div>
+
           <div>
-            <span className="block font-mono text-[9px] tracking-wider text-gray-400 uppercase">
-              Sent To
+            <span className="block font-mono text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
+              Sent (Bheje Gaye)
             </span>
-            <span className="mt-0.5 block text-xs font-semibold text-gray-700 dark:text-gray-300">
-              {c.status === 'sent' ? `${c.recipient_count} people` : '--'}
+            <div className="mt-1">
+              {c.status === 'sent' ? (
+                <span className="text-sm font-bold text-gray-900 dark:text-white">
+                  {attemptedCount}
+                </span>
+              ) : c.status === 'scheduled' ? (
+                <span className="inline-flex items-center gap-1 rounded bg-blue-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-blue-600 dark:text-blue-400">
+                  <Clock className="h-3 w-3" /> Scheduled
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 rounded bg-gray-500/10 px-1.5 py-0.5 text-[11px] font-semibold text-gray-500 dark:text-gray-400">
+                  Draft
+                </span>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <span className="block font-mono text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
+              Successful
             </span>
+            <div className="mt-1">
+              {c.status === 'sent' ? (
+                <span className="inline-flex items-center gap-1 text-sm font-bold text-emerald-600 dark:text-emerald-400">
+                  <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                  <span>{successfulCount}</span>
+                </span>
+              ) : (
+                <span className="text-xs font-medium text-gray-400">--</span>
+              )}
+            </div>
+          </div>
+
+          <div>
+            <span className="block font-mono text-[9px] font-semibold tracking-wider text-gray-400 uppercase">
+              Failed
+            </span>
+            <div className="mt-1">
+              {c.status === 'sent' ? (
+                failedCount > 0 ? (
+                  <span className="inline-flex items-center gap-1 rounded-md bg-rose-50 px-2 py-0.5 text-xs font-bold text-rose-600 dark:bg-rose-500/15 dark:text-rose-400">
+                    <XCircle className="h-3.5 w-3.5 shrink-0" />
+                    <span>{failedCount} failed</span>
+                  </span>
+                ) : (
+                  <span className="text-sm font-bold text-gray-400 dark:text-gray-500">0</span>
+                )
+              ) : (
+                <span className="text-xs font-medium text-gray-400">--</span>
+              )}
+            </div>
           </div>
         </div>
+
+        {/* Custom Recipients Preview Chips */}
+        {c.recipient_group === 'custom' && c.custom_emails && c.custom_emails.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap items-center gap-1.5">
+            <span className="font-mono text-[10px] text-gray-400">Recipients:</span>
+            {c.custom_emails.slice(0, 3).map((email) => (
+              <span
+                key={email}
+                className="inline-block max-w-[160px] truncate rounded-md bg-gray-100 px-2 py-0.5 font-mono text-[10px] font-medium text-gray-600 dark:bg-gray-800 dark:text-gray-300"
+                title={email}
+              >
+                {email}
+              </span>
+            ))}
+            {c.custom_emails.length > 3 && (
+              <span className="bg-brand-gold/15 text-brand-gold rounded-md px-2 py-0.5 font-mono text-[10px] font-bold">
+                +{c.custom_emails.length - 3} more
+              </span>
+            )}
+          </div>
+        )}
 
         {(c.scheduled_at || c.reminder_at) && (
           <div className="mt-3 space-y-1.5">

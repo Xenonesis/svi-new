@@ -1,6 +1,6 @@
 import { supabase } from '@/src/lib/supabase/client';
 import { useAuthStore } from '@/src/stores/authStore';
-import type { DraftData, EmailAttachment } from './types';
+import type { DraftData, EmailAttachment, Contact } from './types';
 import { sanitizeEmailHtml } from '@/src/lib/utils/templateParser';
 export async function getToken(): Promise<string> {
   try {
@@ -31,6 +31,19 @@ export function formatTime(dateString: string): string {
   return date.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
+export async function fetchContacts(): Promise<Contact[]> {
+  try {
+    const token = await getToken();
+    const res = await fetch('/api/admin/contacts', {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    if (!res.ok) return [];
+    const data = (await res.json()) as { contacts?: Contact[] };
+    return data.contacts ?? [];
+  } catch {
+    return [];
+  }
+}
 export function getStatusColor(status: string) {
   switch (status?.toLowerCase()) {
     case 'delivered':

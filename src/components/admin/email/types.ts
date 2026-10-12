@@ -238,4 +238,8 @@ export interface Campaign {
   created_at: string;
   lottery_id: string | null;
   lottery_title?: string | null;
+  target_count?: number;
+  attempted_count?: number;
+  successful_count?: number;
+  failed_count?: number;
 }

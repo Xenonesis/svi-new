@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   X,
@@ -16,12 +16,15 @@ import {
   Search,
   FileIcon,
   Check,
+  UserCheck,
+  Sparkles,
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { getToken } from '../helpers';
+import { getToken, fetchContacts } from '../helpers';
 import { EMAIL_TEMPLATES } from '../constants';
-import type { Campaign } from '../types';
-
+import type { Campaign, Contact } from '../types';
+import { ContactPicker } from '../compose/ContactPicker';
+import { AIComposePopover } from '../compose/AIComposePopover';
 interface CampaignFormModalProps {
   open: boolean;
   editingCampaign: Campaign | null;
@@ -52,21 +55,171 @@ export function CampaignFormModal({
   const [formError, setFormError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showTemplateImport, setShowTemplateImport] = useState(false);
+  const [contactPickerOpen, setContactPickerOpen] = useState(false);
+  const [showAIPopover, setShowAIPopover] = useState(false);
 
+  const handleAIInsert = useCallback(
+    (html: string, generatedSubject?: string) => {
+      setBodyHtml((prev) => (prev ? `${prev}\n\n${html}` : html));
+      if (generatedSubject && !subject.trim()) {
+        setSubject(generatedSubject);
+      }
+      setShowAIPopover(false);
+      toast.success('AI content inserted into campaign');
+    },
+    [subject]
+  );
+
+  const handleAIReplace = useCallback((html: string, generatedSubject?: string) => {
+    setBodyHtml(html);
+    if (generatedSubject) {
+      setSubject(generatedSubject);
+    }
+    setShowAIPopover(false);
+    toast.success('Campaign content replaced with AI draft');
+  }, []);
+
+  const handleAIApplyTemplate = useCallback(
+    (
+      html: string,
+      _templateName?: string,
+      _variables?: Record<string, string>,
+      generatedSubject?: string
+    ) => {
+      setBodyHtml(html);
+      if (generatedSubject) {
+        setSubject(generatedSubject);
+      }
+      setShowAIPopover(false);
+      toast.success('AI template applied to campaign');
+    },
+    []
+  );
+  const selectedCustomEmails = useMemo(() => {
+    return customEmailsInput
+      .split(',')
+      .map((e) => e.trim())
+      .filter(Boolean);
+  }, [customEmailsInput]);
+
+  const selectedCustomEmailSet = useMemo(() => {
+    return new Set(selectedCustomEmails.map((e) => e.toLowerCase()));
+  }, [selectedCustomEmails]);
+
+  const handleToggleContact = useCallback((contact: Contact) => {
+    const primary = (contact.real_email || contact.email).trim();
+    const primaryLower = primary.toLowerCase();
+    const altLower = (contact.email || '').trim().toLowerCase();
+
+    setCustomEmailsInput((prev) => {
+      const currentList = prev
+        .split(',')
+        .map((e) => e.trim())
+        .filter(Boolean);
+
+      const exists = currentList.some((e) => {
+        const lower = e.toLowerCase();
+        return lower === primaryLower || (altLower !== '' && lower === altLower);
+      });
+
+      if (exists) {
+        return currentList
+          .filter((e) => {
+            const lower = e.toLowerCase();
+            return lower !== primaryLower && (altLower === '' || lower !== altLower);
+          })
+          .join(', ');
+      } else {
+        return currentList.length > 0 ? `${currentList.join(', ')}, ${primary}` : primary;
+      }
+    });
+  }, []);
+
+  const handleSelectAllContacts = useCallback(async () => {
+    const all = await fetchContacts();
+    const emailsToAdd = all.map((c) => (c.real_email || c.email).trim()).filter(Boolean);
+
+    setCustomEmailsInput((prev) => {
+      const existing = prev
+        .split(',')
+        .map((e) => e.trim())
+        .filter(Boolean);
+      const set = new Set(existing.map((e) => e.toLowerCase()));
+      const merged = [...existing];
+      for (const email of emailsToAdd) {
+        if (!set.has(email.toLowerCase())) {
+          set.add(email.toLowerCase());
+          merged.push(email);
+        }
+      }
+      return merged.join(', ');
+    });
+  }, []);
+
+  const handleSelectFilteredContacts = useCallback((contactsToSelect: Contact[]) => {
+    const emailsToAdd = contactsToSelect
+      .map((c) => (c.real_email || c.email).trim())
+      .filter(Boolean);
+
+    setCustomEmailsInput((prev) => {
+      const existing = prev
+        .split(',')
+        .map((e) => e.trim())
+        .filter(Boolean);
+      const set = new Set(existing.map((e) => e.toLowerCase()));
+      const merged = [...existing];
+      for (const email of emailsToAdd) {
+        if (!set.has(email.toLowerCase())) {
+          set.add(email.toLowerCase());
+          merged.push(email);
+        }
+      }
+      return merged.join(', ');
+    });
+  }, []);
+
+  const handleClearAllContacts = useCallback(() => {
+    setCustomEmailsInput('');
+  }, []);
+
+  const handleRemoveSingleEmail = useCallback((emailToRemove: string) => {
+    const target = emailToRemove.trim().toLowerCase();
+    setCustomEmailsInput((prev) => {
+      return prev
+        .split(',')
+        .map((e) => e.trim())
+        .filter((e) => e.toLowerCase() !== target)
+        .join(', ');
+    });
+  }, []);
   const toISTString = (utcString: string | null): string => {
     if (!utcString) return '';
     const date = new Date(utcString);
-    const localDate = new Date(date.getTime() + 330 * 60 * 1000);
-    return localDate.toISOString().slice(0, 16);
+    if (isNaN(date.getTime())) return '';
+    const parts = new Intl.DateTimeFormat('en-CA', {
+      timeZone: 'Asia/Kolkata',
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    }).formatToParts(date);
+    const getPart = (t: string) => parts.find((p) => p.type === t)?.value || '';
+    return `${getPart('year')}-${getPart('month')}-${getPart('day')}T${getPart('hour')}:${getPart('minute')}`;
   };
 
   const toUTCString = (istString: string): string => {
     if (!istString) return '';
-    const date = new Date(istString);
-    const utcDate = new Date(date.getTime() - 330 * 60 * 1000);
-    return utcDate.toISOString();
+    const isoWithTz =
+      istString.includes('+') || istString.endsWith('Z')
+        ? istString
+        : istString.length === 16
+          ? `${istString}:00+05:30`
+          : `${istString}+05:30`;
+    const d = new Date(isoWithTz);
+    return isNaN(d.getTime()) ? '' : d.toISOString();
   };
-
   // Load campaign full data when editing
   const loadCampaignDetails = useCallback(async (campaign: Campaign) => {
     try {
@@ -205,11 +358,22 @@ export function CampaignFormModal({
         body: JSON.stringify(payload),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Something went wrong');
+      if (!res.ok) {
+        let errorMsg = 'Failed to save campaign';
+        if (typeof data.error === 'string') {
+          errorMsg = data.error;
+        } else if (data.details && Array.isArray(data.details)) {
+          errorMsg = data.details
+            .map((d: { message?: string }) => d.message)
+            .filter(Boolean)
+            .join(', ');
+        }
+        throw new Error(errorMsg);
+      }
       onClose();
       onSaved();
-    } catch (err: any) {
-      setFormError(err.message);
+    } catch (err: unknown) {
+      setFormError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setIsSubmitting(false);
     }
@@ -289,20 +453,33 @@ export function CampaignFormModal({
 
               {/* Recipient Targeting */}
               <div className="space-y-3 rounded-xl border border-gray-200/80 bg-gray-50/50 p-4 dark:border-gray-700/60 dark:bg-gray-800/20">
-                <label className="block font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                  Target Recipients
-                </label>
+                <div className="flex items-center justify-between">
+                  <label className="block font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                    Target Recipients
+                  </label>
+                  {recipientGroup === 'custom' && selectedCustomEmails.length > 0 && (
+                    <span className="text-brand-gold font-mono text-[11px] font-bold">
+                      {selectedCustomEmails.length} recipient
+                      {selectedCustomEmails.length === 1 ? '' : 's'} configured
+                    </span>
+                  )}
+                </div>
+
                 <div className="flex flex-wrap gap-3">
                   {[
-                    { value: 'all_users', label: 'All Users', icon: Users },
-                    { value: 'lottery_participants', label: 'Lottery Participants', icon: Mail },
-                    { value: 'custom', label: 'Custom List', icon: FileText },
+                    { value: 'all_users' as const, label: 'All Users', icon: Users },
+                    {
+                      value: 'lottery_participants' as const,
+                      label: 'Lottery Participants',
+                      icon: Mail,
+                    },
+                    { value: 'custom' as const, label: 'Custom List', icon: FileText },
                   ].map((opt) => (
                     <label
                       key={opt.value}
                       className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-medium transition-all ${
                         recipientGroup === opt.value
-                          ? 'border-brand-gold/40 bg-brand-gold/5 text-brand-gold'
+                          ? 'border-brand-gold/40 bg-brand-gold/5 text-brand-gold shadow-sm'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400'
                       }`}
                     >
@@ -311,7 +488,7 @@ export function CampaignFormModal({
                         name="recipient_group"
                         value={opt.value}
                         checked={recipientGroup === opt.value}
-                        onChange={() => setRecipientGroup(opt.value as any)}
+                        onChange={() => setRecipientGroup(opt.value)}
                         className="sr-only"
                       />
                       <opt.icon className="h-3.5 w-3.5" />
@@ -319,18 +496,73 @@ export function CampaignFormModal({
                     </label>
                   ))}
                 </div>
+
                 {recipientGroup === 'custom' && (
-                  <div className="mt-2 space-y-1">
-                    <textarea
-                      value={customEmailsInput}
-                      onChange={(e) => setCustomEmailsInput(e.target.value)}
-                      placeholder="client1@gmail.com, client2@outlook.com"
-                      rows={2}
-                      className="focus-gold dark:bg-brand-dark-surface w-full rounded-lg border border-gray-200 bg-white px-4 py-2 text-xs dark:border-gray-700"
-                    />
-                    <p className="font-mono text-[10px] text-gray-400">
-                      Comma-separated email addresses
-                    </p>
+                  <div className="mt-2 space-y-3 rounded-xl border border-gray-200/80 bg-white p-3.5 dark:border-gray-700/70 dark:bg-[#0c0c12]">
+                    <div className="flex flex-wrap items-center justify-between gap-2 border-b border-gray-100 pb-2.5 dark:border-gray-800">
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setContactPickerOpen(true)}
+                          className="bg-brand-gold text-brand-navy flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-bold shadow-sm transition-all hover:opacity-95"
+                        >
+                          <UserCheck className="h-3.5 w-3.5" />
+                          <span>Select Contacts</span>
+                          {selectedCustomEmails.length > 0 && (
+                            <span className="bg-brand-navy/20 py-0.2 ml-1 rounded-full px-1.5 text-[10px] font-black">
+                              {selectedCustomEmails.length}
+                            </span>
+                          )}
+                        </button>
+                        {selectedCustomEmails.length > 0 && (
+                          <button
+                            type="button"
+                            onClick={handleClearAllContacts}
+                            className="text-[11px] font-semibold text-gray-400 transition-colors hover:text-rose-500"
+                          >
+                            Clear All
+                          </button>
+                        )}
+                      </div>
+                      <span className="font-mono text-[10px] text-gray-400">
+                        Search team, clients, or admins
+                      </span>
+                    </div>
+
+                    {/* Chips for Selected Contacts */}
+                    {selectedCustomEmails.length > 0 && (
+                      <div className="flex max-h-32 flex-wrap gap-1.5 overflow-y-auto rounded-lg border border-gray-100/90 bg-gray-50/60 p-2 dark:border-gray-800 dark:bg-gray-900/40">
+                        {selectedCustomEmails.map((email) => (
+                          <span
+                            key={email}
+                            className="border-brand-gold/30 bg-brand-gold/10 inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium text-gray-800 dark:text-gray-200"
+                          >
+                            <span className="max-w-[200px] truncate">{email}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleRemoveSingleEmail(email)}
+                              className="text-gray-400 transition-colors hover:text-rose-500"
+                              title="Remove"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </span>
+                        ))}
+                      </div>
+                    )}
+
+                    <div className="space-y-1">
+                      <label className="block font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                        Or manual comma-separated email addresses:
+                      </label>
+                      <textarea
+                        value={customEmailsInput}
+                        onChange={(e) => setCustomEmailsInput(e.target.value)}
+                        placeholder="client1@gmail.com, client2@outlook.com"
+                        rows={2}
+                        className="focus-gold w-full rounded-lg border border-gray-200 bg-gray-50/60 px-3 py-2 text-xs text-gray-800 dark:border-gray-700 dark:bg-gray-800/40 dark:text-gray-200"
+                      />
+                    </div>
                   </div>
                 )}
               </div>
@@ -387,6 +619,15 @@ export function CampaignFormModal({
                     HTML Body
                   </label>
                   <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowAIPopover(true)}
+                      className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold hover:border-brand-gold/60 hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 text-xs font-bold shadow-sm transition-all"
+                      title="Compose with AI"
+                    >
+                      <Sparkles className="text-brand-gold h-3.5 w-3.5 animate-pulse" />
+                      <span>AI Compose</span>
+                    </button>
                     <div className="relative">
                       <button
                         type="button"
@@ -469,6 +710,26 @@ export function CampaignFormModal({
               </button>
             </div>
           </motion.div>
+          <ContactPicker
+            open={contactPickerOpen}
+            onClose={() => setContactPickerOpen(false)}
+            selectedEmails={selectedCustomEmailSet}
+            onToggle={handleToggleContact}
+            onSelectAll={handleSelectAllContacts}
+            onSelectFiltered={handleSelectFilteredContacts}
+            onClearAll={handleClearAllContacts}
+            title="Select Target Recipients"
+          />
+          <AIComposePopover
+            open={showAIPopover}
+            onClose={() => setShowAIPopover(false)}
+            onInsert={handleAIInsert}
+            onReplace={handleAIReplace}
+            onApplyTemplate={handleAIApplyTemplate}
+            onUpdateSubject={(newSubj) => setSubject(newSubj)}
+            subject={subject}
+            recipientName="Valued Client"
+          />
         </div>
       )}
     </AnimatePresence>

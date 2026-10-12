@@ -96,11 +96,11 @@ export const emailCampaignSchema = z.object({
   subject: z.string().min(1, 'Subject is required').max(500),
   body_html: z.string().min(1, 'Body is required'),
   recipient_group: z.enum(['all_users', 'custom', 'lottery_participants']).default('all_users'),
-  custom_emails: z.array(z.string().email()).optional(),
-  scheduled_at: z.string().datetime().optional(),
-  reminder_at: z.string().datetime().optional(),
-  reminder_subject: z.string().max(500).optional(),
-  lottery_id: z.string().uuid().optional(),
+  custom_emails: z.array(z.string().trim().email()).nullable().optional(),
+  scheduled_at: z.string().datetime().nullable().optional(),
+  reminder_at: z.string().datetime().nullable().optional(),
+  reminder_subject: z.string().max(500).nullable().optional(),
+  lottery_id: z.string().uuid().nullable().optional(),
 });
 
 export type EmailCampaignInput = z.infer<typeof emailCampaignSchema>;

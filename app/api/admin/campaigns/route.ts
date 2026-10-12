@@ -53,21 +53,72 @@ export async function GET(request: NextRequest) {
   let query = supabaseAdmin
     .from('email_campaigns')
     .select(
-      'id, title, subject, recipient_group, status, scheduled_at, reminder_at, reminder_sent_at, sent_at, recipient_count, created_at, created_by, lottery_id, lotteries:lotteries(title)'
+      'id, title, subject, recipient_group, custom_emails, status, scheduled_at, reminder_at, reminder_sent_at, sent_at, recipient_count, created_at, created_by, lottery_id, lotteries:lotteries(title)'
     )
     .order('created_at', { ascending: false });
 
   if (status) query = query.eq('status', status);
 
-  const { data, error } = await query;
-  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  const [campaignsResult, allUsersCountResult, lotteryCountResult] = await Promise.all([
+    query,
+    supabaseAdmin
+      .from('profiles')
+      .select('id', { count: 'exact', head: true })
+      .not('email', 'is', null),
+    supabaseAdmin
+      .from('lottery_participants')
+      .select('id', { count: 'exact', head: true })
+      .not('email', 'is', null),
+  ]);
 
-  // Flatten lottery relation
-  const campaigns = (data || []).map((c: any) => ({
-    ...c,
-    lottery_title: c.lotteries?.title ?? null,
-    lotteries: undefined,
-  }));
+  if (campaignsResult.error) {
+    return NextResponse.json({ error: campaignsResult.error.message }, { status: 500 });
+  }
+
+  const allUsersCount = allUsersCountResult.count ?? 0;
+  const lotteryCount = lotteryCountResult.count ?? 0;
+
+  interface DbCampaignRecord {
+    id: string;
+    title: string;
+    subject: string;
+    recipient_group: 'all_users' | 'lottery_participants' | 'custom';
+    custom_emails?: string[] | null;
+    status: 'draft' | 'scheduled' | 'sent' | 'cancelled';
+    scheduled_at: string | null;
+    reminder_at: string | null;
+    reminder_sent_at: string | null;
+    sent_at: string | null;
+    recipient_count: number;
+    created_at: string;
+    created_by: string;
+    lottery_id: string | null;
+    lotteries?: { title?: string | null } | null;
+  }
+
+  // Flatten lottery relation and calculate delivery statistics
+  const campaigns = ((campaignsResult.data as unknown as DbCampaignRecord[]) || []).map((c) => {
+    const targetCount =
+      c.recipient_group === 'custom'
+        ? (c.custom_emails?.length ?? 0)
+        : c.recipient_group === 'lottery_participants'
+          ? lotteryCount
+          : allUsersCount;
+
+    const successfulCount = c.status === 'sent' ? (c.recipient_count ?? 0) : 0;
+    const attemptedCount = c.status === 'sent' ? Math.max(targetCount, successfulCount) : 0;
+    const failedCount = c.status === 'sent' ? Math.max(0, attemptedCount - successfulCount) : 0;
+
+    return {
+      ...c,
+      lottery_title: c.lotteries?.title ?? null,
+      lotteries: undefined,
+      target_count: targetCount,
+      attempted_count: attemptedCount,
+      successful_count: successfulCount,
+      failed_count: failedCount,
+    };
+  });
 
   return NextResponse.json({ campaigns });
 }

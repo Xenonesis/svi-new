@@ -230,8 +230,8 @@ export function ContactPicker({
   return (
     <Dialog.Root open={open} onOpenChange={(isOpen) => !isOpen && onClose()}>
       <Dialog.Portal>
-        <Dialog.Overlay className="fixed inset-0 z-50 bg-black/60 backdrop-blur-md transition-opacity" />
-        <Dialog.Content className="fixed top-1/2 left-1/2 z-50 flex max-h-[85vh] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-2xl transition-all dark:border-white/10 dark:bg-[#111118]">
+        <Dialog.Overlay className="fixed inset-0 z-[70] bg-black/60 backdrop-blur-md transition-opacity" />
+        <Dialog.Content className="fixed top-1/2 left-1/2 z-[70] flex max-h-[85vh] w-full max-w-lg -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-2xl transition-all dark:border-white/10 dark:bg-[#111118]">
           {/* Header */}
           <div className="flex items-center justify-between border-b border-gray-100 px-5 py-4 dark:border-white/10">
             <div className="flex items-center gap-2.5">
