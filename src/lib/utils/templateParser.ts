@@ -560,8 +560,9 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
     const hasCta = vars.cta_text !== '' && buttonLabel.toLowerCase() !== 'none';
     const bodyContent = vars.body_text
       ? vars.body_text.trim()
-      : '<p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;">Please find the details of your communication below.</p>';
-
+      : vars.prompt
+        ? `<p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">${vars.prompt.trim()}</p>`
+        : '<p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,\'Segoe UI\',Arial,sans-serif;">This is an official communication regarding your property records with SVI Infra Solutions. Please review the details outlined herein.</p>';
     // Check if bodyContent already starts with a greeting or custom HTML
     const hasGreeting =
       /dear\s+/i.test(bodyContent) ||

@@ -11,6 +11,7 @@ import {
   sanitizeEmailHtml,
   buildLuxuryEmailHtml,
   getPreviewHtml,
+  extractTemplateVars,
 } from '@/src/lib/utils/templateParser';
 import type { EmailTemplateType, LuxuryEmailVars } from '@/src/lib/utils/templateParser';
 
@@ -265,13 +266,13 @@ export async function POST(request: NextRequest) {
         '  }',
         '}',
         '',
-        'RULES:',
-        '1. CRITICAL: For general inquiries, outreach, property options, invitations, follow-ups, or custom prompts (where no exact existing transaction template matches), you MUST generate a thorough, polished, high-converting HTML body in "body_text" using clean semantic HTML tags (<p>, <ul>, <li>, <strong>). NEVER leave body_text blank or generic ("Please find details below"). Address the prompt directly and professionally.',
-        '2. "badge": 2-4 word uppercase/title badge for the header banner (e.g. "Residential Property Inquiry", "Exclusive Living Options", "Payment Acknowledgment").',
-        '3. "subtitle": A crisp corporate subtitle describing the communication.',
-        '4. "cta_text": Contextual action button (e.g. "Schedule Site Visit", "Explore Properties", "Connect With Advisor", or empty string if no CTA is needed).',
-        '5. "cta_url": Website link (defaults to "https://www.sviinfrasolutions.com").',
-        '6. NEVER output placeholder strings with angle brackets like "<transaction id>" or "{{variable}}". If a value is not mentioned in the prompt, DO NOT include the key in the variables object.',
+        '1. CRITICAL: For general inquiries, outreach, property notices, cancellations, invitations, follow-ups, or custom prompts, you MUST generate thorough, high-impact corporate copywriting in "body_text" using clean semantic HTML tags (<p>, <strong>, <ul>, <li>). NEVER leave body_text blank or generic ("Please find details below"). Address the user prompt with complete professional context and clarity.',
+        '2. "subject": Write a high-converting, professional subject line strictly reflecting the user prompt (e.g. "Important Notice: Assigned Plot Cancellation — SVI Infra Solutions"). NEVER use generic "Official Communication" unless the user prompt has no specific topic.',
+        '3. "badge": 2-4 word uppercase/title badge for the header banner (e.g. "Plot Cancellation", "Allotment Update", "Payment Acknowledgment").',
+        '4. "subtitle": A crisp corporate subtitle describing the communication.',
+        '5. "cta_text": Contextual action button (e.g. "Connect With Advisor", "Schedule Site Visit", "Explore Properties", or empty string if no CTA is needed).',
+        '6. "cta_url": Website link (defaults to "https://www.sviinfrasolutions.com").',
+        '7. Escape all quotes inside strings as \\" and do not put raw literal unescaped newlines inside JSON string values.',
         '7. For refunds: emailType = refund_confirmation. Set status = "CREDITED" always for refund emails.',
         '8. For payments received: emailType = payment_confirmation. Set status = "RECEIVED" always for payment emails.',
         '9. Extract UTR / Transaction ID from any UTR number, TXN ID, reference number, or 10-18 digit numeric code in the prompt.',
@@ -300,7 +301,7 @@ export async function POST(request: NextRequest) {
           system:
             'You are a JSON data extractor. Output ONLY valid JSON. No markdown, no HTML, no explanation.',
           prompt: extractPrompt,
-          maxOutputTokens: 1200,
+          maxOutputTokens: 2500,
         });
       } catch (err: unknown) {
         const msg = err instanceof Error ? err.message : 'AI service temporarily unavailable';
@@ -310,29 +311,8 @@ export async function POST(request: NextRequest) {
         );
       }
 
-      // ── Step 2: Parse extracted vars ───────────────────────────────────────
-      type ExtractedPayload = {
-        action: 'template_match' | 'ai_template';
-        templateId: string;
-        templateName: string;
-        subject: string;
-        emailType: EmailTemplateType;
-        badge?: string;
-        subtitle?: string;
-        body_text?: string;
-        cta_text?: string;
-        cta_url?: string;
-        variables: LuxuryEmailVars;
-      };
-      const extracted = safeParseJson<ExtractedPayload>(extractedText, {
-        action: 'ai_template',
-        templateId: '_ai_generated',
-        templateName: 'AI Generated',
-        subject: subject || 'Official Communication',
-        emailType: 'general',
-        variables: { name: 'Valued Customer', portal_url: 'https://www.sviinfrasolutions.com' },
-      });
-
+      // ── Step 2: Parse extracted vars with resilient fallback ───────────────
+      const extracted = parseAutoComposeJson(extractedText, userPrompt, subject);
       const emailType: EmailTemplateType = extracted.emailType || 'general';
 
       // Clean extracted variables: strip any placeholder patterns (<...>, {{...}}, [...], dummy strings)
@@ -423,10 +403,10 @@ export async function POST(request: NextRequest) {
         body_text: extracted.body_text,
         cta_text: extracted.cta_text,
         cta_url: extracted.cta_url,
+        prompt: userPrompt,
         ...cleanedVars,
         subject: extracted.subject || subject || 'Official Communication',
       };
-      // ── Step 3: Check for existing template match ──────────────────────────
       type EmailTpl = { id: string; name: string; subject: string; html: string };
       let matchedTpl: EmailTpl | null = null;
       if (extracted.action === 'template_match' && extracted.templateId) {
@@ -729,12 +709,259 @@ ${stripHtml(html)}`,
       return NextResponse.json({ success: true, ...result });
     }
 
+    // ─── Feature 9: Generate / Refine Custom Email Template ─────
+    if (action === 'generate_custom_template') {
+      const {
+        prompt: userPrompt,
+        name: suggestedName,
+        category: suggestedCategory,
+        tone = 'Luxury Executive',
+        currentHtml,
+        refinementInstruction,
+      } = body;
+
+      if (!userPrompt && !refinementInstruction) {
+        return NextResponse.json(
+          { error: 'Prompt or refinement instruction is required' },
+          { status: 400 }
+        );
+      }
+
+      let aiPrompt = '';
+      if (currentHtml && refinementInstruction) {
+        aiPrompt = `You are an elite corporate email HTML template designer for SVI Infra Solutions Pvt. Ltd.
+You are tasked with refining an existing custom email template according to the instruction.
+
+CURRENT TEMPLATE HTML:
+${currentHtml}
+
+REFINEMENT INSTRUCTION:
+${refinementInstruction}
+
+CRITICAL REQUIREMENTS:
+1. Maintain the executive Obsidian/Gold luxury visual design of SVI Infra Solutions.
+2. Official SVI Logo: Ensure <img src="https://www.sviinfrasolutions.com/logo.png" alt="SVI Infra Solutions" width="145" height="auto" style="display:block;max-height:36px;border:0;" /> is inside a white capsule in the dark header banner.
+3. Keep dynamic template placeholders clean with double curly braces (e.g. {{name}}, {{plot_no}}, {{project}}).
+4. SVI Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309. SVI Helpdesk: +91 73000-07643.
+5. Return ONLY a single valid JSON object, NO markdown formatting:
+{
+  "name": "${suggestedName || 'Updated Custom Template'}",
+  "subject": "Refined subject line",
+  "category": "${suggestedCategory || 'Custom'}",
+  "description": "Short 1-sentence description",
+  "html": "<!DOCTYPE html><html>...</html>",
+  "variables": ["name", "plot_no"]
+}`;
+      } else {
+        aiPrompt = `You are an elite corporate email HTML template designer and developer for SVI Infra Solutions Pvt. Ltd. (premier real estate developer in India).
+Generate a complete, fully-responsive, executive-grade corporate email HTML template based on this request:
+
+USER SPECIFICATION:
+"${userPrompt}"
+
+PARAMETERS:
+- Suggested Name: ${suggestedName || 'Auto-generate a crisp, professional real estate template name'}
+- Category: ${suggestedCategory || 'Sales & Offers'}
+- Tone: ${tone}
+
+CRITICAL DESIGN & STRUCTURE REQUIREMENTS:
+1. Layout: Max 600px responsive table card, centered on subtle grey background (#f1f5f9), white card body (#ffffff) with rounded corners (16px) and subtle box shadow.
+2. Header:
+   - Deep luxury Obsidian gradient banner (background: linear-gradient(135deg, #07111e 0%, #0d1e36 50%, #0a1628 100%)) with bottom gold accent border (border-bottom: 3px solid #D4AF37).
+   - Official SVI Corporate Logo: <div style="display:inline-block;background-color:#ffffff;padding:8px 22px;border-radius:24px;box-shadow:0 4px 14px rgba(0,0,0,0.25);margin-bottom:14px;"><img src="https://www.sviinfrasolutions.com/logo.png" alt="SVI Infra Solutions" width="145" height="auto" style="display:block;max-height:36px;border:0;" /></div>
+   - Category pill: High-contrast gold badge (background: rgba(212,175,55,0.15); border: 1px solid #D4AF37; border-radius: 20px; color: #D4AF37; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 14px; display: inline-block;).
+   - Crisp subtitle text in light silver (#e2e8f0).
+3. Body Content:
+   - Polished Indian English, professional real estate business copywriting.
+   - Salutation: "Dear {{name}}," (or appropriate recipient variable).
+   - Rich, clear paragraphs.
+   - Highlight section / Key detail box (e.g. Plot dimensions, Project Name, Investment details, Discount breakdown, or Schedule).
+   - Prominent Call-to-Action button in luxury gold gradient (background: linear-gradient(135deg,#D4AF37 0%,#f3e5ab 50%,#b08f36 100%); color: #0f172a; padding: 12px 32px; border-radius: 25px; text-decoration: none; font-weight: 800; font-size: 12px; text-transform: uppercase;) or inquiry card.
+4. Dynamic Variables:
+   - Use standard mustache variables with double braces: e.g. {{name}}, {{plot_no}}, {{project_name}}, {{amount}}, {{due_date}}, {{discount_percent}}, {{advisor_name}}, {{phone}}, etc.
+   - NEVER put HTML inside the double curly braces (e.g. use <strong>{{plot_no}}</strong>, NEVER {{<strong>plot_no</strong>}}).
+5. Footer:
+   - SVI Helpdesk Bar: SVI Helpdesk: +91 73000-07643 &bull; info@sviinfrasolutions.com
+   - Full Corporate Footer: SVI Infra Solutions Pvt. Ltd.<br>Corporate Office: Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309<br>Official Website: www.sviinfrasolutions.com
+6. Output Format:
+   - Respond ONLY with a valid JSON object.
+   - DO NOT include markdown code fences (\`\`\`json or \`\`\`).
+   - JSON Schema:
+{
+  "name": "Template Name",
+  "subject": "Email Subject Line with {{variable}} if appropriate",
+  "category": "Sales & Offers | Customer Relations | Legal & Allotment | Payment | Festival & Offers | HR & Operations",
+  "description": "1-sentence summary of the template",
+  "html": "<!DOCTYPE html><html>...</html>",
+  "variables": ["name", "plot_no", "project_name"]
+}`;
+      }
+
+      const generatedRaw = await safeGenerateText({
+        system: EMAIL_SYSTEM_PROMPT,
+        prompt: aiPrompt,
+        maxOutputTokens: 3500,
+      });
+
+      const parsed = parseCustomTemplateOutput(generatedRaw, suggestedName, userPrompt);
+      const cleanHtml = sanitizeEmailHtml(parsed.html);
+      const detectedVars = extractTemplateVars(cleanHtml);
+      const combinedVars = Array.from(new Set([...(parsed.variables || []), ...detectedVars]));
+
+      return NextResponse.json({
+        success: true,
+        template: {
+          name: parsed.name,
+          subject: parsed.subject,
+          category: parsed.category,
+          description: parsed.description,
+          html: cleanHtml,
+          variables: combinedVars,
+        },
+      });
+    }
+
     return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
   } catch (err) {
     return handleApiError(err);
   }
 }
 
+/**
+ * Highly resilient parser for auto_compose AI output.
+ * Handles unescaped literal newlines in strings, unescaped quotes, markdown wraps,
+ * and guarantees a prompt-informed body_text so generic placeholders are never shown.
+ */
+function parseAutoComposeJson(
+  rawText: string,
+  userPrompt: string,
+  fallbackSubject = ''
+): {
+  action: 'template_match' | 'ai_template';
+  templateId: string;
+  templateName: string;
+  subject: string;
+  emailType: EmailTemplateType;
+  badge: string;
+  subtitle: string;
+  body_text: string;
+  cta_text: string;
+  cta_url: string;
+  variables: LuxuryEmailVars;
+} {
+  let cleaned = (rawText || '').trim();
+
+  // Strip markdown code fences
+  cleaned = cleaned
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+
+  let parsed: any = null;
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const candidate = cleaned.slice(firstBrace, lastBrace + 1);
+    try {
+      parsed = JSON.parse(candidate);
+    } catch {
+      try {
+        const sanitized = candidate.replace(/(:\s*"(?:[^"\\]|\\.)*")/g, (m) =>
+          m.replace(/\n/g, '\\n').replace(/\r/g, '\\r')
+        );
+        parsed = JSON.parse(sanitized);
+      } catch {
+        // Fall through to regex extraction
+      }
+    }
+  }
+
+  const getField = (name: string): string => {
+    if (parsed && typeof parsed === 'object' && parsed[name]) {
+      return String(parsed[name]).trim();
+    }
+    const m = cleaned.match(new RegExp(`"${name}"\\s*:\\s*"((?:[^"\\\\]|\\\\.)*)"`, 'i'));
+    if (m) {
+      try {
+        return JSON.parse('"' + m[1] + '"').trim();
+      } catch {
+        return m[1].replace(/\\"/g, '"').trim();
+      }
+    }
+    if (name === 'body_text') {
+      const m2 = cleaned.match(/"body_text"\s*:\s*"([\s\S]*?)"\s*(?:,\s*"|\s*\})/);
+      if (m2) {
+        return m2[1].replace(/\\"/g, '"').replace(/\\n/g, '\n').trim();
+      }
+    }
+    return '';
+  };
+
+  const action = (parsed?.action ||
+    cleaned.match(/"action"\s*:\s*"(template_match|ai_template)"/i)?.[1] ||
+    'ai_template') as 'template_match' | 'ai_template';
+  const templateId =
+    parsed?.templateId || cleaned.match(/"templateId"\s*:\s*"([^"]+)"/i)?.[1] || '_ai_generated';
+  const templateName = getField('templateName') || 'Official Notice';
+  let subject = getField('subject');
+  const emailType = (parsed?.emailType ||
+    cleaned.match(/"emailType"\s*:\s*"([^"]+)"/i)?.[1] ||
+    'general') as EmailTemplateType;
+  let badge = getField('badge');
+  let subtitle = getField('subtitle');
+  let body_text = getField('body_text');
+  let cta_text = getField('cta_text');
+  const cta_url = getField('cta_url') || 'https://www.sviinfrasolutions.com';
+  const variables =
+    parsed?.variables && typeof parsed.variables === 'object' ? parsed.variables : {};
+
+  // Check if body_text is empty or contains the generic fallback phrase
+  const isGeneric =
+    !body_text ||
+    /please find the details of your communication below/i.test(body_text) ||
+    body_text.trim().length < 15;
+
+  if (isGeneric && userPrompt && userPrompt.trim()) {
+    const p = userPrompt.trim();
+    const lower = p.toLowerCase();
+
+    if (lower.includes('cancel') || lower.includes('cancelled') || lower.includes('canceled')) {
+      badge = badge || 'Plot Cancellation Notice';
+      subtitle = subtitle || 'Important Notice Regarding Assigned Plot Allocation';
+      subject = subject || 'Important Notice: Assigned Plot Cancellation — SVI Infra Solutions';
+      body_text = `<p>We are writing to formally inform you that the plot allocation previously assigned to you has been cancelled.</p><p>For further details regarding your file, accounting status, or to explore alternative available options with priority allocation, please connect with your assigned property advisor immediately.</p>`;
+      cta_text = cta_text || 'Connect with Advisor';
+    } else {
+      badge = badge || 'Official Notice';
+      subtitle = subtitle || 'SVI Infra Solutions — Corporate Notice';
+      subject =
+        subject ||
+        (fallbackSubject && fallbackSubject !== 'Official Communication'
+          ? fallbackSubject
+          : 'Official Communication — SVI Infra Solutions');
+      body_text = `<p>${p.replace(/\n+/g, '</p><p>')}</p>`;
+      cta_text = cta_text || 'Contact SVI Support';
+    }
+  }
+
+  if (!badge) badge = 'Official Communication';
+  if (!subtitle) subtitle = 'SVI Infra Solutions — Corporate Notice';
+  if (!subject) subject = fallbackSubject || 'Official Communication — SVI Infra Solutions';
+
+  return {
+    action,
+    templateId,
+    templateName,
+    subject,
+    emailType,
+    badge,
+    subtitle,
+    body_text,
+    cta_text,
+    cta_url,
+    variables,
+  };
+}
 // ─── Helpers ─────────────────────────────────────────────────
 
 /**
@@ -954,4 +1181,128 @@ async function fetchRecipientData(email: string): Promise<Record<string, any>> {
   }
 
   return data;
+}
+
+/**
+ * Resilient parser for custom template AI responses.
+ * Extracts JSON properties with regex fallbacks if the HTML body contains tricky unescaped characters.
+ */
+function parseCustomTemplateOutput(
+  rawText: string,
+  fallbackName = '',
+  fallbackSubject = ''
+): {
+  name: string;
+  subject: string;
+  category: string;
+  description: string;
+  html: string;
+  variables: string[];
+} {
+  let cleaned = (rawText || '').trim();
+
+  // Strip markdown code fences
+  cleaned = cleaned
+    .replace(/^```(?:json)?\s*/i, '')
+    .replace(/```\s*$/i, '')
+    .trim();
+
+  // 1. Direct JSON parse attempt on outermost object
+  const firstBrace = cleaned.indexOf('{');
+  const lastBrace = cleaned.lastIndexOf('}');
+  if (firstBrace !== -1 && lastBrace !== -1 && lastBrace > firstBrace) {
+    const jsonCandidate = cleaned.slice(firstBrace, lastBrace + 1);
+    try {
+      const parsed = JSON.parse(jsonCandidate);
+      if (parsed && typeof parsed === 'object') {
+        const detectedHtml = (parsed.html || '').trim();
+        const varsArray = Array.isArray(parsed.variables)
+          ? parsed.variables
+              .map((v: unknown) => String(v).replace(/[{}]/g, '').trim())
+              .filter(Boolean)
+          : [];
+        return {
+          name: (parsed.name || fallbackName || 'Custom Template').trim(),
+          subject: (parsed.subject || fallbackSubject || 'SVI Infra Solutions Update').trim(),
+          category: (parsed.category || 'Sales & Offers').trim(),
+          description: (parsed.description || 'Custom SVI Infra corporate template').trim(),
+          html: detectedHtml,
+          variables: varsArray,
+        };
+      }
+    } catch {
+      // Fall through to regex extraction
+    }
+  }
+
+  // 2. Resilient regex extraction
+  let name = fallbackName || 'Custom Template';
+  const nameMatch = cleaned.match(/"name"\s*:\s*"((?:[^"\\]|\\.)*)"/i);
+  if (nameMatch) {
+    try {
+      name = JSON.parse('"' + nameMatch[1] + '"').trim();
+    } catch {
+      name = nameMatch[1].replace(/\\"/g, '"').trim();
+    }
+  }
+
+  let subject = fallbackSubject || 'SVI Infra Solutions Update';
+  const subjMatch = cleaned.match(/"subject"\s*:\s*"((?:[^"\\]|\\.)*)"/i);
+  if (subjMatch) {
+    try {
+      subject = JSON.parse('"' + subjMatch[1] + '"').trim();
+    } catch {
+      subject = subjMatch[1].replace(/\\"/g, '"').trim();
+    }
+  }
+
+  let category = 'Sales & Offers';
+  const catMatch = cleaned.match(/"category"\s*:\s*"((?:[^"\\]|\\.)*)"/i);
+  if (catMatch) {
+    try {
+      category = JSON.parse('"' + catMatch[1] + '"').trim();
+    } catch {
+      category = catMatch[1].replace(/\\"/g, '"').trim();
+    }
+  }
+
+  let description = 'Custom SVI Infra corporate template';
+  const descMatch = cleaned.match(/"description"\s*:\s*"((?:[^"\\]|\\.)*)"/i);
+  if (descMatch) {
+    try {
+      description = JSON.parse('"' + descMatch[1] + '"').trim();
+    } catch {
+      description = descMatch[1].replace(/\\"/g, '"').trim();
+    }
+  }
+
+  let html = '';
+  const htmlMatch = cleaned.match(/"html"\s*:\s*"([\s\S]*?)"\s*(?:,\s*"|\s*})/);
+  if (htmlMatch) {
+    try {
+      html = JSON.parse('"' + htmlMatch[1] + '"');
+    } catch {
+      html = htmlMatch[1].replace(/\\"/g, '"').replace(/\\n/g, '\n').replace(/\\t/g, ' ');
+    }
+  } else {
+    const docStart = cleaned.indexOf('<!DOCTYPE');
+    const htmlStart = docStart !== -1 ? docStart : cleaned.indexOf('<table');
+    if (htmlStart !== -1) {
+      const htmlEnd = cleaned.lastIndexOf('</html>');
+      if (htmlEnd !== -1) {
+        html = cleaned.slice(htmlStart, htmlEnd + 7);
+      } else {
+        html = cleaned.slice(htmlStart);
+      }
+    }
+  }
+
+  return {
+    name,
+    subject,
+    category,
+    description,
+    html,
+    variables: [],
+  };
 }

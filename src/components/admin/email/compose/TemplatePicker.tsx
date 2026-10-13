@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
-import { Search, ChevronDown, LayoutTemplate, Check, X, FileX } from 'lucide-react';
+import { Search, ChevronDown, LayoutTemplate, Check, X, FileX, Sparkles } from 'lucide-react';
 import { EMAIL_TEMPLATES } from '../constants';
-
+import { useCustomTemplates } from '../hooks/useCustomTemplates';
 interface TemplatePickerProps {
   selectedTemplate: string | null;
   onSelect: (templateId: string) => void;
@@ -12,6 +12,7 @@ interface TemplatePickerProps {
 }
 
 export function TemplatePicker({ selectedTemplate, onSelect, onClear }: TemplatePickerProps) {
+  const { customTemplates } = useCustomTemplates();
   const [showPicker, setShowPicker] = useState(false);
   const [search, setSearch] = useState('');
   const ref = useRef<HTMLDivElement>(null);
@@ -26,6 +27,13 @@ export function TemplatePicker({ selectedTemplate, onSelect, onClear }: Template
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
+  const filteredCustom = customTemplates.filter(
+    (t) =>
+      t.name.toLowerCase().includes(search.toLowerCase()) ||
+      t.category.toLowerCase().includes(search.toLowerCase()) ||
+      t.subject.toLowerCase().includes(search.toLowerCase())
+  );
+
   const filteredTemplates = EMAIL_TEMPLATES.filter(
     (t) =>
       t.name.toLowerCase().includes(search.toLowerCase()) ||
@@ -37,9 +45,10 @@ export function TemplatePicker({ selectedTemplate, onSelect, onClear }: Template
   const selectedName = selectedTemplate
     ? selectedTemplate === '_ai_generated'
       ? 'AI Template'
-      : EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name || 'Template'
+      : customTemplates.find((t) => t.id === selectedTemplate)?.name ||
+        EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name ||
+        'Template'
     : null;
-
   return (
     <div ref={ref} className="relative">
       <button
@@ -127,6 +136,61 @@ export function TemplatePicker({ selectedTemplate, onSelect, onClear }: Template
               </div>
               {!selectedTemplate && <Check className="text-brand-gold h-3.5 w-3.5" />}
             </button>
+
+            {/* Custom AI Templates */}
+            {filteredCustom.length > 0 && (
+              <div>
+                <div className="flex items-center gap-1.5 bg-amber-50/80 px-4 py-2 dark:bg-amber-500/10">
+                  <Sparkles className="h-3 w-3 text-amber-500" />
+                  <span className="font-mono text-[10px] font-bold tracking-widest text-amber-700 uppercase dark:text-amber-300">
+                    Custom AI Templates ({filteredCustom.length})
+                  </span>
+                </div>
+                {filteredCustom.map((tpl) => {
+                  const isActive = selectedTemplate === tpl.id;
+                  return (
+                    <button
+                      key={tpl.id}
+                      onClick={() => {
+                        if (isActive) {
+                          onClear?.();
+                        } else {
+                          onSelect(tpl.id);
+                        }
+                        setShowPicker(false);
+                      }}
+                      className={`flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors ${
+                        isActive
+                          ? 'bg-amber-500/10 text-amber-500'
+                          : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                      }`}
+                    >
+                      <Sparkles
+                        className={`h-3.5 w-3.5 shrink-0 ${
+                          isActive ? 'text-amber-500' : 'text-amber-400'
+                        }`}
+                      />
+                      <div className="min-w-0 flex-1">
+                        <div className="flex items-center gap-1.5">
+                          <p
+                            className={`truncate text-xs font-semibold ${
+                              isActive ? 'text-amber-500' : 'text-gray-900 dark:text-white'
+                            }`}
+                          >
+                            {tpl.name}
+                          </p>
+                          <span className="py-0.2 rounded bg-amber-500/20 px-1 font-mono text-[9px] font-bold text-amber-500">
+                            AI
+                          </span>
+                        </div>
+                        <p className="truncate text-[10px] text-gray-400">{tpl.subject}</p>
+                      </div>
+                      {isActive && <Check className="text-brand-gold h-3.5 w-3.5" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
 
             {/* Template List Categories */}
             <div className="scrollbar-gold max-h-72 overflow-y-auto">

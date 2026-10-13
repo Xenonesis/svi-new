@@ -204,6 +204,22 @@ export interface EmailAttachment {
 export interface TemplatePrefill {
   subject: string;
   html: string;
+  templateId?: string;
+  name?: string;
+}
+
+export interface CustomEmailTemplate {
+  id: string;
+  name: string;
+  subject: string;
+  category: string;
+  description?: string;
+  icon?: string;
+  html: string;
+  variables?: string[];
+  isCustom: true;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export interface ContactGroup {

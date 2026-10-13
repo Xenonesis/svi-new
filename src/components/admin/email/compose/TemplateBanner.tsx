@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { PenLine, LayoutTemplate, Trash2, Sparkles, Check, Wand2, HelpCircle } from 'lucide-react';
 import { EMAIL_TEMPLATES } from '../constants';
+import { useCustomTemplates } from '../hooks/useCustomTemplates';
 import { SmartTemplateSuggestion } from './SmartTemplateSuggestion';
 
 interface TemplateBannerProps {
@@ -28,11 +29,13 @@ export function TemplateBanner({
   onRemoveVariable,
   onApplySuggestions,
 }: TemplateBannerProps) {
+  const { customTemplates } = useCustomTemplates();
   const [showSmartFill, setShowSmartFill] = useState(false);
   if (!selectedTemplate) return null;
 
   const templateName =
     explicitName ||
+    customTemplates.find((t) => t.id === selectedTemplate)?.name ||
     EMAIL_TEMPLATES.find((t) => t.id === selectedTemplate)?.name ||
     'Corporate Template';
 

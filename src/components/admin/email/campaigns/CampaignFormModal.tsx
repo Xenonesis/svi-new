@@ -26,6 +26,7 @@ import type { Campaign, Contact } from '../types';
 import { ContactPicker } from '../compose/ContactPicker';
 import { AIComposePopover } from '../compose/AIComposePopover';
 import { ScheduleDateTimePicker } from '../compose/ScheduleDateTimePicker';
+import { useCustomTemplates } from '../hooks/useCustomTemplates';
 interface CampaignFormModalProps {
   open: boolean;
   editingCampaign: Campaign | null;
@@ -41,6 +42,7 @@ export function CampaignFormModal({
   onClose,
   onSaved,
 }: CampaignFormModalProps) {
+  const { customTemplates } = useCustomTemplates();
   // Form states
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
@@ -309,7 +311,8 @@ export function CampaignFormModal({
   }, [open, editingCampaign, duplicateSource, loadCampaignDetails, resetForm]);
 
   const importTemplate = (templateId: string) => {
-    const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId);
+    const allTemplates = [...customTemplates, ...EMAIL_TEMPLATES];
+    const tpl = allTemplates.find((t) => t.id === templateId);
     if (tpl) {
       setBodyHtml(tpl.html);
       if (!subject) setSubject(tpl.subject);
@@ -635,6 +638,39 @@ export function CampaignFormModal({
                       {showTemplateImport && (
                         <div className="dark:bg-brand-dark-surface absolute top-full right-0 z-50 mt-1 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700">
                           <div className="scrollbar-gold max-h-60 overflow-y-auto">
+                            {customTemplates.length > 0 && (
+                              <div className="border-b border-gray-100 bg-amber-50/50 px-3 py-1.5 font-mono text-[9px] font-bold text-amber-700 uppercase dark:border-gray-800 dark:bg-amber-500/10 dark:text-amber-400">
+                                ✨ Custom AI Templates
+                              </div>
+                            )}
+                            {customTemplates.map((tpl) => (
+                              <button
+                                key={tpl.id}
+                                type="button"
+                                onClick={() => importTemplate(tpl.id)}
+                                className="flex w-full items-center gap-3 px-4 py-2.5 text-left transition-colors hover:bg-amber-50/60 dark:hover:bg-amber-500/10"
+                              >
+                                <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-500" />
+                                <div className="min-w-0 flex-1">
+                                  <div className="flex items-center gap-1.5">
+                                    <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
+                                      {tpl.name}
+                                    </p>
+                                    <span className="py-0.2 rounded bg-amber-500/20 px-1 font-mono text-[9px] font-bold text-amber-500">
+                                      AI
+                                    </span>
+                                  </div>
+                                  <p className="truncate text-[10px] text-gray-400">
+                                    {tpl.category}
+                                  </p>
+                                </div>
+                              </button>
+                            ))}
+                            {customTemplates.length > 0 && (
+                              <div className="border-t border-b border-gray-100 bg-gray-50/50 px-3 py-1.5 font-mono text-[9px] font-bold text-gray-400 uppercase dark:border-gray-800 dark:bg-gray-800/40">
+                                Standard Templates
+                              </div>
+                            )}
                             {EMAIL_TEMPLATES.map((tpl) => (
                               <button
                                 key={tpl.id}

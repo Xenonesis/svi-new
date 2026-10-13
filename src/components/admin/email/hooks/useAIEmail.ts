@@ -39,6 +39,24 @@ interface SentimentOptions {
   emailText?: string;
 }
 
+export interface GenerateCustomTemplateOptions {
+  prompt?: string;
+  name?: string;
+  category?: string;
+  tone?: string;
+  currentHtml?: string;
+  refinementInstruction?: string;
+}
+
+export interface CustomTemplateAIResult {
+  name: string;
+  subject: string;
+  category: string;
+  description: string;
+  html: string;
+  variables: string[];
+}
+
 export function useAIEmail() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -433,6 +451,39 @@ export function useAIEmail() {
     [apiCall]
   );
 
+  // Feature 9: Generate / Refine Custom Email Template
+  const generateCustomTemplate = useCallback(
+    async (options: GenerateCustomTemplateOptions): Promise<CustomTemplateAIResult | null> => {
+      const controller = new AbortController();
+      abortRef.current = controller;
+      setLoading(true);
+      setError(null);
+
+      try {
+        const res = await apiCall(
+          { action: 'generate_custom_template', ...options },
+          controller.signal
+        );
+        const data = await res.json();
+        if (!data.success || !data.template) {
+          throw new Error(data.error || 'Failed to generate custom template');
+        }
+        return data.template as CustomTemplateAIResult;
+      } catch (err: unknown) {
+        const errorObj = err as Error;
+        if (errorObj?.name === 'AbortError') return null;
+        const msg = errorObj?.message || 'Failed to generate custom template';
+        setError(msg);
+        toast.error(msg);
+        return null;
+      } finally {
+        setLoading(false);
+        abortRef.current = null;
+      }
+    },
+    [apiCall]
+  );
+
   return {
     loading,
     error,
@@ -446,5 +497,6 @@ export function useAIEmail() {
     suggestSubject,
     classifyEmail,
     suggestFollowup,
+    generateCustomTemplate,
   };
 }

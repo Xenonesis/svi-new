@@ -7,6 +7,7 @@
       "destination": "/google4cbc4b1a492a2b45.html"
     }
   ],
+  "regions": ["bom1"],
   "framework": "nextjs",
   "buildCommand": "pnpm run build",
   "outputDirectory": ".next",

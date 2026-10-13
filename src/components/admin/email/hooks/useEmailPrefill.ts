@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { EMAIL_TEMPLATES } from '../constants';
 import type { ForwardData, ReplyData, TemplatePrefill, DraftData, EmailAttachment } from '../types';
+import { extractTemplateVars } from '@/src/lib/utils/templateParser';
 
 export interface EmailPrefillSetters {
   setTo: (val: string) => void;
@@ -150,10 +151,23 @@ export function useEmailPrefill({
   useEffect(() => {
     if (templatePrefill) {
       setSubjectTemplate(templatePrefill.subject);
-      setHtml(templatePrefill.html);
+      const vars = extractTemplateVars(templatePrefill.html);
+      if (vars.length > 0) {
+        setTemplateHtml(templatePrefill.html);
+        setSelectedTemplate(templatePrefill.templateId || '_custom_template');
+        const initialVars: Record<string, string> = {};
+        vars.forEach((v) => {
+          initialVars[v] = '';
+        });
+        setTemplateVars(initialVars);
+        setHtml('');
+        setPreviewMode(true);
+      } else {
+        setHtml(templatePrefill.html);
+        setTemplateHtml(null);
+        setSelectedTemplate(null);
+      }
       setQuotedHtml(null);
-      setTemplateHtml(null);
-      setSelectedTemplate(null);
       setInReplyToMessageId(null);
       setEditorKey((prev: number) => prev + 1);
       onClearPrefill?.();
@@ -166,6 +180,8 @@ export function useEmailPrefill({
     setQuotedHtml,
     setTemplateHtml,
     setSelectedTemplate,
+    setTemplateVars,
+    setPreviewMode,
     setInReplyToMessageId,
     setEditorKey,
   ]);

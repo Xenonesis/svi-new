@@ -19,6 +19,7 @@ import { TemplateBanner } from './compose/TemplateBanner';
 import { AttachmentList } from './compose/AttachmentList';
 import { TemplatePicker } from './compose/TemplatePicker';
 import { AIImprovePanel } from './compose/AIImprovePanel';
+import { useCustomTemplates } from './hooks/useCustomTemplates';
 import type {
   ForwardData,
   ReplyData,
@@ -220,6 +221,7 @@ export function ComposeTab({
     setPickerOpen(true);
   }, []);
 
+  const { customTemplates } = useCustomTemplates();
   const [subjectTemplate, setSubjectTemplate] = useState('');
   const [subject, setSubject] = useState('');
   const [html, setHtml] = useState('');
@@ -390,11 +392,12 @@ export function ComposeTab({
   };
 
   const loadTemplate = (templateId: string) => {
-    const tpl = EMAIL_TEMPLATES.find((t) => t.id === templateId);
+    const allTemplates = [...customTemplates, ...EMAIL_TEMPLATES];
+    const tpl = allTemplates.find((t) => t.id === templateId);
     if (!tpl) return;
     setSubjectTemplate(tpl.subject);
     setTemplateHtml(tpl.html);
-    const vars = extractTemplateVars(tpl.html);
+    const vars = parseExtractTemplateVars(tpl.html);
     const initialVars: Record<string, string> = {};
     vars.forEach((v) => {
       initialVars[v] = templateVars[v] || DEFAULT_HELPDESK_VARS[v] || '';
@@ -788,7 +791,9 @@ export function ComposeTab({
           selectedTemplate={selectedTemplate}
           templateVars={templateVars}
           templateName={
-            selectedTemplate === '_ai_generated' ? autoComposeName || 'AI Generated' : undefined
+            selectedTemplate === '_ai_generated'
+              ? autoComposeName || 'AI Generated'
+              : customTemplates.find((t) => t.id === selectedTemplate)?.name
           }
           recipientEmail={toStr}
           onEditTemplate={() => {

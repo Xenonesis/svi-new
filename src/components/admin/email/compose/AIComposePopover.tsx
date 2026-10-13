@@ -328,9 +328,13 @@ export function AIComposePopover({
     const startTime = performance.now();
 
     try {
+      const isSubjectGeneric =
+        !editableSubject.trim() ||
+        editableSubject.trim().toLowerCase() === 'official communication';
+
       const result = await autoCompose({
         prompt: prompt.trim(),
-        subject: editableSubject.trim() || undefined,
+        subject: isSubjectGeneric ? undefined : editableSubject.trim(),
         to: recipientName || undefined,
         tone,
         onChunk: (html) => {
@@ -768,10 +772,13 @@ export function AIComposePopover({
                     <button
                       type="button"
                       onClick={() => setShowToneDropdown(!showToneDropdown)}
-                      className="dark:hover:bg-gray-750 flex items-center gap-2 rounded-xl border border-gray-200 bg-gray-50/80 px-3.5 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-200"
+                      className="flex items-center gap-2 rounded-xl border border-gray-300/80 bg-gray-100/90 px-3.5 py-2 text-xs font-medium text-gray-700 transition-all hover:bg-gray-200 dark:border-gray-700 dark:bg-[#1a2233] dark:text-gray-200 dark:hover:bg-[#222c42]"
                     >
-                      <span>
-                        Tone: <strong className="text-gray-900 dark:text-white">{tone}</strong>
+                      <span className="text-gray-600 dark:text-gray-300">
+                        Tone:{' '}
+                        <strong className="font-semibold text-gray-900 dark:text-amber-400">
+                          {tone}
+                        </strong>
                       </span>
                       <ChevronDown className="h-3.5 w-3.5 text-gray-400" />
                     </button>
