@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import { X } from 'lucide-react';
 import { RecipientInput } from './RecipientInput';
+import { ScheduleDateTimePicker } from './ScheduleDateTimePicker';
 import type { Recipient } from '../types';
 
 interface ComposeFieldsProps {
@@ -328,29 +329,17 @@ export function ComposeFields({
             transition={{ type: 'spring', stiffness: 140, damping: 20 }}
             className="overflow-hidden"
           >
-            <div className="flex flex-wrap items-center border-b border-gray-100 px-4 py-2 sm:flex-nowrap sm:px-6 sm:py-0 dark:border-gray-800">
-              <label className="w-12 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
+            <div className="flex flex-col border-b border-gray-100 px-4 py-2 sm:flex-row sm:items-start sm:px-6 dark:border-gray-800">
+              <label className="mt-2.5 w-14 shrink-0 text-xs font-semibold tracking-wide text-gray-400 uppercase">
                 Send At
               </label>
-              <input
-                type="datetime-local"
-                value={scheduledAt || ''}
-                onChange={(e) => onScheduledAtChange?.(e.target.value || null)}
-                className="mt-1 w-full bg-transparent py-1 text-sm font-medium text-gray-900 [color-scheme:light] outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none sm:mt-0 sm:w-auto sm:py-3 dark:text-gray-100 dark:[color-scheme:dark]"
-              />
-              <span className="mt-1 ml-0 flex-1 text-xs text-gray-400/70 sm:mt-0 sm:ml-3">
-                (Leave empty to send immediately)
-              </span>
-              <button
-                type="button"
-                onClick={() => {
-                  onScheduledAtChange?.(null);
-                  setShowScheduleOptions(false);
-                }}
-                className="ml-2 shrink-0 text-gray-400 hover:text-red-400"
-              >
-                <X className="h-3.5 w-3.5" />
-              </button>
+              <div className="min-w-0 flex-1">
+                <ScheduleDateTimePicker
+                  value={scheduledAt}
+                  onChange={(val) => onScheduledAtChange?.(val)}
+                  onClose={() => setShowScheduleOptions(false)}
+                />
+              </div>
             </div>
           </motion.div>
         )}

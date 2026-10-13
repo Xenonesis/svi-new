@@ -25,6 +25,7 @@ import { EMAIL_TEMPLATES } from '../constants';
 import type { Campaign, Contact } from '../types';
 import { ContactPicker } from '../compose/ContactPicker';
 import { AIComposePopover } from '../compose/AIComposePopover';
+import { ScheduleDateTimePicker } from '../compose/ScheduleDateTimePicker';
 interface CampaignFormModalProps {
   open: boolean;
   editingCampaign: Campaign | null;
@@ -568,32 +569,27 @@ export function CampaignFormModal({
               </div>
 
               {/* Scheduling */}
-              <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="space-y-4 rounded-xl border border-gray-200/80 bg-gray-50/50 p-4 dark:border-gray-700/60 dark:bg-gray-800/30">
                 <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                  <label className="mb-1 flex items-center gap-1.5 font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
                     <Calendar className="text-brand-gold h-3 w-3" /> Schedule (IST)
                   </label>
-                  <input
-                    type="datetime-local"
+                  <ScheduleDateTimePicker
                     value={scheduledAtInput}
-                    onChange={(e) => setScheduledAtInput(e.target.value)}
-                    className="focus-gold w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-800/50"
+                    onChange={(val) => setScheduledAtInput(val || '')}
+                    helperText="Blank = save as draft (pick DD/MM/YYYY & time to schedule)"
                   />
-                  <p className="mt-1 font-mono text-[10px] text-gray-400">Blank = save as draft</p>
                 </div>
-                <div>
-                  <label className="mb-1.5 flex items-center gap-1.5 font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                    <Clock className="text-brand-gold h-3 w-3" /> Reminder (IST)
+                <div className="border-t border-gray-200/60 pt-3 dark:border-gray-700/50">
+                  <label className="mb-1 flex items-center gap-1.5 font-mono text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                    <Clock className="text-brand-gold h-3 w-3" /> Reminder (IST) — Optional
                   </label>
-                  <input
-                    type="datetime-local"
+                  <ScheduleDateTimePicker
                     value={reminderAtInput}
-                    onChange={(e) => setReminderAtInput(e.target.value)}
-                    className="focus-gold w-full rounded-xl border border-gray-200 bg-gray-50/80 px-4 py-2.5 text-sm dark:border-gray-700 dark:bg-gray-800/50"
+                    onChange={(val) => setReminderAtInput(val || '')}
+                    compact
+                    helperText="Optional auto follow-up reminder"
                   />
-                  <p className="mt-1 font-mono text-[10px] text-gray-400">
-                    Optional auto follow-up
-                  </p>
                 </div>
               </div>
 
