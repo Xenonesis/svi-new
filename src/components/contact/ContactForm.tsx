@@ -74,6 +74,9 @@ export default function ContactForm() {
       try {
         const fd = new FormData();
         Object.entries(formData).forEach(([key, value]) => fd.append(key, value));
+        const honeypotVal =
+          (e.currentTarget.elements.namedItem('website') as HTMLInputElement)?.value || '';
+        if (honeypotVal) fd.append('website', honeypotVal);
         const result = await submitContactForm(fd);
         if (!result.success) {
           setSubmitError(result.error || t('validation.submitFailed'));
@@ -118,7 +121,15 @@ export default function ContactForm() {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5" noValidate>
-          {/* Row 1: Name + Email */}
+          {/* Honeypot field for bot protection (invisible to genuine users) */}
+          <input
+            type="text"
+            name="website"
+            tabIndex={-1}
+            autoComplete="off"
+            className="hidden"
+            aria-hidden="true"
+          />
           <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
             <div>
               <label

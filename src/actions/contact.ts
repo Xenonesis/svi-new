@@ -1,6 +1,8 @@
 'use server';
 
+import { headers } from 'next/headers';
 import { contactSchema } from '@/src/lib/api/schemas';
+import { checkRateLimit } from '@/src/lib/api/rateLimit';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { escapeHtml } from '@/src/lib/utils/escape';
@@ -12,6 +14,32 @@ interface ActionResult {
 }
 
 export async function submitContactForm(formData: FormData): Promise<ActionResult> {
+  // 1. Honeypot check: Bots auto-fill hidden input fields
+  const honeypot = formData.get('website');
+  if (typeof honeypot === 'string' && honeypot.trim().length > 0) {
+    // Return fake success to drop bot spam without DB or email cost
+    return { success: true };
+  }
+
+  // 2. Distributed rate limiting: max 5 submissions per 60s per IP
+  try {
+    const headersList = await headers();
+    const clientIp =
+      headersList.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+      headersList.get('x-real-ip') ||
+      'unknown';
+
+    const { allowed, retryAfter } = await checkRateLimit(`contact-action:${clientIp}`, 5, 60);
+    if (!allowed) {
+      return {
+        success: false,
+        error: `Too many submissions. Please wait ${retryAfter} seconds before trying again.`,
+      };
+    }
+  } catch (rateLimitErr) {
+    console.error('Server Action rate limit check error:', rateLimitErr);
+  }
+
   const data = {
     name: formData.get('name'),
     email: formData.get('email'),

@@ -34,6 +34,37 @@ function getClientIp(req: NextRequest): string {
  *     // ... handle request
  *   }
  */
+/**
+ * Universal distributed rate limiter check backed by `increment_rate_limit` RPC.
+ * Usable across NextRequest route handlers and Server Actions alike.
+ */
+export async function checkRateLimit(
+  key: string,
+  limit: number,
+  windowSeconds: number
+): Promise<{ allowed: boolean; retryAfter: number }> {
+  try {
+    const { data, error } = await supabaseAdmin.rpc('increment_rate_limit', {
+      p_key: key.slice(0, 200),
+      p_window_seconds: windowSeconds,
+      p_max_count: limit,
+    });
+    if (error) throw error;
+
+    const result = data as { allowed: boolean; retry_after: number } | null;
+    return {
+      allowed: result ? result.allowed : true,
+      retryAfter: Math.max(1, result?.retry_after || windowSeconds),
+    };
+  } catch (err) {
+    console.error(
+      '[checkRateLimit] Supabase check failed, failing open for availability:',
+      err instanceof Error ? err.message : err
+    );
+    return { allowed: true, retryAfter: 0 };
+  }
+}
+
 export async function rateLimit(
   req: NextRequest,
   options: RateLimitOptions
@@ -41,33 +72,17 @@ export async function rateLimit(
   const { limit, windowSeconds, keyFn = getClientIp } = options;
   const key = `${keyFn(req)}:${req.nextUrl.pathname}`.slice(0, 200);
 
-  try {
-    const { data, error } = await supabaseAdmin.rpc('increment_rate_limit', {
-      p_key: key,
-      p_window_seconds: windowSeconds,
-      p_max_count: limit,
-    });
-    if (error) throw error;
+  const { allowed, retryAfter } = await checkRateLimit(key, limit, windowSeconds);
+  if (allowed) return null;
 
-    const result = data as { allowed: boolean; retry_after: number } | null;
-    if (!result || result.allowed) return null;
-
-    const retryAfter = Math.max(1, result.retry_after || windowSeconds);
-    return NextResponse.json(
-      {
-        error: 'Too many requests. Please try again later.',
-        retryAfter,
-      },
-      {
-        status: 429,
-        headers: { 'Retry-After': String(retryAfter) },
-      }
-    );
-  } catch (err) {
-    console.error(
-      '[rateLimit] Supabase check failed, allowing request:',
-      err instanceof Error ? err.message : err
-    );
-    return null;
-  }
+  return NextResponse.json(
+    {
+      error: 'Too many requests. Please try again later.',
+      retryAfter,
+    },
+    {
+      status: 429,
+      headers: { 'Retry-After': String(retryAfter) },
+    }
+  );
 }
