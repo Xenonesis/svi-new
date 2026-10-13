@@ -1,5 +1,5 @@
 import { Metadata } from 'next';
-import { Cormorant_Garamond, Manrope, Inter, Montserrat } from 'next/font/google';
+import { Cormorant_Garamond, Manrope, Inter } from 'next/font/google';
 import BrochureGenerator from '@/src/components/brochure/BrochureGenerator';
 import { buildAlternates } from '@/src/lib/seo';
 import {
@@ -38,17 +38,11 @@ const inter = Inter({
   variable: '--font-inter',
   display: 'swap',
 });
-const montserrat = Montserrat({
-  subsets: ['latin'],
-  weight: ['600', '700', '800'],
-  variable: '--font-montserrat',
-  display: 'swap',
-});
 
 export default function ShivaniVatika11Brochure() {
   return (
     <div
-      className={`min-h-screen w-full overflow-x-hidden bg-[#F8F6F0] text-[#111111] ${cormorant.variable} ${manrope.variable} ${inter.variable} ${montserrat.variable} font-sans`}
+      className={`min-h-screen w-full overflow-x-hidden bg-[#F8F6F0] text-[#111111] ${cormorant.variable} ${manrope.variable} ${inter.variable} font-sans`}
     >
       <style
         dangerouslySetInnerHTML={{
@@ -64,7 +58,7 @@ export default function ShivaniVatika11Brochure() {
         .font-heading { font-family: var(--font-cormorant), serif; }
         .font-subheading { font-family: var(--font-manrope), sans-serif; }
         .font-body { font-family: var(--font-inter), sans-serif; }
-        .font-stats { font-family: var(--font-montserrat), sans-serif; }
+        .font-stats { font-family: var(--font-manrope), var(--font-sans), sans-serif; font-feature-settings: "tnum"; font-weight: 700; }
         
         .gold-divider {
           height: 1px;

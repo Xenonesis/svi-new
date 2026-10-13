@@ -8,7 +8,7 @@
     }
   ],
   "framework": "nextjs",
-  "buildCommand": "next build",
+  "buildCommand": "pnpm run build",
   "outputDirectory": ".next",
   "installCommand": "pnpm install",
   "devCommand": "next dev --port 3000",
