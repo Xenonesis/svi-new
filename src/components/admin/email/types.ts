@@ -26,6 +26,8 @@ export interface SentEmail {
   is_read?: boolean;
   is_archived?: boolean;
   tags?: string[];
+  is_scheduled?: boolean;
+  scheduled_at?: string;
 }
 
 export interface InboxEmailItem {

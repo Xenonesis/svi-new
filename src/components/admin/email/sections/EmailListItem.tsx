@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
-import { Star, MoreVertical, Check, RotateCw } from 'lucide-react';
+import { Star, MoreVertical, Check, RotateCw, Clock } from 'lucide-react';
 import { formatTime } from '../helpers';
 import { getInitials, getAvatarColor, StatusDot, getStatusLabel, itemVariants } from './constants';
 import type { SentEmail } from '../types';
@@ -50,8 +50,10 @@ export function EmailListItem({
 
   const firstTo = email.to?.[0] || '';
   const initials = getInitials(firstTo);
-  const avatarColor = getAvatarColor(firstTo);
-
+  const isScheduled = Boolean(email.is_scheduled || email.last_event === 'scheduled');
+  const avatarColor = isScheduled
+    ? 'bg-amber-100 text-amber-800 ring-1 ring-amber-300/70 dark:bg-amber-500/20 dark:text-amber-300 dark:ring-amber-500/30'
+    : getAvatarColor(firstTo);
   /* ─── Row click handler: select email for detail view ─── */
   const handleRowClick = () => {
     onSelect(email.id);
@@ -86,13 +88,17 @@ export function EmailListItem({
           }}
           className={`flex w-full cursor-pointer touch-manipulation items-start gap-2.5 px-5 py-4 text-left transition-all active:scale-[0.99] active:bg-gray-100 dark:active:bg-white/[0.03] ${
             isSelected
-              ? 'bg-brand-gold/[0.06] dark:bg-brand-gold/[0.04]'
-              : 'hover:bg-gray-50/80 dark:hover:bg-white/[0.015]'
+              ? 'bg-brand-gold/[0.08] dark:bg-brand-gold/[0.06]'
+              : isScheduled
+                ? 'bg-amber-50/55 hover:bg-amber-50/90 dark:bg-amber-500/[0.045] dark:hover:bg-amber-500/[0.08]'
+                : 'hover:bg-gray-50/80 dark:hover:bg-white/[0.015]'
           }`}
         >
-          {isSelected && (
+          {isSelected ? (
             <div className="bg-brand-gold absolute top-0 bottom-0 left-0 w-[3px] rounded-r-full" />
-          )}
+          ) : isScheduled ? (
+            <div className="absolute top-0 bottom-0 left-0 w-[3px] rounded-r-full bg-amber-400 dark:bg-amber-500" />
+          ) : null}
 
           {/* Checkbox for multi-select */}
           <div
@@ -124,12 +130,19 @@ export function EmailListItem({
               <p className="truncate text-sm font-semibold text-gray-900 dark:text-white">
                 {email.subject || '(no subject)'}
               </p>
+              {isScheduled && (
+                <span className="inline-flex shrink-0 items-center gap-1 rounded-full border border-amber-300/80 bg-amber-100/90 px-2 py-0.5 text-[10px] font-bold tracking-wide text-amber-800 uppercase dark:border-amber-500/40 dark:bg-amber-500/15 dark:text-amber-300">
+                  <Clock className="h-2.5 w-2.5" />
+                  Scheduled
+                </span>
+              )}
               {isStarred && <Star className="h-3.5 w-3.5 shrink-0 fill-amber-400 text-amber-400" />}
             </div>
 
             {/* Recipients */}
-            <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-500">
+            <p className="mt-0.5 truncate text-xs text-gray-500 dark:text-gray-400">
               {email.to && email.to.length > 0 ? `To: ${email.to.join(', ')}` : '(no recipients)'}
+              {email.cc && email.cc.length > 0 ? ` • CC: ${email.cc.join(', ')}` : ''}
             </p>
 
             {/* Meta info */}
@@ -137,8 +150,13 @@ export function EmailListItem({
               <span className="font-mono text-[10px] text-gray-400">
                 {formatTime(email.created_at)}
               </span>
-              <span className="text-[10px] font-medium text-gray-400 capitalize">
+              <span
+                className={`text-[10px] font-medium capitalize ${
+                  isScheduled ? 'font-semibold text-amber-600 dark:text-amber-400' : 'text-gray-400'
+                }`}
+              >
                 {getStatusLabel(email.last_event)}
+                {isScheduled ? ' • Scheduled Mail' : ''}
               </span>
 
               {(email.last_event === 'bounced' || email.last_event === 'failed') && onRetry && (

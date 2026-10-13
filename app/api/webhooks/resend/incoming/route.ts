@@ -211,6 +211,22 @@ async function handleLifecycleEvent(payload: any) {
   if (msgError) {
     console.error('[WEBHOOK] Failed to upsert email_messages:', msgError);
   }
+  // Also sync scheduled_emails if this email originated from a schedule
+  try {
+    const isSuccess = ['sent', 'delivered', 'opened', 'clicked'].includes(eventType);
+    const isFailed = eventType === 'bounced';
+    if (isSuccess || isFailed) {
+      await supabaseAdmin
+        .from('scheduled_emails')
+        .update({
+          status: isSuccess ? 'sent' : 'failed',
+          ...(isSuccess ? { sent_at: occurredAt } : {}),
+        })
+        .filter('metadata->>resend_id', 'eq', emailId);
+    }
+  } catch (schedSyncErr) {
+    console.error('[WEBHOOK] Failed to update scheduled_emails status:', schedSyncErr);
+  }
 
   // ── 3. Suppression side-effects ─────────────────────────────────────────
   if (recipients.length > 0) {

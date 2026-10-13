@@ -201,6 +201,47 @@ export async function GET(request: NextRequest) {
         return NextResponse.json({ error: error.message }, { status: 400 });
       }
 
+      // Auto-reconcile pending emails that were already sent/delivered by Resend or are due
+      if (data && data.length > 0) {
+        const apiKey = process.env.RESEND_API_KEY;
+        if (apiKey) {
+          const resend = new Resend(apiKey);
+          const nowIso = new Date().toISOString();
+
+          await Promise.allSettled(
+            data.map(async (row) => {
+              if (row.status === 'pending' && row.metadata?.resend_id) {
+                try {
+                  const check = await resend.emails.get(row.metadata.resend_id);
+                  const lastEvent = (check.data as { last_event?: string } | null)?.last_event;
+                  if (
+                    lastEvent === 'delivered' ||
+                    lastEvent === 'sent' ||
+                    lastEvent === 'opened' ||
+                    lastEvent === 'clicked'
+                  ) {
+                    row.status = 'sent';
+                    row.sent_at = nowIso;
+                    await supabaseAdmin
+                      .from('scheduled_emails')
+                      .update({ status: 'sent', sent_at: nowIso })
+                      .eq('id', row.id);
+                  } else if (lastEvent === 'bounced') {
+                    row.status = 'failed';
+                    await supabaseAdmin
+                      .from('scheduled_emails')
+                      .update({ status: 'failed' })
+                      .eq('id', row.id);
+                  }
+                } catch (e) {
+                  console.error('[SCHEDULED_SYNC] Failed to reconcile email:', row.id, e);
+                }
+              }
+            })
+          );
+        }
+      }
+
       return NextResponse.json({ success: true, emails: data });
     }
 
@@ -676,21 +717,92 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    // Filter out deleted emails and map to include last_event
-    const filteredEmails = emailRows
-      .filter((e: any) => !deletedIds.has(e.id) && !deletedIds.has(e.resend_id))
-      .map((e: any) => ({
-        id: e.resend_id || e.id,
-        object: 'email',
-        created_at: e.created_at || e.sent_at,
-        subject: e.subject || '(no subject)',
-        from: e.from_email || e.from,
-        to: e.to_emails || (Array.isArray(e.to) ? e.to : [e.to]),
-        cc: e.metadata?.cc || e.cc || undefined,
-        last_event: e.last_event || e.status || 'delivered',
-        attachments: e.metadata?.attachments || e.attachments || undefined,
-      }));
+    // Cross-reference with scheduled_emails so Sent tab can visually distinguish scheduled emails
+    interface ScheduledLookupInfo {
+      scheduledAt: string;
+      toEmails: string[] | null;
+      ccEmails: string[] | null;
+    }
+    const scheduledResendMap = new Map<string, ScheduledLookupInfo>();
+    try {
+      const { data: schedRows } = await supabaseAdmin
+        .from('scheduled_emails')
+        .select('id, scheduled_at, to_emails, cc_emails, metadata');
+      if (schedRows) {
+        for (const sr of schedRows) {
+          const info: ScheduledLookupInfo = {
+            scheduledAt: sr.scheduled_at,
+            toEmails: sr.to_emails || null,
+            ccEmails: sr.cc_emails || null,
+          };
+          const rid = (sr.metadata as { resend_id?: string } | null)?.resend_id;
+          if (rid) scheduledResendMap.set(rid, info);
+          if (sr.id) scheduledResendMap.set(sr.id, info);
+        }
+      }
+    } catch {
+      // Non-fatal
+    }
 
+    interface SentArchiveRow {
+      id: string;
+      resend_id?: string | null;
+      created_at?: string | null;
+      sent_at?: string | null;
+      subject?: string | null;
+      from_email?: string | null;
+      from?: string | null;
+      to_emails?: string[] | null;
+      to?: string | string[] | null;
+      cc?: string[] | null;
+      last_event?: string | null;
+      status?: string | null;
+      attachments?: unknown[];
+      metadata?: {
+        cc?: string[];
+        attachments?: unknown[];
+        scheduled_at?: string;
+        source?: string;
+      } | null;
+    }
+
+    const typedEmailRows = emailRows as SentArchiveRow[];
+
+    // Filter out deleted emails and map to include last_event & scheduled indicator
+    const filteredEmails = typedEmailRows
+      .filter((e) => !deletedIds.has(e.id) && !(e.resend_id && deletedIds.has(e.resend_id)))
+      .map((e) => {
+        const emailKey = e.resend_id || e.id;
+        const schedInfo = scheduledResendMap.get(emailKey) || scheduledResendMap.get(e.id);
+        const scheduledAtFromMap = schedInfo?.scheduledAt || e.metadata?.scheduled_at || undefined;
+        const isScheduledOrigin = Boolean(
+          scheduledAtFromMap || e.metadata?.source === 'scheduled_emails'
+        );
+
+        const resolvedTo =
+          schedInfo?.toEmails && schedInfo.toEmails.length > 0
+            ? schedInfo.toEmails
+            : e.to_emails || (Array.isArray(e.to) ? e.to : e.to ? [e.to] : []);
+
+        const resolvedCc =
+          schedInfo?.ccEmails && schedInfo.ccEmails.length > 0
+            ? schedInfo.ccEmails
+            : e.metadata?.cc || e.cc || undefined;
+
+        return {
+          id: emailKey,
+          object: 'email',
+          created_at: e.created_at || e.sent_at,
+          subject: e.subject || '(no subject)',
+          from: e.from_email || e.from,
+          to: resolvedTo,
+          cc: resolvedCc,
+          last_event: e.last_event || e.status || 'delivered',
+          attachments: e.metadata?.attachments || e.attachments || undefined,
+          is_scheduled: isScheduledOrigin,
+          scheduled_at: scheduledAtFromMap,
+        };
+      });
     return NextResponse.json({
       emails: filteredEmails,
       hasMore,
