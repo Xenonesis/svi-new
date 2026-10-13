@@ -159,7 +159,11 @@ export function RecipientInput({
           onPaste={handlePaste}
           placeholder={recipients.length === 0 ? placeholder : ''}
           disabled={disabled}
-          className="min-w-[120px] flex-1 bg-transparent py-0.5 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="off"
+          spellCheck={false}
+          className="min-w-[140px] flex-1 bg-transparent py-0.5 text-sm font-medium text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none dark:text-gray-100"
         />
         {onOpenContactPicker && (
           <button

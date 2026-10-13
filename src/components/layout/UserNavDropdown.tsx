@@ -32,7 +32,7 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
   const roleConfig = {
     admin: {
       badge: t('roleAdmin'),
-      badgeClass: 'bg-amber-400/15 text-amber-600 dark:text-amber-400 border-amber-400/30',
+      badgeClass: 'bg-amber-400/10 text-amber-500 dark:text-amber-400 border-amber-400/25',
       dashboardPath: '/admin/dashboard',
       dashboardLabel: t('adminPanel'),
       settingsPath: '/admin/settings',
@@ -41,7 +41,7 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
     },
     employee: {
       badge: t('roleEmployee'),
-      badgeClass: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-indigo-500/30',
+      badgeClass: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/25',
       dashboardPath: '/employee/dashboard',
       dashboardLabel: t('staffPortal'),
       settingsPath: '/employee/profile',
@@ -50,7 +50,7 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
     },
     client: {
       badge: t('roleClient'),
-      badgeClass: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-emerald-500/30',
+      badgeClass: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/25',
       dashboardPath: '/portal',
       dashboardLabel: t('myAccount'),
       settingsPath: '/portal/settings',
@@ -120,30 +120,30 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
         aria-expanded={isOpen}
         aria-haspopup="menu"
         aria-label="User navigation menu"
-        className={`group relative flex items-center gap-2 rounded-full py-1 pr-3 pl-1 transition-all duration-200 outline-none select-none focus-visible:ring-2 focus-visible:ring-amber-400 ${
+        className={`group relative flex items-center gap-2 rounded-full py-1 pr-2.5 pl-1.5 transition-all duration-200 outline-none select-none focus-visible:ring-2 focus-visible:ring-amber-400 sm:pr-3 ${
           isOpen
             ? isHomeTransparent
-              ? 'bg-white/20 ring-2 ring-white/30'
-              : 'bg-slate-100 ring-2 ring-amber-400/30 dark:bg-white/10 dark:ring-amber-400/25'
+              ? 'bg-white/20 ring-2 ring-white/30 backdrop-blur-md'
+              : 'bg-slate-100 shadow-sm ring-2 ring-amber-400/30 dark:bg-white/10 dark:ring-amber-400/25'
             : isHomeTransparent
-              ? 'border border-white/20 bg-white/10 hover:bg-white/15'
-              : 'border border-slate-200/90 bg-white/80 shadow-sm hover:bg-slate-50 hover:shadow dark:border-white/10 dark:bg-white/5 dark:hover:bg-white/10'
+              ? 'border border-white/20 bg-black/30 shadow-sm backdrop-blur-md hover:bg-black/45'
+              : 'border border-slate-200/90 bg-white/90 shadow-xs hover:border-slate-300 hover:bg-white hover:shadow-sm dark:border-white/10 dark:bg-white/5 dark:hover:border-white/20 dark:hover:bg-white/10'
         }`}
       >
         {/* Avatar Initials + Presence Indicator */}
-        <div className="ring-1.5 relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-800 text-[11px] font-extrabold tracking-tight text-amber-400 shadow-sm ring-amber-400/40 transition-transform duration-200 group-hover:scale-105 dark:from-slate-900 dark:to-slate-800">
+        <div className="relative flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-950 via-slate-900 to-slate-800 text-[11px] font-extrabold tracking-tight text-amber-400 shadow-sm ring-1 ring-amber-400/35 transition-transform duration-200 group-hover:scale-105 dark:from-slate-900 dark:to-slate-800">
           {initials}
-          <span className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900" />
+          <span className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-[1.5px] border-white bg-emerald-500 ring-1 ring-black/10 dark:border-slate-900" />
         </div>
 
         {/* Identity & Role Badge */}
         <div className="flex items-center gap-1.5 text-left">
           <span
-            className={`max-w-[110px] truncate text-[12px] font-bold tracking-tight whitespace-nowrap 2xl:max-w-[130px] ${
+            className={`max-w-[110px] truncate text-[12px] font-bold tracking-tight whitespace-nowrap 2xl:max-w-[140px] ${
               isHomeTransparent ? 'text-white' : 'text-slate-800 dark:text-slate-100'
             }`}
           >
-            {roleConfig.dashboardLabel}
+            {displayName}
           </span>
           <span
             className={`hidden items-center rounded-full border px-1.5 py-0.5 text-[9px] font-black tracking-wider uppercase sm:inline-flex ${roleConfig.badgeClass}`}
@@ -179,9 +179,9 @@ export function UserNavDropdown({ isHomeTransparent }: UserNavDropdownProps) {
             {/* User Details Header */}
             <div className="border-b border-slate-100 px-3.5 py-3 dark:border-white/10">
               <div className="flex items-center gap-3">
-                <div className="ring-1.5 relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-950 to-slate-800 text-[12px] font-extrabold text-amber-400 shadow-sm ring-amber-400/40 dark:from-slate-900 dark:to-slate-800">
+                <div className="relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-950 to-slate-800 text-[12px] font-extrabold text-amber-400 shadow-sm ring-1 ring-amber-400/35 dark:from-slate-900 dark:to-slate-800">
                   {initials}
-                  <span className="absolute -right-0.5 -bottom-0.5 h-2.5 w-2.5 rounded-full border-2 border-white bg-emerald-500 dark:border-slate-900" />
+                  <span className="absolute right-0 bottom-0 h-2.5 w-2.5 rounded-full border-[1.5px] border-white bg-emerald-500 ring-1 ring-black/10 dark:border-slate-900" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-1.5">

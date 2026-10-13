@@ -119,7 +119,7 @@ export function ComposeFields({
                 value={to}
                 onChange={(e) => onToChange(e.target.value)}
                 placeholder="recipient@example.com"
-                className="w-full bg-transparent py-3.5 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                className="w-full bg-transparent py-3.5 text-sm font-medium text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none dark:text-gray-100"
               />
             )}
           </div>
@@ -193,7 +193,7 @@ export function ComposeFields({
                     value={cc}
                     onChange={(e) => onCcChange(e.target.value)}
                     placeholder="cc@example.com"
-                    className="w-full bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                    className="w-full bg-transparent py-3 text-sm font-medium text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none dark:text-gray-100"
                   />
                 )}
               </div>
@@ -243,7 +243,7 @@ export function ComposeFields({
                     value={bcc}
                     onChange={(e) => onBccChange(e.target.value)}
                     placeholder="bcc@example.com"
-                    className="w-full bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                    className="w-full bg-transparent py-3 text-sm font-medium text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none dark:text-gray-100"
                   />
                 )}
               </div>
@@ -284,7 +284,7 @@ export function ComposeFields({
                 value={fromName}
                 onChange={(e) => onFromNameChange(e.target.value)}
                 placeholder="Sender Name"
-                className="w-full bg-transparent py-1 text-sm text-gray-900 placeholder-gray-400/60 outline-none sm:w-40 sm:py-3 dark:text-white"
+                className="w-full bg-transparent py-1 text-sm font-medium text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none sm:w-40 sm:py-3 dark:text-gray-100"
               />
               <span className="mt-1 flex-1 truncate pr-2 font-mono text-xs text-gray-400/70 sm:mt-0">
                 {'<noreply@sviiinfrasolutions.com>'}
@@ -311,7 +311,7 @@ export function ComposeFields({
                 value={replyTo}
                 onChange={(e) => onReplyToChange(e.target.value)}
                 placeholder={adminEmail || 'reply@example.com'}
-                className="min-w-0 flex-1 bg-transparent py-3 text-sm text-gray-900 placeholder-gray-400/60 outline-none dark:text-white"
+                className="min-w-0 flex-1 bg-transparent py-3 text-sm font-medium text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none dark:text-gray-100"
               />
             </div>
           </motion.div>
@@ -336,7 +336,7 @@ export function ComposeFields({
                 type="datetime-local"
                 value={scheduledAt || ''}
                 onChange={(e) => onScheduledAtChange?.(e.target.value || null)}
-                className="mt-1 w-full bg-transparent py-1 text-sm text-gray-900 outline-none sm:mt-0 sm:w-auto sm:py-3 dark:text-white"
+                className="mt-1 w-full bg-transparent py-1 text-sm font-medium text-gray-900 [color-scheme:light] outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none sm:mt-0 sm:w-auto sm:py-3 dark:text-gray-100 dark:[color-scheme:dark]"
               />
               <span className="mt-1 ml-0 flex-1 text-xs text-gray-400/70 sm:mt-0 sm:ml-3">
                 (Leave empty to send immediately)
@@ -366,7 +366,7 @@ export function ComposeFields({
           value={subject}
           onChange={(e) => onSubjectChange(e.target.value)}
           placeholder="Email subject..."
-          className="min-w-0 flex-1 bg-transparent py-2.5 text-sm font-semibold text-gray-900 placeholder-gray-400/60 outline-none sm:py-3.5 dark:text-white"
+          className="min-w-0 flex-1 bg-transparent py-2.5 text-sm font-semibold text-gray-900 placeholder-gray-400/60 outline-none focus:outline-none focus-visible:shadow-none focus-visible:ring-0 focus-visible:outline-none sm:py-3.5 dark:text-gray-100"
         />
       </div>
     </div>
