@@ -18,7 +18,7 @@ interface BulkEmailModalProps {
 
 const EMAIL_TEMPLATES: Record<string, { subject: string; body: string }> = {
   announcement: {
-    subject: '🎉 Upcoming Lucky Draw — {TITLE}',
+    subject: 'Upcoming Lucky Draw — {TITLE}',
     body: `Dear Participant,
 
 We are excited to inform you about the upcoming draw for "{TITLE}".
@@ -28,7 +28,7 @@ Stay tuned for the live announcement. Best of luck!
 — SVI Infra Solutions Team`,
   },
   reminder: {
-    subject: '⏰ Reminder: {TITLE} Draw Tomorrow!',
+    subject: 'Reminder: {TITLE} Draw Tomorrow',
     body: `Dear Participant,
 
 This is a friendly reminder that the lucky draw for "{TITLE}" is coming up soon!

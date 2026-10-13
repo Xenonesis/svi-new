@@ -639,8 +639,9 @@ export function CampaignFormModal({
                         <div className="dark:bg-brand-dark-surface absolute top-full right-0 z-50 mt-1 w-64 overflow-hidden rounded-xl border border-gray-200 bg-white shadow-xl dark:border-gray-700">
                           <div className="scrollbar-gold max-h-60 overflow-y-auto">
                             {customTemplates.length > 0 && (
-                              <div className="border-b border-gray-100 bg-amber-50/50 px-3 py-1.5 font-mono text-[9px] font-bold text-amber-700 uppercase dark:border-gray-800 dark:bg-amber-500/10 dark:text-amber-400">
-                                ✨ Custom AI Templates
+                              <div className="flex items-center gap-1.5 border-b border-gray-100 bg-amber-50/50 px-3 py-1.5 font-mono text-[9px] font-bold text-amber-700 uppercase dark:border-gray-800 dark:bg-amber-500/10 dark:text-amber-400">
+                                <Sparkles className="h-2.5 w-2.5" />
+                                Custom AI Templates
                               </div>
                             )}
                             {customTemplates.map((tpl) => (

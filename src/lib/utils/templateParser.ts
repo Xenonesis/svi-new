@@ -527,7 +527,7 @@ export function buildLuxuryEmailHtml(type: EmailTemplateType, vars: LuxuryEmailV
           'Official Property Allotment Acknowledgment'
         ),
         bodyInnerHtml: `
-          ${alertBox('success', '🎉 Booking Confirmed!', 'Your property booking with SVI Infra Solutions has been confirmed successfully.')}
+          ${alertBox('success', 'Booking Confirmed', 'Your property booking with SVI Infra Solutions has been confirmed successfully.')}
           <h2 style="color:#0f172a;font-size:18px;margin:0 0 14px;font-weight:700;font-family:Georgia,serif;">Dear ${name},</h2>
           <p style="color:#334155;font-size:14px;line-height:1.7;margin:0 0 20px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;">We are delighted to confirm your booking with SVI Infra Solutions. Your investment journey begins today. Here are your booking details:</p>
           ${rows.length > 0 ? detailTable(rows) : ''}
