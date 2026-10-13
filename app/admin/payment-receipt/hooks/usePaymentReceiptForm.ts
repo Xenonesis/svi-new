@@ -39,7 +39,7 @@ export interface CompanyInfoLike {
 }
 
 export const getInitialFormData = (): PaymentReceiptFormData => ({
-  receiptNo: '',
+  receiptNo: getNextReceiptNumber([]),
   date: new Date().toISOString().split('T')[0],
   salutation: 'Mr.',
   name: '',

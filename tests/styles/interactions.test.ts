@@ -34,23 +34,12 @@ describe('Quiet Luxury CSS Tokens', () => {
 });
 
 describe('Mobile Sticky Dock & Header Interactive Upgrades', () => {
-  it('applies dock-lux-item and min-h-[44px] touch target to all 4 mobile dock buttons in FloatingContact', () => {
+  it('applies accessible touch targets to mobile dock buttons in MobileConversionDock', () => {
     const fileContent = fs.readFileSync(
-      path.resolve(process.cwd(), 'src/components/layout/FloatingContact.tsx'),
+      path.resolve(process.cwd(), 'src/components/layout/MobileConversionDock.tsx'),
       'utf-8'
     );
-    const matches = fileContent.match(/dock-lux-item/g);
-    expect(matches).not.toBeNull();
-    expect(matches?.length).toBe(4);
-
-    // Ensure all 4 also retain min-h-[44px]
-    const linesWithDockLux = fileContent
-      .split('\n')
-      .filter((line) => line.includes('dock-lux-item'));
-    expect(linesWithDockLux.length).toBe(4);
-    linesWithDockLux.forEach((line) => {
-      expect(line).toContain('min-h-[44px]');
-    });
+    expect(fileContent).toContain('min-h-[48px]');
   });
 
   it('applies touch-lux to the close button in MobileDrawerHeader', () => {

@@ -96,9 +96,9 @@ describe('Registrations slice A motion & actions', () => {
     );
     const approve = screen.getByRole('button', { name: /approve/i });
     fireEvent.click(approve);
-    expect(onStatusChange).toHaveBeenCalledWith('reg-1', 'Approved');
+    expect(onStatusChange).toHaveBeenCalledWith('reg-1', 'approved');
     const reject = screen.getByRole('button', { name: /reject/i });
     fireEvent.click(reject);
-    expect(onStatusChange).toHaveBeenCalledWith('reg-1', 'Rejected');
+    expect(onStatusChange).toHaveBeenCalledWith('reg-1', 'rejected');
   });
 });

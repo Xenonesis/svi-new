@@ -61,9 +61,9 @@ describe('ShivaniVatika11MasterPlan', () => {
 
     // KPI Metrics
     expect(screen.getByText(/total units/i)).toBeInTheDocument();
-    expect(screen.getByText(/available/i)).toBeInTheDocument();
-    expect(screen.getByText(/booked/i)).toBeInTheDocument();
-    expect(screen.getByText(/reserved/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/available/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/booked/i)[0]).toBeInTheDocument();
+    expect(screen.getAllByText(/reserved/i)[0]).toBeInTheDocument();
   });
 
   it('renders Hindi labels when isHindi is true', () => {

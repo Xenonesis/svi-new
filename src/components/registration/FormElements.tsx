@@ -284,8 +284,15 @@ export function FormRelationInput({
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const nextName = e.target.value;
-    setRelativeName(nextName);
-    emitChange(prefix, nextName);
+    const parsed = splitRelationValue(nextName);
+    if (parsed.name && nextName.includes('/')) {
+      setPrefix(parsed.prefix);
+      setRelativeName(parsed.name);
+      emitChange(parsed.prefix, parsed.name);
+    } else {
+      setRelativeName(nextName);
+      emitChange(prefix, nextName);
+    }
   };
 
   const errorId = `${name}-error`;
@@ -293,8 +300,7 @@ export function FormRelationInput({
   return (
     <div className="space-y-2">
       <div className="flex items-center justify-between">
-        <label htmlFor={`${name}-input`} className={LABEL_CLASS}>
-          {label}
+        <label htmlFor={name} className={LABEL_CLASS}>
           {required && ' *'}
         </label>
       </div>
@@ -328,7 +334,8 @@ export function FormRelationInput({
           ))}
         </select>
         <input
-          id={`${name}-input`}
+          id={name}
+          name={name}
           type="text"
           value={relativeName}
           placeholder={placeholder}
