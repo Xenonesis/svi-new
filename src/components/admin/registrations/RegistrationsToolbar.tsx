@@ -10,6 +10,9 @@ import {
   RefreshCw,
   Users,
   SortDesc,
+  FileSpreadsheet,
+  FileText,
+  CheckSquare,
 } from 'lucide-react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { SORT_OPTIONS } from './types';
@@ -27,6 +30,11 @@ interface RegistrationsToolbarProps {
   onSortOrderToggle: () => void;
   onFilterToggle: () => void;
   onExport: () => void;
+  onExportExcel?: () => void;
+  onExportSelectedCsv?: () => void;
+  onExportSelectedExcel?: () => void;
+  selectedCount?: number;
+  onClearSelection?: () => void;
   onRefresh: () => void;
   onManageAdvisors: () => void;
 }
@@ -44,6 +52,11 @@ export function RegistrationsToolbar({
   onSortOrderToggle,
   onFilterToggle,
   onExport,
+  onExportExcel,
+  onExportSelectedCsv,
+  onExportSelectedExcel,
+  selectedCount = 0,
+  onClearSelection,
   onRefresh,
   onManageAdvisors,
 }: RegistrationsToolbarProps) {
@@ -143,10 +156,64 @@ export function RegistrationsToolbar({
           )}
         </button>
 
+        {/* Selected Export Button (when records are selected) */}
+        {selectedCount > 0 && (
+          <DropdownMenu.Root>
+            <DropdownMenu.Trigger asChild>
+              <button className="animate-in fade-in flex cursor-pointer items-center gap-2 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 px-4 py-3 text-xs font-bold tracking-wider text-white uppercase shadow-md transition-all hover:brightness-110 focus:outline-none">
+                <CheckSquare className="h-4 w-4" />
+                <span>Export Selected ({selectedCount})</span>
+                <ArrowDown className="h-3.5 w-3.5 opacity-80" />
+              </button>
+            </DropdownMenu.Trigger>
+            <DropdownMenu.Portal>
+              <DropdownMenu.Content
+                align="end"
+                sideOffset={8}
+                className="animate-in fade-in zoom-in-95 z-50 min-w-[220px] rounded-xl border border-gray-200 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1a24]/95"
+              >
+                <DropdownMenu.Label className="px-2 py-1.5 text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+                  Export {selectedCount} Selected
+                </DropdownMenu.Label>
+                {onExportSelectedExcel && (
+                  <DropdownMenu.Item
+                    onClick={onExportSelectedExcel}
+                    className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none data-[highlighted]:bg-gray-100 dark:text-gray-300 dark:data-[highlighted]:bg-white/10 dark:data-[highlighted]:text-white"
+                  >
+                    <FileSpreadsheet className="mr-2 h-4 w-4 text-emerald-500" />
+                    Export to Excel (.xlsx)
+                  </DropdownMenu.Item>
+                )}
+                {onExportSelectedCsv && (
+                  <DropdownMenu.Item
+                    onClick={onExportSelectedCsv}
+                    className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none data-[highlighted]:bg-gray-100 dark:text-gray-300 dark:data-[highlighted]:bg-white/10 dark:data-[highlighted]:text-white"
+                  >
+                    <Download className="text-brand-gold mr-2 h-4 w-4" />
+                    Export to CSV (.csv)
+                  </DropdownMenu.Item>
+                )}
+                {onClearSelection && (
+                  <>
+                    <DropdownMenu.Separator className="my-1 h-px bg-gray-100 dark:bg-white/10" />
+                    <DropdownMenu.Item
+                      onClick={onClearSelection}
+                      className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-rose-600 outline-none select-none data-[highlighted]:bg-rose-50 dark:text-rose-400 dark:data-[highlighted]:bg-rose-500/10"
+                    >
+                      <X className="mr-2 h-4 w-4 text-rose-500" />
+                      Deselect All ({selectedCount})
+                    </DropdownMenu.Item>
+                  </>
+                )}
+              </DropdownMenu.Content>
+            </DropdownMenu.Portal>
+          </DropdownMenu.Root>
+        )}
+
         {/* Other Actions Dropdown (Export, Refresh, Manage) */}
         <DropdownMenu.Root>
           <DropdownMenu.Trigger asChild>
-            <button className="hover:text-brand-gold dark:hover:text-brand-gold flex items-center justify-center rounded-xl bg-white/80 p-3 text-gray-700 shadow-sm backdrop-blur-xl transition-colors hover:bg-white focus:outline-none dark:bg-[#111118]/80 dark:text-gray-300 dark:ring-1 dark:ring-white/10 dark:hover:bg-white/5">
+            <button className="hover:text-brand-gold dark:hover:text-brand-gold flex cursor-pointer items-center justify-center rounded-xl bg-white/80 p-3 text-gray-700 shadow-sm backdrop-blur-xl transition-colors hover:bg-white focus:outline-none dark:bg-[#111118]/80 dark:text-gray-300 dark:ring-1 dark:ring-white/10 dark:hover:bg-white/5">
               <span className="hidden pr-2 text-xs font-bold tracking-widest uppercase sm:inline">
                 Actions
               </span>
@@ -171,7 +238,7 @@ export function RegistrationsToolbar({
                 className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none data-[highlighted]:bg-gray-100 dark:text-gray-300 dark:data-[highlighted]:bg-white/10 dark:data-[highlighted]:text-white"
               >
                 <Download className="group-data-[highlighted]:text-brand-gold mr-2 h-4 w-4 text-gray-400" />
-                Export CSV
+                Export All CSV
               </DropdownMenu.Item>
               <DropdownMenu.Separator className="my-1 h-px bg-gray-100 dark:bg-white/10" />
               <DropdownMenu.Item

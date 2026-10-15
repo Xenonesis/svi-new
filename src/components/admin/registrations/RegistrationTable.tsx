@@ -199,6 +199,10 @@ interface RegistrationTableProps {
   hasMore: boolean;
   startItem: number;
   endItem: number;
+  selectedIds: Set<string>;
+  isAllSelected: boolean;
+  onToggleSelectOne: (id: string) => void;
+  onToggleSelectAll: () => void;
   onStarToggle: (reg: Registration) => void;
   onStatusChange: (id: string, status: string) => void;
   onView: (reg: Registration) => void;
@@ -219,6 +223,10 @@ export function RegistrationTable({
   hasMore,
   startItem,
   endItem,
+  selectedIds,
+  isAllSelected,
+  onToggleSelectOne,
+  onToggleSelectAll,
   onStarToggle,
   onStatusChange,
   onView,
@@ -226,9 +234,44 @@ export function RegistrationTable({
   onClearFilters,
   onPageChange,
 }: RegistrationTableProps) {
+  const isIndeterminate = selectedIds.size > 0 && selectedIds.size < registrations.length;
+
   // Define columns using useMemo to prevent recreation
   const columns = useMemo(
     () => [
+      columnHelper.display({
+        id: 'select',
+        header: () => (
+          <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+            <input
+              type="checkbox"
+              checked={isAllSelected}
+              ref={(el) => {
+                if (el) el.indeterminate = isIndeterminate;
+              }}
+              onChange={onToggleSelectAll}
+              aria-label="Select all registrations on this page"
+              className="accent-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 transition-all dark:border-white/20 dark:bg-white/5"
+            />
+          </div>
+        ),
+        cell: (info) => {
+          const reg = info.row.original;
+          const isSelected = selectedIds.has(reg.id);
+          return (
+            <div className="flex items-center justify-center" onClick={(e) => e.stopPropagation()}>
+              <input
+                type="checkbox"
+                checked={isSelected}
+                onChange={() => onToggleSelectOne(reg.id)}
+                aria-label={`Select registration ${reg.submission_id || reg.name}`}
+                className="accent-brand-gold focus:ring-brand-gold h-4 w-4 cursor-pointer rounded border-gray-300 transition-all dark:border-white/20 dark:bg-white/5"
+              />
+            </div>
+          );
+        },
+        size: 40,
+      }),
       columnHelper.display({
         id: 'star',
         header: '',
@@ -246,7 +289,7 @@ export function RegistrationTable({
             </div>
           );
         },
-        size: 50,
+        size: 40,
       }),
       columnHelper.accessor('submission_id', {
         header: 'ID',
@@ -433,7 +476,17 @@ export function RegistrationTable({
         },
       }),
     ],
-    [onStarToggle, onStatusChange, onView, onDelete]
+    [
+      isAllSelected,
+      isIndeterminate,
+      onToggleSelectAll,
+      selectedIds,
+      onToggleSelectOne,
+      onStarToggle,
+      onStatusChange,
+      onView,
+      onDelete,
+    ]
   );
 
   const table = useReactTable({
@@ -472,22 +525,29 @@ export function RegistrationTable({
               ))}
             </thead>
             <tbody className="divide-y divide-gray-100 dark:divide-white/5">
-              {table.getRowModel().rows.map((row) => (
-                <motion.tr
-                  key={row.id}
-                  onClick={() => onView(row.original)}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.2 }}
-                  className="group table-row-hover cursor-pointer transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="px-6 py-4 align-middle">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </td>
-                  ))}
-                </motion.tr>
-              ))}
+              {table.getRowModel().rows.map((row) => {
+                const isRowSelected = selectedIds.has(row.original.id);
+                return (
+                  <motion.tr
+                    key={row.id}
+                    onClick={() => onView(row.original)}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: 0.2 }}
+                    className={`group table-row-hover cursor-pointer transition-colors ${
+                      isRowSelected
+                        ? 'bg-brand-gold/10 hover:bg-brand-gold/15 dark:bg-brand-gold/[0.08] dark:hover:bg-brand-gold/[0.12]'
+                        : 'hover:bg-gray-50 dark:hover:bg-white/[0.02]'
+                    }`}
+                  >
+                    {row.getVisibleCells().map((cell) => (
+                      <td key={cell.id} className="px-6 py-4 align-middle">
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </td>
+                    ))}
+                  </motion.tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

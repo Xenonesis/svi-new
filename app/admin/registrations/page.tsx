@@ -1,6 +1,15 @@
 'use client';
 
-import { AlertCircle, CheckCircle2, FileText, Clock, CheckCheck } from 'lucide-react';
+import {
+  AlertCircle,
+  CheckCircle2,
+  FileText,
+  Clock,
+  CheckCheck,
+  Download,
+  FileSpreadsheet,
+  X,
+} from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
 import { GRID_STYLE } from '@/src/components/admin/registrations/types';
@@ -179,6 +188,10 @@ export default function AdminRegistrations() {
           onSortOrderToggle={() => h.setSortOrder(h.sortOrder === 'asc' ? 'desc' : 'asc')}
           onFilterToggle={() => h.setShowFilters(!h.showFilters)}
           onExport={h.handleExportCSV}
+          onExportSelectedCsv={h.handleExportSelectedCsv}
+          onExportSelectedExcel={h.handleExportSelectedExcel}
+          selectedCount={h.selectedCount}
+          onClearSelection={h.clearSelection}
           onRefresh={() => h.fetchRegistrations()}
           onManageAdvisors={() => h.setShowAdvisorSettings(true)}
         />
@@ -204,6 +217,10 @@ export default function AdminRegistrations() {
           hasMore={h.hasMore}
           startItem={h.startItem}
           endItem={h.endItem}
+          selectedIds={h.selectedIds}
+          isAllSelected={h.isAllSelected}
+          onToggleSelectOne={h.toggleSelectOne}
+          onToggleSelectAll={h.toggleSelectAll}
           onStarToggle={h.handleStarToggle}
           onStatusChange={h.handleStatusChange}
           onView={h.setSelectedReg}
@@ -240,6 +257,58 @@ export default function AdminRegistrations() {
             showToast={h.showToast}
             onClose={() => h.setShowAdvisorSettings(false)}
           />
+        )}
+      </AnimatePresence>
+
+      {/* Floating Bulk Action Dock for Selected Registrations */}
+      <AnimatePresence>
+        {h.selectedCount > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 30 }}
+            className="border-brand-gold/30 bg-brand-navy/95 fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 flex-wrap items-center gap-3 rounded-2xl border px-5 py-3 text-white shadow-2xl backdrop-blur-md"
+          >
+            <div className="flex items-center gap-2 border-r border-white/10 pr-3">
+              <span className="bg-brand-gold text-brand-navy flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
+                {h.selectedCount}
+              </span>
+              <span className="text-xs font-semibold">Registrations Selected</span>
+            </div>
+
+            {/* Export Excel Button */}
+            <button
+              type="button"
+              onClick={h.handleExportSelectedExcel}
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-600/30 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-all hover:bg-emerald-600/40 hover:text-white"
+              title="Export selected registrations to Excel"
+            >
+              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-400" />
+              <span>Excel (.xlsx)</span>
+            </button>
+
+            {/* Export CSV Button */}
+            <button
+              type="button"
+              onClick={h.handleExportSelectedCsv}
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-gray-200 transition-all hover:bg-white/20 hover:text-white"
+              title="Export selected registrations to CSV"
+            >
+              <Download className="text-brand-gold h-3.5 w-3.5" />
+              <span>CSV (.csv)</span>
+            </button>
+
+            {/* Deselect / Clear Selection Button */}
+            <button
+              type="button"
+              onClick={h.clearSelection}
+              className="flex cursor-pointer items-center gap-1 rounded-xl px-2 py-1.5 text-xs text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
+              title="Clear selection"
+            >
+              <X className="h-3.5 w-3.5" />
+              <span className="text-[11px]">Clear</span>
+            </button>
+          </motion.div>
         )}
       </AnimatePresence>
     </div>

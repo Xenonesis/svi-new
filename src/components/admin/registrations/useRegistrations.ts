@@ -1,11 +1,15 @@
 'use client';
 import { toast } from 'sonner';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/src/lib/supabase/client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import type { Registration, Filters } from './types';
+import {
+  exportRegistrationsToCsv,
+  exportRegistrationsToExcel,
+} from '@/src/lib/registrations/exportRegistrations';
 
 const DEFAULT_FILTERS: Filters = {
   project: '',
@@ -34,7 +38,7 @@ export function useRegistrations() {
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
   const [filters, setFilters] = useState<Filters>(DEFAULT_FILTERS);
   const [page, setPage] = useState(1);
-
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const activeFilterCount = Object.values(filters).filter((v) => v !== '').length;
 
   const showToast = useCallback((type: 'success' | 'error', msg: string) => {
@@ -154,7 +158,7 @@ export function useRegistrations() {
     placeholderData: (previousData) => previousData,
   });
 
-  const registrations = registrationsData?.registrations || [];
+  const registrations: Registration[] = registrationsData?.registrations || [];
   const total = registrationsData?.total || 0;
   const hasMore = registrationsData?.hasMore || false;
 
@@ -260,11 +264,13 @@ export function useRegistrations() {
   const updateFilter = (key: keyof Filters, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
     setPage(1);
+    setSelectedIds(new Set());
   };
 
   const clearFilters = () => {
     setFilters(DEFAULT_FILTERS);
     setPage(1);
+    setSelectedIds(new Set());
   };
 
   const handleStatusChange = (id: string, newStatus: string) => {
@@ -280,6 +286,40 @@ export function useRegistrations() {
     starMutation.mutate({ id: reg.id, is_important: !reg.is_important });
   };
 
+  // ── Multi-select management ────────────────────────────────────────────────
+  const toggleSelectOne = useCallback((id: string) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  }, []);
+
+  const toggleSelectAll = useCallback(() => {
+    setSelectedIds((prev) => {
+      if (prev.size === registrations.length && registrations.length > 0) {
+        return new Set();
+      }
+      return new Set(registrations.map((r) => r.id));
+    });
+  }, [registrations]);
+
+  const clearSelection = useCallback(() => {
+    setSelectedIds(new Set());
+  }, []);
+
+  const selectedRegistrations = useMemo(() => {
+    return registrations.filter((r) => selectedIds.has(r.id));
+  }, [registrations, selectedIds]);
+
+  const handleExportSelectedCsv = useCallback(() => {
+    exportRegistrationsToCsv(selectedRegistrations);
+  }, [selectedRegistrations]);
+
+  const handleExportSelectedExcel = useCallback(async () => {
+    await exportRegistrationsToExcel(selectedRegistrations);
+  }, [selectedRegistrations]);
   const handleExportCSV = async () => {
     const params = new URLSearchParams({ limit: '1000' });
     if (search) params.set('search', search);
@@ -389,7 +429,10 @@ export function useRegistrations() {
     activeFilterCount,
     startItem,
     endItem,
-
+    selectedIds,
+    selectedRegistrations,
+    selectedCount: selectedIds.size,
+    isAllSelected: registrations.length > 0 && selectedIds.size === registrations.length,
     setSearch,
     setSelectedReg,
     setDeleteTarget,
@@ -398,7 +441,12 @@ export function useRegistrations() {
     setSortBy,
     setSortOrder,
     setPage,
-
+    setSelectedIds,
+    toggleSelectOne,
+    toggleSelectAll,
+    clearSelection,
+    handleExportSelectedCsv,
+    handleExportSelectedExcel,
     handleSearch,
     updateFilter,
     clearFilters,
