@@ -28,8 +28,16 @@ test.describe('Registration Flow', () => {
     await page.locator('input#dob').fill('1990-05-15');
     await page.locator('input#aadharNumber').fill('567890123456');
     await page.locator('input#panNumber').fill('ABCDE1234F');
-    await page.locator('input#state').fill('Rajasthan');
-    await page.locator('input#city').fill('Jaipur');
+    if (await page.locator('select#state').isVisible()) {
+      await page.locator('select#state').selectOption('Rajasthan');
+    } else {
+      await page.locator('input#state').fill('Rajasthan');
+    }
+    if (await page.locator('select#city-select').isVisible()) {
+      await page.locator('select#city-select').selectOption('Jaipur');
+    } else {
+      await page.locator('input#city').fill('Jaipur');
+    }
     await page.locator('input#address').fill('123, Vaishali Nagar, Jaipur');
 
     // Wait for the dynamic select options to load from the API
