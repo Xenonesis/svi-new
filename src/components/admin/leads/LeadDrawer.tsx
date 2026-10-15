@@ -15,6 +15,7 @@ import {
   FileText,
   Loader2,
   Flame,
+  Volume2,
 } from 'lucide-react';
 import type { LeadInteraction } from '@/src/lib/leads/leadInteractionsStore';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
@@ -39,6 +40,7 @@ interface LeadDrawerProps {
   assignedAdvisorId?: string | null;
   assignedAdvisorName?: string | null;
   temperature?: 'hot' | 'warm' | 'cold';
+  recordingUrl?: string | null;
   currentStage?: PipelineStage;
   employees: Employee[];
   isOpen: boolean;
@@ -52,6 +54,7 @@ export function LeadDrawer({
   clientName,
   assignedAdvisorId,
   temperature = 'warm',
+  recordingUrl,
   currentStage = 'new',
   employees,
   isOpen,
@@ -281,9 +284,23 @@ export function LeadDrawer({
                       {temperature}
                     </span>
                   </div>
-                  <div className="mt-1 flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
-                    <Phone className="text-brand-gold h-3 w-3" />
-                    <span className="font-mono font-medium">+91 {phone}</span>
+                  <div className="mt-1 flex items-center gap-3 text-xs text-gray-500 dark:text-gray-400">
+                    <div className="flex items-center gap-1.5">
+                      <Phone className="text-brand-gold h-3 w-3" />
+                      <span className="font-mono font-medium">+91 {phone}</span>
+                    </div>
+                    {recordingUrl && (
+                      <a
+                        href={recordingUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+                        title="Listen to IVR call recording (.wav)"
+                      >
+                        <Volume2 className="h-3 w-3" />
+                        <span>Call Recording</span>
+                      </a>
+                    )}
                   </div>
                 </div>
 

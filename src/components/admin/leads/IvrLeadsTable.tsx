@@ -29,6 +29,7 @@ import {
   Calendar,
   SlidersHorizontal,
   RotateCcw,
+  Volume2,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -360,6 +361,7 @@ export function IvrLeadsTable({
     advisorId?: string | null;
     advisorName?: string | null;
     temperature?: 'hot' | 'warm' | 'cold';
+    recordingUrl?: string | null;
   } | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
@@ -1054,6 +1056,7 @@ export function IvrLeadsTable({
                               advisorId: record.assigned_agent_id,
                               advisorName: record.agent_name,
                               temperature: record.temperature,
+                              recordingUrl: record.recording_url,
                             })
                           }
                           className="hover:text-brand-gold dark:hover:text-brand-gold text-left font-mono text-sm font-bold text-gray-900 transition-colors dark:text-white"
@@ -1120,8 +1123,19 @@ export function IvrLeadsTable({
                         {formatDuration(record.call_duration)}
                       </span>
                       <span className="text-[10px] text-gray-400">({record.call_duration}s)</span>
+                      {record.recording_url && (
+                        <a
+                          href={record.recording_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+                          title="Listen to Call Recording"
+                        >
+                          <Volume2 className="h-2.5 w-2.5" />
+                          <span>Audio</span>
+                        </a>
+                      )}
                     </div>
-
                     <div className="flex items-center gap-1.5">
                       {record.pressed_key ? (
                         <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold">
@@ -1376,6 +1390,7 @@ export function IvrLeadsTable({
                                   advisorId: record.assigned_agent_id,
                                   advisorName: record.agent_name,
                                   temperature: record.temperature,
+                                  recordingUrl: record.recording_url,
                                 })
                               }
                               className="hover:text-brand-gold rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/5"
@@ -1383,6 +1398,18 @@ export function IvrLeadsTable({
                             >
                               <FileText className="h-3 w-3" />
                             </button>
+
+                            {record.recording_url && (
+                              <a
+                                href={record.recording_url}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="rounded-md p-1 text-amber-500 transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:bg-amber-500/20"
+                                title="Listen to Call Recording (.wav)"
+                              >
+                                <Volume2 className="h-3 w-3" />
+                              </a>
+                            )}
                           </div>
                         </div>
                       </td>
@@ -1749,6 +1776,7 @@ export function IvrLeadsTable({
           assignedAdvisorId={drawerLead.advisorId}
           assignedAdvisorName={drawerLead.advisorName}
           temperature={drawerLead.temperature}
+          recordingUrl={drawerLead.recordingUrl}
           employees={employees}
           onClose={() => setDrawerLead(null)}
           onLeadUpdated={() => onFilterChange({})}

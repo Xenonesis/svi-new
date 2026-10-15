@@ -19,6 +19,8 @@ export interface ParsedIvrRecord {
   dial_status: 'ANSWER' | 'NOANSWER';
   pressed_key: string | null;
   temperature: 'hot' | 'warm' | 'cold';
+  recording_url?: string | null;
+  raw_payload?: Record<string, unknown> | null;
 }
 
 /**
@@ -110,7 +112,7 @@ export function resolveAdvisorId(
 
   // 3. Known agent aliases
   const aliasMap: Record<string, string[]> = {
-    deepa: ['deepa'],
+    deepa: ['deepa', 'deepa sharma'],
     ruby: ['ruby'],
     riya: ['riya'],
     arbaaz: ['arbaaz', 'arwaz'],
@@ -130,11 +132,16 @@ export function resolveAdvisorId(
     santosh: ['santosh'],
     shashank: ['shashank'],
     shivam: ['shivam'],
-    shikha: ['shikha'],
-    khushi: ['khushi'],
-    manish: ['manish'],
-    soniya: ['soniya'],
-    kajal: ['kajal'],
+    shikha: ['shikha', 'shikha tomer', 'shikha tomar'],
+    khushi: ['khushi', 'khushi pal', 'khushi chodhary'],
+    manish: ['manish', 'manish sharma'],
+    soniya: ['soniya', 'sonia', 'sonia garg', 'soniya garg'],
+    kajal: ['kajal', 'kajal singh', 'kajal vishu'],
+    abhishek: ['abhishek', 'abhishek singh', 'abhishek kumar'],
+    amarnath: ['amarnath', 'amarnath sharma'],
+    vinod: ['vinod', 'vinod ji'],
+    wasi: ['wasi', 'haider wasi', 'wasi haider'],
+    rashmi: ['rashmi', 'rashmi shakya'],
   };
 
   for (const [keyName, aliases] of Object.entries(aliasMap)) {
@@ -145,6 +152,28 @@ export function resolveAdvisorId(
   }
 
   return null;
+}
+
+/**
+ * Tokenizes one CSV line respecting quoted strings.
+ */
+export function tokenizeCsvLine(line: string): string[] {
+  const res: string[] = [];
+  let inQuote = false;
+  let cur = '';
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') {
+      inQuote = !inQuote;
+    } else if (c === ',' && !inQuote) {
+      res.push(cur.trim());
+      cur = '';
+    } else {
+      cur += c;
+    }
+  }
+  res.push(cur.trim());
+  return res.map((cell) => cell.replace(/^["']|["']$/g, '').trim());
 }
 
 /**
@@ -162,32 +191,74 @@ export function parseIvrCsvText(csvContent: string): ParsedIvrRecord[] {
 
   const records: ParsedIvrRecord[] = [];
 
-  // Determine column index map from header
-  const header = lines[0].split(',').map((h) => h.trim().toLowerCase());
+  // Determine column index map from header (cleaned of quotes)
+  const header = tokenizeCsvLine(lines[0]).map((h) => h.toLowerCase());
   const numIdx = header.findIndex(
-    (h) => h === 'number' || h.includes('phone') || h.includes('customer')
+    (h) =>
+      h === 'number' ||
+      h === 'from number' ||
+      h === 'from_number' ||
+      h.includes('phone') ||
+      h.includes('customer') ||
+      h.includes('caller')
   );
   const agentNumIdx = header.findIndex(
-    (h) => h === 'agentnumber' || h.includes('agent phone') || h.includes('agent_number')
+    (h) =>
+      h === 'agentnumber' ||
+      h === 'to number' ||
+      h === 'to_number' ||
+      h.includes('agent phone') ||
+      h.includes('agent_number')
   );
   const agentNameIdx = header.findIndex(
-    (h) => h === 'agentname' || h.includes('agent name') || h.includes('agent_name')
+    (h) =>
+      h === 'agentname' ||
+      h === 'user' ||
+      h.includes('agent name') ||
+      h.includes('agent_name') ||
+      h.includes('advisor')
   );
   const dialTimeIdx = header.findIndex(
-    (h) => h === 'dialtime' || h.includes('dial time') || h.includes('dial_time')
+    (h) =>
+      h === 'dialtime' ||
+      h === 'start time' ||
+      h === 'start_time' ||
+      h.includes('dial time') ||
+      h.includes('dial_time')
   );
   const ansTimeIdx = header.findIndex(
-    (h) => h === 'customeranstime' || h.includes('ans time') || h.includes('anstime')
+    (h) =>
+      h === 'customeranstime' ||
+      h === 'answer time' ||
+      h === 'answer_time' ||
+      h.includes('ans time') ||
+      h.includes('anstime')
   );
   const hangTimeIdx = header.findIndex(
-    (h) => h === 'custhangtime' || h.includes('hang time') || h.includes('hangtime')
+    (h) =>
+      h === 'custhangtime' ||
+      h === 'end time' ||
+      h === 'end_time' ||
+      h.includes('hang time') ||
+      h.includes('hangtime')
   );
   const durationIdx = header.findIndex((h) => h === 'call duration' || h.includes('duration'));
-  const statusIdx = header.findIndex((h) => h === 'dialstatus' || h.includes('status'));
+  const statusIdx = header.findIndex(
+    (h) =>
+      h === 'dialstatus' ||
+      h === 'dail status' ||
+      h === 'dailstatus' ||
+      h.includes('dialstatus') ||
+      h.includes('dial status') ||
+      h.includes('status')
+  );
   const keyIdx = header.findIndex((h) => h === 'pressedkey' || h.includes('key'));
+  const recordingIdx = header.findIndex((h) => h === 'recording' || h.includes('recording'));
+  const pulseIdx = header.findIndex((h) => h === 'pulse');
+  const virtualNumIdx = header.findIndex((h) => h === 'virtual number' || h === 'virtual_number');
 
   for (let i = 1; i < lines.length; i++) {
-    const row = lines[i].split(',').map((cell) => cell.trim());
+    const row = tokenizeCsvLine(lines[i]);
     if (row.length < 3) continue;
 
     const rawCustomerPhone = row[numIdx >= 0 ? numIdx : 0] || '';
@@ -197,17 +268,48 @@ export function parseIvrCsvText(csvContent: string): ParsedIvrRecord[] {
     const agentNumber = row[agentNumIdx >= 0 ? agentNumIdx : 1] || '';
     const agentName = row[agentNameIdx >= 0 ? agentNameIdx : 2] || 'Unassigned';
     const dialTime = row[dialTimeIdx >= 0 ? dialTimeIdx : 3] || new Date().toISOString();
-    const customerAnsTime = ansTimeIdx >= 0 && row[ansTimeIdx] ? row[ansTimeIdx] : null;
-    const customerHangTime = hangTimeIdx >= 0 && row[hangTimeIdx] ? row[hangTimeIdx] : null;
+
+    const rawAnsTime = ansTimeIdx >= 0 ? row[ansTimeIdx] : null;
+    const customerAnsTime =
+      rawAnsTime && rawAnsTime !== 'NA' && !rawAnsTime.startsWith('0000-00-00') ? rawAnsTime : null;
+
+    const rawHangTime = hangTimeIdx >= 0 ? row[hangTimeIdx] : null;
+    const customerHangTime =
+      rawHangTime && rawHangTime !== 'NA' && !rawHangTime.startsWith('0000-00-00')
+        ? rawHangTime
+        : null;
+
     const rawDuration = durationIdx >= 0 ? parseInt(row[durationIdx], 10) : 0;
     const callDuration = isNaN(rawDuration) ? 0 : Math.max(0, rawDuration);
+
     const rawStatus = (statusIdx >= 0 ? row[statusIdx] : 'NOANSWER').toUpperCase();
-    const dialStatus: 'ANSWER' | 'NOANSWER' = rawStatus === 'ANSWER' ? 'ANSWER' : 'NOANSWER';
+    const dialStatus: 'ANSWER' | 'NOANSWER' =
+      rawStatus === 'ANSWER' || rawStatus === 'ANSWERED' ? 'ANSWER' : 'NOANSWER';
+
     const rawKey = keyIdx >= 0 && row[keyIdx] ? row[keyIdx] : null;
-    const pressedKey = rawKey && rawKey !== '' ? rawKey : null;
+    const pressedKey = rawKey && rawKey !== '' && rawKey !== 'NA' ? rawKey : null;
 
     const temperature = calculateLeadTemperature(callDuration, pressedKey);
 
+    const rawRecording = recordingIdx >= 0 ? row[recordingIdx] : null;
+    const recordingUrl =
+      rawRecording &&
+      rawRecording !== 'NA' &&
+      !rawRecording.includes('0000-00-00') &&
+      rawRecording.startsWith('http')
+        ? rawRecording
+        : null;
+
+    const rawPulse = pulseIdx >= 0 ? parseInt(row[pulseIdx], 10) : undefined;
+    const virtualNum = virtualNumIdx >= 0 ? row[virtualNumIdx] : undefined;
+
+    const rawPayload: Record<string, unknown> = {};
+    if (recordingUrl) rawPayload.recording_url = recordingUrl;
+    if (rawPulse !== undefined && !isNaN(rawPulse)) rawPayload.pulse = rawPulse;
+    if (virtualNum) rawPayload.virtual_number = virtualNum;
+    if (recordingUrl || (rawPulse !== undefined && !isNaN(rawPulse)) || virtualNum) {
+      if (rawStatus) rawPayload.status = rawStatus;
+    }
     records.push({
       customer_phone: customerPhone,
       agent_number: agentNumber,
@@ -219,6 +321,8 @@ export function parseIvrCsvText(csvContent: string): ParsedIvrRecord[] {
       dial_status: dialStatus,
       pressed_key: pressedKey,
       temperature,
+      recording_url: recordingUrl,
+      raw_payload: Object.keys(rawPayload).length > 0 ? rawPayload : null,
     });
   }
 

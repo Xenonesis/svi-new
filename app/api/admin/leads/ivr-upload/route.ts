@@ -105,6 +105,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
         dial_status: r.dial_status,
         pressed_key: r.pressed_key,
         campaign_name: campaignName,
+        raw_payload: r.raw_payload || null,
       };
     });
 

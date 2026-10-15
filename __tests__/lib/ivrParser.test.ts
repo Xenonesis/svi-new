@@ -93,6 +93,8 @@ describe('ivrParser utilities', () => {
         dial_status: 'NOANSWER',
         pressed_key: '2',
         temperature: 'hot',
+        recording_url: null,
+        raw_payload: null,
       });
 
       expect(records[1].dial_status).toBe('ANSWER');
@@ -105,7 +107,36 @@ describe('ivrParser utilities', () => {
       expect(records[3].pressed_key).toBeNull();
       expect(records[3].temperature).toBe('warm'); // 22 seconds
     });
+
+    it('parses quoted cloud telecom CSV formats like CALL_LOGS.csv', () => {
+      const telecomCsv = `"ID","VIRTUAL NUMBER","FROM NUMBER","TO NUMBER","USER","START TIME","ANSWER TIME","END TIME","DURATION","PULSE","STATUS","DAIL STATUS","RECORDING",
+"1","1207174250","8954636641","9528664770","Rashmi Shakya","2026-10-14 16:15:55","2026-10-14 16:16:02","2026-10-14 16:21:43","348","12","ANSWERED","ANSWER","http://49.50.77.194/recordings/answered/test.wav",
+"2","1207174250","9460693066","9216014579","Haider Wasi","2026-10-14 16:09:54","0000-00-00 00:00:00","2026-10-14 16:11:12","78","3","MISSED","BUSY","http://49.50.77.194/recordings/answered/673_9460693066_0000-00-00.wav",`;
+
+      const records = parseIvrCsvText(telecomCsv);
+      expect(records).toHaveLength(2);
+
+      // Answered call with recording
+      expect(records[0].customer_phone).toBe('8954636641');
+      expect(records[0].agent_name).toBe('Rashmi Shakya');
+      expect(records[0].call_duration).toBe(348);
+      expect(records[0].dial_status).toBe('ANSWER');
+      expect(records[0].temperature).toBe('hot');
+      expect(records[0].recording_url).toBe('http://49.50.77.194/recordings/answered/test.wav');
+      expect(records[0].raw_payload).toMatchObject({
+        pulse: 12,
+        virtual_number: '1207174250',
+        status: 'ANSWERED',
+      });
+
+      // Missed call with 0000-00-00 ans time
+      expect(records[1].customer_phone).toBe('9460693066');
+      expect(records[1].customer_ans_time).toBeNull();
+      expect(records[1].dial_status).toBe('NOANSWER');
+      expect(records[1].recording_url).toBeNull(); // sanitized
+    });
   });
+
   describe('normalizeCallKey', () => {
     it('normalizes timestamps across CSV space format and DB ISO/tz formats', () => {
       const csvKey = normalizeCallKey('9971544114', '2026-09-17 17:45:07');

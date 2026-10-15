@@ -27,6 +27,7 @@ export interface IvrRecordItem {
   temperature: 'hot' | 'warm' | 'cold';
   campaign_name: string;
   created_at: string;
+  recording_url?: string | null;
 }
 
 interface CachedSummary {
@@ -93,7 +94,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       let qBuilder = supabaseAdmin
         .from('ivr_call_records')
         .select(
-          'id, customer_phone, agent_name, agent_phone, assigned_agent_id, dial_time, customer_ans_time, customer_hang_time, call_duration, dial_status, pressed_key, campaign_name, created_at, assigned_agent:assigned_agent_id(id, full_name, phone)',
+          'id, customer_phone, agent_name, agent_phone, assigned_agent_id, dial_time, customer_ans_time, customer_hang_time, call_duration, dial_status, pressed_key, campaign_name, created_at, raw_payload, assigned_agent:assigned_agent_id(id, full_name, phone)',
           { count: 'exact' }
         );
 
@@ -312,24 +313,26 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
     }
 
     const rawRecords = recordsData || [];
-    const items: IvrRecordItem[] = (
-      rawRecords as unknown as Array<{
-        id: string;
-        customer_phone: string;
-        agent_name: string;
-        agent_phone?: string | null;
-        assigned_agent_id?: string | null;
-        assigned_agent?: { id: string; full_name: string; phone?: string | null } | null;
-        dial_time: string;
-        customer_ans_time?: string | null;
-        customer_hang_time?: string | null;
-        call_duration: number;
-        dial_status: string;
-        pressed_key?: string | null;
-        campaign_name?: string | null;
-        created_at: string;
-      }>
-    ).map((r) => {
+    interface DatabaseIvrRow {
+      id: string;
+      customer_phone: string;
+      agent_name: string;
+      agent_phone?: string | null;
+      assigned_agent_id?: string | null;
+      assigned_agent?: { id: string; full_name: string; phone?: string | null } | null;
+      dial_time: string;
+      customer_ans_time?: string | null;
+      customer_hang_time?: string | null;
+      call_duration: number;
+      dial_status: string;
+      pressed_key?: string | null;
+      campaign_name?: string | null;
+      created_at: string;
+      raw_payload?: { recording_url?: string } | null;
+    }
+    const typedRows = rawRecords as unknown as DatabaseIvrRow[];
+    const items: IvrRecordItem[] = typedRows.map((r) => {
+      const recordingUrl = r.raw_payload?.recording_url ?? null;
       const status: 'ANSWER' | 'NOANSWER' = r.dial_status === 'ANSWER' ? 'ANSWER' : 'NOANSWER';
       const temp = calculateLeadTemperature(r.call_duration || 0, r.pressed_key);
       return {
@@ -348,6 +351,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         temperature: temp,
         campaign_name: r.campaign_name || 'General Campaign',
         created_at: r.created_at,
+        recording_url: recordingUrl,
       };
     });
 
