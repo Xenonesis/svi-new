@@ -1,5 +1,4 @@
 import { Metadata } from 'next';
-import { Cormorant_Garamond, Manrope, Inter } from 'next/font/google';
 import BrochureGenerator from '@/src/components/brochure/BrochureGenerator';
 import { buildAlternates } from '@/src/lib/seo';
 import {
@@ -20,29 +19,11 @@ export const metadata: Metadata = {
   alternates: buildAlternates('/brochure/shivani-vatika-11', 'en'),
 };
 
-const cormorant = Cormorant_Garamond({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-cormorant',
-  display: 'swap',
-});
-const manrope = Manrope({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-manrope',
-  display: 'swap',
-});
-const inter = Inter({
-  subsets: ['latin'],
-  weight: ['300', '400', '500'],
-  variable: '--font-inter',
-  display: 'swap',
-});
 
 export default function ShivaniVatika11Brochure() {
   return (
     <div
-      className={`min-h-screen w-full overflow-x-hidden bg-[#F8F6F0] text-[#111111] ${cormorant.variable} ${manrope.variable} ${inter.variable} font-sans`}
+      className="min-h-screen w-full overflow-x-hidden bg-[#F8F6F0] text-[#111111] font-sans"
     >
       <style
         dangerouslySetInnerHTML={{
@@ -55,11 +36,10 @@ export default function ShivaniVatika11Brochure() {
           --brochure-text: #111111;
           --brochure-divider: rgba(201, 168, 76, 0.35);
         }
-        .font-heading { font-family: var(--font-cormorant), serif; }
-        .font-subheading { font-family: var(--font-manrope), sans-serif; }
-        .font-body { font-family: var(--font-inter), sans-serif; }
-        .font-stats { font-family: var(--font-manrope), var(--font-sans), sans-serif; font-feature-settings: "tnum"; font-weight: 700; }
-        
+        .font-heading { font-family: var(--font-serif), Georgia, 'Times New Roman', serif; }
+        .font-subheading { font-family: var(--font-sans), system-ui, sans-serif; }
+        .font-body { font-family: var(--font-sans), system-ui, sans-serif; }
+        .font-stats { font-family: var(--font-sans), system-ui, sans-serif; font-feature-settings: "tnum"; font-weight: 700; }
         .gold-divider {
           height: 1px;
           background-color: var(--brochure-divider);
