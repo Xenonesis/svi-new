@@ -12,9 +12,11 @@ import {
   AlertCircle,
   ToggleLeft,
   ToggleRight,
+  Sparkles,
+  Loader2,
 } from 'lucide-react';
 import { motion } from 'motion/react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { getSettingsDensity, getSettingsInputClass, SETTINGS_LABEL_CLASS } from './helpers';
 
 interface Property {
@@ -45,9 +47,11 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
   const [slug, setSlug] = useState('');
   const [legalLocationHi, setLegalLocationHi] = useState('');
   const [legalLocationEn, setLegalLocationEn] = useState('');
+  const [isTranslating, setIsTranslating] = useState(false);
+  const [isManualHindiEdit, setIsManualHindiEdit] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
   // Search/Filter state
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -85,6 +89,42 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
         .trim()
         .replace(/\s+/g, '-'); // replace spaces with hyphens
       setSlug(generated);
+    }
+  };
+
+  // Auto-translate English legal location to Hindi via server-side proxy
+  const translateToHindi = async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) {
+      if (!isManualHindiEdit) setLegalLocationHi('');
+      return;
+    }
+
+    setIsTranslating(true);
+    try {
+      const url = `/api/admin/translate?text=${encodeURIComponent(trimmed)}&from=en&to=hi`;
+      const res = await fetch(url, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+      if (!res.ok) throw new Error('Translation failed');
+      const data = await res.json();
+      if (data?.translatedText) {
+        setLegalLocationHi(data.translatedText);
+      }
+    } catch (err) {
+      console.warn('Auto translation error:', err);
+    } finally {
+      setIsTranslating(false);
+    }
+  };
+
+  const handleLegalLocationEnChange = (val: string) => {
+    setLegalLocationEn(val);
+    if (!isManualHindiEdit) {
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      debounceTimerRef.current = setTimeout(() => {
+        translateToHindi(val);
+      }, 500);
     }
   };
 
@@ -126,9 +166,10 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
       setSlug('');
       setLegalLocationHi('');
       setLegalLocationEn('');
+      setIsManualHindiEdit(false);
+      setIsTranslating(false);
       setEditingId(null);
       setShowAddForm(false);
-
       // Refresh list
       fetchProperties();
     } catch (err: any) {
@@ -210,18 +251,21 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
     setSlug(property.slug);
     setLegalLocationHi(property.legal_location_hi || '');
     setLegalLocationEn(property.legal_location_en || '');
+    setIsManualHindiEdit(!!property.legal_location_hi);
     setShowAddForm(true);
-    // Scroll to form smoothly
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   // Cancel editing
   const cancelEdit = () => {
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
     setEditingId(null);
     setName('');
     setSlug('');
     setLegalLocationHi('');
     setLegalLocationEn('');
+    setIsManualHindiEdit(false);
+    setIsTranslating(false);
     setShowAddForm(false);
   };
 
@@ -317,37 +361,69 @@ export function PropertiesTab({ token, isCompact, showToast }: PropertiesTabProp
 
             <div className="grid gap-4 md:grid-cols-2">
               <div>
-                <label className={labelClass}>
-                  विधिक स्थान - हिंदी (Hindi Legal Location for BBA/Allotment)
-                </label>
-                <input
-                  type="text"
-                  value={legalLocationHi}
-                  onChange={(e) => setLegalLocationHi(e.target.value)}
-                  placeholder="उदा: ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान"
-                  className={inputClass}
-                />
-                <p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
-                  बीबीए एग्रीमेंट एवं आवंटन पत्र में छपने वाला आधिकारिक हिंदी विधिक स्थान।
-                </p>
-              </div>
-              <div>
-                <label className={labelClass}>
-                  Legal Location - English (English Legal Location for BBA/Allotment)
-                </label>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase font-sans dark:text-gray-400">
+                    Legal Location - English (English Legal Location for BBA/Allotment)
+                  </label>
+                  {isTranslating && (
+                    <span className="inline-flex items-center gap-1 text-[10px] font-medium text-brand-gold">
+                      <Loader2 className="h-3 w-3 animate-spin" />
+                      Translating...
+                    </span>
+                  )}
+                </div>
                 <input
                   type="text"
                   value={legalLocationEn}
-                  onChange={(e) => setLegalLocationEn(e.target.value)}
+                  onChange={(e) => handleLegalLocationEnChange(e.target.value)}
                   placeholder="e.g. Village Harsoli, Tehsil Renwal, District Jaipur, State – Rajasthan"
                   className={inputClass}
                 />
                 <p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
-                  Official English legal land location printed in English BBA and Allotment Letters.
+                  Type here in English. Hindi legal name will auto-translate below.
+                </p>
+              </div>
+
+              <div>
+                <div className="mb-1.5 flex items-center justify-between">
+                  <label className="text-[10px] font-bold tracking-widest text-gray-500 uppercase font-sans dark:text-gray-400">
+                    विधिक स्थान - हिंदी (Hindi Legal Location for BBA/Allotment)
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsManualHindiEdit(false);
+                      translateToHindi(legalLocationEn);
+                    }}
+                    title="Re-translate from English"
+                    className="inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-semibold text-brand-gold hover:bg-brand-gold/10 transition-colors"
+                  >
+                    <Sparkles className="h-3 w-3" />
+                    Auto-Translate
+                  </button>
+                </div>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={legalLocationHi}
+                    onChange={(e) => {
+                      setIsManualHindiEdit(true);
+                      setLegalLocationHi(e.target.value);
+                    }}
+                    placeholder="उदा: ग्राम हरसोली, तहसील रेनवाल, जिला जयपुर, राज्य – राजस्थान"
+                    className={inputClass}
+                  />
+                  {isTranslating && (
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <Loader2 className="h-4 w-4 animate-spin text-brand-gold" />
+                    </div>
+                  )}
+                </div>
+                <p className="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
+                  बीबीए एग्रीमेंट एवं आवंटन पत्र में छपने वाला आधिकारिक हिंदी विधिक स्थान (Auto-filled or editable).
                 </p>
               </div>
             </div>
-
             <div className="flex justify-end gap-3 pt-2">
               {editingId && (
                 <button
