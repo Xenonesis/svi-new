@@ -17,6 +17,7 @@ import { getToken } from './helpers';
 interface UsageData {
   period: string;
   sent: number;
+  sentToday?: number;
   delivered: number;
   opened: number;
   clicked: number;
@@ -24,7 +25,6 @@ interface UsageData {
   spamComplaints: number;
   dailyStats: { date: string; sent: number; delivered: number; opened: number }[];
 }
-
 interface ResendUsageDashboardProps {
   className?: string;
 }
@@ -74,8 +74,8 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
       bgColor: 'bg-blue-100 dark:bg-blue-500/15',
     },
     {
-      title: 'Emails Per Day',
-      current: usageData?.sent || 0,
+      title: 'Emails Today',
+      current: usageData?.sentToday || 0,
       max: PLAN_LIMITS.emailsPerDay,
       unit: 'emails',
       icon: Mail,
@@ -84,9 +84,9 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
     },
     {
       title: 'Delivery Rate',
-      current: usageData?.delivered || 0,
-      max: usageData?.sent || 100,
-      unit: 'percent',
+      current: usageData?.sent ? Math.round((usageData.delivered / usageData.sent) * 100) : 100,
+      max: 100,
+      unit: '% successful',
       icon: TrendingUp,
       color: 'text-violet-500',
       bgColor: 'bg-violet-100 dark:bg-violet-500/15',
@@ -94,7 +94,6 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
     },
     {
       title: 'Active Domains',
-      current: 1,
       max: PLAN_LIMITS.domains,
       unit: 'domains',
       icon: Globe,
@@ -137,9 +136,10 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
             <div className="grid grid-cols-2 gap-4">
               {statsCards.map((stat) => {
                 const StatIcon = stat.icon;
+                const currentValue = typeof stat.current === 'number' ? stat.current : 0;
                 const percentage = stat.isPercentage
-                  ? stat.current
-                  : Math.min(100, (stat.current / stat.max) * 100);
+                  ? currentValue
+                  : Math.min(100, (currentValue / (stat.max || 1)) * 100);
                 const isNearLimit = percentage >= 80;
                 const isOverLimit = percentage > 100;
 
@@ -176,7 +176,7 @@ export function ResendUsageDashboard({ className }: ResendUsageDashboardProps) {
                         {stat.isPercentage ? `${stat.current}%` : stat.current}
                       </span>
                       <span className="text-xs text-gray-400">
-                        / {stat.max} {stat.unit}
+                        {stat.isPercentage ? `(${stat.unit})` : `/ ${stat.max} ${stat.unit}`}
                       </span>
                     </div>
                     {!stat.isPercentage && (

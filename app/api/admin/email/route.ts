@@ -119,12 +119,12 @@ export async function GET(request: NextRequest) {
 
     if (action === 'usage') {
       let sentCount = 0;
+      let sentTodayCount = 0;
       let deliveredCount = 0;
       let openedCount = 0;
       let clickedCount = 0;
       let bouncedCount = 0;
       let spamComplaintsCount = 0;
-
       try {
         const emailsResp = await resend.emails.list({ limit: 100 });
         const responseData = emailsResp.data as any;
@@ -157,9 +157,11 @@ export async function GET(request: NextRequest) {
           }
           if (email.last_event === 'bounced') bouncedCount++;
           if (email.last_event === 'complained') spamComplaintsCount++;
-
           if (email.created_at) {
             const emailDate = new Date(email.created_at);
+            const isToday = emailDate.toDateString() === new Date().toDateString();
+            if (isToday) sentTodayCount++;
+
             const dateStr = emailDate.toLocaleDateString('en-GB', {
               day: 'numeric',
               month: 'short',
@@ -172,12 +174,12 @@ export async function GET(request: NextRequest) {
             }
           }
         }
-
         const dailyStats = Array.from(dailyStatsMap.values());
 
         return NextResponse.json({
           period: new Date().toLocaleString('default', { month: 'long', year: 'numeric' }),
           sent: sentCount,
+          sentToday: sentTodayCount,
           delivered: deliveredCount,
           opened: openedCount,
           clicked: clickedCount,
@@ -245,6 +247,89 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ success: true, emails: data });
     }
 
+    // ─── Real Estate Client Context Auto-Fill for Merge Tags ───
+    if (action === 'client_context') {
+      const targetEmail = url.searchParams.get('email')?.trim().toLowerCase();
+      if (!targetEmail) {
+        return NextResponse.json({ error: 'Missing email parameter' }, { status: 400 });
+      }
+
+      try {
+        // 1. Check allotments table
+        const { data: allotment } = await supabaseAdmin
+          .from('allotments')
+          .select('unit_no, allotted_date, metadata, properties(title)')
+          .ilike('client_email', targetEmail)
+          .maybeSingle();
+
+        if (allotment) {
+          const meta =
+            allotment.metadata && typeof allotment.metadata === 'object' ? allotment.metadata : {};
+          const propTitle =
+            (allotment.properties as { title?: string } | null)?.title || 'Shivani Vatika';
+
+          return NextResponse.json({
+            success: true,
+            context: {
+              plot_no: allotment.unit_no || (typeof meta.unit_no === 'string' ? meta.unit_no : ''),
+              allotted_date:
+                allotment.allotted_date ||
+                (typeof meta.allotted_date === 'string' ? meta.allotted_date : ''),
+              total_cost: meta.total_cost
+                ? `₹${Number(meta.total_cost).toLocaleString('en-IN')}`
+                : '',
+              pending_amount: meta.balance_due
+                ? `₹${Number(meta.balance_due).toLocaleString('en-IN')}`
+                : '',
+              advisor_name:
+                typeof meta.advisor_name === 'string' ? meta.advisor_name : 'SVI Property Advisor',
+              project: propTitle,
+            },
+          });
+        }
+
+        // 2. Check registrations table
+        const { data: registration } = await supabaseAdmin
+          .from('registrations')
+          .select('full_name, plot_preference, scheme_amount, advisor_name, project')
+          .ilike('email', targetEmail)
+          .maybeSingle();
+
+        if (registration) {
+          return NextResponse.json({
+            success: true,
+            context: {
+              name: registration.full_name || '',
+              plot_no: registration.plot_preference || '',
+              total_cost: registration.scheme_amount
+                ? `₹${Number(registration.scheme_amount).toLocaleString('en-IN')}`
+                : '',
+              advisor_name: registration.advisor_name || 'SVI Property Advisor',
+              project: registration.project || 'Shivani Vatika 11th',
+            },
+          });
+        }
+
+        // 3. Fallback: check chat_leads or profiles
+        const { data: profile } = await supabaseAdmin
+          .from('profiles')
+          .select('full_name')
+          .or(`email.ilike.${targetEmail},real_email.ilike.${targetEmail}`)
+          .maybeSingle();
+
+        return NextResponse.json({
+          success: true,
+          context: {
+            name: profile?.full_name || '',
+            project: 'Shivani Vatika 11th',
+            advisor_name: 'SVI Property Advisor',
+          },
+        });
+      } catch (ctxErr) {
+        console.error('[CLIENT CONTEXT] Error fetching merge tags:', ctxErr);
+        return NextResponse.json({ error: 'Failed to fetch client context' }, { status: 500 });
+      }
+    }
     if (action === 'email' && emailId) {
       // 1) Try Supabase permanent storage first
       try {
@@ -265,6 +350,48 @@ export async function GET(request: NextRequest) {
             attachments = dbAttachments;
           }
 
+          // Fetch timeline events from email_events table
+          const targetIds = [emailId];
+          if (dbMsg.resend_id && dbMsg.resend_id !== emailId) targetIds.push(dbMsg.resend_id);
+          if (dbMsg.id && dbMsg.id !== emailId) targetIds.push(dbMsg.id);
+
+          const { data: eventRows } = await supabaseAdmin
+            .from('email_events')
+            .select('id, event_type, occurred_at, ip, user_agent, url, bounce_type, bounce_reason')
+            .in('email_id', targetIds)
+            .order('occurred_at', { ascending: true });
+
+          const events = eventRows || [];
+          let sentAt: string | null = dbMsg.created_at || dbMsg.sent_at || null;
+          let deliveredAt: string | null = null;
+          let firstOpenedAt: string | null = null;
+          let firstClickedAt: string | null = null;
+          let bouncedAt: string | null = null;
+          let complainedAt: string | null = null;
+          let openCount = 0;
+          let clickCount = 0;
+          const clickedUrls: string[] = [];
+
+          for (const ev of events) {
+            if (ev.event_type === 'sent' && !sentAt) sentAt = ev.occurred_at;
+            if (ev.event_type === 'delivered' && !deliveredAt) deliveredAt = ev.occurred_at;
+            if (ev.event_type === 'opened' || ev.event_type === 'email.opened') {
+              openCount++;
+              if (!firstOpenedAt) firstOpenedAt = ev.occurred_at;
+            }
+            if (ev.event_type === 'clicked' || ev.event_type === 'email.clicked') {
+              clickCount++;
+              if (!firstClickedAt) firstClickedAt = ev.occurred_at;
+              if (ev.url && !clickedUrls.includes(ev.url)) clickedUrls.push(ev.url);
+            }
+            if (ev.event_type === 'bounced' || ev.event_type === 'email.bounced') {
+              if (!bouncedAt) bouncedAt = ev.occurred_at;
+            }
+            if (ev.event_type === 'complained' || ev.event_type === 'email.complained') {
+              if (!complainedAt) complainedAt = ev.occurred_at;
+            }
+          }
+
           const emailData = {
             id: dbMsg.resend_id || dbMsg.id,
             object: 'email',
@@ -283,6 +410,20 @@ export async function GET(request: NextRequest) {
               : [],
             last_event: dbMsg.last_event || 'delivered',
             attachments,
+            events,
+            tracking: {
+              status: dbMsg.last_event || 'delivered',
+              sent_at: sentAt,
+              delivered_at: deliveredAt,
+              first_opened_at: firstOpenedAt,
+              first_clicked_at: firstClickedAt,
+              bounced_at: bouncedAt,
+              complained_at: complainedAt,
+              open_count: openCount,
+              click_count: clickCount,
+              clicked_urls: clickedUrls,
+              events,
+            },
           };
           return NextResponse.json({ email: emailData });
         }

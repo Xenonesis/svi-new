@@ -8,10 +8,9 @@ import {
   type FocusEvent,
   type ClipboardEvent,
 } from 'react';
-import { X, AlertCircle, CheckCircle, Users } from 'lucide-react';
-import { isValidEmail } from '@/src/lib/utils/emailValidation';
+import { X, AlertCircle, CheckCircle, Users, Sparkles } from 'lucide-react';
+import { isValidEmail, detectEmailTypo } from '@/src/lib/utils/emailValidation';
 import type { Recipient } from '../types';
-
 interface RecipientInputProps {
   recipients: Recipient[];
   onChange: (recipients: Recipient[]) => void;
@@ -107,6 +106,27 @@ export function RecipientInput({
 
   const invalidCount = recipients.filter((r) => !r.valid).length;
 
+  // Detect any common domain typos across active recipients
+  const typoSuggestions = recipients
+    .map((r, idx) => ({ ...detectEmailTypo(r.email), index: idx }))
+    .filter(
+      (
+        s
+      ): s is {
+        original: string;
+        suggested: string;
+        domain: string;
+        suggestedDomain: string;
+        index: number;
+      } => Boolean(s && s.suggested)
+    );
+
+  const handleFixTypo = (index: number, suggested: string) => {
+    const updated = [...recipients];
+    updated[index] = { ...updated[index], email: suggested, valid: isValidEmail(suggested) };
+    onChange(updated);
+  };
+
   return (
     <div className="flex-1">
       <div
@@ -183,6 +203,28 @@ export function RecipientInput({
           <span>
             {invalidCount} invalid {invalidCount === 1 ? 'address' : 'addresses'}
           </span>
+        </div>
+      )}
+      {typoSuggestions.length > 0 && (
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          {typoSuggestions.map((t) => (
+            <div
+              key={t.original}
+              className="inline-flex items-center gap-1.5 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-xs text-amber-800 dark:border-amber-500/20 dark:bg-amber-500/10 dark:text-amber-300"
+            >
+              <span>
+                Did you mean <strong>{t.suggestedDomain}</strong> instead of {t.domain}?
+              </span>
+              <button
+                type="button"
+                onClick={() => handleFixTypo(t.index, t.suggested)}
+                className="inline-flex items-center gap-1 rounded bg-amber-600 px-1.5 py-0.5 font-bold text-white transition-colors hover:bg-amber-700 dark:bg-amber-500 dark:text-black dark:hover:bg-amber-400"
+              >
+                <Sparkles className="h-2.5 w-2.5" />
+                Fix
+              </button>
+            </div>
+          ))}
         </div>
       )}
     </div>

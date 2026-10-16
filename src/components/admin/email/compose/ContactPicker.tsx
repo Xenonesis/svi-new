@@ -2,10 +2,23 @@
 
 import { useState, useEffect, useRef, useMemo } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { X, Search, Loader2, Check, Users, UserCheck, Shield, Briefcase, User } from 'lucide-react';
+import {
+  X,
+  Search,
+  Loader2,
+  Check,
+  Users,
+  UserCheck,
+  Shield,
+  Briefcase,
+  User,
+  Trophy,
+  Building2,
+  Ticket,
+  Flame,
+} from 'lucide-react';
 import { getToken } from '../helpers';
-import type { Contact } from '../types';
-
+import type { Contact, AudienceSegment } from '../types';
 interface ContactPickerProps {
   open: boolean;
   onClose: () => void;
@@ -17,8 +30,16 @@ interface ContactPickerProps {
   title?: string;
 }
 
-type FilterTab = 'all' | 'employee' | 'client' | 'admin' | 'selected';
-
+type FilterTab =
+  | 'all'
+  | 'lucky_draw_winners'
+  | 'allotment_done'
+  | 'token_holders'
+  | 'hot_calling_leads'
+  | 'employee'
+  | 'client'
+  | 'admin'
+  | 'selected';
 function getInitials(name: string): string {
   const parts = name.trim().split(/\s+/);
   if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
@@ -143,6 +164,22 @@ export function ContactPicker({
 
   // Category counts
   const totalCount = contacts.length;
+  const winnersCount = useMemo(
+    () => contacts.filter((c) => c.segments?.includes('lucky_draw_winners')).length,
+    [contacts]
+  );
+  const allotmentCount = useMemo(
+    () => contacts.filter((c) => c.segments?.includes('allotment_done')).length,
+    [contacts]
+  );
+  const tokenCount = useMemo(
+    () => contacts.filter((c) => c.segments?.includes('token_holders')).length,
+    [contacts]
+  );
+  const hotLeadsCount = useMemo(
+    () => contacts.filter((c) => c.segments?.includes('hot_calling_leads')).length,
+    [contacts]
+  );
   const employeeCount = useMemo(
     () => contacts.filter((c) => c.role === 'employee').length,
     [contacts]
@@ -160,6 +197,13 @@ export function ContactPicker({
 
     if (activeTab === 'selected') {
       list = list.filter(isContactSelected);
+    } else if (
+      activeTab === 'lucky_draw_winners' ||
+      activeTab === 'allotment_done' ||
+      activeTab === 'token_holders' ||
+      activeTab === 'hot_calling_leads'
+    ) {
+      list = list.filter((c) => c.segments?.includes(activeTab as AudienceSegment));
     } else if (activeTab !== 'all') {
       list = list.filter((c) => c.role === activeTab);
     }
@@ -170,7 +214,8 @@ export function ContactPicker({
       (c) =>
         c.full_name.toLowerCase().includes(q) ||
         c.email.toLowerCase().includes(q) ||
-        (c.real_email && c.real_email.toLowerCase().includes(q))
+        (c.real_email && c.real_email.toLowerCase().includes(q)) ||
+        (c.metadata?.plot_no && c.metadata.plot_no.toLowerCase().includes(q))
     );
   }, [contacts, activeTab, search, isContactSelected]);
 
@@ -307,6 +352,102 @@ export function ContactPicker({
                 {totalCount}
               </span>
             </button>
+
+            {winnersCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('lucky_draw_winners')}
+                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  activeTab === 'lucky_draw_winners'
+                    ? 'bg-amber-500 text-black shadow-xs'
+                    : 'border border-amber-500/20 bg-amber-500/10 text-amber-700 hover:bg-amber-500/20 dark:text-amber-300'
+                }`}
+              >
+                <Trophy className="h-3 w-3" />
+                Winners
+                <span
+                  className={`py-0.2 rounded-full px-1.5 text-[10px] ${
+                    activeTab === 'lucky_draw_winners'
+                      ? 'bg-black/20 font-bold text-black'
+                      : 'bg-amber-500/20 text-amber-800 dark:text-amber-200'
+                  }`}
+                >
+                  {winnersCount}
+                </span>
+              </button>
+            )}
+
+            {allotmentCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('allotment_done')}
+                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  activeTab === 'allotment_done'
+                    ? 'bg-emerald-600 text-white shadow-xs'
+                    : 'border border-emerald-500/20 bg-emerald-500/10 text-emerald-700 hover:bg-emerald-500/20 dark:text-emerald-300'
+                }`}
+              >
+                <Building2 className="h-3 w-3" />
+                Allotted
+                <span
+                  className={`py-0.2 rounded-full px-1.5 text-[10px] ${
+                    activeTab === 'allotment_done'
+                      ? 'bg-white/20 font-bold text-white'
+                      : 'bg-emerald-500/20 text-emerald-800 dark:text-emerald-200'
+                  }`}
+                >
+                  {allotmentCount}
+                </span>
+              </button>
+            )}
+
+            {tokenCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('token_holders')}
+                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  activeTab === 'token_holders'
+                    ? 'bg-purple-600 text-white shadow-xs'
+                    : 'border border-purple-500/20 bg-purple-500/10 text-purple-700 hover:bg-purple-500/20 dark:text-purple-300'
+                }`}
+              >
+                <Ticket className="h-3 w-3" />
+                Token Clients
+                <span
+                  className={`py-0.2 rounded-full px-1.5 text-[10px] ${
+                    activeTab === 'token_holders'
+                      ? 'bg-white/20 font-bold text-white'
+                      : 'bg-purple-500/20 text-purple-800 dark:text-purple-200'
+                  }`}
+                >
+                  {tokenCount}
+                </span>
+              </button>
+            )}
+
+            {hotLeadsCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setActiveTab('hot_calling_leads')}
+                className={`flex shrink-0 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold transition-all ${
+                  activeTab === 'hot_calling_leads'
+                    ? 'bg-rose-600 text-white shadow-xs'
+                    : 'border border-rose-500/20 bg-rose-500/10 text-rose-700 hover:bg-rose-500/20 dark:text-rose-300'
+                }`}
+              >
+                <Flame className="h-3 w-3" />
+                Hot Leads
+                <span
+                  className={`py-0.2 rounded-full px-1.5 text-[10px] ${
+                    activeTab === 'hot_calling_leads'
+                      ? 'bg-white/20 font-bold text-white'
+                      : 'bg-rose-500/20 text-rose-800 dark:text-rose-200'
+                  }`}
+                >
+                  {hotLeadsCount}
+                </span>
+              </button>
+            )}
 
             <button
               type="button"
@@ -517,11 +658,33 @@ export function ContactPicker({
                           {roleInfo.label}
                         </span>
                       </div>
-                      <span className="block truncate text-xs text-gray-500 dark:text-gray-400">
-                        {displayEmail}
-                      </span>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-1.5">
+                        <span className="block truncate text-xs text-gray-500 dark:text-gray-400">
+                          {displayEmail}
+                        </span>
+                        {contact.segments?.includes('lucky_draw_winners') && (
+                          <span className="py-0.2 inline-flex items-center gap-0.5 rounded border border-amber-500/30 bg-amber-500/15 px-1.5 text-[9px] font-bold text-amber-700 dark:text-amber-300">
+                            <Trophy className="h-2 w-2" /> Winner
+                          </span>
+                        )}
+                        {contact.segments?.includes('allotment_done') && (
+                          <span className="py-0.2 inline-flex items-center gap-0.5 rounded border border-emerald-500/30 bg-emerald-500/15 px-1.5 text-[9px] font-bold text-emerald-700 dark:text-emerald-300">
+                            <Building2 className="h-2 w-2" />{' '}
+                            {contact.metadata?.plot_no || 'Allotted'}
+                          </span>
+                        )}
+                        {contact.segments?.includes('token_holders') && (
+                          <span className="py-0.2 inline-flex items-center gap-0.5 rounded border border-purple-500/30 bg-purple-500/15 px-1.5 text-[9px] font-bold text-purple-700 dark:text-purple-300">
+                            <Ticket className="h-2 w-2" /> Token
+                          </span>
+                        )}
+                        {contact.segments?.includes('hot_calling_leads') && (
+                          <span className="py-0.2 inline-flex items-center gap-0.5 rounded border border-rose-500/30 bg-rose-500/15 px-1.5 text-[9px] font-bold text-rose-700 dark:text-rose-300">
+                            <Flame className="h-2 w-2" /> Hot Lead
+                          </span>
+                        )}
+                      </div>
                     </div>
-
                     {/* Selected Badge */}
                     {checked && (
                       <div className="bg-brand-gold/20 text-brand-gold border-brand-gold/40 flex shrink-0 items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-bold">

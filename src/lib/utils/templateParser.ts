@@ -355,6 +355,66 @@ export type EmailTemplateType =
   | 'payment_reminder'
   | 'general';
 
+export interface RealEstateMergeTagDefinition {
+  key: string;
+  label: string;
+  category: 'property' | 'financial' | 'client' | 'agent';
+  sample: string;
+  description: string;
+}
+
+export const REAL_ESTATE_MERGE_TAGS: RealEstateMergeTagDefinition[] = [
+  {
+    key: 'plot_no',
+    label: 'Plot / Unit Number',
+    category: 'property',
+    sample: 'Plot #B-104',
+    description: 'Assigned plot or villa unit number',
+  },
+  {
+    key: 'allotted_date',
+    label: 'Allotment Date',
+    category: 'property',
+    sample: '15 Oct 2026',
+    description: 'Date of allotment or booking confirmation',
+  },
+  {
+    key: 'total_cost',
+    label: 'Total Valuation',
+    category: 'financial',
+    sample: '₹45,00,000',
+    description: 'Total property consideration amount',
+  },
+  {
+    key: 'pending_amount',
+    label: 'Pending Balance',
+    category: 'financial',
+    sample: '₹12,50,000',
+    description: 'Outstanding installment due from client',
+  },
+  {
+    key: 'advisor_name',
+    label: 'Advisor Name',
+    category: 'agent',
+    sample: 'Sanu Mishra',
+    description: 'Dedicated luxury property advisor',
+  },
+  {
+    key: 'project',
+    label: 'Project Name',
+    category: 'property',
+    sample: 'Shivani Vatika 11th',
+    description: 'Township / Project name',
+  },
+  {
+    key: 'name',
+    label: 'Client Name',
+    category: 'client',
+    sample: 'Sanu Mishra',
+    description: 'Client full name',
+  },
+];
+
 export interface LuxuryEmailVars {
   name?: string;
   subject?: string;
@@ -370,10 +430,15 @@ export interface LuxuryEmailVars {
   event?: string;
   status?: string;
   payment_mode?: string;
-  // Booking
+  total_cost?: string;
+  pending_amount?: string;
+  // Booking & Real Estate
   project?: string;
   plot_size?: string;
   unit_no?: string;
+  plot_no?: string;
+  allotted_date?: string;
+  advisor_name?: string;
   booking_date?: string;
   // Links
   portal_url?: string;

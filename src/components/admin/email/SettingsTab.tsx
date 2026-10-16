@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { AnimatePresence, motion } from 'motion/react';
 import {
   AlertTriangle,
@@ -18,8 +18,18 @@ import {
   Zap,
   Calendar,
   Mail,
+  Bot,
+  Clock,
+  Sparkles,
+  Save,
 } from 'lucide-react';
 import { getToken } from './helpers';
+import {
+  DEFAULT_AUTO_REPLY_SETTINGS,
+  isWithinBusinessHours,
+  getISTDateTime,
+  type AutoReplySettings,
+} from '@/src/lib/email/autoReplyEvaluator';
 import dynamic from 'next/dynamic';
 const ResendUsageDashboard = dynamic(
   () => import('./ResendUsageDashboard').then((mod) => mod.ResendUsageDashboard),
@@ -37,9 +47,60 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
   const [sending, setSending] = useState(false);
   const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null);
 
+  // Auto-Reply Bot State
+  const [autoReply, setAutoReply] = useState<AutoReplySettings>(DEFAULT_AUTO_REPLY_SETTINGS);
+  const [savingAutoReply, setSavingAutoReply] = useState(false);
+  const [autoReplySaved, setAutoReplySaved] = useState(false);
+  const [currentTimeIST, setCurrentTimeIST] = useState(getISTDateTime());
+
   const isDev =
     process.env.NODE_ENV === 'development' && process.env.NEXT_PUBLIC_SHOW_RESEND !== 'false';
 
+  // Load Auto-Reply settings on mount
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTimeIST(getISTDateTime());
+    }, 15000);
+
+    getToken().then((token) => {
+      fetch('/api/admin/settings?key=email_auto_reply_settings', {
+        headers: { Authorization: `Bearer ${token}` },
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data) => {
+          if (data && data.setting && data.setting.value) {
+            setAutoReply(data.setting.value);
+          }
+        })
+        .catch(() => {});
+    });
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const saveAutoReplySettings = async () => {
+    setSavingAutoReply(true);
+    setAutoReplySaved(false);
+    try {
+      const token = await getToken();
+      const res = await fetch('/api/admin/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({
+          key: 'email_auto_reply_settings',
+          value: autoReply,
+        }),
+      });
+      if (res.ok) {
+        setAutoReplySaved(true);
+        setTimeout(() => setAutoReplySaved(false), 3000);
+      }
+    } catch (err) {
+      console.error('Failed to save auto-reply settings:', err);
+    } finally {
+      setSavingAutoReply(false);
+    }
+  };
   const sendTest = async () => {
     if (!testTo.trim()) return;
     setSending(true);
@@ -162,41 +223,84 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
         </div>
 
         {/* Quick links */}
-        {isDev && (
-          <div className="dark:bg-brand-dark-surface mt-4 rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
-            <h3 className="mb-4 text-sm font-bold text-gray-900 dark:text-white">
-              Resend Resources
+        {/* Quick links & Internal SVI Email Navigation */}
+        <div className="dark:bg-brand-dark-surface mt-4 rounded-xl border border-gray-200/80 bg-white p-6 dark:border-gray-700/60">
+          <div className="mb-4 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white">
+              SVI Email Command Hub
             </h3>
-            <div className="space-y-1">
-              {[
-                { label: 'Dashboard', url: 'https://resend.com/overview', icon: BarChart3 },
-                { label: 'Email Logs', url: 'https://resend.com/emails', icon: Inbox },
-                { label: 'Domains', url: 'https://resend.com/domains', icon: Globe },
-                { label: 'API Keys', url: 'https://resend.com/api-keys', icon: Shield },
-                { label: 'Documentation', url: 'https://resend.com/docs', icon: FileText },
-              ].map((link) => {
-                const LinkIcon = link.icon;
-                return (
-                  <a
-                    key={link.label}
-                    href={link.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.02]"
-                  >
-                    <div className="flex items-center gap-3">
-                      <LinkIcon className="h-4 w-4 text-gray-400" />
-                      <span className="text-xs font-medium text-gray-700 dark:text-gray-300">
-                        {link.label}
-                      </span>
-                    </div>
-                    <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
-                  </a>
-                );
-              })}
-            </div>
+            <span className="bg-brand-gold/15 text-brand-gold rounded-md px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
+              In-House Portal
+            </span>
           </div>
-        )}
+          <div className="space-y-1">
+            {[
+              {
+                label: 'Executive Analytics & Usage',
+                href: '#usage-dashboard',
+                icon: BarChart3,
+                internal: true,
+                badge: 'Built-in',
+              },
+              {
+                label: 'Sent Mail & Delivery Logs',
+                href: '/admin/email?tab=sent',
+                icon: Inbox,
+                internal: true,
+                badge: 'Live Logs',
+              },
+              {
+                label: 'Verified Sending Domains',
+                href: '/admin/email?tab=domains',
+                icon: Globe,
+                internal: true,
+                badge: 'DNS Hub',
+              },
+              {
+                label: 'Client Out-of-Office & Bot',
+                href: '#bot-settings',
+                icon: Bot,
+                internal: true,
+                badge: 'Active',
+              },
+              {
+                label: 'Resend Cloud Console',
+                href: 'https://resend.com/overview',
+                icon: Shield,
+                internal: false,
+                badge: 'Cloud API',
+              },
+            ].map((link) => {
+              const LinkIcon = link.icon;
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target={link.internal ? undefined : '_blank'}
+                  rel={link.internal ? undefined : 'noopener noreferrer'}
+                  className="flex items-center justify-between rounded-lg px-3 py-2.5 transition-colors hover:bg-gray-50 dark:hover:bg-white/[0.04]"
+                >
+                  <div className="flex items-center gap-3">
+                    <LinkIcon className="text-brand-gold h-4 w-4" />
+                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                      {link.label}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="rounded bg-gray-100 px-1.5 py-0.5 text-[9.5px] font-bold text-gray-600 dark:bg-white/5 dark:text-gray-400">
+                      {link.badge}
+                    </span>
+                    {link.internal ? (
+                      <span className="text-brand-gold text-xs font-bold">→</span>
+                    ) : (
+                      <ExternalLink className="h-3.5 w-3.5 text-gray-400" />
+                    )}
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        </div>
       </div>
 
       {/* Test email & Limits */}
@@ -309,12 +413,228 @@ export function SettingsTab({ adminEmail }: { adminEmail: string }) {
         )}
       </div>
 
-      {/* Usage Dashboard - full width below */}
-      {isDev && (
-        <div className="lg:col-span-5">
-          <ResendUsageDashboard />
+      {/* Out of Office & Business Hours Bot Card */}
+      <div
+        id="bot-settings"
+        className="dark:bg-brand-dark-surface overflow-hidden rounded-2xl border border-gray-200/80 bg-white shadow-sm lg:col-span-5 dark:border-gray-700/60"
+      >
+        <div className="border-b border-gray-100 p-6 dark:border-white/10">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="rounded-xl border border-amber-500/30 bg-amber-500/10 p-2.5 text-amber-600 dark:text-amber-400">
+                <Bot className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="text-base font-bold text-gray-900 dark:text-white">
+                  Out-of-Office & Business Hours Bot
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Automatically acknowledge incoming client emails outside corporate hours (9:30 AM
+                  – 6:30 PM IST).
+                </p>
+              </div>
+            </div>
+
+            {/* Live IST Status Badge */}
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2 rounded-full border border-gray-200 bg-gray-50 px-3 py-1 text-xs font-semibold text-gray-700 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
+                <Clock className="text-brand-gold h-3.5 w-3.5" />
+                <span>IST: {currentTimeIST.timeString}</span>
+                <span
+                  className={`ml-1 h-2 w-2 rounded-full ${
+                    isWithinBusinessHours(new Date(), autoReply.business_hours)
+                      ? 'bg-emerald-500'
+                      : 'bg-amber-500'
+                  }`}
+                />
+                <span className="text-[11px] font-bold">
+                  {isWithinBusinessHours(new Date(), autoReply.business_hours)
+                    ? 'Office Open'
+                    : 'Out of Office'}
+                </span>
+              </div>
+
+              {/* Master Toggle */}
+              <label className="relative inline-flex cursor-pointer items-center">
+                <input
+                  type="checkbox"
+                  checked={autoReply.enabled}
+                  onChange={(e) => setAutoReply({ ...autoReply, enabled: e.target.checked })}
+                  className="peer sr-only"
+                />
+                <div className="peer peer-checked:bg-brand-gold h-6 w-11 rounded-full bg-gray-200 peer-focus:outline-none after:absolute after:top-[2px] after:left-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:after:translate-x-full peer-checked:after:border-white dark:border-gray-600 dark:bg-gray-700" />
+              </label>
+            </div>
+          </div>
         </div>
-      )}
+
+        {/* Bot Settings Form */}
+        <div className="space-y-6 p-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {/* Mode Selector */}
+            <div>
+              <label className="mb-2 block text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                Auto-Reply Mode
+              </label>
+              <select
+                value={autoReply.mode}
+                onChange={(e) =>
+                  setAutoReply({
+                    ...autoReply,
+                    mode: e.target.value as 'out_of_office' | 'always' | 'vacation',
+                  })
+                }
+                className="focus:border-brand-gold w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-xs font-semibold text-gray-800 shadow-xs focus:outline-none dark:border-gray-700 dark:bg-white/5 dark:text-gray-200"
+              >
+                <option value="out_of_office">🌙 Outside Business Hours Only (Recommended)</option>
+                <option value="always">⚡ 24/7 Always Auto-Acknowledge</option>
+                <option value="vacation">🏖️ Vacation / Extended Holiday Notice</option>
+              </select>
+            </div>
+
+            {/* Office Hours Range */}
+            <div>
+              <label className="mb-2 block text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                Business Hours (Start - End)
+              </label>
+              <div className="flex items-center gap-2">
+                <input
+                  type="time"
+                  value={autoReply.business_hours.start}
+                  onChange={(e) =>
+                    setAutoReply({
+                      ...autoReply,
+                      business_hours: { ...autoReply.business_hours, start: e.target.value },
+                    })
+                  }
+                  className="focus:border-brand-gold w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-white/5 dark:text-gray-200"
+                />
+                <span className="font-bold text-gray-400">to</span>
+                <input
+                  type="time"
+                  value={autoReply.business_hours.end}
+                  onChange={(e) =>
+                    setAutoReply({
+                      ...autoReply,
+                      business_hours: { ...autoReply.business_hours, end: e.target.value },
+                    })
+                  }
+                  className="focus:border-brand-gold w-full rounded-xl border border-gray-300 bg-white px-3 py-2 text-xs font-semibold text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-white/5 dark:text-gray-200"
+                />
+              </div>
+            </div>
+
+            {/* Helpline Phone */}
+            <div>
+              <label className="mb-2 block text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                Helpline Phone
+              </label>
+              <input
+                type="text"
+                value={autoReply.emergency_phone}
+                onChange={(e) => setAutoReply({ ...autoReply, emergency_phone: e.target.value })}
+                className="focus:border-brand-gold w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2 text-xs font-semibold text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-white/5 dark:text-gray-200"
+              />
+            </div>
+          </div>
+
+          {/* Working Days Selector */}
+          <div>
+            <label className="mb-2 block text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+              Working Days
+            </label>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { id: 1, label: 'Mon' },
+                { id: 2, label: 'Tue' },
+                { id: 3, label: 'Wed' },
+                { id: 4, label: 'Thu' },
+                { id: 5, label: 'Fri' },
+                { id: 6, label: 'Sat' },
+                { id: 7, label: 'Sun' },
+              ].map((d) => {
+                const isActive = autoReply.business_hours.working_days.includes(d.id);
+                return (
+                  <button
+                    key={d.id}
+                    type="button"
+                    onClick={() => {
+                      const updated = isActive
+                        ? autoReply.business_hours.working_days.filter((x) => x !== d.id)
+                        : [...autoReply.business_hours.working_days, d.id];
+                      setAutoReply({
+                        ...autoReply,
+                        business_hours: { ...autoReply.business_hours, working_days: updated },
+                      });
+                    }}
+                    className={`rounded-lg px-3 py-1.5 text-xs font-bold transition-all ${
+                      isActive
+                        ? 'bg-brand-gold text-brand-navy shadow-xs'
+                        : 'border border-gray-200 bg-gray-50 text-gray-600 hover:bg-gray-100 dark:border-white/5 dark:bg-white/5 dark:text-gray-400'
+                    }`}
+                  >
+                    {d.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Subject & Body */}
+          <div className="space-y-4">
+            <div>
+              <label className="mb-1.5 block text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                Auto-Reply Subject Line
+              </label>
+              <input
+                type="text"
+                value={autoReply.subject}
+                onChange={(e) => setAutoReply({ ...autoReply, subject: e.target.value })}
+                className="focus:border-brand-gold w-full rounded-xl border border-gray-300 bg-white px-3.5 py-2.5 text-xs font-medium text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-white/5 dark:text-gray-200"
+              />
+            </div>
+
+            <div>
+              <label className="mb-1.5 block text-xs font-bold tracking-wider text-gray-700 uppercase dark:text-gray-300">
+                Out-of-Office Body Message
+              </label>
+              <textarea
+                rows={3}
+                value={autoReply.body_text}
+                onChange={(e) => setAutoReply({ ...autoReply, body_text: e.target.value })}
+                className="focus:border-brand-gold w-full rounded-xl border border-gray-300 bg-white p-3 text-xs leading-relaxed text-gray-800 focus:outline-none dark:border-gray-700 dark:bg-white/5 dark:text-gray-200"
+              />
+            </div>
+          </div>
+
+          {/* Save Button */}
+          <div className="flex items-center justify-between border-t border-gray-100 pt-4 dark:border-white/10">
+            <span className="text-xs text-gray-500 dark:text-gray-400">
+              Cooldown: {autoReply.cooldown_hours}h per client to prevent spam loops.
+            </span>
+            <button
+              type="button"
+              onClick={saveAutoReplySettings}
+              disabled={savingAutoReply}
+              className="bg-brand-gold text-brand-navy inline-flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold shadow-sm transition-all hover:opacity-95 disabled:opacity-50"
+            >
+              {savingAutoReply ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : autoReplySaved ? (
+                <Check className="h-3.5 w-3.5 stroke-[3]" />
+              ) : (
+                <Save className="h-3.5 w-3.5" />
+              )}
+              <span>{autoReplySaved ? 'Rules Saved!' : 'Save Auto-Reply Rules'}</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Usage Dashboard - full width below */}
+      <div id="usage-dashboard" className="lg:col-span-5">
+        <ResendUsageDashboard />
+      </div>
     </div>
   );
 }

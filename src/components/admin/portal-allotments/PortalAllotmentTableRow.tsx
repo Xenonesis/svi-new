@@ -313,7 +313,7 @@ export function PortalAllotmentTableRow({
                 </button>
                 {renderClientPopover()}
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex flex-col gap-0.5">
                 {clientPhone && (
                   <a
                     href={`tel:${clientPhone}`}
@@ -327,20 +327,25 @@ export function PortalAllotmentTableRow({
                   <a
                     href={`mailto:${clientEmail}`}
                     title={clientEmail}
-                    className="inline-flex max-w-[140px] items-center gap-1 truncate text-[11px] text-slate-500 hover:underline dark:text-slate-400"
+                    className="inline-flex max-w-[170px] items-center gap-1 truncate text-[11px] text-slate-500 hover:text-slate-800 hover:underline dark:text-slate-400 dark:hover:text-slate-200"
                   >
-                    <Mail className="h-2.5 w-2.5 shrink-0" />
+                    <Mail className="h-2.5 w-2.5 shrink-0 text-sky-500" />
                     <span className="truncate">{clientEmail}</span>
                   </a>
                 )}
               </div>
-              {clientAddress && (
+              {clientAddress ? (
                 <div
                   title={clientAddress}
-                  className="flex max-w-[190px] items-center gap-1 truncate text-[10px] text-amber-700/90 dark:text-amber-400/90"
+                  className="mt-0.5 flex max-w-[210px] items-start gap-1 rounded bg-amber-500/[0.08] px-1.5 py-0.5 text-[10.5px] text-amber-800 dark:bg-amber-400/[0.08] dark:text-amber-300"
                 >
-                  <MapPin className="h-2.5 w-2.5 shrink-0" />
-                  <span className="truncate">{clientAddress}</span>
+                  <MapPin className="mt-0.5 h-2.5 w-2.5 shrink-0 text-amber-600 dark:text-amber-400" />
+                  <span className="line-clamp-2 leading-tight">{clientAddress}</span>
+                </div>
+              ) : (
+                <div className="mt-0.5 flex items-center gap-1 text-[10px] text-slate-400 dark:text-slate-500">
+                  <MapPin className="h-2.5 w-2.5 shrink-0 opacity-50" />
+                  <span>No address logged</span>
                 </div>
               )}
             </div>

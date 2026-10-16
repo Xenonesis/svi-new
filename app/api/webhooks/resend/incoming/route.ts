@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { Resend } from 'resend';
+import {
+  isWithinBusinessHours,
+  buildAutoReplyHtml,
+  DEFAULT_AUTO_REPLY_SETTINGS,
+  type AutoReplySettings,
+} from '@/src/lib/email/autoReplyEvaluator';
 
 /**
  * Resend Webhook — Inbound + Full Lifecycle Ingestion
- *
  * Configure in Resend Dashboard:
  * 1. https://resend.com/emails/receiving → Add inbound address
  * 2. Webhook: https://www.sviinfrasolutions.com/api/webhooks/resend/incoming
@@ -435,7 +440,86 @@ export async function POST(request: NextRequest) {
       console.error('[WEBHOOK] Failed to store email:', error);
       throw AppError.internal('Failed to store incoming email');
     }
+    // ── Automated Out-of-Office / Business Hours Response Dispatch ──
+    try {
+      // 1. Fetch auto reply settings from portal_settings
+      const { data: settingRow } = await supabaseAdmin
+        .from('portal_settings')
+        .select('value')
+        .eq('key', 'email_auto_reply_settings')
+        .maybeSingle();
 
+      const settings: AutoReplySettings =
+        settingRow?.value && typeof settingRow.value === 'object'
+          ? (settingRow.value as AutoReplySettings)
+          : DEFAULT_AUTO_REPLY_SETTINGS;
+
+      if (settings.enabled && fromEmail && fromEmail.includes('@')) {
+        const cleanFrom = fromEmail.trim().toLowerCase();
+        const isExcluded = (settings.excluded_senders || []).some((pattern) =>
+          cleanFrom.includes(pattern.toLowerCase())
+        );
+
+        // Check if outside business hours
+        const withinHours = isWithinBusinessHours(new Date(), settings.business_hours);
+        const shouldReply =
+          !isExcluded &&
+          (settings.mode === 'always' || (settings.mode === 'out_of_office' && !withinHours));
+
+        if (shouldReply) {
+          // Check cooldown (e.g. 24h) to avoid loops
+          const cooldownHours = settings.cooldown_hours || 24;
+          const sinceIso = new Date(Date.now() - cooldownHours * 3600 * 1000).toISOString();
+
+          const { data: recentReplies } = await supabaseAdmin
+            .from('email_messages')
+            .select('id')
+            .contains('to_emails', [fromEmail])
+            .gte('created_at', sinceIso)
+            .limit(1);
+
+          if (!recentReplies || recentReplies.length === 0) {
+            const autoSubject = settings.subject || 'Thank you for contacting SVI Infra Solutions';
+            const autoHtml = buildAutoReplyHtml(
+              { senderName: fromName || undefined, subject: data.subject || undefined },
+              settings
+            );
+
+            const resend = getResend();
+            const replyRes = await resend.emails.send({
+              from: 'SVI Infra <info@sviiinfrasolutions.com>',
+              to: fromEmail,
+              subject: autoSubject,
+              html: autoHtml,
+              text: settings.body_text,
+              headers: {
+                'Auto-Submitted': 'auto-replied',
+                'X-Auto-Response-Suppress': 'All',
+              },
+            });
+
+            // Log auto-reply message
+            await supabaseAdmin.from('email_messages').insert({
+              resend_id: replyRes.data?.id || `auto-${Date.now()}`,
+              from_email: 'info@sviiinfrasolutions.com',
+              to_emails: [fromEmail],
+              subject: autoSubject,
+              status: 'sent',
+              metadata: {
+                source: 'auto_reply',
+                in_reply_to_email_id: emailId,
+                html: autoHtml,
+                text: settings.body_text,
+              },
+            });
+
+            console.log(`[WEBHOOK] Out-of-office auto-reply dispatched to ${fromEmail}`);
+          }
+        }
+      }
+    } catch (autoErr) {
+      console.warn('[WEBHOOK] Auto-reply processing non-fatal error:', autoErr);
+    }
     return NextResponse.json({ received: true });
   } catch (error) {
     console.error('[WEBHOOK] Error:', error);

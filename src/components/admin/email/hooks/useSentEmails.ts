@@ -262,6 +262,24 @@ export function useSentEmails(): UseSentEmailsReturn {
     };
   }, [fetchEmails]);
 
+  // Listen for local dispatch events (e.g. from ComposeTab) to instantly refresh without delay
+  useEffect(() => {
+    const handleSentEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<{ email?: SentEmail }>;
+      if (customEvent.detail?.email) {
+        setEmails((prev) => [
+          customEvent.detail.email!,
+          ...prev.filter((x) => x.id !== customEvent.detail.email!.id),
+        ]);
+      }
+      fetchEmails();
+    };
+
+    window.addEventListener('svi-email-sent', handleSentEvent);
+    return () => {
+      window.removeEventListener('svi-email-sent', handleSentEvent);
+    };
+  }, [fetchEmails]);
   // Load more using stored cursor (last email ID)
   const loadMore = useCallback(() => {
     if (afterCursor) fetchEmails(afterCursor);

@@ -32,8 +32,8 @@ import { buildCopyText } from '../helpers';
 import { useState, useRef, useEffect } from 'react';
 import { AISummaryPanel } from './AISummaryPanel';
 import { SentimentBadge } from './SentimentBadge';
+import { EmailTrackingTimeline } from './EmailTrackingTimeline';
 import { COMMON_TAGS, getTagStyle } from '../constants';
-
 interface EmailDetailPanelProps {
   selected: EmailDetail | null;
   loadingDetail: boolean;
@@ -497,6 +497,14 @@ export function EmailDetailPanel({
                   )}
                 </div>
               </div>
+              {/* Email Tracking Timeline */}
+              <EmailTrackingTimeline
+                tracking={selected.tracking}
+                events={selected.events}
+                lastEvent={selected.last_event}
+                createdAt={selected.created_at}
+              />
+
               {/* Sentiment + AI Actions */}
               <div className="mb-6 flex items-center gap-1.5">
                 {selected.html && (

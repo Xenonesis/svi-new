@@ -495,7 +495,30 @@ export function ComposeTab({
         await clearDraft();
         toast.success(scheduledAt ? 'Email scheduled successfully!' : 'Email sent successfully');
 
-        // Suggest follow-up in background
+        // Broadcast local dispatched event to trigger instant optimistic refresh across Sent & Scheduled tabs
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(
+            new CustomEvent('svi-email-sent', {
+              detail: {
+                email: {
+                  id:
+                    data && typeof data === 'object' && 'id' in data && typeof data.id === 'string'
+                      ? data.id
+                      : `local-${Date.now()}`,
+                  subject: subject || '(no subject)',
+                  from: fromName
+                    ? `${fromName} <info@sviiinfrasolutions.com>`
+                    : 'info@sviiinfrasolutions.com',
+                  to: toRecipients.map((r) => r.email),
+                  created_at: new Date().toISOString(),
+                  last_event: scheduledAt ? 'scheduled' : 'sent',
+                  is_scheduled: Boolean(scheduledAt),
+                  scheduled_at: scheduledAt || undefined,
+                },
+              },
+            })
+          );
+        }
         const finalBody = getPreviewHtml() || html;
         const recipient = toRecipients[0]?.email;
         suggestFollowup(finalBody, recipient)
@@ -691,11 +714,38 @@ export function ComposeTab({
     await handleClearDraft();
   };
 
-  const handleQuickAutoFill = () => {
+  const handleQuickAutoFill = async () => {
     const raw = templateHtml || html;
     if (!raw) return;
     const vars = extractTemplateVars(raw);
     const updated: Record<string, string> = { ...templateVars };
+
+    const firstRecipientEmail = toRecipients[0]?.email || toStr.split(',')[0]?.trim();
+
+    // If we have a recipient email, fetch their real-estate profile from DB first
+    if (firstRecipientEmail && firstRecipientEmail.includes('@')) {
+      try {
+        const token = await getToken();
+        const res = await fetch(
+          `/api/admin/email?action=client_context&email=${encodeURIComponent(firstRecipientEmail)}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
+        if (res.ok) {
+          const resData = await res.json();
+          if (resData.context) {
+            Object.entries(resData.context).forEach(([k, val]) => {
+              if (val && typeof val === 'string' && val.trim()) {
+                updated[k] = val;
+              }
+            });
+          }
+        }
+      } catch (err) {
+        console.warn('Could not auto-fetch client context:', err);
+      }
+    }
 
     vars.forEach((v) => {
       if (!updated[v] || !updated[v].trim()) {
@@ -703,14 +753,21 @@ export function ComposeTab({
           const recipient =
             toRecipients[0]?.name || toStr.split(',')[0]?.split('@')[0]?.trim() || 'Sanu Mishra';
           updated[v] = recipient.replace(/[._]/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-        } else if (v.includes('date') || v === 'start_date') {
+        } else if (v.includes('date') || v === 'start_date' || v === 'allotted_date') {
           const d = new Date();
-          d.setDate(d.getDate() + 7);
           updated[v] = d.toLocaleDateString('en-IN', {
             day: 'numeric',
             month: 'short',
             year: 'numeric',
           });
+        } else if (v === 'plot_no' || v === 'unit_no') {
+          updated[v] = 'Plot #32';
+        } else if (v === 'total_cost') {
+          updated[v] = '₹45,00,000';
+        } else if (v === 'pending_amount') {
+          updated[v] = '₹12,50,000';
+        } else if (v === 'advisor_name') {
+          updated[v] = 'SVI Property Advisor';
         } else if (v === 'role' || v.includes('designation')) {
           updated[v] = 'Freelance Consultant';
         } else if (v === 'project') {
@@ -726,7 +783,7 @@ export function ComposeTab({
     });
 
     setTemplateVars(updated);
-    toast.success('Auto-filled template details');
+    toast.success('Auto-filled real estate & client details');
   };
 
   return (

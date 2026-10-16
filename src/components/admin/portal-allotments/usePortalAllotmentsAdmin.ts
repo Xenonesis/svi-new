@@ -225,7 +225,9 @@ export function usePortalAllotmentsAdmin() {
       const fetchAdvisorRegs = async () => {
         try {
           if (!supabase?.from) return { data: [] };
-          const q = supabase.from('registrations').select('submission_id, advisor_name');
+          const q = supabase
+            .from('registrations')
+            .select('submission_id, advisor_name, email, phone, name, address, city, state');
           const res = typeof q?.limit === 'function' ? await q.limit(500) : await q;
           return res || { data: [] };
         } catch {
@@ -244,7 +246,7 @@ export function usePortalAllotmentsAdmin() {
         supabase
           .from('allotments')
           .select(
-            '*, profiles:user_id(id, full_name, email), properties:property_id(id, name), payment_schedules(*)'
+            '*, profiles:user_id(id, full_name, email, phone, real_email), properties:property_id(id, name), payment_schedules(*)'
           )
           .order('created_at', { ascending: false }),
         supabase.from('profiles').select('id, full_name, email, role').order('full_name'),
@@ -282,12 +284,37 @@ export function usePortalAllotmentsAdmin() {
           }
         }
       });
+      const ticketToClientInfo: Record<
+        string,
+        { email?: string; phone?: string; name?: string; address?: string }
+      > = {};
 
       (
-        (advRegsResult?.data as Array<{ submission_id?: string; advisor_name?: string }>) || []
+        (advRegsResult?.data as Array<{
+          submission_id?: string;
+          advisor_name?: string;
+          email?: string;
+          phone?: string;
+          name?: string;
+          address?: string;
+          city?: string;
+          state?: string;
+        }>) || []
       ).forEach((r) => {
         const rawTicket = r?.submission_id;
         const adv = r?.advisor_name;
+        if (rawTicket) {
+          const norm = normalizeId(rawTicket);
+          const fullAddr = [r.address, r.city, r.state].filter(Boolean).join(', ');
+          if (r.email || r.phone || r.name || fullAddr) {
+            ticketToClientInfo[norm] = {
+              email: r.email || undefined,
+              phone: r.phone || undefined,
+              name: r.name || undefined,
+              address: fullAddr || undefined,
+            };
+          }
+        }
         if (adv && typeof adv === 'string' && adv.trim()) {
           const cleanAdv = adv.trim();
           knownAdvisorsSet.add(cleanAdv);
@@ -296,7 +323,6 @@ export function usePortalAllotmentsAdmin() {
           }
         }
       });
-
       setAdvisors(Array.from(knownAdvisorsSet).sort());
 
       let rawList: AllotmentRecord[] = [];
@@ -383,8 +409,27 @@ export function usePortalAllotmentsAdmin() {
 
           return false;
         });
+        const regClient = ticketToClientInfo[normTicket];
+        const enrichedProfile: ProfileSummary | null = a.profiles
+          ? {
+              ...a.profiles,
+              email: a.profiles.email || regClient?.email || null,
+              phone: a.profiles.phone || regClient?.phone || null,
+              real_email: a.profiles.real_email || regClient?.email || null,
+            }
+          : regClient
+            ? {
+                id: a.user_id || `temp-${normTicket}`,
+                full_name: regClient.name || (a.metadata?.client_name as string) || null,
+                email: regClient.email || null,
+                phone: regClient.phone || null,
+                real_email: regClient.email || null,
+              }
+            : null;
+
         return {
           ...a,
+          profiles: enrichedProfile,
           unit_number: a.unit_no || a.unit_number,
           area: a.metadata?.area ?? a.area,
           total_cost: a.metadata?.total_cost ?? a.total_cost,
@@ -393,6 +438,21 @@ export function usePortalAllotmentsAdmin() {
           metadata: {
             ...(a.metadata || {}),
             advisor_name: resolvedAdvisor,
+            client_address:
+              (a.metadata?.client_address as string) ||
+              (a.metadata?.address as string) ||
+              regClient?.address ||
+              undefined,
+            client_email:
+              (a.metadata?.client_email as string) ||
+              regClient?.email ||
+              a.profiles?.email ||
+              undefined,
+            client_phone:
+              (a.metadata?.client_phone as string) ||
+              regClient?.phone ||
+              a.profiles?.phone ||
+              undefined,
           },
           receipts: matchedReceipts,
         };

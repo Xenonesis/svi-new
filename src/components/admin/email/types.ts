@@ -5,14 +5,30 @@ export interface Recipient {
   valid: boolean;
 }
 
+export type AudienceSegment =
+  'lucky_draw_winners' | 'allotment_done' | 'token_holders' | 'hot_calling_leads';
+
+export interface ContactRealEstateMeta {
+  plot_no?: string;
+  allotted_date?: string;
+  total_cost?: number;
+  pending_amount?: number;
+  advisor_name?: string;
+  ticket_id?: string;
+  projectName?: string;
+  temperature?: 'hot' | 'warm' | 'cold';
+}
+
 export interface Contact {
   id: string;
   full_name: string;
   email: string;
   real_email: string | null;
   role: 'admin' | 'employee' | 'client';
+  segments?: AudienceSegment[];
+  phone?: string | null;
+  metadata?: ContactRealEstateMeta;
 }
-
 export interface SentEmail {
   id: string;
   from: string;
@@ -50,6 +66,30 @@ export interface InboxEmailItem {
   text?: string;
   last_event?: string;
 }
+export interface EmailTimelineEvent {
+  id: string | number;
+  event_type: 'sent' | 'delivered' | 'opened' | 'clicked' | 'bounced' | 'complained' | string;
+  occurred_at: string;
+  ip?: string | null;
+  user_agent?: string | null;
+  url?: string | null;
+  bounce_type?: string | null;
+  bounce_reason?: string | null;
+}
+
+export interface EmailTrackingTimelineData {
+  status: string;
+  sent_at?: string | null;
+  delivered_at?: string | null;
+  first_opened_at?: string | null;
+  first_clicked_at?: string | null;
+  bounced_at?: string | null;
+  complained_at?: string | null;
+  open_count: number;
+  click_count: number;
+  clicked_urls?: string[];
+  events: EmailTimelineEvent[];
+}
 
 export interface EmailDetail {
   id: string;
@@ -78,8 +118,9 @@ export interface EmailDetail {
   is_archived?: boolean;
   is_starred?: boolean;
   tags?: string[];
+  tracking?: EmailTrackingTimelineData;
+  events?: EmailTimelineEvent[];
 }
-
 export interface Domain {
   id: string;
   name: string;

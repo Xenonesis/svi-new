@@ -152,30 +152,38 @@ export function EmailListItem({
               </span>
               <span
                 className={`text-[10px] font-medium capitalize ${
-                  isScheduled ? 'font-semibold text-amber-600 dark:text-amber-400' : 'text-gray-400'
+                  email.last_event === 'suppressed' ||
+                  email.last_event === 'bounced' ||
+                  email.last_event === 'failed'
+                    ? 'rounded bg-rose-500/10 px-1.5 py-0.5 font-bold text-rose-600 dark:bg-rose-500/15 dark:text-rose-400'
+                    : isScheduled
+                      ? 'font-semibold text-amber-600 dark:text-amber-400'
+                      : 'text-gray-400'
                 }`}
               >
                 {getStatusLabel(email.last_event)}
                 {isScheduled ? ' • Scheduled Mail' : ''}
               </span>
 
-              {(email.last_event === 'bounced' || email.last_event === 'failed') && onRetry && (
-                <button
-                  type="button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    onRetry(email);
-                  }}
-                  className="inline-flex items-center gap-1 rounded bg-red-100 px-1.5 py-0.5 text-[10px] font-bold text-red-700 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50"
-                  title="1-Click Retry"
-                >
-                  <RotateCw className="h-2.5 w-2.5" />
-                  Retry Send
-                </button>
-              )}
+              {(email.last_event === 'bounced' ||
+                email.last_event === 'failed' ||
+                email.last_event === 'suppressed') &&
+                onRetry && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onRetry(email);
+                    }}
+                    className="inline-flex items-center gap-1 rounded bg-rose-100 px-1.5 py-0.5 text-[10px] font-bold text-rose-700 hover:bg-rose-200 dark:bg-rose-900/40 dark:text-rose-300 dark:hover:bg-rose-900/60"
+                    title="1-Click Fix & Retry"
+                  >
+                    <RotateCw className="h-2.5 w-2.5" />
+                    Fix & Retry
+                  </button>
+                )}
             </div>
           </div>
-
           {/* Star quick-toggle (visible when starred) */}
           {isStarred && (
             <Star

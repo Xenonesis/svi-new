@@ -35,12 +35,12 @@ export const STATUS_FILTER_OPTIONS = [
   { value: 'delivered', color: 'bg-emerald-500' },
   { value: 'opened', color: 'bg-violet-500' },
   { value: 'clicked', color: 'bg-indigo-500' },
+  { value: 'suppressed', color: 'bg-rose-500' },
   { value: 'bounced', color: 'bg-red-500' },
   { value: 'failed', color: 'bg-red-500' },
   { value: 'complained', color: 'bg-amber-500' },
   { value: 'sent', color: 'bg-blue-500' },
 ];
-
 /* ─── Animation variants ─── */
 export const containerVariants = {
   hidden: { opacity: 0 },
