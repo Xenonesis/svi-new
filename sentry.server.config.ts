@@ -13,6 +13,4 @@ Sentry.init({
 
   // Attach local variable values to stack frames
   includeLocalVariables: false,
-
-  enableLogs: true,
 });

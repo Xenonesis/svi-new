@@ -9,7 +9,6 @@ if (dsn) {
     // ingest domain gets blocked by browser tracking prevention anyway.
     enabled: process.env.NODE_ENV !== 'development',
     tracesSampleRate: process.env.NODE_ENV === 'development' ? 0 : 0.1,
-    enableLogs: false,
     integrations: [],
     tunnel: '/monitoring',
   });

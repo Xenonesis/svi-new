@@ -10,6 +10,4 @@ Sentry.init({
     // httpBodies: [],
   },
   tracesSampleRate: process.env.NODE_ENV === 'development' ? 0 : 0.1,
-
-  enableLogs: true,
 });
