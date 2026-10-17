@@ -110,16 +110,9 @@ export function ContactInfoSection(): React.JSX.Element {
               className="opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
             />
           </a>
-          <a
-            href="mailto:sales@sviinfrasolutions.com"
-            className="group mt-1.5 flex items-center gap-1 text-[13px] font-medium text-white/70 transition-colors duration-200 hover:text-[#d4af37]"
-          >
-            sales@sviinfrasolutions.com
-            <ArrowUpRight
-              size={11}
-              className="opacity-0 transition-all duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-100"
-            />
-          </a>
+          <span className="mt-1 block text-[11px] font-medium text-white/50">
+            Support, Sales &amp; Inquiries
+          </span>
         </>
       ),
     },

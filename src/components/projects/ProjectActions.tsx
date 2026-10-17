@@ -44,7 +44,7 @@ export default function ProjectActions({
           {isHindi ? 'कॉल करें' : 'Call Now'}
         </a>
         <a
-          href="mailto:info@sviinfra.com"
+          href="mailto:info@sviinfrasolutions.com"
           className="text-brand-navy flex flex-1 items-center justify-center gap-2 rounded-xl border-2 border-gray-200 bg-white py-4 text-lg font-bold shadow-md transition-all hover:-translate-y-1 hover:bg-gray-50 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
         >
           <Mail size={20} />
