@@ -273,6 +273,7 @@ export async function GET(request: NextRequest) {
       totalUniqueClients: allCandidates.length,
     });
   } catch (err) {
+    console.error('[/api/admin/portal-allotments/candidates] Error:', err);
     return handleApiError(err);
   }
 }

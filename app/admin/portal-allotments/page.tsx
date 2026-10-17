@@ -7,7 +7,7 @@ import PortalAllotmentsAdmin from '@/app/[locale]/(main)/admin/portal-allotments
 
 export default function PortalAllotmentsPage() {
   return (
-    <NextIntlClientProvider locale="en" messages={messages}>
+    <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Kolkata">
       <PortalAllotmentsAdmin />
     </NextIntlClientProvider>
   );

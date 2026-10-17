@@ -492,7 +492,11 @@ export function usePortalAllotmentsAdmin() {
           : '/api/admin/portal-allotments/candidates';
 
       const res = await fetch(endpoint, { headers });
-      if (!res.ok) throw new Error(`Candidates HTTP ${res.status}`);
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        const msg = errData?.error?.message || `Candidates HTTP ${res.status}`;
+        throw new Error(msg);
+      }
       const json = await res.json();
       const list: AllotmentCandidate[] = json.candidates || [];
       setCandidates(list);

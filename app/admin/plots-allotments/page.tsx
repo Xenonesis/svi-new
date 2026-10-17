@@ -2,12 +2,12 @@
 
 import { NextIntlClientProvider } from 'next-intl';
 import messages from '@/messages/en.json';
-import PortalAllotmentsAdmin from '@/app/[locale]/(main)/admin/portal-allotments/page';
+import PlotsAllotmentsPage from '@/app/[locale]/(main)/admin/plots-allotments/page';
 
-export default function PlotsAllotmentsPage() {
+export default function PlotsAllotmentsRoute() {
   return (
-    <NextIntlClientProvider locale="en" messages={messages}>
-      <PortalAllotmentsAdmin />
+    <NextIntlClientProvider locale="en" messages={messages} timeZone="Asia/Kolkata">
+      <PlotsAllotmentsPage />
     </NextIntlClientProvider>
   );
 }

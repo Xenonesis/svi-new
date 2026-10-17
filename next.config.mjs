@@ -5,7 +5,7 @@
 process.env.SERWIST_SUPPRESS_TURBOPACK_WARNING = '1';
 
 import createNextIntlPlugin from 'next-intl/plugin';
-import { withSentryConfig } from '@sentry/nextjs';
+import { withSentryConfig } from '@sentry/nextjs/config';
 import withSerwistInit from '@serwist/next';
 
 // Dev-only allowance so impeccable live mode can load.
