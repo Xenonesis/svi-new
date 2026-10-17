@@ -2,9 +2,25 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Search, Award, RefreshCw, Mail } from 'lucide-react';
+import {
+  X,
+  Search,
+  Award,
+  RefreshCw,
+  Mail,
+  FileText,
+  FileSpreadsheet,
+  FileDown,
+  Loader2,
+} from 'lucide-react';
 import { supabase } from '@/src/lib/supabase/client';
 import type { Lottery, DbParticipant } from '../types';
+import {
+  fetchLotteryExportData,
+  exportSingleLotteryToCSV,
+  exportSingleLotteryToExcel,
+  exportSingleLotteryToPDF,
+} from '@/src/lib/lottery/exportSingleLottery';
 
 interface ViewParticipantsModalProps {
   open: boolean;
@@ -22,6 +38,24 @@ export function ViewParticipantsModal({
   const [participants, setParticipants] = useState<DbParticipant[]>([]);
   const [loading, setLoading] = useState(false);
   const [search, setSearch] = useState('');
+  const [exportingType, setExportingType] = useState<'csv' | 'excel' | 'pdf' | null>(null);
+
+  const handleExport = async (format: 'csv' | 'excel' | 'pdf') => {
+    if (!lottery || participants.length === 0) return;
+    try {
+      setExportingType(format);
+      const data = await fetchLotteryExportData(lottery);
+      if (format === 'csv') {
+        exportSingleLotteryToCSV(data);
+      } else if (format === 'excel') {
+        await exportSingleLotteryToExcel(data);
+      } else if (format === 'pdf') {
+        await exportSingleLotteryToPDF(data);
+      }
+    } finally {
+      setExportingType(null);
+    }
+  };
 
   useEffect(() => {
     if (open && lottery) {
@@ -97,16 +131,65 @@ export function ViewParticipantsModal({
                   {participants.length} Participant{participants.length !== 1 ? 's' : ''}
                 </p>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Export Controls for Selected Draw */}
+                <div className="flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-50 p-1 dark:border-white/10 dark:bg-white/5">
+                  <span className="px-2 text-[9.5px] font-bold tracking-wider text-slate-400 uppercase dark:text-gray-500">
+                    Export:
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleExport('csv')}
+                    disabled={exportingType !== null || loading || participants.length === 0}
+                    title="Export all candidates to CSV"
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:bg-slate-50 disabled:opacity-50 dark:border-white/10 dark:bg-white/10 dark:text-gray-200"
+                  >
+                    {exportingType === 'csv' ? (
+                      <Loader2 className="h-3 w-3 animate-spin text-slate-500" />
+                    ) : (
+                      <FileText className="h-3 w-3 text-blue-500" />
+                    )}
+                    <span>CSV</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExport('excel')}
+                    disabled={exportingType !== null || loading || participants.length === 0}
+                    title="Export formatted Excel (.xlsx) report"
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-emerald-300 hover:bg-emerald-50 hover:text-emerald-700 disabled:opacity-50 dark:border-white/10 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-emerald-500/10"
+                  >
+                    {exportingType === 'excel' ? (
+                      <Loader2 className="h-3 w-3 animate-spin text-emerald-500" />
+                    ) : (
+                      <FileSpreadsheet className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                    )}
+                    <span>Excel</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleExport('pdf')}
+                    disabled={exportingType !== null || loading || participants.length === 0}
+                    title="Export Executive PDF Dossier"
+                    className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 shadow-2xs transition-all hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 disabled:opacity-50 dark:border-white/10 dark:bg-white/10 dark:text-gray-200 dark:hover:bg-rose-500/10"
+                  >
+                    {exportingType === 'pdf' ? (
+                      <Loader2 className="h-3 w-3 animate-spin text-rose-500" />
+                    ) : (
+                      <FileDown className="h-3 w-3 text-rose-600 dark:text-rose-400" />
+                    )}
+                    <span>PDF</span>
+                  </button>
+                </div>
+
                 <button
                   onClick={() => onOpenEmail(lottery)}
-                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-600 transition-all hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
+                  className="inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[10px] font-bold text-amber-600 transition-all hover:bg-amber-100 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400 dark:hover:bg-amber-500/20"
                 >
                   <Mail className="h-3.5 w-3.5" /> Email All
                 </button>
                 <button
                   onClick={onClose}
-                  className="hover:text-brand-navy cursor-pointer rounded-md border border-gray-200 p-2 text-gray-400 transition-colors dark:border-gray-700 dark:hover:text-gray-100"
+                  className="hover:text-brand-navy cursor-pointer rounded-xl border border-gray-200 p-2 text-gray-400 transition-colors dark:border-gray-700 dark:hover:text-gray-100"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -166,12 +249,12 @@ export function ViewParticipantsModal({
                           </td>
                           <td className="py-3">
                             {p.is_winner ? (
-                              <span className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-amber-50 px-2.5 py-0.5 text-[10px] font-bold text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-400">
-                                <Award className="h-3 w-3" /> Winner
+                              <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-50 px-2.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:border-emerald-500/20 dark:bg-emerald-500/10 dark:text-emerald-400">
+                                <Award className="h-3 w-3" /> Allotted
                               </span>
                             ) : (
-                              <span className="text-[10px] text-slate-400 dark:text-gray-500">
-                                Participant
+                              <span className="inline-flex items-center rounded-md border border-slate-200 bg-slate-50 px-2 py-0.5 text-[9.5px] font-medium text-slate-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">
+                                Not alloted — Better luck next time
                               </span>
                             )}
                           </td>

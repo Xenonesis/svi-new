@@ -72,7 +72,15 @@ export function HallOfFame({
               }`}
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm shadow-sm">
-                {isWinner ? <Award className="h-5 w-5" /> : <Ticket className="h-4 w-4" />}
+                {isWinner ? (
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-amber-500/15 text-[#B38728] ring-1 ring-amber-500/30 dark:bg-amber-500/10 dark:text-[#D4AF37]">
+                    <Award className="h-5 w-5" />
+                  </span>
+                ) : (
+                  <span className="flex h-9 w-9 items-center justify-center rounded-full bg-slate-100 text-slate-400 dark:bg-white/5 dark:text-slate-500">
+                    <Ticket className="h-4 w-4" />
+                  </span>
+                )}
               </div>
               <div className="min-w-0 flex-1">
                 <div
@@ -84,14 +92,17 @@ export function HallOfFame({
                 >
                   {hw.name}
                 </div>
-                <div
-                  className={`mt-0.5 text-[10px] font-semibold tracking-widest uppercase ${
-                    isWinner
-                      ? 'text-[#B38728] dark:text-[#D4AF37]'
-                      : 'text-slate-400 dark:text-slate-500'
-                  }`}
-                >
-                  {isWinner ? t('winners') : t('participant')}
+                <div className="mt-1 flex items-center gap-2">
+                  {isWinner ? (
+                    <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold tracking-wide text-emerald-700 uppercase dark:border-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400">
+                      <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
+                      Allotted
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100/80 px-2 py-0.5 text-[9.5px] font-medium tracking-normal text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-400">
+                      Not alloted — Better luck next time
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="text-right">

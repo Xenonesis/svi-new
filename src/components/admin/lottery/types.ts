@@ -34,5 +34,7 @@ export interface DbParticipant {
   phone?: string | null;
   email?: string | null;
   is_winner?: boolean;
+  prize_rank?: string | number | null;
+  created_at?: string | null;
   lottery_id?: string;
 }

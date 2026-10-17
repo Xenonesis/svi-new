@@ -18,6 +18,12 @@ import {
   exportLotteryToExcel,
   exportLotteryToPDF,
 } from '@/src/lib/lottery/exportLotteryHistory';
+import {
+  fetchLotteryExportData,
+  exportSingleLotteryToCSV,
+  exportSingleLotteryToExcel,
+  exportSingleLotteryToPDF,
+} from '@/src/lib/lottery/exportSingleLottery';
 interface HistoryTableProps {
   lotteries: Lottery[];
   isPending: boolean;
@@ -41,7 +47,27 @@ export function HistoryTable({
 }: HistoryTableProps) {
   const [activeDropdownId, setActiveDropdownId] = useState<string | null>(null);
   const [exportingType, setExportingType] = useState<'csv' | 'excel' | 'pdf' | null>(null);
+  const [rowExportingId, setRowExportingId] = useState<string | null>(null);
+  const [rowExportMenuId, setRowExportMenuId] = useState<string | null>(null);
 
+  const handleExportSingleDraw = async (lottery: Lottery, format: 'csv' | 'excel' | 'pdf') => {
+    try {
+      setRowExportingId(lottery.id);
+      setRowExportMenuId(null);
+      const data = await fetchLotteryExportData(lottery);
+      if (format === 'csv') {
+        exportSingleLotteryToCSV(data);
+      } else if (format === 'excel') {
+        await exportSingleLotteryToExcel(data);
+      } else if (format === 'pdf') {
+        await exportSingleLotteryToPDF(data);
+      }
+    } catch {
+      // toast is shown in utility
+    } finally {
+      setRowExportingId(null);
+    }
+  };
   const handleExportCSV = () => {
     try {
       setExportingType('csv');
@@ -299,6 +325,62 @@ export function HistoryTable({
                   </td>
                   <td className="px-8 py-5 text-right">
                     <div className="flex items-center justify-end gap-2">
+                      {/* Individual Draw Export Dropdown Button */}
+                      <div className="relative">
+                        <button
+                          type="button"
+                          title="Export All Details for this Draw"
+                          disabled={rowExportingId === l.id}
+                          onClick={() => setRowExportMenuId(rowExportMenuId === l.id ? null : l.id)}
+                          className="inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-2 text-xs font-semibold text-slate-700 transition-all hover:border-amber-400/50 hover:bg-amber-50 hover:text-amber-800 disabled:opacity-50 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:border-amber-500/40 dark:hover:bg-amber-500/10 dark:hover:text-amber-300"
+                        >
+                          {rowExportingId === l.id ? (
+                            <Loader2 className="h-3.5 w-3.5 animate-spin text-amber-500" />
+                          ) : (
+                            <FileDown className="h-3.5 w-3.5 text-amber-600 dark:text-amber-400" />
+                          )}
+                          <span className="hidden sm:inline">Export</span>
+                          <ChevronDown className="h-3 w-3 opacity-60" />
+                        </button>
+
+                        {rowExportMenuId === l.id && (
+                          <>
+                            <div
+                              className="fixed inset-0 z-30"
+                              onClick={() => setRowExportMenuId(null)}
+                            />
+                            <div className="absolute right-0 z-40 mt-1 w-44 rounded-xl border border-slate-200 bg-white p-1.5 shadow-2xl dark:border-white/10 dark:bg-[#0c0c12]">
+                              <div className="px-2.5 py-1 text-[9px] font-bold tracking-wider text-slate-400 uppercase dark:text-gray-500">
+                                Export Draw Results
+                              </div>
+                              <button
+                                type="button"
+                                onClick={() => handleExportSingleDraw(l, 'pdf')}
+                                className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-slate-700 transition-colors hover:bg-rose-50 hover:text-rose-700 dark:text-gray-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-300"
+                              >
+                                <FileDown className="h-3.5 w-3.5 text-rose-500" />
+                                <span>PDF Dossier</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleExportSingleDraw(l, 'excel')}
+                                className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-slate-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 dark:text-gray-300 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-300"
+                              >
+                                <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-500" />
+                                <span>Excel (.xlsx)</span>
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleExportSingleDraw(l, 'csv')}
+                                className="flex w-full cursor-pointer items-center gap-2 rounded-lg px-2.5 py-1.5 text-left text-xs font-semibold text-slate-700 transition-colors hover:bg-blue-50 hover:text-blue-700 dark:text-gray-300 dark:hover:bg-blue-500/10 dark:hover:text-blue-300"
+                              >
+                                <FileText className="h-3.5 w-3.5 text-blue-500" />
+                                <span>CSV Spreadsheet</span>
+                              </button>
+                            </div>
+                          </>
+                        )}
+                      </div>
                       <button
                         title="View Participants"
                         onClick={() => onViewParticipants(l)}
