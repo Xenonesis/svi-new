@@ -14,6 +14,7 @@ import {
   Mail,
   MapPin,
   Briefcase,
+  Sparkles,
 } from 'lucide-react';
 import Link from 'next/link';
 import { useMemo } from 'react';
@@ -119,6 +120,33 @@ export function OfferLetterTable({
       return { date: dateStr, time: '' };
     }
   };
+  function getInitials(name?: string): string {
+    if (!name) return '??';
+    const parts = name.trim().split(/\s+/).filter(Boolean);
+    if (parts.length === 0) return '??';
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  }
+
+  function formatLocationDisplay(loc?: string): { short: string; full: string } {
+    if (!loc) return { short: '—', full: '' };
+    const trimmed = loc.trim();
+    const lower = trimmed.toLowerCase();
+    if (lower.includes('sector 63') && lower.includes('noida')) {
+      return { short: 'Noida (Sec 63 HQ)', full: trimmed };
+    }
+    if (lower.includes('noida')) {
+      return { short: 'Noida Hub', full: trimmed };
+    }
+    const parts = trimmed
+      .split(',')
+      .map((p) => p.trim())
+      .filter(Boolean);
+    if (parts.length > 2) {
+      return { short: `${parts[0]}, ${parts[1]}`, full: trimmed };
+    }
+    return { short: trimmed, full: trimmed };
+  }
 
   return (
     <div className="dark:bg-brand-dark-surface/80 relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/90 p-4 shadow-xl backdrop-blur-xl transition-colors duration-300 sm:p-6 dark:border-white/10">
@@ -268,22 +296,22 @@ export function OfferLetterTable({
             )}
           </div>
         ) : (
-          <table className="w-full min-w-[980px] font-sans text-xs">
+          <table className="w-full min-w-[940px] font-sans text-xs">
             <thead>
               <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
                 {[
-                  { label: 'DATE & TIME', align: 'text-left' },
-                  { label: 'CANDIDATE NAME', align: 'text-left' },
-                  { label: 'DESIGNATION', align: 'text-left' },
-                  { label: 'DEPARTMENT', align: 'text-left' },
-                  { label: 'LOCATION', align: 'text-left' },
-                  { label: 'CTC (MONTHLY)', align: 'text-right' },
-                  { label: 'STATUS', align: 'text-center' },
-                  { label: 'ACTIONS', align: 'text-right' },
+                  { label: 'DATE & TIME', align: 'text-left', width: 'w-32' },
+                  { label: 'CANDIDATE', align: 'text-left', width: 'w-[260px]' },
+                  { label: 'DESIGNATION', align: 'text-left', width: 'w-28' },
+                  { label: 'DEPARTMENT', align: 'text-left', width: 'w-28' },
+                  { label: 'LOCATION', align: 'text-left', width: 'w-36' },
+                  { label: 'CTC', align: 'text-right', width: 'w-28' },
+                  { label: 'STATUS', align: 'text-center', width: 'w-24' },
+                  { label: 'ACTIONS', align: 'text-right', width: 'w-32' },
                 ].map((h) => (
                   <th
                     key={h.label}
-                    className={`px-5 py-4 text-[10px] font-bold tracking-[0.15em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
+                    className={`px-3.5 py-3 text-[10px] font-bold tracking-[0.12em] text-gray-500 uppercase dark:text-gray-400 ${h.align} ${h.width}`}
                   >
                     {h.label}
                   </th>
@@ -302,6 +330,8 @@ export function OfferLetterTable({
                 const isCompleted = record.status === 'completed';
 
                 const isHighlighted = highlightedId === record.id;
+                const locInfo = formatLocationDisplay(record.form_data?.location);
+
                 return (
                   <motion.tr
                     key={record.id}
@@ -309,22 +339,24 @@ export function OfferLetterTable({
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
-                    className={`group transition-all ${
+                    className={`group transition-all duration-200 ${
                       isHighlighted
-                        ? 'border-l-brand-gold bg-brand-gold/[0.08] ring-brand-gold/30 dark:bg-brand-gold/[0.12] border-l-4 shadow-sm ring-1'
+                        ? 'bg-brand-gold/[0.06] shadow-[inset_3px_0_0_0_#d4af37] dark:bg-amber-400/[0.05] dark:shadow-[inset_3px_0_0_0_#d4af37]'
                         : 'hover:bg-gray-50/70 dark:hover:bg-white/[0.03]'
                     }`}
                   >
                     {/* Date & Time */}
-                    <td className="px-5 py-3.5 align-middle whitespace-nowrap">
-                      <div className="flex items-center gap-1.5">
-                        <Calendar className="h-3 w-3 shrink-0 text-gray-400" />
+                    <td className="px-3.5 py-3 align-middle whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-gray-200/60 bg-gray-100 text-gray-500 dark:border-white/10 dark:bg-white/5 dark:text-gray-400">
+                          <Calendar className="h-3.5 w-3.5" />
+                        </div>
                         <div className="flex flex-col">
-                          <span className="font-mono text-[11px] font-medium text-gray-800 tabular-nums dark:text-gray-200">
+                          <span className="font-mono text-xs font-semibold text-gray-800 tabular-nums dark:text-gray-200">
                             {date}
                           </span>
                           {time && (
-                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                            <span className="font-mono text-[10px] text-gray-400 dark:text-gray-500">
                               {time}
                             </span>
                           )}
@@ -332,68 +364,109 @@ export function OfferLetterTable({
                       </div>
                     </td>
 
-                    {/* Candidate Name */}
-                    <td className="px-5 py-3.5 align-middle">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                            {record.form_data?.name || 'N/A'}
-                          </span>
-                          {isHighlighted && (
-                            <span className="border-brand-gold/40 bg-brand-gold/15 text-brand-gold inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase">
-                              Target Record
-                            </span>
-                          )}
+                    {/* Candidate Name & Contact (Strict 2-Line Hierarchy) */}
+                    <td className="px-3.5 py-3 align-middle">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-xs font-bold uppercase shadow-2xs transition-transform group-hover:scale-105 ${
+                            isHighlighted
+                              ? 'from-brand-gold text-brand-navy bg-gradient-to-br via-amber-400 to-amber-500 font-black shadow-md shadow-amber-500/20'
+                              : 'border-brand-gold/25 bg-brand-gold/10 text-brand-gold dark:bg-brand-gold/15 border'
+                          }`}
+                        >
+                          {getInitials(record.form_data?.name)}
                         </div>
-                        {record.form_data?.mobileNo && (
-                          <div className="font-mono text-[10px] text-gray-400 dark:text-gray-500">
-                            {record.form_data.mobileNo}
+
+                        <div className="min-w-0 flex-1">
+                          <div className="flex items-center gap-1.5">
+                            <span className="group-hover:text-brand-gold truncate text-xs font-bold tracking-tight text-gray-900 capitalize transition-colors dark:text-white">
+                              {record.form_data?.name || 'N/A'}
+                            </span>
+                            {isHighlighted && (
+                              <span className="border-brand-gold/50 bg-brand-gold/20 py-0.2 text-brand-gold inline-flex shrink-0 items-center gap-1 rounded-full border px-2 text-[9px] font-extrabold tracking-wider uppercase shadow-2xs">
+                                <Sparkles className="h-2.5 w-2.5" /> Target
+                              </span>
+                            )}
                           </div>
-                        )}
+
+                          <div className="mt-0.5 flex items-center gap-1.5 text-[11px] text-gray-400">
+                            {record.form_data?.mobileNo && (
+                              <span className="shrink-0 font-mono text-gray-500 dark:text-gray-400">
+                                {record.form_data.mobileNo}
+                              </span>
+                            )}
+                            {record.form_data?.mobileNo && record.form_data?.emailId && (
+                              <span className="text-gray-300 dark:text-gray-600">&bull;</span>
+                            )}
+                            {record.form_data?.emailId && (
+                              <span
+                                className="max-w-[150px] truncate text-gray-400 hover:text-gray-300"
+                                title={record.form_data.emailId}
+                              >
+                                {record.form_data.emailId}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </td>
 
                     {/* Designation */}
-                    <td className="px-5 py-3.5 align-middle font-medium whitespace-nowrap text-gray-700 capitalize dark:text-gray-300">
-                      {record.form_data?.designation || 'N/A'}
-                    </td>
-
-                    {/* Department */}
-                    <td className="px-5 py-3.5 align-middle">
-                      <span className="inline-block rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-medium whitespace-nowrap text-gray-700 capitalize dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
-                        {record.form_data?.department || 'N/A'}
+                    <td className="px-3.5 py-3 align-middle whitespace-nowrap">
+                      <span className="text-xs font-medium text-gray-800 capitalize dark:text-gray-200">
+                        {record.form_data?.designation || 'N/A'}
                       </span>
                     </td>
 
-                    {/* Location */}
-                    <td className="px-5 py-3.5 align-middle">
+                    {/* Department */}
+                    <td className="px-3.5 py-3 align-middle whitespace-nowrap">
+                      {record.form_data?.department ? (
+                        <span className="inline-flex items-center gap-1 text-xs font-medium text-gray-600 capitalize dark:text-gray-300">
+                          <Briefcase className="h-3 w-3 text-gray-400" />
+                          {record.form_data.department}
+                        </span>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
+
+                    {/* Office Location */}
+                    <td className="px-3.5 py-3 align-middle whitespace-nowrap">
                       {record.form_data?.location ? (
-                        <div
-                          className="flex max-w-[200px] items-center gap-1 text-gray-600 dark:text-gray-400"
-                          title={record.form_data.location}
+                        <span
+                          className="inline-flex items-center gap-1 text-xs font-medium text-gray-600 dark:text-gray-300"
+                          title={locInfo.full}
                         >
-                          <MapPin className="h-3 w-3 shrink-0 text-amber-500/70" />
-                          <span className="truncate text-xs font-medium">
-                            {record.form_data.location}
-                          </span>
-                        </div>
+                          <MapPin className="h-3 w-3 shrink-0 text-amber-500/75" />
+                          <span>{locInfo.short}</span>
+                        </span>
                       ) : (
                         <span className="text-gray-400">—</span>
                       )}
                     </td>
 
                     {/* CTC */}
-                    <td className="px-5 py-3.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
-                      {formattedCtc}
+                    <td className="px-3.5 py-3 text-right align-middle whitespace-nowrap">
+                      <div className="flex flex-col items-end">
+                        <span className="font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
+                          {formattedCtc}
+                          <span className="ml-1 text-[10px] font-normal text-gray-400">/mo</span>
+                        </span>
+                        {ctc > 0 && (
+                          <span className="text-brand-gold/90 font-mono text-[10px] font-medium">
+                            ₹{((ctc * 12) / 100000).toFixed(2)} L/yr
+                          </span>
+                        )}
+                      </div>
                     </td>
 
                     {/* Status */}
-                    <td className="px-5 py-3.5 text-center align-middle">
+                    <td className="px-3.5 py-3 text-center align-middle whitespace-nowrap">
                       <span
-                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap ${
+                        className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wide uppercase ${
                           isCompleted
-                            ? 'border-emerald-500/25 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
-                            : 'border-amber-500/25 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                            ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:border-emerald-500/20 dark:bg-emerald-500/15 dark:text-emerald-400'
+                            : 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:border-amber-500/20 dark:bg-amber-500/15 dark:text-amber-400'
                         }`}
                       >
                         <span
@@ -406,21 +479,21 @@ export function OfferLetterTable({
                     </td>
 
                     {/* Actions */}
-                    <td className="px-5 py-3.5 text-right align-middle">
+                    <td className="px-3.5 py-3 text-right align-middle whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => onView(record)}
-                          className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
-                          title="View & Print Offer Letter"
-                          aria-label="View & Print"
+                          className="hover:border-brand-gold/50 hover:bg-brand-gold/10 hover:text-brand-gold dark:hover:border-brand-gold/50 dark:hover:bg-brand-gold/15 dark:hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
+                          title="View & Download Offer Letter"
+                          aria-label="View & Download"
                         >
                           <Eye className="h-3.5 w-3.5" />
                         </button>
                         <Link
                           href={`/admin/offer-letter?templateId=${record.id}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
-                          title="Use as Template"
-                          aria-label="Use as Template"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-blue-400/50 dark:hover:bg-blue-400/15 dark:hover:text-blue-400"
+                          title="Edit in Generator / Use as Template"
+                          aria-label="Edit in Generator"
                         >
                           <FileText className="h-3.5 w-3.5" />
                         </Link>
@@ -429,7 +502,7 @@ export function OfferLetterTable({
                             sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
                             window.location.href = '/admin/email?tab=compose&prefillOffer=true';
                           }}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-purple-500/50 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-purple-400/50 dark:hover:bg-purple-400/15 dark:hover:text-purple-400"
                           title="Email Offer Letter to Candidate"
                           aria-label="Email Candidate"
                         >
@@ -437,7 +510,7 @@ export function OfferLetterTable({
                         </button>
                         <button
                           onClick={() => onDelete(record)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-rose-400/50 dark:hover:bg-rose-400/15 dark:hover:text-rose-400"
                           title="Delete Offer Letter"
                           aria-label="Delete Record"
                         >
