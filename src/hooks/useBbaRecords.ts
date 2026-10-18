@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { SavedBba } from '@/src/types/bba';
+import { DEFAULT_COMPANY_INFO } from '@/src/lib/constants/companyInfo';
 
 export function calculateTotalCost(formData?: SavedBba['form_data']) {
   if (!formData) return 0;
@@ -31,11 +32,7 @@ export function useBbaRecords(token: string | null) {
   const [imageLoading, setImageLoading] = useState(false);
   const [projects, setProjects] = useState<string[]>(['Shyam Aangan', 'Shyam Aangan Farm House']);
   const [companyInfo, setCompanyInfo] = useState({
-    company_name: 'Svi Infra Solutions Pvt. Ltd.',
-    company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
-    company_email: 'info@sviinfrasolutions.com',
-    company_phone: '+91 9216014579',
-    company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
+    ...DEFAULT_COMPANY_INFO,
     bank_account_name: 'Svi Infra Solutions Pvt. Ltd.',
     bank_account_no: '0894102000013837',
     bank_name: 'IDBI BANK',

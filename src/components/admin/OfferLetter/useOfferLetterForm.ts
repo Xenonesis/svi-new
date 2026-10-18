@@ -7,6 +7,9 @@ import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { SALARY_SLABS } from '@/src/components/admin/OfferLetter/SlabSelector';
 import { SALES_DESIGNATIONS } from '@/src/components/admin/OfferLetter/types';
 import type { OfferLetterFormData, SavedOffer } from '@/src/components/admin/OfferLetter/types';
+import { DEFAULT_COMPANY_INFO, type CompanyInfo } from '@/src/lib/constants/companyInfo';
+
+export type { CompanyInfo };
 
 export const INITIAL_FORM_DATA: OfferLetterFormData = {
   date: '',
@@ -57,13 +60,7 @@ export const INITIAL_FORM_DATA: OfferLetterFormData = {
 
 export function useOfferLetterForm() {
   const { token } = useAuthStore();
-  const [companyInfo, setCompanyInfo] = useState({
-    company_name: 'SVI Infra Solutions Pvt. Ltd.',
-    company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
-    company_email: 'info@sviinfrasolutions.com',
-    company_phone: '+91 9216014579',
-    company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
-  });
+  const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(DEFAULT_COMPANY_INFO);
 
   const [formData, setFormData] = useState<OfferLetterFormData>(INITIAL_FORM_DATA);
   const [showSalesOptions, setShowSalesOptions] = useState(false);

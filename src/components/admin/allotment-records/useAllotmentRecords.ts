@@ -5,13 +5,10 @@ import { supabase } from '@/src/lib/supabase/client';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { SavedAllotment, CompanyInfo } from './types';
+import { DEFAULT_COMPANY_INFO } from '@/src/lib/constants/companyInfo';
 
 export const defaultCompanyInfo: CompanyInfo = {
-  company_name: 'SVI Infra Solutions Pvt. Ltd.',
-  company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
-  company_email: 'info@sviinfrasolutions.com',
-  company_phone: '+91 9216014579',
-  company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
+  ...DEFAULT_COMPANY_INFO,
   bank_account_name: 'Svi Infra Solutions Pvt. Ltd',
   bank_account_no: '0894102000013837',
   bank_name: 'IDBI BANK',

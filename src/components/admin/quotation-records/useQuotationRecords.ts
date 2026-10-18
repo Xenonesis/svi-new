@@ -6,17 +6,17 @@ import { useAuthStore } from '@/src/stores/authStore';
 import type { SavedQuotation, CompanyInfo } from '@/src/lib/quotation/types';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
-export const DEFAULT_COMPANY_INFO: CompanyInfo = {
-  company_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
-  company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
-  company_email: 'info@sviinfrasolutions.com',
-  company_phone: '+91 9216014579',
-  company_website: 'www.sviinfrasolutions.in',
+import { DEFAULT_COMPANY_INFO } from '@/src/lib/constants/companyInfo';
+
+export const defaultCompanyInfo: CompanyInfo = {
+  ...DEFAULT_COMPANY_INFO,
   bank_name: 'IDBI Bank Ltd.',
   bank_account_no: '0894102000013837',
   bank_ifsc: 'IBKL0000894',
   bank_account_name: 'SVI INFRA SOLUTIONS PVT. LTD.',
 };
+
+export { DEFAULT_COMPANY_INFO };
 
 export interface UseQuotationRecordsOptions {
   initialQuotations?: SavedQuotation[];
@@ -60,7 +60,7 @@ export function useQuotationRecords(
 ): UseQuotationRecordsReturn {
   const {
     initialQuotations = [],
-    initialCompanyInfo = DEFAULT_COMPANY_INFO,
+    initialCompanyInfo = DEFAULT_COMPANY_INFO as CompanyInfo,
     autoFetch = true,
   } = options;
 

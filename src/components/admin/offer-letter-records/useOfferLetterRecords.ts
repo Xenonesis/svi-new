@@ -5,21 +5,9 @@ import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { SavedOfferLetter } from '@/src/components/admin/OfferLetter/types';
 
-export interface CompanyInfo {
-  company_name: string;
-  company_address: string;
-  company_email: string;
-  company_phone: string;
-  company_website: string;
-}
+import { DEFAULT_COMPANY_INFO, type CompanyInfo } from '@/src/lib/constants/companyInfo';
 
-const DEFAULT_COMPANY_INFO: CompanyInfo = {
-  company_name: 'SVI Infra Solutions Pvt. Ltd.',
-  company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
-  company_email: 'info@sviinfrasolutions.com',
-  company_phone: '+91 9216014579',
-  company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
-};
+export type { CompanyInfo };
 
 export interface UseOfferLetterRecordsOptions {
   targetId?: string | null;

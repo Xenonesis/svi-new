@@ -5,6 +5,7 @@ export interface SavedAllotment {
   created_at: string;
   form_data: {
     clientName: string;
+    applicantName?: string;
     salutation: string;
     address: string;
     ticketId: string;
