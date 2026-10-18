@@ -1,5 +1,7 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
+import { ActiveAllotmentTicketDropdown } from '@/src/components/admin/allotment-shared/ActiveAllotmentTicketDropdown';
+import type { ActiveAllotmentOption } from '@/src/components/admin/allotment-shared/types';
 import { RefreshCw, Plus, Loader2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 interface BBAFormProps {
@@ -25,6 +27,9 @@ interface BBAFormProps {
   isSubmitting?: boolean;
   totalCost: number;
   initialPayment: number;
+  activeAllotments?: ActiveAllotmentOption[];
+  loadingActiveAllotments?: boolean;
+  handleSelectAllotment?: (allotment: ActiveAllotmentOption) => void;
 }
 
 export function BBAForm({
@@ -48,6 +53,9 @@ export function BBAForm({
   isSubmitting,
   totalCost,
   initialPayment,
+  activeAllotments = [],
+  loadingActiveAllotments = false,
+  handleSelectAllotment,
 }: BBAFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
@@ -227,11 +235,16 @@ export function BBAForm({
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-        <FormField
-          label="Ticket ID"
-          name="ticketId"
+        <ActiveAllotmentTicketDropdown
           value={formData.ticketId}
-          onChange={handleChange}
+          onChange={(newTicket) => {
+            handleChange({
+              target: { name: 'ticketId', value: newTicket },
+            } as unknown as React.ChangeEvent<HTMLInputElement>);
+          }}
+          onSelectAllotment={handleSelectAllotment}
+          allotments={activeAllotments}
+          loading={loadingActiveAllotments}
           required
         />
 

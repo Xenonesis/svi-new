@@ -120,7 +120,14 @@ export function PortalAllotmentTableRowV2({
 
   // Metadata
   const bookingDate = (allotment.metadata?.booking_date as string) || allotment.booking_date;
-  const unitNumber = allotment.unit_no || allotment.unit_number || '—';
+  const rawUnit = allotment.unit_no || allotment.unit_number || '—';
+  const plotPreference =
+    (allotment.metadata?.plot_preference as string) ||
+    (allotment.metadata?.plotPreference as string) ||
+    '';
+  const isParkOnly = String(rawUnit).trim().toLowerCase() === 'park';
+  const unitNumber = isParkOnly ? (plotPreference ? '—' : 'Unassigned') : rawUnit;
+  const effectivePreference = plotPreference || (isParkOnly ? 'park' : '');
   const propertyName = allotment.properties?.name || 'Assigned Property';
   const area = allotment.metadata?.area ?? allotment.area;
   const clientName =
@@ -166,7 +173,11 @@ export function PortalAllotmentTableRowV2({
               />
             )}
             <span className="font-mono text-xs font-bold text-slate-900 dark:text-white">
-              Unit {unitNumber}
+              {unitNumber === '—' || unitNumber === 'Unassigned'
+                ? unitNumber
+                : unitNumber.startsWith('Unit')
+                  ? unitNumber
+                  : `Unit ${unitNumber}`}
             </span>
             <span className="font-mono text-[11px] text-slate-500">{rawTicketId}</span>
           </div>
@@ -267,13 +278,27 @@ export function PortalAllotmentTableRowV2({
           {rawTicketId}
         </td>
 
-        {/* Unit */}
-        <td className="w-[90px] border-r border-slate-200 px-3 py-3 align-middle font-mono whitespace-nowrap dark:border-white/[0.08]">
-          <span className="inline-flex items-center rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-900 dark:bg-white/10 dark:text-white">
-            {unitNumber.startsWith('Unit') ? unitNumber : `Unit ${unitNumber}`}
-          </span>
+        {/* Unit & Preference */}
+        <td className="w-[100px] border-r border-slate-200 px-3 py-3 align-middle font-mono whitespace-nowrap dark:border-white/[0.08]">
+          <div className="flex flex-col items-start gap-1">
+            <span className="inline-flex items-center rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-900 dark:bg-white/10 dark:text-white">
+              {unitNumber === '—' || unitNumber === 'Unassigned'
+                ? unitNumber
+                : unitNumber.startsWith('Unit')
+                  ? unitNumber
+                  : `Unit ${unitNumber}`}
+            </span>
+            {effectivePreference && (
+              <span className="py-0.2 inline-flex items-center rounded bg-amber-50 px-1.5 text-[10px] font-semibold text-amber-700 capitalize dark:bg-amber-500/10 dark:text-amber-400">
+                {effectivePreference === 'park'
+                  ? 'Park Facing'
+                  : effectivePreference === 'main-road'
+                    ? 'Main Road'
+                    : effectivePreference}
+              </span>
+            )}
+          </div>
         </td>
-
         {/* Property */}
         <td className="border-r border-slate-200 px-3 py-3 align-middle dark:border-white/[0.08]">
           <span className="font-medium whitespace-nowrap text-slate-900 dark:text-white">

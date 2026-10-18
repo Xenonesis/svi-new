@@ -1,5 +1,7 @@
 import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
+import { ActiveAllotmentTicketDropdown } from '@/src/components/admin/allotment-shared/ActiveAllotmentTicketDropdown';
+import type { ActiveAllotmentOption } from '@/src/components/admin/allotment-shared/types';
 import { RefreshCw } from 'lucide-react';
 import Link from 'next/link';
 
@@ -24,7 +26,35 @@ export function AllotmentLetterForm({
   bookingPercent,
   initialPayment,
   edcInEmi,
-}: any) {
+  activeAllotments = [],
+  loadingActiveAllotments = false,
+  handleSelectAllotment,
+}: {
+  formData: any;
+  setFormData: any;
+  advisors: any;
+  projects: any;
+  isCustomAdvisor: boolean;
+  setIsCustomAdvisor: (val: boolean) => void;
+  isCustomSecondPaymentDays: boolean;
+  setIsCustomSecondPaymentDays: (val: boolean) => void;
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => void;
+  getCustomDateValue: () => string;
+  handleCustomDateChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleSecondPaymentDaysChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleAdvisorChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
+  handleSubmit: (e?: React.FormEvent) => void;
+  isSaving: boolean;
+  totalCost: number;
+  bookingPercent: number;
+  initialPayment: number;
+  edcInEmi: boolean;
+  activeAllotments?: ActiveAllotmentOption[];
+  loadingActiveAllotments?: boolean;
+  handleSelectAllotment?: (allotment: ActiveAllotmentOption) => void;
+}) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -54,11 +84,16 @@ export function AllotmentLetterForm({
           onChange={handleChange}
           required
         />
-        <FormField
-          label="Ticket ID"
-          name="ticketId"
+        <ActiveAllotmentTicketDropdown
           value={formData.ticketId}
-          onChange={handleChange}
+          onChange={(newTicket) => {
+            handleChange({
+              target: { name: 'ticketId', value: newTicket },
+            } as unknown as React.ChangeEvent<HTMLInputElement>);
+          }}
+          onSelectAllotment={handleSelectAllotment}
+          allotments={activeAllotments}
+          loading={loadingActiveAllotments}
           required
         />
         <FormField

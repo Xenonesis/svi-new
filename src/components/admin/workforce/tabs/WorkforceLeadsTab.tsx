@@ -76,6 +76,7 @@ export interface WorkforceLeadsTabProps {
   token: string;
   employees: Employee[];
   fixedSource?: string;
+  excludeSource?: string;
 }
 
 const LIFECYCLE_STATUS_OPTIONS = [
@@ -90,7 +91,12 @@ const LIFECYCLE_STATUS_OPTIONS = [
   { value: 'lost', label: 'Lost / Closed' },
 ];
 
-export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLeadsTabProps) {
+export function WorkforceLeadsTab({
+  token,
+  employees,
+  fixedSource,
+  excludeSource,
+}: WorkforceLeadsTabProps) {
   const [mounted, setMounted] = useState(false);
   useEffect(() => {
     setMounted(true);
@@ -179,7 +185,7 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
   // Fetch leads from /api/admin/leads
   const fetchLeads = useCallback(
     async (force = false) => {
-      const cacheKey = `${page}_${debouncedSearch.trim()}_${sourceFilter}_${statusFilter}_${temperatureFilter}_${assignedFilter}`;
+      const cacheKey = `${page}_${debouncedSearch.trim()}_${sourceFilter}_${statusFilter}_${temperatureFilter}_${assignedFilter}_${excludeSource || ''}`;
       const cached = leadsCacheRef.current.get(cacheKey);
       const now = Date.now();
 
@@ -203,7 +209,7 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
         if (statusFilter !== 'all') params.set('status', statusFilter);
         if (temperatureFilter !== 'all') params.set('temperature', temperatureFilter);
         if (assignedFilter !== 'all') params.set('assigned_to', assignedFilter);
-
+        if (excludeSource) params.set('exclude_source', excludeSource);
         const headers: Record<string, string> = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
 
@@ -237,7 +243,16 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
         setLoading(false);
       }
     },
-    [token, page, debouncedSearch, sourceFilter, statusFilter, temperatureFilter, assignedFilter]
+    [
+      token,
+      page,
+      debouncedSearch,
+      sourceFilter,
+      statusFilter,
+      temperatureFilter,
+      assignedFilter,
+      excludeSource,
+    ]
   );
 
   useEffect(() => {
@@ -599,12 +614,6 @@ export function WorkforceLeadsTab({ token, employees, fixedSource }: WorkforceLe
                 className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
               >
                 AI Chatbot Leads
-              </option>
-              <option
-                value="ivr"
-                className="bg-white text-gray-900 dark:bg-[#161D2C] dark:text-white"
-              >
-                IVR Dialer Campaigns
               </option>
               <option
                 value="whatsapp"

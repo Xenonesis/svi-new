@@ -34,6 +34,7 @@ export async function GET(request: NextRequest) {
     const offset = (page - 1) * limit;
 
     const source = searchParams.get('source');
+    const excludeSource = searchParams.get('exclude_source');
     const temperature = searchParams.get('temperature');
     const status = searchParams.get('status');
     const assignedTo = searchParams.get('assigned_to');
@@ -47,6 +48,9 @@ export async function GET(request: NextRequest) {
       query = query.in('source', ['exit_intent', 'site_visit', 'chatbot', 'website']);
     } else if (source && source !== 'all') {
       query = query.eq('source', source);
+    }
+    if (excludeSource) {
+      query = query.neq('source', excludeSource);
     }
     if (temperature && temperature !== 'all') {
       query = query.eq('temperature', temperature);
@@ -149,9 +153,55 @@ export async function GET(request: NextRequest) {
       exit_intent: 0,
       website_inquiries: 0,
     };
-
     const now = Date.now();
-    if (cachedChatLeadsCounts && now - cachedChatLeadsCounts.timestamp < CHAT_LEADS_COUNTS_TTL_MS) {
+    if (excludeSource === 'ivr') {
+      const [totalRes, unassignedRes, hotRes, chatbotRes, siteVisitRes, exitIntentRes] =
+        await Promise.all([
+          supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .neq('source', 'ivr'),
+          supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .neq('source', 'ivr')
+            .is('assigned_to', null),
+          supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .neq('source', 'ivr')
+            .eq('temperature', 'hot'),
+          supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .eq('source', 'chatbot'),
+          supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .eq('source', 'site_visit'),
+          supabaseAdmin
+            .from('chat_leads')
+            .select('id', { count: 'exact', head: true })
+            .eq('source', 'exit_intent'),
+        ]);
+
+      const chatbotCount = chatbotRes.count || 0;
+      const siteVisitCount = siteVisitRes.count || 0;
+      const exitIntentCount = exitIntentRes.count || 0;
+
+      counts = {
+        total: totalRes.count || 0,
+        unassigned: unassignedRes.count || 0,
+        hot: hotRes.count || 0,
+        chatbot: chatbotCount,
+        site_visits: siteVisitCount,
+        exit_intent: exitIntentCount,
+        website_inquiries: chatbotCount + siteVisitCount + exitIntentCount,
+      };
+    } else if (
+      cachedChatLeadsCounts &&
+      now - cachedChatLeadsCounts.timestamp < CHAT_LEADS_COUNTS_TTL_MS
+    ) {
       counts = cachedChatLeadsCounts.counts;
     } else {
       try {

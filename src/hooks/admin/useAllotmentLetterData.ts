@@ -2,7 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import { toast } from 'sonner';
 import { registerDynamicProjectLocations } from '@/src/lib/utils/projectLocations';
-
+import type { ActiveAllotmentOption } from '@/src/components/admin/allotment-shared/types';
+import { formatTicketId } from '@/src/lib/allotment/ticketUtils';
 export interface Advisor {
   full_name: string;
   phone: string | null;
@@ -72,6 +73,8 @@ export function useAllotmentLetterData(token: string | null) {
   const [savedAllotments, setSavedAllotments] = useState<any[]>([]);
   const [loadingRecords, setLoadingRecords] = useState(false);
   const [selectedRecordId, setSelectedRecordId] = useState('');
+  const [activeAllotments, setActiveAllotments] = useState<ActiveAllotmentOption[]>([]);
+  const [loadingActiveAllotments, setLoadingActiveAllotments] = useState(false);
 
   // Load Projects
   useEffect(() => {
@@ -169,6 +172,73 @@ export function useAllotmentLetterData(token: string | null) {
     loadSavedAllotments();
   }, [loadSavedAllotments]);
 
+  // Load Active Allotments from Portal Allotments suite
+  const loadActiveAllotments = useCallback(async () => {
+    if (!token) return;
+    setLoadingActiveAllotments(true);
+    try {
+      const res = await fetch('/api/admin/portal-allotments/manage', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to fetch active allotments');
+      const json = await res.json();
+      if (Array.isArray(json.allotments)) {
+        setActiveAllotments(json.allotments);
+      }
+    } catch (err) {
+      console.error('Error loading active allotments:', err);
+    } finally {
+      setLoadingActiveAllotments(false);
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadActiveAllotments();
+  }, [loadActiveAllotments]);
+  const handleSelectAllotment = useCallback(
+    (allotment: ActiveAllotmentOption) => {
+      // Find matching project
+      const matchedProject =
+        projects.find(
+          (p) =>
+            p.label.toLowerCase() === allotment.projectName.toLowerCase() ||
+            p.value.toLowerCase() === allotment.projectName.toLowerCase()
+        )?.value ||
+        allotment.projectName ||
+        formData.projectName;
+
+      // Check if advisor is custom
+      const matchedAdv = advisors.find(
+        (adv) =>
+          adv.full_name.toLowerCase() === allotment.advisorName.toLowerCase() ||
+          (adv.full_name &&
+            allotment.advisorName &&
+            adv.full_name.toLowerCase().includes(allotment.advisorName.toLowerCase()))
+      );
+
+      setIsCustomAdvisor(!matchedAdv && Boolean(allotment.advisorName));
+
+      setFormData((prev) => ({
+        ...prev,
+        ticketId: allotment.ticketId,
+        clientName: allotment.clientName || prev.clientName,
+        address: allotment.address || prev.address,
+        aadharNumber: allotment.aadharNumber || prev.aadharNumber,
+        fatherName: allotment.fatherName || prev.fatherName,
+        projectName: matchedProject,
+        unitNumber: allotment.unitNumber !== 'Unassigned' ? allotment.unitNumber : prev.unitNumber,
+        area: allotment.area || prev.area,
+        bsp: allotment.bsp || prev.bsp,
+        advisorName: matchedAdv?.full_name || allotment.advisorName || prev.advisorName,
+        advisorNumber: matchedAdv?.phone || prev.advisorNumber,
+        advisorEmail: matchedAdv?.email || prev.advisorEmail,
+        bookingDate: allotment.allottedDate || prev.bookingDate,
+      }));
+
+      toast.success(`Loaded details for Ticket ${allotment.ticketId} (${allotment.clientName})`);
+    },
+    [advisors, projects, formData.projectName]
+  );
   // Load Company Info
   useEffect(() => {
     if (!token) return;
@@ -485,6 +555,10 @@ export function useAllotmentLetterData(token: string | null) {
     refreshRecords: loadSavedAllotments,
     selectedRecordId,
     setSelectedRecordId,
+    activeAllotments,
+    loadingActiveAllotments,
+    refreshActiveAllotments: loadActiveAllotments,
+    handleSelectAllotment,
     loadFromRecord,
     handleAdvisorChange,
     getCustomDateValue,

@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { supabase } from '@/src/lib/supabase/client';
 import { useSearchParams } from 'next/navigation';
+import type { BbaFormData } from '@/src/components/admin/bba/hooks/useBbaPage';
 import { registerDynamicProjectLocations } from '@/src/lib/utils/projectLocations';
-
+import type { ActiveAllotmentOption } from '@/src/components/admin/allotment-shared/types';
+import { formatTicketId } from '@/src/lib/allotment/ticketUtils';
 export interface Advisor {
   full_name: string;
   phone: string | null;
@@ -23,7 +25,8 @@ export function useBBAData(token: string | null) {
     { value: 'Shyam Aangan Farm House', label: 'Shyam Aangan Farm House' },
     { value: 'Shivani Vatika 11th', label: 'Shivani Vatika 11th' },
   ]);
-
+  const [activeAllotments, setActiveAllotments] = useState<ActiveAllotmentOption[]>([]);
+  const [loadingActiveAllotments, setLoadingActiveAllotments] = useState(false);
   const [companyInfo, setCompanyInfo] = useState({
     company_name: 'Svi Infra Solutions Pvt. Ltd.',
     company_address: 'Block E-220, 2nd Floor, Sector 63, Noida, Uttar Pradesh 201309',
@@ -36,7 +39,7 @@ export function useBBAData(token: string | null) {
     bank_ifsc: 'IBKL0000894',
   });
 
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<BbaFormData>({
     salutation: '',
     clientName: '',
     aadharNumber: '',
@@ -72,6 +75,13 @@ export function useBBAData(token: string | null) {
     emiCount: '12',
     emiStartDate: '',
     language: 'en',
+    mobileNumber: '',
+    email: '',
+    panNumber: '',
+    nomineeName: '',
+    nomineeRelation: '',
+    nomineeAge: '',
+    nomineeAddress: '',
   });
 
   const [preview, setPreview] = useState(false);
@@ -173,6 +183,78 @@ export function useBBAData(token: string | null) {
       .catch((err) => console.error('Error fetching company info:', err));
   }, [token]);
 
+  // Load Active Allotments from Portal Allotments suite
+  useEffect(() => {
+    if (!token) return;
+    let isCancelled = false;
+    setLoadingActiveAllotments(true);
+
+    fetch('/api/admin/portal-allotments/manage', {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error('Failed to fetch active allotments');
+        return res.json();
+      })
+      .then((json) => {
+        if (!isCancelled && Array.isArray(json.allotments)) {
+          setActiveAllotments(json.allotments);
+        }
+      })
+      .catch((err) => console.error('Error loading active allotments in BBA:', err))
+      .finally(() => {
+        if (!isCancelled) setLoadingActiveAllotments(false);
+      });
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [token]);
+  const handleSelectAllotment = (allotment: ActiveAllotmentOption) => {
+    // Find matching project
+    const matchedProject =
+      projects.find(
+        (p) =>
+          p.label.toLowerCase() === allotment.projectName.toLowerCase() ||
+          p.value.toLowerCase() === allotment.projectName.toLowerCase()
+      )?.value ||
+      allotment.projectName ||
+      formData.projectName;
+
+    // Check if advisor is custom
+    const matchedAdv = advisors.find(
+      (adv) =>
+        adv.full_name.toLowerCase() === allotment.advisorName.toLowerCase() ||
+        (adv.full_name &&
+          allotment.advisorName &&
+          adv.full_name.toLowerCase().includes(allotment.advisorName.toLowerCase()))
+    );
+
+    setIsCustomAdvisor(!matchedAdv && Boolean(allotment.advisorName));
+
+    setFormData((prev) => ({
+      ...prev,
+      ticketId: allotment.ticketId,
+      clientName: allotment.clientName || prev.clientName,
+      aadharNumber: allotment.aadharNumber || prev.aadharNumber,
+      fatherName: allotment.fatherName || prev.fatherName,
+      mobileNumber: allotment.phone || prev.mobileNumber,
+      email: allotment.email || prev.email,
+      panNumber: allotment.panNumber || prev.panNumber,
+      addressLine1: allotment.address || prev.addressLine1,
+      city: allotment.city || prev.city,
+      state: allotment.state || prev.state,
+      pincode: allotment.pincode || prev.pincode,
+      projectName: matchedProject,
+      unitNumber: allotment.unitNumber !== 'Unassigned' ? allotment.unitNumber : prev.unitNumber,
+      area: allotment.area || prev.area,
+      bsp: allotment.bsp || prev.bsp,
+      advisorName: matchedAdv?.full_name || allotment.advisorName || prev.advisorName,
+      advisorNumber: matchedAdv?.phone || prev.advisorNumber,
+      advisorEmail: matchedAdv?.email || prev.advisorEmail,
+      bookingDate: allotment.allottedDate || prev.bookingDate,
+    }));
+  };
   // Synchronize custom advisor state
   useEffect(() => {
     if (formData.advisorName && advisors.length > 0) {
@@ -515,6 +597,9 @@ export function useBBAData(token: string | null) {
     setDocumentId,
     savedBbas,
     setSavedBbas,
+    activeAllotments,
+    loadingActiveAllotments,
+    handleSelectAllotment,
     handleChange,
     getCustomDateValue,
     handleCustomDateChange,

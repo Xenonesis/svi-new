@@ -19,12 +19,14 @@ import type {
 } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
 import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
+import { formatTicketId } from '@/src/lib/allotment/ticketUtils';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
 export const INITIAL_ALLOTMENT_FORM_DATA: AllotmentFormData = {
   profile_id: '',
   property_id: '',
   unit_number: '',
+  plot_preference: 'none',
   area: '',
   total_cost: '',
   booking_date: '',
@@ -491,8 +493,16 @@ export function usePortalAllotmentsAdmin() {
           ? `${window.location.origin}/api/admin/portal-allotments/candidates`
           : '/api/admin/portal-allotments/candidates';
 
-      const res = await fetch(endpoint, { headers });
+      const res = await fetch(endpoint, {
+        headers,
+        credentials: 'include',
+      });
       if (!res.ok) {
+        if (res.status === 401 || res.status === 403) {
+          // User session might not be loaded yet or expired, gracefully treat as empty candidates
+          setCandidates([]);
+          return;
+        }
         const errData = await res.json().catch(() => null);
         const msg = errData?.error?.message || `Candidates HTTP ${res.status}`;
         throw new Error(msg);
@@ -660,60 +670,61 @@ export function usePortalAllotmentsAdmin() {
     e.preventDefault();
     try {
       const existingAllotment = editingId ? allotments.find((a) => a.id === editingId) : null;
-      const existingMeta = (existingAllotment?.metadata as Record<string, any>) || {};
+      const existingMeta = (existingAllotment?.metadata as Record<string, unknown>) || {};
 
       if (editingId && existingAllotment) {
-        const isRefundDone = Boolean(
-          existingAllotment.notes?.toLowerCase().includes('refund') ||
-          existingAllotment.status?.toLowerCase().includes('refund') ||
-          existingAllotment.status?.toLowerCase().includes('cancelled') ||
-          (existingMeta?.status as string)?.toLowerCase().includes('refund') ||
-          (existingMeta?.refund_status as string)?.toLowerCase().includes('refund') ||
-          (existingMeta?.notes as string)?.toLowerCase().includes('refund') ||
-          (existingMeta?.remarks as string)?.toLowerCase().includes('refund')
-        );
+        const notesText = String(existingAllotment.notes || '').toLowerCase();
+        const statusText = String(existingAllotment.status || '').toLowerCase();
+        const metaStatus = String(existingMeta.status || '').toLowerCase();
+        const metaRefundStatus = String(existingMeta.refund_status || '').toLowerCase();
+        const metaRemarks = String(existingMeta.remarks || '').toLowerCase();
+
+        const isRefundDone =
+          notesText.includes('refund') ||
+          statusText.includes('refund') ||
+          statusText.includes('cancelled') ||
+          metaStatus.includes('refund') ||
+          metaRefundStatus.includes('refund') ||
+          metaRemarks.includes('refund');
+
         if (isRefundDone) {
           toast.error('Refunded allotments are archived and cannot be modified.');
           return;
         }
       }
 
-      const ticketVal = formData.ticket_id?.trim() || null;
-      const updatedMeta: Record<string, any> = {
-        ...existingMeta,
-        area: formData.area ? Number(formData.area) || formData.area : null,
-        total_cost: formData.total_cost ? Number(formData.total_cost) || null : null,
-        advisor_name: formData.advisor_name?.trim() || null,
+      const sessionRes = await supabase?.auth?.getSession?.();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
       };
-
-      if (ticketVal) {
-        updatedMeta.ticket_id = ticketVal;
-        updatedMeta.ticketId = ticketVal;
-      } else {
-        delete updatedMeta.ticket_id;
-        delete updatedMeta.ticketId;
-        delete updatedMeta.refId;
-        delete updatedMeta.ref_id;
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
       }
 
-      const payload = {
-        user_id: formData.profile_id,
-        property_id: formData.property_id,
-        unit_no: formData.unit_number,
-        status: existingAllotment?.status || 'Allotted',
-        allotted_date: formData.booking_date || new Date().toISOString().split('T')[0],
-        metadata: updatedMeta,
-      };
+      const res = await fetch('/api/admin/portal-allotments/manage', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          id: editingId || undefined,
+          profile_id: formData.profile_id,
+          property_id: formData.property_id,
+          unit_number: formData.unit_number,
+          plot_preference: formData.plot_preference,
+          area: formData.area,
+          total_cost: formData.total_cost,
+          booking_date: formData.booking_date,
+          advisor_name: formData.advisor_name,
+          ticket_id: formData.ticket_id,
+        }),
+      });
 
-      if (editingId) {
-        const { error } = await supabase.from('allotments').update(payload).eq('id', editingId);
-        if (error) throw error;
-        toast.success(t('allotmentUpdated'));
-      } else {
-        const { error } = await supabase.from('allotments').insert(payload);
-        if (error) throw error;
-        toast.success(t('allotmentCreated'));
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error?.message || errData?.message || 'Failed to save allotment');
       }
+
+      toast.success(editingId ? t('allotmentUpdated') : t('allotmentCreated'));
       setShowModal(false);
       await fetchAllotments();
     } catch (error: unknown) {
@@ -723,21 +734,46 @@ export function usePortalAllotmentsAdmin() {
 
   const handleDelete = async (id: string) => {
     const target = allotments.find((a) => a.id === id);
-    const isRefundDone = Boolean(
-      target?.notes?.toLowerCase().includes('refund') ||
-      target?.status?.toLowerCase().includes('refund') ||
-      target?.status?.toLowerCase().includes('cancelled') ||
-      (target?.metadata?.status as string)?.toLowerCase().includes('refund') ||
-      (target?.metadata?.refund_status as string)?.toLowerCase().includes('refund')
-    );
+    const meta = (target?.metadata as Record<string, unknown>) || {};
+    const notesText = String(target?.notes || '').toLowerCase();
+    const statusText = String(target?.status || '').toLowerCase();
+    const metaStatus = String(meta.status || '').toLowerCase();
+    const metaRefundStatus = String(meta.refund_status || '').toLowerCase();
+    const metaRemarks = String(meta.remarks || '').toLowerCase();
+
+    const isRefundDone =
+      notesText.includes('refund') ||
+      statusText.includes('refund') ||
+      statusText.includes('cancelled') ||
+      metaStatus.includes('refund') ||
+      metaRefundStatus.includes('refund') ||
+      metaRemarks.includes('refund');
+
     if (isRefundDone) {
       toast.error('Refunded allotments are archived and cannot be deleted.');
       return;
     }
     if (!confirm(t('deleteConfirmation'))) return;
     try {
-      const { error } = await supabase.from('allotments').delete().eq('id', id);
-      if (error) throw error;
+      const sessionRes = await supabase?.auth?.getSession?.();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers: Record<string, string> = {};
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
+
+      const res = await fetch(`/api/admin/portal-allotments/manage?id=${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        headers,
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(
+          errData?.error?.message || errData?.message || 'Failed to delete allotment'
+        );
+      }
+
       toast.success(t('allotmentDeleted'));
       await fetchAllotments();
       await fetchCandidates();
@@ -749,19 +785,35 @@ export function usePortalAllotmentsAdmin() {
   const togglePaymentStatus = async (paymentId: string, currentStatus: string) => {
     const newStatus = currentStatus === 'paid' ? 'pending' : 'paid';
     try {
-      const { error } = await supabase
-        .from('payment_schedules')
-        .update({
-          status: newStatus,
-          paid_date: newStatus === 'paid' ? new Date().toISOString().split('T')[0] : null,
-        })
-        .eq('id', paymentId);
+      const sessionRes = await supabase?.auth?.getSession?.();
+      const token = sessionRes?.data?.session?.access_token;
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+      };
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
 
-      if (error) throw error;
+      const res = await fetch('/api/admin/portal-allotments/manage', {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({
+          paymentId,
+          status: newStatus,
+        }),
+      });
+
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(
+          errData?.error?.message || errData?.message || 'Failed to update payment status'
+        );
+      }
+
       toast.success(t('paymentMarkedAs', { status: newStatus }));
       await fetchAllotments();
     } catch (error: unknown) {
-      toast.error(t('failedToUpdateStatus'));
+      toast.error(error instanceof Error ? error.message : t('failedToUpdateStatus'));
     }
   };
 
@@ -771,6 +823,7 @@ export function usePortalAllotmentsAdmin() {
       profile_id: '',
       property_id: '',
       unit_number: '',
+      plot_preference: 'none',
       area: '',
       total_cost: '',
       booking_date: new Date().toISOString().split('T')[0],
@@ -800,15 +853,20 @@ export function usePortalAllotmentsAdmin() {
       (allotment.metadata?.advisor_name as string) ||
       (allotment.metadata?.advisorName as string) ||
       '';
-    const existingTicket =
+    const existingTicket = formatTicketId(
       (allotment.metadata?.ticket_id as string) ||
-      (allotment.metadata?.ticketId as string) ||
-      (allotment.metadata?.refId as string) ||
-      '';
+        (allotment.metadata?.ticketId as string) ||
+        (allotment.metadata?.refId as string) ||
+        ''
+    );
     setFormData({
       profile_id: allotment.user_id || allotment.profile_id || '',
       property_id: allotment.property_id,
       unit_number: allotment.unit_no || allotment.unit_number || '',
+      plot_preference:
+        (allotment.metadata?.plot_preference as string) ||
+        (allotment.metadata?.plotPreference as string) ||
+        'none',
       area: (allotment.metadata?.area ?? allotment.area)?.toString() || '',
       total_cost: (allotment.metadata?.total_cost ?? allotment.total_cost)?.toString() || '',
       booking_date: allotment.allotted_date || allotment.booking_date || '',

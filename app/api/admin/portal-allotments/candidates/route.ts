@@ -20,6 +20,7 @@ export interface CandidateClient {
   projectName: string;
   propertyId: string | null;
   unitNo: string;
+  plotPreference?: string;
   area: string | number;
   totalCost: number;
   bookingDate: string;
@@ -150,7 +151,8 @@ export async function GET(request: NextRequest) {
           phone: r.phone || '',
           projectName: r.project || '',
           propertyId: resolvePropertyId(r.project),
-          unitNo: r.plot_preference || '',
+          unitNo: '',
+          plotPreference: r.plot_preference || '',
           area: r.property_size || '',
           totalCost: Number(r.scheme_amount) || 0,
           bookingDate: safeIsoDate(r.created_at),

@@ -62,6 +62,7 @@ export interface AllotmentFormData {
   profile_id: string;
   property_id: string;
   unit_number: string;
+  plot_preference?: string;
   area: string;
   total_cost: string;
   booking_date: string;
@@ -86,6 +87,7 @@ export interface AllotmentCandidate {
   projectName: string;
   propertyId: string | null;
   unitNo: string;
+  plotPreference?: string;
   area: string | number;
   totalCost: number;
   bookingDate: string;

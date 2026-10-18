@@ -218,7 +218,9 @@ export function WorkforceTabContent(props: WorkforceTabContentProps) {
         />
       )}
 
-      {activeTab === 'leads' && token && <WorkforceLeadsTab token={token} employees={employees} />}
+      {activeTab === 'leads' && token && (
+        <WorkforceLeadsTab token={token} employees={employees} excludeSource="ivr" />
+      )}
 
       {activeTab === 'attendance' && token && (
         <WorkforceAttendanceTab token={token} teams={teams} showToast={showToast} />

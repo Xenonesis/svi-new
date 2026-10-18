@@ -81,7 +81,14 @@ export function PortalAllotmentPendingCard({
           <div>
             <span className="text-slate-500 dark:text-gray-400">Unit / Plot:</span>
             <p className="dark:text-brand-gold mt-0.5 font-bold text-[#0f2942]">
-              {candidate.unitNo || 'To be assigned'}
+              {candidate.unitNo ? `Unit ${candidate.unitNo}` : 'To be assigned'}
+            </p>
+          </div>
+
+          <div>
+            <span className="text-slate-500 dark:text-gray-400">Plot Preference:</span>
+            <p className="mt-0.5 font-medium text-amber-700 capitalize dark:text-amber-400">
+              {candidate.plotPreference || 'None'}
             </p>
           </div>
 

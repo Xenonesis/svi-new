@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { formatTicketId, extractTicketFromMetadata } from '@/src/lib/allotment/ticketUtils';
 import type { CandidateClient } from '../candidates/route';
 
 interface ApprovePayload {
@@ -78,11 +79,34 @@ export async function POST(request: NextRequest) {
     const results = [];
 
     for (const c of candidatesToApprove) {
-      const cleanTicketId = c.ticketId.trim();
+      const cleanTicketId = formatTicketId(c.ticketId);
+
+      // Duplicate Check: Verify ticket is not already allotted to an active allotment
+      const { data: existingAllots } = await supabaseAdmin
+        .from('allotments')
+        .select('id, unit_no, status, notes, metadata');
+
+      const isAlreadyAllotted = (existingAllots || []).some((a) => {
+        const assignedTicket = extractTicketFromMetadata(a.metadata as Record<string, unknown>);
+        if (assignedTicket !== cleanTicketId) return false;
+
+        const nText = String(a.notes || '').toLowerCase();
+        const sText = String(a.status || '').toLowerCase();
+        const isCancelled =
+          nText.includes('refund') || sText.includes('refund') || sText.includes('cancelled');
+        return !isCancelled;
+      });
+
+      if (isAlreadyAllotted) {
+        console.warn(
+          `[Approve] Ticket ${cleanTicketId} is already allotted. Skipping duplicate insertion.`
+        );
+        continue;
+      }
+
       const clientName = c.clientName?.trim() || `Client ${cleanTicketId}`;
       let email = c.email?.trim().toLowerCase();
       const phone = c.phone?.trim() || null;
-
       // 1. Check if profile already exists by email or phone
       let profileId: string | null = null;
 
@@ -183,6 +207,7 @@ export async function POST(request: NextRequest) {
             area: c.area || null,
             total_cost: c.totalCost || null,
             advisor_name: c.advisorName?.trim() || null,
+            plot_preference: c.plotPreference || null,
             approved_by: admin.email,
             approved_at: new Date().toISOString(),
             source: c.sources?.join(', ') || 'Approval Queue',
@@ -190,6 +215,18 @@ export async function POST(request: NextRequest) {
         })
         .select()
         .single();
+
+      // Sync back to registrations if submission_id matches
+      if (cleanTicketId) {
+        const regUpdate: Record<string, any> = {};
+        if (c.plotPreference) regUpdate.plot_preference = c.plotPreference;
+        if (Object.keys(regUpdate).length > 0) {
+          await supabaseAdmin
+            .from('registrations')
+            .update(regUpdate)
+            .eq('submission_id', cleanTicketId);
+        }
+      }
 
       if (allotInsertErr) {
         console.error(`Failed to insert allotment for ticket ${cleanTicketId}:`, allotInsertErr);
