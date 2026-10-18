@@ -27,7 +27,9 @@ import {
   ChevronRight,
   ChevronsLeft,
   ChevronsRight,
+  DollarSign,
 } from 'lucide-react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import type { UserProfile } from '@/src/lib/supabase/types';
 import { RoleSwitcher } from '@/src/components/admin/helpers/RoleSwitcher';
@@ -573,11 +575,18 @@ export function DashboardUsersTable({
                         {renderPropertyInterestTags(u.property_interest, properties)}
                       </div>
                     ) : u.role === 'employee' ? (
-                      <div className="pt-1">
+                      <div className="flex flex-wrap items-center gap-2 pt-1">
                         <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
                           <Briefcase className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
                           {u.department ? `${u.department} Team` : 'Internal Operations'}
                         </span>
+                        <Link
+                          href={`/admin/workforce?tab=payroll&employeeId=${u.id}`}
+                          className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-bold transition-all"
+                        >
+                          <DollarSign className="h-3 w-3" />
+                          <span>Payroll Dossier &rarr;</span>
+                        </Link>
                       </div>
                     ) : u.role === 'admin' ? (
                       <div className="pt-1">
@@ -822,10 +831,19 @@ export function DashboardUsersTable({
                           {u.property_interest ? (
                             renderPropertyInterestTags(u.property_interest, properties)
                           ) : u.role === 'employee' ? (
-                            <span className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
-                              <Briefcase className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
-                              {u.department ? `${u.department} Team` : 'Internal Operations'}
-                            </span>
+                            <div className="flex flex-col gap-1.5">
+                              <span className="inline-flex w-fit items-center gap-1.5 rounded-lg border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-xs font-medium text-emerald-700 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300">
+                                <Briefcase className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                                {u.department ? `${u.department} Team` : 'Internal Operations'}
+                              </span>
+                              <Link
+                                href={`/admin/workforce?tab=payroll&employeeId=${u.id}`}
+                                className="text-brand-gold hover:text-brand-gold-light inline-flex w-fit items-center gap-1 text-[11px] font-bold transition-all hover:underline"
+                              >
+                                <DollarSign className="h-3 w-3" />
+                                <span>Payroll Dossier &rarr;</span>
+                              </Link>
+                            </div>
                           ) : u.role === 'admin' ? (
                             <span className="dark:border-brand-gold/20 dark:bg-brand-gold/10 dark:text-brand-gold inline-flex items-center gap-1.5 rounded-lg border border-amber-500/20 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-700">
                               <Shield className="dark:text-brand-gold h-3 w-3 text-amber-600" />
@@ -873,6 +891,16 @@ export function DashboardUsersTable({
                               )}
                               <span>{(u.is_active ?? true) ? 'Active' : 'Inactive'}</span>
                             </button>
+                            {u.role === 'employee' && (
+                              <Link
+                                href={`/admin/workforce?tab=payroll&employeeId=${u.id}`}
+                                className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex h-8 items-center gap-1 rounded-lg border px-2.5 text-[11px] font-bold transition-all"
+                                title="Open Employee Payroll Dossier"
+                              >
+                                <DollarSign className="h-3.5 w-3.5" />
+                                <span className="hidden sm:inline">Dossier</span>
+                              </Link>
+                            )}
 
                             <button
                               onClick={() => onEditUser(u)}

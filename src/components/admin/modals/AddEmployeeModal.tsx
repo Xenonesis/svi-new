@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
 import { motion } from 'motion/react';
-import { AlertCircle, CheckCircle2, Loader2, Sparkles, X } from 'lucide-react';
+import { AlertCircle, CheckCircle2, Loader2, Sparkles, X, DollarSign } from 'lucide-react';
 import { toast } from 'sonner';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import { DepartmentRoleSelector } from '../employees/DepartmentRoleSelector';
@@ -26,6 +27,21 @@ export function AddEmployeeModal({
     password: '',
     notes: '',
   });
+  const router = useRouter();
+  const [createdEmployee, setCreatedEmployee] = useState<{
+    id: string;
+    full_name: string;
+    email: string;
+    real_email?: string | null;
+    phone?: string | null;
+    department?: string | null;
+  } | null>(null);
+  const [detectedOffer, setDetectedOffer] = useState<{
+    designation: string;
+    salaryCtc?: number;
+    target?: number;
+  } | null>(null);
+  const [checkingOffer, setCheckingOffer] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -218,10 +234,57 @@ export function AddEmployeeModal({
           extractApiErrorMessage(data, 'Failed to create employee. Please try again.')
         );
       }
-
+      const created = data.employee;
       toast.success('Employee created successfully');
       onSuccess();
-      onClose();
+      setCreatedEmployee(created);
+
+      // Check matching offer letter
+      setCheckingOffer(true);
+      try {
+        const docRes = await fetch('/api/admin/documents?type=offer_letter&limit=200', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (docRes.ok) {
+          const docData = await docRes.json();
+          const docs = Array.isArray(docData.documents) ? docData.documents : [];
+          const cleanP = (p?: string) => (p || '').replace(/\D/g, '').slice(-10);
+          const cleanN = (n?: string) => (n || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+
+          const targetPhone = cleanP(created?.phone);
+          const targetName = cleanN(created?.full_name);
+          const targetEmail = (created?.email || '').toLowerCase().trim();
+          const targetRealEmail = (created?.real_email || '').toLowerCase().trim();
+
+          const found = docs.find((d: { form_data?: Record<string, unknown> }) => {
+            const fd = d.form_data || {};
+            const dEmail = String(fd.emailId || fd.email || '')
+              .toLowerCase()
+              .trim();
+            const dPhone = cleanP(String(fd.mobileNo || fd.phone || ''));
+            const dName = cleanN(String(fd.name || ''));
+            return (
+              (targetEmail && dEmail === targetEmail) ||
+              (targetRealEmail && dEmail === targetRealEmail) ||
+              (targetPhone && dPhone && dPhone === targetPhone) ||
+              (targetName && dName && targetName === targetName)
+            );
+          });
+
+          if (found) {
+            const fd = (found.form_data || {}) as Record<string, unknown>;
+            setDetectedOffer({
+              designation: String(fd.designation || 'Staff'),
+              salaryCtc: Number(fd.salaryCtc || 0),
+              target: Number(fd.target || 0),
+            });
+          }
+        }
+      } catch {
+        // Fallback silently if scan fails
+      } finally {
+        setCheckingOffer(false);
+      }
     } catch (err: unknown) {
       setError(extractApiErrorMessage(err, 'Failed to create employee. Please try again.'));
     } finally {
@@ -243,7 +306,7 @@ export function AddEmployeeModal({
         {/* Modal Header */}
         <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-6 py-4 dark:border-white/5">
           <h2 className="text-brand-navy font-serif text-lg font-semibold dark:text-white">
-            New Employee
+            {createdEmployee ? 'Account Live' : 'New Employee'}
           </h2>
           <button
             onClick={onClose}
@@ -254,196 +317,278 @@ export function AddEmployeeModal({
         </div>
 
         {/* Scrollable Form Body */}
-        <form
-          id="add-employee-form"
-          onSubmit={handleSubmit}
-          autoComplete="off"
-          className="scrollbar-gold flex-1 space-y-4 overflow-y-auto overscroll-contain p-6"
-        >
-          {error && (
-            <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
-              <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500 dark:text-red-400" />
-              <span className="flex-1 leading-relaxed">{error}</span>
+        {createdEmployee ? (
+          <div className="space-y-6 p-6 sm:p-8">
+            <div className="flex flex-col items-center text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl border border-emerald-500/20 bg-emerald-500/10 text-emerald-500 shadow-lg">
+                <CheckCircle2 className="h-8 w-8" />
+              </div>
+              <h3 className="mt-4 font-serif text-xl font-bold text-gray-900 dark:text-white">
+                Employee Account Created!
+              </h3>
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                Account for{' '}
+                <span className="font-semibold text-gray-800 dark:text-gray-200">
+                  {createdEmployee.full_name}
+                </span>{' '}
+                is live.
+              </p>
             </div>
-          )}
 
-          <div className="grid grid-cols-2 gap-4">
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Full Name *
-              </label>
-              <input
-                required
-                autoComplete="off"
-                autoFocus
-                value={formData.full_name}
-                onChange={handleFullNameChange}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="John Doe"
-              />
-
-              <div className="col-span-2 md:col-span-1">
-                <div className="flex items-center justify-between">
-                  <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                    SVI Corporate Email *
-                  </label>
-                  <span className="text-brand-gold/90 bg-brand-gold/10 border-brand-gold/20 flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium">
-                    <Sparkles className="h-2.5 w-2.5" /> Auto-generated
-                  </span>
-                </div>
-                <div className="relative">
-                  <input
-                    required
-                    type="email"
-                    readOnly
-                    tabIndex={-1}
-                    value={formData.email}
-                    className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-50/80 px-4 py-2.5 pr-10 text-sm text-gray-700 select-all focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-200"
-                    placeholder="Auto-generated from name..."
-                  />
-                  <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                    {validating.email ? (
-                      <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
-                    ) : formData.email ? (
-                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                    ) : null}
+            {checkingOffer ? (
+              <div className="border-brand-gold/20 bg-brand-gold/5 text-brand-gold flex items-center justify-center gap-2 rounded-xl border p-4 text-xs">
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Scanning documents for matching Offer Letter...</span>
+              </div>
+            ) : detectedOffer ? (
+              <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 dark:border-emerald-500/20 dark:bg-emerald-500/10">
+                <div className="flex items-start gap-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-emerald-500/20 text-emerald-600 dark:text-emerald-400">
+                    <Sparkles className="text-brand-gold h-4 w-4" />
+                  </div>
+                  <div className="min-w-0 flex-1 text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300">
+                        Offer Letter Auto-Detected
+                      </span>
+                      <span className="bg-brand-gold/20 text-brand-gold rounded-md px-2 py-0.5 text-[10px] font-bold">
+                        {detectedOffer.designation}
+                      </span>
+                    </div>
+                    <p className="mt-1 text-xs text-gray-600 dark:text-gray-300">
+                      Verified offer found{' '}
+                      {detectedOffer.salaryCtc
+                        ? `with CTC ₹${detectedOffer.salaryCtc.toLocaleString('en-IN')}`
+                        : ''}
+                      . You can pre-fill and activate their Salary Structure in 1 click!
+                    </p>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="col-span-2 md:col-span-1">
-              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Personal / Real Email
-              </label>
-              <div className="relative">
-                <input
-                  type="email"
-                  value={formData.real_email}
-                  onChange={(e) => setFormData((p) => ({ ...p, real_email: e.target.value }))}
-                  className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
-                    uniqueErrors.real_email ? 'border-red-500/50 focus:border-red-500' : ''
-                  }`}
-                  placeholder="name@gmail.com"
-                />
-                <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                  {validating.real_email ? (
-                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
-                  ) : uniqueErrors.real_email ? (
-                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
-                  ) : uniqueValid.real_email ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                  ) : null}
-                </div>
-              </div>
-              {uniqueErrors.real_email && (
-                <p className="mt-1 text-[10px] leading-tight font-medium text-red-500">
-                  {uniqueErrors.real_email}
+            ) : (
+              <div className="rounded-xl border border-gray-200/80 bg-gray-50/80 p-4 text-left dark:border-white/10 dark:bg-white/5">
+                <p className="text-xs text-gray-600 dark:text-gray-300">
+                  Would you like to configure monthly CTC, allowances, and bank settlement details
+                  now?
                 </p>
-              )}
-            </div>
-
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Phone
-              </label>
-              <div className="relative">
-                <input
-                  type="tel"
-                  value={formData.phone}
-                  onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
-                  className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
-                    uniqueErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''
-                  }`}
-                  placeholder="+91 98000 00000"
-                />
-                <div className="absolute top-1/2 right-3 -translate-y-1/2">
-                  {validating.phone ? (
-                    <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
-                  ) : uniqueErrors.phone ? (
-                    <AlertCircle className="h-3.5 w-3.5 text-red-500" />
-                  ) : uniqueValid.phone ? (
-                    <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
-                  ) : null}
-                </div>
               </div>
-              {uniqueErrors.phone && (
-                <p className="mt-1 text-[10px] leading-tight font-medium text-red-500">
-                  {uniqueErrors.phone}
-                </p>
-              )}
-            </div>
-            <div className="col-span-2">
-              <DepartmentRoleSelector
-                value={formData.department}
-                onChange={(val) => setFormData((p) => ({ ...p, department: val }))}
-              />
-            </div>
+            )}
 
-            <div className="col-span-2">
-              <label className="mb-1.5 flex justify-between text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                <span>Password *</span>
-                <button
-                  type="button"
-                  onClick={generatePassword}
-                  className="text-brand-gold hover:underline"
-                >
-                  Generate
-                </button>
-              </label>
-              <input
-                required
-                type="text"
-                value={formData.password}
-                onChange={(e) => setFormData((p) => ({ ...p, password: e.target.value }))}
-                className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 font-mono text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                placeholder="Enter or generate password"
-              />
-            </div>
-
-            <div className="col-span-2">
-              <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
-                Notes (Optional)
-              </label>
-              <textarea
-                value={formData.notes}
-                onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
-                className="focus:border-brand-gold w-full resize-none rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
-                rows={3}
-                placeholder="Additional info about the employee..."
-              />
+            <div className="flex flex-col gap-2.5 pt-2 sm:flex-row sm:items-center sm:justify-end">
+              <button
+                type="button"
+                onClick={onClose}
+                className="rounded-xl border border-gray-200 px-5 py-2.5 text-xs font-semibold text-gray-700 transition-all hover:bg-gray-100 dark:border-white/10 dark:text-gray-300 dark:hover:bg-white/10"
+              >
+                Done / Skip for now
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onClose();
+                  router.push(`/admin/workforce?tab=payroll&employeeId=${createdEmployee.id}`);
+                }}
+                className="shimmer bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex items-center justify-center gap-2 rounded-xl px-5 py-2.5 text-xs font-bold tracking-wider uppercase shadow-lg transition-all"
+              >
+                <DollarSign className="h-4 w-4" />
+                <span>Configure Salary Structure &rarr;</span>
+              </button>
             </div>
           </div>
-        </form>
+        ) : (
+          <>
+            <form
+              id="add-employee-form"
+              onSubmit={handleSubmit}
+              autoComplete="off"
+              className="scrollbar-gold flex-1 space-y-4 overflow-y-auto overscroll-contain p-6"
+            >
+              {error && (
+                <div className="flex items-start gap-2.5 rounded-xl border border-red-500/30 bg-red-500/10 p-3 text-xs font-medium text-red-600 dark:border-red-500/20 dark:bg-red-500/15 dark:text-red-300">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0 text-red-500 dark:text-red-400" />
+                  <span className="flex-1 leading-relaxed">{error}</span>
+                </div>
+              )}
 
-        {/* Modal Actions Footer */}
-        <div className="flex shrink-0 gap-3 border-t border-gray-100 bg-gray-50/70 p-4 px-6 backdrop-blur-sm dark:border-white/5 dark:bg-[#12121a]/80">
-          <button
-            type="button"
-            onClick={onClose}
-            className="flex-1 rounded-lg border border-gray-200 bg-gray-50 py-2.5 text-xs font-bold tracking-widest text-gray-600 uppercase transition-all hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            form="add-employee-form"
-            disabled={
-              loading ||
-              Boolean(
-                uniqueErrors.email ||
-                uniqueErrors.real_email ||
-                uniqueErrors.phone ||
-                validating.email ||
-                validating.real_email ||
-                validating.phone
-              )
-            }
-            className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light flex-1 rounded-lg py-2.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {loading ? 'Creating...' : 'Create Employee'}
-          </button>
-        </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                  <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                    Full Name *
+                  </label>
+                  <input
+                    required
+                    autoComplete="off"
+                    autoFocus
+                    value={formData.full_name}
+                    onChange={handleFullNameChange}
+                    className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                    placeholder="John Doe"
+                  />
+
+                  <div className="col-span-2 md:col-span-1">
+                    <div className="flex items-center justify-between">
+                      <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                        SVI Corporate Email *
+                      </label>
+                      <span className="text-brand-gold/90 bg-brand-gold/10 border-brand-gold/20 flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium">
+                        <Sparkles className="h-2.5 w-2.5" /> Auto-generated
+                      </span>
+                    </div>
+                    <div className="relative">
+                      <input
+                        required
+                        type="email"
+                        readOnly
+                        tabIndex={-1}
+                        value={formData.email}
+                        className="w-full cursor-not-allowed rounded-lg border border-gray-200 bg-gray-50/80 px-4 py-2.5 pr-10 text-sm text-gray-700 select-all focus:outline-none dark:border-white/10 dark:bg-white/[0.04] dark:text-gray-200"
+                        placeholder="Auto-generated from name..."
+                      />
+                      <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                        {validating.email ? (
+                          <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                        ) : formData.email ? (
+                          <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                        ) : null}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="col-span-2 md:col-span-1">
+                  <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                    Personal / Real Email
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="email"
+                      value={formData.real_email}
+                      onChange={(e) => setFormData((p) => ({ ...p, real_email: e.target.value }))}
+                      className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
+                        uniqueErrors.real_email ? 'border-red-500/50 focus:border-red-500' : ''
+                      }`}
+                      placeholder="name@gmail.com"
+                    />
+                    <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                      {validating.real_email ? (
+                        <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                      ) : uniqueErrors.real_email ? (
+                        <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                      ) : uniqueValid.real_email ? (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : null}
+                    </div>
+                  </div>
+                  {uniqueErrors.real_email && (
+                    <p className="mt-1 text-[10px] leading-tight font-medium text-red-500">
+                      {uniqueErrors.real_email}
+                    </p>
+                  )}
+                </div>
+
+                <div className="col-span-2">
+                  <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                    Phone
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="tel"
+                      value={formData.phone}
+                      onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))}
+                      className={`focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 pr-10 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white ${
+                        uniqueErrors.phone ? 'border-red-500/50 focus:border-red-500' : ''
+                      }`}
+                      placeholder="+91 98000 00000"
+                    />
+                    <div className="absolute top-1/2 right-3 -translate-y-1/2">
+                      {validating.phone ? (
+                        <Loader2 className="text-brand-gold h-3.5 w-3.5 animate-spin" />
+                      ) : uniqueErrors.phone ? (
+                        <AlertCircle className="h-3.5 w-3.5 text-red-500" />
+                      ) : uniqueValid.phone ? (
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" />
+                      ) : null}
+                    </div>
+                  </div>
+                  {uniqueErrors.phone && (
+                    <p className="mt-1 text-[10px] leading-tight font-medium text-red-500">
+                      {uniqueErrors.phone}
+                    </p>
+                  )}
+                </div>
+                <div className="col-span-2">
+                  <DepartmentRoleSelector
+                    value={formData.department}
+                    onChange={(val) => setFormData((p) => ({ ...p, department: val }))}
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="mb-1.5 flex justify-between text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                    <span>Password *</span>
+                    <button
+                      type="button"
+                      onClick={generatePassword}
+                      className="text-brand-gold hover:underline"
+                    >
+                      Generate
+                    </button>
+                  </label>
+                  <input
+                    required
+                    type="text"
+                    value={formData.password}
+                    onChange={(e) => setFormData((p) => ({ ...p, password: e.target.value }))}
+                    className="focus:border-brand-gold w-full rounded-lg border border-gray-200 px-4 py-2.5 font-mono text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                    placeholder="Enter or generate password"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="mb-1.5 block text-[10px] font-bold tracking-widest text-gray-500 uppercase">
+                    Notes (Optional)
+                  </label>
+                  <textarea
+                    value={formData.notes}
+                    onChange={(e) => setFormData((p) => ({ ...p, notes: e.target.value }))}
+                    className="focus:border-brand-gold w-full resize-none rounded-lg border border-gray-200 px-4 py-2.5 text-sm focus:outline-none dark:border-white/10 dark:bg-[#111118] dark:text-white"
+                    rows={3}
+                    placeholder="Additional info about the employee..."
+                  />
+                </div>
+              </div>
+            </form>
+
+            {/* Modal Actions Footer */}
+            <div className="flex shrink-0 gap-3 border-t border-gray-100 bg-gray-50/70 p-4 px-6 backdrop-blur-sm dark:border-white/5 dark:bg-[#12121a]/80">
+              <button
+                type="button"
+                onClick={onClose}
+                className="flex-1 rounded-lg border border-gray-200 bg-gray-50 py-2.5 text-xs font-bold tracking-widest text-gray-600 uppercase transition-all hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-white/10"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                form="add-employee-form"
+                disabled={
+                  loading ||
+                  Boolean(
+                    uniqueErrors.email ||
+                    uniqueErrors.real_email ||
+                    uniqueErrors.phone ||
+                    validating.email ||
+                    validating.real_email ||
+                    validating.phone
+                  )
+                }
+                className="bg-brand-gold text-brand-navy hover:bg-brand-gold-light flex-1 rounded-lg py-2.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {loading ? 'Creating...' : 'Create Employee'}
+              </button>
+            </div>
+          </>
+        )}
       </motion.div>
     </div>
   );

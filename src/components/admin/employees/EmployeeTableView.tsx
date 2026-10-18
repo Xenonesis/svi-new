@@ -22,7 +22,9 @@ import {
   ToggleRight,
   ToggleLeft,
   ShieldAlert,
+  DollarSign,
 } from 'lucide-react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import type { Employee } from './EmployeeCard';
 import { getSviEmail, getWhatsAppUrl } from './EmployeeCard';
@@ -350,6 +352,14 @@ export function EmployeeTableView({
                         <BarChart3 size={12} />
                         <span>Performance</span>
                       </button>
+                      <Link
+                        href={`/admin/workforce?tab=payroll&employeeId=${emp.id}`}
+                        className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-colors active:scale-95"
+                        title="View Salary & Offer Dossier in Payroll"
+                      >
+                        <DollarSign size={12} />
+                        <span>Salary</span>
+                      </Link>
                       <button
                         onClick={() => onEdit(emp)}
                         className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-amber-50 hover:text-amber-600 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"

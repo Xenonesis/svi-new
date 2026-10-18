@@ -1,12 +1,12 @@
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { AppError } from '@/src/lib/api/errors';
+import { getEmployeeOfferLetterMap, autoSyncOfferLettersToStructures } from './offerLetterSync';
 import type {
   SalaryStructure,
   MonthlyPayroll,
   PayrollItem,
   CalculatePayrollPayload,
 } from './types';
-
 /**
  * Resilient Payroll Store
  * Handles database operations for Salary Structures, Monthly Runs, Attendance-Linked Calculations,
@@ -16,34 +16,61 @@ export const payrollStore = {
   // ── 1. Salary Structures ───────────────────────────────────────────────────
   async getSalaryStructures(): Promise<SalaryStructure[]> {
     try {
-      const { data: structures, error } = await supabaseAdmin
-        .from('employee_salary_structures')
-        .select('*')
-        .order('created_at', { ascending: false });
+      // 1. Fetch existing structures & offer letter map in parallel
+      const [structuresRes, offerMap] = await Promise.all([
+        supabaseAdmin
+          .from('employee_salary_structures')
+          .select('*')
+          .order('created_at', { ascending: false }),
+        getEmployeeOfferLetterMap().catch(() => new Map()),
+      ]);
 
-      if (error) {
-        console.error('[payrollStore] DB read failed for salary_structures:', error.message);
-        throw AppError.internal(`Failed to fetch salary structures: ${error.message}`);
+      if (structuresRes.error) {
+        console.error(
+          '[payrollStore] DB read failed for salary_structures:',
+          structuresRes.error.message
+        );
+        throw AppError.internal(
+          `Failed to fetch salary structures: ${structuresRes.error.message}`
+        );
       }
 
-      // Enrich with employee profile details
+      let structures = structuresRes.data || [];
+      const existingUserIds = new Set(structures.map((s) => s.user_id));
+
+      // 2. Automatically sync any employee who has an Offer Letter but no salary structure yet!
+      const newlySyncedCount = await autoSyncOfferLettersToStructures(offerMap, existingUserIds);
+      if (newlySyncedCount > 0) {
+        const { data: refreshed } = await supabaseAdmin
+          .from('employee_salary_structures')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (refreshed) structures = refreshed;
+      }
+
+      // 3. Enrich with employee profile details
       const userIds = structures?.map((s) => s.user_id) || [];
       const profileMap = new Map<
         string,
-        { full_name: string; email: string; department?: string | null }
+        {
+          full_name: string;
+          email: string;
+          phone?: string | null;
+          department?: string | null;
+          created_at?: string;
+        }
       >();
 
       if (userIds.length > 0) {
-        const { data: profiles } = await supabaseAdmin
+        const { data: profilesData } = await supabaseAdmin
           .from('profiles')
-          .select('id, full_name, email, department')
+          .select('id, full_name, email, phone, department, created_at')
           .in('id', userIds);
-
-        profiles?.forEach((p) => profileMap.set(p.id, p));
+        profilesData?.forEach((p) => profileMap.set(p.id, p));
       }
-
       return (structures || []).map((s) => {
         const prof = profileMap.get(s.user_id);
+        const offer = offerMap.get(s.user_id);
         return {
           id: s.id,
           user_id: s.user_id,
@@ -68,6 +95,21 @@ export const payrollStore = {
           employee_name: prof?.full_name || 'Employee',
           employee_email: prof?.email || '',
           employee_department: prof?.department || null,
+          offer_document_id: offer?.documentId || null,
+          offer_target: offer?.target || null,
+          offer_target_unit: offer?.targetUnit || null,
+          offer_slab: offer?.offerSlab || null,
+          offer_designation: offer?.designation || null,
+          offer_appointment_date: offer?.appointmentDate || null,
+          offer_location: offer?.location || null,
+          offer_candidate_address: offer?.candidateAddress || null,
+          offer_reporting_to: offer?.reportingTo || null,
+          offer_working_hours: offer?.workingHours || null,
+          offer_working_days: offer?.workingDays || null,
+          offer_weekly_off_days: offer?.weeklyOffDays || null,
+          offer_probation_period: offer?.probationPeriod || null,
+          employee_phone: prof?.phone || offer?.mobileNo || null,
+          employee_created_at: prof?.created_at || null,
         };
       });
     } catch (err) {
@@ -79,24 +121,59 @@ export const payrollStore = {
 
   async getSalaryStructureByUserId(userId: string): Promise<SalaryStructure | null> {
     try {
-      const { data, error } = await supabaseAdmin
+      const { data: initialData, error } = await supabaseAdmin
         .from('employee_salary_structures')
         .select('*')
         .eq('user_id', userId)
         .maybeSingle();
 
+      let data = initialData;
+
       if (error) {
         console.error('[payrollStore] Error getting salary structure by user_id:', error.message);
         throw AppError.internal(`Failed to fetch salary structure: ${error.message}`);
       }
+
+      const offerMap = await getEmployeeOfferLetterMap().catch(() => new Map());
+      const offer = offerMap.get(userId);
+
+      // Auto-create from Offer Letter if missing in DB
+      if (!data && offer && offer.salaryCtc > 0) {
+        const base = offer.salaryCtc;
+        const basic = Math.round(base * 0.5);
+        const hra = Math.round(base * 0.3);
+        const special = Math.max(0, base - (basic + hra));
+
+        const { data: created, error: createErr } = await supabaseAdmin
+          .from('employee_salary_structures')
+          .upsert(
+            {
+              user_id: userId,
+              base_salary: base,
+              basic_pay: basic,
+              hra: hra,
+              special_allowance: special,
+              conveyance_allowance: offer.conveyanceAllowanceAmount || 0,
+              professional_tax: 200,
+              is_active: true,
+            },
+            { onConflict: 'user_id' }
+          )
+          .select()
+          .single();
+
+        if (created && !createErr) {
+          data = created;
+        }
+      }
+
       if (!data) return null;
 
       const { data: prof } = await supabaseAdmin
         .from('profiles')
-        .select('full_name, email, department')
+        .select('full_name, email, phone, department, created_at')
         .eq('id', userId)
         .maybeSingle();
-
       return {
         id: data.id,
         user_id: data.user_id,
@@ -121,6 +198,21 @@ export const payrollStore = {
         employee_name: prof?.full_name,
         employee_email: prof?.email,
         employee_department: prof?.department,
+        offer_document_id: offer?.documentId || null,
+        offer_target: offer?.target || null,
+        offer_target_unit: offer?.targetUnit || null,
+        offer_slab: offer?.offerSlab || null,
+        offer_designation: offer?.designation || null,
+        offer_appointment_date: offer?.appointmentDate || null,
+        offer_location: offer?.location || null,
+        offer_candidate_address: offer?.candidateAddress || null,
+        offer_reporting_to: offer?.reportingTo || null,
+        offer_working_hours: offer?.workingHours || null,
+        offer_working_days: offer?.workingDays || null,
+        offer_weekly_off_days: offer?.weeklyOffDays || null,
+        offer_probation_period: offer?.probationPeriod || null,
+        employee_phone: prof?.phone || offer?.mobileNo || null,
+        employee_created_at: prof?.created_at || null,
       };
     } catch (err) {
       if (err instanceof AppError) throw err;
@@ -172,6 +264,36 @@ export const payrollStore = {
       if (error) {
         console.error('[payrollStore] DB upsert failed for salary structure:', error.message);
         throw AppError.internal(`Failed to save salary structure: ${error.message}`);
+      }
+      // Synchronize employee department to profiles if missing
+      if (payload.user_id) {
+        try {
+          const { data: currentProfile } = await supabaseAdmin
+            .from('profiles')
+            .select('department')
+            .eq('id', payload.user_id)
+            .maybeSingle();
+
+          if (!currentProfile?.department) {
+            const offerMap = await getEmployeeOfferLetterMap().catch(() => new Map());
+            const offer = offerMap.get(payload.user_id);
+            const deptToSync = offer?.designation?.toLowerCase().includes('telecaller')
+              ? 'Telecaller'
+              : offer?.designation?.toLowerCase().includes('bdm') ||
+                  offer?.designation?.toLowerCase().includes('sales')
+                ? 'Sales'
+                : offer?.designation;
+
+            if (deptToSync) {
+              await supabaseAdmin
+                .from('profiles')
+                .update({ department: deptToSync })
+                .eq('id', payload.user_id);
+            }
+          }
+        } catch {
+          // Graceful ignore
+        }
       }
 
       return {
@@ -251,13 +373,17 @@ export const payrollStore = {
         .eq('payroll_id', payrollId);
 
       const userIds = items?.map((i) => i.user_id) || [];
-      const { data: profiles } = await supabaseAdmin
-        .from('profiles')
-        .select('id, full_name, email, department, phone')
-        .in('id', userIds);
+      const [profilesRes, offerMap] = await Promise.all([
+        userIds.length > 0
+          ? supabaseAdmin
+              .from('profiles')
+              .select('id, full_name, email, department, phone')
+              .in('id', userIds)
+          : Promise.resolve({ data: [] }),
+        getEmployeeOfferLetterMap().catch(() => new Map()),
+      ]);
 
-      const profileMap = new Map((profiles || []).map((p) => [p.id, p]));
-
+      const profileMap = new Map((profilesRes.data || []).map((p) => [p.id, p]));
       const enrichedItems: PayrollItem[] = (items || []).map((item) => {
         const prof = profileMap.get(item.user_id);
         return {
@@ -269,6 +395,9 @@ export const payrollStore = {
           employee_email: prof?.email || '',
           employee_department: prof?.department || null,
           employee_phone: prof?.phone || null,
+          offer_target: offerMap.get(item.user_id)?.target || null,
+          offer_target_unit: offerMap.get(item.user_id)?.targetUnit || null,
+          offer_slab: offerMap.get(item.user_id)?.offerSlab || null,
 
           total_month_days: item.total_month_days,
           working_days: item.working_days,

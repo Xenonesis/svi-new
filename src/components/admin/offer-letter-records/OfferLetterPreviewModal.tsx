@@ -1,7 +1,8 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { RefreshCw, Download, X, Image as ImageIcon } from 'lucide-react';
+import Link from 'next/link';
+import { RefreshCw, Download, X, Image as ImageIcon, FileText, Edit } from 'lucide-react';
 import OfferLetterPreviewContent from '@/src/components/admin/DocumentGenerator/OfferLetterPreviewContent';
 
 import { OfferLetterFormData } from '@/src/components/admin/OfferLetter/types';
@@ -85,6 +86,15 @@ export function OfferLetterPreviewModal({
                 </button>
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
+                <Link
+                  href={`/admin/offer-letter?templateId=${offer.id}`}
+                  target="_blank"
+                  className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 hidden items-center justify-center gap-1.5 rounded-lg border px-3 py-1.5 text-[11px] font-bold uppercase shadow-xs transition-all sm:inline-flex sm:px-4 sm:py-2 sm:text-xs"
+                  title="Open and edit in Offer Letter Generator"
+                >
+                  <Edit className="h-3.5 w-3.5" />
+                  <span>Edit in Generator</span>
+                </Link>
                 <button
                   onClick={onDownloadPDF}
                   disabled={pdfLoading}

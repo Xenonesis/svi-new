@@ -24,7 +24,9 @@ import {
   ToggleRight,
   ToggleLeft,
   ShieldAlert,
+  DollarSign,
 } from 'lucide-react';
+import Link from 'next/link';
 import { toast } from 'sonner';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
 
@@ -413,13 +415,23 @@ export function EmployeeCard({
         </div>
 
         {/* Performance Dashboard Button */}
-        <button
-          onClick={onViewPerformance}
-          className="via-brand-gold/15 flex w-full items-center justify-center gap-2 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/15 to-amber-500/15 px-3 py-2 text-xs font-bold text-amber-700 transition-all hover:bg-amber-500/25 active:scale-98 dark:text-amber-300"
-        >
-          <BarChart3 size={14} className="text-amber-500" />
-          <span>Performance & Leads Dashboard</span>
-        </button>
+        {/* Quick Action Buttons */}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            onClick={onViewPerformance}
+            className="via-brand-gold/15 flex items-center justify-center gap-1.5 rounded-xl border border-amber-500/30 bg-gradient-to-r from-amber-500/15 to-amber-500/15 px-2.5 py-2 text-xs font-bold text-amber-700 transition-all hover:bg-amber-500/25 active:scale-98 dark:text-amber-300"
+          >
+            <BarChart3 size={13} className="text-amber-500" />
+            <span>Performance</span>
+          </button>
+          <Link
+            href={`/admin/workforce?tab=payroll&employeeId=${employee.id}`}
+            className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex items-center justify-center gap-1.5 rounded-xl border px-2.5 py-2 text-xs font-bold transition-all active:scale-98"
+          >
+            <DollarSign size={13} />
+            <span>Payroll Dossier</span>
+          </Link>
+        </div>
 
         {/* Secondary Actions Row */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">

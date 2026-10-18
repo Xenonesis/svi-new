@@ -128,8 +128,29 @@ export function PayrollAdjustmentsModal({
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="mt-5 space-y-4">
-            {/* Incentive Bonus */}
+          {/* Offer Letter Target & Slab Reference */}
+          {item.offer_target ? (
+            <div className="mt-4 rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-3 text-xs">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-emerald-800 dark:text-emerald-300">
+                  Offer Letter Agreement:
+                </span>
+                {item.offer_slab && (
+                  <span className="rounded bg-emerald-600/20 px-2 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                    Slab {item.offer_slab}
+                  </span>
+                )}
+              </div>
+              <p className="mt-1 text-gray-600 dark:text-gray-300">
+                Monthly Target:{' '}
+                <strong>
+                  {item.offer_target} {item.offer_target_unit || 'Sq. Yd.'}
+                </strong>
+              </p>
+            </div>
+          ) : null}
+
+          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div>
               <label className="flex items-center gap-1.5 text-xs font-bold tracking-wider text-emerald-600 uppercase dark:text-emerald-400">
                 <Sparkles className="h-3.5 w-3.5" /> Performance / Sales Incentive (₹)

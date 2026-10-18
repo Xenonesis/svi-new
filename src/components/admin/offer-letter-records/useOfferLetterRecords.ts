@@ -21,17 +21,23 @@ const DEFAULT_COMPANY_INFO: CompanyInfo = {
   company_website: 'www.sviinfrasolutions.in | www.sviinfrasolutions.com',
 };
 
-export function useOfferLetterRecords() {
+export interface UseOfferLetterRecordsOptions {
+  targetId?: string | null;
+  targetSearch?: string | null;
+}
+
+export function useOfferLetterRecords(options?: UseOfferLetterRecordsOptions) {
   const { token } = useAuthStore();
   const [offers, setOffers] = useState<SavedOfferLetter[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(options?.targetSearch || '');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
     key: 'date',
     direction: 'desc',
   });
   const [dateRange, setDateRange] = useState({ start: '', end: '' });
   const [selectedOffer, setSelectedOffer] = useState<SavedOfferLetter | null>(null);
+  const [highlightedId, setHighlightedId] = useState<string | null>(options?.targetId || null);
   const [deleteTarget, setDeleteTarget] = useState<SavedOfferLetter | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [pdfLoading, setPdfLoading] = useState(false);
@@ -82,6 +88,48 @@ export function useOfferLetterRecords() {
       })
       .catch((err) => console.error('Error fetching company info:', err));
   }, [token]);
+  useEffect(() => {
+    if (!loading && offers.length > 0) {
+      if (options?.targetId) {
+        const match = offers.find((o) => o.id === options.targetId);
+        if (match) {
+          setSelectedOffer(match);
+          setHighlightedId(match.id);
+          if (match.form_data?.name) {
+            setSearchQuery(match.form_data.name);
+          }
+          setTimeout(() => {
+            const el = document.getElementById(`offer-row-${match.id}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+          return;
+        }
+      }
+      if (options?.targetSearch) {
+        const q = options.targetSearch.toLowerCase().trim();
+        const match = offers.find((o) => {
+          const name = (o.form_data?.name || '').toLowerCase();
+          const email = (o.form_data?.emailId || '').toLowerCase();
+          const phone = (o.form_data?.mobileNo || '').replace(/\D/g, '').slice(-10);
+          return (
+            name.includes(q) ||
+            q.includes(name) ||
+            (email && (email.includes(q) || q.includes(email))) ||
+            (phone && q.includes(phone))
+          );
+        });
+        if (match) {
+          setSelectedOffer(match);
+          setHighlightedId(match.id);
+          setTimeout(() => {
+            const el = document.getElementById(`offer-row-${match.id}`);
+            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+        setSearchQuery(options.targetSearch);
+      }
+    }
+  }, [loading, offers, options?.targetId, options?.targetSearch]);
 
   const handleDelete = async () => {
     if (!deleteTarget || !token) return;
@@ -208,5 +256,6 @@ export function useOfferLetterRecords() {
     handleDownloadPDF,
     handleDownloadImage,
     handleClearFilters,
+    highlightedId,
   };
 }

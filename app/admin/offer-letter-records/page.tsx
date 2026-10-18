@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useOfferLetterRecords } from '@/src/components/admin/offer-letter-records/useOfferLetterRecords';
 import { OfferLetterRecordsHeader } from '@/src/components/admin/offer-letter-records/OfferLetterRecordsHeader';
 import { OfferLetterStatsCards } from '@/src/components/admin/offer-letter-records/OfferLetterStatsCards';
@@ -7,7 +9,13 @@ import { OfferLetterTable } from '@/src/components/admin/offer-letter-records/Of
 import { OfferLetterPreviewModal } from '@/src/components/admin/offer-letter-records/OfferLetterPreviewModal';
 import { DeleteConfirm } from '@/src/components/admin/modals/DeleteConfirm';
 
-export default function OfferLetterRecordsPage() {
+function OfferLetterRecordsContent() {
+  const searchParams = useSearchParams();
+  const targetId =
+    searchParams?.get('id') || searchParams?.get('documentId') || searchParams?.get('offerId');
+  const targetSearch =
+    searchParams?.get('search') || searchParams?.get('name') || searchParams?.get('q');
+  const options = useMemo(() => ({ targetId, targetSearch }), [targetId, targetSearch]);
   const {
     offers,
     loading,
@@ -32,7 +40,8 @@ export default function OfferLetterRecordsPage() {
     handleDownloadPDF,
     handleDownloadImage,
     handleClearFilters,
-  } = useOfferLetterRecords();
+    highlightedId,
+  } = useOfferLetterRecords(options);
 
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
@@ -60,6 +69,7 @@ export default function OfferLetterRecordsPage() {
         onView={setSelectedOffer}
         onDelete={setDeleteTarget}
         onRetry={fetchOffers}
+        highlightedId={highlightedId}
       />
 
       <OfferLetterPreviewModal
@@ -87,5 +97,19 @@ export default function OfferLetterRecordsPage() {
         />
       )}
     </div>
+  );
+}
+
+export default function OfferLetterRecordsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto w-full max-w-7xl p-6 font-sans">
+          <div className="h-10 w-64 animate-pulse rounded-lg bg-gray-200 dark:bg-white/10" />
+        </div>
+      }
+    >
+      <OfferLetterRecordsContent />
+    </Suspense>
   );
 }

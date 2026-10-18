@@ -41,12 +41,26 @@ function WorkforceContent() {
   const modals = useWorkforcePageModals(tokenRef, data.setEmployees);
 
   useEffect(() => {
-    const employeeParam = searchParams.get('employee');
-    if (employeeParam && data.employees.length > 0 && !modals.performanceTarget) {
+    const employeeParam = searchParams.get('employee') || searchParams.get('employeeId');
+    const currentTab = searchParams.get('tab');
+    if (employeeParam && currentTab === 'payroll') {
+      modals.setPayrollSubTab('structures');
+    } else if (
+      employeeParam &&
+      data.employees.length > 0 &&
+      !modals.performanceTarget &&
+      currentTab !== 'payroll'
+    ) {
       const target = data.employees.find((e) => e.id === employeeParam);
       if (target) modals.setPerformanceTarget(target);
     }
-  }, [searchParams, data.employees, modals.performanceTarget, modals.setPerformanceTarget]);
+  }, [
+    searchParams,
+    data.employees,
+    modals.performanceTarget,
+    modals.setPerformanceTarget,
+    modals.setPayrollSubTab,
+  ]);
 
   useEffect(() => {
     if (authStoreToken) {

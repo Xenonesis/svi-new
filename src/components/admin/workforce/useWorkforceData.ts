@@ -139,7 +139,7 @@ export function useWorkforceData(token: string) {
       const headers: Record<string, string> = {};
       if (activeToken) headers['Authorization'] = `Bearer ${activeToken}`;
 
-      const res = await fetch('/api/admin/payroll/structures', { headers });
+      const res = await fetch('/api/admin/payroll/salary-structures', { headers });
       const data = await res.json();
       if (res.ok) {
         const structList = data.structures || [];

@@ -369,11 +369,19 @@ export function MonthlyPayrollRunView({ token, onViewPayslip }: MonthlyPayrollRu
                           {item.employee_name}
                         </div>
                         <div className="text-[11px] text-gray-500">{item.employee_email}</div>
-                        {item.employee_department && (
-                          <span className="mt-1 inline-block rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
-                            {item.employee_department}
-                          </span>
-                        )}
+                        <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          {item.employee_department && (
+                            <span className="inline-block rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
+                              {item.employee_department}
+                            </span>
+                          )}
+                          {item.offer_target ? (
+                            <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 dark:text-emerald-300">
+                              Target: {item.offer_target} {item.offer_target_unit || 'Sq. Yd.'}
+                              {item.offer_slab ? ` (${item.offer_slab})` : ''}
+                            </span>
+                          ) : null}
+                        </div>
                       </td>
 
                       {/* Attendance metrics */}

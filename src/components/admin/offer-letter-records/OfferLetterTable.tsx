@@ -34,6 +34,7 @@ interface OfferLetterTableProps {
   onView: (offer: SavedOfferLetter) => void;
   onDelete: (offer: SavedOfferLetter) => void;
   onRetry: () => void;
+  highlightedId?: string | null;
 }
 
 export function OfferLetterTable({
@@ -50,6 +51,7 @@ export function OfferLetterTable({
   onView,
   onDelete,
   onRetry,
+  highlightedId,
 }: OfferLetterTableProps) {
   const filteredOffers = useMemo(() => {
     return offers
@@ -299,13 +301,19 @@ export function OfferLetterTable({
                 const { date, time } = formatDateTimeParts(record.created_at);
                 const isCompleted = record.status === 'completed';
 
+                const isHighlighted = highlightedId === record.id;
                 return (
                   <motion.tr
                     key={record.id}
+                    id={`offer-row-${record.id}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
-                    className="group transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.03]"
+                    className={`group transition-all ${
+                      isHighlighted
+                        ? 'border-l-brand-gold bg-brand-gold/[0.08] ring-brand-gold/30 dark:bg-brand-gold/[0.12] border-l-4 shadow-sm ring-1'
+                        : 'hover:bg-gray-50/70 dark:hover:bg-white/[0.03]'
+                    }`}
                   >
                     {/* Date & Time */}
                     <td className="px-5 py-3.5 align-middle whitespace-nowrap">
@@ -327,8 +335,15 @@ export function OfferLetterTable({
                     {/* Candidate Name */}
                     <td className="px-5 py-3.5 align-middle">
                       <div className="min-w-0">
-                        <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                          {record.form_data?.name || 'N/A'}
+                        <div className="flex items-center gap-2">
+                          <span className="truncate font-semibold text-gray-900 capitalize dark:text-white">
+                            {record.form_data?.name || 'N/A'}
+                          </span>
+                          {isHighlighted && (
+                            <span className="border-brand-gold/40 bg-brand-gold/15 text-brand-gold inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase">
+                              Target Record
+                            </span>
+                          )}
                         </div>
                         {record.form_data?.mobileNo && (
                           <div className="font-mono text-[10px] text-gray-400 dark:text-gray-500">

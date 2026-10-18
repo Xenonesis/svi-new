@@ -2,12 +2,21 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, CreditCard, Percent, DollarSign, Sparkles } from 'lucide-react';
+import {
+  X,
+  CreditCard,
+  Percent,
+  DollarSign,
+  Sparkles,
+  FileText,
+  ArrowRight,
+  Target,
+} from 'lucide-react';
 import { toast } from 'sonner';
 import type { SalaryStructure } from '@/src/lib/payroll/types';
+import type { OfferLetterDetails } from '@/src/lib/payroll/offerLetterSync';
 import { formatINR } from '@/src/lib/quotation/format';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
-
 interface EmployeeSalarySetupDrawerProps {
   isOpen: boolean;
   onClose: () => void;
@@ -45,7 +54,8 @@ export function EmployeeSalarySetupDrawer({
   const [uanNumber, setUanNumber] = useState('');
 
   const [saving, setSaving] = useState(false);
-
+  const [loadingOffer, setLoadingOffer] = useState(false);
+  const [matchedOffer, setMatchedOffer] = useState<OfferLetterDetails | null>(null);
   useEffect(() => {
     if (initialData) {
       setSelectedUserId(initialData.user_id);
@@ -77,6 +87,52 @@ export function EmployeeSalarySetupDrawer({
     }
   }, [initialData, isOpen]);
 
+  // When selected user changes, check for an existing offer letter
+  useEffect(() => {
+    if (!selectedUserId || !isOpen) {
+      setMatchedOffer(null);
+      return;
+    }
+    let isCancelled = false;
+    const fetchOffer = async () => {
+      setLoadingOffer(true);
+      try {
+        const headers: Record<string, string> = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+        const res = await fetch(`/api/admin/payroll/salary-structures?userId=${selectedUserId}`, {
+          headers,
+        });
+        const json = await res.json();
+        if (!isCancelled && json.matchedOffer) {
+          setMatchedOffer(json.matchedOffer);
+        } else if (!isCancelled) {
+          setMatchedOffer(null);
+        }
+      } catch {
+        if (!isCancelled) setMatchedOffer(null);
+      } finally {
+        if (!isCancelled) setLoadingOffer(false);
+      }
+    };
+    fetchOffer();
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedUserId, isOpen, token]);
+
+  const applyOfferLetterTerms = () => {
+    if (!matchedOffer) return;
+    if (matchedOffer.salaryCtc > 0) {
+      setBaseSalary(String(matchedOffer.salaryCtc));
+      applyStandardBreakdown(matchedOffer.salaryCtc);
+      if (matchedOffer.conveyanceAllowanceAmount > 0) {
+        setConveyanceAllowance(String(matchedOffer.conveyanceAllowanceAmount));
+      }
+      toast.success(
+        `Applied Offer Letter terms: ₹${matchedOffer.salaryCtc.toLocaleString('en-IN')} CTC & Target ${matchedOffer.target} ${matchedOffer.targetUnit}`
+      );
+    }
+  };
   const resetForm = () => {
     setSelectedUserId(employees[0]?.id || '');
     setBaseSalary('25000');
@@ -246,6 +302,52 @@ export function EmployeeSalarySetupDrawer({
                 </select>
               </div>
 
+              {/* Offer Letter Sync Banner */}
+              {matchedOffer && (
+                <div className="relative overflow-hidden rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1.5">
+                        <FileText className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        <span className="text-xs font-bold tracking-wide text-emerald-700 uppercase dark:text-emerald-300">
+                          Active Offer Letter Detected
+                        </span>
+                      </div>
+                      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-gray-700 dark:text-gray-300">
+                        {matchedOffer.designation && (
+                          <span>
+                            Role: <strong>{matchedOffer.designation}</strong>
+                          </span>
+                        )}
+                        <span>
+                          CTC: <strong>₹{matchedOffer.salaryCtc.toLocaleString('en-IN')}/mo</strong>
+                        </span>
+                        {matchedOffer.target > 0 && (
+                          <span className="flex items-center gap-1 text-emerald-600 dark:text-emerald-400">
+                            <Target className="h-3 w-3" />
+                            Target:{' '}
+                            <strong>
+                              {matchedOffer.target} {matchedOffer.targetUnit}
+                            </strong>
+                          </span>
+                        )}
+                        {matchedOffer.offerSlab && (
+                          <span className="rounded bg-emerald-600/20 px-1.5 py-0.5 text-[10px] font-bold text-emerald-700 dark:text-emerald-300">
+                            Slab: {matchedOffer.offerSlab}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={applyOfferLetterTerms}
+                      className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-emerald-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition-all hover:bg-emerald-700 active:scale-95"
+                    >
+                      <Sparkles className="h-3.5 w-3.5" /> Auto-Fill CTC &amp; Terms
+                    </button>
+                  </div>
+                </div>
+              )}
               {/* Base Gross Salary with Auto-Breakdown Preset */}
               <div className="border-brand-gold/30 bg-brand-gold/5 rounded-2xl border p-5">
                 <div className="flex items-center justify-between">

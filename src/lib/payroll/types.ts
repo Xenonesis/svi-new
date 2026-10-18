@@ -22,6 +22,22 @@ export interface SalaryStructure {
   employee_name?: string;
   employee_email?: string;
   employee_department?: string | null;
+  // Offer letter benchmark / target terms
+  offer_document_id?: string | null;
+  offer_target?: number | null;
+  offer_target_unit?: string | null;
+  offer_slab?: string | null;
+  offer_designation?: string | null;
+  offer_appointment_date?: string | null;
+  offer_location?: string | null;
+  offer_candidate_address?: string | null;
+  offer_reporting_to?: string | null;
+  offer_working_hours?: string | null;
+  offer_working_days?: string | null;
+  offer_weekly_off_days?: string | null;
+  offer_probation_period?: string | null;
+  employee_phone?: string | null;
+  employee_created_at?: string | null;
 }
 
 export type PayrollStatus = 'draft' | 'processing' | 'approved' | 'paid' | 'completed';
@@ -54,7 +70,9 @@ export interface PayrollItem {
   employee_email?: string;
   employee_department?: string | null;
   employee_phone?: string | null;
-
+  offer_target?: number | null;
+  offer_target_unit?: string | null;
+  offer_slab?: string | null;
   // Attendance Metrics
   total_month_days: number;
   working_days: number;
