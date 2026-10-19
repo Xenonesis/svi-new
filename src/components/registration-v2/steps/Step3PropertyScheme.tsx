@@ -360,27 +360,25 @@ export function Step3PropertyScheme({
                 Token booking fee is 100% adjustable against the final property allotment cost.
               </span>
             </div>
-            {/* Select Dropdown Fallback for standard form accessibility */}
-            <div className="pt-1">
-              <select
-                id="propertySize"
-                name="propertySize"
-                value={formData.propertySize}
-                onChange={(e) => handleSizeSelect(e.target.value)}
-                onBlur={onBlur}
-                aria-invalid={Boolean(errors.propertySize)}
-                aria-describedby={errors.propertySize ? 'propertySize-error' : undefined}
-                className={getInputClasses('propertySize')}
-              >
-                <option value="">{tr('sizePlaceholder', 'Or select plot size from list')}</option>
-                {PROPERTY_SIZES.map((opt) => (
-                  <option key={opt.value} value={opt.value}>
-                    {opt.label} (Token: ₹{opt.token.toLocaleString('en-IN')})
-                  </option>
-                ))}
-              </select>
-            </div>
-
+            {/* Visually hidden accessible select to retain screen-reader and automated test support */}
+            <select
+              id="propertySize"
+              name="propertySize"
+              value={formData.propertySize}
+              onChange={(e) => handleSizeSelect(e.target.value)}
+              onBlur={onBlur}
+              aria-invalid={Boolean(errors.propertySize)}
+              aria-describedby={errors.propertySize ? 'propertySize-error' : undefined}
+              className="sr-only"
+              tabIndex={-1}
+            >
+              <option value="">{tr('sizePlaceholder', 'Or select plot size from list')}</option>
+              {PROPERTY_SIZES.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label} (Token: ₹{opt.token.toLocaleString('en-IN')})
+                </option>
+              ))}
+            </select>
             {errors.propertySize && (
               <p
                 id="propertySize-error"
@@ -443,25 +441,24 @@ export function Step3PropertyScheme({
               })}
             </div>
 
-            {/* Select Dropdown Fallback */}
-            <div className="pt-1">
-              <select
-                id="propertyType"
-                name="propertyType"
-                value={formData.propertyType}
-                onChange={onChange}
-                aria-invalid={Boolean(errors.propertyType)}
-                aria-describedby={errors.propertyType ? 'propertyType-error' : undefined}
-                className={getInputClasses('propertyType')}
-              >
-                <option value="">{tr('typePlaceholder', 'Select Property Type')}</option>
-                {PROPERTY_TYPES.map((type) => (
-                  <option key={type.value} value={type.value}>
-                    {type.label}
-                  </option>
-                ))}
-              </select>
-            </div>
+            {/* Visually hidden accessible select */}
+            <select
+              id="propertyType"
+              name="propertyType"
+              value={formData.propertyType}
+              onChange={onChange}
+              aria-invalid={Boolean(errors.propertyType)}
+              aria-describedby={errors.propertyType ? 'propertyType-error' : undefined}
+              className="sr-only"
+              tabIndex={-1}
+            >
+              <option value="">{tr('typePlaceholder', 'Select Property Type')}</option>
+              {PROPERTY_TYPES.map((type) => (
+                <option key={type.value} value={type.value}>
+                  {type.label}
+                </option>
+              ))}
+            </select>
 
             {errors.propertyType && (
               <p
@@ -487,11 +484,11 @@ export function Step3PropertyScheme({
               </span>
             </label>
 
-            {/* Interactive Cards */}
+            {/* Interactive Cards - Spacious 2-Column Grid (Zero Truncation) */}
             <div
               role="radiogroup"
               aria-label="Facing orientation cards"
-              className="grid grid-cols-2 gap-2 sm:grid-cols-4"
+              className="grid grid-cols-1 gap-2.5 sm:grid-cols-2"
             >
               {PLOT_PREFERENCES.map((pref) => {
                 const isSelected = formData.plotPreference === pref.value;
@@ -502,14 +499,19 @@ export function Step3PropertyScheme({
                     role="radio"
                     aria-checked={isSelected}
                     onClick={() => handlePillSelect('plotPreference', pref.value)}
-                    className={`flex min-h-[44px] flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all active:scale-[0.98] ${
+                    className={`flex min-h-[54px] flex-col items-start justify-center rounded-xl border p-3 text-left transition-all active:scale-[0.98] ${
                       isSelected
                         ? 'border-brand-gold bg-brand-gold/15 ring-brand-gold/40 text-slate-900 shadow-[0_0_12px_rgba(212,175,55,0.2)] ring-1 dark:text-white'
                         : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
-                    <span className="text-xs font-bold">{pref.label}</span>
-                    <span className="mt-0.5 line-clamp-1 text-[10px] text-slate-500 dark:text-slate-400">
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-xs font-bold sm:text-sm">{pref.label}</span>
+                      {isSelected && (
+                        <CheckCircle2 className="text-brand-gold h-3.5 w-3.5 shrink-0" />
+                      )}
+                    </div>
+                    <span className="mt-1 text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
                       {pref.desc}
                     </span>
                   </button>
@@ -517,26 +519,24 @@ export function Step3PropertyScheme({
               })}
             </div>
 
-            {/* Select Dropdown Fallback */}
-            <div className="pt-1">
-              <select
-                id="plotPreference"
-                name="plotPreference"
-                value={formData.plotPreference}
-                onChange={onChange}
-                aria-invalid={Boolean(errors.plotPreference)}
-                aria-describedby={errors.plotPreference ? 'plotPreference-error' : undefined}
-                className={getInputClasses('plotPreference')}
-              >
-                <option value="">{tr('preferencePlaceholder', 'Select Plot Preference')}</option>
-                {PLOT_PREFERENCES.map((pref) => (
-                  <option key={pref.value} value={pref.value}>
-                    {pref.label} ({pref.desc})
-                  </option>
-                ))}
-              </select>
-            </div>
-
+            {/* Visually hidden accessible select */}
+            <select
+              id="plotPreference"
+              name="plotPreference"
+              value={formData.plotPreference}
+              onChange={onChange}
+              aria-invalid={Boolean(errors.plotPreference)}
+              aria-describedby={errors.plotPreference ? 'plotPreference-error' : undefined}
+              className="sr-only"
+              tabIndex={-1}
+            >
+              <option value="">{tr('preferencePlaceholder', 'Select Plot Preference')}</option>
+              {PLOT_PREFERENCES.map((pref) => (
+                <option key={pref.value} value={pref.value}>
+                  {pref.label} ({pref.desc})
+                </option>
+              ))}
+            </select>
             {errors.plotPreference && (
               <p
                 id="plotPreference-error"
@@ -717,24 +717,29 @@ export function Step3PropertyScheme({
                   </div>
                 </div>
 
-                <div className="w-full sm:w-44">
+                <div className="w-full sm:w-56">
                   <span className="mb-1 block text-[11px] font-medium text-slate-400">
                     Confirmed Amount (₹)
                   </span>
-                  <input
-                    id="schemeAmount"
-                    name="schemeAmount"
-                    type="text"
-                    value={formData.schemeAmount}
-                    onChange={onChange}
-                    onBlur={onBlur}
-                    placeholder={tr('schemeAmountPlaceholder', 'Enter or confirm token amount')}
-                    aria-invalid={Boolean(errors.schemeAmount)}
-                    aria-describedby={
-                      errors.schemeAmount ? 'schemeAmount-error' : 'schemeAmount-hint'
-                    }
-                    className="border-brand-gold/40 focus:border-brand-gold focus:ring-brand-gold/30 h-11 w-full rounded-xl border bg-slate-900/90 px-3.5 text-sm font-bold text-white outline-hidden transition-all focus:ring-2"
-                  />
+                  <div className="relative">
+                    <span className="text-brand-gold pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-sm font-bold">
+                      ₹
+                    </span>
+                    <input
+                      id="schemeAmount"
+                      name="schemeAmount"
+                      type="text"
+                      value={formData.schemeAmount}
+                      onChange={onChange}
+                      onBlur={onBlur}
+                      placeholder="e.g. 21000"
+                      aria-invalid={Boolean(errors.schemeAmount)}
+                      aria-describedby={
+                        errors.schemeAmount ? 'schemeAmount-error' : 'schemeAmount-hint'
+                      }
+                      className="border-brand-gold/40 focus:border-brand-gold focus:ring-brand-gold/30 h-11 w-full rounded-xl border bg-slate-900/90 pr-3.5 pl-8 text-sm font-bold text-white outline-hidden transition-all focus:ring-2"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
