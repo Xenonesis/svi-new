@@ -68,15 +68,35 @@ export function KycPreviewCard({
   const displayPan = upperPan || '••••••••••';
 
   // Location display
-  // Location display (City, District, State) with deduplication
+  // Location display (City, District, State) with smart deduplication
   const upperCity = city?.trim().toUpperCase();
   const upperDistrict = district?.trim().toUpperCase();
   const upperState = state?.trim().toUpperCase();
+
+  // Smart deduplication: If district contains the city name (e.g. "GURUGRAM (GURGAON)" contains "GURGAON"),
+  // or city is identical/subset of district, do not repeat it.
+  const isCityRedundant = Boolean(
+    upperCity &&
+    upperDistrict &&
+    (upperDistrict.includes(upperCity) ||
+      upperDistrict
+        .replace(/[()]/g, ' ')
+        .split(/\s+/)
+        .some((part) => part && part === upperCity))
+  );
+
+  const isDistrictRedundant = Boolean(upperDistrict && upperCity && upperCity === upperDistrict);
+
   const locParts = [
-    upperCity,
-    upperDistrict && upperDistrict !== upperCity ? upperDistrict : null,
+    !isCityRedundant ? upperCity : null,
+    !isDistrictRedundant ? upperDistrict : null,
     upperState,
   ].filter(Boolean);
+
+  // Fallback if both got filtered out
+  if (locParts.length === 1 && (upperCity || upperDistrict)) {
+    locParts.unshift(upperDistrict || upperCity);
+  }
   const locationText = locParts.length > 0 ? locParts.join(', ') : 'LOCATION NOT SET';
 
   // Display Name

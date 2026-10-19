@@ -620,11 +620,9 @@ export function Step2KycDocuments({
                     </div>
                     <div className="space-y-0.5">
                       <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        Click or drag passport photo to upload
+                        Upload Passport Photo
                       </p>
-                      <p className="text-[10px] text-slate-400">
-                        Supports JPG, PNG, WEBP up to 5MB
-                      </p>
+                      <p className="text-[10px] text-slate-400">JPG, PNG, WEBP (max 5MB)</p>
                     </div>
                   </label>
                 )}
@@ -696,11 +694,9 @@ export function Step2KycDocuments({
                     </div>
                     <div className="space-y-0.5">
                       <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
-                        Click or drag PAN card to upload
+                        Upload PAN Card
                       </p>
-                      <p className="text-[10px] text-slate-400">
-                        Supports JPG, PNG, WEBP, PDF up to 5MB
-                      </p>
+                      <p className="text-[10px] text-slate-400">JPG, PNG, PDF (max 5MB)</p>
                     </div>
                   </label>
                 )}
@@ -717,76 +713,75 @@ export function Step2KycDocuments({
               </h3>
             </div>
 
-            {/* Smart PIN Code with Auto-lookup */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="pincode"
-                className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
-              >
-                <span className="flex items-center gap-1.5">
-                  <MapPin className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-                  <span>PIN Code (6 Digits)</span>
-                  <span className="text-red-500">*</span>
-                </span>
-                {pincodeLoading && (
-                  <span className="text-brand-gold inline-flex items-center gap-1 text-[11px]">
-                    <Loader2 className="h-3 w-3 animate-spin" /> Auto-looking up...
+            {/* Address 2-Column Responsive Grid */}
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              {/* Smart PIN Code with Auto-lookup */}
+              <div className="space-y-1.5">
+                <label
+                  htmlFor="pincode"
+                  className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <MapPin className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
+                    <span>PIN Code (6 Digits)</span>
+                    <span className="text-red-500">*</span>
                   </span>
-                )}
-                {pincodeSuccess && !pincodeLoading && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
-                    <Check className="h-3 w-3" /> State & City Resolved
-                  </span>
-                )}
-                {pincodeNotFound && !pincodeLoading && (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-500">
-                    PIN not found — select State & City below
-                  </span>
-                )}
-              </label>
-              <div className="relative">
-                <input
-                  id="pincode"
-                  name="pincode"
-                  type="text"
-                  inputMode="numeric"
-                  required
-                  maxLength={6}
-                  autoComplete="postal-code"
-                  placeholder="e.g. 201301"
-                  value={formData.pincode}
-                  onChange={handlePincodeChange}
-                  onBlur={onBlur}
-                  aria-describedby={errors.pincode ? 'pincode-error' : undefined}
-                  className={`${getInputClasses('pincode')} font-mono tracking-widest`}
-                />
-                {pincodeLoading && (
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <Loader2 className="text-brand-gold h-4 w-4 animate-spin" />
-                  </div>
-                )}
-                {pincodeSuccess && !pincodeLoading && (
-                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
-                    <CheckCircle2 className="h-4 w-4 text-emerald-500" />
-                  </div>
+                  {pincodeLoading && (
+                    <span className="text-brand-gold inline-flex items-center gap-1 text-[11px]">
+                      <Loader2 className="h-3 w-3 animate-spin" /> Looking up...
+                    </span>
+                  )}
+                  {pincodeSuccess && !pincodeLoading && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                      <Check className="h-3 w-3" /> Auto-filled
+                    </span>
+                  )}
+                  {pincodeNotFound && !pincodeLoading && (
+                    <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-500">
+                      Select below
+                    </span>
+                  )}
+                </label>
+                <div className="relative">
+                  <input
+                    id="pincode"
+                    name="pincode"
+                    type="text"
+                    inputMode="numeric"
+                    required
+                    maxLength={6}
+                    autoComplete="postal-code"
+                    placeholder="e.g. 201301"
+                    value={formData.pincode}
+                    onChange={handlePincodeChange}
+                    onBlur={onBlur}
+                    aria-describedby={errors.pincode ? 'pincode-error' : undefined}
+                    className={`${getInputClasses('pincode')} font-mono tracking-widest`}
+                  />
+                  {pincodeLoading && (
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <Loader2 className="text-brand-gold h-4 w-4 animate-spin" />
+                    </div>
+                  )}
+                  {pincodeSuccess && !pincodeLoading && (
+                    <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                      <CheckCircle2 className="h-4 w-4 text-emerald-500" />
+                    </div>
+                  )}
+                </div>
+
+                {errors.pincode && (
+                  <p
+                    id="pincode-error"
+                    role="alert"
+                    className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"
+                  >
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span>{errors.pincode}</span>
+                  </p>
                 )}
               </div>
 
-              {errors.pincode && (
-                <p
-                  id="pincode-error"
-                  role="alert"
-                  className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"
-                >
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                  <span>{errors.pincode}</span>
-                </p>
-              )}
-            </div>
-
-            {/* State and City Row */}
-            {/* State and City Row */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {/* State Selector */}
               <div className="space-y-1.5">
                 <label
@@ -881,7 +876,7 @@ export function Step2KycDocuments({
                     onChange={handleDistrictSelectChange}
                     onBlur={onBlur}
                     aria-describedby={errors.district ? 'district-error' : undefined}
-                    className={`${getInputClasses('district')} disabled:cursor-not-allowed disabled:opacity-60`}
+                    className={`${getInputClasses('district')} truncate disabled:cursor-not-allowed disabled:opacity-60`}
                   >
                     <option value="">
                       {!formData.state ? 'Select State First' : 'Select District'}
@@ -934,8 +929,8 @@ export function Step2KycDocuments({
                 )}
               </div>
 
-              {/* City Input */}
-              <div className="space-y-1.5 sm:col-span-2 md:col-span-1">
+              {/* City / Town Input */}
+              <div className="space-y-1.5">
                 <label
                   htmlFor="city"
                   className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
@@ -971,43 +966,42 @@ export function Step2KycDocuments({
                   </p>
                 )}
               </div>
-            </div>
 
-            {/* House / Flat & Street Address */}
-            <div className="space-y-1.5">
-              <label
-                htmlFor="address"
-                className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
-              >
-                <span className="flex items-center gap-1.5">
-                  <span>House / Flat & Street Address</span>
-                  <span className="text-red-500">*</span>
-                </span>
-              </label>
-              <input
-                id="address"
-                name="address"
-                type="text"
-                required
-                autoComplete="street-address"
-                placeholder="e.g. House No. 12, Sector 62, Noida"
-                value={formData.address}
-                onChange={handleAddressChange}
-                onBlur={onBlur}
-                aria-describedby={errors.address ? 'address-error' : undefined}
-                className={`${getInputClasses('address')} uppercase`}
-              />
-
-              {errors.address && (
-                <p
-                  id="address-error"
-                  role="alert"
-                  className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"
+              {/* House / Flat & Street Address (Full Width sm:col-span-2) */}
+              <div className="space-y-1.5 sm:col-span-2">
+                <label
+                  htmlFor="address"
+                  className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
-                  <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
-                  <span>{errors.address}</span>
-                </p>
-              )}
+                  <span className="flex items-center gap-1.5">
+                    <span>House / Flat & Street Address</span>
+                    <span className="text-red-500">*</span>
+                  </span>
+                </label>
+                <input
+                  id="address"
+                  name="address"
+                  type="text"
+                  required
+                  autoComplete="street-address"
+                  placeholder="e.g. House No. 12, Sector 62, Noida"
+                  value={formData.address}
+                  onChange={handleAddressChange}
+                  onBlur={onBlur}
+                  aria-describedby={errors.address ? 'address-error' : undefined}
+                  className={`${getInputClasses('address')} uppercase`}
+                />
+                {errors.address && (
+                  <p
+                    id="address-error"
+                    role="alert"
+                    className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"
+                  >
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span>{errors.address}</span>
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
