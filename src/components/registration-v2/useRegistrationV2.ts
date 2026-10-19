@@ -112,69 +112,56 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
   useEffect(() => {
     let active = true;
 
-    const fetchMetadata = async () => {
-      try {
-        let advList: string[] | null = null;
-        try {
-          const advRes = await fetch('/api/registration/advisors');
-          if (advRes.ok) {
-            const data = (await advRes.json()) as { advisors?: string[] };
-            if (data?.advisors?.length) advList = data.advisors;
-          } else {
-            const fbRes = await fetch('/api/registration');
-            if (fbRes.ok) {
-              const data = (await fbRes.json()) as { advisors?: string[] };
-              if (data?.advisors?.length) advList = data.advisors;
+    const fetchRegistration = fetch('/api/registration')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+    const fetchProperties = fetch('/api/properties')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    Promise.all([fetchRegistration, fetchProperties])
+      .then(([registrationData, propertiesData]) => {
+        if (!active) return;
+        if (
+          registrationData &&
+          typeof registrationData === 'object' &&
+          'advisors' in registrationData
+        ) {
+          const list = registrationData.advisors;
+          if (Array.isArray(list) && list.length > 0) {
+            setAdvisors(list.filter((item): item is string => typeof item === 'string'));
+          }
+        }
+        if (propertiesData && typeof propertiesData === 'object') {
+          if (
+            'projects' in propertiesData &&
+            Array.isArray(propertiesData.projects) &&
+            propertiesData.projects.length > 0
+          ) {
+            setProjects(propertiesData.projects);
+          } else if (
+            'properties' in propertiesData &&
+            Array.isArray(propertiesData.properties) &&
+            propertiesData.properties.length > 0
+          ) {
+            type RawProp = { slug?: string; name?: string; value?: string; label?: string };
+            const rawList: unknown[] = propertiesData.properties;
+            const mapped = rawList
+              .filter((p: unknown): p is RawProp => Boolean(p && typeof p === 'object'))
+              .map((p: RawProp) => ({
+                value: p.value || p.slug || '',
+                label: p.label || p.name || '',
+              }))
+              .filter((p: { value: string; label: string }) => p.value.length > 0);
+            if (mapped.length > 0) {
+              setProjects(mapped);
             }
           }
-        } catch {
-          // Keep fallback advisors
         }
-
-        if (active && advList && advList.length > 0) {
-          setAdvisors(advList);
-        }
-
-        let projList: { value: string; label: string }[] | null = null;
-        try {
-          const projRes = await fetch('/api/registration/projects');
-          if (projRes.ok) {
-            const data = (await projRes.json()) as {
-              projects?: { value: string; label: string }[];
-            };
-            if (data?.projects?.length) projList = data.projects;
-          } else {
-            const fbRes = await fetch('/api/properties');
-            if (fbRes.ok) {
-              const data = (await fbRes.json()) as {
-                properties?: Array<{
-                  slug?: string;
-                  value?: string;
-                  name?: string;
-                  label?: string;
-                }>;
-              };
-              if (data?.properties?.length) {
-                projList = data.properties.map((p) => ({
-                  value: p.slug || p.value || '',
-                  label: p.name || p.label || '',
-                }));
-              }
-            }
-          }
-        } catch {
-          // Keep fallback projects
-        }
-
-        if (active && projList && projList.length > 0) {
-          setProjects(projList);
-        }
-      } catch (err) {
-        console.error('Failed to load registration metadata:', err);
-      }
-    };
-
-    fetchMetadata();
+      })
+      .catch(() => {
+        // Retain fallback advisors and projects
+      });
 
     return () => {
       active = false;

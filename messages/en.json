@@ -889,7 +889,19 @@
         "fileType": "Only JPG, PNG, WEBP, or PDF files are allowed. Please take a photo or use a PDF.",
         "fileCompressFailed": "Could not compress the image automatically. Please try a smaller file.",
         "submitError": "Failed to submit registration. Please try again."
-      }
+      },
+      "personalSubtitle": "Please provide your official legal identity as registered on your Government ID documents.",
+      "propertySubtitle": "Select your preferred township project, plot dimension, and payment schedule",
+      "prevStep": "Back",
+      "nextStep": "Next",
+      "applicantName": "Full Name",
+      "sizePlaceholder": "Select plot size",
+      "typePlaceholder": "Select property type",
+      "preferencePlaceholder": "Select plot preference",
+      "planPlaceholder": "Choose payment plan",
+      "modePlaceholder": "Select payment mode",
+      "schemeAmountPlaceholder": "Confirm token amount",
+      "schemeAmountHint": "Standard token amount based on selected plot dimension"
     },
     "thankYou": {
       "title": "Thank You",

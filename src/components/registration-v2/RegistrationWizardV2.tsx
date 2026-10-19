@@ -23,8 +23,10 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
   // Translation helper with English fallback to avoid throwing on missing keys
   const translate = (key: string): string => {
     try {
-      type TranslationKey = Parameters<typeof t>[0];
-      return t(key as unknown as TranslationKey);
+      if ('has' in t && typeof t.has === 'function' && !t.has(key)) {
+        return key;
+      }
+      return t(key as Parameters<typeof t>[0]);
     } catch {
       return key;
     }
