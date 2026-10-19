@@ -22,7 +22,11 @@ import {
 } from 'lucide-react';
 import { formatAadhaarNumber, isValidPan } from '../schemeCalculator';
 import { lookupPincode } from '@/src/lib/postal';
-import { INDIAN_STATES_AND_UTS } from '@/src/lib/constants';
+import {
+  INDIAN_STATES_AND_UTS,
+  DISTRICTS_BY_STATE_OR_UT,
+  OTHER_DISTRICT_VALUE,
+} from '@/src/lib/constants';
 import { KycPreviewCard } from '../KycPreviewCard';
 import type { Step2KycDocumentsProps } from '../types';
 
@@ -55,7 +59,7 @@ export function Step2KycDocuments({
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [pincodeSuccess, setPincodeSuccess] = useState(false);
   const [pincodeNotFound, setPincodeNotFound] = useState(false);
-
+  const [isCustomDistrict, setIsCustomDistrict] = useState(false);
   // Object URL for passport photo preview inside the uploader
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
 
@@ -156,7 +160,7 @@ export function Step2KycDocuments({
     } as ChangeEvent<HTMLInputElement>;
     onChange(syntheticEvent);
   };
-  // District Uppercase Sanitizer
+  // District Uppercase Sanitizer (for manual custom input)
   const handleDistrictChange = (e: ChangeEvent<HTMLInputElement>) => {
     const upper = e.target.value.toUpperCase();
     const syntheticEvent = {
@@ -170,6 +174,56 @@ export function Step2KycDocuments({
     onChange(syntheticEvent);
   };
 
+  // State Change Handler with District Sync
+  const handleStateChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    onChange(e);
+    const newState = e.target.value;
+    const newDistList =
+      newState && DISTRICTS_BY_STATE_OR_UT[newState] ? DISTRICTS_BY_STATE_OR_UT[newState] : [];
+    // Check if current district still belongs to new state
+    if (formData.district) {
+      const stillValid = newDistList.some(
+        (d) =>
+          d.toLowerCase() === formData.district.toLowerCase() ||
+          d.toLowerCase().includes(formData.district.toLowerCase()) ||
+          formData.district.toLowerCase().includes(d.toLowerCase())
+      );
+      if (!stillValid) {
+        const resetDistEvent = {
+          target: {
+            name: 'district',
+            value: '',
+          },
+        } as unknown as ChangeEvent<HTMLInputElement>;
+        onChange(resetDistEvent);
+        setIsCustomDistrict(false);
+      }
+    }
+  };
+
+  // District Select Handler
+  const handleDistrictSelectChange = (e: ChangeEvent<HTMLSelectElement>) => {
+    const selected = e.target.value;
+    if (selected === OTHER_DISTRICT_VALUE) {
+      setIsCustomDistrict(true);
+      const syntheticEvent = {
+        target: {
+          name: 'district',
+          value: '',
+        },
+      } as unknown as ChangeEvent<HTMLInputElement>;
+      onChange(syntheticEvent);
+    } else {
+      setIsCustomDistrict(false);
+      const syntheticEvent = {
+        target: {
+          name: 'district',
+          value: selected.toUpperCase(),
+        },
+      } as unknown as ChangeEvent<HTMLInputElement>;
+      onChange(syntheticEvent);
+    }
+  };
   // House / Street Address Uppercase Sanitizer
   const handleAddressChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const upper = e.target.value.toUpperCase();
@@ -225,7 +279,16 @@ export function Step2KycDocuments({
           }
 
           // Auto-fill district
-          const districtToSet = (info.district || '').toUpperCase();
+          const stateForDist = matchedState?.value || info.state;
+          const distList = (stateForDist && DISTRICTS_BY_STATE_OR_UT[stateForDist]) || [];
+          const rawDist = (info.district || '').trim();
+          const matchedDistrictOption = distList.find(
+            (d) =>
+              d.toLowerCase() === rawDist.toLowerCase() ||
+              d.toLowerCase().includes(rawDist.toLowerCase()) ||
+              rawDist.toLowerCase().includes(d.toLowerCase())
+          );
+          const districtToSet = (matchedDistrictOption || rawDist).toUpperCase();
           if (districtToSet && districtToSet !== formData.district) {
             const districtEvent = {
               target: {
@@ -235,7 +298,6 @@ export function Step2KycDocuments({
             } as unknown as ChangeEvent<HTMLInputElement>;
             onChange(districtEvent);
           }
-
           // Auto-fill city
           const cityToSet = (info.postOffices?.[0] || info.district || '').toUpperCase();
           if (cityToSet && (!formData.city || formData.city === '')) {
@@ -723,6 +785,7 @@ export function Step2KycDocuments({
             </div>
 
             {/* State and City Row */}
+            {/* State and City Row */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {/* State Selector */}
               <div className="space-y-1.5">
@@ -744,7 +807,7 @@ export function Step2KycDocuments({
                       (st) => st.value.toLowerCase() === (formData.state || '').toLowerCase()
                     )?.value || ''
                   }
-                  onChange={onChange}
+                  onChange={handleStateChange}
                   onBlur={onBlur}
                   aria-describedby={errors.state ? 'state-error' : undefined}
                   className={getInputClasses('state')}
@@ -769,31 +832,95 @@ export function Step2KycDocuments({
                 )}
               </div>
 
-              {/* District Input */}
+              {/* Dynamic District Selector */}
               <div className="space-y-1.5">
-                <label
-                  htmlFor="district"
-                  className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
-                >
-                  <span className="flex items-center gap-1.5">
+                <div className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
+                  <label htmlFor="district" className="flex items-center gap-1.5">
                     <span>District</span>
                     <span className="text-red-500">*</span>
-                  </span>
-                </label>
+                  </label>
+                  {isCustomDistrict && (
+                    <button
+                      type="button"
+                      onClick={() => setIsCustomDistrict(false)}
+                      className="text-brand-gold text-[11px] font-semibold lowercase hover:underline"
+                    >
+                      (choose from list)
+                    </button>
+                  )}
+                </div>
 
-                <input
-                  id="district"
-                  name="district"
-                  type="text"
-                  required
-                  autoComplete="address-level2"
-                  placeholder="e.g. Gurgaon / Gautam Buddha Nagar"
-                  value={formData.district}
-                  onChange={handleDistrictChange}
-                  onBlur={onBlur}
-                  aria-describedby={errors.district ? 'district-error' : undefined}
-                  className={`${getInputClasses('district')} uppercase`}
-                />
+                {!isCustomDistrict ? (
+                  <select
+                    id="district"
+                    name="district"
+                    required
+                    disabled={!formData.state}
+                    value={(() => {
+                      if (!formData.district) return '';
+                      const matchedStateObj = INDIAN_STATES_AND_UTS.find(
+                        (s) => s.value.toLowerCase() === (formData.state || '').toLowerCase()
+                      );
+                      const activeStateName = matchedStateObj?.value || formData.state || '';
+                      const distList =
+                        activeStateName && DISTRICTS_BY_STATE_OR_UT[activeStateName]
+                          ? DISTRICTS_BY_STATE_OR_UT[activeStateName]
+                          : [];
+                      const exact = distList.find(
+                        (d) => d.toLowerCase() === formData.district.toLowerCase()
+                      );
+                      if (exact) return exact;
+                      const partial = distList.find(
+                        (d) =>
+                          d.toLowerCase().includes(formData.district.toLowerCase()) ||
+                          formData.district.toLowerCase().includes(d.toLowerCase())
+                      );
+                      if (partial) return partial;
+                      return formData.district;
+                    })()}
+                    onChange={handleDistrictSelectChange}
+                    onBlur={onBlur}
+                    aria-describedby={errors.district ? 'district-error' : undefined}
+                    className={`${getInputClasses('district')} disabled:cursor-not-allowed disabled:opacity-60`}
+                  >
+                    <option value="">
+                      {!formData.state ? 'Select State First' : 'Select District'}
+                    </option>
+                    {(() => {
+                      const matchedStateObj = INDIAN_STATES_AND_UTS.find(
+                        (s) => s.value.toLowerCase() === (formData.state || '').toLowerCase()
+                      );
+                      const activeStateName = matchedStateObj?.value || formData.state || '';
+                      const distList =
+                        activeStateName && DISTRICTS_BY_STATE_OR_UT[activeStateName]
+                          ? DISTRICTS_BY_STATE_OR_UT[activeStateName]
+                          : [];
+                      return distList.map((dist) => (
+                        <option key={dist} value={dist}>
+                          {dist}
+                        </option>
+                      ));
+                    })()}
+                    {formData.state && (
+                      <option value={OTHER_DISTRICT_VALUE}>Other (Type Manually)</option>
+                    )}
+                  </select>
+                ) : (
+                  <input
+                    id="district"
+                    name="district"
+                    type="text"
+                    required
+                    autoComplete="address-level2"
+                    placeholder="Enter District name"
+                    value={formData.district}
+                    onChange={handleDistrictChange}
+                    onBlur={onBlur}
+                    aria-describedby={errors.district ? 'district-error' : undefined}
+                    className={`${getInputClasses('district')} uppercase`}
+                    autoFocus
+                  />
+                )}
 
                 {errors.district && (
                   <p

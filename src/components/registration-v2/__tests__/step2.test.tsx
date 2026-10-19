@@ -204,8 +204,8 @@ describe('Step2KycDocuments', () => {
 
     const stateSelect = screen.getByLabelText(/State \/ Union Territory/i) as HTMLSelectElement;
     expect(stateSelect.value).toBe('Uttar Pradesh');
-    const districtInput = screen.getByLabelText(/^District/i) as HTMLInputElement;
-    expect(districtInput.value).toBe('GAUTAM BUDDHA NAGAR');
+    const districtSelect = screen.getByLabelText(/^District/i) as HTMLSelectElement;
+    expect(districtSelect.value).toBe('Gautam Buddha Nagar (Noida)');
 
     const cityInput = screen.getByLabelText(/City \/ Town/i) as HTMLInputElement;
     expect(cityInput.value).toBe('NOIDA');
@@ -371,7 +371,7 @@ describe('Step2KycDocuments', () => {
         expect.objectContaining({
           target: expect.objectContaining({
             name: 'district',
-            value: 'GAUTAM BUDDHA NAGAR',
+            value: 'GAUTAM BUDDHA NAGAR (NOIDA)',
           }),
         })
       );
