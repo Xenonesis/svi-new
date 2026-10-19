@@ -13,7 +13,7 @@ export default async function Registration2Page(props: {
   const t = await getTranslations({ locale, namespace: 'pages.registration' });
 
   return (
-    <div className="bg-brand-bg min-h-screen pt-6 pb-24 dark:bg-slate-950">
+    <div className="bg-brand-bg min-h-screen pt-28 pb-24 md:pt-32 dark:bg-slate-950">
       {searchParams.needRegistration && (
         <div className="container mx-auto px-4 pt-4">
           <div

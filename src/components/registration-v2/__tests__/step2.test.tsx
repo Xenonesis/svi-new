@@ -47,14 +47,14 @@ describe('KycPreviewCard', () => {
   it('renders official header and branding pass title', () => {
     render(<KycPreviewCard {...defaultProps} />);
 
-    expect(screen.getByText(/SVI INFRA LOTTERY IDENTITY PASS/i)).toBeInTheDocument();
+    expect(screen.getByText(/PRIORITY ALLOTMENT PASS/i)).toBeInTheDocument();
     expect(screen.getByText(/OFFICIAL VERIFIED APPLICANT/i)).toBeInTheDocument();
   });
 
-  it('renders official hologram security effect badge', () => {
+  it('renders official digital security seal badge', () => {
     render(<KycPreviewCard {...defaultProps} />);
 
-    expect(screen.getByText(/HOLOGRAM/i)).toBeInTheDocument();
+    expect(screen.getByText(/DIGITAL SEAL/i)).toBeInTheDocument();
   });
 
   it('displays applicant name in bold uppercase', () => {
@@ -382,7 +382,7 @@ describe('Step2KycDocuments', () => {
     render(<Step2KycDocuments {...defaultProps} />);
 
     // Live preview title
-    expect(screen.getAllByText(/SVI INFRA LOTTERY IDENTITY PASS/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/PRIORITY ALLOTMENT PASS/i).length).toBeGreaterThan(0);
 
     // Mobile preview toggle button
     const mobileToggle = screen.getByRole('button', { name: /Live ID Pass Preview/i });

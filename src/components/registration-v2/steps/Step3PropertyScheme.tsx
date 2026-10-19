@@ -16,7 +16,7 @@ import {
   CheckCircle2,
   ChevronDown,
   ChevronUp,
-  Sparkles,
+  ShieldCheck,
   Info,
 } from 'lucide-react';
 import { SchemeCalculatorV2 } from '../SchemeCalculatorV2';
@@ -677,13 +677,13 @@ export function Step3PropertyScheme({
             >
               <span className="flex items-center gap-1.5">
                 <IndianRupee className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>Registration Token Fee (INR) (Booking Token Amount)</span>
+                <span>Registration Token Fee (INR)</span>
                 <span className="text-brand-gold" aria-hidden="true">
                   *
                 </span>
               </span>
               <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:text-brand-gold-light inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">
-                <Sparkles className="h-3 w-3" /> Priority Token
+                <ShieldCheck className="h-3 w-3" /> Priority Token
               </span>
             </label>
 

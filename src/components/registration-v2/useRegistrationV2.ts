@@ -177,10 +177,14 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
       if (!raw) return;
       const parsed = JSON.parse(raw);
       const savedData = (parsed?.formData || parsed) as Partial<FormData>;
+      const savedStep = parsed?.currentStep as RegistrationV2Step | undefined;
       if (savedData && typeof savedData === 'object') {
         const hasValues = Object.values(savedData).some((v) => v !== '');
         if (hasValues) {
           setFormData((prev) => ({ ...prev, ...savedData }));
+          if (savedStep && savedStep >= 1 && savedStep <= 4) {
+            setCurrentStep(savedStep);
+          }
           setDraftRestored(true);
           const timer = setTimeout(() => setDraftRestored(false), 5000);
           return () => clearTimeout(timer);
@@ -200,7 +204,7 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
           if (hasValues) {
             localStorage.setItem(
               DRAFT_STORAGE_KEY,
-              JSON.stringify({ formData, savedAt: Date.now() })
+              JSON.stringify({ formData, currentStep, savedAt: Date.now() })
             );
           }
         }
@@ -210,7 +214,7 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
     }, 500);
 
     return () => clearTimeout(timer);
-  }, [formData]);
+  }, [formData, currentStep]);
 
   const clearDraft = useCallback(() => {
     try {

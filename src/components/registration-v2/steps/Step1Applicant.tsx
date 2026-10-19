@@ -195,7 +195,7 @@ export function Step1Applicant({
         ? 'border-2 border-red-500 bg-red-50/30 text-red-950 dark:bg-red-950/20 dark:text-red-100 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
         : isSuccess
           ? 'border-2 border-emerald-500/70 bg-emerald-50/10 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 dark:border-emerald-500/50 dark:bg-emerald-950/10 dark:text-white'
-          : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-800 dark:bg-slate-900/90 dark:text-white dark:hover:border-slate-700'
+          : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-700/80 dark:bg-[#0c101a] dark:text-white dark:hover:border-slate-600 dark:focus:border-brand-gold'
     }`;
   };
 
@@ -223,7 +223,7 @@ export function Step1Applicant({
               <User className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
               <span>First Name</span>
               <span className="text-[11px] font-normal text-slate-400 normal-case">
-                (Aapka Naam)
+                (Given Name)
               </span>
               <span className="text-red-500">*</span>
             </span>
@@ -271,7 +271,9 @@ export function Step1Applicant({
             <span className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
               <span>Last Name</span>
-              <span className="text-[11px] font-normal text-slate-400 normal-case">(Surname)</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">
+                (Family Name)
+              </span>
             </span>
           </label>
           <div className="relative">
@@ -326,7 +328,7 @@ export function Step1Applicant({
                 ? 'border-2 border-red-500 bg-red-50/30 dark:bg-red-950/20'
                 : !errors.mobileNo && formData.mobileNo.length === 10
                   ? 'border-2 border-emerald-500/70 bg-emerald-50/10 dark:border-emerald-500/50 dark:bg-emerald-950/10'
-                  : 'focus-within:border-brand-gold focus-within:ring-brand-gold/25 border border-slate-200 bg-white focus-within:ring-2 dark:border-slate-800 dark:bg-slate-900/90'
+                  : 'focus-within:border-brand-gold focus-within:ring-brand-gold/25 border border-slate-200 bg-white focus-within:ring-2 dark:border-slate-700/80 dark:bg-[#0c101a]'
             }`}
           >
             <span className="inline-flex h-full items-center border-r border-slate-200 bg-slate-100 px-3.5 text-xs font-bold text-slate-600 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-300">
@@ -379,7 +381,7 @@ export function Step1Applicant({
               <Mail className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
               <span>Email Address</span>
               <span className="text-[11px] font-normal text-slate-400 normal-case">
-                (Receipt & Allotment)
+                (For Allotment Letter)
               </span>
               <span className="text-red-500">*</span>
             </span>
@@ -429,9 +431,7 @@ export function Step1Applicant({
             <span className="flex items-center gap-1.5">
               <Users className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
               <span>Father / Husband / Guardian</span>
-              <span className="text-[11px] font-normal text-slate-400 normal-case">
-                (Pita / Pati / Guardian)
-              </span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">(Care Of)</span>
               <span className="text-red-500">*</span>
             </span>
           </label>
@@ -441,7 +441,7 @@ export function Step1Applicant({
                 ? 'border-2 border-red-500 bg-red-50/30 dark:bg-red-950/20'
                 : !errors.soWoDo && relativeName.trim().length >= 2
                   ? 'border-2 border-emerald-500/70 bg-emerald-50/10 dark:border-emerald-500/50 dark:bg-emerald-950/10'
-                  : 'focus-within:border-brand-gold focus-within:ring-brand-gold/25 border border-slate-200 bg-white focus-within:ring-2 dark:border-slate-800 dark:bg-slate-900/90'
+                  : 'focus-within:border-brand-gold focus-within:ring-brand-gold/25 border border-slate-200 bg-white focus-within:ring-2 dark:border-slate-700/80 dark:bg-[#0c101a]'
             }`}
           >
             <select

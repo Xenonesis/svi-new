@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { Calculator, Ruler, Calendar, Sparkles, Clock, CheckCircle2, Info } from 'lucide-react';
+import { Calculator, Ruler, Calendar, ShieldCheck, Clock, CheckCircle2, Info } from 'lucide-react';
 import { calculateSchemeDetails } from './schemeCalculator';
 import type { SchemeCalculatorV2Props } from './types';
 
@@ -61,7 +61,7 @@ export function SchemeCalculatorV2({
             className="border-brand-gold/40 bg-brand-gold/15 text-brand-gold flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(212,175,55,0.2)]"
             title="Official SVI Allotment Guarantee"
           >
-            <Sparkles className="text-brand-gold h-3 w-3" aria-hidden="true" />
+            <ShieldCheck className="text-brand-gold h-3 w-3" aria-hidden="true" />
             <span>Official Scheme</span>
           </div>
         </div>

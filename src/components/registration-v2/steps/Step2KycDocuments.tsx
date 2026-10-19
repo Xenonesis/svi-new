@@ -15,7 +15,6 @@ import {
   CreditCard,
   MapPin,
   Building2,
-  Sparkles,
   Check,
   Eye,
   ChevronDown,
@@ -265,7 +264,7 @@ export function Step2KycDocuments({
         ? 'border-2 border-red-500 bg-red-50/30 text-red-950 dark:bg-red-950/20 dark:text-red-100 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
         : isSuccess
           ? 'border-2 border-emerald-500/70 bg-emerald-50/10 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 dark:border-emerald-500/50 dark:bg-emerald-950/10 dark:text-white'
-          : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-800 dark:bg-slate-900/90 dark:text-white dark:hover:border-slate-700'
+          : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-700/80 dark:bg-[#0c101a] dark:text-white dark:hover:border-slate-600 dark:focus:border-brand-gold'
     }`;
   };
 
@@ -278,11 +277,11 @@ export function Step2KycDocuments({
       {/* Step Header */}
       <div className="border-b border-slate-200/80 pb-4 dark:border-slate-800">
         <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-          <span>KYC & Address Verification</span>{' '}
-          <span className="text-sm font-normal text-slate-500">(Aapki ID aur Address Details)</span>
+          <span>KYC & Address Verification</span>
         </h2>
         <p className="mt-1 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-          Government ID card aur ghar ka pata allotment letter ke liye zaroori hai.
+          Government-issued identification and address details required for official priority
+          allotment certification.
         </p>
       </div>
 
@@ -345,7 +344,7 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>Aadhaar Card Number (12 Ank)</span>
+                  <span>Aadhaar Card Number (12 Digits)</span>
                   <span className="text-red-500">*</span>
                 </span>
                 {cleanAadhaar.length === 12 && (
@@ -632,7 +631,7 @@ export function Step2KycDocuments({
               >
                 <span className="flex items-center gap-1.5">
                   <MapPin className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-                  <span>PIN Code (6 Ank)</span>
+                  <span>PIN Code (6 Digits)</span>
                   <span className="text-red-500">*</span>
                 </span>
                 {pincodeLoading && (
@@ -736,7 +735,7 @@ export function Step2KycDocuments({
                   className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>City / District (Zila)</span>
+                    <span>City / District</span>
                     <span className="text-red-500">*</span>
                   </span>
                 </label>
@@ -775,7 +774,7 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>House / Flat & Street Address (Makaan No. / Gali / Sadak)</span>
+                  <span>House / Flat & Street Address</span>
                   <span className="text-red-500">*</span>
                 </span>
               </label>

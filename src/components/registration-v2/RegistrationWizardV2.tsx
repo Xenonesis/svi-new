@@ -3,7 +3,7 @@
 import React from 'react';
 import { useTranslations } from 'next-intl';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, Trash2 } from 'lucide-react';
+import { ShieldCheck, Trash2, FileCheck2 } from 'lucide-react';
 import { useRegistrationV2 } from './useRegistrationV2';
 import { StepProgressBar } from './StepProgressBar';
 import { TrustBannerV2 } from './TrustBannerV2';
@@ -46,7 +46,7 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
       {/* Funnel Header */}
       <header className="mb-8 text-center sm:mb-12">
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-bold tracking-widest text-amber-700 uppercase dark:text-amber-400">
-          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
           <span>SVI INFRA TOWNSHIPS • PRIORITY ALLOTMENT</span>
         </div>
 
@@ -76,7 +76,7 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
           className="mb-8 flex flex-col gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-900 sm:flex-row sm:items-center sm:justify-between dark:border-amber-500/20 dark:bg-amber-950/30 dark:text-amber-300"
         >
           <div className="flex items-center gap-2.5">
-            <Sparkles className="text-brand-gold h-5 w-5 shrink-0" aria-hidden="true" />
+            <FileCheck2 className="text-brand-gold h-5 w-5 shrink-0" aria-hidden="true" />
             <div>
               <p className="font-semibold text-slate-900 dark:text-white">
                 Draft Application Restored
@@ -99,8 +99,11 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
       )}
 
       {/* Main Step Container with Smooth Transition Animations */}
-      <main className="rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-xl backdrop-blur-md sm:p-10 dark:border-slate-800 dark:bg-slate-900/70">
-        <AnimatePresence mode="wait">
+      <section
+        aria-label="Registration Step Form"
+        className="rounded-3xl border border-slate-200/80 bg-white/70 p-6 shadow-xl backdrop-blur-md sm:p-10 dark:border-slate-800 dark:bg-slate-900/70"
+      >
+        <AnimatePresence initial={false} mode="wait">
           <motion.div
             key={wizard.currentStep}
             initial={{ opacity: 0, y: 15 }}
@@ -176,7 +179,7 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
             )}
           </motion.div>
         </AnimatePresence>
-      </main>
+      </section>
 
       {/* Payment Modal */}
       {wizard.isPaymentModalOpen && (

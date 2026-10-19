@@ -22,7 +22,6 @@ import {
   Loader2,
   FileText,
   MapPin,
-  Sparkles,
 } from 'lucide-react';
 import Captcha from '@/src/components/Captcha';
 import { calculateSchemeDetails } from '../schemeCalculator';
@@ -136,7 +135,7 @@ export function Step4ReviewConfirm({
       {/* Step Header */}
       <div className="text-center sm:text-left">
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-3.5 py-1 text-xs font-semibold tracking-wide text-amber-700 uppercase dark:text-amber-400">
-          <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
+          <ShieldCheck className="h-3.5 w-3.5" aria-hidden="true" />
           <span>Step 4 of 4 • Final Verification</span>
         </div>
         <h2 className="text-brand-navy mt-3 font-serif text-2xl font-bold tracking-tight sm:text-3xl dark:text-white">
@@ -401,7 +400,7 @@ export function Step4ReviewConfirm({
             </div>
 
             <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:text-brand-gold-light inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold">
-              <Sparkles className="h-3 w-3" /> Priority Queue
+              <CheckCircle2 className="h-3 w-3" /> Priority Queue
             </span>
           </div>
 

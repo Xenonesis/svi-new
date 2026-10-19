@@ -1,15 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  ShieldCheck,
-  CheckCircle2,
-  User,
-  Sparkles,
-  MapPin,
-  FileCheck,
-  BadgeCheck,
-} from 'lucide-react';
+import { ShieldCheck, CheckCircle2, User, MapPin, FileCheck, BadgeCheck } from 'lucide-react';
 import { isValidPan } from './schemeCalculator';
 import type { KycPreviewCardProps } from './types';
 
@@ -90,16 +82,6 @@ export function KycPreviewCard({
       aria-label="Digital Applicant KYC Identity Pass"
       className={`border-brand-gold/40 ring-brand-gold/20 relative overflow-hidden rounded-2xl border bg-gradient-to-br from-slate-950 via-slate-900 to-[#0b0c10] p-5 text-white shadow-2xl ring-1 backdrop-blur-xl sm:p-6 ${className}`}
     >
-      {/* Luxury Ambient Gold Glow */}
-      <div
-        className="bg-brand-gold/15 pointer-events-none absolute -top-12 -right-12 h-36 w-36 rounded-full blur-2xl"
-        aria-hidden="true"
-      />
-      <div
-        className="bg-brand-gold/10 pointer-events-none absolute -bottom-10 -left-10 h-28 w-28 rounded-full blur-2xl"
-        aria-hidden="true"
-      />
-
       {/* Subtle Geometric Security Mesh Overlay */}
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-10"
@@ -119,18 +101,18 @@ export function KycPreviewCard({
                 SVI INFRA SOLUTIONS
               </p>
               <h3 className="text-xs font-extrabold tracking-wider text-slate-100 uppercase sm:text-sm">
-                SVI INFRA LOTTERY IDENTITY PASS
+                PRIORITY ALLOTMENT PASS
               </h3>
             </div>
           </div>
 
-          {/* Official Hologram Effect */}
+          {/* Official Security Seal */}
           <div
-            className="relative flex items-center gap-1.5 overflow-hidden rounded-full border border-amber-300/40 bg-gradient-to-r from-amber-400/20 via-emerald-400/20 to-sky-400/20 px-2.5 py-1 text-[10px] font-bold tracking-wider text-amber-200 uppercase shadow-[0_0_14px_rgba(212,175,55,0.25)] backdrop-blur-md"
-            title="Official Holographic Security Seal"
+            className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold relative flex items-center gap-1.5 overflow-hidden rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(212,175,55,0.15)] backdrop-blur-md"
+            title="Official Digital Security Seal"
           >
-            <Sparkles className="h-3 w-3 text-amber-300" aria-hidden="true" />
-            <span>HOLOGRAM</span>
+            <ShieldCheck className="text-brand-gold h-3 w-3" aria-hidden="true" />
+            <span>DIGITAL SEAL</span>
           </div>
         </div>
 

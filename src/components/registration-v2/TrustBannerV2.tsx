@@ -28,16 +28,6 @@ export function TrustBannerV2({
       aria-label="Trust and Verification Banner"
       className={`border-brand-gold/30 relative overflow-hidden rounded-2xl border bg-slate-950/95 px-4 py-3 text-slate-100 shadow-xl backdrop-blur-md sm:px-6 sm:py-3.5 dark:bg-[#0b0c10]/95 ${className}`}
     >
-      {/* Subtle Luxury Ambient Gold Glow */}
-      <div
-        className="bg-brand-gold/15 pointer-events-none absolute -top-12 -right-12 h-32 w-48 rounded-full blur-2xl"
-        aria-hidden="true"
-      />
-      <div
-        className="bg-brand-gold/10 pointer-events-none absolute -bottom-10 -left-10 h-28 w-40 rounded-full blur-2xl"
-        aria-hidden="true"
-      />
-
       <div className="relative z-10 flex flex-col items-center justify-between gap-3 sm:gap-4 md:flex-row">
         {/* 1. SVI Verified Scheme Badge */}
         <div className="flex items-center gap-2.5">
