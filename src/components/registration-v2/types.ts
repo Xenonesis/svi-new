@@ -28,6 +28,26 @@ export interface StepProgressBarProps {
 export interface Step1ApplicantProps extends StepProps {
   onNext: () => void;
 }
+export interface Step2KycDocumentsProps extends StepProps {
+  photoFile: File | null;
+  panCardFile: File | null;
+  compressing: 'photo' | 'panCard' | null;
+  onFileChange: (e: React.ChangeEvent<HTMLInputElement>, type: 'photo' | 'panCard') => void;
+  onRemoveFile: (type: 'photo' | 'panCard') => void;
+  onNext: () => void;
+  onPrev: () => void;
+}
+
+export interface KycPreviewCardProps {
+  fullName: string;
+  photoFile: File | null;
+  panCardFile: File | null;
+  aadharNumber: string;
+  panNumber: string;
+  city: string;
+  state: string;
+  className?: string;
+}
 
 export interface UseRegistrationV2Return {
   currentStep: RegistrationV2Step;
