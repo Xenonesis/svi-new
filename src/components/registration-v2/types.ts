@@ -51,6 +51,18 @@ export interface Step3PropertySchemeProps extends StepProps {
   onNext: () => void;
   onPrev: () => void;
 }
+export interface Step4ReviewConfirmProps extends StepProps {
+  photoFile: File | null;
+  panCardFile: File | null;
+  captchaAnswer: string;
+  captchaError: string;
+  isSubmitting: boolean;
+  submitError: string;
+  onCaptchaValidate: (answer: string) => void;
+  onEditStep: (step: 1 | 2 | 3) => void;
+  onProceedToPayment: () => void;
+  onPrev: () => void;
+}
 export interface KycPreviewCardProps {
   fullName: string;
   photoFile: File | null;
