@@ -112,9 +112,11 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
               <Step1Applicant
                 formData={wizard.formData}
                 errors={wizard.errors}
+                touchedFields={wizard.touchedFields}
                 attempted={wizard.attemptedSteps[1]}
                 t={translate}
                 onChange={wizard.handleChange}
+                onBlur={wizard.handleBlur}
                 onNext={wizard.nextStep}
               />
             )}
@@ -123,9 +125,11 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
               <Step2KycDocuments
                 formData={wizard.formData}
                 errors={wizard.errors}
+                touchedFields={wizard.touchedFields}
                 attempted={wizard.attemptedSteps[2]}
                 t={translate}
                 onChange={wizard.handleChange}
+                onBlur={wizard.handleBlur}
                 photoFile={wizard.photoFile}
                 panCardFile={wizard.panCardFile}
                 compressing={wizard.compressing}
@@ -140,16 +144,17 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
               <Step3PropertyScheme
                 formData={wizard.formData}
                 errors={wizard.errors}
+                touchedFields={wizard.touchedFields}
                 attempted={wizard.attemptedSteps[3]}
                 t={translate}
                 onChange={wizard.handleChange}
+                onBlur={wizard.handleBlur}
                 advisors={wizard.advisors}
                 projects={wizard.projects}
                 onNext={wizard.nextStep}
                 onPrev={wizard.prevStep}
               />
             )}
-
             {wizard.currentStep === 4 && (
               <Step4ReviewConfirm
                 formData={wizard.formData}

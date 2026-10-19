@@ -32,9 +32,11 @@ export type { Step2KycDocumentsProps };
 export function Step2KycDocuments({
   formData,
   errors,
+  touchedFields,
   attempted,
   t,
   onChange,
+  onBlur,
   photoFile,
   panCardFile,
   compressing,
@@ -254,13 +256,15 @@ export function Step2KycDocuments({
   // Helper for input styles
   const getInputClasses = (field: string) => {
     const hasError = Boolean(errors[field]);
-    const isSuccess = attempted && !hasError && Boolean(formData[field as keyof typeof formData]);
+    const isTouched = Boolean(touchedFields && touchedFields[field]);
+    const isSuccess =
+      (attempted || isTouched) && !hasError && Boolean(formData[field as keyof typeof formData]);
 
     return `w-full min-h-[44px] h-12 px-4 rounded-xl text-sm transition-all outline-hidden ${
       hasError
         ? 'border-2 border-red-500 bg-red-50/30 text-red-950 dark:bg-red-950/20 dark:text-red-100 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
         : isSuccess
-          ? 'border border-emerald-500/60 bg-white text-slate-900 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-emerald-500/40 dark:bg-slate-900 dark:text-white'
+          ? 'border-2 border-emerald-500/70 bg-emerald-50/10 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 dark:border-emerald-500/50 dark:bg-emerald-950/10 dark:text-white'
           : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-800 dark:bg-slate-900/90 dark:text-white dark:hover:border-slate-700'
     }`;
   };
@@ -274,13 +278,11 @@ export function Step2KycDocuments({
       {/* Step Header */}
       <div className="border-b border-slate-200/80 pb-4 dark:border-slate-800">
         <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-          {tr('steps.step2.title', 'KYC & Address Verification')}
+          <span>KYC & Address Verification</span>{' '}
+          <span className="text-sm font-normal text-slate-500">(Aapki ID aur Address Details)</span>
         </h2>
         <p className="mt-1 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-          {tr(
-            'steps.step2.subtitle',
-            'Government ID proof and permanent residential address for allotment entitlement'
-          )}
+          Government ID card aur ghar ka pata allotment letter ke liye zaroori hai.
         </p>
       </div>
 
@@ -343,7 +345,7 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>{tr('aadharNumber', 'Aadhaar Card Number')}</span>
+                  <span>Aadhaar Card Number (12 Ank)</span>
                   <span className="text-red-500">*</span>
                 </span>
                 <span className="font-mono text-[10px] font-medium text-slate-400">
@@ -369,12 +371,17 @@ export function Step2KycDocuments({
                   placeholder="XXXX XXXX 1234"
                   value={formData.aadharNumber}
                   onChange={handleAadhaarChange}
+                  onBlur={onBlur}
                   aria-invalid={errors.aadharNumber ? 'true' : 'false'}
                   aria-describedby={errors.aadharNumber ? 'aadharNumber-error' : undefined}
-                  className={`${getInputClasses('aadharNumber')} font-mono tracking-wider`}
+                  className={`${getInputClasses('aadharNumber')} pr-10 font-mono tracking-wider`}
                 />
+                {cleanAadhaar.length === 12 && !errors.aadharNumber && (
+                  <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center">
+                    <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+                  </div>
+                )}
               </div>
-
               {errors.aadharNumber && (
                 <p
                   id="aadharNumber-error"
@@ -394,7 +401,7 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>{tr('panNumber', 'PAN Card Number')}</span>
+                  <span>PAN Card Number (10 Akshar)</span>
                   <span className="text-red-500">*</span>
                 </span>
                 {panValid ? (
@@ -417,7 +424,7 @@ export function Step2KycDocuments({
                   placeholder="ABCDE1234F"
                   value={formData.panNumber}
                   onChange={handlePanChange}
-                  aria-invalid={errors.panNumber ? 'true' : 'false'}
+                  onBlur={onBlur}
                   aria-describedby={errors.panNumber ? 'panNumber-error' : undefined}
                   className={`${getInputClasses('panNumber')} font-mono tracking-widest uppercase`}
                 />
@@ -632,7 +639,7 @@ export function Step2KycDocuments({
               >
                 <span className="flex items-center gap-1.5">
                   <MapPin className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-                  <span>{tr('pincode', 'PIN Code')}</span>
+                  <span>Area PIN Code (6 Digits)</span>
                   <span className="text-red-500">*</span>
                 </span>
                 <span className="text-[10px] text-slate-400">
@@ -662,7 +669,7 @@ export function Step2KycDocuments({
                   placeholder="201301"
                   value={formData.pincode}
                   onChange={handlePincodeChange}
-                  aria-invalid={errors.pincode ? 'true' : 'false'}
+                  onBlur={onBlur}
                   aria-describedby={errors.pincode ? 'pincode-error' : undefined}
                   className={`${getInputClasses('pincode')} font-mono tracking-widest`}
                 />
@@ -699,7 +706,7 @@ export function Step2KycDocuments({
                   className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>{tr('state', 'State / Union Territory')}</span>
+                    <span>State / Union Territory (Rajya)</span>
                     <span className="text-red-500">*</span>
                   </span>
                 </label>
@@ -710,7 +717,7 @@ export function Step2KycDocuments({
                   required
                   value={formData.state}
                   onChange={onChange}
-                  aria-invalid={errors.state ? 'true' : 'false'}
+                  onBlur={onBlur}
                   aria-describedby={errors.state ? 'state-error' : undefined}
                   className={getInputClasses('state')}
                 >
@@ -741,7 +748,7 @@ export function Step2KycDocuments({
                   className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>{tr('city', 'City / District')}</span>
+                    <span>City / District (Zila)</span>
                     <span className="text-red-500">*</span>
                   </span>
                 </label>
@@ -755,7 +762,7 @@ export function Step2KycDocuments({
                   placeholder="NOIDA / GAUTAM BUDDHA NAGAR"
                   value={formData.city}
                   onChange={handleCityChange}
-                  aria-invalid={errors.city ? 'true' : 'false'}
+                  onBlur={onBlur}
                   aria-describedby={errors.city ? 'city-error' : undefined}
                   className={`${getInputClasses('city')} uppercase`}
                 />
@@ -780,7 +787,7 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>{tr('address', 'House / Flat & Street Address')}</span>
+                  <span>House / Flat & Street Address (Makaan No. / Gali / Sadak ka Pata)</span>
                   <span className="text-red-500">*</span>
                 </span>
                 <span className="text-[10px] text-slate-400">for delivery</span>
@@ -795,7 +802,7 @@ export function Step2KycDocuments({
                 placeholder="HOUSE NO. 12, SECTOR 62"
                 value={formData.address}
                 onChange={handleAddressChange}
-                aria-invalid={errors.address ? 'true' : 'false'}
+                onBlur={onBlur}
                 aria-describedby={errors.address ? 'address-error' : undefined}
                 className={`${getInputClasses('address')} uppercase`}
               />

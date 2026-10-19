@@ -95,9 +95,11 @@ export const PAYMENT_MODES = [
 export function Step3PropertyScheme({
   formData,
   errors,
+  touchedFields,
   attempted,
   t,
   onChange,
+  onBlur,
   advisors,
   projects,
   onNext,
@@ -179,13 +181,15 @@ export function Step3PropertyScheme({
   // Input styling helper
   const getInputClasses = (field: string) => {
     const hasError = Boolean(errors[field]);
-    const isSuccess = attempted && !hasError && Boolean(formData[field as keyof typeof formData]);
+    const isTouched = Boolean(touchedFields && touchedFields[field]);
+    const isSuccess =
+      (attempted || isTouched) && !hasError && Boolean(formData[field as keyof typeof formData]);
 
     return `w-full min-h-[44px] h-12 px-4 rounded-xl text-sm transition-all outline-hidden ${
       hasError
         ? 'border-2 border-red-500 bg-red-50/30 text-red-950 dark:bg-red-950/20 dark:text-red-100 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
         : isSuccess
-          ? 'border border-emerald-500/60 bg-white text-slate-900 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-emerald-500/40 dark:bg-slate-900 dark:text-white'
+          ? 'border-2 border-emerald-500/70 bg-emerald-50/10 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 dark:border-emerald-500/50 dark:bg-emerald-950/10 dark:text-white'
           : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-800 dark:bg-slate-900/90 dark:text-white dark:hover:border-slate-700'
     }`;
   };
@@ -195,13 +199,10 @@ export function Step3PropertyScheme({
       {/* Step Header */}
       <div className="border-b border-slate-200/80 pb-4 dark:border-slate-800">
         <h2 className="text-xl font-bold tracking-tight text-slate-900 sm:text-2xl dark:text-white">
-          {tr('sectionProperty', 'Property Preferences & Scheme Selection')}
+          Property Preferences & Scheme Selection (Plot ki Pasand)
         </h2>
         <p className="mt-1 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-          {tr(
-            'propertySubtitle',
-            'Select your preferred township project, plot dimension, and payment schedule'
-          )}
+          Apna manpasand township project, plot ka size aur payment plan chunein.
         </p>
       </div>
 
@@ -252,7 +253,7 @@ export function Step3PropertyScheme({
             >
               <span className="flex items-center gap-1.5">
                 <Building2 className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>{tr('selectProjects', 'Select Preferred Project')}</span>
+                <span>Select Preferred Project (Township Chunein)</span>
                 <span className="text-brand-gold" aria-hidden="true">
                   *
                 </span>
@@ -265,6 +266,7 @@ export function Step3PropertyScheme({
                 name="project"
                 value={formData.project}
                 onChange={onChange}
+                onBlur={onBlur}
                 aria-invalid={Boolean(errors.project)}
                 aria-describedby={errors.project ? 'project-error' : undefined}
                 className={getInputClasses('project')}
@@ -298,7 +300,7 @@ export function Step3PropertyScheme({
             >
               <span className="flex items-center gap-1.5">
                 <Ruler className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>{tr('propertySize', 'Property Size (Plot Area)')}</span>
+                <span>Property Size (Plot Area)</span>
                 <span className="text-brand-gold" aria-hidden="true">
                   *
                 </span>
@@ -351,6 +353,7 @@ export function Step3PropertyScheme({
                 name="propertySize"
                 value={formData.propertySize}
                 onChange={(e) => handleSizeSelect(e.target.value)}
+                onBlur={onBlur}
                 aria-invalid={Boolean(errors.propertySize)}
                 aria-describedby={errors.propertySize ? 'propertySize-error' : undefined}
                 className={getInputClasses('propertySize')}
@@ -631,7 +634,7 @@ export function Step3PropertyScheme({
             >
               <span className="flex items-center gap-1.5">
                 <UserCheck className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>{tr('advisorName', 'Assigned Property Advisor')}</span>
+                <span>Assigned Property Advisor (SVI Representative - Optional)</span>
               </span>
             </label>
 
@@ -640,6 +643,7 @@ export function Step3PropertyScheme({
               name="advisorName"
               value={formData.advisorName}
               onChange={onChange}
+              onBlur={onBlur}
               className={getInputClasses('advisorName')}
             >
               <option value="">{tr('advisorPlaceholder', 'Select an Advisor (Optional)')}</option>
@@ -659,7 +663,7 @@ export function Step3PropertyScheme({
             >
               <span className="flex items-center gap-1.5">
                 <IndianRupee className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>{tr('schemeAmount', 'Registration Token Fee (INR)')}</span>
+                <span>Registration Token Fee (INR) (Booking Token Amount)</span>
                 <span className="text-brand-gold" aria-hidden="true">
                   *
                 </span>
@@ -676,6 +680,7 @@ export function Step3PropertyScheme({
                 type="text"
                 value={formData.schemeAmount}
                 onChange={onChange}
+                onBlur={onBlur}
                 placeholder={tr('schemeAmountPlaceholder', 'Enter or confirm token amount')}
                 aria-invalid={Boolean(errors.schemeAmount)}
                 aria-describedby={errors.schemeAmount ? 'schemeAmount-error' : 'schemeAmount-hint'}

@@ -1,7 +1,16 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { AlertCircle, ArrowRight, User, Phone, Mail, Calendar, Users } from 'lucide-react';
+import {
+  AlertCircle,
+  ArrowRight,
+  User,
+  Phone,
+  Mail,
+  Calendar,
+  Users,
+  CheckCircle2,
+} from 'lucide-react';
 import type { StepProps, Step1ApplicantProps } from '../types';
 
 export type { Step1ApplicantProps };
@@ -26,9 +35,11 @@ function splitRelation(raw: string): { prefix: RelationPrefix; name: string } {
 export function Step1Applicant({
   formData,
   errors,
+  touchedFields,
   attempted,
   t,
   onChange,
+  onBlur,
   onNext,
 }: Step1ApplicantProps) {
   // Relation prefix & relative name state
@@ -105,13 +116,15 @@ export function Step1Applicant({
   // Input styling helper
   const getInputClasses = (field: string) => {
     const hasError = Boolean(errors[field]);
-    const isSuccess = attempted && !hasError && Boolean(formData[field as keyof typeof formData]);
+    const isTouched = Boolean(touchedFields && touchedFields[field]);
+    const isSuccess =
+      (attempted || isTouched) && !hasError && Boolean(formData[field as keyof typeof formData]);
 
     return `w-full min-h-[44px] h-12 px-4 rounded-xl text-sm transition-all outline-hidden ${
       hasError
         ? 'border-2 border-red-500 bg-red-50/30 text-red-950 dark:bg-red-950/20 dark:text-red-100 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
         : isSuccess
-          ? 'border border-emerald-500/60 bg-white text-slate-900 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-emerald-500/40 dark:bg-slate-900 dark:text-white'
+          ? 'border-2 border-emerald-500/70 bg-emerald-50/10 text-slate-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/25 dark:border-emerald-500/50 dark:bg-emerald-950/10 dark:text-white'
           : 'border border-slate-200 bg-white text-slate-900 hover:border-slate-300 focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/25 dark:border-slate-800 dark:bg-slate-900/90 dark:text-white dark:hover:border-slate-700'
     }`;
   };
@@ -141,24 +154,37 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <User className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>{tr('firstName', 'First Name')}</span>
+              <span>First Name (Aapka Naam)</span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">min 2 chars</span>
           </label>
-          <input
-            id="firstName"
-            name="firstName"
-            type="text"
-            required
-            autoComplete="given-name"
-            placeholder={tr('firstNamePlaceholder', 'ENTER FIRST NAME')}
-            value={formData.firstName}
-            onChange={onChange}
-            aria-invalid={errors.firstName ? 'true' : 'false'}
-            aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-            className={`${getInputClasses('firstName')} uppercase`}
-          />
+          <div className="relative">
+            <input
+              id="firstName"
+              name="firstName"
+              type="text"
+              required
+              autoComplete="given-name"
+              placeholder={tr('firstNamePlaceholder', 'ENTER FIRST NAME')}
+              value={formData.firstName}
+              onChange={onChange}
+              onBlur={onBlur}
+              aria-invalid={errors.firstName ? 'true' : 'false'}
+              aria-describedby={errors.firstName ? 'firstName-error' : undefined}
+              className={`${getInputClasses('firstName')} pr-10 uppercase`}
+            />
+            {Boolean(
+              (attempted || touchedFields?.firstName) &&
+              !errors.firstName &&
+              formData.firstName.trim().length >= 2
+            ) && (
+              <CheckCircle2
+                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                aria-hidden="true"
+              />
+            )}
+          </div>
           {errors.firstName && (
             <p
               id="firstName-error"
@@ -179,22 +205,31 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
-              <span>{tr('lastName', 'Last Name')}</span>
+              <span>Last Name (Surname)</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">optional</span>
           </label>
-          <input
-            id="lastName"
-            name="lastName"
-            type="text"
-            autoComplete="family-name"
-            placeholder={tr('lastNamePlaceholder', 'ENTER LAST NAME')}
-            value={formData.lastName}
-            onChange={onChange}
-            aria-invalid={errors.lastName ? 'true' : 'false'}
-            aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-            className={`${getInputClasses('lastName')} uppercase`}
-          />
+          <div className="relative">
+            <input
+              id="lastName"
+              name="lastName"
+              type="text"
+              autoComplete="family-name"
+              placeholder={tr('lastNamePlaceholder', 'ENTER LAST NAME')}
+              value={formData.lastName}
+              onChange={onChange}
+              onBlur={onBlur}
+              aria-invalid={errors.lastName ? 'true' : 'false'}
+              aria-describedby={errors.lastName ? 'lastName-error' : undefined}
+              className={`${getInputClasses('lastName')} pr-10 uppercase`}
+            />
+            {Boolean(formData.lastName?.trim() && !errors.lastName) && (
+              <CheckCircle2
+                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                aria-hidden="true"
+              />
+            )}
+          </div>
           {errors.lastName && (
             <p
               id="lastName-error"
@@ -215,7 +250,7 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Phone className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>{tr('mobileNo', 'Mobile Number')}</span>
+              <span>Mobile Number (WhatsApp Number)</span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">10 digits</span>
@@ -228,16 +263,28 @@ export function Step1Applicant({
               id="mobileNo"
               name="mobileNo"
               type="tel"
+              inputMode="numeric"
               required
               maxLength={10}
               autoComplete="tel-national"
-              placeholder={tr('mobilePlaceholder', '9876543210')}
+              placeholder="9876543210"
               value={formData.mobileNo}
               onChange={handleMobileChange}
+              onBlur={onBlur}
               aria-invalid={errors.mobileNo ? 'true' : 'false'}
               aria-describedby={errors.mobileNo ? 'mobileNo-error' : undefined}
-              className={`${getInputClasses('mobileNo')} rounded-l-none`}
+              className={`${getInputClasses('mobileNo')} rounded-l-none pr-10`}
             />
+            {Boolean(
+              (attempted || touchedFields?.mobileNo) &&
+              !errors.mobileNo &&
+              formData.mobileNo.length === 10
+            ) && (
+              <CheckCircle2
+                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                aria-hidden="true"
+              />
+            )}
           </div>
           {errors.mobileNo && (
             <p
@@ -259,26 +306,35 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Mail className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>{tr('email', 'Email Address')}</span>
+              <span>Email Address (Receipt & Allotment yahan aayegi)</span>
               <span className="text-red-500">*</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">
-              for allotment letter
-            </span>
+            <span className="text-[10px] font-normal text-slate-400 lowercase">verified inbox</span>
           </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            autoComplete="email"
-            placeholder={tr('emailPlaceholder', 'NAME@EXAMPLE.COM')}
-            value={formData.email}
-            onChange={onChange}
-            aria-invalid={errors.email ? 'true' : 'false'}
-            aria-describedby={errors.email ? 'email-error' : undefined}
-            className={`${getInputClasses('email')} uppercase`}
-          />
+          <div className="relative">
+            <input
+              id="email"
+              name="email"
+              type="email"
+              required
+              autoComplete="email"
+              placeholder="NAME@EXAMPLE.COM"
+              value={formData.email}
+              onChange={onChange}
+              onBlur={onBlur}
+              aria-invalid={errors.email ? 'true' : 'false'}
+              aria-describedby={errors.email ? 'email-error' : undefined}
+              className={`${getInputClasses('email')} pr-10 uppercase`}
+            />
+            {Boolean(
+              (attempted || touchedFields?.email) && !errors.email && formData.email.includes('@')
+            ) && (
+              <CheckCircle2
+                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                aria-hidden="true"
+              />
+            )}
+          </div>
           {errors.email && (
             <p
               id="email-error"
@@ -299,12 +355,12 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Users className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>{tr('soWoDo', 'Father / Husband / Guardian')}</span>
+              <span>Father / Husband / Guardian (Pita / Pati / Guardian ka Naam)</span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">S/O, W/O, D/O</span>
           </label>
-          <div className="flex overflow-hidden rounded-xl">
+          <div className="relative flex overflow-hidden rounded-xl">
             <select
               id="relationPrefix"
               aria-label="Relationship prefix"
@@ -323,13 +379,24 @@ export function Step1Applicant({
               name="soWoDo"
               type="text"
               required
-              placeholder={tr('soWoDoPlaceholder', "ENTER RELATIVE'S FULL NAME")}
+              placeholder="ENTER RELATIVE'S FULL NAME"
               value={relativeName}
               onChange={handleRelativeNameInput}
+              onBlur={onBlur}
               aria-invalid={errors.soWoDo ? 'true' : 'false'}
               aria-describedby={errors.soWoDo ? 'soWoDo-error' : undefined}
-              className={`${getInputClasses('soWoDo')} rounded-l-none uppercase`}
+              className={`${getInputClasses('soWoDo')} rounded-l-none pr-10 uppercase`}
             />
+            {Boolean(
+              (attempted || touchedFields?.soWoDo) &&
+              !errors.soWoDo &&
+              relativeName.trim().length >= 2
+            ) && (
+              <CheckCircle2
+                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                aria-hidden="true"
+              />
+            )}
           </div>
           {errors.soWoDo && (
             <p
@@ -351,25 +418,34 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Calendar className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>{tr('dob', 'Date of Birth')}</span>
+              <span>Date of Birth (Janam Tithi)</span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">18+ years</span>
           </label>
-          <input
-            id="dob"
-            name="dob"
-            type="date"
-            required
-            autoComplete="bday"
-            max={maxDobDate}
-            min={minDobDate}
-            value={formData.dob}
-            onChange={onChange}
-            aria-invalid={errors.dob ? 'true' : 'false'}
-            aria-describedby={errors.dob ? 'dob-error' : undefined}
-            className={getInputClasses('dob')}
-          />
+          <div className="relative">
+            <input
+              id="dob"
+              name="dob"
+              type="date"
+              required
+              autoComplete="bday"
+              max={maxDobDate}
+              min={minDobDate}
+              value={formData.dob}
+              onChange={onChange}
+              onBlur={onBlur}
+              aria-invalid={errors.dob ? 'true' : 'false'}
+              aria-describedby={errors.dob ? 'dob-error' : undefined}
+              className={`${getInputClasses('dob')} pr-10`}
+            />
+            {Boolean((attempted || touchedFields?.dob) && !errors.dob && formData.dob) && (
+              <CheckCircle2
+                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                aria-hidden="true"
+              />
+            )}
+          </div>
           {errors.dob && (
             <p
               id="dob-error"

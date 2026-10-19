@@ -13,10 +13,14 @@ export interface SchemeBreakdown {
 export interface StepProps {
   formData: FormData;
   errors: Record<string, string>;
+  touchedFields?: Record<string, boolean>;
   attempted: boolean;
   t: (key: string) => string;
   onChange: (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => void;
+  onBlur?: (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }
 
@@ -81,6 +85,10 @@ export interface UseRegistrationV2Return {
   setFormData: React.Dispatch<React.SetStateAction<FormData>>;
   errors: Record<string, string>;
   setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  touchedFields: Record<string, boolean>;
+  handleBlur: (
+    e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => void;
   isSubmitting: boolean;
   submitError: string;
   photoFile: File | null;

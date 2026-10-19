@@ -84,6 +84,7 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
   const [currentStep, setCurrentStep] = useState<RegistrationV2Step>(1);
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [photoFile, setPhotoFile] = useState<File | null>(null);
@@ -220,6 +221,120 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
       // Storage unavailable
     }
   }, []);
+
+  // Granular Field-by-Field Validator
+  const validateField = useCallback(
+    (name: string, value: string): string | null => {
+      const trimmed = value.trim();
+      switch (name) {
+        case 'firstName':
+          if (!trimmed) return t('validation.firstNameRequired');
+          if (trimmed.length < 2) return t('validation.firstNameMin');
+          if (!NAME_REGEX.test(trimmed)) return t('validation.firstNameFormat');
+          return null;
+        case 'lastName':
+          if (trimmed && !NAME_REGEX.test(trimmed)) return t('validation.lastNameFormat');
+          return null;
+        case 'mobileNo':
+          if (!trimmed) return t('validation.mobileRequired');
+          if (!normalizeIndianPhone(trimmed)) return t('validation.mobileFormat');
+          return null;
+        case 'email':
+          if (!trimmed) return t('validation.emailRequired');
+          if (!/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(trimmed)) {
+            return t('validation.emailFormat');
+          }
+          return null;
+        case 'soWoDo':
+          if (!trimmed) return t('validation.soWoDoRequired');
+          if (trimmed.length > 50) return t('validation.soWoDoFormat');
+          return null;
+        case 'dob': {
+          if (!trimmed) return t('validation.dobRequired');
+          const [y, m, d] = trimmed.split('-').map(Number);
+          if (!y || !m || !d || isNaN(y) || isNaN(m) || isNaN(d)) {
+            return t('validation.dobInvalid');
+          }
+          const today = new Date();
+          let age = today.getFullYear() - y;
+          const currentMonth = today.getMonth() + 1;
+          const currentDay = today.getDate();
+          if (currentMonth < m || (currentMonth === m && currentDay < d)) {
+            age--;
+          }
+          if (age < 18) return t('validation.dobUnderage');
+          if (age > 100) return t('validation.dobOverage');
+          return null;
+        }
+        case 'aadharNumber': {
+          const cleanAadhar = trimmed.replace(/\s+/g, '');
+          if (!cleanAadhar) return t('validation.aadharRequired');
+          if (!/^\d{12}$/.test(cleanAadhar)) return t('validation.aadharFormat');
+          return null;
+        }
+        case 'panNumber':
+          if (trimmed && !isValidPan(trimmed)) return t('validation.panFormat');
+          return null;
+        case 'pincode':
+          if (!trimmed || !/^\d{6}$/.test(trimmed)) return t('validation.pincodeFormat');
+          return null;
+        case 'state':
+          if (!trimmed) return t('validation.stateRequired');
+          return null;
+        case 'city':
+          if (!trimmed) return t('validation.cityRequired');
+          return null;
+        case 'address':
+          if (!trimmed) return t('validation.addressRequired');
+          return null;
+        case 'project':
+          if (!trimmed) return t('validation.projectRequired');
+          return null;
+        case 'propertySize':
+          if (!trimmed) return t('validation.sizeRequired');
+          return null;
+        case 'propertyType':
+          if (!trimmed) return t('validation.typeRequired');
+          return null;
+        case 'paymentPlan':
+          if (!trimmed) return t('validation.planRequired');
+          return null;
+        case 'paymentMode':
+          if (!trimmed) return t('validation.modeRequired');
+          return null;
+        case 'schemeAmount': {
+          if (!trimmed) return t('validation.amountRequired');
+          const num = Number(trimmed);
+          if (isNaN(num) || num <= 0) return t('validation.amountPositive');
+          return null;
+        }
+        default:
+          return null;
+      }
+    },
+    [t]
+  );
+
+  // On-blur validation handler
+  const handleBlur = useCallback(
+    (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+      const { name, value } = e.target;
+      setTouchedFields((prev) => ({ ...prev, [name]: true }));
+      const fieldError = validateField(name, value);
+      setErrors((prev) => {
+        if (fieldError) {
+          return { ...prev, [name]: fieldError };
+        }
+        if (prev[name]) {
+          const next = { ...prev };
+          delete next[name];
+          return next;
+        }
+        return prev;
+      });
+    },
+    [validateField]
+  );
 
   // Step 1 Validation
   const validateStep1 = useCallback((): boolean => {
@@ -460,7 +575,7 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
     [currentStep, validateStep]
   );
 
-  // Form field changes with uppercase transform and error clearing
+  // Form field changes with uppercase transform and real-time error clearing
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
       const { name, value } = e.target;
@@ -474,7 +589,21 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
 
       setFormData((prev) => ({ ...prev, [name]: transformedValue }));
 
-      if (errors[name]) {
+      // Real-time re-validation if field was already touched
+      if (touchedFields[name]) {
+        const fieldError = validateField(name, transformedValue);
+        setErrors((prev) => {
+          if (fieldError) {
+            return { ...prev, [name]: fieldError };
+          }
+          if (prev[name]) {
+            const next = { ...prev };
+            delete next[name];
+            return next;
+          }
+          return prev;
+        });
+      } else if (errors[name]) {
         setErrors((prev) => {
           const next = { ...prev };
           delete next[name];
@@ -482,7 +611,7 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
         });
       }
     },
-    [errors]
+    [errors, touchedFields, validateField]
   );
 
   // Client-side image compression & file upload
@@ -652,6 +781,8 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
     setFormData,
     errors,
     setErrors,
+    touchedFields,
+    handleBlur,
     isSubmitting,
     submitError,
     photoFile,
