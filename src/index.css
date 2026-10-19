@@ -32,3 +32,24 @@
     @apply text-brand-navy font-serif dark:text-gray-100;
   }
 }
+
+  /* High-contrast native select dropdowns in light and dark mode */
+  select {
+    color-scheme: light;
+  }
+
+  select option {
+    background-color: #ffffff;
+    color: #0f172a;
+  }
+
+  .dark select,
+  html.dark select {
+    color-scheme: dark;
+  }
+
+  .dark select option,
+  html.dark select option {
+    background-color: #0f172a;
+    color: #f8fafc;
+  }

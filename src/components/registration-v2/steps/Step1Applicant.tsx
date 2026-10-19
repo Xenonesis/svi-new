@@ -190,7 +190,7 @@ export function Step1Applicant({
     const isSuccess =
       (attempted || isTouched) && !hasError && Boolean(formData[field as keyof typeof formData]);
 
-    return `w-full min-h-[44px] h-12 px-4 rounded-xl text-sm transition-all outline-hidden ${
+    return `w-full min-h-[44px] h-12 px-4 rounded-xl text-sm transition-all outline-hidden [color-scheme:light] dark:[color-scheme:dark] [&>option]:bg-white [&>option]:text-slate-900 dark:[&>option]:bg-slate-900 dark:[&>option]:text-white ${
       hasError
         ? 'border-2 border-red-500 bg-red-50/30 text-red-950 dark:bg-red-950/20 dark:text-red-100 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
         : isSuccess
