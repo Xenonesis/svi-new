@@ -43,3 +43,5 @@ export const INITIAL_FORM: FormData = {
   paymentMode: '',
   schemeAmount: '',
 };
+
+export const INITIAL_FORM_DATA: FormData = INITIAL_FORM;

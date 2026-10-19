@@ -19,3 +19,49 @@ export interface StepProps {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => void;
 }
+
+export interface UseRegistrationV2Return {
+  currentStep: RegistrationV2Step;
+  setCurrentStep: React.Dispatch<React.SetStateAction<RegistrationV2Step>>;
+  formData: FormData;
+  setFormData: React.Dispatch<React.SetStateAction<FormData>>;
+  errors: Record<string, string>;
+  setErrors: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  isSubmitting: boolean;
+  submitError: string;
+  photoFile: File | null;
+  panCardFile: File | null;
+  captchaAnswer: string;
+  setCaptchaAnswer: React.Dispatch<React.SetStateAction<string>>;
+  captchaError: string;
+  compressing: 'photo' | 'panCard' | null;
+  isPaymentModalOpen: boolean;
+  setIsPaymentModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  draftRestored: boolean;
+  attemptedSteps: Record<RegistrationV2Step, boolean>;
+  advisors: string[];
+  projects: { value: string; label: string }[];
+  validateStep1: () => boolean;
+  validateStep2: () => boolean;
+  validateStep3: () => boolean;
+  validateStep4: () => boolean;
+  validateStep: (step: RegistrationV2Step) => boolean;
+  nextStep: () => boolean;
+  prevStep: () => void;
+  goToStep: (step: RegistrationV2Step) => boolean;
+  handleChange: (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => void;
+  handleFileChange: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    type: 'photo' | 'panCard'
+  ) => Promise<void>;
+  removeFile: (type: 'photo' | 'panCard') => void;
+  handleConfirmPayment: () => Promise<void>;
+  clearDraft: () => void;
+  copiedField: string | null;
+  handleCopy: (text: string, fieldId: string) => void;
+}
+
+export { INITIAL_FORM, INITIAL_FORM_DATA } from '@/src/types/registration';
+export type { FormData } from '@/src/types/registration';
