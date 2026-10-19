@@ -413,4 +413,23 @@ describe('Step2KycDocuments', () => {
     const mobileToggle = screen.getByRole('button', { name: /Live ID Pass Preview/i });
     expect(mobileToggle).toBeInTheDocument();
   });
+
+  it('renders live full address auto-combination preview under address input', () => {
+    render(
+      <Step2KycDocuments
+        {...defaultProps}
+        formData={{
+          ...baseFormData,
+          address: 'FLAT 302, TOWER B',
+          city: 'GURGAON',
+          district: 'GURUGRAM (GURGAON)',
+          state: 'Haryana',
+          pincode: '122002',
+        }}
+      />
+    );
+
+    expect(screen.getByTestId('live-full-address-preview')).toBeInTheDocument();
+    expect(screen.getByText(/FLAT 302, TOWER B, GURGAON, Haryana - 122002/i)).toBeInTheDocument();
+  });
 });

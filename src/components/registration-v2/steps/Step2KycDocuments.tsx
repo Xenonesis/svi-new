@@ -365,6 +365,25 @@ export function Step2KycDocuments({
   const panValid = isValidPan(formData.panNumber);
   const fullName = `${formData.firstName || ''} ${formData.lastName || ''}`.trim();
 
+  // Construct Live Combined Allotment Address Preview
+  const previewLocParts = [
+    formData.address?.trim(),
+    formData.city?.trim(),
+    formData.district?.trim() &&
+    formData.district.trim().toUpperCase() !== formData.city?.trim().toUpperCase() &&
+    !formData.district
+      .trim()
+      .toUpperCase()
+      .includes(formData.city?.trim().toUpperCase() || '___')
+      ? formData.district.trim()
+      : null,
+    formData.state?.trim(),
+  ].filter(Boolean);
+
+  const fullPreviewAddress =
+    previewLocParts.length > 0
+      ? `${previewLocParts.join(', ')}${formData.pincode?.trim() ? ` - ${formData.pincode.trim()}` : ''}`
+      : '';
   return (
     <div className="space-y-8">
       {/* Step Header */}
@@ -971,11 +990,14 @@ export function Step2KycDocuments({
               <div className="space-y-1.5 sm:col-span-2">
                 <label
                   htmlFor="address"
-                  className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+                  className="flex flex-wrap items-center justify-between gap-1 text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>House / Flat & Street Address</span>
+                    <span>{tr('address', 'House / Flat & Street Address')}</span>
                     <span className="text-red-500">*</span>
+                  </span>
+                  <span className="text-[11px] font-medium text-amber-600 normal-case dark:text-amber-400/90">
+                    (City, District & PIN auto-add honge)
                   </span>
                 </label>
                 <input
@@ -984,7 +1006,7 @@ export function Step2KycDocuments({
                   type="text"
                   required
                   autoComplete="street-address"
-                  placeholder="e.g. House No. 12, Sector 62, Noida"
+                  placeholder="e.g. Flat 302, Tower B, Sector 49 ya House No. 12, Gali No. 3"
                   value={formData.address}
                   onChange={handleAddressChange}
                   onBlur={onBlur}
@@ -1001,10 +1023,33 @@ export function Step2KycDocuments({
                     <span>{errors.address}</span>
                   </p>
                 )}
+
+                {/* Live Complete Allotment Address Preview Card */}
+                {fullPreviewAddress && (
+                  <div
+                    data-testid="live-full-address-preview"
+                    className="mt-2.5 rounded-xl border border-slate-200/90 bg-white/80 p-3 shadow-xs backdrop-blur-xs transition-all dark:border-slate-800 dark:bg-slate-900/60"
+                  >
+                    <div className="flex items-center justify-between text-[11px]">
+                      <span className="flex items-center gap-1.5 font-bold tracking-wider text-slate-600 uppercase dark:text-slate-300">
+                        <MapPin
+                          className="text-brand-gold h-3.5 w-3.5 shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span>Allotment Pass Address (Poora Pata):</span>
+                      </span>
+                      <span className="rounded bg-emerald-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
+                        Live Auto-Combined
+                      </span>
+                    </div>
+                    <p className="mt-1.5 font-mono text-xs font-medium text-slate-800 uppercase dark:text-slate-200">
+                      {fullPreviewAddress}
+                    </p>
+                  </div>
+                )}
               </div>
             </div>
           </div>
-
           {/* Navigation Controls */}
           <div className="flex flex-col-reverse gap-3 pt-4 sm:flex-row sm:items-center sm:justify-between">
             <button
