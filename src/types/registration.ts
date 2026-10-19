@@ -9,6 +9,7 @@ export interface FormData {
   panNumber: string;
   state: string;
   city: string;
+  district: string;
   pincode: string;
   address: string;
   advisorName: string;
@@ -32,6 +33,7 @@ export const INITIAL_FORM: FormData = {
   panNumber: '',
   state: '',
   city: '',
+  district: '',
   pincode: '',
   address: '',
   advisorName: '',

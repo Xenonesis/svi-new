@@ -279,10 +279,11 @@ export function Step4ReviewConfirm({
               icon={MapPin}
             />
             <ReviewField
-              label={tr('city', 'City / District')}
-              value={formData.city}
+              label={tr('district', 'District')}
+              value={formData.district || '—'}
               icon={MapPin}
             />
+            <ReviewField label={tr('city', 'City / Town')} value={formData.city} icon={MapPin} />
             <ReviewField label={tr('pincode', 'PIN Code')} value={formData.pincode} icon={MapPin} />
             <ReviewField
               label={tr('address', 'Permanent Address')}

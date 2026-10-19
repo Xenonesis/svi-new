@@ -191,6 +191,7 @@ describe('RegistrationWizardV2', () => {
         panNumber: 'ABCDE1234F',
         pincode: '201301',
         state: 'UTTAR PRADESH',
+        district: 'GAUTAM BUDDHA NAGAR',
         city: 'NOIDA',
         address: 'SECTOR 15, NOIDA',
         project: 'shivani-vatika',

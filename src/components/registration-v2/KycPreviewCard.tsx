@@ -14,6 +14,7 @@ export function KycPreviewCard({
   aadharNumber,
   panNumber,
   city,
+  district,
   state,
   className = '',
 }: KycPreviewCardProps) {
@@ -67,10 +68,16 @@ export function KycPreviewCard({
   const displayPan = upperPan || '••••••••••';
 
   // Location display
-  const hasLocation = Boolean(city?.trim() || state?.trim());
-  const locationText = hasLocation
-    ? [city?.trim().toUpperCase(), state?.trim().toUpperCase()].filter(Boolean).join(', ')
-    : 'LOCATION NOT SET';
+  // Location display (City, District, State) with deduplication
+  const upperCity = city?.trim().toUpperCase();
+  const upperDistrict = district?.trim().toUpperCase();
+  const upperState = state?.trim().toUpperCase();
+  const locParts = [
+    upperCity,
+    upperDistrict && upperDistrict !== upperCity ? upperDistrict : null,
+    upperState,
+  ].filter(Boolean);
+  const locationText = locParts.length > 0 ? locParts.join(', ') : 'LOCATION NOT SET';
 
   // Display Name
   const trimmedName = (fullName || '').trim().toUpperCase();

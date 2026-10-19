@@ -129,6 +129,7 @@ export async function POST(request: NextRequest) {
       'panNumber',
       'state',
       'city',
+      'district',
       'pincode',
       'address',
       'advisorName',
@@ -167,6 +168,7 @@ export async function POST(request: NextRequest) {
       panNumber,
       state,
       city,
+      district,
       pincode,
       address,
       advisorName,
@@ -269,14 +271,16 @@ export async function POST(request: NextRequest) {
           pan_card_file_url: panCardFileUrl,
           state,
           city,
+          district: district || null,
+          pincode: pincode || null,
           address: (() => {
             const cleanAddr = address.trim();
-            const cityStatePin = [city, state].filter(Boolean).join(', ');
+            const cityDistrictStatePin = [city, district, state].filter(Boolean).join(', ');
             const suffix = pincode
-              ? cityStatePin
-                ? `${cityStatePin} - ${pincode}`
+              ? cityDistrictStatePin
+                ? `${cityDistrictStatePin} - ${pincode}`
                 : pincode
-              : cityStatePin;
+              : cityDistrictStatePin;
             if (!cleanAddr) return suffix;
             if (cleanAddr.includes(state) || (city && cleanAddr.includes(city))) return cleanAddr;
             return suffix ? `${cleanAddr}, ${suffix}` : cleanAddr;

@@ -106,6 +106,7 @@ export const RegistrationSchema = z.object({
     .default(''),
   state: z.string().trim().min(2, 'State is required').max(50, 'State must be ≤ 50 chars'),
   city: z.string().trim().min(2, 'City is required').max(50, 'City must be ≤ 50 chars'),
+  district: z.string().trim().max(50, 'District must be ≤ 50 chars').optional().default(''),
   pincode: z
     .string()
     .trim()

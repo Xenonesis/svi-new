@@ -156,6 +156,19 @@ export function Step2KycDocuments({
     } as ChangeEvent<HTMLInputElement>;
     onChange(syntheticEvent);
   };
+  // District Uppercase Sanitizer
+  const handleDistrictChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const upper = e.target.value.toUpperCase();
+    const syntheticEvent = {
+      ...e,
+      target: {
+        ...e.target,
+        name: 'district',
+        value: upper,
+      },
+    } as ChangeEvent<HTMLInputElement>;
+    onChange(syntheticEvent);
+  };
 
   // House / Street Address Uppercase Sanitizer
   const handleAddressChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -211,9 +224,21 @@ export function Step2KycDocuments({
             onChange(stateEvent);
           }
 
-          // Auto-fill city/district
-          const cityToSet = (info.district || info.postOffices[0] || '').toUpperCase();
-          if (cityToSet && cityToSet !== formData.city) {
+          // Auto-fill district
+          const districtToSet = (info.district || '').toUpperCase();
+          if (districtToSet && districtToSet !== formData.district) {
+            const districtEvent = {
+              target: {
+                name: 'district',
+                value: districtToSet,
+              },
+            } as unknown as ChangeEvent<HTMLInputElement>;
+            onChange(districtEvent);
+          }
+
+          // Auto-fill city
+          const cityToSet = (info.postOffices?.[0] || info.district || '').toUpperCase();
+          if (cityToSet && (!formData.city || formData.city === '')) {
             const cityEvent = {
               target: {
                 name: 'city',
@@ -324,6 +349,7 @@ export function Step2KycDocuments({
               aadharNumber={formData.aadharNumber}
               panNumber={formData.panNumber}
               city={formData.city}
+              district={formData.district}
               state={formData.state}
             />
           </div>
@@ -697,7 +723,7 @@ export function Step2KycDocuments({
             </div>
 
             {/* State and City Row */}
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
               {/* State Selector */}
               <div className="space-y-1.5">
                 <label
@@ -743,14 +769,52 @@ export function Step2KycDocuments({
                 )}
               </div>
 
-              {/* City Input */}
+              {/* District Input */}
               <div className="space-y-1.5">
+                <label
+                  htmlFor="district"
+                  className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+                >
+                  <span className="flex items-center gap-1.5">
+                    <span>District</span>
+                    <span className="text-red-500">*</span>
+                  </span>
+                </label>
+
+                <input
+                  id="district"
+                  name="district"
+                  type="text"
+                  required
+                  autoComplete="address-level2"
+                  placeholder="e.g. Gurgaon / Gautam Buddha Nagar"
+                  value={formData.district}
+                  onChange={handleDistrictChange}
+                  onBlur={onBlur}
+                  aria-describedby={errors.district ? 'district-error' : undefined}
+                  className={`${getInputClasses('district')} uppercase`}
+                />
+
+                {errors.district && (
+                  <p
+                    id="district-error"
+                    role="alert"
+                    className="mt-1.5 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"
+                  >
+                    <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                    <span>{errors.district}</span>
+                  </p>
+                )}
+              </div>
+
+              {/* City Input */}
+              <div className="space-y-1.5 sm:col-span-2 md:col-span-1">
                 <label
                   htmlFor="city"
                   className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>City / District</span>
+                    <span>City / Town</span>
                     <span className="text-red-500">*</span>
                   </span>
                 </label>
@@ -761,7 +825,7 @@ export function Step2KycDocuments({
                   type="text"
                   required
                   autoComplete="address-level2"
-                  placeholder="e.g. Gautam Buddha Nagar / Noida"
+                  placeholder="e.g. Gurugram / Noida"
                   value={formData.city}
                   onChange={handleCityChange}
                   onBlur={onBlur}
@@ -862,6 +926,7 @@ export function Step2KycDocuments({
               aadharNumber={formData.aadharNumber}
               panNumber={formData.panNumber}
               city={formData.city}
+              district={formData.district}
               state={formData.state}
             />
           </div>

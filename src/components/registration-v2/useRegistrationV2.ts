@@ -31,6 +31,7 @@ export const UPPERCASE_FIELDS: Record<string, true> = {
   email: true,
   address: true,
   city: true,
+  district: true,
   panNumber: true,
   advisorName: true,
 };
@@ -312,6 +313,9 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
         case 'city':
           if (!trimmed) return t('validation.cityRequired');
           return null;
+        case 'district':
+          if (!trimmed) return t('validation.districtRequired') || 'District is required';
+          return null;
         case 'address':
           if (!trimmed) return t('validation.addressRequired');
           return null;
@@ -485,6 +489,10 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
 
     if (!formData.city.trim()) {
       newErrors.city = t('validation.cityRequired');
+    }
+
+    if (!formData.district?.trim()) {
+      newErrors.district = t('validation.districtRequired') || 'District is required';
     }
 
     if (!formData.address.trim()) {

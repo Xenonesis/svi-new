@@ -61,6 +61,8 @@ export interface Registration {
   pan_card_file_url: string | null;
   state: string | null;
   city: string | null;
+  district?: string | null;
+  pincode?: string | null;
   address: string | null;
   advisor_name: string | null;
   project: string | null;

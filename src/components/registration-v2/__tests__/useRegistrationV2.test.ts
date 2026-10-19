@@ -33,6 +33,7 @@ const VALID_STEP2_DATA: Partial<FormData> = {
   panNumber: 'ABCDE1234F',
   pincode: '201301',
   state: 'UTTAR PRADESH',
+  district: 'GAUTAM BUDDHA NAGAR',
   city: 'NOIDA',
   address: 'SECTOR 62, NOIDA',
 };
@@ -239,10 +240,10 @@ describe('useRegistrationV2', () => {
       expect(result.current.errors.aadharNumber).toBe('validation.aadharRequired');
       expect(result.current.errors.pincode).toBe('validation.pincodeFormat');
       expect(result.current.errors.state).toBe('validation.stateRequired');
+      expect(result.current.errors.district).toBe('validation.districtRequired');
       expect(result.current.errors.city).toBe('validation.cityRequired');
       expect(result.current.errors.address).toBe('validation.addressRequired');
     });
-
     it('validates Aadhaar has exactly 12 digits', () => {
       const { result } = renderHook(() => useRegistrationV2(mockT));
 
@@ -296,6 +297,7 @@ describe('useRegistrationV2', () => {
       expect(result.current.errors.panNumber).toBeUndefined();
       expect(result.current.errors.pincode).toBeUndefined();
       expect(result.current.errors.state).toBeUndefined();
+      expect(result.current.errors.district).toBeUndefined();
       expect(result.current.errors.city).toBeUndefined();
       expect(result.current.errors.address).toBeUndefined();
     });
@@ -304,7 +306,6 @@ describe('useRegistrationV2', () => {
   describe('Step 3 Validation (Property & Scheme)', () => {
     it('fails when property choices or scheme amount are missing', () => {
       const { result } = renderHook(() => useRegistrationV2(mockT));
-
       let isValid = false;
       act(() => {
         isValid = result.current.validateStep3();
@@ -552,6 +553,7 @@ describe('useRegistrationV2', () => {
         email: true,
         address: true,
         city: true,
+        district: true,
         panNumber: true,
         advisorName: true,
       });

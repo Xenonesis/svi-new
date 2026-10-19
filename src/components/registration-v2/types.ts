@@ -74,6 +74,7 @@ export interface KycPreviewCardProps {
   aadharNumber: string;
   panNumber: string;
   city: string;
+  district?: string;
   state: string;
   className?: string;
 }

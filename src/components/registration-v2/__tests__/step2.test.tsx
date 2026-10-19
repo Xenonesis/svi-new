@@ -25,7 +25,8 @@ const mockT = (key: string): string => {
     panNumber: 'PAN Card Number',
     pincode: 'PIN Code',
     state: 'State / Union Territory',
-    city: 'City / District',
+    district: 'District',
+    city: 'City / Town',
     address: 'House / Flat & Street Address',
     prevStep: 'Back to Applicant',
     nextStep: 'Next: Property Preferences',
@@ -40,6 +41,7 @@ describe('KycPreviewCard', () => {
     panCardFile: null,
     aadharNumber: '1234 5678 9012',
     panNumber: 'ABCDE1234F',
+    district: '',
     city: 'NOIDA',
     state: 'UTTAR PRADESH',
   };
@@ -97,13 +99,26 @@ describe('KycPreviewCard', () => {
   });
 
   it('displays city and state location badge', () => {
-    render(<KycPreviewCard {...defaultProps} city="NOIDA" state="UTTAR PRADESH" />);
+    render(<KycPreviewCard {...defaultProps} district="" city="NOIDA" state="UTTAR PRADESH" />);
 
     expect(screen.getByText(/NOIDA, UTTAR PRADESH/i)).toBeInTheDocument();
   });
 
+  it('displays city, district, and state in location badge when district is present', () => {
+    render(
+      <KycPreviewCard
+        {...defaultProps}
+        city="NOIDA"
+        district="GAUTAM BUDDHA NAGAR"
+        state="UTTAR PRADESH"
+      />
+    );
+
+    expect(screen.getByText(/NOIDA, GAUTAM BUDDHA NAGAR, UTTAR PRADESH/i)).toBeInTheDocument();
+  });
+
   it('displays fallback location when city and state are empty', () => {
-    render(<KycPreviewCard {...defaultProps} city="" state="" />);
+    render(<KycPreviewCard {...defaultProps} district="" city="" state="" />);
 
     expect(screen.getByText(/LOCATION NOT SET/i)).toBeInTheDocument();
   });
@@ -151,6 +166,7 @@ describe('Step2KycDocuments', () => {
     panNumber: 'ABCDE1234F',
     pincode: '201301',
     state: 'Uttar Pradesh',
+    district: 'GAUTAM BUDDHA NAGAR',
     city: 'NOIDA',
     address: 'SECTOR 62, PLOT 4',
   };
@@ -188,10 +204,11 @@ describe('Step2KycDocuments', () => {
 
     const stateSelect = screen.getByLabelText(/State \/ Union Territory/i) as HTMLSelectElement;
     expect(stateSelect.value).toBe('Uttar Pradesh');
+    const districtInput = screen.getByLabelText(/^District/i) as HTMLInputElement;
+    expect(districtInput.value).toBe('GAUTAM BUDDHA NAGAR');
 
-    const cityInput = screen.getByLabelText(/City \/ District/i) as HTMLInputElement;
+    const cityInput = screen.getByLabelText(/City \/ Town/i) as HTMLInputElement;
     expect(cityInput.value).toBe('NOIDA');
-
     const addressInput = screen.getByLabelText(
       /House \/ Flat & Street Address/i
     ) as HTMLInputElement;
@@ -332,7 +349,7 @@ describe('Step2KycDocuments', () => {
     render(
       <Step2KycDocuments
         {...defaultProps}
-        formData={{ ...baseFormData, pincode: '201301', state: '', city: '' }}
+        formData={{ ...baseFormData, pincode: '201301', state: '', district: '', city: '' }}
         onChange={handleChange}
       />
     );
@@ -353,8 +370,16 @@ describe('Step2KycDocuments', () => {
       expect(handleChange).toHaveBeenCalledWith(
         expect.objectContaining({
           target: expect.objectContaining({
-            name: 'city',
+            name: 'district',
             value: 'GAUTAM BUDDHA NAGAR',
+          }),
+        })
+      );
+      expect(handleChange).toHaveBeenCalledWith(
+        expect.objectContaining({
+          target: expect.objectContaining({
+            name: 'city',
+            value: 'NOIDA SECTOR 62',
           }),
         })
       );

@@ -171,11 +171,13 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
               <span className="bg-brand-gold/20 h-px flex-1" /> Address{' '}
               <span className="bg-brand-gold/20 h-px flex-1" />
             </h3>
-            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3">
+            <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-4">
               <Field label="State" value={reg.state} />
               <Field label="City" value={reg.city} />
-              <div className="col-span-2 sm:col-span-1">
-                <Field label="Address" value={reg.address} />
+              <Field label="District" value={reg.district} />
+              <Field label="PIN Code" value={reg.pincode} />
+              <div className="col-span-2 sm:col-span-4">
+                <Field label="Full Address" value={reg.address} />
               </div>
             </div>
           </div>
