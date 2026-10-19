@@ -251,8 +251,32 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
           return null;
         case 'dob': {
           if (!trimmed) return t('validation.dobRequired');
-          const [y, m, d] = trimmed.split('-').map(Number);
-          if (!y || !m || !d || isNaN(y) || isNaN(m) || isNaN(d)) {
+          let y = 0,
+            m = 0,
+            d = 0;
+          if (trimmed.includes('-')) {
+            const parts = trimmed.split('-').map(Number);
+            if (parts[0] > 1000) {
+              [y, m, d] = parts;
+            } else {
+              [d, m, y] = parts;
+            }
+          } else if (trimmed.includes('/')) {
+            const parts = trimmed.split('/').map(Number);
+            [d, m, y] = parts;
+          }
+          if (
+            !y ||
+            !m ||
+            !d ||
+            isNaN(y) ||
+            isNaN(m) ||
+            isNaN(d) ||
+            d < 1 ||
+            d > 31 ||
+            m < 1 ||
+            m > 12
+          ) {
             return t('validation.dobInvalid');
           }
           const today = new Date();
@@ -262,6 +286,7 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
           if (currentMonth < m || (currentMonth === m && currentDay < d)) {
             age--;
           }
+          if (age < 0) return t('validation.dobFuture');
           if (age < 18) return t('validation.dobUnderage');
           if (age > 100) return t('validation.dobOverage');
           return null;
@@ -373,20 +398,42 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
     if (!formData.dob) {
       newErrors.dob = t('validation.dobRequired');
     } else {
-      const [y, m, d] = formData.dob.split('-').map(Number);
-      if (!y || !m || !d || isNaN(y) || isNaN(m) || isNaN(d)) {
+      let y = 0,
+        m = 0,
+        d = 0;
+      if (formData.dob.includes('-')) {
+        const parts = formData.dob.split('-').map(Number);
+        if (parts[0] > 1000) {
+          [y, m, d] = parts;
+        } else {
+          [d, m, y] = parts;
+        }
+      } else if (formData.dob.includes('/')) {
+        const parts = formData.dob.split('/').map(Number);
+        [d, m, y] = parts;
+      }
+      if (
+        !y ||
+        !m ||
+        !d ||
+        isNaN(y) ||
+        isNaN(m) ||
+        isNaN(d) ||
+        d < 1 ||
+        d > 31 ||
+        m < 1 ||
+        m > 12
+      ) {
         newErrors.dob = t('validation.dobInvalid');
       } else {
         const today = new Date();
         const currentYear = today.getFullYear();
+        let age = currentYear - y;
         const currentMonth = today.getMonth() + 1;
         const currentDay = today.getDate();
-
-        let age = currentYear - y;
         if (currentMonth < m || (currentMonth === m && currentDay < d)) {
           age--;
         }
-
         if (
           y > currentYear ||
           (y === currentYear && (m > currentMonth || (m === currentMonth && d > currentDay)))
@@ -684,6 +731,13 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
     Object.entries(formData).forEach(([key, value]) => {
       if (key === 'email' && typeof value === 'string') {
         body.append(key, value.trim().toLowerCase());
+      } else if (key === 'dob' && typeof value === 'string' && value.includes('/')) {
+        const parts = value.split('/');
+        if (parts.length === 3) {
+          body.append(key, `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`);
+        } else {
+          body.append(key, value);
+        }
       } else {
         body.append(key, value);
       }

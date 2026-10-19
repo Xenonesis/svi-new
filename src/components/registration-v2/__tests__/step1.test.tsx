@@ -149,7 +149,7 @@ describe('Step1Applicant', () => {
     expect(emailInput.value).toBe('RAMESH@EXAMPLE.COM');
 
     const dobInput = screen.getByLabelText(/Date of Birth/i) as HTMLInputElement;
-    expect(dobInput.value).toBe('1990-05-15');
+    expect(dobInput.value).toBe('15/05/1990');
 
     const relativeInput = screen.getByPlaceholderText(/Ramesh Kumar/i) as HTMLInputElement;
     expect(relativeInput.value).toBe('SURESH KUMAR');

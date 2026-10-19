@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   AlertCircle,
   ArrowRight,
@@ -73,7 +73,77 @@ export function Step1Applicant({
   const minDobDate = new Date(today.getFullYear() - 100, today.getMonth(), today.getDate())
     .toISOString()
     .split('T')[0];
+  // DOB display formatter helpers: DD/MM/YYYY <-> YYYY-MM-DD
+  const formatToDdMmYyyy = (input: string): string => {
+    if (!input) return '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(input)) {
+      const [y, m, d] = input.split('-');
+      return `${d}/${m}/${y}`;
+    }
+    const digits = input.replace(/\D/g, '').slice(0, 8);
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 4) return `${digits.slice(0, 2)}/${digits.slice(2)}`;
+    return `${digits.slice(0, 2)}/${digits.slice(2, 4)}/${digits.slice(4)}`;
+  };
 
+  const isoToDdMmYyyy = (iso: string): string => {
+    if (!iso) return '';
+    if (iso.includes('/')) return iso;
+    const parts = iso.split('-');
+    if (parts.length === 3 && parts[0].length === 4) {
+      return `${parts[2]}/${parts[1]}/${parts[0]}`;
+    }
+    return iso;
+  };
+
+  const ddMmYyyyToIso = (display: string): string => {
+    const parts = display.split('/');
+    if (
+      parts.length === 3 &&
+      parts[0].length === 2 &&
+      parts[1].length === 2 &&
+      parts[2].length === 4
+    ) {
+      return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    return '';
+  };
+
+  const [dobDisplay, setDobDisplay] = useState<string>(() => isoToDdMmYyyy(formData.dob));
+  const datePickerRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    setDobDisplay(isoToDdMmYyyy(formData.dob));
+  }, [formData.dob]);
+
+  const handleDobTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatToDdMmYyyy(e.target.value);
+    setDobDisplay(formatted);
+    const iso = ddMmYyyyToIso(formatted);
+    onChange({
+      ...e,
+      target: {
+        ...e.target,
+        name: 'dob',
+        value: iso || formatted,
+      },
+    });
+  };
+
+  const handleDatePickerSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const isoVal = e.target.value;
+    if (isoVal) {
+      setDobDisplay(isoToDdMmYyyy(isoVal));
+      onChange({
+        ...e,
+        target: {
+          ...e.target,
+          name: 'dob',
+          value: isoVal,
+        },
+      });
+    }
+  };
   // Mobile number sanitizer: digits only, max 10
   const handleMobileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const digitsOnly = e.target.value.replace(/\D/g, '').slice(0, 10);
@@ -431,7 +501,7 @@ export function Step1Applicant({
               <Calendar className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
               <span>Date of Birth</span>
               <span className="text-[11px] font-normal text-slate-400 normal-case">
-                (Janam Tithi)
+                (Date / Month / Year)
               </span>
               <span className="text-red-500">*</span>
             </span>
@@ -440,24 +510,55 @@ export function Step1Applicant({
             <input
               id="dob"
               name="dob"
-              type="date"
+              type="text"
+              inputMode="numeric"
               required
               autoComplete="bday"
-              max={maxDobDate}
-              min={minDobDate}
-              value={formData.dob}
-              onChange={onChange}
+              placeholder="DD/MM/YYYY (e.g. 14/09/1980)"
+              maxLength={10}
+              value={dobDisplay}
+              onChange={handleDobTextChange}
               onBlur={onBlur}
               aria-invalid={errors.dob ? 'true' : 'false'}
               aria-describedby={errors.dob ? 'dob-error' : undefined}
-              className={`${getInputClasses('dob')} pr-10`}
+              className={`${getInputClasses('dob')} pr-20 font-mono`}
             />
-            {Boolean((attempted || touchedFields?.dob) && !errors.dob && formData.dob) && (
-              <CheckCircle2
-                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
-                aria-hidden="true"
-              />
-            )}
+
+            {/* Quick Calendar Picker Trigger Button */}
+            <div className="absolute top-1/2 right-3 flex -translate-y-1/2 items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  try {
+                    datePickerRef.current?.showPicker?.();
+                  } catch {
+                    datePickerRef.current?.focus();
+                  }
+                }}
+                className="hover:text-brand-gold rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 active:scale-95 dark:hover:bg-slate-800"
+                title="Choose from Calendar"
+                aria-label="Choose from Calendar"
+              >
+                <Calendar className="h-4 w-4" aria-hidden="true" />
+              </button>
+
+              {Boolean((attempted || touchedFields?.dob) && !errors.dob && formData.dob) && (
+                <CheckCircle2 className="h-4 w-4 text-emerald-500" aria-hidden="true" />
+              )}
+            </div>
+
+            {/* Hidden native date picker input */}
+            <input
+              ref={datePickerRef}
+              type="date"
+              tabIndex={-1}
+              aria-hidden="true"
+              max={maxDobDate}
+              min={minDobDate}
+              value={ddMmYyyyToIso(dobDisplay) || (formData.dob?.includes('-') ? formData.dob : '')}
+              onChange={handleDatePickerSelect}
+              className="pointer-events-none sr-only absolute"
+            />
           </div>
           {errors.dob && (
             <p
