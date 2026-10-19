@@ -17,6 +17,7 @@ import {
   RotateCcw,
   ChevronLeft,
   ChevronRight,
+  Phone,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -159,6 +160,12 @@ export function ReceiptsTable({
       return dateStr;
     }
   };
+  const getInitials = (name?: string) => {
+    if (!name) return '—';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+  };
 
   return (
     <div className="dark:bg-brand-dark-surface/80 relative overflow-hidden rounded-2xl border border-gray-200/80 bg-white/90 shadow-xl backdrop-blur-xl transition-colors duration-300 dark:border-white/10">
@@ -244,7 +251,7 @@ export function ReceiptsTable({
                 )}
               </div>
             )}
-            <table className="w-full min-w-[1040px] font-sans text-xs">
+            <table className="w-full min-w-[940px] font-sans text-xs">
               <thead>
                 <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
                   {[
@@ -259,7 +266,7 @@ export function ReceiptsTable({
                   ].map((h) => (
                     <th
                       key={h.label}
-                      className={`px-5 py-4 text-[10px] font-bold tracking-[0.15em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
+                      className={`px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
                     >
                       {h.label}
                     </th>
@@ -290,10 +297,10 @@ export function ReceiptsTable({
                       initial={{ opacity: 0, y: 4 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
-                      className="group h-[52px] transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
+                      className="group transition-colors hover:bg-slate-50/80 dark:hover:bg-white/[0.03]"
                     >
                       {/* Receipt No */}
-                      <td className="px-5 py-2.5 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         {receiptNo ? (
                           <button
                             type="button"
@@ -314,7 +321,7 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Ref ID */}
-                      <td className="px-5 py-2.5 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         {refId ? (
                           <div className="inline-flex items-center gap-1">
                             <button
@@ -343,27 +350,41 @@ export function ReceiptsTable({
                         )}
                       </td>
 
-                      {/* Client Name */}
-                      <td className="px-5 py-2.5 align-middle">
-                        <div className="min-w-0">
-                          <div className="flex items-center gap-1.5 truncate font-semibold text-gray-900 capitalize dark:text-white">
-                            <span>{receipt.form_data?.name || 'N/A'}</span>
-                            {isRefund && (
-                              <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
-                                Refund Done
-                              </span>
-                            )}
-                          </div>
-                          {receipt.form_data?.drawnOn && (
-                            <div className="text-[10px] text-gray-400 capitalize dark:text-gray-500">
-                              Bank: {receipt.form_data.drawnOn}
+                      {/* Client Identity (Avatar + Name + Contact) */}
+                      <td className="px-4 py-3 align-middle">
+                        <div className="flex items-center gap-2.5">
+                          <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-500/25 bg-amber-500/10 font-mono text-[10px] font-bold text-amber-300">
+                            {getInitials(receipt.form_data?.name)}
+                          </span>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-1.5 truncate font-semibold text-gray-900 capitalize dark:text-white">
+                              <span>{receipt.form_data?.name || 'N/A'}</span>
+                              {isRefund && (
+                                <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-1.5 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                                  Refund
+                                </span>
+                              )}
                             </div>
-                          )}
+                            <div className="flex items-center gap-2 font-mono text-[10px] text-gray-400 dark:text-gray-500">
+                              {receipt.form_data?.clientPhone ? (
+                                <span className="flex items-center gap-1">
+                                  <Phone className="h-2.5 w-2.5 text-gray-400" />
+                                  {receipt.form_data.clientPhone}
+                                </span>
+                              ) : receipt.form_data?.drawnOn ? (
+                                <span className="truncate text-gray-400">
+                                  Bank: {receipt.form_data.drawnOn}
+                                </span>
+                              ) : (
+                                <span>No phone</span>
+                              )}
+                            </div>
+                          </div>
                         </div>
                       </td>
 
                       {/* Date */}
-                      <td className="px-5 py-2.5 align-middle whitespace-nowrap">
+                      <td className="px-4 py-3 align-middle whitespace-nowrap">
                         <div className="flex items-center gap-1.5">
                           <Calendar className="h-3.5 w-3.5 text-gray-400" />
                           <span className="font-mono text-[11px] font-medium text-gray-800 tabular-nums dark:text-gray-200">
@@ -373,12 +394,12 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Amount */}
-                      <td className="px-5 py-2.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
+                      <td className="px-4 py-3 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
                         {formattedAmount}
                       </td>
 
                       {/* Method */}
-                      <td className="px-5 py-2.5 text-center align-middle">
+                      <td className="px-4 py-3 text-center align-middle">
                         <span
                           className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap uppercase backdrop-blur-xs ${getMethodBadgeStyle(
                             receipt.form_data?.paymentMethod
@@ -390,7 +411,7 @@ export function ReceiptsTable({
                       </td>
 
                       {/* Plot Info */}
-                      <td className="px-5 py-2.5 align-middle">
+                      <td className="px-4 py-3 align-middle">
                         {receipt.form_data?.plotNo ? (
                           <div className="flex flex-wrap items-center gap-1.5">
                             <span className="rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-mono text-[10px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
@@ -406,9 +427,8 @@ export function ReceiptsTable({
                           <span className="text-gray-400">—</span>
                         )}
                       </td>
-
                       {/* Actions */}
-                      <td className="px-5 py-2.5 text-right align-middle">
+                      <td className="px-4 py-3 text-right align-middle">
                         {activeTab === 'trash' ? (
                           <div className="flex items-center justify-end gap-1.5">
                             {onRestore && (
@@ -428,24 +448,24 @@ export function ReceiptsTable({
                                 setIsPermanentDelete?.(true);
                                 setDeleteTarget(receipt);
                               }}
-                              className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                              className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
                               title="Delete Permanently"
                               aria-label="Delete Permanently"
                             >
-                              <Trash2 className="h-3.5 w-3.5" />
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         ) : (
-                          <div className="flex items-center justify-end gap-1">
+                          <div className="flex items-center justify-end gap-1.5">
                             {/* Quick Eye button (View & Print) */}
                             <button
                               type="button"
                               onClick={() => setSelectedReceipt(receipt)}
-                              className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
+                              className="hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-amber-500/30 hover:bg-amber-500/10 active:scale-95"
                               title="View & Print Payment Receipt"
                               aria-label="View & Print"
                             >
-                              <Eye className="h-3.5 w-3.5" />
+                              <Eye className="h-4 w-4" />
                             </button>
 
                             {/* Quick MessageSquare button (WhatsApp) */}
@@ -453,11 +473,11 @@ export function ReceiptsTable({
                               <button
                                 type="button"
                                 onClick={() => onShareWhatsApp(receipt)}
-                                className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
+                                className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-emerald-500/30 hover:bg-emerald-500/10 hover:text-emerald-500 active:scale-95"
                                 title="Share via WhatsApp"
                                 aria-label="Share via WhatsApp"
                               >
-                                <MessageSquare className="h-3.5 w-3.5" />
+                                <MessageSquare className="h-4 w-4" />
                               </button>
                             )}
 

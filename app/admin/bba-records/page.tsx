@@ -1,5 +1,7 @@
 'use client';
 
+import { Suspense, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { useAuthStore } from '@/src/stores/authStore';
 import { RefreshCw } from 'lucide-react';
 import { useBbaRecords } from '@/src/hooks/useBbaRecords';
@@ -7,9 +9,19 @@ import BbaStatsCards from '@/src/components/admin/bba/BbaStatsCards';
 import BbaFilters from '@/src/components/admin/bba/BbaFilters';
 import BbaTable from '@/src/components/admin/bba/BbaTable';
 import { BbaDeleteModal, BbaPreviewModal } from '@/src/components/admin/bba/BbaModals';
+import { CrossNavReturnBanner } from '@/src/components/admin/Shared/CrossNavReturnBanner';
 
-export default function BbaRecordsPage() {
+function BbaRecordsContent() {
   const { token } = useAuthStore();
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get('id') || searchParams?.get('documentId');
+  const targetSearch =
+    searchParams?.get('search') ||
+    searchParams?.get('refId') ||
+    searchParams?.get('ticketId') ||
+    searchParams?.get('q');
+  const options = useMemo(() => ({ targetId, targetSearch }), [targetId, targetSearch]);
+  const isNavigatedFromPlots = Boolean(targetSearch || targetId);
 
   const {
     loading,
@@ -40,7 +52,7 @@ export default function BbaRecordsPage() {
     handleDownloadImage,
     filteredBbas,
     handleClearFilters,
-  } = useBbaRecords(token);
+  } = useBbaRecords(token, options);
 
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
@@ -61,6 +73,13 @@ export default function BbaRecordsPage() {
           <RefreshCw className="h-3.5 w-3.5 text-gray-600 sm:h-4 sm:w-4 dark:text-gray-400" />
         </button>
       </div>
+      {isNavigatedFromPlots && searchQuery && (
+        <CrossNavReturnBanner
+          searchQuery={searchQuery}
+          onClear={() => setSearchQuery('')}
+          recordTypeLabel="BBA agreements"
+        />
+      )}
 
       <BbaStatsCards
         totalCount={totalCount}
@@ -111,5 +130,19 @@ export default function BbaRecordsPage() {
         onDownloadImage={handleDownloadImage}
       />
     </div>
+  );
+}
+
+export default function BbaRecordsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-center p-12 text-sm text-gray-400">
+          Loading BBA records...
+        </div>
+      }
+    >
+      <BbaRecordsContent />
+    </Suspense>
   );
 }

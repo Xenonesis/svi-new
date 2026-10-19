@@ -1,14 +1,26 @@
 'use client';
 
+import { Suspense, useMemo } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { RefreshCw, Receipt, Trash2 } from 'lucide-react';
 import { usePaymentReceiptsRecords } from '@/src/components/admin/payment-receipts/usePaymentReceiptsRecords';
 import { ReceiptStatsCards } from '@/src/components/admin/payment-receipts/ReceiptStatsCards';
 import { ReceiptToolbar } from '@/src/components/admin/payment-receipts/ReceiptToolbar';
 import { ReceiptsTable } from '@/src/components/admin/payment-receipts/ReceiptsTable';
 import { ReceiptModalsContainer } from '@/src/components/admin/payment-receipts/ReceiptModalsContainer';
+import { CrossNavReturnBanner } from '@/src/components/admin/Shared/CrossNavReturnBanner';
 
-export default function ReceiptRecordsPage() {
-  const records = usePaymentReceiptsRecords();
+function ReceiptRecordsContent() {
+  const searchParams = useSearchParams();
+  const targetId = searchParams?.get('id') || searchParams?.get('documentId');
+  const targetSearch =
+    searchParams?.get('search') ||
+    searchParams?.get('refId') ||
+    searchParams?.get('ticketId') ||
+    searchParams?.get('q');
+  const options = useMemo(() => ({ targetId, targetSearch }), [targetId, targetSearch]);
+  const records = usePaymentReceiptsRecords(options);
+  const isNavigatedFromPlots = Boolean(targetSearch || targetId);
 
   return (
     <div className="mx-auto w-full max-w-7xl font-sans">
@@ -32,6 +44,14 @@ export default function ReceiptRecordsPage() {
           />
         </button>
       </div>
+
+      {isNavigatedFromPlots && records.searchQuery && (
+        <CrossNavReturnBanner
+          searchQuery={records.searchQuery}
+          onClear={() => records.setSearchQuery('')}
+          recordTypeLabel="payment receipts"
+        />
+      )}
 
       {/* Tab Switcher: Active Records vs Trash Bin */}
       <div className="mb-6 flex items-center justify-between border-b border-gray-200 dark:border-white/10">
@@ -138,5 +158,19 @@ export default function ReceiptRecordsPage() {
 
       <ReceiptModalsContainer {...records} />
     </div>
+  );
+}
+
+export default function ReceiptRecordsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="mx-auto flex w-full max-w-7xl items-center justify-center p-12 text-sm text-gray-400">
+          Loading payment receipts...
+        </div>
+      }
+    >
+      <ReceiptRecordsContent />
+    </Suspense>
   );
 }

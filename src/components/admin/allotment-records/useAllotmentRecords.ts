@@ -15,12 +15,17 @@ export const defaultCompanyInfo: CompanyInfo = {
   bank_ifsc: 'IBKL0000894',
 };
 
-export function useAllotmentRecords() {
+export interface UseAllotmentRecordsOptions {
+  targetId?: string | null;
+  targetSearch?: string | null;
+}
+
+export function useAllotmentRecords(options?: UseAllotmentRecordsOptions) {
   const { token } = useAuthStore();
   const [allotments, setAllotments] = useState<SavedAllotment[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(options?.targetSearch || '');
   const [projectFilter, setProjectFilter] = useState('');
   const [selectedAllotment, setSelectedAllotment] = useState<SavedAllotment | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<SavedAllotment | null>(null);
@@ -29,6 +34,12 @@ export function useAllotmentRecords() {
   const [imageLoading, setImageLoading] = useState(false);
   const [projects, setProjects] = useState<string[]>(['Shyam Aangan', 'Shyam Aangan Farm House']);
   const [companyInfo, setCompanyInfo] = useState<CompanyInfo>(defaultCompanyInfo);
+
+  useEffect(() => {
+    if (options?.targetSearch !== undefined && options?.targetSearch !== null) {
+      setSearchQuery(options.targetSearch);
+    }
+  }, [options?.targetSearch]);
 
   useEffect(() => {
     async function loadProjects() {
@@ -64,6 +75,12 @@ export function useAllotmentRecords() {
       .then((json) => {
         if (json.documents) {
           setAllotments(json.documents);
+          if (options?.targetId) {
+            const matched = json.documents.find((d: SavedAllotment) => d.id === options.targetId);
+            if (matched) {
+              setSelectedAllotment(matched);
+            }
+          }
         }
       })
       .catch((err) => {
@@ -179,7 +196,14 @@ export function useAllotmentRecords() {
     const name = (r.form_data?.clientName || '').toLowerCase();
     const ticket = (r.form_data?.ticketId || '').toLowerCase();
     const advisor = (r.form_data?.advisorName || '').toLowerCase();
-    const matchesSearch = name.includes(query) || ticket.includes(query) || advisor.includes(query);
+    const unit = (r.form_data?.unitNumber || '').toLowerCase();
+    const applicant = (r.form_data?.applicantName || '').toLowerCase();
+    const matchesSearch =
+      name.includes(query) ||
+      applicant.includes(query) ||
+      ticket.includes(query) ||
+      advisor.includes(query) ||
+      unit.includes(query);
     const matchesProject = projectFilter ? r.form_data?.projectName === projectFilter : true;
     return matchesSearch && matchesProject;
   });

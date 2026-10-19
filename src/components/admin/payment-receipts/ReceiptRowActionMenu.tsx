@@ -63,12 +63,12 @@ export function ReceiptRowActionMenu({
       <button
         type="button"
         onClick={() => setIsOpen((prev) => !prev)}
-        className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-gray-200 hover:bg-gray-100 hover:text-gray-700 active:scale-95 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200"
+        className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-gray-200 hover:bg-gray-100 hover:text-gray-700 active:scale-95 dark:text-gray-400 dark:hover:border-white/10 dark:hover:bg-white/5 dark:hover:text-gray-200"
         aria-label="More actions"
         aria-expanded={isOpen}
         aria-haspopup="menu"
       >
-        <MoreVertical className="h-3.5 w-3.5" />
+        <MoreVertical className="h-4 w-4" />
       </button>
 
       {isOpen && (

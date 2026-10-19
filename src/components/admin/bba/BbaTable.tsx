@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Eye, FileText, Mail, Trash2, Search, Calendar, Globe, Plus } from 'lucide-react';
+import { Eye, FileText, Mail, Trash2, Search, Calendar, Globe, Phone } from 'lucide-react';
 import Link from 'next/link';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
 import { SavedBba } from '@/src/types/bba';
@@ -33,6 +33,12 @@ export default function BbaTable({
     } catch {
       return dateStr;
     }
+  };
+  const getInitials = (name?: string) => {
+    if (!name) return '—';
+    const parts = name.trim().split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
   };
 
   if (loading) {
@@ -81,7 +87,7 @@ export default function BbaTable({
 
   return (
     <div className="overflow-x-auto">
-      <table className="w-full min-w-[980px] font-sans text-xs">
+      <table className="w-full min-w-[940px] font-sans text-xs">
         <thead>
           <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
             {[
@@ -96,7 +102,7 @@ export default function BbaTable({
             ].map((h) => (
               <th
                 key={h.label}
-                className={`px-5 py-4 text-[10px] font-bold tracking-[0.15em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
+                className={`px-4 py-3 text-[10px] font-bold tracking-[0.12em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
               >
                 {h.label}
               </th>
@@ -123,10 +129,10 @@ export default function BbaTable({
                 className="group transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.03]"
               >
                 {/* Date + Hindi Badge */}
-                <td className="px-5 py-3.5 align-middle whitespace-nowrap">
+                <td className="px-4 py-3 align-middle whitespace-nowrap">
                   <div className="flex items-center gap-2">
                     <div className="flex items-center gap-1.5">
-                      <Calendar className="h-3 w-3 shrink-0 text-gray-400" />
+                      <Calendar className="h-3.5 w-3.5 shrink-0 text-gray-400" />
                       <span className="font-mono text-[11px] font-medium text-gray-800 tabular-nums dark:text-gray-200">
                         {formatDateDisplay(dateVal)}
                       </span>
@@ -143,90 +149,106 @@ export default function BbaTable({
                   </div>
                 </td>
 
-                {/* Client Name */}
-                <td className="px-5 py-3.5 align-middle">
-                  <div className="min-w-0">
-                    <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                      {record.form_data?.clientName || 'N/A'}
-                    </div>
-                    {record.form_data?.phone && (
-                      <div className="font-mono text-[10px] text-gray-400 dark:text-gray-500">
-                        {record.form_data.phone}
+                {/* Client Identity (Avatar + Name + Contact) */}
+                <td className="px-4 py-3 align-middle">
+                  <div className="flex items-center gap-2.5">
+                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border border-amber-500/25 bg-amber-500/10 font-mono text-[10px] font-bold text-amber-300">
+                      {getInitials(record.form_data?.clientName)}
+                    </span>
+                    <div className="min-w-0">
+                      <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
+                        {record.form_data?.clientName || 'N/A'}
                       </div>
-                    )}
+                      <div className="flex items-center gap-2 font-mono text-[10px] text-gray-400 dark:text-gray-500">
+                        {record.form_data?.phone ? (
+                          <span className="flex items-center gap-1">
+                            <Phone className="h-2.5 w-2.5 text-gray-400" />
+                            {record.form_data.phone}
+                          </span>
+                        ) : (
+                          <span>No phone</span>
+                        )}
+                        {record.form_data?.city && (
+                          <span className="truncate text-gray-400">• {record.form_data.city}</span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </td>
 
                 {/* Project */}
-                <td className="px-5 py-3.5 align-middle font-medium whitespace-nowrap text-gray-700 capitalize dark:text-gray-300">
+                <td className="px-4 py-3 align-middle font-medium whitespace-nowrap text-gray-700 capitalize dark:text-gray-300">
                   {record.form_data?.projectName || 'N/A'}
                 </td>
 
                 {/* Unit / Plot */}
-                <td className="px-5 py-3.5 text-center align-middle">
-                  {record.form_data?.unitNumber ? (
-                    <span className="inline-block rounded-md border border-gray-200 bg-gray-100 px-2.5 py-0.5 font-mono text-[11px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
-                      {record.form_data.unitNumber}
+                <td className="px-4 py-3 text-center align-middle">
+                  <div className="inline-flex flex-col items-center">
+                    <span className="inline-block rounded-md border border-amber-500/20 bg-amber-500/5 px-2 py-0.5 font-mono text-[11px] font-bold text-amber-200">
+                      {record.form_data?.unitNumber || '—'}
                     </span>
-                  ) : (
-                    <span className="text-gray-400">—</span>
-                  )}
+                    {record.form_data?.ticketId && (
+                      <span className="mt-0.5 font-mono text-[9px] text-gray-400 dark:text-gray-500">
+                        {record.form_data.ticketId}
+                      </span>
+                    )}
+                  </div>
                 </td>
 
                 {/* Area */}
-                <td className="px-5 py-3.5 align-middle font-medium whitespace-nowrap text-gray-600 tabular-nums dark:text-gray-400">
+                <td className="px-4 py-3 align-middle font-medium whitespace-nowrap text-gray-600 tabular-nums dark:text-gray-400">
                   {record.form_data?.area ? `${record.form_data.area} Sq. Yds.` : '—'}
                 </td>
 
                 {/* Total Cost */}
-                <td className="px-5 py-3.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
+                <td className="px-4 py-3 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
                   {formattedCost}
                 </td>
 
                 {/* Plan */}
-                <td className="px-5 py-3.5 text-center align-middle">
+                <td className="px-4 py-3 text-center align-middle">
                   <span className="inline-block rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap text-emerald-600 dark:text-emerald-400">
                     {record.form_data?.paymentPlan || '12'} Months
                   </span>
                 </td>
 
                 {/* Actions */}
-                <td className="px-5 py-3.5 text-right align-middle">
-                  <div className="flex items-center justify-end gap-1">
+                <td className="px-4 py-3 text-right align-middle">
+                  <div className="flex items-center justify-end gap-1.5">
                     <button
                       onClick={() => onSelectBba(record)}
-                      className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
+                      className="hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-amber-500/30 hover:bg-amber-500/10 active:scale-95"
                       title="View & Print Builder-Buyer Agreement"
                       aria-label="View & Print"
                     >
-                      <Eye className="h-3.5 w-3.5" />
+                      <Eye className="h-4 w-4" />
                     </button>
                     <Link
                       href={`/admin/bba?templateId=${record.id}`}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
                       title="Use as Template"
                       aria-label="Use as Template"
                     >
-                      <FileText className="h-3.5 w-3.5" />
+                      <FileText className="h-4 w-4" />
                     </Link>
                     <button
                       onClick={() => {
                         sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
                         window.location.href = '/admin/email?tab=compose&prefillBba=true';
                       }}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
                       title="Email BBA to Client"
                       aria-label="Email Client"
                     >
-                      <Mail className="h-3.5 w-3.5" />
+                      <Mail className="h-4 w-4" />
                     </button>
                     <button
                       onClick={() => onDeleteBba(record)}
-                      className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
                       title="Delete BBA Record"
                       aria-label="Delete Record"
                     >
-                      <Trash2 className="h-3.5 w-3.5" />
+                      <Trash2 className="h-4 w-4" />
                     </button>
                   </div>
                 </td>

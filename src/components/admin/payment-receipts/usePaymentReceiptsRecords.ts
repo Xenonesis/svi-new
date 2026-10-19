@@ -101,14 +101,20 @@ export interface UsePaymentReceiptsRecordsReturn {
   handleRestore: (receipt: SavedReceipt) => Promise<void>;
   handleEmptyTrash: () => Promise<void>;
 }
+export interface UsePaymentReceiptsRecordsOptions {
+  targetId?: string | null;
+  targetSearch?: string | null;
+}
 
-export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
+export function usePaymentReceiptsRecords(
+  options?: UsePaymentReceiptsRecordsOptions
+): UsePaymentReceiptsRecordsReturn {
   const { token } = useAuthStore();
   const [receipts, setReceipts] = useState<SavedReceipt[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(options?.targetSearch || '');
   const [methodFilter, setMethodFilter] = useState('');
   const [sortConfig, setSortConfig] = useState<SortConfig>({
     key: 'date',
@@ -133,6 +139,12 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
   const [isLedgersModalOpen, setIsLedgersModalOpen] = useState(false);
   const [dealValuesMap, setDealValuesMap] = useState<Record<string, number>>({});
 
+  useEffect(() => {
+    if (options?.targetSearch !== undefined && options?.targetSearch !== null) {
+      setSearchQuery(options.targetSearch);
+    }
+  }, [options?.targetSearch]);
+
   const fetchReceipts = useCallback(() => {
     if (!token) return;
     setLoading(true);
@@ -151,6 +163,12 @@ export function usePaymentReceiptsRecords(): UsePaymentReceiptsRecordsReturn {
           const trashed = allDocs.filter((r) => !!r.metadata?.is_trashed);
           setReceipts(active);
           setTrashedReceipts(trashed);
+          if (options?.targetId) {
+            const matched = active.find((d: SavedReceipt) => d.id === options.targetId);
+            if (matched) {
+              setSelectedReceipt(matched);
+            }
+          }
         }
       })
       .catch((err: unknown) => {

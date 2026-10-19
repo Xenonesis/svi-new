@@ -15,10 +15,15 @@ export function calculateTotalCost(formData?: SavedBba['form_data']) {
   return base + plcAmount;
 }
 
-export function useBbaRecords(token: string | null) {
+export interface UseBbaRecordsOptions {
+  targetId?: string | null;
+  targetSearch?: string | null;
+}
+
+export function useBbaRecords(token: string | null, options?: UseBbaRecordsOptions) {
   const [bbas, setBbas] = useState<SavedBba[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(options?.targetSearch || '');
   const [projectFilter, setProjectFilter] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' }>({
     key: 'date',
@@ -38,6 +43,12 @@ export function useBbaRecords(token: string | null) {
     bank_name: 'IDBI BANK',
     bank_ifsc: 'IBKL0000894',
   });
+
+  useEffect(() => {
+    if (options?.targetSearch !== undefined && options?.targetSearch !== null) {
+      setSearchQuery(options.targetSearch);
+    }
+  }, [options?.targetSearch]);
 
   useEffect(() => {
     async function loadProjects() {
@@ -81,6 +92,12 @@ export function useBbaRecords(token: string | null) {
       .then((json) => {
         if (json.documents) {
           setBbas(json.documents);
+          if (options?.targetId) {
+            const matched = json.documents.find((d: SavedBba) => d.id === options.targetId);
+            if (matched) {
+              setSelectedBba(matched);
+            }
+          }
         }
       })
       .catch((err) => console.error('Error fetching BBAs:', err))
@@ -191,7 +208,15 @@ export function useBbaRecords(token: string | null) {
         const query = searchQuery.toLowerCase();
         const name = (r.form_data?.clientName || '').toLowerCase();
         const advisor = (r.form_data?.advisorName || '').toLowerCase();
-        const matchesSearch = name.includes(query) || advisor.includes(query);
+        const ticket = (r.form_data?.ticketId || '').toLowerCase();
+        const unit = (r.form_data?.unitNumber || '').toLowerCase();
+        const phone = (r.form_data?.phone || r.form_data?.mobileNumber || '').toLowerCase();
+        const matchesSearch =
+          name.includes(query) ||
+          advisor.includes(query) ||
+          ticket.includes(query) ||
+          unit.includes(query) ||
+          phone.includes(query);
         const matchesProject = projectFilter ? r.form_data?.projectName === projectFilter : true;
 
         let matchesDate = true;
