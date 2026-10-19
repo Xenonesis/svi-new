@@ -20,6 +20,15 @@ export interface StepProps {
   ) => void;
 }
 
+export interface StepProgressBarProps {
+  currentStep: RegistrationV2Step;
+  onSelectStep?: (step: RegistrationV2Step) => void;
+}
+
+export interface Step1ApplicantProps extends StepProps {
+  onNext: () => void;
+}
+
 export interface UseRegistrationV2Return {
   currentStep: RegistrationV2Step;
   setCurrentStep: React.Dispatch<React.SetStateAction<RegistrationV2Step>>;
