@@ -154,7 +154,10 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <User className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>First Name (Aapka Naam)</span>
+              <span>First Name</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">
+                (Aapka Naam)
+              </span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">min 2 chars</span>
@@ -174,11 +177,7 @@ export function Step1Applicant({
               aria-describedby={errors.firstName ? 'firstName-error' : undefined}
               className={`${getInputClasses('firstName')} pr-10 uppercase`}
             />
-            {Boolean(
-              (attempted || touchedFields?.firstName) &&
-              !errors.firstName &&
-              formData.firstName.trim().length >= 2
-            ) && (
+            {Boolean(!errors.firstName && formData.firstName.trim().length >= 2) && (
               <CheckCircle2
                 className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
                 aria-hidden="true"
@@ -205,7 +204,8 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
-              <span>Last Name (Surname)</span>
+              <span>Last Name</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">(Surname)</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">optional</span>
           </label>
@@ -250,7 +250,8 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Phone className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>Mobile Number (WhatsApp Number)</span>
+              <span>Mobile Number</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">(WhatsApp)</span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">10 digits</span>
@@ -275,11 +276,7 @@ export function Step1Applicant({
               aria-describedby={errors.mobileNo ? 'mobileNo-error' : undefined}
               className={`${getInputClasses('mobileNo')} rounded-l-none pr-10`}
             />
-            {Boolean(
-              (attempted || touchedFields?.mobileNo) &&
-              !errors.mobileNo &&
-              formData.mobileNo.length === 10
-            ) && (
+            {Boolean(!errors.mobileNo && formData.mobileNo.length === 10) && (
               <CheckCircle2
                 className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
                 aria-hidden="true"
@@ -306,7 +303,10 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Mail className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>Email Address (Receipt & Allotment yahan aayegi)</span>
+              <span>Email Address</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">
+                (Receipt & Allotment)
+              </span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">verified inbox</span>
@@ -327,7 +327,7 @@ export function Step1Applicant({
               className={`${getInputClasses('email')} pr-10 uppercase`}
             />
             {Boolean(
-              (attempted || touchedFields?.email) && !errors.email && formData.email.includes('@')
+              !errors.email && formData.email.includes('@') && formData.email.includes('.')
             ) && (
               <CheckCircle2
                 className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
@@ -355,18 +355,29 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Users className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>Father / Husband / Guardian (Pita / Pati / Guardian ka Naam)</span>
+              <span>Father / Husband / Guardian</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">
+                (Pita / Pati / Guardian)
+              </span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">S/O, W/O, D/O</span>
           </label>
-          <div className="relative flex overflow-hidden rounded-xl">
+          <div
+            className={`flex h-12 min-h-[44px] overflow-hidden rounded-xl transition-all ${
+              errors.soWoDo
+                ? 'border-2 border-red-500 bg-red-50/30 dark:bg-red-950/20'
+                : !errors.soWoDo && relativeName.trim().length >= 2
+                  ? 'border-2 border-emerald-500/70 bg-emerald-50/10 dark:border-emerald-500/50 dark:bg-emerald-950/10'
+                  : 'focus-within:border-brand-gold focus-within:ring-brand-gold/25 border border-slate-200 bg-white focus-within:ring-2 dark:border-slate-800 dark:bg-slate-900/90'
+            }`}
+          >
             <select
               id="relationPrefix"
               aria-label="Relationship prefix"
               value={prefix}
               onChange={handlePrefixSelect}
-              className="focus:border-brand-gold h-12 min-h-[44px] rounded-l-xl border border-r-0 border-slate-200 bg-slate-100 px-3 text-xs font-bold text-slate-700 transition-colors focus:outline-hidden dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
+              className="h-full border-r border-slate-200 bg-slate-100 px-3 text-xs font-bold text-slate-700 outline-hidden transition-colors dark:border-slate-800 dark:bg-slate-800 dark:text-slate-200"
             >
               {RELATION_PREFIXES.map((p) => (
                 <option key={p} value={p}>
@@ -374,29 +385,27 @@ export function Step1Applicant({
                 </option>
               ))}
             </select>
-            <input
-              id="soWoDo"
-              name="soWoDo"
-              type="text"
-              required
-              placeholder="ENTER RELATIVE'S FULL NAME"
-              value={relativeName}
-              onChange={handleRelativeNameInput}
-              onBlur={onBlur}
-              aria-invalid={errors.soWoDo ? 'true' : 'false'}
-              aria-describedby={errors.soWoDo ? 'soWoDo-error' : undefined}
-              className={`${getInputClasses('soWoDo')} rounded-l-none pr-10 uppercase`}
-            />
-            {Boolean(
-              (attempted || touchedFields?.soWoDo) &&
-              !errors.soWoDo &&
-              relativeName.trim().length >= 2
-            ) && (
-              <CheckCircle2
-                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
-                aria-hidden="true"
+            <div className="relative flex-1">
+              <input
+                id="soWoDo"
+                name="soWoDo"
+                type="text"
+                required
+                placeholder="ENTER RELATIVE'S FULL NAME"
+                value={relativeName}
+                onChange={handleRelativeNameInput}
+                onBlur={onBlur}
+                aria-invalid={errors.soWoDo ? 'true' : 'false'}
+                aria-describedby={errors.soWoDo ? 'soWoDo-error' : undefined}
+                className="h-full w-full bg-transparent px-4 pr-10 text-sm text-slate-900 uppercase outline-hidden dark:text-white"
               />
-            )}
+              {Boolean(!errors.soWoDo && relativeName.trim().length >= 2) && (
+                <CheckCircle2
+                  className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                  aria-hidden="true"
+                />
+              )}
+            </div>
           </div>
           {errors.soWoDo && (
             <p
@@ -418,7 +427,10 @@ export function Step1Applicant({
           >
             <span className="flex items-center gap-1.5">
               <Calendar className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-              <span>Date of Birth (Janam Tithi)</span>
+              <span>Date of Birth</span>
+              <span className="text-[11px] font-normal text-slate-400 normal-case">
+                (Janam Tithi)
+              </span>
               <span className="text-red-500">*</span>
             </span>
             <span className="text-[10px] font-normal text-slate-400 lowercase">18+ years</span>

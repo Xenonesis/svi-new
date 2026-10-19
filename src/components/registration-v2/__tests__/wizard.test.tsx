@@ -100,9 +100,7 @@ describe('RegistrationWizardV2', () => {
   it('renders wizard shell with title, progress bar, and trust banners', () => {
     render(<RegistrationWizardV2 />);
 
-    expect(
-      screen.getByText('UP-RERA REGISTERED TOWNSHIPS • PRIORITY ALLOTMENT')
-    ).toBeInTheDocument();
+    expect(screen.getByText('SVI INFRA TOWNSHIPS • PRIORITY ALLOTMENT')).toBeInTheDocument();
     expect(screen.getByText('Property Registration & Lottery Application')).toBeInTheDocument();
 
     // Trust banners render

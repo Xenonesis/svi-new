@@ -423,7 +423,7 @@ export function Step4ReviewConfirm({
           <ShieldCheck className="text-brand-gold mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <p>
             Your information is encrypted with bank-grade 256-bit SSL protocols. Allotment is
-            governed by official UP-RERA guidelines and SVI terms and conditions.
+            governed by official SVI Infra Solutions guidelines and allotment terms.
           </p>
         </div>
       </section>

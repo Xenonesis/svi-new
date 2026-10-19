@@ -47,7 +47,7 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
       <header className="mb-8 text-center sm:mb-12">
         <div className="inline-flex items-center gap-2 rounded-full border border-amber-500/30 bg-amber-500/10 px-4 py-1 text-xs font-bold tracking-widest text-amber-700 uppercase dark:text-amber-400">
           <Sparkles className="h-3.5 w-3.5" aria-hidden="true" />
-          <span>UP-RERA REGISTERED TOWNSHIPS • PRIORITY ALLOTMENT</span>
+          <span>SVI INFRA TOWNSHIPS • PRIORITY ALLOTMENT</span>
         </div>
 
         <h1 className="text-brand-navy mt-4 font-serif text-3xl font-extrabold tracking-tight sm:text-4xl md:text-5xl dark:text-white">
@@ -177,11 +177,6 @@ export function RegistrationWizardV2({ className = '' }: RegistrationWizardV2Pro
           </motion.div>
         </AnimatePresence>
       </main>
-
-      {/* Bottom Trust & Support Strip */}
-      <footer className="mt-10 sm:mt-14">
-        <TrustBannerV2 variant="bottom" />
-      </footer>
 
       {/* Payment Modal */}
       {wizard.isPaymentModalOpen && (
