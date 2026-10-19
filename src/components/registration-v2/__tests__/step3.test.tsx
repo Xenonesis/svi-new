@@ -30,7 +30,7 @@ const mockT = (key: string): string => {
     paymentMode: 'Payment Mode',
     modePlaceholder: 'Select Payment Mode',
     advisorName: 'Assigned Property Advisor',
-    advisorPlaceholder: 'Select an Advisor (Optional)',
+    advisorPlaceholder: 'Select an Assigned Advisor',
     schemeAmount: 'Registration Token Fee (INR)',
     schemeAmountPlaceholder: 'Enter or confirm token amount',
     schemeAmountHint: 'Standard token amount based on selected plot dimension',
@@ -330,9 +330,9 @@ describe('Step3PropertyScheme', () => {
       propertyType: 'Property type is required',
       paymentPlan: 'Payment plan is required',
       paymentMode: 'Payment mode is required',
+      advisorName: 'Advisor selection is required',
       schemeAmount: 'Token amount is required',
     };
-
     render(<Step3PropertyScheme {...defaultProps} errors={errors} attempted={true} />);
 
     expect(screen.getByText('Project selection is required')).toBeInTheDocument();
@@ -341,6 +341,7 @@ describe('Step3PropertyScheme', () => {
     expect(screen.getByText('Payment plan is required')).toBeInTheDocument();
     expect(screen.getByText('Payment mode is required')).toBeInTheDocument();
     expect(screen.getByText('Token amount is required')).toBeInTheDocument();
+    expect(screen.getByText('Advisor selection is required')).toBeInTheDocument();
 
     expect(screen.getByLabelText(/Select Preferred Project/i).getAttribute('aria-invalid')).toBe(
       'true'

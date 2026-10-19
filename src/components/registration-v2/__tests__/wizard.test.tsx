@@ -200,6 +200,7 @@ describe('RegistrationWizardV2', () => {
         plotPreference: 'park',
         paymentPlan: 'one-time',
         paymentMode: 'online',
+        advisorName: 'Direct / SVI Official',
         schemeAmount: '21000',
       })
     );

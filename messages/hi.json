@@ -879,6 +879,7 @@
         "districtRequired": "ज़िला अनिवार्य है",
         "pincodeFormat": "कृपया एक वैध 6-अंकीय पोस्टल पिन कोड दर्ज करें",
         "addressRequired": "पूरा पता अनिवार्य है",
+        "advisorRequired": "कृपया प्रॉपर्टी एडवाइजर चुनें",
         "projectRequired": "कृपया एक प्रोजेक्ट चुनें",
         "sizeRequired": "कृपया प्रॉपर्टी का आकार चुनें",
         "typeRequired": "कृपया प्रॉपर्टी का प्रकार चुनें",

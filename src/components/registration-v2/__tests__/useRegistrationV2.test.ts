@@ -45,9 +45,9 @@ const VALID_STEP3_DATA: Partial<FormData> = {
   plotPreference: 'park',
   paymentPlan: 'one-time',
   paymentMode: 'online',
+  advisorName: 'Direct / SVI Official',
   schemeAmount: '21000',
 };
-
 describe('useRegistrationV2', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -317,6 +317,7 @@ describe('useRegistrationV2', () => {
       expect(result.current.errors.propertyType).toBe('validation.typeRequired');
       expect(result.current.errors.paymentPlan).toBe('validation.planRequired');
       expect(result.current.errors.paymentMode).toBe('validation.modeRequired');
+      expect(result.current.errors.advisorName).toBe('validation.advisorRequired');
       expect(result.current.errors.schemeAmount).toBe('validation.amountRequired');
     });
 
@@ -555,7 +556,6 @@ describe('useRegistrationV2', () => {
         city: true,
         district: true,
         panNumber: true,
-        advisorName: true,
       });
     });
   });

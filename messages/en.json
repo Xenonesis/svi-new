@@ -879,6 +879,7 @@
         "districtRequired": "District is required",
         "pincodeFormat": "Please enter a valid 6-digit postal PIN code",
         "addressRequired": "Full address is required",
+        "advisorRequired": "Please select an assigned property advisor",
         "projectRequired": "Please select a project",
         "sizeRequired": "Please select property size",
         "typeRequired": "Please select property type",

@@ -33,7 +33,6 @@ export const UPPERCASE_FIELDS: Record<string, true> = {
   city: true,
   district: true,
   panNumber: true,
-  advisorName: true,
 };
 
 const NAME_REGEX = /^[\p{L}\s]+$/u;
@@ -56,6 +55,7 @@ const STEP_FIELDS: Record<RegistrationV2Step, string[]> = {
     'plotPreference',
     'paymentPlan',
     'paymentMode',
+    'advisorName',
     'schemeAmount',
   ],
   4: ['captcha'],
@@ -334,6 +334,10 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
         case 'paymentMode':
           if (!trimmed) return t('validation.modeRequired');
           return null;
+        case 'advisorName':
+          if (!trimmed)
+            return t('validation.advisorRequired') || 'Please select an assigned property advisor';
+          return null;
         case 'schemeAmount': {
           if (!trimmed) return t('validation.amountRequired');
           const num = Number(trimmed);
@@ -517,6 +521,10 @@ export function useRegistrationV2(t: (key: string) => string): UseRegistrationV2
     if (!formData.propertyType.trim()) newErrors.propertyType = t('validation.typeRequired');
     if (!formData.paymentPlan.trim()) newErrors.paymentPlan = t('validation.planRequired');
     if (!formData.paymentMode.trim()) newErrors.paymentMode = t('validation.modeRequired');
+    if (!formData.advisorName.trim()) {
+      newErrors.advisorName =
+        t('validation.advisorRequired') || 'Please select an assigned property advisor';
+    }
 
     if (!formData.schemeAmount.trim()) {
       newErrors.schemeAmount = t('validation.amountRequired');

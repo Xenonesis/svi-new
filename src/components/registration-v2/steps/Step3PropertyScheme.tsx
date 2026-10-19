@@ -648,25 +648,42 @@ export function Step3PropertyScheme({
             >
               <span className="flex items-center gap-1.5">
                 <UserCheck className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>Assigned Property Advisor (SVI Representative - Optional)</span>
+                <span>{tr('advisorName', 'Assigned Property Advisor')} (SVI Representative)</span>
+                <span className="text-brand-gold" aria-hidden="true">
+                  *
+                </span>
               </span>
             </label>
 
             <select
               id="advisorName"
               name="advisorName"
+              required
+              aria-required="true"
+              aria-invalid={Boolean(errors.advisorName)}
+              aria-describedby={errors.advisorName ? 'advisorName-error' : undefined}
               value={formData.advisorName}
               onChange={onChange}
               onBlur={onBlur}
               className={getInputClasses('advisorName')}
             >
-              <option value="">{tr('advisorPlaceholder', 'Select an Advisor (Optional)')}</option>
+              <option value="">{tr('advisorPlaceholder', 'Select an Assigned Advisor')}</option>
               {advisorList.map((adv) => (
                 <option key={adv} value={adv}>
                   {adv}
                 </option>
               ))}
             </select>
+            {errors.advisorName && (
+              <p
+                id="advisorName-error"
+                role="alert"
+                className="mt-1 flex items-center gap-1.5 text-xs font-medium text-red-600 dark:text-red-400"
+              >
+                <AlertCircle className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+                <span>{errors.advisorName}</span>
+              </p>
+            )}
           </div>
 
           {/* Registration Token Amount Showcase Card */}
