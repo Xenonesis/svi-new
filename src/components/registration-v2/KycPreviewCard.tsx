@@ -80,39 +80,39 @@ export function KycPreviewCard({
     <div
       role="region"
       aria-label="Digital Applicant KYC Identity Pass"
-      className={`border-brand-gold/40 ring-brand-gold/20 relative overflow-hidden rounded-2xl border bg-gradient-to-br from-slate-950 via-slate-900 to-[#0b0c10] p-5 text-white shadow-2xl ring-1 backdrop-blur-xl sm:p-6 ${className}`}
+      className={`relative overflow-hidden rounded-2xl border border-amber-500/35 bg-gradient-to-br from-[#070a12] via-[#0d121d] to-[#070a12] p-5 text-white shadow-2xl ring-1 ring-amber-500/10 backdrop-blur-xl before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-transparent before:via-amber-400/40 before:to-transparent sm:p-6 ${className}`}
     >
-      {/* Subtle Geometric Security Mesh Overlay */}
-      <div
-        className="pointer-events-none absolute inset-0 bg-[radial-gradient(#d4af37_1px,transparent_1px)] [background-size:16px_16px] opacity-10"
-        aria-hidden="true"
-      />
-
       {/* Card Content */}
       <div className="relative z-10 space-y-4 sm:space-y-5">
-        {/* Header: SVI Infra Branding & Official Hologram */}
-        <div className="border-brand-gold/20 flex items-center justify-between border-b pb-3">
-          <div className="flex items-center gap-2">
-            <div className="border-brand-gold/50 bg-brand-gold/15 flex h-8 w-8 items-center justify-center rounded-lg border shadow-[0_0_10px_rgba(212,175,55,0.25)]">
-              <ShieldCheck className="text-brand-gold h-5 w-5" aria-hidden="true" />
-            </div>
-            <div>
-              <p className="text-brand-gold text-[10px] font-bold tracking-widest uppercase">
+        {/* Header: SVI Infra Branding & Official Digital Seal */}
+        <div className="border-b border-amber-500/20 pb-3">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-md border border-amber-500/50 bg-amber-500/15 shadow-[0_0_8px_rgba(212,175,55,0.2)]">
+                <ShieldCheck className="h-3.5 w-3.5 text-amber-400" aria-hidden="true" />
+              </div>
+              <p className="text-[10px] font-bold tracking-[0.2em] text-amber-400/90 uppercase">
                 SVI INFRA SOLUTIONS
               </p>
-              <h3 className="text-xs font-extrabold tracking-wider text-slate-100 uppercase sm:text-sm">
-                PRIORITY ALLOTMENT PASS
-              </h3>
+            </div>
+
+            {/* Official Digital Seal */}
+            <div
+              className="inline-flex shrink-0 items-center gap-1 overflow-hidden rounded-full border border-amber-400/40 bg-amber-400/10 px-2.5 py-0.5 text-[9px] font-bold tracking-wider text-amber-300 uppercase shadow-[0_0_8px_rgba(212,175,55,0.15)] backdrop-blur-md"
+              title="Official Digital Security Seal"
+            >
+              <ShieldCheck className="h-2.5 w-2.5 text-amber-300" aria-hidden="true" />
+              <span>DIGITAL SEAL</span>
             </div>
           </div>
 
-          {/* Official Security Seal */}
-          <div
-            className="border-brand-gold/40 bg-brand-gold/10 text-brand-gold relative flex items-center gap-1.5 overflow-hidden rounded-full border px-2.5 py-1 text-[10px] font-bold tracking-wider uppercase shadow-[0_0_10px_rgba(212,175,55,0.15)] backdrop-blur-md"
-            title="Official Digital Security Seal"
-          >
-            <ShieldCheck className="text-brand-gold h-3 w-3" aria-hidden="true" />
-            <span>DIGITAL SEAL</span>
+          <div className="mt-2.5 flex items-baseline justify-between">
+            <h3 className="font-serif text-xs font-bold tracking-wider text-slate-100 uppercase sm:text-sm">
+              PRIORITY ALLOTMENT PASS
+            </h3>
+            <span className="font-mono text-[9px] font-semibold tracking-widest text-amber-400/80 uppercase">
+              PRE-ALLOTMENT
+            </span>
           </div>
         </div>
 
@@ -138,8 +138,8 @@ export function KycPreviewCard({
 
           {/* Identity Metadata */}
           <div className="min-w-0 flex-1 space-y-1.5">
-            <span className="bg-brand-gold/15 text-brand-gold-light inline-flex items-center gap-1 rounded px-2 py-0.5 text-[10px] font-bold tracking-wider uppercase">
-              <BadgeCheck className="text-brand-gold h-3 w-3" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1 rounded bg-amber-500/15 px-2 py-0.5 text-[10px] font-bold tracking-wider text-amber-300 uppercase">
+              <BadgeCheck className="h-3 w-3 text-amber-400" aria-hidden="true" />
               PRIORITY ALLOTTEE
             </span>
 
@@ -149,40 +149,50 @@ export function KycPreviewCard({
 
             {/* City & State Location Indicator */}
             <div className="flex items-center gap-1.5 text-xs text-slate-300">
-              <MapPin className="text-brand-gold h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <MapPin className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-hidden="true" />
               <span className="truncate font-medium">{locationText}</span>
             </div>
 
             {/* Document upload badges */}
-            <div className="flex flex-wrap items-center gap-2 pt-1">
-              {photoFile && (
-                <span className="inline-flex items-center gap-1 rounded bg-emerald-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-emerald-400">
-                  <CheckCircle2 className="h-2.5 w-2.5" /> PHOTO READY
-                </span>
-              )}
-              {panCardFile && (
-                <span className="inline-flex items-center gap-1 rounded bg-sky-500/15 px-1.5 py-0.5 text-[10px] font-semibold text-sky-400">
-                  <FileCheck className="h-2.5 w-2.5" /> PAN DOC ATTACHED
-                </span>
-              )}
-            </div>
+            {(photoFile || panCardFile) && (
+              <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                {photoFile && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-emerald-500/30 bg-emerald-500/15 px-2 py-0.5 text-[10px] font-semibold text-emerald-400">
+                    <CheckCircle2 className="h-2.5 w-2.5" /> PHOTO READY
+                  </span>
+                )}
+                {panCardFile && (
+                  <span className="inline-flex items-center gap-1 rounded-md border border-sky-500/30 bg-sky-500/15 px-2 py-0.5 text-[10px] font-semibold text-sky-400">
+                    <FileCheck className="h-2.5 w-2.5" /> PAN DOC ATTACHED
+                  </span>
+                )}
+              </div>
+            )}
           </div>
         </div>
 
         {/* Security Numbers Grid */}
-        <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-white/10 bg-black/40 p-3 backdrop-blur-sm sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-2.5 rounded-xl border border-white/10 bg-black/50 p-3.5 backdrop-blur-sm sm:grid-cols-2">
           {/* Masked Aadhaar */}
-          <div className="space-y-0.5">
-            <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
-              AADHAAR NUMBER
-            </span>
+          <div className="space-y-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
+                AADHAAR NUMBER
+              </span>
+              {cleanAadhaar.length === 12 && (
+                <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400">
+                  <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                  12 DIGITS
+                </span>
+              )}
+            </div>
             <p className="font-mono text-xs font-semibold tracking-widest text-slate-100 sm:text-sm">
               {maskedAadhaar}
             </p>
           </div>
 
           {/* PAN Number & Live Verification Checkmark */}
-          <div className="space-y-0.5">
+          <div className="space-y-1 sm:border-l sm:border-white/10 sm:pl-3">
             <div className="flex items-center justify-between">
               <span className="text-[10px] font-bold tracking-wider text-slate-400 uppercase">
                 PAN NUMBER
@@ -201,7 +211,6 @@ export function KycPreviewCard({
             </p>
           </div>
         </div>
-
         {/* Footer: Official Seal & Verification Disclaimer */}
         <div className="border-brand-gold/20 flex items-center justify-between border-t pt-3 text-[10px]">
           <div className="text-brand-gold flex items-center gap-1.5 font-bold tracking-wider uppercase">
