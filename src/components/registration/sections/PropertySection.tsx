@@ -79,7 +79,7 @@ export default function PropertySection({
         name="advisorName"
         label={t('advisorName')}
         value={formData.advisorName}
-        options={advisors}
+        options={advisors.map((adv) => ({ value: adv, label: adv }))}
         errors={errors}
         onChange={onChange}
         placeholder={t('advisorPlaceholder')}

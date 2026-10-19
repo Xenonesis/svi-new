@@ -611,7 +611,7 @@ export function FormSelect({
           <option value="">{placeholder}</option>
           {options.map((opt) =>
             typeof opt === 'string' ? (
-              <option key={opt} value={opt.toLowerCase().replace(/\s+/g, '-')}>
+              <option key={opt} value={opt}>
                 {opt}
               </option>
             ) : (

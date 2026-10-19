@@ -26,10 +26,7 @@ const UPPERCASE_FIELDS: Record<string, true> = {
   soWoDo: true,
   email: true,
   address: true,
-  city: true,
-  state: true,
   panNumber: true,
-  advisorName: true,
 };
 
 async function refreshCsrfToken(): Promise<string | null> {
@@ -71,10 +68,14 @@ export function useRegistrationForm(t: (key: string) => string) {
   useEffect(() => {
     let active = true;
 
-    Promise.all([
-      fetch('/api/registration').then((res) => res.json()),
-      fetch('/api/properties').then((res) => res.json()),
-    ])
+    const fetchRegistration = fetch('/api/registration')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+    const fetchProperties = fetch('/api/properties')
+      .then((res) => (res.ok ? res.json() : null))
+      .catch(() => null);
+
+    Promise.all([fetchRegistration, fetchProperties])
       .then(([registrationData, propertiesData]) => {
         if (!active) return;
         if (registrationData?.advisors?.length) {
@@ -106,6 +107,18 @@ export function useRegistrationForm(t: (key: string) => string) {
       setTimeout(() => setDraftRestored(false), 5000);
     }
   }, []);
+  // Normalize advisor name if restored from legacy slug or differing case draft
+  useEffect(() => {
+    if (!formData.advisorName || advisors.length === 0) return;
+    const match = advisors.find(
+      (adv) =>
+        adv.toLowerCase() === formData.advisorName.toLowerCase() ||
+        adv.toLowerCase().replace(/\s+/g, '-') === formData.advisorName.toLowerCase()
+    );
+    if (match && match !== formData.advisorName) {
+      setFormData((prev) => ({ ...prev, advisorName: match }));
+    }
+  }, [advisors, formData.advisorName]);
 
   useEffect(() => {
     const timer = setTimeout(
@@ -388,9 +401,14 @@ export function useRegistrationForm(t: (key: string) => string) {
                 `${field}: ${Array.isArray(msgs) ? msgs.join(', ') : msgs}`
             )
             .join(' | ');
-          throw new Error(issueMessages || errData.error || 'Submission failed');
+          throw new Error(issueMessages || 'Submission failed');
         }
-        throw new Error(errData.error || 'Submission failed');
+        const message =
+          (typeof errData.error === 'object' && errData.error?.message) ||
+          (typeof errData.error === 'string' && errData.error) ||
+          errData.message ||
+          'Submission failed';
+        throw new Error(message);
       }
       setIsPaymentModalOpen(false);
       clearFormDraft();

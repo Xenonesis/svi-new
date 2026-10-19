@@ -7,6 +7,7 @@ import { RegistrationSchema } from '@/src/lib/schemas/registration';
 import { verifyCaptchaToken, CAPTCHA_COOKIE } from '@/src/lib/captcha';
 
 export const runtime = 'nodejs';
+export const dynamic = 'force-dynamic';
 
 const STORAGE_BUCKET = 'registration-docs';
 
@@ -52,12 +53,13 @@ async function uploadFile(
 ): Promise<{ path: string; url: string } | null> {
   const ext = file.name.split('.').pop() || 'jpg';
   const fileName = `${folder}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+  const contentType = file.type || (ext === 'pdf' ? 'application/pdf' : 'image/jpeg');
   const { error } = await supabaseAdmin.storage.from(STORAGE_BUCKET).upload(fileName, file, {
-    contentType: file.type,
+    contentType,
     upsert: false,
   });
   if (error) {
-    console.error('File upload error:', error.message);
+    console.error(`[uploadFile ${folder}] Error:`, error.message, error);
     return null;
   }
   const { data } = await supabaseAdmin.storage
@@ -238,7 +240,10 @@ export async function POST(request: NextRequest) {
         .order('submission_id', { ascending: false })
         .limit(1);
 
-      if (fetchError) throw AppError.internal('Database error during ID generation');
+      if (fetchError) {
+        console.error('[Registration] fetchError:', fetchError);
+        throw AppError.internal('Database error during ID generation');
+      }
 
       let nextId = 'SVI2200';
       if (existing && existing.length > 0 && existing[0].submission_id) {
@@ -291,6 +296,7 @@ export async function POST(request: NextRequest) {
         .single();
 
       if (insertError) {
+        console.error('[Registration] insertError:', insertError);
         if (insertError.code === '23505') {
           console.warn(
             `[Registration] Collision on ID ${nextId}, retry ${attempts}/${maxAttempts}`
@@ -475,6 +481,7 @@ export async function POST(request: NextRequest) {
       emailStatus,
     });
   } catch (error) {
+    console.error('[Registration POST error]:', error);
     return handleApiError(error);
   }
 }
@@ -532,7 +539,7 @@ async function getActiveAdvisorNames(): Promise<string[]> {
 }
 
 // GET /api/registration — retrieve active advisor names (used by registration form)
-export async function GET(request: NextRequest) {
+export async function GET(_request?: NextRequest) {
   try {
     const advisorNames = await getActiveAdvisorNames();
     const rawList = advisorNames.length > 0 ? advisorNames : DEFAULT_ADVISORS;
