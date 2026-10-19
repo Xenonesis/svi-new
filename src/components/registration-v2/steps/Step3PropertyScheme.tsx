@@ -27,13 +27,13 @@ import type { Step3PropertySchemeProps } from '../types';
 export type { Step3PropertySchemeProps };
 
 export const PROPERTY_SIZES = [
-  { value: '50-100', label: '50-100 Sq. Yd', token: 11000 },
-  { value: '100-200', label: '100-200 Sq. Yd', token: 21000 },
-  { value: '200-400', label: '200-400 Sq. Yd', token: 31000 },
-  { value: '400-700', label: '400-700 Sq. Yd', token: 51000 },
-  { value: '700-1000', label: '700-1000 Sq. Yd', token: 75000 },
-  { value: '1000-1500', label: '1000-1500 Sq. Yd', token: 100000 },
-  { value: '1500-2000', label: '1500-2000 Sq. Yd', token: 150000 },
+  { value: '50-100', label: '50-100 Sq. Yd', sqFt: '450 - 900 Sq. Ft', token: 11000 },
+  { value: '100-200', label: '100-200 Sq. Yd', sqFt: '900 - 1,800 Sq. Ft', token: 21000 },
+  { value: '200-400', label: '200-400 Sq. Yd', sqFt: '1,800 - 3,600 Sq. Ft', token: 31000 },
+  { value: '400-700', label: '400-700 Sq. Yd', sqFt: '3,600 - 6,300 Sq. Ft', token: 51000 },
+  { value: '700-1000', label: '700-1000 Sq. Yd', sqFt: '6,300 - 9,000 Sq. Ft', token: 75000 },
+  { value: '1000-1500', label: '1000-1500 Sq. Yd', sqFt: '9,000 - 13,500 Sq. Ft', token: 100000 },
+  { value: '1500-2000', label: '1500-2000 Sq. Yd', sqFt: '13,500 - 18,000 Sq. Ft', token: 150000 },
 ] as const;
 
 export const PROPERTY_TYPES = [
@@ -122,6 +122,13 @@ export function Step3PropertyScheme({
   // Safe fallbacks for options
   const projectList = projects && projects.length > 0 ? projects : FALLBACK_PROJECTS;
   const advisorList = advisors && advisors.length > 0 ? advisors : FALLBACK_ADVISORS;
+
+  // Real-time scheme breakdown calculation
+  const currentSchemeDetails = calculateSchemeDetails(
+    formData.propertySize,
+    formData.project,
+    formData.paymentPlan
+  );
 
   // Auto-sync scheme amount when propertySize changes or on mount if empty
   useEffect(() => {
@@ -298,15 +305,13 @@ export function Step3PropertyScheme({
               htmlFor="propertySize"
               className="flex items-center justify-between text-xs font-semibold text-slate-700 sm:text-sm dark:text-slate-300"
             >
-              <span className="flex items-center gap-1.5">
+              <span className="sr-only">Property Size (Plot Area)</span>
+              <span className="flex items-center gap-1.5" aria-hidden="true">
                 <Ruler className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                <span>Property Size (Plot Area)</span>
+                <span>Property Size (Plot Area / Gaj)</span>
                 <span className="text-brand-gold" aria-hidden="true">
                   *
                 </span>
-              </span>
-              <span className="text-[11px] font-normal text-slate-500 dark:text-slate-400">
-                Token adjustable against cost
               </span>
             </label>
 
@@ -325,18 +330,21 @@ export function Step3PropertyScheme({
                     role="radio"
                     aria-checked={isSelected}
                     onClick={() => handleSizeSelect(opt.value)}
-                    className={`flex min-h-[44px] flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all active:scale-[0.98] ${
+                    className={`flex min-h-[58px] flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all active:scale-[0.98] ${
                       isSelected
-                        ? 'border-brand-gold bg-brand-gold/15 ring-brand-gold/40 dark:text-brand-gold-light text-slate-900 shadow-[0_0_12px_rgba(212,175,55,0.2)] ring-1'
+                        ? 'border-brand-gold bg-brand-gold/15 ring-brand-gold/40 text-slate-900 shadow-[0_0_12px_rgba(212,175,55,0.2)] ring-1 dark:text-white'
                         : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
                     <span className="text-xs font-bold sm:text-sm">{opt.label}</span>
+                    <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                      {opt.sqFt}
+                    </span>
                     <span
-                      className={`mt-0.5 text-[10px] font-medium ${
+                      className={`mt-1 rounded px-1.5 py-0.5 text-[10px] font-bold ${
                         isSelected
-                          ? 'text-brand-gold dark:text-brand-gold'
-                          : 'text-slate-500 dark:text-slate-400'
+                          ? 'bg-brand-gold/20 text-brand-gold dark:text-brand-gold'
+                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
                       }`}
                     >
                       Token: ₹{opt.token.toLocaleString('en-IN')}
@@ -346,6 +354,12 @@ export function Step3PropertyScheme({
               })}
             </div>
 
+            <div className="flex items-center gap-1.5 pt-0.5 text-[11px] text-slate-500 dark:text-slate-400">
+              <Info className="text-brand-gold h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+              <span>
+                Token booking fee is 100% adjustable against the final property allotment cost.
+              </span>
+            </div>
             {/* Select Dropdown Fallback for standard form accessibility */}
             <div className="pt-1">
               <select
@@ -545,7 +559,7 @@ export function Step3PropertyScheme({
               >
                 <span className="flex items-center gap-1.5">
                   <CreditCard className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                  <span>{tr('paymentPlan', 'Payment Plan')}</span>
+                  <span>Select Payment Plan (Bhugtan Yojna)</span>
                   <span className="text-brand-gold" aria-hidden="true">
                     *
                   </span>
@@ -589,7 +603,7 @@ export function Step3PropertyScheme({
               >
                 <span className="flex items-center gap-1.5">
                   <CreditCard className="text-brand-gold h-4 w-4" aria-hidden="true" />
-                  <span>{tr('paymentMode', 'Payment Mode')}</span>
+                  <span>Payment Mode (Bhugtan Madhyam)</span>
                   <span className="text-brand-gold" aria-hidden="true">
                     *
                   </span>
@@ -655,8 +669,8 @@ export function Step3PropertyScheme({
             </select>
           </div>
 
-          {/* Registration Token Amount (schemeAmount) */}
-          <div className="space-y-1.5">
+          {/* Registration Token Amount Showcase Card */}
+          <div className="space-y-2">
             <label
               htmlFor="schemeAmount"
               className="flex items-center justify-between text-xs font-semibold text-slate-700 sm:text-sm dark:text-slate-300"
@@ -668,33 +682,71 @@ export function Step3PropertyScheme({
                   *
                 </span>
               </span>
-              <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-2 py-0.5 text-[11px] font-medium text-amber-600 dark:text-amber-400">
-                <Sparkles className="h-3 w-3" /> Auto-computed
+              <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:text-brand-gold-light inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[11px] font-semibold">
+                <Sparkles className="h-3 w-3" /> Priority Token
               </span>
             </label>
 
-            <div className="relative">
-              <input
-                id="schemeAmount"
-                name="schemeAmount"
-                type="text"
-                value={formData.schemeAmount}
-                onChange={onChange}
-                onBlur={onBlur}
-                placeholder={tr('schemeAmountPlaceholder', 'Enter or confirm token amount')}
-                aria-invalid={Boolean(errors.schemeAmount)}
-                aria-describedby={errors.schemeAmount ? 'schemeAmount-error' : 'schemeAmount-hint'}
-                className={getInputClasses('schemeAmount')}
+            {/* High-Impact Executive Token Fee Display Card */}
+            <div className="border-brand-gold/40 relative overflow-hidden rounded-2xl border bg-gradient-to-br from-[#080b11] via-[#111622] to-[#080b11] p-5 text-white shadow-xl">
+              <div
+                className="bg-brand-gold/15 pointer-events-none absolute -top-8 -right-8 h-28 w-28 rounded-full blur-2xl"
+                aria-hidden="true"
               />
+              <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <span className="text-[10px] font-bold tracking-widest text-slate-400 uppercase">
+                    Booking Token Amount
+                  </span>
+                  <div className="mt-1 flex items-baseline gap-2">
+                    <span className="font-serif text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+                      ₹
+                      {Number(
+                        formData.schemeAmount || currentSchemeDetails.tokenAmount
+                      ).toLocaleString('en-IN')}
+                    </span>
+                    <span className="text-brand-gold text-xs font-semibold">INR</span>
+                  </div>
+                  <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-300">
+                    <span className="flex items-center gap-1 text-emerald-400">
+                      <CheckCircle2 className="h-3.5 w-3.5 shrink-0" />
+                      100% adjustable against total plot cost
+                    </span>
+                    <span className="hidden text-slate-600 sm:inline">•</span>
+                    <span className="text-slate-400">Instant allotment queue priority</span>
+                  </div>
+                </div>
+
+                <div className="w-full sm:w-44">
+                  <span className="mb-1 block text-[11px] font-medium text-slate-400">
+                    Confirmed Amount (₹)
+                  </span>
+                  <input
+                    id="schemeAmount"
+                    name="schemeAmount"
+                    type="text"
+                    value={formData.schemeAmount}
+                    onChange={onChange}
+                    onBlur={onBlur}
+                    placeholder={tr('schemeAmountPlaceholder', 'Enter or confirm token amount')}
+                    aria-invalid={Boolean(errors.schemeAmount)}
+                    aria-describedby={
+                      errors.schemeAmount ? 'schemeAmount-error' : 'schemeAmount-hint'
+                    }
+                    className="border-brand-gold/40 focus:border-brand-gold focus:ring-brand-gold/30 h-11 w-full rounded-xl border bg-slate-900/90 px-3.5 text-sm font-bold text-white outline-hidden transition-all focus:ring-2"
+                  />
+                </div>
+              </div>
             </div>
 
             <p
               id="schemeAmount-hint"
-              className="flex items-center gap-1 text-[11px] text-slate-500 dark:text-slate-400"
+              className="flex items-center gap-1.5 text-[11px] text-slate-500 dark:text-slate-400"
             >
               <Info className="text-brand-gold h-3.5 w-3.5 shrink-0" aria-hidden="true" />
               <span>
-                {tr('schemeAmountHint', 'Standard token amount based on selected plot dimension')}
+                Standard priority token amount based on selected plot dimension (
+                {formData.propertySize ? `${formData.propertySize} Sq. Yd` : '100-200 Sq. Yd'}).
               </span>
             </p>
 

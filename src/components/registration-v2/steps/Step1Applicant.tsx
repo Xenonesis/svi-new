@@ -137,10 +137,7 @@ export function Step1Applicant({
           {tr('sectionPersonal', 'Applicant Personal Details')}
         </h2>
         <p className="mt-1 text-xs text-slate-500 sm:text-sm dark:text-slate-400">
-          {tr(
-            'personalSubtitle',
-            'Please provide your official legal identity as registered on your Government ID documents.'
-          )}
+          {tr('personalSubtitle', 'Basic information for your priority allotment certificate.')}
         </p>
       </div>
 
@@ -150,7 +147,7 @@ export function Step1Applicant({
         <div className="space-y-1.5">
           <label
             htmlFor="firstName"
-            className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+            className="flex items-center text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
           >
             <span className="flex items-center gap-1.5">
               <User className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
@@ -160,7 +157,6 @@ export function Step1Applicant({
               </span>
               <span className="text-red-500">*</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">min 2 chars</span>
           </label>
           <div className="relative">
             <input
@@ -169,13 +165,13 @@ export function Step1Applicant({
               type="text"
               required
               autoComplete="given-name"
-              placeholder={tr('firstNamePlaceholder', 'ENTER FIRST NAME')}
+              placeholder={tr('firstNamePlaceholder', 'e.g. Rajesh')}
               value={formData.firstName}
               onChange={onChange}
               onBlur={onBlur}
               aria-invalid={errors.firstName ? 'true' : 'false'}
               aria-describedby={errors.firstName ? 'firstName-error' : undefined}
-              className={`${getInputClasses('firstName')} pr-10 uppercase`}
+              className={`${getInputClasses('firstName')} pr-10 uppercase placeholder:normal-case`}
             />
             {Boolean(!errors.firstName && formData.firstName.trim().length >= 2) && (
               <CheckCircle2
@@ -200,14 +196,13 @@ export function Step1Applicant({
         <div className="space-y-1.5">
           <label
             htmlFor="lastName"
-            className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+            className="flex items-center text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
           >
             <span className="flex items-center gap-1.5">
               <User className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
               <span>Last Name</span>
               <span className="text-[11px] font-normal text-slate-400 normal-case">(Surname)</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">optional</span>
           </label>
           <div className="relative">
             <input
@@ -215,13 +210,13 @@ export function Step1Applicant({
               name="lastName"
               type="text"
               autoComplete="family-name"
-              placeholder={tr('lastNamePlaceholder', 'ENTER LAST NAME')}
+              placeholder={tr('lastNamePlaceholder', 'e.g. Sharma')}
               value={formData.lastName}
               onChange={onChange}
               onBlur={onBlur}
               aria-invalid={errors.lastName ? 'true' : 'false'}
               aria-describedby={errors.lastName ? 'lastName-error' : undefined}
-              className={`${getInputClasses('lastName')} pr-10 uppercase`}
+              className={`${getInputClasses('lastName')} pr-10 uppercase placeholder:normal-case`}
             />
             {Boolean(formData.lastName?.trim() && !errors.lastName) && (
               <CheckCircle2
@@ -246,7 +241,7 @@ export function Step1Applicant({
         <div className="space-y-1.5">
           <label
             htmlFor="mobileNo"
-            className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+            className="flex items-center text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
           >
             <span className="flex items-center gap-1.5">
               <Phone className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
@@ -254,34 +249,43 @@ export function Step1Applicant({
               <span className="text-[11px] font-normal text-slate-400 normal-case">(WhatsApp)</span>
               <span className="text-red-500">*</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">10 digits</span>
           </label>
-          <div className="relative flex rounded-xl">
-            <span className="inline-flex h-12 min-h-[44px] items-center rounded-l-xl border border-r-0 border-slate-200 bg-slate-100 px-3.5 text-xs font-bold text-slate-600 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-300">
+          <div
+            className={`flex h-12 min-h-[44px] overflow-hidden rounded-xl transition-all ${
+              errors.mobileNo
+                ? 'border-2 border-red-500 bg-red-50/30 dark:bg-red-950/20'
+                : !errors.mobileNo && formData.mobileNo.length === 10
+                  ? 'border-2 border-emerald-500/70 bg-emerald-50/10 dark:border-emerald-500/50 dark:bg-emerald-950/10'
+                  : 'focus-within:border-brand-gold focus-within:ring-brand-gold/25 border border-slate-200 bg-white focus-within:ring-2 dark:border-slate-800 dark:bg-slate-900/90'
+            }`}
+          >
+            <span className="inline-flex h-full items-center border-r border-slate-200 bg-slate-100 px-3.5 text-xs font-bold text-slate-600 dark:border-slate-800 dark:bg-slate-800/80 dark:text-slate-300">
               🇮🇳 +91
             </span>
-            <input
-              id="mobileNo"
-              name="mobileNo"
-              type="tel"
-              inputMode="numeric"
-              required
-              maxLength={10}
-              autoComplete="tel-national"
-              placeholder="9876543210"
-              value={formData.mobileNo}
-              onChange={handleMobileChange}
-              onBlur={onBlur}
-              aria-invalid={errors.mobileNo ? 'true' : 'false'}
-              aria-describedby={errors.mobileNo ? 'mobileNo-error' : undefined}
-              className={`${getInputClasses('mobileNo')} rounded-l-none pr-10`}
-            />
-            {Boolean(!errors.mobileNo && formData.mobileNo.length === 10) && (
-              <CheckCircle2
-                className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
-                aria-hidden="true"
+            <div className="relative flex-1">
+              <input
+                id="mobileNo"
+                name="mobileNo"
+                type="tel"
+                inputMode="numeric"
+                required
+                maxLength={10}
+                autoComplete="tel-national"
+                placeholder="98765 43210"
+                value={formData.mobileNo}
+                onChange={handleMobileChange}
+                onBlur={onBlur}
+                aria-invalid={errors.mobileNo ? 'true' : 'false'}
+                aria-describedby={errors.mobileNo ? 'mobileNo-error' : undefined}
+                className="h-full w-full bg-transparent px-4 pr-10 text-sm text-slate-900 outline-hidden dark:text-white"
               />
-            )}
+              {Boolean(!errors.mobileNo && formData.mobileNo.length === 10) && (
+                <CheckCircle2
+                  className="pointer-events-none absolute top-1/2 right-3.5 h-4 w-4 -translate-y-1/2 text-emerald-500"
+                  aria-hidden="true"
+                />
+              )}
+            </div>
           </div>
           {errors.mobileNo && (
             <p
@@ -299,7 +303,7 @@ export function Step1Applicant({
         <div className="space-y-1.5">
           <label
             htmlFor="email"
-            className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+            className="flex items-center text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
           >
             <span className="flex items-center gap-1.5">
               <Mail className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
@@ -309,7 +313,6 @@ export function Step1Applicant({
               </span>
               <span className="text-red-500">*</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">verified inbox</span>
           </label>
           <div className="relative">
             <input
@@ -318,13 +321,13 @@ export function Step1Applicant({
               type="email"
               required
               autoComplete="email"
-              placeholder="NAME@EXAMPLE.COM"
+              placeholder="rajesh.sharma@example.com"
               value={formData.email}
               onChange={onChange}
               onBlur={onBlur}
               aria-invalid={errors.email ? 'true' : 'false'}
               aria-describedby={errors.email ? 'email-error' : undefined}
-              className={`${getInputClasses('email')} pr-10 uppercase`}
+              className={`${getInputClasses('email')} pr-10 lowercase`}
             />
             {Boolean(
               !errors.email && formData.email.includes('@') && formData.email.includes('.')
@@ -351,7 +354,7 @@ export function Step1Applicant({
         <div className="space-y-1.5">
           <label
             htmlFor="soWoDo"
-            className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+            className="flex items-center text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
           >
             <span className="flex items-center gap-1.5">
               <Users className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
@@ -361,7 +364,6 @@ export function Step1Applicant({
               </span>
               <span className="text-red-500">*</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">S/O, W/O, D/O</span>
           </label>
           <div
             className={`flex h-12 min-h-[44px] overflow-hidden rounded-xl transition-all ${
@@ -391,13 +393,13 @@ export function Step1Applicant({
                 name="soWoDo"
                 type="text"
                 required
-                placeholder="ENTER RELATIVE'S FULL NAME"
+                placeholder="e.g. Ramesh Kumar"
                 value={relativeName}
                 onChange={handleRelativeNameInput}
                 onBlur={onBlur}
                 aria-invalid={errors.soWoDo ? 'true' : 'false'}
                 aria-describedby={errors.soWoDo ? 'soWoDo-error' : undefined}
-                className="h-full w-full bg-transparent px-4 pr-10 text-sm text-slate-900 uppercase outline-hidden dark:text-white"
+                className="h-full w-full bg-transparent px-4 pr-10 text-sm text-slate-900 uppercase outline-hidden placeholder:normal-case dark:text-white"
               />
               {Boolean(!errors.soWoDo && relativeName.trim().length >= 2) && (
                 <CheckCircle2
@@ -423,7 +425,7 @@ export function Step1Applicant({
         <div className="space-y-1.5">
           <label
             htmlFor="dob"
-            className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
+            className="flex items-center text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
           >
             <span className="flex items-center gap-1.5">
               <Calendar className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
@@ -433,7 +435,6 @@ export function Step1Applicant({
               </span>
               <span className="text-red-500">*</span>
             </span>
-            <span className="text-[10px] font-normal text-slate-400 lowercase">18+ years</span>
           </label>
           <div className="relative">
             <input

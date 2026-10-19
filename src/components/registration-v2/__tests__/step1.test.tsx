@@ -151,9 +151,7 @@ describe('Step1Applicant', () => {
     const dobInput = screen.getByLabelText(/Date of Birth/i) as HTMLInputElement;
     expect(dobInput.value).toBe('1990-05-15');
 
-    const relativeInput = screen.getByPlaceholderText(
-      "ENTER RELATIVE'S FULL NAME"
-    ) as HTMLInputElement;
+    const relativeInput = screen.getByPlaceholderText(/Ramesh Kumar/i) as HTMLInputElement;
     expect(relativeInput.value).toBe('SURESH KUMAR');
 
     const relationSelect = screen.getByLabelText(/Relationship prefix/i) as HTMLSelectElement;
@@ -254,7 +252,7 @@ describe('Step1Applicant', () => {
       />
     );
 
-    const relativeInput = screen.getByPlaceholderText("ENTER RELATIVE'S FULL NAME");
+    const relativeInput = screen.getByPlaceholderText(/Ramesh Kumar/i);
     fireEvent.change(relativeInput, { target: { value: 'mohan lal' } });
 
     expect(handleChange).toHaveBeenCalled();

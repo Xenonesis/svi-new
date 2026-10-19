@@ -151,7 +151,7 @@ describe('Step4ReviewConfirm', () => {
     expect(screen.getByText('3 Equal Monthly Installments')).toBeInTheDocument();
     expect(screen.getByText('Online (UPI / Net Banking / Card)')).toBeInTheDocument();
     expect(screen.getByText('Park Facing Corner')).toBeInTheDocument();
-    expect(screen.getByText('₹21,000')).toBeInTheDocument();
+    expect(screen.getAllByText(/₹21,000/i).length).toBeGreaterThanOrEqual(1);
   });
 
   it('calls onEditStep(3) when clicking Edit on Property & Scheme card', () => {

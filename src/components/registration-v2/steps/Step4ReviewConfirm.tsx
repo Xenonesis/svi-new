@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import {
   User,
   Phone,
@@ -109,6 +109,8 @@ export function Step4ReviewConfirm({
   onProceedToPayment,
   onPrev,
 }: Step4ReviewConfirmProps) {
+  const [termsAccepted, setTermsAccepted] = useState(true);
+
   // Safe translation helper with English fallback
   const tr = (key: string, fallback: string): string => {
     if (typeof t !== 'function') return fallback;
@@ -168,23 +170,23 @@ export function Step4ReviewConfirm({
         {/* Card 1: Applicant Details Card */}
         <section
           aria-labelledby="card-applicant-heading"
-          className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-sm backdrop-blur-sm transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-slate-700"
+          className="hover:border-brand-gold/30 dark:hover:border-brand-gold/20 relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-sm backdrop-blur-sm transition-all dark:border-slate-800 dark:bg-slate-900/90"
         >
           <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/10 text-amber-600 dark:bg-amber-500/20 dark:text-amber-400">
+              <div className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:bg-brand-gold/20 dark:text-brand-gold-light flex h-10 w-10 items-center justify-center rounded-xl border">
                 <User className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
+                <span className="text-brand-gold text-[10px] font-bold tracking-widest uppercase">
+                  Section 01 • Applicant Dossier
+                </span>
                 <h3
                   id="card-applicant-heading"
                   className="text-base font-bold text-slate-900 dark:text-white"
                 >
                   {tr('sectionPersonal', 'Applicant Personal Details')}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Step 1 • Legal identity of the primary applicant
-                </p>
               </div>
             </div>
 
@@ -192,7 +194,7 @@ export function Step4ReviewConfirm({
               type="button"
               onClick={() => onEditStep(1)}
               aria-label="Edit Applicant Details"
-              className="inline-flex min-h-[36px] items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-700 transition-colors hover:bg-amber-500/20 active:scale-95 dark:text-amber-300"
+              className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 dark:text-brand-gold-light inline-flex min-h-[36px] items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-bold transition-colors active:scale-95"
             >
               <Pencil className="h-3.5 w-3.5" aria-hidden="true" />
               <span>Edit</span>
@@ -223,23 +225,23 @@ export function Step4ReviewConfirm({
         {/* Card 2: KYC & Address Card */}
         <section
           aria-labelledby="card-kyc-heading"
-          className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-sm backdrop-blur-sm transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-slate-700"
+          className="hover:border-brand-gold/30 dark:hover:border-brand-gold/20 relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-sm backdrop-blur-sm transition-all dark:border-slate-800 dark:bg-slate-900/90"
         >
           <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/20 dark:text-emerald-400">
                 <ShieldCheck className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
+                <span className="text-[10px] font-bold tracking-widest text-emerald-600 uppercase dark:text-emerald-400">
+                  Section 02 • Identity & Domicile
+                </span>
                 <h3
                   id="card-kyc-heading"
                   className="text-base font-bold text-slate-900 dark:text-white"
                 >
                   {tr('sectionDocuments', 'KYC & Residential Address')}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Step 2 • Government identification & domicile records
-                </p>
               </div>
             </div>
 
@@ -312,26 +314,26 @@ export function Step4ReviewConfirm({
           </div>
         </section>
 
-        {/* Card 3: Property & Scheme Card */}
+        {/* Card 3: Property Details Card */}
         <section
           aria-labelledby="card-property-heading"
-          className="relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/90 p-6 shadow-sm backdrop-blur-sm transition-all hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/90 dark:hover:border-slate-700"
+          className="hover:border-brand-gold/30 dark:hover:border-brand-gold/20 relative overflow-hidden rounded-2xl border border-slate-200/80 bg-white/95 p-6 shadow-sm backdrop-blur-sm transition-all dark:border-slate-800 dark:bg-slate-900/90"
         >
           <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl border border-blue-500/30 bg-blue-500/10 text-blue-600 dark:bg-blue-500/20 dark:text-blue-400">
                 <Building2 className="h-5 w-5" aria-hidden="true" />
               </div>
               <div>
+                <span className="text-[10px] font-bold tracking-widest text-blue-600 uppercase dark:text-blue-400">
+                  Section 03 • Property Allocation
+                </span>
                 <h3
                   id="card-property-heading"
                   className="text-base font-bold text-slate-900 dark:text-white"
                 >
                   {tr('sectionProperty', 'Property & Scheme Details')}
                 </h3>
-                <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Step 3 • Selected township, plot dimensions & payment scheme
-                </p>
               </div>
             </div>
 
@@ -362,6 +364,59 @@ export function Step4ReviewConfirm({
               }
               icon={Ruler}
             />
+            {formData.plotPreference && (
+              <ReviewField
+                label={tr('plotPreference', 'Plot Preference')}
+                value={formData.plotPreference}
+                icon={Building2}
+              />
+            )}
+            {formData.advisorName && (
+              <ReviewField label="Assigned Advisor" value={formData.advisorName} icon={User} />
+            )}
+          </div>
+        </section>
+
+        {/* Card 4: Payment Summary Dossier Card */}
+        <section
+          aria-labelledby="card-payment-heading"
+          className="border-brand-gold/30 hover:border-brand-gold/50 dark:border-brand-gold/30 relative overflow-hidden rounded-2xl border bg-white/95 p-6 shadow-sm backdrop-blur-sm transition-all dark:bg-slate-900/90"
+        >
+          <div className="mb-5 flex items-center justify-between border-b border-slate-100 pb-4 dark:border-slate-800">
+            <div className="flex items-center gap-3">
+              <div className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:bg-brand-gold/20 dark:text-brand-gold-light flex h-10 w-10 items-center justify-center rounded-xl border">
+                <Wallet className="h-5 w-5" aria-hidden="true" />
+              </div>
+              <div>
+                <span className="text-brand-gold text-[10px] font-bold tracking-widest uppercase">
+                  Section 04 • Financial Summary
+                </span>
+                <h3
+                  id="card-payment-heading"
+                  className="text-base font-bold text-slate-900 dark:text-white"
+                >
+                  Allotment Token Payment Summary
+                </h3>
+              </div>
+            </div>
+
+            <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold dark:text-brand-gold-light inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold">
+              <Sparkles className="h-3 w-3" /> Priority Queue
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <ReviewField
+              label={tr('schemeAmount', 'Allotment Token Fee')}
+              value={`₹${effectiveTokenAmount.toLocaleString('en-IN')}`}
+              badge={
+                <span className="bg-brand-gold/15 text-brand-gold dark:text-brand-gold-light inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-bold">
+                  Priority Allotment
+                </span>
+              }
+              icon={IndianRupee}
+              className="border-brand-gold/30 bg-brand-gold/5 dark:bg-brand-gold/10"
+            />
             <ReviewField
               label={tr('paymentPlan', 'Payment Plan')}
               value={schemeDetails.planDescription || formData.paymentPlan || '—'}
@@ -372,23 +427,15 @@ export function Step4ReviewConfirm({
               value={PAYMENT_MODE_LABELS[formData.paymentMode] || formData.paymentMode || '—'}
               icon={Wallet}
             />
-            {formData.plotPreference && (
-              <ReviewField
-                label={tr('plotPreference', 'Plot Preference')}
-                value={formData.plotPreference}
-                icon={Building2}
-              />
-            )}
-            <ReviewField
-              label={tr('schemeAmount', 'Allotment Token Fee')}
-              value={`₹${effectiveTokenAmount.toLocaleString('en-IN')}`}
-              badge={
-                <span className="inline-flex items-center gap-1 rounded bg-amber-500/10 px-1.5 py-0.5 text-[10px] font-bold text-amber-600 dark:text-amber-400">
-                  Priority Allotment
-                </span>
-              }
-              icon={IndianRupee}
-            />
+          </div>
+
+          <div className="mt-4 flex flex-wrap items-center gap-2 rounded-xl border border-emerald-500/20 bg-emerald-50/50 p-3 text-xs text-emerald-800 dark:border-emerald-500/20 dark:bg-emerald-950/20 dark:text-emerald-300">
+            <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 dark:text-emerald-400" />
+            <span>
+              Booking token fee of <strong>₹{effectiveTokenAmount.toLocaleString('en-IN')}</strong>{' '}
+              is 100% adjustable against final property allotment price. Instant digital receipt
+              will be generated.
+            </span>
           </div>
         </section>
       </div>
@@ -416,14 +463,41 @@ export function Step4ReviewConfirm({
         </div>
 
         <div className="max-w-md">
-          <Captcha onValidate={onCaptchaValidate} error={captchaError || errors.captcha} />
+          <Captcha
+            onValidate={onCaptchaValidate}
+            error={captchaError || errors.captcha}
+            placeholder="Enter sum (e.g. 12)"
+          />
+        </div>
+
+        {/* Clear Terms Checkbox */}
+        <div className="mt-6 rounded-xl border border-slate-200/80 bg-slate-50/80 p-4 dark:border-slate-800 dark:bg-slate-900/60">
+          <label className="flex cursor-pointer items-start gap-3 select-none">
+            <input
+              type="checkbox"
+              id="termsAccepted"
+              name="termsAccepted"
+              checked={termsAccepted}
+              onChange={(e) => setTermsAccepted(e.target.checked)}
+              className="text-brand-gold focus:ring-brand-gold/40 mt-0.5 h-4 w-4 rounded border-slate-300 dark:border-slate-700 dark:bg-slate-900"
+            />
+            <span className="text-xs leading-relaxed text-slate-600 dark:text-slate-300">
+              I hereby declare that all details provided in this application are authentic. I agree
+              to the{' '}
+              <span className="text-brand-gold dark:text-brand-gold-light font-semibold underline underline-offset-2">
+                Priority Allotment Terms & Conditions
+              </span>{' '}
+              and confirm that the booking token amount is 100% adjustable against the final
+              property allotment.
+            </span>
+          </label>
         </div>
 
         <div className="mt-4 flex items-start gap-2 text-xs text-slate-500 dark:text-slate-400">
           <ShieldCheck className="text-brand-gold mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
           <p>
-            Your information is encrypted with bank-grade 256-bit SSL protocols. Allotment is
-            governed by official SVI Infra Solutions guidelines and allotment terms.
+            Your allotment application data is encrypted with bank-grade 256-bit SSL protocols.
+            Allotment queue priority is timestamped upon confirmed token receipt.
           </p>
         </div>
       </section>
@@ -443,8 +517,9 @@ export function Step4ReviewConfirm({
         <button
           type="button"
           onClick={onProceedToPayment}
-          disabled={isSubmitting}
-          className="from-brand-gold via-brand-gold-light to-brand-gold shadow-brand-gold/20 inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-gradient-to-r px-8 py-3.5 text-sm font-bold text-slate-950 shadow-lg transition-all hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
+          disabled={isSubmitting || !termsAccepted}
+          aria-label={isSubmitting ? 'Processing Application...' : 'Proceed to Payment'}
+          className="from-brand-gold via-brand-gold-light to-brand-gold shadow-brand-gold/25 hover:shadow-brand-gold/40 inline-flex min-h-[46px] items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r px-8 py-3.5 text-sm font-bold text-slate-950 shadow-lg transition-all duration-200 hover:brightness-105 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {isSubmitting ? (
             <>
@@ -453,7 +528,7 @@ export function Step4ReviewConfirm({
             </>
           ) : (
             <>
-              <span>Proceed to Payment</span>
+              <span>Proceed to Token Payment</span>
               <ArrowRight className="h-4 w-4" aria-hidden="true" />
             </>
           )}

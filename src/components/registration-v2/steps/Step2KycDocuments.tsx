@@ -348,15 +348,11 @@ export function Step2KycDocuments({
                   <span>Aadhaar Card Number (12 Ank)</span>
                   <span className="text-red-500">*</span>
                 </span>
-                <span className="font-mono text-[10px] font-medium text-slate-400">
-                  {cleanAadhaar.length === 12 ? (
-                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                      <Check className="h-3 w-3" /> 12 Digits
-                    </span>
-                  ) : (
-                    `${cleanAadhaar.length} / 12 digits`
-                  )}
-                </span>
+                {cleanAadhaar.length === 12 && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                    <Check className="h-3 w-3" /> 12 Digits Verified
+                  </span>
+                )}
               </label>
 
               <div className="relative">
@@ -401,18 +397,15 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>PAN Card Number (10 Akshar)</span>
+                  <span>PAN Card Number</span>
                   <span className="text-red-500">*</span>
                 </span>
-                {panValid ? (
-                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
+                {panValid && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
                     <CheckCircle2 className="h-3 w-3" /> Format Verified
                   </span>
-                ) : (
-                  <span className="font-mono text-[10px] text-slate-400">ABCDE1234F</span>
                 )}
               </label>
-
               <div className="relative">
                 <input
                   id="panNumber"
@@ -453,18 +446,16 @@ export function Step2KycDocuments({
             <div className="flex items-center gap-2 border-b border-slate-200/60 pb-3 dark:border-slate-800">
               <UploadCloud className="text-brand-gold h-4 w-4" aria-hidden="true" />
               <h3 className="text-sm font-bold tracking-wider text-slate-800 uppercase dark:text-slate-200">
-                2. Document Uploads (Auto-Compressed &lt;150KB)
+                2. Document Uploads
               </h3>
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               {/* Passport Photo Upload Zone */}
               <div className="space-y-1.5">
-                <span className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
-                  <span>Applicant Passport Photo</span>
-                  <span className="text-[10px] text-slate-400">JPG/PNG</span>
+                <span className="block text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
+                  Applicant Passport Photo
                 </span>
-
                 <input
                   id="photo-upload"
                   data-testid="photo-upload-input"
@@ -525,20 +516,22 @@ export function Step2KycDocuments({
                     }}
                     onDragLeave={() => setIsDraggingPhoto(false)}
                     onDrop={(e) => handleDrop(e, 'photo')}
-                    className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition-all ${
+                    className={`group flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition-all ${
                       isDraggingPhoto
-                        ? 'border-brand-gold bg-brand-gold/10'
-                        : 'hover:border-brand-gold border-slate-300 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:border-slate-600'
+                        ? 'border-brand-gold bg-brand-gold/10 scale-[1.01]'
+                        : 'hover:border-brand-gold dark:hover:border-brand-gold/60 border-slate-300 bg-white hover:bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900/90'
                     }`}
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+                    <div className="group-hover:bg-brand-gold/10 group-hover:text-brand-gold dark:group-hover:bg-brand-gold/20 dark:group-hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors dark:bg-slate-800 dark:text-slate-300">
                       <UploadCloud className="h-5 w-5" />
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                        Upload Passport Photo
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                        Click or drag passport photo to upload
                       </p>
-                      <p className="text-[10px] text-slate-400">Click or drag & drop (max 150KB)</p>
+                      <p className="text-[10px] text-slate-400">
+                        Supports JPG, PNG, WEBP up to 5MB
+                      </p>
                     </div>
                   </label>
                 )}
@@ -546,11 +539,9 @@ export function Step2KycDocuments({
 
               {/* PAN Card Document Upload Zone */}
               <div className="space-y-1.5">
-                <span className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
-                  <span>PAN Card Copy</span>
-                  <span className="text-[10px] text-slate-400">PDF/JPG</span>
+                <span className="block text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300">
+                  PAN Card Copy
                 </span>
-
                 <input
                   id="pancard-upload"
                   data-testid="pancard-upload-input"
@@ -601,20 +592,22 @@ export function Step2KycDocuments({
                     }}
                     onDragLeave={() => setIsDraggingPan(false)}
                     onDrop={(e) => handleDrop(e, 'panCard')}
-                    className={`flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition-all ${
+                    className={`group flex min-h-[140px] cursor-pointer flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed p-4 text-center transition-all ${
                       isDraggingPan
-                        ? 'border-brand-gold bg-brand-gold/10'
-                        : 'hover:border-brand-gold border-slate-300 bg-white hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:border-slate-600'
+                        ? 'border-brand-gold bg-brand-gold/10 scale-[1.01]'
+                        : 'hover:border-brand-gold dark:hover:border-brand-gold/60 border-slate-300 bg-white hover:bg-slate-50/80 dark:border-slate-700 dark:bg-slate-900/60 dark:hover:bg-slate-900/90'
                     }`}
                   >
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-300">
+                    <div className="group-hover:bg-brand-gold/10 group-hover:text-brand-gold dark:group-hover:bg-brand-gold/20 dark:group-hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-500 transition-colors dark:bg-slate-800 dark:text-slate-300">
                       <UploadCloud className="h-5 w-5" />
                     </div>
-                    <div>
-                      <p className="text-xs font-semibold text-slate-700 dark:text-slate-200">
-                        Upload PAN Document
+                    <div className="space-y-0.5">
+                      <p className="text-xs font-semibold text-slate-800 dark:text-slate-200">
+                        Click or drag PAN card to upload
                       </p>
-                      <p className="text-[10px] text-slate-400">PDF or image scan (max 150KB)</p>
+                      <p className="text-[10px] text-slate-400">
+                        Supports JPG, PNG, WEBP, PDF up to 5MB
+                      </p>
                     </div>
                   </label>
                 )}
@@ -639,24 +632,20 @@ export function Step2KycDocuments({
               >
                 <span className="flex items-center gap-1.5">
                   <MapPin className="text-brand-gold h-3.5 w-3.5" aria-hidden="true" />
-                  <span>Area PIN Code (6 Digits)</span>
+                  <span>PIN Code (6 Ank)</span>
                   <span className="text-red-500">*</span>
                 </span>
-                <span className="text-[10px] text-slate-400">
-                  {pincodeLoading ? (
-                    <span className="text-brand-gold inline-flex items-center gap-1">
-                      <Loader2 className="h-3 w-3 animate-spin" /> Auto-looking up...
-                    </span>
-                  ) : pincodeSuccess ? (
-                    <span className="inline-flex items-center gap-1 font-semibold text-emerald-600 dark:text-emerald-400">
-                      <Check className="h-3 w-3" /> State & City Resolved
-                    </span>
-                  ) : (
-                    '6 digits auto-fills state & city'
-                  )}
-                </span>
+                {pincodeLoading && (
+                  <span className="text-brand-gold inline-flex items-center gap-1 text-[11px]">
+                    <Loader2 className="h-3 w-3 animate-spin" /> Auto-looking up...
+                  </span>
+                )}
+                {pincodeSuccess && !pincodeLoading && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-500">
+                    <Check className="h-3 w-3" /> State & City Resolved
+                  </span>
+                )}
               </label>
-
               <div className="relative">
                 <input
                   id="pincode"
@@ -666,7 +655,7 @@ export function Step2KycDocuments({
                   required
                   maxLength={6}
                   autoComplete="postal-code"
-                  placeholder="201301"
+                  placeholder="e.g. 201301"
                   value={formData.pincode}
                   onChange={handlePincodeChange}
                   onBlur={onBlur}
@@ -706,11 +695,10 @@ export function Step2KycDocuments({
                   className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
                 >
                   <span className="flex items-center gap-1.5">
-                    <span>State / Union Territory (Rajya)</span>
+                    <span>State / Union Territory</span>
                     <span className="text-red-500">*</span>
                   </span>
                 </label>
-
                 <select
                   id="state"
                   name="state"
@@ -759,7 +747,7 @@ export function Step2KycDocuments({
                   type="text"
                   required
                   autoComplete="address-level2"
-                  placeholder="NOIDA / GAUTAM BUDDHA NAGAR"
+                  placeholder="e.g. Gautam Buddha Nagar / Noida"
                   value={formData.city}
                   onChange={handleCityChange}
                   onBlur={onBlur}
@@ -787,19 +775,17 @@ export function Step2KycDocuments({
                 className="flex items-center justify-between text-xs font-bold tracking-wider text-slate-700 uppercase dark:text-slate-300"
               >
                 <span className="flex items-center gap-1.5">
-                  <span>House / Flat & Street Address (Makaan No. / Gali / Sadak ka Pata)</span>
+                  <span>House / Flat & Street Address (Makaan No. / Gali / Sadak)</span>
                   <span className="text-red-500">*</span>
                 </span>
-                <span className="text-[10px] text-slate-400">for delivery</span>
               </label>
-
               <input
                 id="address"
                 name="address"
                 type="text"
                 required
                 autoComplete="street-address"
-                placeholder="HOUSE NO. 12, SECTOR 62"
+                placeholder="e.g. House No. 12, Sector 62, Noida"
                 value={formData.address}
                 onChange={handleAddressChange}
                 onBlur={onBlur}

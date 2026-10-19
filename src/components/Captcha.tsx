@@ -7,6 +7,7 @@ interface CaptchaProps {
   /** Called with the user's current answer ('' = unanswered). Server verifies it. */
   onValidate: (answer: string) => void;
   error?: string;
+  placeholder?: string;
 }
 
 interface Challenge {
@@ -14,7 +15,11 @@ interface Challenge {
   b: number;
 }
 
-export default function Captcha({ onValidate, error }: CaptchaProps) {
+export default function Captcha({
+  onValidate,
+  error,
+  placeholder = 'Enter sum (e.g. 12)',
+}: CaptchaProps) {
   const [mounted, setMounted] = useState(false);
   const [challenge, setChallenge] = useState<Challenge | null>(null);
   const [loading, setLoading] = useState(false);
@@ -88,12 +93,12 @@ export default function Captcha({ onValidate, error }: CaptchaProps) {
           type="number"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          className={`w-24 border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white ${
+          className={`w-44 rounded-xl border bg-slate-50/50 px-4 py-3 text-sm font-medium outline-hidden transition-all sm:w-52 dark:bg-slate-900/90 dark:text-white ${
             error
-              ? 'border-red-500 focus:border-red-500'
-              : 'focus:border-brand-gold dark:focus:border-brand-gold border-gray-200 dark:border-gray-700'
+              ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20'
+              : 'focus:border-brand-gold focus:ring-brand-gold/25 dark:focus:border-brand-gold border-slate-200 focus:ring-2 dark:border-slate-700'
           }`}
-          placeholder="?"
+          placeholder={placeholder}
           required
         />
         <button
