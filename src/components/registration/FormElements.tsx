@@ -4,11 +4,12 @@ import React, { useState, useEffect } from 'react';
 import { AlertCircle, Calendar } from 'lucide-react';
 import { CITIES_BY_STATE_OR_UT, OTHER_CITY_VALUE } from '@/src/lib/constants';
 export const INPUT_CLASS = (field: string, errors: Record<string, string>, attempted?: boolean) => {
-  if (errors[field])
-    return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-red-500';
+  const base =
+    'w-full border bg-gray-50/50 px-4 py-3 text-sm uppercase transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white';
+  if (errors[field]) return `${base} border-red-500`;
   if (attempted)
-    return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-green-500 focus:border-green-500 dark:border-green-500 dark:focus:border-green-500';
-  return 'w-full border bg-gray-50/50 px-4 py-3 text-sm transition-colors outline-none focus:ring-0 dark:bg-gray-900 dark:text-white border-gray-200 focus:border-brand-gold dark:border-gray-700 dark:focus:border-brand-gold';
+    return `${base} border-green-500 focus:border-green-500 dark:border-green-500 dark:focus:border-green-500`;
+  return `${base} border-gray-200 focus:border-brand-gold dark:border-gray-700 dark:focus:border-brand-gold`;
 };
 
 export const LABEL_CLASS = 'text-[10px] font-bold tracking-[0.2em] text-gray-500 uppercase';
@@ -266,7 +267,8 @@ export function FormRelationInput({
   }, [value]);
 
   const emitChange = (nextPrefix: RelationPrefix, nextName: string) => {
-    const formatted = nextName.trim() ? `${nextPrefix} ${nextName.trim()}` : '';
+    const upperName = nextName.trim().toUpperCase();
+    const formatted = upperName ? `${nextPrefix} ${upperName}` : '';
     const syntheticEvent = {
       target: {
         name,
@@ -283,12 +285,13 @@ export function FormRelationInput({
   };
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const nextName = e.target.value;
+    const nextName = e.target.value.toUpperCase();
     const parsed = splitRelationValue(nextName);
     if (parsed.name && nextName.includes('/')) {
+      const upperParsed = parsed.name.toUpperCase();
       setPrefix(parsed.prefix);
-      setRelativeName(parsed.name);
-      emitChange(parsed.prefix, parsed.name);
+      setRelativeName(upperParsed);
+      emitChange(parsed.prefix, upperParsed);
     } else {
       setRelativeName(nextName);
       emitChange(prefix, nextName);
@@ -342,7 +345,7 @@ export function FormRelationInput({
           onChange={handleNameChange}
           aria-invalid={!!errors[name]}
           aria-describedby={errors[name] ? errorId : undefined}
-          className="w-full bg-transparent px-4 py-3 text-sm text-gray-900 outline-none placeholder:text-gray-400 dark:text-white"
+          className="w-full bg-transparent px-4 py-3 text-sm text-gray-900 uppercase outline-none placeholder:text-gray-400 dark:text-white"
         />
       </div>
       {hint && !errors[name] && <p className="text-[10px] text-gray-400">{hint}</p>}
@@ -420,7 +423,7 @@ export function FormCityInput({
   };
 
   const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const next = e.target.value;
+    const next = e.target.value.toUpperCase();
     setCustomCityText(next);
     emitChange(next);
   };

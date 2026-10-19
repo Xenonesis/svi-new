@@ -55,7 +55,7 @@ export default function AddressSection({
           }
 
           // Auto-fill city/district if present
-          const cityToSet = info.district || info.postOffices[0];
+          const cityToSet = (info.district || info.postOffices[0] || '').toUpperCase();
           if (cityToSet && cityToSet !== formData.city) {
             const cityEvent = {
               target: {

@@ -20,6 +20,18 @@ const FALLBACK_PROJECTS = [
 
 /** Letters in any script (Latin, Devanagari, …) plus spaces */
 const NAME_REGEX = /^[\p{L}\s]+$/u;
+const UPPERCASE_FIELDS: Record<string, true> = {
+  firstName: true,
+  lastName: true,
+  soWoDo: true,
+  email: true,
+  address: true,
+  city: true,
+  state: true,
+  panNumber: true,
+  advisorName: true,
+};
+
 async function refreshCsrfToken(): Promise<string | null> {
   try {
     const res = await fetch('/api/csrf-refresh', { method: 'POST' });
@@ -229,7 +241,11 @@ export function useRegistrationForm(t: (key: string) => string) {
         setWebsite(value);
         return;
       }
-      setFormData((prev) => ({ ...prev, [name]: value }));
+
+      const transformedValue =
+        UPPERCASE_FIELDS[name] && typeof value === 'string' ? value.toUpperCase() : value;
+
+      setFormData((prev) => ({ ...prev, [name]: transformedValue }));
       if (errors[name]) {
         setErrors((prev) => {
           const next = { ...prev };
@@ -321,7 +337,11 @@ export function useRegistrationForm(t: (key: string) => string) {
   const buildBody = useCallback(() => {
     const body = new window.FormData();
     Object.entries(formData).forEach(([key, value]) => {
-      body.append(key, value);
+      if (key === 'email' && typeof value === 'string') {
+        body.append(key, value.trim().toLowerCase());
+      } else {
+        body.append(key, value);
+      }
     });
     if (photoFile) body.append('photo', photoFile);
     if (panCardFile) body.append('panCard', panCardFile);
