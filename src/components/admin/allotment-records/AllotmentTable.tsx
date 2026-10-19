@@ -8,6 +8,7 @@ import {
   FileText,
   Building2,
   Mail,
+  Phone,
   Trash2,
   WifiOff,
   RefreshCw,
@@ -20,7 +21,7 @@ import { toast } from 'sonner';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
 import type { SavedAllotment } from './types';
 import { calculateTotalCost } from './types';
-
+import { CLIENT_CONTACT_MAP } from '@/src/components/admin/payment-receipts/clientContactMap';
 interface AllotmentTableProps {
   loading: boolean;
   error: string | null;
@@ -29,22 +30,23 @@ interface AllotmentTableProps {
   onRefresh: () => void;
   onSelectRecord: (record: SavedAllotment) => void;
   onDeleteRecord: (record: SavedAllotment) => void;
+  highlightedId?: string | null;
 }
 
 function TableSkeleton() {
   return (
     <div className="animate-pulse divide-y divide-gray-100 dark:divide-white/5">
       {[...Array(6)].map((_, i) => (
-        <div key={i} className="flex items-center gap-4 px-6 py-4.5">
+        <div key={i} className="flex items-center gap-3.5 px-4 py-3.5">
           <SkeletonBlock className="h-4 w-24 rounded-lg" />
           <SkeletonBlock className="h-4 w-32" />
-          <SkeletonBlock className="h-4 w-28" />
-          <SkeletonBlock className="h-4 w-12 rounded-md" />
-          <SkeletonBlock className="h-4 w-20" />
           <SkeletonBlock className="h-4 w-24" />
-          <SkeletonBlock className="h-4 w-20 rounded-full" />
-          <SkeletonBlock className="h-4 w-28" />
-          <div className="ml-auto flex gap-1.5">
+          <SkeletonBlock className="h-4 w-12 rounded-md" />
+          <SkeletonBlock className="h-4 w-16" />
+          <SkeletonBlock className="h-4 w-20" />
+          <SkeletonBlock className="h-4 w-16 rounded-full" />
+          <SkeletonBlock className="h-4 w-24" />
+          <div className="ml-auto flex gap-1">
             <SkeletonBlock className="h-8 w-8 rounded-lg" />
             <SkeletonBlock className="h-8 w-8 rounded-lg" />
             <SkeletonBlock className="h-8 w-8 rounded-lg" />
@@ -56,6 +58,13 @@ function TableSkeleton() {
     </div>
   );
 }
+function getInitials(name?: string): string {
+  if (!name) return '??';
+  const parts = name.trim().split(/\s+/).filter(Boolean);
+  if (parts.length === 0) return '??';
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
 
 export function AllotmentTable({
   loading,
@@ -65,6 +74,7 @@ export function AllotmentTable({
   onRefresh,
   onSelectRecord,
   onDeleteRecord,
+  highlightedId,
 }: AllotmentTableProps) {
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
@@ -153,23 +163,23 @@ export function AllotmentTable({
             </Link>
           </div>
         ) : (
-          <table className="w-full min-w-[1020px] font-sans text-xs">
+          <table className="w-full min-w-[940px] font-sans text-xs">
             <thead>
               <tr className="border-b border-gray-200/80 bg-gray-50/80 backdrop-blur-md dark:border-white/10 dark:bg-white/5">
                 {[
-                  { label: 'TICKET ID', align: 'text-left' },
-                  { label: 'CLIENT NAME', align: 'text-left' },
-                  { label: 'PROJECT', align: 'text-left' },
-                  { label: 'UNIT / PLOT', align: 'text-center' },
-                  { label: 'AREA', align: 'text-left' },
-                  { label: 'TOTAL COST', align: 'text-right' },
-                  { label: 'PLAN', align: 'text-center' },
-                  { label: 'DATE & TIME', align: 'text-left' },
-                  { label: 'ACTIONS', align: 'text-right' },
+                  { label: 'TICKET ID', align: 'text-left', width: 'w-28' },
+                  { label: 'CLIENT NAME', align: 'text-left', width: 'w-[240px]' },
+                  { label: 'PROJECT', align: 'text-left', width: 'w-28' },
+                  { label: 'UNIT / PLOT', align: 'text-center', width: 'w-24' },
+                  { label: 'AREA', align: 'text-left', width: 'w-24' },
+                  { label: 'TOTAL COST', align: 'text-right', width: 'w-28' },
+                  { label: 'PLAN', align: 'text-center', width: 'w-20' },
+                  { label: 'DATE & TIME', align: 'text-left', width: 'w-28' },
+                  { label: 'ACTIONS', align: 'text-right', width: 'w-44' },
                 ].map((h) => (
                   <th
                     key={h.label}
-                    className={`px-5 py-4 text-[10px] font-bold tracking-[0.15em] text-gray-500 uppercase dark:text-gray-400 ${h.align}`}
+                    className={`px-3.5 py-3 text-[10px] font-bold tracking-[0.12em] whitespace-nowrap text-gray-500 uppercase dark:text-gray-400 ${h.align} ${h.width}`}
                   >
                     {h.label}
                   </th>
@@ -190,23 +200,53 @@ export function AllotmentTable({
                 const { date, time } = record.created_at
                   ? formatDateTimeParts(record.created_at)
                   : { date: '—', time: '' };
+                const isHighlighted = highlightedId === record.id;
+                const isRefundDone =
+                  (record.form_data as Record<string, any>)?.refundStatus === 'Refund Done' ||
+                  (record.form_data as Record<string, any>)?.notes
+                    ?.toLowerCase()
+                    .includes('refund') ||
+                  (record.form_data as Record<string, any>)?.remarks
+                    ?.toLowerCase()
+                    .includes('refund');
+
+                const displayName =
+                  record.form_data?.applicantName || record.form_data?.clientName || 'N/A';
+                const rawTicketId = record.form_data?.ticketId
+                  ? record.form_data.ticketId.trim().toLowerCase()
+                  : '';
+                const contactFromMap = rawTicketId ? CLIENT_CONTACT_MAP[rawTicketId] : undefined;
+                const formDataAny = (record.form_data || {}) as Record<string, string | undefined>;
+                const clientPhone =
+                  formDataAny.phone ||
+                  formDataAny.mobile ||
+                  formDataAny.contactNumber ||
+                  formDataAny.clientPhone ||
+                  contactFromMap?.phone;
+                const clientEmail =
+                  formDataAny.email || formDataAny.clientEmail || contactFromMap?.email;
 
                 return (
                   <motion.tr
                     key={record.id}
+                    id={`allotment-row-${record.id}`}
                     initial={{ opacity: 0, y: 4 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: Math.min(i * 0.015, 0.2), duration: 0.25 }}
-                    className="group transition-colors hover:bg-gray-50/70 dark:hover:bg-white/[0.03]"
+                    className={`group transition-all duration-200 ${
+                      isHighlighted
+                        ? 'bg-brand-gold/[0.06] shadow-[inset_3px_0_0_0_#d4af37] dark:bg-amber-400/[0.05] dark:shadow-[inset_3px_0_0_0_#d4af37]'
+                        : 'hover:bg-gray-50/70 dark:hover:bg-white/[0.03]'
+                    }`}
                   >
                     {/* Ticket ID */}
-                    <td className="px-5 py-3.5 align-middle">
+                    <td className="px-3.5 py-3 align-middle whitespace-nowrap">
                       <div className="flex flex-col items-start gap-1">
                         {ticketId ? (
                           <button
                             type="button"
                             onClick={(e) => handleCopyTicket(ticketId, e)}
-                            className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 hover:border-brand-gold/50 inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
+                            className="group/copy border-brand-gold/30 bg-brand-gold/10 hover:border-brand-gold/50 hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-2 py-0.5 font-mono text-[11px] font-bold text-amber-600 transition-all dark:text-amber-400"
                             title="Click to copy ticket ID"
                           >
                             <span>{ticketId}</span>
@@ -232,41 +272,71 @@ export function AllotmentTable({
                       </div>
                     </td>
 
-                    {/* Client Name */}
-                    <td className="px-5 py-3.5 align-middle">
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2 truncate font-semibold text-gray-900 capitalize dark:text-white">
-                          <span>{record.form_data?.clientName || 'N/A'}</span>
-                          {((record.form_data as Record<string, any>)?.refundStatus ===
-                            'Refund Done' ||
-                            (record.form_data as Record<string, any>)?.notes
-                              ?.toLowerCase()
-                              .includes('refund') ||
-                            (record.form_data as Record<string, any>)?.remarks
-                              ?.toLowerCase()
-                              .includes('refund')) && (
-                            <span className="inline-flex items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
-                              Refund Done
-                            </span>
-                          )}
+                    {/* Client Name (2-Line Luxury Hierarchy) */}
+                    <td className="px-3.5 py-3 align-middle">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="border-brand-gold/25 bg-brand-gold/10 text-brand-gold flex h-7 w-7 shrink-0 items-center justify-center rounded-lg border text-[10px] font-bold shadow-2xs"
+                          aria-hidden="true"
+                        >
+                          {getInitials(displayName)}
                         </div>
-                        {record.form_data?.advisorName && (
-                          <div className="text-[10px] text-gray-400 dark:text-gray-500">
-                            Adv: {record.form_data.advisorName}
+                        <div className="min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="truncate font-semibold text-gray-900 capitalize dark:text-white">
+                              {displayName}
+                            </span>
+                            {isRefundDone && (
+                              <span className="inline-flex shrink-0 items-center rounded-full border border-rose-500/30 bg-rose-500/10 px-2 py-0.5 text-[9px] font-extrabold tracking-wide text-rose-600 uppercase dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-400">
+                                Refund Done
+                              </span>
+                            )}
                           </div>
-                        )}
+                          <div className="mt-0.5 flex items-center gap-2 font-mono text-[11px] text-gray-500 dark:text-gray-400">
+                            {clientPhone && (
+                              <span className="inline-flex items-center gap-1">
+                                <Phone className="h-3 w-3 shrink-0 text-gray-400 dark:text-gray-500" />
+                                <span>{clientPhone}</span>
+                              </span>
+                            )}
+                            {clientPhone && clientEmail && (
+                              <span className="text-gray-300 dark:text-gray-600">&bull;</span>
+                            )}
+                            {clientEmail && (
+                              <span
+                                className="inline-flex max-w-[130px] items-center gap-1 truncate"
+                                title={clientEmail}
+                              >
+                                <Mail className="h-3 w-3 shrink-0 text-gray-400 dark:text-gray-500" />
+                                <span className="truncate">{clientEmail}</span>
+                              </span>
+                            )}
+                            {!clientPhone && !clientEmail && record.form_data?.advisorName && (
+                              <span className="font-sans text-[10px] text-gray-400 dark:text-gray-500">
+                                Adv: {record.form_data.advisorName}
+                              </span>
+                            )}
+                            {!clientPhone && !clientEmail && !record.form_data?.advisorName && (
+                              <span className="font-sans text-[10px] text-gray-400 dark:text-gray-500">
+                                {record.form_data?.address
+                                  ? record.form_data.address.split(',')[0]
+                                  : '—'}
+                              </span>
+                            )}
+                          </div>
+                        </div>
                       </div>
                     </td>
 
                     {/* Project */}
-                    <td className="px-5 py-3.5 align-middle font-medium whitespace-nowrap text-gray-700 capitalize dark:text-gray-300">
+                    <td className="px-3.5 py-3 align-middle font-medium whitespace-nowrap text-gray-700 capitalize dark:text-gray-300">
                       {record.form_data?.projectName || 'N/A'}
                     </td>
 
                     {/* Unit / Plot */}
-                    <td className="px-5 py-3.5 text-center align-middle">
+                    <td className="px-3.5 py-3 text-center align-middle whitespace-nowrap">
                       {record.form_data?.unitNumber ? (
-                        <span className="inline-block rounded-md border border-gray-200 bg-gray-100 px-2.5 py-0.5 font-mono text-[11px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
+                        <span className="inline-block rounded-md border border-gray-200 bg-gray-100 px-2 py-0.5 font-mono text-[11px] font-bold text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200">
                           {record.form_data.unitNumber}
                         </span>
                       ) : (
@@ -275,24 +345,24 @@ export function AllotmentTable({
                     </td>
 
                     {/* Area */}
-                    <td className="px-5 py-3.5 align-middle font-medium whitespace-nowrap text-gray-600 tabular-nums dark:text-gray-400">
+                    <td className="px-3.5 py-3 align-middle font-medium whitespace-nowrap text-gray-600 tabular-nums dark:text-gray-400">
                       {record.form_data?.area ? `${record.form_data.area} Sq. Yds.` : '—'}
                     </td>
 
                     {/* Total Cost */}
-                    <td className="px-5 py-3.5 text-right align-middle font-mono text-xs font-bold text-gray-900 tabular-nums dark:text-white">
+                    <td className="px-3.5 py-3 text-right align-middle font-mono text-xs font-bold whitespace-nowrap text-gray-900 tabular-nums dark:text-white">
                       {formattedCost}
                     </td>
 
                     {/* Plan */}
-                    <td className="px-5 py-3.5 text-center align-middle">
-                      <span className="inline-block rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap text-emerald-600 dark:text-emerald-400">
+                    <td className="px-3.5 py-3 text-center align-middle whitespace-nowrap">
+                      <span className="inline-block rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-bold whitespace-nowrap text-emerald-600 dark:text-emerald-400">
                         {record.form_data?.paymentPlan || '12'} Months
                       </span>
                     </td>
 
                     {/* Date & Time */}
-                    <td className="px-5 py-3.5 align-middle whitespace-nowrap">
+                    <td className="px-3.5 py-3 align-middle whitespace-nowrap">
                       <div className="flex items-center gap-1.5">
                         <Calendar className="h-3 w-3 shrink-0 text-gray-400" />
                         <div className="flex flex-col">
@@ -300,7 +370,7 @@ export function AllotmentTable({
                             {date}
                           </span>
                           {time && (
-                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                            <span className="font-mono text-[10px] text-gray-400 dark:text-gray-500">
                               {time}
                             </span>
                           )}
@@ -309,11 +379,11 @@ export function AllotmentTable({
                     </td>
 
                     {/* Actions */}
-                    <td className="px-5 py-3.5 text-right align-middle">
+                    <td className="px-3.5 py-3 text-right align-middle whitespace-nowrap">
                       <div className="flex items-center justify-end gap-1">
                         <button
                           onClick={() => onSelectRecord(record)}
-                          className="hover:border-brand-gold/30 hover:bg-brand-gold/10 hover:text-brand-gold flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 active:scale-95"
+                          className="hover:border-brand-gold/50 hover:bg-brand-gold/10 hover:text-brand-gold dark:hover:border-brand-gold/50 dark:hover:bg-brand-gold/15 dark:hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400"
                           title="View & Print Allotment Letter"
                           aria-label="View & Print"
                         >
@@ -321,7 +391,7 @@ export function AllotmentTable({
                         </button>
                         <Link
                           href={`/admin/allotment-letter?templateId=${record.id}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-blue-500/50 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-blue-400/50 dark:hover:bg-blue-400/15 dark:hover:text-blue-400"
                           title="Use as Template"
                           aria-label="Use as Template"
                         >
@@ -329,7 +399,7 @@ export function AllotmentTable({
                         </Link>
                         <Link
                           href={`/admin/bba?allotmentId=${record.id}`}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-amber-500/30 hover:bg-amber-500/10 hover:text-amber-500 active:scale-95"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-amber-400/50 dark:hover:bg-amber-400/15 dark:hover:text-amber-400"
                           title="Create BBA from Allotment"
                           aria-label="Create BBA"
                         >
@@ -340,7 +410,7 @@ export function AllotmentTable({
                             sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
                             window.location.href = '/admin/email?tab=compose&prefillAllotment=true';
                           }}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-purple-500/50 hover:bg-purple-500/10 hover:text-purple-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-purple-400/50 dark:hover:bg-purple-400/15 dark:hover:text-purple-400"
                           title="Email Document to Client"
                           aria-label="Email Client"
                         >
@@ -348,7 +418,7 @@ export function AllotmentTable({
                         </button>
                         <button
                           onClick={() => onDeleteRecord(record)}
-                          className="flex h-7 w-7 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-rose-500/50 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-rose-400/50 dark:hover:bg-rose-400/15 dark:hover:text-rose-400"
                           title="Delete Allotment Record"
                           aria-label="Delete Record"
                         >

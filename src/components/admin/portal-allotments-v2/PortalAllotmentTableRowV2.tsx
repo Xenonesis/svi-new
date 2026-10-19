@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import {
   ChevronDown,
   ChevronUp,
@@ -13,6 +14,8 @@ import {
   Mail,
   MapPin,
   BookOpen,
+  Receipt,
+  FileText,
 } from 'lucide-react';
 import type { AllotmentRecord, AllotmentFinancials } from '../portal-allotments/types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
@@ -149,6 +152,16 @@ export function PortalAllotmentTableRowV2({
     (allotment.metadata?.allotment_mode as string) ||
     (allotment.metadata?.sale_type as string) ||
     'Direct Sell';
+
+  const docRefId =
+    (allotment.metadata?.ticket_id as string | undefined) ||
+    (allotment.metadata?.ticketId as string | undefined) ||
+    '';
+  const docSearchQuery =
+    allotment.profiles?.full_name ||
+    (allotment.metadata?.client_name as string | undefined) ||
+    (allotment.metadata?.ticket_id as string | undefined) ||
+    '';
 
   const latestReceipt =
     allotment.receipts && allotment.receipts.length > 0 ? allotment.receipts[0] : null;
@@ -489,9 +502,51 @@ export function PortalAllotmentTableRowV2({
             {/* Micro Action Dropdown */}
             {showMenu && (
               <div
-                className="absolute top-full right-0 z-30 mt-1 w-32 border border-slate-200 bg-white py-1 text-left shadow-lg dark:border-white/[0.1] dark:bg-[#161D2C]"
+                className="absolute top-full right-0 z-30 mt-1 w-44 rounded-xl border border-slate-200/80 bg-white p-1.5 text-left shadow-2xl backdrop-blur-md dark:border-white/10 dark:bg-[#111622]"
                 onMouseLeave={() => setShowMenu(false)}
               >
+                <div className="px-2 py-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                  Documents
+                </div>
+                <Link
+                  href={`/admin/payment-receipts?refId=${encodeURIComponent(docRefId)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 transition-colors hover:bg-sky-500/10 hover:text-sky-600 dark:text-slate-300 dark:hover:bg-sky-500/10 dark:hover:text-sky-400"
+                  title="View Payment Receipts"
+                >
+                  <Receipt className="h-3.5 w-3.5 text-sky-500" />
+                  <span>Payment Receipts</span>
+                </Link>
+                <Link
+                  href={`/admin/allotment-records?search=${encodeURIComponent(docSearchQuery)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:text-slate-300 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                  title="View Allotment Letter Record"
+                >
+                  <FileText className="h-3.5 w-3.5 text-amber-500" />
+                  <span>Allotment Letter</span>
+                </Link>
+                <Link
+                  href={`/admin/bba-records?search=${encodeURIComponent(docSearchQuery)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShowMenu(false)}
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 transition-colors hover:bg-emerald-500/10 hover:text-emerald-600 dark:text-slate-300 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
+                  title="View BBA Agreement"
+                >
+                  <BookOpen className="h-3.5 w-3.5 text-emerald-500" />
+                  <span>BBA Agreement</span>
+                </Link>
+
+                <div className="my-1 border-t border-slate-100 dark:border-white/[0.08]" />
+
+                <div className="px-2 py-1 text-[10px] font-bold tracking-wider text-slate-400 uppercase dark:text-slate-500">
+                  Actions
+                </div>
                 {latestReceipt && onShareWhatsApp && (
                   <button
                     type="button"
@@ -499,9 +554,9 @@ export function PortalAllotmentTableRowV2({
                       onShareWhatsApp(latestReceipt);
                       setShowMenu(false);
                     }}
-                    className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/[0.05]"
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/[0.05] dark:hover:text-white"
                   >
-                    <Share2 className="h-3 w-3 text-emerald-500" />
+                    <Share2 className="h-3.5 w-3.5 text-emerald-500" />
                     <span>WhatsApp</span>
                   </button>
                 )}
@@ -511,9 +566,9 @@ export function PortalAllotmentTableRowV2({
                     onEdit(allotment);
                     setShowMenu(false);
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-slate-700 hover:bg-slate-50 dark:text-slate-300 dark:hover:bg-white/[0.05]"
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-700 transition-colors hover:bg-slate-50 hover:text-slate-900 dark:text-slate-300 dark:hover:bg-white/[0.05] dark:hover:text-white"
                 >
-                  <Edit className="h-3 w-3" />
+                  <Edit className="h-3.5 w-3.5 text-slate-400" />
                   <span>Edit</span>
                 </button>
                 <button
@@ -522,9 +577,9 @@ export function PortalAllotmentTableRowV2({
                     onDelete(allotment.id);
                     setShowMenu(false);
                   }}
-                  className="flex w-full items-center gap-2 px-3 py-1.5 text-xs text-rose-600 hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
+                  className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-rose-600 transition-colors hover:bg-rose-50 dark:text-rose-400 dark:hover:bg-rose-500/10"
                 >
-                  <Trash2 className="h-3 w-3" />
+                  <Trash2 className="h-3.5 w-3.5 text-rose-500" />
                   <span>Delete</span>
                 </button>
               </div>

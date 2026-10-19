@@ -106,14 +106,17 @@ export function PortalAllotmentScheduleDrawer({
     : paymentSchedules.filter((p) => p.status === 'paid').length;
   const totalItemsCount = hasReceipts ? receipts.length : paymentSchedules.length;
 
-  const fallbackRefId =
-    allotment?.metadata?.ticket_id ||
-    allotment?.metadata?.ticketId ||
-    'SVI' + (allotment?.id?.slice(0, 4) || '');
-
   const fallbackClientName =
     allotment?.profiles?.full_name || (allotment?.metadata?.client_name as string) || 'Client';
 
+  const refId =
+    (allotment?.metadata?.ticket_id as string | undefined) ||
+    (allotment?.metadata?.ticketId as string | undefined) ||
+    (allotment?.id ? 'SVI' + allotment.id.slice(0, 4) : '');
+
+  const clientSearch = encodeURIComponent(refId || fallbackClientName);
+
+  const fallbackRefId = refId;
   const fallbackPlotNo =
     allotment?.unit_no ||
     allotment?.unit_number ||
@@ -140,12 +143,45 @@ export function PortalAllotmentScheduleDrawer({
                   {t('paymentSchedule')}
                 </h4>
               </div>
-              <div className="flex items-center gap-2.5">
+              <div className="flex flex-wrap items-center gap-2">
+                <Link
+                  href={`/admin/payment-receipts?refId=${encodeURIComponent(refId)}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-sky-500/30 bg-sky-500/10 px-2.5 py-1 font-mono text-xs font-medium text-sky-400 shadow-sm transition-all hover:bg-sky-500/20 hover:text-sky-300"
+                  title={`Open Receipts Ledger for ${refId || 'customer'}`}
+                >
+                  <ReceiptIcon className="h-3.5 w-3.5" />
+                  <span>Receipts Ledger &rarr;</span>
+                </Link>
+
+                <Link
+                  href={`/admin/allotment-records?search=${clientSearch}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 font-mono text-xs font-medium text-amber-400 shadow-sm transition-all hover:bg-amber-500/20 hover:text-amber-300"
+                  title={`Open Allotment Record for ${refId || fallbackClientName}`}
+                >
+                  <FileText className="h-3.5 w-3.5" />
+                  <span>Allotment Record &rarr;</span>
+                </Link>
+
+                <Link
+                  href={`/admin/bba-records?search=${clientSearch}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-emerald-500/30 bg-emerald-500/10 px-2.5 py-1 font-mono text-xs font-semibold text-emerald-400 shadow-sm transition-all hover:bg-emerald-500/20 hover:text-emerald-300"
+                  title={`Open BBA Agreement for ${refId || fallbackClientName}`}
+                >
+                  <BookOpen className="h-3.5 w-3.5" />
+                  <span>BBA Agreement &rarr;</span>
+                </Link>
+
                 {onOpenLedger && (
                   <button
                     type="button"
                     onClick={() => onOpenLedger(allotment)}
-                    className="border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 font-mono text-xs font-bold text-amber-400 transition-all"
+                    className="border-brand-gold/30 bg-brand-gold/10 hover:bg-brand-gold/20 inline-flex items-center gap-1.5 rounded-lg border px-3 py-1 font-mono text-xs font-bold text-amber-400 shadow-sm transition-all"
                     title="Open Full Customer Ledger Statement"
                   >
                     <BookOpen className="h-3.5 w-3.5" />
