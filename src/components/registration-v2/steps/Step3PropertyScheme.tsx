@@ -330,24 +330,15 @@ export function Step3PropertyScheme({
                     role="radio"
                     aria-checked={isSelected}
                     onClick={() => handleSizeSelect(opt.value)}
-                    className={`flex min-h-[58px] flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all active:scale-[0.98] ${
+                    className={`flex min-h-[52px] flex-col items-center justify-center rounded-xl border p-2.5 text-center transition-all active:scale-[0.98] ${
                       isSelected
                         ? 'border-brand-gold bg-brand-gold/15 ring-brand-gold/40 text-slate-900 shadow-[0_0_12px_rgba(212,175,55,0.2)] ring-1 dark:text-white'
                         : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-300 dark:hover:border-slate-700'
                     }`}
                   >
                     <span className="text-xs font-bold sm:text-sm">{opt.label}</span>
-                    <span className="text-[10px] font-medium text-slate-500 dark:text-slate-400">
+                    <span className="text-[11px] font-medium text-slate-500 dark:text-slate-400">
                       {opt.sqFt}
-                    </span>
-                    <span
-                      className={`mt-1 rounded px-1.5 py-0.5 text-[10px] font-bold ${
-                        isSelected
-                          ? 'bg-brand-gold/20 text-brand-gold dark:text-brand-gold'
-                          : 'bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400'
-                      }`}
-                    >
-                      Token: ₹{opt.token.toLocaleString('en-IN')}
                     </span>
                   </button>
                 );
