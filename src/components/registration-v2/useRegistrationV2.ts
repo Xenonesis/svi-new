@@ -31,7 +31,6 @@ export const UPPERCASE_FIELDS: Record<string, true> = {
   email: true,
   address: true,
   city: true,
-  state: true,
   panNumber: true,
   advisorName: true,
 };

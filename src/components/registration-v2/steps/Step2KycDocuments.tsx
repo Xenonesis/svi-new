@@ -54,6 +54,7 @@ export function Step2KycDocuments({
   // Postal lookup states
   const [pincodeLoading, setPincodeLoading] = useState(false);
   const [pincodeSuccess, setPincodeSuccess] = useState(false);
+  const [pincodeNotFound, setPincodeNotFound] = useState(false);
 
   // Object URL for passport photo preview inside the uploader
   const [photoPreviewUrl, setPhotoPreviewUrl] = useState<string | null>(null);
@@ -175,11 +176,13 @@ export function Step2KycDocuments({
     const cleanPin = (formData.pincode || '').replace(/\D/g, '');
     if (cleanPin.length !== 6) {
       setPincodeSuccess(false);
+      setPincodeNotFound(false);
       return;
     }
 
     let active = true;
     setPincodeLoading(true);
+    setPincodeNotFound(false);
 
     const promise = lookupPincode(cleanPin);
     if (!promise || typeof promise.then !== 'function') {
@@ -192,6 +195,7 @@ export function Step2KycDocuments({
         setPincodeLoading(false);
         if (info) {
           setPincodeSuccess(true);
+          setPincodeNotFound(false);
 
           // Auto-fill matched state
           const matchedState = INDIAN_STATES_AND_UTS.find(
@@ -220,19 +224,21 @@ export function Step2KycDocuments({
           }
         } else {
           setPincodeSuccess(false);
+          setPincodeNotFound(true);
         }
       })
       .catch(() => {
         if (active) {
           setPincodeLoading(false);
           setPincodeSuccess(false);
+          setPincodeNotFound(true);
         }
       });
 
     return () => {
       active = false;
     };
-  }, [formData.pincode, formData.state, formData.city, onChange]);
+  }, [formData.pincode, onChange]);
 
   // Drag and Drop handlers for file uploads
   const handleDrop = (e: DragEvent<HTMLElement>, type: 'photo' | 'panCard') => {
@@ -644,6 +650,11 @@ export function Step2KycDocuments({
                     <Check className="h-3 w-3" /> State & City Resolved
                   </span>
                 )}
+                {pincodeNotFound && !pincodeLoading && (
+                  <span className="inline-flex items-center gap-1 text-[11px] font-medium text-amber-500">
+                    PIN not found — select State & City below
+                  </span>
+                )}
               </label>
               <div className="relative">
                 <input
@@ -702,7 +713,11 @@ export function Step2KycDocuments({
                   id="state"
                   name="state"
                   required
-                  value={formData.state}
+                  value={
+                    INDIAN_STATES_AND_UTS.find(
+                      (st) => st.value.toLowerCase() === (formData.state || '').toLowerCase()
+                    )?.value || ''
+                  }
                   onChange={onChange}
                   onBlur={onBlur}
                   aria-describedby={errors.state ? 'state-error' : undefined}

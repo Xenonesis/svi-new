@@ -552,7 +552,6 @@ describe('useRegistrationV2', () => {
         email: true,
         address: true,
         city: true,
-        state: true,
         panNumber: true,
         advisorName: true,
       });
