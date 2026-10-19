@@ -8,17 +8,25 @@ import { AppError, handleApiError } from '@/src/lib/api/errors';
 // ── Zod schema: strictly typed, self-documenting, future-proof ────────────────
 const patchSchema = z
   .object({
-    id: z.string().uuid('id must be a valid UUID'),
+    id: z.string().uuid('id must be a valid UUID').optional(),
+    ids: z.array(z.string().uuid('Each id must be a valid UUID')).min(1).optional(),
     status: z
       .string()
       .transform((val) => val.toLowerCase())
       .pipe(z.enum(['pending', 'contacted', 'approved', 'rejected']))
       .optional(),
     is_important: z.boolean().optional(),
+    advisor_name: z.string().trim().min(1, 'Advisor name cannot be empty').optional(),
   })
-  .refine((d) => d.status !== undefined || d.is_important !== undefined, {
-    message: 'At least one of status or is_important must be provided',
-  });
+  .refine((d) => d.id !== undefined || d.ids !== undefined, {
+    message: 'Either id or ids must be provided',
+  })
+  .refine(
+    (d) => d.status !== undefined || d.is_important !== undefined || d.advisor_name !== undefined,
+    {
+      message: 'At least one of status, is_important, or advisor_name must be provided',
+    }
+  );
 
 type PatchBody = z.infer<typeof patchSchema>;
 // ─────────────────────────────────────────────────────────────────────────────
@@ -120,16 +128,34 @@ export async function PATCH(request: NextRequest) {
       throw AppError.validationError(parsed.error.flatten());
     }
 
-    const { id, status: newStatus, is_important } = parsed.data as PatchBody;
+    const { id, ids, status: newStatus, is_important, advisor_name } = parsed.data as PatchBody;
+    const targetIds = ids ?? (id ? [id] : []);
 
     const updatePayload: Record<string, unknown> = {};
     if (newStatus !== undefined) updatePayload.status = newStatus;
     if (is_important !== undefined) updatePayload.is_important = is_important;
+    if (advisor_name !== undefined) updatePayload.advisor_name = advisor_name;
 
+    if (targetIds.length > 1) {
+      const { data, error } = await supabaseAdmin
+        .from('registrations')
+        .update(updatePayload)
+        .in('id', targetIds)
+        .select();
+
+      if (error) throw AppError.internal(error.message);
+      return NextResponse.json({
+        success: true,
+        count: data?.length || targetIds.length,
+        registrations: data,
+      });
+    }
+
+    const singleId = targetIds[0];
     const { data, error } = await supabaseAdmin
       .from('registrations')
       .update(updatePayload)
-      .eq('id', id)
+      .eq('id', singleId)
       .select()
       .single();
 
@@ -143,7 +169,7 @@ export async function PATCH(request: NextRequest) {
         .single();
       const adminName = profileData?.full_name || admin.email || 'Admin';
       if (newStatus) {
-        await NotificationHelper.registrationStatusUpdated(id, newStatus, adminName);
+        await NotificationHelper.registrationStatusUpdated(singleId, newStatus, adminName);
       }
     } catch (notifErr) {
       console.error('[Registration] Notification error:', notifErr);

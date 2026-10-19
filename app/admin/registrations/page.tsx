@@ -9,6 +9,7 @@ import {
   Download,
   FileSpreadsheet,
   X,
+  UserCheck,
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { useQuery } from '@tanstack/react-query';
@@ -32,6 +33,7 @@ import { FilterPanel } from '@/src/components/admin/registrations/FilterPanel';
 import { RegistrationTable } from '@/src/components/admin/registrations/RegistrationTable';
 import { DetailModal } from '@/src/components/admin/registrations/DetailModal';
 import { DeleteConfirmModal } from '@/src/components/admin/registrations/DeleteConfirmModal';
+import { ReassignAdvisorModal } from '@/src/components/admin/registrations/ReassignAdvisorModal';
 import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
 
 export default function AdminRegistrations() {
@@ -190,6 +192,7 @@ export default function AdminRegistrations() {
           onExport={h.handleExportCSV}
           onExportSelectedCsv={h.handleExportSelectedCsv}
           onExportSelectedExcel={h.handleExportSelectedExcel}
+          onBulkReassign={() => h.handleOpenReassign(h.selectedRegistrations)}
           selectedCount={h.selectedCount}
           onClearSelection={h.clearSelection}
           onRefresh={() => h.fetchRegistrations()}
@@ -224,6 +227,7 @@ export default function AdminRegistrations() {
           onStarToggle={h.handleStarToggle}
           onStatusChange={h.handleStatusChange}
           onView={h.setSelectedReg}
+          onReassign={h.handleOpenReassign}
           onDelete={h.setDeleteTarget}
           onClearFilters={h.clearFilters}
           onPageChange={(p) => h.setPage(p)}
@@ -241,6 +245,8 @@ export default function AdminRegistrations() {
               h.setSelectedReg(null);
               h.setDeleteTarget(r);
             }}
+            advisors={h.availableAdvisors}
+            onAdvisorChange={h.handleUpdateSingleAdvisor}
           />
         )}
         {h.deleteTarget && (
@@ -249,6 +255,15 @@ export default function AdminRegistrations() {
             onConfirm={h.handleDelete}
             onCancel={() => h.setDeleteTarget(null)}
             loading={h.deleteLoading}
+          />
+        )}
+        {h.reassignTargets && (
+          <ReassignAdvisorModal
+            targets={h.reassignTargets}
+            advisors={h.availableAdvisors}
+            onConfirm={h.handleConfirmReassign}
+            onCancel={h.handleCloseReassign}
+            loading={h.reassignLoading}
           />
         )}
         {h.showAdvisorSettings && (
@@ -276,6 +291,16 @@ export default function AdminRegistrations() {
               <span className="text-xs font-semibold">Registrations Selected</span>
             </div>
 
+            {/* Reassign Advisor Button */}
+            <button
+              type="button"
+              onClick={() => h.handleOpenReassign(h.selectedRegistrations)}
+              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-600/30 px-3 py-1.5 text-xs font-semibold text-amber-300 transition-all hover:bg-amber-600/40 hover:text-white"
+              title="Reassign selected registrations to advisor"
+            >
+              <UserCheck className="h-3.5 w-3.5 text-amber-400" />
+              <span>Reassign Advisor</span>
+            </button>
             {/* Export Excel Button */}
             <button
               type="button"

@@ -3,6 +3,7 @@
 import React, { useMemo } from 'react';
 import {
   Users,
+  UserCheck,
   Star,
   Eye,
   Trash2,
@@ -206,6 +207,7 @@ interface RegistrationTableProps {
   onStarToggle: (reg: Registration) => void;
   onStatusChange: (id: string, status: string) => void;
   onView: (reg: Registration) => void;
+  onReassign?: (reg: Registration) => void;
   onDelete: (reg: Registration) => void;
   onClearFilters: () => void;
   onPageChange: (page: number) => void;
@@ -230,6 +232,7 @@ export function RegistrationTable({
   onStarToggle,
   onStatusChange,
   onView,
+  onReassign,
   onDelete,
   onClearFilters,
   onPageChange,
@@ -324,13 +327,28 @@ export function RegistrationTable({
         cell: (info) => {
           const reg = info.row.original;
           return (
-            <div>
+            <div className="group/adv relative">
               <div className="text-brand-gold dark:text-brand-gold/90 font-semibold">
                 {reg.project || reg.property_interest || '—'}
               </div>
-              <div className="mt-0.5 flex items-center gap-1.5 text-xs text-gray-500">
-                <Users className="h-3 w-3" />
-                {reg.advisor_name || 'Direct'}
+              <div className="mt-0.5 flex items-center justify-between gap-1.5 text-xs text-gray-500">
+                <span className="flex items-center gap-1.5 truncate">
+                  <Users className="h-3 w-3 shrink-0" />
+                  <span className="truncate">{reg.advisor_name || 'Direct'}</span>
+                </span>
+                {onReassign && (
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onReassign(reg);
+                    }}
+                    title="Change Advisor"
+                    className="rounded p-0.5 text-gray-400 opacity-0 transition-opacity group-hover/adv:opacity-100 hover:bg-gray-100 hover:text-amber-500 dark:hover:bg-white/10"
+                  >
+                    <UserCheck className="h-3 w-3" />
+                  </button>
+                )}
               </div>
             </div>
           );
@@ -421,6 +439,16 @@ export function RegistrationTable({
                       <Eye className="group-hover:text-brand-gold mr-2 h-4 w-4 text-gray-400" />
                       View Details
                     </DropdownMenu.Item>
+
+                    {onReassign && (
+                      <DropdownMenu.Item
+                        onSelect={() => onReassign(reg)}
+                        className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-gray-700 outline-none select-none hover:bg-amber-50 hover:text-amber-600 dark:text-gray-300 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
+                      >
+                        <UserCheck className="mr-2 h-4 w-4 text-gray-400 group-hover:text-amber-500" />
+                        Reassign Advisor
+                      </DropdownMenu.Item>
+                    )}
 
                     <DropdownMenu.Separator className="my-1 h-px bg-gray-100 dark:bg-white/5" />
                     <DropdownMenu.Label className="px-2 py-1 text-[9px] font-semibold tracking-wider text-gray-400 uppercase">

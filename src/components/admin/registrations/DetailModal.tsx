@@ -1,6 +1,7 @@
 'use client';
 
-import { X, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+import { X, Trash2, Edit2, Check, RefreshCw } from 'lucide-react';
 import { motion } from 'motion/react';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { StatusBadge } from './StatusBadge';
@@ -25,9 +26,40 @@ interface DetailModalProps {
   onClose: () => void;
   onStatusChange: (id: string, status: string) => void;
   onDelete: (reg: Registration) => void;
+  advisors?: string[];
+  onAdvisorChange?: (id: string, advisorName: string) => Promise<void>;
 }
 
-export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailModalProps) {
+export function DetailModal({
+  reg,
+  onClose,
+  onStatusChange,
+  onDelete,
+  advisors = [],
+  onAdvisorChange,
+}: DetailModalProps) {
+  const [isEditingAdvisor, setIsEditingAdvisor] = useState(false);
+  const [selectedAdvisor, setSelectedAdvisor] = useState(
+    reg.advisor_name || 'Direct / SVI Official'
+  );
+  const [savingAdvisor, setSavingAdvisor] = useState(false);
+
+  const advisorsList =
+    advisors.length > 0
+      ? advisors
+      : ['Direct / SVI Official', 'Ajeet Kumar', 'Sanjay Sharma', 'Pooja Singh', 'Vikram Rathore'];
+
+  const handleSaveAdvisor = async () => {
+    if (!onAdvisorChange || savingAdvisor) return;
+    try {
+      setSavingAdvisor(true);
+      await onAdvisorChange(reg.id, selectedAdvisor);
+      setIsEditingAdvisor(false);
+    } finally {
+      setSavingAdvisor(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/50 p-4 backdrop-blur-md dark:bg-black/85">
       <motion.div
@@ -188,7 +220,56 @@ export function DetailModal({ reg, onClose, onStatusChange, onDelete }: DetailMo
               <span className="bg-brand-gold/20 h-px flex-1" />
             </h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3">
-              <Field label="Advisor" value={reg.advisor_name} />
+              <div className="min-w-0">
+                <div className="flex items-center justify-between gap-1">
+                  <p className="text-[9px] font-bold tracking-widest text-gray-400 uppercase sm:text-[10px]">
+                    Advisor
+                  </p>
+                  {onAdvisorChange && (
+                    <button
+                      type="button"
+                      onClick={() => setIsEditingAdvisor(!isEditingAdvisor)}
+                      className="text-brand-gold flex items-center gap-1 text-[10px] font-semibold hover:underline"
+                    >
+                      <Edit2 className="h-3 w-3" />
+                      {isEditingAdvisor ? 'Cancel' : 'Change'}
+                    </button>
+                  )}
+                </div>
+                {isEditingAdvisor ? (
+                  <div className="mt-1 flex items-center gap-1.5">
+                    <select
+                      value={selectedAdvisor}
+                      onChange={(e) => setSelectedAdvisor(e.target.value)}
+                      disabled={savingAdvisor}
+                      className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-white px-2 py-1 text-xs text-gray-900 focus:outline-none dark:border-white/10 dark:bg-[#1a1a24] dark:text-white"
+                    >
+                      {advisorsList.map((adv) => (
+                        <option key={adv} value={adv}>
+                          {adv}
+                        </option>
+                      ))}
+                    </select>
+                    <button
+                      type="button"
+                      disabled={savingAdvisor}
+                      onClick={handleSaveAdvisor}
+                      className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-emerald-600 text-white hover:bg-emerald-500 disabled:opacity-50"
+                      title="Save Advisor"
+                    >
+                      {savingAdvisor ? (
+                        <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                      ) : (
+                        <Check className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  </div>
+                ) : (
+                  <p className="truncate text-xs font-medium text-gray-800 sm:text-sm dark:text-gray-200">
+                    {reg.advisor_name || 'Direct / SVI Official'}
+                  </p>
+                )}
+              </div>
               <Field label="Project" value={reg.project} />
               <Field label="Property Size" value={reg.property_size} />
               <Field label="Property Type" value={reg.property_type} />

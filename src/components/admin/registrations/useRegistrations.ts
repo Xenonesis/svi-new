@@ -32,6 +32,7 @@ export function useRegistrations() {
   const [search, setSearch] = useState('');
   const [selectedReg, setSelectedReg] = useState<Registration | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<Registration | null>(null);
+  const [reassignTargets, setReassignTargets] = useState<Registration[] | null>(null);
   const [showAdvisorSettings, setShowAdvisorSettings] = useState(false);
   const [showFilters, setShowFilters] = useState(false);
   const [sortBy, setSortBy] = useState('created_at');
@@ -124,6 +125,39 @@ export function useRegistrations() {
     staleTime: 5 * 60 * 1000, // 5 mins cache for filters
   });
 
+  const { data: activeAdvisors = [] } = useQuery<string[]>({
+    queryKey: ['activeAdvisors'],
+    queryFn: async () => {
+      const res = await fetch('/api/registration');
+      if (!res.ok)
+        return [
+          'Direct / SVI Official',
+          'Ajeet Kumar',
+          'Sanjay Sharma',
+          'Pooja Singh',
+          'Vikram Rathore',
+        ];
+      const data = await res.json();
+      return (data.advisors as string[]) || [];
+    },
+    staleTime: 60 * 1000,
+  });
+
+  const availableAdvisors = useMemo(() => {
+    const list = new Set<string>([
+      'Direct / SVI Official',
+      ...activeAdvisors,
+      ...(filterOptions.advisors || []),
+    ]);
+    return Array.from(list)
+      .filter(Boolean)
+      .sort((a, b) => {
+        if (a === 'Direct / SVI Official') return -1;
+        if (b === 'Direct / SVI Official') return 1;
+        return a.localeCompare(b);
+      });
+  }, [activeAdvisors, filterOptions.advisors]);
+
   // Fetch registrations data via React Query
   const {
     data: registrationsData,
@@ -210,6 +244,73 @@ export function useRegistrations() {
     },
     onError: () => showToast('error', 'Failed to delete registration'),
   });
+
+  const updateAdvisorMutation = useMutation({
+    mutationFn: async ({ ids, advisorName }: { ids: string[]; advisorName: string }) => {
+      let authToken = token;
+      if (!authToken) {
+        const {
+          data: { session },
+        } = await supabase.auth.getSession();
+        authToken = session?.access_token || '';
+      }
+      const res = await fetch('/api/admin/registrations', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${authToken}` },
+        body: JSON.stringify(
+          ids.length === 1
+            ? { id: ids[0], advisor_name: advisorName }
+            : { ids, advisor_name: advisorName }
+        ),
+      });
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => null);
+        throw new Error(errJson?.error || 'Failed to update advisor');
+      }
+      return { ids, advisorName };
+    },
+    onSuccess: (data) => {
+      const count = data.ids.length;
+      if (count === 1) {
+        showToast('success', `Advisor updated to "${data.advisorName}"`);
+      } else {
+        showToast('success', `Reassigned ${count} clients to "${data.advisorName}"`);
+        clearSelection();
+      }
+      setReassignTargets(null);
+      queryClient.invalidateQueries({ queryKey: ['registrations'] });
+      queryClient.invalidateQueries({ queryKey: ['filterOptions'] });
+      if (selectedReg && data.ids.includes(selectedReg.id)) {
+        setSelectedReg((prev) => (prev ? { ...prev, advisor_name: data.advisorName } : null));
+      }
+    },
+    onError: (err: Error) => showToast('error', err?.message || 'Failed to update advisor'),
+  });
+
+  const handleOpenReassign = useCallback((targets: Registration | Registration[]) => {
+    const list = Array.isArray(targets) ? targets : [targets];
+    if (list.length > 0) setReassignTargets(list);
+  }, []);
+
+  const handleCloseReassign = useCallback(() => {
+    setReassignTargets(null);
+  }, []);
+
+  const handleConfirmReassign = useCallback(
+    async (advisorName: string) => {
+      if (!reassignTargets || reassignTargets.length === 0) return;
+      const ids = reassignTargets.map((r) => r.id);
+      await updateAdvisorMutation.mutateAsync({ ids, advisorName });
+    },
+    [reassignTargets, updateAdvisorMutation]
+  );
+
+  const handleUpdateSingleAdvisor = useCallback(
+    async (id: string, advisorName: string) => {
+      await updateAdvisorMutation.mutateAsync({ ids: [id], advisorName });
+    },
+    [updateAdvisorMutation]
+  );
 
   const starMutation = useMutation({
     mutationFn: async ({ id, is_important }: { id: string; is_important: boolean }) => {
@@ -420,7 +521,13 @@ export function useRegistrations() {
     page,
     hasMore,
     showAdvisorSettings,
-
+    reassignTargets,
+    reassignLoading: updateAdvisorMutation.isPending,
+    availableAdvisors,
+    handleOpenReassign,
+    handleCloseReassign,
+    handleConfirmReassign,
+    handleUpdateSingleAdvisor,
     showFilters,
     sortBy,
     sortOrder,

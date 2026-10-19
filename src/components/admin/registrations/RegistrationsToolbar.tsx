@@ -9,6 +9,7 @@ import {
   Download,
   RefreshCw,
   Users,
+  UserCheck,
   SortDesc,
   FileSpreadsheet,
   FileText,
@@ -33,6 +34,7 @@ interface RegistrationsToolbarProps {
   onExportExcel?: () => void;
   onExportSelectedCsv?: () => void;
   onExportSelectedExcel?: () => void;
+  onBulkReassign?: () => void;
   selectedCount?: number;
   onClearSelection?: () => void;
   onRefresh: () => void;
@@ -55,6 +57,7 @@ export function RegistrationsToolbar({
   onExportExcel,
   onExportSelectedCsv,
   onExportSelectedExcel,
+  onBulkReassign,
   selectedCount = 0,
   onClearSelection,
   onRefresh,
@@ -173,8 +176,17 @@ export function RegistrationsToolbar({
                 className="animate-in fade-in zoom-in-95 z-50 min-w-[220px] rounded-xl border border-gray-200 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#1a1a24]/95"
               >
                 <DropdownMenu.Label className="px-2 py-1.5 text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
-                  Export {selectedCount} Selected
+                  Actions ({selectedCount} Selected)
                 </DropdownMenu.Label>
+                {onBulkReassign && (
+                  <DropdownMenu.Item
+                    onClick={onBulkReassign}
+                    className="group flex cursor-pointer items-center rounded-md px-2 py-2 text-xs font-medium text-amber-700 outline-none select-none data-[highlighted]:bg-amber-50 dark:text-amber-400 dark:data-[highlighted]:bg-amber-500/10"
+                  >
+                    <UserCheck className="mr-2 h-4 w-4 text-amber-500" />
+                    Reassign Advisor ({selectedCount})
+                  </DropdownMenu.Item>
+                )}
                 {onExportSelectedExcel && (
                   <DropdownMenu.Item
                     onClick={onExportSelectedExcel}
