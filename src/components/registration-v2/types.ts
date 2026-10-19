@@ -38,6 +38,19 @@ export interface Step2KycDocumentsProps extends StepProps {
   onPrev: () => void;
 }
 
+export interface SchemeCalculatorV2Props {
+  size: string;
+  project: string;
+  plan: string;
+  className?: string;
+}
+
+export interface Step3PropertySchemeProps extends StepProps {
+  advisors: string[];
+  projects: { value: string; label: string }[];
+  onNext: () => void;
+  onPrev: () => void;
+}
 export interface KycPreviewCardProps {
   fullName: string;
   photoFile: File | null;
