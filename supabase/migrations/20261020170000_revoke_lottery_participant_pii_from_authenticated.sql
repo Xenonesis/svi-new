@@ -39,7 +39,8 @@ GRANT SELECT (id, lottery_id, name, ticket_number, is_winner, prize_rank, create
 -- ── 2. Admin-gated RPC for PII-bearing reads ────────────────────────────────
 -- The admin console (View Participants, Edit Campaign, Bulk Email, exports and
 -- the winner-picker search) needs participant email and phone. Those reads go
--- through this RPC, which is only executable by service_role and by admins.
+-- through this RPC, which is executable only by service_role and by admins
+-- (public.is_admin()). Non-admin authenticated callers get no rows.
 
 CREATE OR REPLACE FUNCTION public.get_lottery_participants_admin(
   p_lottery_id uuid,
@@ -57,11 +58,19 @@ RETURNS TABLE (
   prize_rank integer,
   created_at timestamptz
 )
-LANGUAGE sql
+LANGUAGE plpgsql
 STABLE
 SECURITY DEFINER
 SET search_path = public
 AS $$
+BEGIN
+  -- Admin gate: service_role has is_admin() = false but bypasses RLS and the
+  -- column grants, so this check only restricts the `authenticated` role.
+  IF auth.role() = 'authenticated' AND NOT public.is_admin() THEN
+    RETURN;
+  END IF;
+
+  RETURN QUERY
   SELECT
     lp.id,
     lp.lottery_id,
@@ -82,12 +91,13 @@ AS $$
     )
   ORDER BY lp.is_winner DESC, lp.name ASC
   LIMIT LEAST(GREATEST(p_limit, 1), 1000);
+END;
 $$;
 
 REVOKE EXECUTE ON FUNCTION public.get_lottery_participants_admin(uuid, text, integer) FROM PUBLIC;
 REVOKE EXECUTE ON FUNCTION public.get_lottery_participants_admin(uuid, text, integer) FROM anon;
-REVOKE EXECUTE ON FUNCTION public.get_lottery_participants_admin(uuid, text, integer) FROM authenticated;
 GRANT EXECUTE ON FUNCTION public.get_lottery_participants_admin(uuid, text, integer) TO service_role;
+GRANT EXECUTE ON FUNCTION public.get_lottery_participants_admin(uuid, text, integer) TO authenticated;
 
 -- ── 3. Notify PostgREST to reload the schema cache ───────────────────────────
 NOTIFY pgrst, 'reload schema';
