@@ -56,3 +56,13 @@ This project is indexed by GitNexus as **svi-new** (12460 symbols, 21234 relatio
 
 - **Always Read Context**: Before planning or making significant architectural, database, or workflow changes, ALWAYS read the markdown files inside the `context/` directory to understand the current architecture, stack, and DB schema.
 - **Always Update Context**: If your changes introduce new tables, new tech stack elements, major architectural shifts, or new core features, you MUST update the relevant markdown files in the `context/` folder to reflect these changes. This ensures the AI's understanding remains up to date.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+## This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->
