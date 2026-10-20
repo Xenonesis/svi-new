@@ -13,5 +13,8 @@ export type { Team, AttendanceRecord, TeamMember } from './attendanceRepository'
 export { activityRepository } from './activityRepository';
 export type { ActivityLog } from './activityRepository';
 
+export { writeActivityLog } from './activityLogWriter';
+export type { ActivityLogEntry, ActivityLogResult } from './activityLogWriter';
+
 export { careerRepository } from './careerRepository';
 export type { Career } from './careerRepository';

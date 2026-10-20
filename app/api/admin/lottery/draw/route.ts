@@ -2,10 +2,15 @@ import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import crypto from 'crypto';
-import { Resend } from 'resend';
 import { winnerEmailHtml, nonWinnerEmailHtml } from '@/src/lib/email-templates';
 import { lotteryDrawSchema } from '@/src/lib/api/schemas';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import {
+  dispatchLotteryEmails,
+  type LotteryEmailDispatchResult,
+  type LotteryEmailRecipient,
+} from '@/src/lib/lottery/dispatchEmails';
+import { writeActivityLog } from '@/src/lib/repositories/activityLogWriter';
 
 export async function POST(request: NextRequest) {
   try {
@@ -119,7 +124,7 @@ export async function POST(request: NextRequest) {
       const adminName = profile?.full_name || admin.email || 'Admin';
 
       const winnerSummary = winners.map((w) => `${w.name} (${w.ticket_number})`).join(', ');
-      await supabaseAdmin.from('activity_logs').insert({
+      await writeActivityLog({
         user_id: admin.id,
         action_type: 'lottery_drawn',
         description: `${adminName} executed lottery drawing for "${lottery.title}". Winner${winners.length > 1 ? 's' : ''}: ${winnerSummary}.`,
@@ -136,95 +141,68 @@ export async function POST(request: NextRequest) {
 
     // 7. Send automated email notifications using Resend
     const apiKey = process.env.RESEND_API_KEY;
-    let emailsSentCount = 0;
+    const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
+    const now = new Date();
+    const winnerNames = winners.map((w) => w.name).join(', ');
+
+    const winnerRecipients: LotteryEmailRecipient[] = winners
+      .filter((w): w is typeof w & { email: string } => Boolean(w.email))
+      .map((w) => ({
+        email: w.email,
+        name: w.name,
+        ticketNumber: w.ticket_number,
+        subject: `Congratulations! You won the ${lottery.title}!`,
+        html: winnerEmailHtml({
+          participantName: w.name,
+          lotteryTitle: lottery.title,
+          ticketNumber: w.ticket_number,
+          drawnAt: now,
+        }),
+      }));
+
+    const runnerUpRecipients: LotteryEmailRecipient[] = candidates
+      .filter(
+        (c): c is typeof c & { email: string } => !winnerIdList.includes(c.id) && Boolean(c.email)
+      )
+      .map((p) => ({
+        email: p.email,
+        name: p.name,
+        ticketNumber: p.ticket_number,
+        subject: `Draw Results — ${lottery.title}`,
+        html: nonWinnerEmailHtml({
+          participantName: p.name,
+          lotteryTitle: lottery.title,
+          ticketNumber: p.ticket_number,
+          winnerName: winnerNames,
+          drawnAt: now,
+        }),
+      }));
+
+    let emailDispatch: LotteryEmailDispatchResult = {
+      sent: 0,
+      failed: 0,
+      skipped: 0,
+      rejected: [],
+      retryable: [],
+    };
 
     if (apiKey) {
-      try {
-        const resend = new Resend(apiKey);
-        const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
-        const now = new Date();
+      emailDispatch = await dispatchLotteryEmails(
+        apiKey,
+        FROM_ADDRESS,
+        [...winnerRecipients, ...runnerUpRecipients],
+        lotteryId
+      );
 
-        // 1. Send Winner Emails (all winners)
-        for (const w of winners) {
-          if (w.email) {
-            try {
-              const { data: emailData, error: sendErr } = await resend.emails.send({
-                from: FROM_ADDRESS,
-                to: [w.email],
-                subject: `🏆 Congratulations! You won the ${lottery.title}!`,
-                html: winnerEmailHtml({
-                  participantName: w.name,
-                  lotteryTitle: lottery.title,
-                  ticketNumber: w.ticket_number,
-                  drawnAt: now,
-                }),
-              });
-              if (sendErr || !emailData?.id) {
-                console.error(
-                  `Manual draw: Winner email failed for ${w.email}:`,
-                  sendErr?.message ?? 'no message id returned'
-                );
-              } else {
-                emailsSentCount++;
-              }
-            } catch (winnerEmailErr: unknown) {
-              console.error(
-                `Manual draw: Winner email failed for ${w.email}:`,
-                winnerEmailErr instanceof Error ? winnerEmailErr.message : String(winnerEmailErr)
-              );
-            }
-          }
-        }
-
-        // 2. Send Runner-Up (Better Luck Next Time) Emails in batches
-        const runnerUps = (candidates || []).filter(
-          (c: any) => !winnerIdList.includes(c.id) && c.email
+      for (const rejection of emailDispatch.rejected) {
+        console.error(
+          `Manual draw: email permanently rejected for ${rejection.email}: ${rejection.reason}`
         );
-
-        if (runnerUps.length > 0) {
-          const BATCH_SIZE = 10;
-          for (let i = 0; i < runnerUps.length; i += BATCH_SIZE) {
-            const batch = runnerUps.slice(i, i + BATCH_SIZE);
-            await Promise.allSettled(
-              batch.map(async (p: any) => {
-                try {
-                  const { data: emailData, error: sendErr } = await resend.emails.send({
-                    from: FROM_ADDRESS,
-                    to: [p.email],
-                    subject: `Draw Results — ${lottery.title}`,
-                    html: nonWinnerEmailHtml({
-                      participantName: p.name,
-                      lotteryTitle: lottery.title,
-                      ticketNumber: p.ticket_number,
-                      winnerName: winners.map((w) => w.name).join(', '),
-                      drawnAt: now,
-                    }),
-                  });
-                  if (sendErr || !emailData?.id) {
-                    console.error(
-                      `Manual draw: Runner-up email failed for ${p.email}:`,
-                      sendErr?.message ?? 'no message id returned'
-                    );
-                  } else {
-                    emailsSentCount++;
-                  }
-                } catch (emailErr: unknown) {
-                  console.error(
-                    `Manual draw: Runner-up email failed for ${p.email}:`,
-                    emailErr instanceof Error ? emailErr.message : String(emailErr)
-                  );
-                }
-              })
-            );
-
-            // Introduce a short delay between batches if there are more emails left to send
-            if (i + BATCH_SIZE < runnerUps.length) {
-              await new Promise((res) => setTimeout(res, 500));
-            }
-          }
-        }
-      } catch (emailBlockErr) {
-        console.error('Manual draw: Unexpected error in email notification block:', emailBlockErr);
+      }
+      for (const failure of emailDispatch.retryable) {
+        console.error(
+          `Manual draw: email failed (retryable) for ${failure.email}: ${failure.reason}`
+        );
       }
     } else {
       console.warn(
@@ -234,7 +212,14 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      emailsSent: emailsSentCount > 0,
+      emailsSent: emailDispatch.sent > 0,
+      emailDispatch: {
+        sent: emailDispatch.sent,
+        failed: emailDispatch.failed,
+        skipped: emailDispatch.skipped,
+        rejectedCount: emailDispatch.rejected.length,
+        retryableCount: emailDispatch.retryable.length,
+      },
       winners: winners.map((w) => ({
         id: w.id,
         name: w.name,

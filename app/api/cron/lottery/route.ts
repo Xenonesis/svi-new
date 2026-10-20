@@ -1,21 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
-import { Resend } from 'resend';
 import { AppError } from '@/src/lib/api/errors';
 import crypto from 'crypto';
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
-
-function getResend() {
-  const key = process.env.RESEND_API_KEY;
-  if (!key) throw new Error('Missing RESEND_API_KEY');
-  return new Resend(key);
-}
+import { reminderEmailHtml, winnerEmailHtml, nonWinnerEmailHtml } from '@/src/lib/email-templates';
+import {
+  dispatchLotteryEmails,
+  type LotteryEmailRecipient,
+} from '@/src/lib/lottery/dispatchEmails';
+import { writeActivityLog } from '@/src/lib/repositories/activityLogWriter';
 
 const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
-
-/** Format a date to IST string */
-import { reminderEmailHtml, winnerEmailHtml, nonWinnerEmailHtml } from '@/src/lib/email-templates';
 
 // ─── Main Cron Handler ─────────────────────────────────────────────────────────
 
@@ -107,83 +101,69 @@ export async function GET(request: NextRequest) {
 
           results.push(`  → Winner: ${winner.name} (${winner.ticket_number})`);
 
-          // Send winner email
-          if (winner.email) {
-            try {
-              const resend = getResend();
-              const { data: emailData, error: sendErr } = await resend.emails.send({
-                from: FROM_ADDRESS,
-                to: [winner.email],
-                subject: `🏆 Congratulations! You won the ${lottery.title}!`,
-                html: winnerEmailHtml({
-                  participantName: winner.name,
-                  lotteryTitle: lottery.title,
-                  ticketNumber: winner.ticket_number,
-                  drawnAt: now,
-                }),
-              });
-              if (sendErr || !emailData?.id) {
-                results.push(
-                  `  → Winner email failed: ${sendErr?.message ?? 'no message id returned'}`
-                );
-              } else {
-                results.push(`  → Winner email sent to ${winner.email}`);
-              }
-            } catch (emailErr: unknown) {
-              results.push(
-                `  → Winner email failed: ${emailErr instanceof Error ? emailErr.message : String(emailErr)}`
-              );
-            }
-          }
-
-          // Send non-winner emails in batches
-          const nonWinners = participants.filter((p) => p.id !== winner.id && p.email);
-          let nonWinnerEmailCount = 0;
-          const BATCH_SIZE = 10;
-          for (let i = 0; i < nonWinners.length; i += BATCH_SIZE) {
-            const batch = nonWinners.slice(i, i + BATCH_SIZE);
-            await Promise.allSettled(
-              batch.map(async (p) => {
-                try {
-                  const resend = getResend();
-                  const { data: emailData, error: sendErr } = await resend.emails.send({
-                    from: FROM_ADDRESS,
-                    to: [p.email],
-                    subject: `Draw Results — ${lottery.title}`,
-                    html: nonWinnerEmailHtml({
-                      participantName: p.name,
+          // Send winner + non-winner emails through the shared dispatcher
+          const emailRecipients: LotteryEmailRecipient[] = [
+            ...(winner.email
+              ? [
+                  {
+                    email: winner.email,
+                    name: winner.name,
+                    ticketNumber: winner.ticket_number,
+                    subject: `Congratulations! You won the ${lottery.title}!`,
+                    html: winnerEmailHtml({
+                      participantName: winner.name,
                       lotteryTitle: lottery.title,
-                      ticketNumber: p.ticket_number,
-                      winnerName: winner.name,
+                      ticketNumber: winner.ticket_number,
                       drawnAt: now,
                     }),
-                  });
-                  if (sendErr || !emailData?.id) {
-                    console.error(
-                      `Non-winner email failed for ${p.email}:`,
-                      sendErr?.message ?? 'no message id returned'
-                    );
-                  } else {
-                    nonWinnerEmailCount++;
-                  }
-                } catch (emailErr: unknown) {
-                  console.error(
-                    `Non-winner email failed for ${p.email}:`,
-                    emailErr instanceof Error ? emailErr.message : String(emailErr)
-                  );
-                }
-              })
+                  },
+                ]
+              : []),
+            ...participants
+              .filter(
+                (p): p is typeof p & { email: string } => p.id !== winner.id && Boolean(p.email)
+              )
+              .map((p) => ({
+                email: p.email,
+                name: p.name,
+                ticketNumber: p.ticket_number,
+                subject: `Draw Results — ${lottery.title}`,
+                html: nonWinnerEmailHtml({
+                  participantName: p.name,
+                  lotteryTitle: lottery.title,
+                  ticketNumber: p.ticket_number,
+                  winnerName: winner.name,
+                  drawnAt: now,
+                }),
+              })),
+          ];
+
+          const apiKey = process.env.RESEND_API_KEY;
+          if (apiKey) {
+            const dispatch = await dispatchLotteryEmails(
+              apiKey,
+              FROM_ADDRESS,
+              emailRecipients,
+              `cron-${draw.id}`
             );
-            // Small delay between batches to avoid rate limits
-            if (i + BATCH_SIZE < nonWinners.length) {
-              await new Promise((res) => setTimeout(res, 500));
+            results.push(
+              `  → ${dispatch.sent} emails sent, ${dispatch.failed} failed (${dispatch.rejected.length} rejected, ${dispatch.retryable.length} retryable).`
+            );
+            for (const rejection of dispatch.rejected) {
+              console.error(
+                `Scheduled draw: email rejected for ${rejection.email}: ${rejection.reason}`
+              );
             }
+            for (const failure of dispatch.retryable) {
+              console.error(`Scheduled draw: email failed for ${failure.email}: ${failure.reason}`);
+            }
+          } else {
+            results.push('  → RESEND_API_KEY missing; skipped email notifications.');
           }
-          results.push(`  → ${nonWinnerEmailCount} non-winner emails sent.`);
 
           // Log activity
           try {
-            await supabaseAdmin.from('activity_logs').insert({
+            await writeActivityLog({
               user_id: null,
               action_type: 'lottery_drawn',
               description: `Scheduled draw executed for "${lottery.title}". Winner: ${winner.name} (${winner.ticket_number}).`,
@@ -226,46 +206,38 @@ export async function GET(request: NextRequest) {
             .eq('lottery_id', draw.lottery_id)
             .not('email', 'is', null);
 
-          let reminderCount = 0;
-          if (participants && participants.length > 0) {
-            const BATCH_SIZE = 10;
-            for (let i = 0; i < participants.length; i += BATCH_SIZE) {
-              const batch = participants.slice(i, i + BATCH_SIZE);
-              await Promise.allSettled(
-                batch.map(async (p) => {
-                  try {
-                    const resend = getResend();
-                    const { data: emailData, error: sendErr } = await resend.emails.send({
-                      from: FROM_ADDRESS,
-                      to: [p.email],
-                      subject: `⏰ Reminder: ${lottery.title} draw is happening soon!`,
-                      html: reminderEmailHtml({
-                        participantName: p.name,
-                        lotteryTitle: lottery.title,
-                        scheduledAt,
-                        ticketNumber: p.ticket_number,
-                        includeCountdown: draw.include_countdown_in_email,
-                      }),
-                    });
-                    if (sendErr || !emailData?.id) {
-                      console.error(
-                        `Reminder email failed for ${p.email}:`,
-                        sendErr?.message ?? 'no message id returned'
-                      );
-                    } else {
-                      reminderCount++;
-                    }
-                  } catch (emailErr: unknown) {
-                    console.error(
-                      `Reminder email failed for ${p.email}:`,
-                      emailErr instanceof Error ? emailErr.message : String(emailErr)
-                    );
-                  }
-                })
-              );
-              if (i + BATCH_SIZE < participants.length) {
-                await new Promise((res) => setTimeout(res, 500));
-              }
+          const apiKey = process.env.RESEND_API_KEY;
+          if (!apiKey) {
+            results.push('  → RESEND_API_KEY missing; skipped reminder emails.');
+          } else if (participants && participants.length > 0) {
+            const reminderRecipients: LotteryEmailRecipient[] = participants
+              .filter((p): p is typeof p & { email: string } => Boolean(p.email))
+              .map((p) => ({
+                email: p.email,
+                name: p.name,
+                ticketNumber: p.ticket_number,
+                subject: `Reminder: ${lottery.title} draw is happening soon!`,
+                html: reminderEmailHtml({
+                  participantName: p.name,
+                  lotteryTitle: lottery.title,
+                  scheduledAt,
+                  ticketNumber: p.ticket_number,
+                  includeCountdown: draw.include_countdown_in_email,
+                }),
+              }));
+
+            const dispatch = await dispatchLotteryEmails(
+              apiKey,
+              FROM_ADDRESS,
+              reminderRecipients,
+              `reminder-${draw.id}`
+            );
+            results.push(`  → ${dispatch.sent} reminder emails sent, ${dispatch.failed} failed.`);
+            for (const rejection of dispatch.rejected) {
+              console.error(`Reminder email rejected for ${rejection.email}: ${rejection.reason}`);
+            }
+            for (const failure of dispatch.retryable) {
+              console.error(`Reminder email failed for ${failure.email}: ${failure.reason}`);
             }
           }
 
@@ -274,8 +246,6 @@ export async function GET(request: NextRequest) {
             .from('scheduled_draws')
             .update({ status: 'reminder_sent', reminder_sent_at: now.toISOString() })
             .eq('id', draw.id);
-
-          results.push(`  → ${reminderCount} reminder emails sent.`);
         } catch (reminderErr: any) {
           results.push(`  → Reminder error: ${reminderErr.message}`);
           console.error('Reminder send error:', reminderErr);
