@@ -3,11 +3,14 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 /**
  * Activity-log writer that tolerates a stale `action_type` CHECK constraint.
  *
- * The live database's `activity_logs_action_type_check` can lag behind the
+ * The `activity_logs_action_type_check` constraint can lag behind the
  * application code (new action types such as `lottery_drawn` or
  * `campaign_created` are rejected with Postgres error 23514 until the matching
- * migration is applied). A failed audit write must never break the business
- * action that triggered it, so this helper:
+ * migration is applied to that database). Migration
+ * `20261020160000_extend_activity_logs_action_type_check.sql` aligns the
+ * constraint with the current action types, but a failed audit write must
+ * never break the business action that triggered it — and an environment that
+ * has not applied that migration yet would still hit 23514. So this helper:
  *   1. attempts the insert with the intended action type,
  *   2. on a constraint violation, falls back to a known-allowed type so the
  *      audit entry (and its metadata) is still recorded,
