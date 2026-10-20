@@ -93,7 +93,7 @@ export function useLotteryData(): UseLotteryDataReturn {
         setActiveLottery(active);
         const { count, error: cError } = await supabase
           .from('lottery_participants')
-          .select('*', { count: 'exact', head: true })
+          .select('id', { count: 'exact', head: true })
           .eq('lottery_id', active.id);
 
         if (!cError) {

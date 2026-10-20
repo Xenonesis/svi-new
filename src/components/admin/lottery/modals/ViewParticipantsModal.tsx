@@ -13,7 +13,6 @@ import {
   FileDown,
   Loader2,
 } from 'lucide-react';
-import { supabase } from '@/src/lib/supabase/client';
 import type { Lottery, DbParticipant } from '../types';
 import {
   fetchLotteryExportData,
@@ -68,26 +67,14 @@ export function ViewParticipantsModal({
   const loadParticipants = async (lotteryId: string) => {
     setLoading(true);
     try {
-      let { data, error } = await supabase
-        .from('lottery_participants')
-        .select('id, name, ticket_number, phone, email, is_winner')
-        .eq('lottery_id', lotteryId)
-        .order('is_winner', { ascending: false })
-        .order('name');
-
-      if (error) {
-        const fallback = await supabase
-          .from('lottery_participants')
-          .select('id, name, ticket_number, is_winner')
-          .eq('lottery_id', lotteryId)
-          .order('is_winner', { ascending: false })
-          .order('name');
-        data = (fallback.data as typeof data) || null;
-        error = fallback.error;
-      }
-
-      if (error) throw error;
-      setParticipants(data || []);
+      // PII (email/phone) is only readable through the verifyAdmin-gated route;
+      // the browser client no longer has SELECT on those columns.
+      const res = await fetch(
+        `/api/admin/lottery/participants?lotteryId=${encodeURIComponent(lotteryId)}`
+      );
+      if (!res.ok) throw new Error('Failed to fetch participants');
+      const json = (await res.json()) as { participants?: DbParticipant[] };
+      setParticipants(json.participants || []);
     } catch {
       // ignore
     } finally {

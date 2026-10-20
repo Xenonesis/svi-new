@@ -58,25 +58,21 @@ export function EditCampaignModal({
 
   const loadParticipants = async (l: Lottery) => {
     setPartsLoading(true);
-    const { data: initialData, error } = await supabase
-      .from('lottery_participants')
-      .select('id, name, ticket_number, phone, email, is_winner')
-      .eq('lottery_id', l.id)
-      .order('is_winner', { ascending: false })
-      .order('name');
-
-    let data = initialData;
-    if (error) {
-      const fallback = await supabase
-        .from('lottery_participants')
-        .select('id, name, ticket_number, is_winner')
-        .eq('lottery_id', l.id)
-        .order('is_winner', { ascending: false })
-        .order('name');
-      data = (fallback.data as typeof initialData) || null;
+    try {
+      // email/phone require the verifyAdmin-gated route now that the browser
+      // client only holds the non-sensitive column grant.
+      const res = await fetch(
+        `/api/admin/lottery/participants?lotteryId=${encodeURIComponent(l.id)}&limit=1000`
+      );
+      if (!res.ok) throw new Error('Failed to load participants');
+      const json = (await res.json()) as { participants?: DbParticipant[] };
+      setParticipants(json.participants || []);
+    } catch (err) {
+      console.error('Failed to load lottery participants:', err);
+      setParticipants([]);
+    } finally {
+      setPartsLoading(false);
     }
-    setParticipants(data || []);
-    setPartsLoading(false);
   };
 
   // Initialize state when lottery changes

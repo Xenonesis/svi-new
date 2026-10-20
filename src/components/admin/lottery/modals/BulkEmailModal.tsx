@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { AlertCircle, Check, Loader2, Mail, RefreshCw, Send, X } from 'lucide-react';
-import { supabase } from '@/src/lib/supabase/client';
 import { extractApiErrorMessage } from '@/src/lib/api/parseError';
 import type { Lottery } from '../types';
 
@@ -80,13 +79,18 @@ export function BulkEmailModal({
     if (!lottery || !subject.trim() || !body.trim()) return;
     setSending(true);
     try {
-      const { data: parts, error } = await supabase
-        .from('lottery_participants')
-        .select('email, name')
-        .eq('lottery_id', lottery.id)
-        .not('email', 'is', null);
-      if (error) throw error;
-      const emails = (parts || []).map((p: any) => p.email).filter(Boolean);
+      // Participant emails require the verifyAdmin-gated route now that the
+      // browser client only holds the non-sensitive column grant.
+      const partsRes = await fetch(
+        `/api/admin/lottery/participants?lotteryId=${encodeURIComponent(lottery.id)}&limit=1000`
+      );
+      if (!partsRes.ok) throw new Error('Failed to load participant emails');
+      const partsJson = (await partsRes.json()) as {
+        participants?: Array<{ email?: string | null }>;
+      };
+      const emails = (partsJson.participants || [])
+        .map((p) => p.email)
+        .filter((e): e is string => Boolean(e));
       if (emails.length === 0) {
         onError('No participants with email addresses found.');
         setSending(false);

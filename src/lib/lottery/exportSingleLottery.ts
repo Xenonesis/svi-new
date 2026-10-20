@@ -1,5 +1,4 @@
 import type { Lottery, DbParticipant } from '@/src/components/admin/lottery/types';
-import { supabase } from '@/src/lib/supabase/client';
 import { toast } from 'sonner';
 
 export interface SingleLotteryExportData {
@@ -11,19 +10,21 @@ export interface SingleLotteryExportData {
 
 /**
  * Fetches all participants for a specific lottery campaign.
+ *
+ * Participant email/phone require the verifyAdmin-gated route now that the
+ * browser client only holds the non-sensitive column grant on
+ * `lottery_participants`.
  */
 export async function fetchLotteryExportData(lottery: Lottery): Promise<SingleLotteryExportData> {
-  const { data: participants, error } = await supabase
-    .from('lottery_participants')
-    .select('id, name, ticket_number, phone, email, is_winner, prize_rank, created_at')
-    .eq('lottery_id', lottery.id)
-    .order('name', { ascending: true });
-
-  if (error) {
-    throw new Error(error.message || 'Failed to fetch draw participants');
+  const res = await fetch(
+    `/api/admin/lottery/participants?lotteryId=${encodeURIComponent(lottery.id)}&limit=1000`
+  );
+  if (!res.ok) {
+    throw new Error('Failed to fetch draw participants');
   }
+  const json = (await res.json()) as { participants?: DbParticipant[] };
 
-  const all = (participants || []) as DbParticipant[];
+  const all = json.participants || [];
   const winners = all.filter((p) => p.is_winner);
   const nonWinners = all.filter((p) => !p.is_winner);
 

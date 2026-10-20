@@ -213,7 +213,11 @@ describe('useLotteryWizard', () => {
           email: 'a@b.com',
         },
       ];
-      mockSupabaseQuery.limit.mockResolvedValueOnce({ data: mockFound, error: null });
+      const fetchMock = vi.fn().mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve({ participants: mockFound }),
+      });
+      vi.stubGlobal('fetch', fetchMock);
 
       const { result } = renderHook(() =>
         useLotteryWizard({
@@ -225,14 +229,16 @@ describe('useLotteryWizard', () => {
         result.current.setDbParticipantsSearch('Alice');
       });
 
-      expect(mockSupabaseQuery.limit).not.toHaveBeenCalled();
+      expect(fetchMock).not.toHaveBeenCalled();
 
       // Fast forward past 300ms debounce
       await act(async () => {
         vi.advanceTimersByTime(300);
       });
 
+      expect(fetchMock).toHaveBeenCalledTimes(1);
       expect(result.current.dbParticipants).toEqual(mockFound);
+      vi.unstubAllGlobals();
     });
 
     it('resets dbParticipants when drawMethod is random or activeLottery is null', async () => {

@@ -76,18 +76,19 @@ export function useLotteryWizard({
     const timer = setTimeout(async () => {
       setDbParticipantsLoading(true);
       try {
-        let query = supabase
-          .from('lottery_participants')
-          .select('id, name, ticket_number, phone, email')
-          .eq('lottery_id', activeLottery.id);
+        // email/phone are no longer selectable by the browser client, so the
+        // winner-picker search goes through the verifyAdmin-gated route.
+        const params = new URLSearchParams({
+          lotteryId: activeLottery.id,
+          limit: '10',
+        });
         if (dbParticipantsSearch.trim()) {
-          query = query.or(
-            `name.ilike.%${dbParticipantsSearch.trim()}%,ticket_number.ilike.%${dbParticipantsSearch.trim()}%`
-          );
+          params.set('search', dbParticipantsSearch.trim());
         }
-        const { data, error } = await query.limit(10);
-        if (error) throw error;
-        setDbParticipants(data || []);
+        const res = await fetch(`/api/admin/lottery/participants?${params.toString()}`);
+        if (!res.ok) throw new Error('Failed to load participants');
+        const json = (await res.json()) as { participants?: DbParticipant[] };
+        setDbParticipants(json.participants || []);
       } catch (err) {
         console.error('Error fetching participants for search:', err);
       } finally {
