@@ -1,13 +1,15 @@
 'use client';
 
+import React, { useTransition } from 'react';
 import { Volume2, Pause, Loader2 } from 'lucide-react';
-import { useRecordingPlayer } from '@/src/lib/leads/recordingPlayer';
+import { useRecordingPlayer, type RecordingMeta } from '@/src/lib/leads/recordingPlayer';
 
 interface IvrRecordingButtonProps {
   recordingUrl: string | null | undefined;
   variant?: 'icon' | 'pill';
   title?: string;
   className?: string;
+  meta?: RecordingMeta;
 }
 
 /**
@@ -24,19 +26,25 @@ export function IvrRecordingButton({
   variant = 'icon',
   title = 'Listen to Call Recording (.wav)',
   className = '',
+  meta,
 }: IvrRecordingButtonProps) {
   const { isPlaying, isLoading, toggle } = useRecordingPlayer(recordingUrl);
+  const [, startTransition] = useTransition();
 
   if (!recordingUrl) return null;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    startTransition(() => {
+      toggle(meta);
+    });
+  };
 
   if (variant === 'pill') {
     return (
       <button
         type="button"
-        onClick={(e) => {
-          e.stopPropagation();
-          toggle();
-        }}
+        onClick={handleClick}
         title={isPlaying ? 'Pause call recording' : 'Listen to call recording'}
         aria-label={isPlaying ? 'Pause call recording' : 'Listen to call recording'}
         className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-semibold transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/40 ${
@@ -60,10 +68,7 @@ export function IvrRecordingButton({
   return (
     <button
       type="button"
-      onClick={(e) => {
-        e.stopPropagation();
-        toggle();
-      }}
+      onClick={handleClick}
       title={isPlaying ? 'Pause Call Recording' : title}
       aria-label={isPlaying ? 'Pause Call Recording' : 'Listen to Call Recording'}
       className={`relative inline-flex items-center justify-center rounded-md p-1 transition-all focus:outline-none focus:ring-2 focus:ring-amber-500/40 ${

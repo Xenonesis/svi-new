@@ -147,6 +147,10 @@ export function IvrLeadMobileCard({
                           recordingUrl={record.recording_url}
                           variant="pill"
                           title="Listen to Call Recording"
+                          meta={{
+                            customerPhone: record.customer_phone,
+                            agentName: record.agent_name,
+                          }}
                         />
                       )}
                     </div>

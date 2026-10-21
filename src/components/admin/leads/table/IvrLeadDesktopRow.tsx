@@ -119,6 +119,10 @@ export function IvrLeadDesktopRow({
                               <IvrRecordingButton
                                 recordingUrl={record.recording_url}
                                 variant="icon"
+                                meta={{
+                                  customerPhone: record.customer_phone,
+                                  agentName: record.agent_name,
+                                }}
                               />
                             )}
                           </div>

@@ -12,6 +12,7 @@ import {
   exportIvrLeadsToCsv,
 } from '@/src/lib/leads/exportIvrLeads';
 import { LeadDrawer } from './LeadDrawer';
+import { IvrAudioPlayerDock } from './IvrAudioPlayerDock';
 
 import { IvrLeadsFilterToolbar } from './table/IvrLeadsFilterToolbar';
 import { IvrLeadMobileCard } from './table/IvrLeadMobileCard';
@@ -592,6 +593,9 @@ export function IvrLeadsTable({
           advisor_id: activeAdvisor !== 'all' ? activeAdvisor : undefined,
         }}
       />
+
+      {/* Persistent Floating Audio Player Dock */}
+      <IvrAudioPlayerDock />
     </div>
   );
 }

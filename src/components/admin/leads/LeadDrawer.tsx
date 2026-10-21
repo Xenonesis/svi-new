@@ -294,6 +294,10 @@ export function LeadDrawer({
                         recordingUrl={recordingUrl}
                         variant="pill"
                         title="Listen to IVR call recording (.wav)"
+                        meta={{
+                          customerPhone: phone || undefined,
+                          agentName: clientName || undefined,
+                        }}
                       />
                     )}
                   </div>
