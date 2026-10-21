@@ -165,6 +165,30 @@ async function run() {
 
   console.log(`Found active lottery: "${lottery.title}" (ID: ${lottery.id})`);
 
+  // Safety guard: this script seeds placeholder participants for a DEMO campaign
+  // only. Seeding a live campaign mixes fake entrants into a real draw, which
+  // publishes fabricated winners on the public portal and dilutes real
+  // participants. Refuse to touch a campaign that already has real entrants.
+  const { count: existingCount, error: countError } = await supabase
+    .from('lottery_participants')
+    .select('id', { count: 'exact', head: true })
+    .eq('lottery_id', lottery.id);
+
+  if (countError) {
+    console.error('Failed to count existing participants:', countError.message);
+    process.exit(1);
+  }
+
+  if ((existingCount ?? 0) > 0) {
+    console.error(
+      `REFUSING TO SEED: "${lottery.title}" already has ${existingCount} participant(s). ` +
+        'This script is for empty demo campaigns only — seeding a live campaign ' +
+        'would mix placeholder entrants into a real draw. Create a separate demo ' +
+        'campaign and re-run against it, or register real participants through the portal.'
+    );
+    process.exit(1);
+  }
+
   // Generate 98 unique names
   const indianNames = generateUniqueNames(98);
 
