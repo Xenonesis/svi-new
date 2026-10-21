@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import {
   OfferLetterPreviewContentProps,
   OfferLetterPage1,
@@ -8,6 +9,7 @@ import {
   getDocReferenceNumber,
   resolveMatchedSlab,
 } from './OfferLetter';
+import { useOfferLetterPageFit } from './OfferLetter/useOfferLetterPageFit';
 
 export type {
   OfferLetterFormData,
@@ -45,8 +47,14 @@ export default function OfferLetterPreviewContent({
     language,
   };
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  useOfferLetterPageFit(containerRef, formData, companyInfo, matchedSlab, language);
+
   return (
-    <div className="offer-letter-document flex flex-col items-center gap-6 bg-gray-200/60 p-2 sm:p-4">
+    <div
+      ref={containerRef}
+      className="offer-letter-document flex flex-col items-center gap-6 bg-gray-200/60 p-2 sm:p-4"
+    >
       <OfferLetterPage1 {...commonProps} />
       <OfferLetterPage2 {...commonProps} />
       <OfferLetterPage3 {...commonProps} />

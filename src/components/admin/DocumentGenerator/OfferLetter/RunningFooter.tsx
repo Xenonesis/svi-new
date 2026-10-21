@@ -12,7 +12,10 @@ export default function RunningFooter({
   language = 'en',
 }: RunningFooterProps) {
   return (
-    <div className="mt-auto grid grid-cols-[1fr_auto_auto] items-center gap-2 border-t border-gray-400 pt-2 text-[10.5px] text-gray-600">
+    <div
+      data-page-footer="true"
+      className="mt-auto grid grid-cols-[1fr_auto_auto] items-center gap-2 border-t border-gray-400 pt-2 text-[10.5px] text-gray-600"
+    >
       <div>
         <span className="font-bold text-gray-800">
           {language === 'hi' ? 'गोपनीय एवं सर्वाधिकार सुरक्षित' : 'CONFIDENTIAL & PROPRIETARY'}
