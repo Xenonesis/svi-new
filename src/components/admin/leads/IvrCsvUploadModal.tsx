@@ -189,7 +189,7 @@ export function IvrCsvUploadModal({ isOpen, onClose, onSuccess, token }: IvrCsvU
                   value={campaignName}
                   onChange={(e) => setCampaignName(e.target.value)}
                   placeholder="e.g. Shivani Vatika Outbound IVR 15-Sep"
-                  className="focus:border-brand-gold dark:focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-gray-50/70 px-3.5 py-2 text-xs text-gray-900 transition-colors focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+                  className="focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/30 dark:focus:border-brand-gold dark:focus:ring-brand-gold/30 w-full rounded-xl border border-gray-200 bg-gray-50/70 px-3.5 py-2 text-xs text-gray-900 transition-all focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-[#161D2C]"
                 />
               </div>
 
