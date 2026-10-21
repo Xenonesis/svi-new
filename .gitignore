@@ -25,6 +25,10 @@ dist/
 # Pi local state
 .pi/
 
+# Local agent / test tool artifacts
+.omp/
+.vitest/
+
 # OS files
 .DS_Store
 *.log
