@@ -55,21 +55,21 @@ export function QuotationTermsAndFooter({
             within 15–30 days.
           </p>
           <p style={{ margin: '0 0 2px' }}>
-            • <strong>Remaining Balance (70%):</strong> Next remaining amount will be counted on agreed
-            EMI plan as per its rate/square yard.
+            • <strong>Remaining Balance (70%):</strong> Next remaining amount will be counted on
+            agreed EMI plan as per its rate/square yard.
           </p>
           <p style={{ margin: '0 0 2px' }}>
-            • <strong>No-Cost EMI Guarantee:</strong> EMI will be 100% No-Cost EMI (0% interest, zero
-            hidden finance charges).
+            • <strong>No-Cost EMI Guarantee:</strong> EMI will be 100% No-Cost EMI (0% interest,
+            zero hidden finance charges).
           </p>
           <p style={{ margin: '0 0 2px' }}>
-            • <strong>Quotation Validity:</strong> Rates are valid until the specified date. Allotments
-            are subject to unit availability.
+            • <strong>Quotation Validity:</strong> Rates are valid until the specified date.
+            Allotments are subject to unit availability.
           </p>
           <p style={{ margin: 0 }}>
-            • <strong>Statutory Charges &amp; Agreement:</strong> Government stamp duty, registration
-            charges, and legal document fees are payable at the time of registry as per applicable
-            state norms. Final terms governed by Builder-Buyer Agreement (BBA).
+            • <strong>Statutory Charges &amp; Agreement:</strong> Government stamp duty,
+            registration charges, and legal document fees are payable at the time of registry as per
+            applicable state norms. Final terms governed by Builder-Buyer Agreement (BBA).
           </p>
         </div>
       </div>
