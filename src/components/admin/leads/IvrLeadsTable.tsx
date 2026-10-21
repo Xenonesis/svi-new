@@ -1,44 +1,27 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { ExportLeadsModal } from '@/src/components/admin/leads/ExportLeadsModal';
 import type { IvrRecordItem } from '@/app/api/admin/leads/ivr-records/route';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
-import {
-  Phone,
-  Clock,
-  Flame,
-  Zap,
-  Snowflake,
-  ChevronLeft,
-  ChevronRight,
-  ChevronDown,
-  Search,
-  CheckCircle2,
-  XCircle,
-  UserCheck,
-  Check,
-  Download,
-  FileText,
-  FileSpreadsheet,
-  X,
-  ArrowUpDown,
-  ArrowUp,
-  ArrowDown,
-  Calendar,
-  SlidersHorizontal,
-  RotateCcw,
-  Volume2,
-} from 'lucide-react';
+import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   exportIvrLeadsToExcel,
   exportIvrLeadsToPdf,
   exportIvrLeadsToCsv,
 } from '@/src/lib/leads/exportIvrLeads';
-import { WhatsAppTemplateDropdown } from './WhatsAppTemplateDropdown';
 import { LeadDrawer } from './LeadDrawer';
+
+import { IvrLeadsFilterToolbar } from './table/IvrLeadsFilterToolbar';
+import { IvrLeadMobileCard } from './table/IvrLeadMobileCard';
+import { IvrLeadDesktopRow } from './table/IvrLeadDesktopRow';
+import { IvrLeadsPagination } from './table/IvrLeadsPagination';
+import { IvrBulkActionDock } from './table/IvrBulkActionDock';
+import { IvrTableSkeletonRows } from './table/IvrTableSkeletonRows';
+
+export { IvrTableSkeletonRows };
+
 export interface IvrFilterState {
   dial_status: 'all' | 'ANSWER' | 'NOANSWER';
   temperature: 'all' | 'hot' | 'warm' | 'cold';
@@ -77,252 +60,6 @@ function formatDuration(seconds: number): string {
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;
   return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-}
-export function IvrTableSkeletonRows({ count = 8 }: { count?: number }) {
-  return (
-    <>
-      {Array.from({ length: count }).map((_, idx) => (
-        <tr
-          key={idx}
-          data-testid="ivr-table-skeleton-row"
-          className="animate-pulse transition-colors"
-          style={{ animationDelay: `${idx * 75}ms` }}
-        >
-          {/* Checkbox */}
-          <td className="px-4 py-3.5">
-            <div className="h-4 w-4 rounded-md bg-gray-200 dark:bg-white/10" />
-          </td>
-
-          {/* Customer Contact */}
-          <td className="px-5 py-3.5">
-            <div className="flex flex-col gap-1.5">
-              <div className="h-4 w-28 rounded-md bg-gray-200 dark:bg-white/10" />
-              <div className="h-3 w-16 rounded bg-gray-100 dark:bg-white/5" />
-            </div>
-          </td>
-
-          {/* Attended By */}
-          <td className="px-4 py-3.5">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 shrink-0 rounded-full bg-gray-200 dark:bg-white/10" />
-              <div className="flex flex-col gap-1">
-                <div className="h-3.5 w-20 rounded-md bg-gray-200 dark:bg-white/10" />
-                <div className="h-2.5 w-14 rounded bg-gray-100 dark:bg-white/5" />
-              </div>
-            </div>
-          </td>
-
-          {/* Follow-up Advisor */}
-          <td className="px-4 py-3.5">
-            <div className="h-7 w-28 rounded-lg bg-gray-200 dark:bg-white/10" />
-          </td>
-
-          {/* Dial Status */}
-          <td className="px-4 py-3.5">
-            <div className="h-5 w-20 rounded-full bg-gray-200 dark:bg-white/10" />
-          </td>
-
-          {/* Call Duration */}
-          <td className="px-4 py-3.5">
-            <div className="flex flex-col gap-1.5">
-              <div className="h-3.5 w-12 rounded bg-gray-200 dark:bg-white/10" />
-              <div className="h-1.5 w-20 rounded-full bg-gray-100 dark:bg-white/5" />
-            </div>
-          </td>
-
-          {/* Pressed Key */}
-          <td className="px-4 py-3.5">
-            <div className="h-6 w-8 rounded-lg bg-gray-200 dark:bg-white/10" />
-          </td>
-
-          {/* Lead Intent */}
-          <td className="px-4 py-3.5">
-            <div className="h-6 w-16 rounded-xl bg-gray-200 dark:bg-white/10" />
-          </td>
-
-          {/* Dialed At */}
-          <td className="px-5 py-3.5 text-right">
-            <div className="ml-auto flex flex-col items-end gap-1">
-              <div className="h-3.5 w-20 rounded bg-gray-200 dark:bg-white/10" />
-              <div className="h-2.5 w-14 rounded bg-gray-100 dark:bg-white/5" />
-            </div>
-          </td>
-        </tr>
-      ))}
-    </>
-  );
-}
-interface AdvisorFilterDropdownProps {
-  employees: Employee[];
-  selectedAdvisorId: string;
-  onChange: (id: string) => void;
-}
-
-export function AdvisorFilterDropdown({
-  employees,
-  selectedAdvisorId,
-  onChange,
-}: AdvisorFilterDropdownProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const [search, setSearch] = useState('');
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const selectedEmployee = employees.find((e) => e.id === selectedAdvisorId);
-  const selectedLabel = selectedEmployee ? selectedEmployee.full_name : 'All Advisors';
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      document.addEventListener('keydown', handleKeyDown);
-    }
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [isOpen]);
-
-  const filteredEmployees = employees.filter((emp) =>
-    emp.full_name.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div ref={dropdownRef} className="relative">
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-medium transition-all ${
-          selectedAdvisorId !== 'all'
-            ? 'border-brand-gold/40 bg-brand-gold/10 text-brand-gold font-semibold shadow-sm'
-            : 'border-gray-200 bg-gray-50/80 text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10 dark:hover:text-white'
-        }`}
-        aria-expanded={isOpen}
-        aria-haspopup="listbox"
-        aria-label="Filter by assigned advisor"
-      >
-        <UserCheck
-          className={`h-3.5 w-3.5 ${
-            selectedAdvisorId !== 'all' ? 'text-brand-gold' : 'text-gray-400 dark:text-gray-400'
-          }`}
-        />
-        <span className="max-w-[140px] truncate">{selectedLabel}</span>
-        <ChevronDown
-          className={`h-3 w-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
-        />
-      </button>
-
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 4, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 4, scale: 0.98 }}
-            transition={{ duration: 0.15 }}
-            className="absolute top-full left-0 z-50 mt-1.5 max-w-[280px] min-w-[240px] rounded-2xl border border-gray-200/80 bg-white p-1.5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#12121a]"
-            role="listbox"
-          >
-            {employees.length > 5 && (
-              <div className="p-1 pb-1.5">
-                <div className="relative">
-                  <Search className="absolute top-1/2 left-2.5 h-3.5 w-3.5 -translate-y-1/2 text-gray-400" />
-                  <input
-                    type="text"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder="Search advisor..."
-                    className="focus:border-brand-gold w-full rounded-lg border border-gray-200 bg-gray-50 py-1.5 pr-3 pl-8 text-xs text-gray-900 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
-                    autoFocus
-                  />
-                </div>
-              </div>
-            )}
-
-            <div className="max-h-[260px] space-y-0.5 overflow-x-hidden overflow-y-auto">
-              {/* All Advisors Option */}
-              <button
-                type="button"
-                onClick={() => {
-                  onChange('all');
-                  setIsOpen(false);
-                }}
-                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs transition-colors ${
-                  selectedAdvisorId === 'all'
-                    ? 'bg-brand-gold/15 text-brand-gold font-semibold'
-                    : 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-white'
-                }`}
-                role="option"
-                aria-selected={selectedAdvisorId === 'all'}
-              >
-                <div className="flex items-center gap-2">
-                  <div className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-200/70 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
-                    ALL
-                  </div>
-                  <span>All Advisors</span>
-                </div>
-                {selectedAdvisorId === 'all' && <Check className="text-brand-gold h-3.5 w-3.5" />}
-              </button>
-
-              {/* Individual Advisor Options */}
-              {filteredEmployees.map((emp) => {
-                const isSelected = selectedAdvisorId === emp.id;
-                const initials = emp.full_name
-                  .split(' ')
-                  .map((n) => n[0])
-                  .filter(Boolean)
-                  .slice(0, 2)
-                  .join('')
-                  .toUpperCase();
-
-                return (
-                  <button
-                    key={emp.id}
-                    type="button"
-                    onClick={() => {
-                      onChange(emp.id);
-                      setIsOpen(false);
-                    }}
-                    className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs transition-colors ${
-                      isSelected
-                        ? 'bg-brand-gold/15 text-brand-gold font-semibold'
-                        : 'text-gray-800 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-white/5 dark:hover:text-white'
-                    }`}
-                    role="option"
-                    aria-selected={isSelected}
-                  >
-                    <div className="flex min-w-0 items-center gap-2">
-                      <div className="bg-brand-gold/15 text-brand-gold flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold">
-                        {initials}
-                      </div>
-                      <span className="truncate">{emp.full_name}</span>
-                      {emp.is_active === false && (
-                        <span className="rounded-md border border-red-500/20 bg-red-50 px-1 py-0.5 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
-                          Disabled
-                        </span>
-                      )}
-                    </div>
-                    {isSelected && <Check className="text-brand-gold h-3.5 w-3.5 shrink-0" />}
-                  </button>
-                );
-              })}
-
-              {filteredEmployees.length === 0 && (
-                <div className="px-3 py-4 text-center text-xs text-gray-400">No advisors found</div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
 }
 
 export function IvrLeadsTable({
@@ -365,6 +102,29 @@ export function IvrLeadsTable({
   } | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
+  // Audio Playback State
+  const [activeAudio, setActiveAudio] = useState<string | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+
+  const toggleAudio = (url: string) => {
+    if (activeAudio === url) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setActiveAudio(null);
+    } else {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
+      const audio = new Audio(url);
+      audio.play();
+      audio.onended = () => setActiveAudio(null);
+      audioRef.current = audio;
+      setActiveAudio(url);
+    }
+  };
+
   const toggleSelectPhone = (phone: string) => {
     setSelectedPhones((prev) => {
       const next = new Set(prev);
@@ -404,37 +164,36 @@ export function IvrLeadsTable({
       });
       const data = await res.json();
       if (res.ok && data.success) {
+        const phonesToRevert = Array.from(selectedPhones);
         setSelectedPhones(new Set());
         onFilterChange({});
         toast.success(`Reassigned ${count} leads to ${advisorName}`, {
-          description: 'Option to revert is saved in Notifications.',
+          description: 'Changed in Supabase & local cache.',
           action: {
             label: 'Undo',
             onClick: async () => {
               try {
-                const revRes = await fetch('/api/admin/leads/bulk', {
+                const revertRes = await fetch('/api/admin/leads/bulk', {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
                     ...(token ? { Authorization: `Bearer ${token}` } : {}),
                   },
                   body: JSON.stringify({
-                    action: 'revert',
-                    notification_id: data.notification_id,
-                    previous_assignments: data.previous_assignments,
+                    phone_numbers: phonesToRevert,
+                    action: 'reassign',
+                    advisor_id: null,
+                    advisor_name: null,
                   }),
                 });
-                const revData = await revRes.json();
-                if (revRes.ok && revData.success) {
-                  toast.success(
-                    `Successfully reverted assignment for ${revData.restored_count} leads`
-                  );
+                if (revertRes.ok) {
+                  toast.success('Assignment reverted.');
                   onFilterChange({});
                 } else {
-                  toast.error(revData.message || 'Failed to revert assignment');
+                  toast.error('Could not revert assignment.');
                 }
               } catch {
-                toast.error('Failed to revert assignment');
+                toast.error('Revert failed.');
               }
             },
           },
@@ -519,7 +278,7 @@ export function IvrLeadsTable({
 
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
-  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onFilterChange({ q: searchTerm.trim() });
   };
@@ -593,407 +352,44 @@ export function IvrLeadsTable({
     });
   };
 
+  const hasActiveAdvancedFilters =
+    activePressedKey !== 'all' || activeDurationFilter !== 'all' || activeDate !== '';
+
   return (
     <div className="space-y-4">
-      {/* Filter Toolbar */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-gray-100 bg-white p-4 shadow-sm transition-colors duration-300 lg:flex-row lg:items-center lg:justify-between dark:border-white/5 dark:bg-[#0f0f16]">
-        {/* Left: Search & Advisor Dropdown */}
-        <div className="flex flex-1 flex-wrap items-center gap-2.5">
-          <form onSubmit={handleSearchSubmit} className="relative min-w-[240px] flex-1">
-            <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-            <input
-              type="text"
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search phone or advisor..."
-              className="focus:border-brand-gold dark:focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
-            />
-          </form>
+      {/* Filter Toolbar Subcomponent */}
+      <IvrLeadsFilterToolbar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        handleSearchSubmit={handleSearchSubmit}
+        employees={employees}
+        activeAdvisor={activeAdvisor}
+        handleAdvisorChange={handleAdvisorChange}
+        activeDialStatus={activeDialStatus}
+        handleDialStatusClick={handleDialStatusClick}
+        activeTemp={activeTemp}
+        handleTempClick={handleTempClick}
+        showAdvancedFilters={showAdvancedFilters}
+        setShowAdvancedFilters={setShowAdvancedFilters}
+        hasActiveAdvancedFilters={hasActiveAdvancedFilters}
+        setIsExportModalOpen={setIsExportModalOpen}
+        activeDate={activeDate}
+        handleDateChange={handleDateChange}
+        activePressedKey={activePressedKey}
+        handlePressedKeyChange={handlePressedKeyChange}
+        activeDuration={activeDurationFilter}
+        handleDurationFilterChange={handleDurationFilterChange}
+        handleResetFilters={handleResetFilters}
+        exportMenuRef={exportMenuRef}
+        exportMenuOpen={exportMenuOpen}
+        setExportMenuOpen={setExportMenuOpen}
+        handleExportExcel={handleExportExcel}
+        handleExportPdf={handleExportPdf}
+        handleExportCsv={handleExportCsv}
+        selectedCount={selectedPhones.size}
+        summary={summary}
+      />
 
-          <AdvisorFilterDropdown
-            employees={employees}
-            selectedAdvisorId={activeAdvisor}
-            onChange={handleAdvisorChange}
-          />
-        </div>
-
-        {/* Right: Dial Status & Temperature Quick Filters */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Dial Status Filter Group */}
-          <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50/80 p-0.5 dark:border-white/10 dark:bg-white/5">
-            <button
-              type="button"
-              onClick={() => handleDialStatusClick('all')}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeDialStatus === 'all'
-                  ? 'text-brand-navy bg-white shadow-sm dark:bg-white/15 dark:text-white'
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-              }`}
-            >
-              All Calls
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDialStatusClick('ANSWER')}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeDialStatus === 'ANSWER'
-                  ? 'bg-emerald-50 text-emerald-700 shadow-sm dark:bg-emerald-500/20 dark:text-emerald-300'
-                  : 'text-emerald-600 hover:text-emerald-700 dark:text-emerald-400'
-              }`}
-            >
-              <CheckCircle2 className="h-3 w-3" />
-              Answered {summary?.answered_calls ? `(${summary.answered_calls})` : ''}
-            </button>
-            <button
-              type="button"
-              onClick={() => handleDialStatusClick('NOANSWER')}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeDialStatus === 'NOANSWER'
-                  ? 'bg-rose-50 text-rose-700 shadow-sm dark:bg-rose-500/20 dark:text-rose-300'
-                  : 'text-rose-600 hover:text-rose-700 dark:text-rose-400'
-              }`}
-            >
-              <XCircle className="h-3 w-3" />
-              Not Answered {summary?.missed_calls ? `(${summary.missed_calls})` : ''}
-            </button>
-          </div>
-
-          {/* Temperature Filter Group */}
-          <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50/80 p-0.5 dark:border-white/10 dark:bg-white/5">
-            <button
-              type="button"
-              onClick={() => handleTempClick('all')}
-              className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeTemp === 'all'
-                  ? 'text-brand-navy bg-white shadow-sm dark:bg-white/15 dark:text-white'
-                  : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-              }`}
-            >
-              All
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTempClick('hot')}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeTemp === 'hot'
-                  ? 'bg-rose-50 text-rose-700 shadow-sm dark:bg-rose-500/20 dark:text-rose-300'
-                  : 'text-rose-600 hover:text-rose-700 dark:text-rose-400'
-              }`}
-            >
-              <Flame className="h-3 w-3" /> Hot
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTempClick('warm')}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeTemp === 'warm'
-                  ? 'bg-amber-50 text-amber-700 shadow-sm dark:bg-amber-500/20 dark:text-amber-300'
-                  : 'text-amber-600 hover:text-amber-700 dark:text-amber-400'
-              }`}
-            >
-              <Zap className="h-3 w-3" /> Warm
-            </button>
-            <button
-              type="button"
-              onClick={() => handleTempClick('cold')}
-              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                activeTemp === 'cold'
-                  ? 'bg-blue-50 text-blue-700 shadow-sm dark:bg-blue-500/20 dark:text-blue-300'
-                  : 'text-blue-600 hover:text-blue-700 dark:text-blue-400'
-              }`}
-            >
-              <Snowflake className="h-3 w-3" /> Cold
-            </button>
-          </div>
-          {/* Filters toggle button */}
-          <button
-            type="button"
-            onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}
-            className={`flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-1.5 text-xs font-semibold transition-all ${
-              showAdvancedFilters ||
-              activePressedKey !== 'all' ||
-              activeDurationFilter !== 'all' ||
-              activeDate
-                ? 'border-brand-gold bg-brand-gold/15 text-brand-gold font-bold shadow-xs'
-                : 'border-gray-300 bg-gray-100 text-gray-800 hover:bg-gray-200 hover:text-gray-950 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10 dark:hover:text-white'
-            }`}
-            title="Toggle more filters (Date, DTMF Key, Duration)"
-          >
-            <SlidersHorizontal className="h-3.5 w-3.5" />
-            <span>More Filters</span>
-            {(activePressedKey !== 'all' || activeDurationFilter !== 'all' || activeDate) && (
-              <span className="bg-brand-gold text-brand-navy flex h-4 w-4 items-center justify-center rounded-full text-[9px] font-bold">
-                {
-                  [
-                    activePressedKey !== 'all',
-                    activeDurationFilter !== 'all',
-                    Boolean(activeDate),
-                  ].filter(Boolean).length
-                }
-              </span>
-            )}
-          </button>
-
-          {/* Quick Export Suite Dropdown */}
-          <div className="relative" ref={exportMenuRef}>
-            <div className="flex items-center rounded-xl border border-gray-200 bg-gray-50 shadow-2xs dark:border-white/10 dark:bg-white/5">
-              <button
-                type="button"
-                onClick={() => setIsExportModalOpen(true)}
-                className="flex cursor-pointer items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-gray-700 transition-colors hover:bg-gray-100 dark:border-white/10 dark:bg-white/5 dark:text-gray-200 dark:hover:bg-white/10"
-                title="Open Export Studio to customize advisor and date range"
-              >
-                <Download className="text-brand-gold h-3.5 w-3.5" />
-                <span>Export</span>
-              </button>
-              <div className="h-4 w-px bg-gray-200 dark:bg-white/10" />
-              <button
-                type="button"
-                onClick={() => setExportMenuOpen(!exportMenuOpen)}
-                className="cursor-pointer px-2 py-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-800 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
-                title="More export formats (Excel, PDF)"
-                aria-label="Export format options"
-              >
-                <ChevronDown
-                  className={`h-3.5 w-3.5 transition-transform duration-200 ${
-                    exportMenuOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-            </div>
-
-            <AnimatePresence>
-              {exportMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute top-full right-0 z-40 mt-1.5 w-48 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#13131c]"
-                >
-                  <div className="px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                    Export{' '}
-                    {selectedPhones.size > 0 ? `${selectedPhones.size} Selected` : 'Page Leads'}
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsExportModalOpen(true);
-                      setExportMenuOpen(false);
-                    }}
-                    className="bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    <div className="text-left">
-                      <p className="leading-tight">Custom Export Studio...</p>
-                      <span className="text-[10px] font-normal opacity-80">
-                        By Advisor, Date & Status
-                      </span>
-                    </div>
-                  </button>
-                  <div className="my-1 border-t border-gray-100 dark:border-white/5" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportExcel();
-                      setExportMenuOpen(false);
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 dark:text-gray-200 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-                  >
-                    <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <div className="text-left">
-                      <p className="leading-tight">Excel Spreadsheet</p>
-                      <span className="text-[10px] font-normal text-gray-400">
-                        Formatted .xlsx file
-                      </span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportPdf();
-                      setExportMenuOpen(false);
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-gray-200 dark:hover:bg-red-500/10 dark:hover:text-red-400"
-                  >
-                    <FileText className="h-4 w-4 text-red-500" />
-                    <div className="text-left">
-                      <p className="leading-tight">PDF Document</p>
-                      <span className="text-[10px] font-normal text-gray-400">
-                        Printable branded report
-                      </span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportCsv();
-                      setExportMenuOpen(false);
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-amber-50 hover:text-amber-700 dark:text-gray-200 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
-                  >
-                    <Download className="h-4 w-4 text-amber-500" />
-                    <div className="text-left">
-                      <p className="leading-tight">CSV Spreadsheet</p>
-                      <span className="text-[10px] font-normal text-gray-400">
-                        Standard .csv format
-                      </span>
-                    </div>
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-        {/* Expandable Advanced Filters Panel */}
-        <AnimatePresence>
-          {showAdvancedFilters && (
-            <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden rounded-2xl border border-gray-100 bg-gray-50/80 p-4 shadow-xs dark:border-white/5 dark:bg-[#13131c]"
-            >
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-4">
-                  {/* Specific Day Filter */}
-                  <div>
-                    <label className="mb-1 flex items-center gap-1 text-[11px] font-semibold text-gray-600 dark:text-gray-300">
-                      <Calendar className="text-brand-gold h-3 w-3" />
-                      <span>Specific Date</span>
-                    </label>
-                    <div className="flex items-center gap-1">
-                      <input
-                        type="date"
-                        value={activeDate}
-                        onChange={(e) => handleDateChange(e.target.value)}
-                        className="focus:border-brand-gold rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs text-gray-800 dark:border-white/10 dark:bg-white/5 dark:text-gray-200"
-                      />
-                      {activeDate && (
-                        <button
-                          type="button"
-                          onClick={() => handleDateChange('')}
-                          className="rounded-lg p-1 text-gray-400 hover:text-rose-500"
-                          title="Clear date"
-                        >
-                          <X className="h-3.5 w-3.5" />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* DTMF Key Pressed Filter */}
-                  <div>
-                    <label className="mb-1 block text-[11px] font-semibold text-gray-600 dark:text-gray-300">
-                      DTMF Pressed Key
-                    </label>
-                    <div className="flex items-center rounded-xl border border-gray-200 bg-white p-0.5 dark:border-white/10 dark:bg-white/5">
-                      <button
-                        type="button"
-                        onClick={() => handlePressedKeyChange('all')}
-                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                          activePressedKey === 'all'
-                            ? 'bg-brand-gold/15 text-brand-gold'
-                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-                        }`}
-                      >
-                        All Keys
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePressedKeyChange('1')}
-                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                          activePressedKey === '1'
-                            ? 'bg-emerald-500/15 font-bold text-emerald-600 dark:text-emerald-400'
-                            : 'text-gray-500 hover:text-emerald-600 dark:text-gray-400'
-                        }`}
-                      >
-                        Key 1 (Interested)
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handlePressedKeyChange('none')}
-                        className={`rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
-                          activePressedKey === 'none'
-                            ? 'bg-rose-500/15 font-bold text-rose-600 dark:text-rose-400'
-                            : 'text-gray-500 hover:text-rose-600 dark:text-gray-400'
-                        }`}
-                      >
-                        No Key
-                      </button>
-                    </div>
-                  </div>
-
-                  {/* Call Duration Filter */}
-                  <div>
-                    <label className="mb-1 block text-[11px] font-semibold text-gray-600 dark:text-gray-300">
-                      Call Duration
-                    </label>
-                    <div className="flex items-center rounded-xl border border-gray-200 bg-white p-0.5 dark:border-white/10 dark:bg-white/5">
-                      <button
-                        type="button"
-                        onClick={() => handleDurationFilterChange('all')}
-                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
-                          activeDurationFilter === 'all'
-                            ? 'bg-brand-gold/15 text-brand-gold'
-                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-                        }`}
-                      >
-                        Any
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDurationFilterChange('lt_30')}
-                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
-                          activeDurationFilter === 'lt_30'
-                            ? 'bg-rose-500/15 font-bold text-rose-600 dark:text-rose-400'
-                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-                        }`}
-                      >
-                        &lt; 30s
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDurationFilterChange('30_60')}
-                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
-                          activeDurationFilter === '30_60'
-                            ? 'bg-amber-500/15 font-bold text-amber-600 dark:text-amber-400'
-                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-                        }`}
-                      >
-                        30s - 60s
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => handleDurationFilterChange('gt_60')}
-                        className={`rounded-lg px-2 py-1 text-[11px] font-semibold transition-all ${
-                          activeDurationFilter === 'gt_60'
-                            ? 'bg-emerald-500/15 font-bold text-emerald-600 dark:text-emerald-400'
-                            : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-                        }`}
-                      >
-                        &gt; 60s
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Reset all button */}
-                <button
-                  type="button"
-                  onClick={handleResetFilters}
-                  className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-1.5 text-xs font-semibold text-gray-600 transition-colors hover:bg-rose-50 hover:text-rose-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300 dark:hover:bg-rose-500/10 dark:hover:text-rose-400"
-                >
-                  <RotateCcw className="h-3.5 w-3.5" />
-                  <span>Reset All Filters</span>
-                </button>
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
       {/* Main Table Container: Mobile Cards (<md) + Full Desktop Table (md+) */}
       <div className="overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-colors duration-300 dark:border-white/8 dark:bg-[#0d0d14]">
         {/* Mobile Lead Cards View (<md) */}
@@ -1011,8 +407,8 @@ export function IvrLeadsTable({
                   </div>
                   <div className="h-3 w-48 rounded bg-gray-200/70 dark:bg-white/5" />
                   <div className="mt-3 flex gap-2">
-                    <div className="h-8 w-24 rounded-lg bg-gray-200 dark:bg-white/10" />
-                    <div className="h-8 w-24 rounded-lg bg-gray-200 dark:bg-white/10" />
+                    <div className="h-6 w-20 rounded bg-gray-200 dark:bg-white/10" />
+                    <div className="h-6 w-20 rounded bg-gray-200 dark:bg-white/10" />
                   </div>
                 </div>
               ))}
@@ -1022,202 +418,21 @@ export function IvrLeadsTable({
               No IVR call records found matching current filters.
             </div>
           ) : (
-            records.map((record) => {
-              const isAnswered = record.dial_status === 'ANSWER';
-              const durationPercent = Math.min(100, Math.round((record.call_duration / 120) * 100));
-              const isSelected = selectedPhones.has(record.customer_phone);
-
-              return (
-                <div
-                  key={`card-${record.id}`}
-                  className={`p-4 transition-colors ${
-                    isSelected
-                      ? 'bg-amber-50/50 dark:bg-amber-500/[0.04]'
-                      : 'hover:bg-gray-50/60 dark:hover:bg-white/[0.01]'
-                  }`}
-                >
-                  {/* Top Bar: Checkbox + Phone + Status & Temperature Badges */}
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="flex items-center gap-3">
-                      <input
-                        type="checkbox"
-                        checked={isSelected}
-                        onChange={() => toggleSelectPhone(record.customer_phone)}
-                        aria-label={`Select lead ${record.customer_phone}`}
-                        className="accent-brand-gold h-4 w-4 rounded border-gray-300 transition-colors"
-                      />
-                      <div>
-                        <button
-                          type="button"
-                          onClick={() =>
-                            setDrawerLead({
-                              phone: record.customer_phone,
-                              clientName: `Lead ${record.customer_phone}`,
-                              advisorId: record.assigned_agent_id,
-                              advisorName: record.agent_name,
-                              temperature: record.temperature,
-                              recordingUrl: record.recording_url,
-                            })
-                          }
-                          className="hover:text-brand-gold dark:hover:text-brand-gold text-left font-mono text-sm font-bold text-gray-900 transition-colors dark:text-white"
-                        >
-                          {record.customer_phone}
-                        </button>
-                        <p className="font-mono text-[10px] text-gray-400">
-                          {new Date(record.dial_time).toLocaleDateString('en-IN', {
-                            month: 'short',
-                            day: 'numeric',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex flex-col items-end gap-1">
-                      {/* Dial Status Badge */}
-                      {isAnswered ? (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2 py-0.5 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-                          <CheckCircle2 className="h-2.5 w-2.5 shrink-0" />
-                          Answered
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 rounded-full border border-rose-500/25 bg-rose-500/10 px-2 py-0.5 text-[10px] font-semibold text-rose-600 dark:text-rose-400">
-                          <XCircle className="h-2.5 w-2.5 shrink-0" />
-                          Missed
-                        </span>
-                      )}
-
-                      {/* Temperature Dropdown */}
-                      <select
-                        value={record.temperature}
-                        onChange={(e) =>
-                          onTemperatureChange(
-                            record.id,
-                            record.customer_phone,
-                            e.target.value as 'hot' | 'warm' | 'cold'
-                          )
-                        }
-                        aria-label={`Lead temperature for ${record.customer_phone}`}
-                        style={{ colorScheme: 'dark light' }}
-                        className={`rounded-full border px-2 py-0.5 text-[9px] font-bold tracking-wider uppercase transition-all focus:outline-none [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white ${
-                          record.temperature === 'hot'
-                            ? 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                            : record.temperature === 'warm'
-                              ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                              : 'border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                        }`}
-                      >
-                        <option value="hot">HOT</option>
-                        <option value="warm">WARM</option>
-                        <option value="cold">COLD</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  {/* Metrics Row: Duration + DTMF Key */}
-                  <div className="mt-3 flex items-center justify-between rounded-xl bg-gray-50/80 px-3 py-2 text-xs dark:bg-white/[0.02]">
-                    <div className="flex items-center gap-2">
-                      <Clock className="h-3.5 w-3.5 text-gray-400" />
-                      <span className="font-semibold text-gray-700 dark:text-gray-300">
-                        {formatDuration(record.call_duration)}
-                      </span>
-                      <span className="text-[10px] text-gray-400">({record.call_duration}s)</span>
-                      {record.recording_url && (
-                        <a
-                          href={record.recording_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
-                          title="Listen to Call Recording"
-                        >
-                          <Volume2 className="h-2.5 w-2.5" />
-                          <span>Audio</span>
-                        </a>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      {record.pressed_key ? (
-                        <span className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[10px] font-bold">
-                          Key {record.pressed_key}
-                        </span>
-                      ) : (
-                        <span className="text-[10px] text-gray-400">No Keypad Response</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* Advisor Assignment */}
-                  <div className="mt-3 flex items-center justify-between gap-2 text-xs">
-                    <div className="flex min-w-0 items-center gap-1.5">
-                      <div className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gray-100 text-[9px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
-                        {record.agent_name ? record.agent_name.slice(0, 1).toUpperCase() : '?'}
-                      </div>
-                      <span className="truncate text-[11px] text-gray-500 dark:text-gray-400">
-                        Attended:{' '}
-                        <strong className="text-gray-800 dark:text-gray-200">
-                          {record.agent_name || 'Telecaller'}
-                        </strong>
-                      </span>
-                    </div>
-
-                    <select
-                      value={record.assigned_agent_id || ''}
-                      onChange={(e) =>
-                        onReassignAdvisor(record.id, record.customer_phone, e.target.value)
-                      }
-                      aria-label={`Follow-up advisor for ${record.customer_phone}`}
-                      style={{ colorScheme: 'dark light' }}
-                      className="focus:border-brand-gold rounded-lg border border-gray-200 bg-white px-2 py-1 text-[11px] font-medium text-gray-800 transition-colors focus:outline-none dark:border-white/10 dark:bg-[#161622] dark:text-gray-200 [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
-                    >
-                      <option value="">
-                        {record.agent_name ? `${record.agent_name} (Attended)` : 'Unassigned'}
-                      </option>
-                      {employees.map((emp) => (
-                        <option key={emp.id} value={emp.id}>
-                          {emp.full_name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Action Bar (Minimum 44px Touch Targets) */}
-                  <div className="mt-3 flex items-center gap-2 border-t border-gray-100 pt-3 dark:border-white/5">
-                    <a
-                      href={`tel:${record.customer_phone}`}
-                      className="flex min-h-[44px] flex-1 items-center justify-center gap-1.5 rounded-xl border border-emerald-500/20 bg-emerald-500/10 px-3 py-2 text-xs font-bold text-emerald-700 transition-all active:scale-95 dark:border-emerald-400/20 dark:bg-emerald-400/10 dark:text-emerald-300"
-                    >
-                      <Phone className="h-3.5 w-3.5" />
-                      <span>Call</span>
-                    </a>
-
-                    <WhatsAppTemplateDropdown
-                      phone={record.customer_phone}
-                      clientName={`Lead ${record.customer_phone}`}
-                      advisorName={record.agent_name}
-                    />
-
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setDrawerLead({
-                          phone: record.customer_phone,
-                          clientName: `Lead ${record.customer_phone}`,
-                          advisorId: record.assigned_agent_id,
-                          advisorName: record.agent_name,
-                          temperature: record.temperature,
-                        })
-                      }
-                      className="hover:border-brand-gold/40 hover:text-brand-gold flex min-h-[44px] items-center justify-center gap-1.5 rounded-xl border border-gray-200 bg-gray-50 px-3 py-2 text-xs font-semibold text-gray-700 transition-all active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-300"
-                      title="Lead Notes & Timeline"
-                    >
-                      <FileText className="h-3.5 w-3.5" />
-                      <span>Notes</span>
-                    </button>
-                  </div>
-                </div>
-              );
-            })
+            records.map((record) => (
+              <IvrLeadMobileCard
+                key={`card-${record.id}`}
+                record={record}
+                isSelected={selectedPhones.has(record.customer_phone)}
+                toggleSelectPhone={toggleSelectPhone}
+                setDrawerLead={setDrawerLead}
+                onTemperatureChange={onTemperatureChange}
+                employees={employees}
+                onReassignAdvisor={onReassignAdvisor}
+                activeAudio={activeAudio}
+                toggleAudio={toggleAudio}
+                formatDuration={formatDuration}
+              />
+            ))
           )}
         </div>
 
@@ -1323,454 +538,56 @@ export function IvrLeadsTable({
                   </td>
                 </tr>
               ) : (
-                records.map((record) => {
-                  const isAnswered = record.dial_status === 'ANSWER';
-                  const durationPercent = Math.min(
-                    100,
-                    Math.round((record.call_duration / 120) * 100)
-                  );
-
-                  return (
-                    <tr
-                      key={record.id}
-                      className="transition-colors hover:bg-gray-50/80 dark:hover:bg-white/[0.02]"
-                    >
-                      {/* Checkbox */}
-                      <td className="w-10 px-4 py-3.5">
-                        <input
-                          type="checkbox"
-                          checked={selectedPhones.has(record.customer_phone)}
-                          onChange={() => toggleSelectPhone(record.customer_phone)}
-                          aria-label={`Select lead ${record.customer_phone}`}
-                          className="accent-brand-gold h-3.5 w-3.5 rounded border-gray-300 transition-colors"
-                        />
-                      </td>
-
-                      {/* Customer Phone & Quick Actions */}
-                      <td className="px-5 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() =>
-                              setDrawerLead({
-                                phone: record.customer_phone,
-                                clientName: `Lead ${record.customer_phone}`,
-                                advisorId: record.assigned_agent_id,
-                                advisorName: record.agent_name,
-                                temperature: record.temperature,
-                              })
-                            }
-                            className="hover:text-brand-gold dark:hover:text-brand-gold font-semibold text-gray-900 transition-colors dark:text-white"
-                            title="Open Lead Timeline & Notes"
-                          >
-                            {record.customer_phone}
-                          </button>
-
-                          <div className="flex items-center gap-1 opacity-80 hover:opacity-100">
-                            <a
-                              href={`tel:${record.customer_phone}`}
-                              className="rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 hover:text-emerald-600 dark:hover:bg-white/5"
-                              title="Click to Call"
-                            >
-                              <Phone className="h-3 w-3" />
-                            </a>
-
-                            <WhatsAppTemplateDropdown
-                              phone={record.customer_phone}
-                              clientName={`Lead ${record.customer_phone}`}
-                              advisorName={record.agent_name}
-                            />
-
-                            <button
-                              type="button"
-                              onClick={() =>
-                                setDrawerLead({
-                                  phone: record.customer_phone,
-                                  clientName: `Lead ${record.customer_phone}`,
-                                  advisorId: record.assigned_agent_id,
-                                  advisorName: record.agent_name,
-                                  temperature: record.temperature,
-                                  recordingUrl: record.recording_url,
-                                })
-                              }
-                              className="hover:text-brand-gold rounded-md p-1 text-gray-400 transition-colors hover:bg-gray-100 dark:hover:bg-white/5"
-                              title="Lead Notes & Timeline"
-                            >
-                              <FileText className="h-3 w-3" />
-                            </button>
-
-                            {record.recording_url && (
-                              <a
-                                href={record.recording_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-md p-1 text-amber-500 transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:bg-amber-500/20"
-                                title="Listen to Call Recording (.wav)"
-                              >
-                                <Volume2 className="h-3 w-3" />
-                              </a>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* 1. Attended By (Original Telecaller - Permanent / Read-Only) */}
-                      <td className="px-4 py-3.5">
-                        <div className="flex items-center gap-2">
-                          <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
-                            {record.agent_name ? record.agent_name.slice(0, 1).toUpperCase() : '?'}
-                          </div>
-                          <div className="min-w-0">
-                            <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
-                              {record.agent_name || 'Telecaller'}
-                            </p>
-                            {record.agent_phone && (
-                              <p className="font-mono text-[10px] text-gray-400">
-                                {record.agent_phone}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* 2. Follow-up Advisor (Assignable Lead Closer - Dropdown) */}
-                      <td className="px-4 py-3.5">
-                        <select
-                          value={record.assigned_agent_id || ''}
-                          onChange={(e) =>
-                            onReassignAdvisor(record.id, record.customer_phone, e.target.value)
-                          }
-                          aria-label={`Follow-up advisor for ${record.customer_phone}`}
-                          style={{ colorScheme: 'dark light' }}
-                          className="focus:border-brand-gold rounded-lg border border-transparent bg-transparent py-1 text-xs font-medium text-gray-800 transition-colors hover:border-gray-200 focus:bg-white focus:outline-none dark:text-gray-200 dark:hover:border-white/10 dark:focus:bg-[#1a1a24] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
-                        >
-                          <option
-                            value=""
-                            className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
-                          >
-                            {record.agent_name ? `${record.agent_name} (Attended)` : 'Unassigned'}
-                          </option>
-                          {employees.map((emp) => (
-                            <option
-                              key={emp.id}
-                              value={emp.id}
-                              className="bg-white text-gray-900 dark:bg-[#161622] dark:text-white"
-                            >
-                              {emp.full_name}
-                            </option>
-                          ))}
-                        </select>
-                      </td>
-
-                      {/* Prominent Dial Status Badge */}
-                      <td className="px-4 py-3.5">
-                        {isAnswered ? (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-emerald-500/25 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-semibold text-emerald-600 dark:text-emerald-400">
-                            <CheckCircle2 className="h-3 w-3 shrink-0" />
-                            Answered
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1.5 rounded-full border border-rose-500/25 bg-rose-500/10 px-2.5 py-1 text-[11px] font-semibold text-rose-600 dark:text-rose-400">
-                            <XCircle className="h-3 w-3 shrink-0" />
-                            Not Answered
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Call Duration with Visual Meter */}
-                      <td className="px-4 py-3.5">
-                        <div className="flex flex-col gap-1">
-                          <div className="flex items-center gap-1.5 font-medium text-gray-800 dark:text-gray-200">
-                            <Clock className="h-3 w-3 text-gray-400" />
-                            <span>{formatDuration(record.call_duration)}</span>
-                            <span className="text-[10px] text-gray-400">
-                              ({record.call_duration}s)
-                            </span>
-                          </div>
-                          <div className="h-1 w-20 overflow-hidden rounded-full bg-gray-100 dark:bg-white/10">
-                            <div
-                              className={`h-full rounded-full transition-all ${
-                                record.call_duration >= 60
-                                  ? 'bg-rose-500'
-                                  : record.call_duration >= 20
-                                    ? 'bg-amber-500'
-                                    : 'bg-gray-400'
-                              }`}
-                              style={{ width: `${durationPercent}%` }}
-                            />
-                          </div>
-                        </div>
-                      </td>
-
-                      {/* Pressed Key */}
-                      <td className="px-4 py-3.5">
-                        {record.pressed_key ? (
-                          <div className="group/dtmf relative inline-flex">
-                            <span
-                              className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:border-brand-gold/60 hover:bg-brand-gold/20 inline-flex cursor-help items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-bold transition-all"
-                              title={`DTMF Key ${record.pressed_key}: Caller actively pressed key ${record.pressed_key} during IVR call to express interest`}
-                            >
-                              Key {record.pressed_key}
-                            </span>
-
-                            {/* Sleek Hover Tooltip */}
-                            <div className="pointer-events-none absolute bottom-full left-1/2 z-50 mb-1.5 hidden -translate-x-1/2 rounded-lg bg-gray-950/95 px-2.5 py-1.5 text-[11px] font-medium whitespace-nowrap text-white shadow-xl backdrop-blur-md transition-all group-hover/dtmf:block dark:border dark:border-white/15 dark:bg-gray-900/95">
-                              <div className="text-brand-gold flex items-center gap-1.5 font-semibold">
-                                <Phone className="h-3 w-3" />
-                                <span>IVR Keypad Response</span>
-                              </div>
-                              <p className="mt-0.5 text-[10px] font-normal text-gray-300">
-                                Customer pressed{' '}
-                                <strong className="text-white">Key {record.pressed_key}</strong> on
-                                phone
-                                <br />
-                                Indicating high purchase interest
-                              </p>
-                              {/* Little arrow */}
-                              <div className="absolute top-full left-1/2 -mt-px -translate-x-1/2 border-4 border-transparent border-t-gray-950 dark:border-t-gray-900" />
-                            </div>
-                          </div>
-                        ) : (
-                          <span
-                            className="text-gray-400"
-                            title="No keypad button was pressed during the call"
-                          >
-                            —
-                          </span>
-                        )}
-                      </td>
-
-                      {/* Temperature with 1-Click Interactive Selector */}
-                      <td className="px-4 py-3.5">
-                        <select
-                          value={record.temperature}
-                          onChange={(e) =>
-                            onTemperatureChange(
-                              record.id,
-                              record.customer_phone,
-                              e.target.value as 'hot' | 'warm' | 'cold'
-                            )
-                          }
-                          aria-label={`Lead temperature for ${record.customer_phone}`}
-                          style={{ colorScheme: 'dark light' }}
-                          className={`rounded-full border px-2.5 py-0.5 text-[10px] font-bold tracking-wider uppercase transition-all focus:outline-none [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white ${
-                            record.temperature === 'hot'
-                              ? 'border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400'
-                              : record.temperature === 'warm'
-                                ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400'
-                                : 'border-blue-500/30 bg-blue-500/10 text-blue-600 dark:text-blue-400'
-                          }`}
-                        >
-                          <option
-                            value="hot"
-                            className="bg-white text-rose-600 dark:bg-[#161622] dark:text-rose-400"
-                          >
-                            Hot Lead
-                          </option>
-                          <option
-                            value="warm"
-                            className="bg-white text-amber-600 dark:bg-[#161622] dark:text-amber-400"
-                          >
-                            Warm Lead
-                          </option>
-                          <option
-                            value="cold"
-                            className="bg-white text-blue-600 dark:bg-[#161622] dark:text-blue-400"
-                          >
-                            Cold Lead
-                          </option>
-                        </select>
-                      </td>
-
-                      {/* Timestamp */}
-                      <td className="px-5 py-3.5 text-right font-mono text-[11px] text-gray-500 dark:text-gray-400">
-                        {new Date(record.dial_time).toLocaleDateString('en-IN', {
-                          month: 'short',
-                          day: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
-                      </td>
-                    </tr>
-                  );
-                })
+                records.map((record) => (
+                  <IvrLeadDesktopRow
+                    key={record.id}
+                    record={record}
+                    isSelected={selectedPhones.has(record.customer_phone)}
+                    toggleSelectPhone={toggleSelectPhone}
+                    setDrawerLead={setDrawerLead}
+                    employees={employees}
+                    onReassignAdvisor={onReassignAdvisor}
+                    onTemperatureChange={onTemperatureChange}
+                    activeAudio={activeAudio}
+                    toggleAudio={toggleAudio}
+                    formatDuration={formatDuration}
+                  />
+                ))
               )}
             </tbody>
           </table>
         </div>
 
-        {/* Pagination Footer */}
-        <div className="flex items-center justify-between border-t border-gray-100 px-5 py-3 text-xs text-gray-500 dark:border-white/5 dark:text-gray-400">
-          <div>
-            Showing{' '}
-            <span className="font-semibold text-gray-900 dark:text-white">{records.length}</span> of{' '}
-            <span className="font-semibold text-gray-900 dark:text-white">{totalCount}</span>{' '}
-            records
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              type="button"
-              onClick={() => onPageChange(page - 1)}
-              disabled={page <= 1 || loading}
-              className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 font-medium transition-colors hover:bg-gray-100 disabled:opacity-40 dark:border-white/10 dark:hover:bg-white/5"
-            >
-              <ChevronLeft className="h-3.5 w-3.5" /> Previous
-            </button>
-            <span className="px-2 font-medium">
-              {page} / {totalPages}
-            </span>
-            <button
-              type="button"
-              onClick={() => onPageChange(page + 1)}
-              disabled={page >= totalPages || loading}
-              className="flex items-center gap-1 rounded-lg border border-gray-200 px-3 py-1.5 font-medium transition-colors hover:bg-gray-100 disabled:opacity-40 dark:border-white/10 dark:hover:bg-white/5"
-            >
-              Next <ChevronRight className="h-3.5 w-3.5" />
-            </button>
-          </div>
-        </div>
+        {/* Pagination Footer Subcomponent */}
+        <IvrLeadsPagination
+          currentCount={records.length}
+          totalCount={totalCount}
+          page={page}
+          totalPages={totalPages}
+          loading={loading}
+          onPageChange={onPageChange}
+        />
       </div>
-      {/* Floating Bulk Action Dock */}
-      <AnimatePresence>
-        {selectedPhones.size > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            className="border-brand-gold/30 bg-brand-navy/95 fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 flex-wrap items-center gap-3 rounded-2xl border px-5 py-3 text-white shadow-2xl backdrop-blur-md"
-          >
-            <div className="flex items-center gap-2 border-r border-white/10 pr-3">
-              <span className="bg-brand-gold text-brand-navy flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
-                {selectedPhones.size}
-              </span>
-              <span className="text-xs font-semibold">Leads Selected</span>
-            </div>
 
-            {/* Bulk Reassign Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-gray-400">Assign:</span>
-              <select
-                onChange={(e) => {
-                  if (e.target.value) handleBulkReassign(e.target.value);
-                }}
-                defaultValue=""
-                disabled={bulkLoading}
-                style={{ colorScheme: 'dark light' }}
-                className="rounded-xl border border-white/20 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none dark:bg-[#1a1a25] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
-              >
-                <option value="" disabled>
-                  Select Advisor...
-                </option>
-                {employees.map((emp) => (
-                  <option key={emp.id} value={emp.id}>
-                    {emp.full_name}
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Bulk Stage Dropdown */}
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] text-gray-400">Stage:</span>
-              <select
-                onChange={(e) => {
-                  if (e.target.value) handleBulkStage(e.target.value);
-                }}
-                defaultValue=""
-                disabled={bulkLoading}
-                style={{ colorScheme: 'dark light' }}
-                className="rounded-xl border border-white/20 bg-white/10 px-2 py-1 text-xs font-semibold text-white focus:outline-none dark:bg-[#1a1a25] [&>option]:bg-white [&>option]:text-gray-900 dark:[&>option]:bg-[#161622] dark:[&>option]:text-white"
-              >
-                <option value="" disabled>
-                  Move Stage...
-                </option>
-                <option value="contacted">Contacted</option>
-                <option value="visit_scheduled">Visit Scheduled</option>
-                <option value="visited">Site Visited</option>
-                <option value="booked">Booked</option>
-                <option value="lost">Lost / Dropped</option>
-              </select>
-            </div>
-
-            {/* Export Selected Dropdown */}
-            <div className="relative" ref={dockExportMenuRef}>
-              <button
-                type="button"
-                onClick={() => setDockExportMenuOpen(!dockExportMenuOpen)}
-                className="flex cursor-pointer items-center gap-1.5 rounded-xl bg-white/10 px-3 py-1 text-xs font-semibold text-white transition-colors hover:bg-white/20"
-                title="Export selected leads"
-              >
-                <Download className="text-brand-gold h-3.5 w-3.5" />
-                <span>Export ({selectedPhones.size})</span>
-                <ChevronDown
-                  className={`h-3 w-3 opacity-70 transition-transform ${
-                    dockExportMenuOpen ? 'rotate-180' : ''
-                  }`}
-                />
-              </button>
-
-              <AnimatePresence>
-                {dockExportMenuOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 6 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 6 }}
-                    className="absolute right-0 bottom-full z-50 mb-2 w-44 rounded-2xl border border-white/10 bg-[#13131c] p-1.5 shadow-2xl backdrop-blur-xl"
-                  >
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleExportExcel();
-                        setDockExportMenuOpen(false);
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-200 hover:bg-emerald-500/10 hover:text-emerald-400"
-                    >
-                      <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-400" />
-                      <span>Excel (.xlsx)</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleExportPdf();
-                        setDockExportMenuOpen(false);
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-200 hover:bg-red-500/10 hover:text-red-400"
-                    >
-                      <FileText className="h-3.5 w-3.5 text-red-400" />
-                      <span>PDF Document</span>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        handleExportCsv();
-                        setDockExportMenuOpen(false);
-                      }}
-                      className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-gray-200 hover:bg-white/10 hover:text-white"
-                    >
-                      <Download className="h-3.5 w-3.5 text-amber-400" />
-                      <span>CSV (.csv)</span>
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-            {/* Clear Selection */}
-            <button
-              type="button"
-              onClick={() => setSelectedPhones(new Set())}
-              className="rounded-lg p-1 text-gray-400 hover:text-white"
-              title="Clear selection"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {/* Floating Bulk Action Dock Subcomponent */}
+      <IvrBulkActionDock
+        selectedCount={selectedPhones.size}
+        employees={employees}
+        bulkLoading={bulkLoading}
+        handleBulkReassign={handleBulkReassign}
+        handleBulkStage={handleBulkStage}
+        dockExportMenuRef={dockExportMenuRef}
+        dockExportMenuOpen={dockExportMenuOpen}
+        setDockExportMenuOpen={setDockExportMenuOpen}
+        handleExportExcel={handleExportExcel}
+        handleExportPdf={handleExportPdf}
+        handleExportCsv={handleExportCsv}
+        onClearSelection={() => setSelectedPhones(new Set())}
+      />
 
       {/* Slide-over Lead Timeline & Notes Drawer */}
       {drawerLead && (
         <LeadDrawer
-          isOpen={Boolean(drawerLead)}
           phone={drawerLead.phone}
           clientName={drawerLead.clientName}
           assignedAdvisorId={drawerLead.advisorId}
@@ -1778,8 +595,12 @@ export function IvrLeadsTable({
           temperature={drawerLead.temperature}
           recordingUrl={drawerLead.recordingUrl}
           employees={employees}
+          isOpen={!!drawerLead}
           onClose={() => setDrawerLead(null)}
-          onLeadUpdated={() => onFilterChange({})}
+          onLeadUpdated={() => {
+            onFilterChange({});
+          }}
+          token={token}
         />
       )}
 
@@ -1792,9 +613,9 @@ export function IvrLeadsTable({
         currentRecords={records}
         totalRecordsCount={totalCount}
         currentFilters={{
-          advisor_id: activeAdvisor,
-          dial_status: activeDialStatus,
-          temperature: activeTemp,
+          dial_status: activeDialStatus !== 'all' ? activeDialStatus : undefined,
+          temperature: activeTemp !== 'all' ? activeTemp : undefined,
+          advisor_id: activeAdvisor !== 'all' ? activeAdvisor : undefined,
         }}
       />
     </div>
