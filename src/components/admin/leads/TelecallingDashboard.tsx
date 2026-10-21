@@ -493,7 +493,7 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search advisor..."
-                className="focus:border-brand-gold dark:focus:border-brand-gold w-48 rounded-xl border border-gray-200 bg-gray-50 py-1.5 pr-3 pl-8 text-xs text-gray-900 transition-colors focus:bg-white focus:outline-hidden dark:border-white/10 dark:bg-white/5 dark:text-white"
+                className="focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 dark:focus:border-brand-gold dark:focus:ring-brand-gold/30 w-48 rounded-xl border border-gray-200 bg-gray-50 py-1.5 pr-3 pl-8 text-xs text-gray-900 transition-all focus:bg-white focus:outline-hidden dark:border-white/10 dark:bg-white/5 dark:text-white"
               />
             </div>
 

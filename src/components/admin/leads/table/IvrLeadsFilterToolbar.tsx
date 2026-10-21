@@ -102,7 +102,7 @@ export function IvrLeadsFilterToolbar({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search phone or advisor..."
-              className="focus:border-brand-gold dark:focus:border-brand-gold w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2 pr-4 pl-9 text-xs text-gray-900 transition-colors focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
+              className="focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/20 dark:focus:border-brand-gold dark:focus:ring-brand-gold/30 w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2 pr-4 pl-9 text-xs text-gray-900 transition-all focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white"
             />
           </form>
 
