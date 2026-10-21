@@ -2,64 +2,30 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { useRouter } from 'next/navigation';
-import { motion, AnimatePresence } from 'motion/react';
+import { Trophy, Search, ArrowUpDown } from 'lucide-react';
+import { toast } from 'sonner';
+
 import { ExportLeadsModal } from '@/src/components/admin/leads/ExportLeadsModal';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
-import {
-  Trophy,
-  Medal,
-  PhoneCall,
-  PhoneForwarded,
-  PhoneOff,
-  Flame,
-  Clock,
-  Search,
-  ArrowUpDown,
-  Download,
-  ExternalLink,
-  MessageCircle,
-  RefreshCw,
-  Phone,
-  FileSpreadsheet,
-  FileText,
-  ChevronDown,
-} from 'lucide-react';
-import { toast } from 'sonner';
 import type {
   AdvisorPerformanceMetric,
   CampaignPerformanceMetric,
+  DashboardSummary,
+  SortField,
+  TimeRange,
 } from '@/src/lib/types/telecalling';
-interface DashboardSummary {
-  total_calls: number;
-  answered_calls: number;
-  missed_calls: number;
-  answer_rate: number;
-  total_talk_time_sec: number;
-  avg_talk_time_sec: number;
-  hot_leads: number;
-  key1_count: number;
-  active_advisors: number;
-  total_roster_count: number;
-}
+import { formatSeconds } from '@/src/lib/types/telecalling';
 
-interface TelecallingDashboardProps {
+import { TelecallingDashboardToolbar } from './dashboard/TelecallingDashboardToolbar';
+import { TelecallingCockpitHero } from './dashboard/TelecallingCockpitHero';
+import { AdvisorPodiumCard } from './dashboard/AdvisorPodiumCard';
+import { AdvisorContenderCard } from './dashboard/AdvisorContenderCard';
+import { TelecallingBenchDrawer } from './dashboard/TelecallingBenchDrawer';
+
+export interface TelecallingDashboardProps {
   token?: string;
   onNavigateToLeads?: (advisorId?: string) => void;
 }
-
-function formatSeconds(seconds: number): string {
-  if (!seconds || seconds <= 0) return '0s';
-  const hrs = Math.floor(seconds / 3600);
-  const mins = Math.floor((seconds % 3600) / 60);
-  const secs = seconds % 60;
-  if (hrs > 0) return `${hrs}h ${mins}m`;
-  if (mins > 0) return `${mins}m ${secs}s`;
-  return `${secs}s`;
-}
-
-type SortField =
-  'answered_calls' | 'total_calls' | 'answer_rate' | 'total_talk_time_sec' | 'hot_leads';
-type TimeRange = 'all' | 'today' | 'week' | 'month';
 
 export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDashboardProps) {
   const router = useRouter();
@@ -92,6 +58,7 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
       }
     >
   >(new Map());
+
   useEffect(() => {
     if (!token || employeesLoadedRef.current) return;
     fetch('/api/admin/employees', {
@@ -116,6 +83,7 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
   const fetchDashboardData = useCallback(
     async (showRefreshAnimation = false) => {
       const cached = dashboardCacheRef.current.get(timeRange);
@@ -215,6 +183,7 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
         return 0;
       });
   }, [leaderboard, searchQuery, sortBy]);
+
   const [showBench, setShowBench] = useState(false);
 
   const { activeAdvisors, benchAdvisors } = useMemo(() => {
@@ -241,7 +210,6 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
     }
     try {
       toast.info('Generating Excel report...');
-      // Lazy-load ExcelJS to keep it out of the initial page compilation bundle
       const ExcelJS = (await import('exceljs')).default;
       const workbook = new ExcelJS.Workbook();
       workbook.creator = 'SVI Infra Solutions Pvt. Ltd.';
@@ -325,7 +293,6 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
     }
     try {
       toast.info('Generating PDF report...');
-      // Lazy-load jsPDF to keep it out of the initial page compilation bundle
       const { jsPDF } = await import('jspdf');
       const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
       const pageWidth = doc.internal.pageSize.getWidth();
@@ -469,6 +436,7 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
     document.body.removeChild(link);
     toast.success('Advisor performance report exported!');
   };
+
   const handleAdvisorLeadsClick = (advisorId: string) => {
     if (onNavigateToLeads) {
       onNavigateToLeads(advisorId);
@@ -480,336 +448,29 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
   return (
     <div className="space-y-6">
       {/* ── Top Header & Global Controls ── */}
-      <div className="dark:to-brand-gold/[0.03] flex flex-col gap-4 rounded-3xl border border-gray-200 bg-gradient-to-br from-white via-gray-50/50 to-amber-500/[0.03] p-6 shadow-sm transition-colors duration-300 lg:flex-row lg:items-center lg:justify-between dark:border-white/5 dark:from-[#0d0d14] dark:via-[#0a0a10]">
-        <div className="space-y-1">
-          <div className="flex items-center gap-3">
-            <div className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold flex h-11 w-11 items-center justify-center rounded-2xl border shadow-sm">
-              <Trophy className="h-5 w-5" />
-            </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="font-serif text-xl font-bold tracking-tight text-gray-900 sm:text-2xl dark:text-white">
-                  Telecalling &amp; Conversion Command Center
-                </h1>
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-[10px] font-bold text-emerald-600 dark:text-emerald-400">
-                  <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-emerald-500" />
-                  Live Sync
-                </span>
-              </div>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                Real-time telecaller productivity, connected rates, hot lead generation &amp;
-                advisor conversion rankings
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Global Action Toolbar */}
-        <div className="flex flex-wrap items-center gap-2">
-          {/* Time Filter Pills */}
-          <div className="flex items-center rounded-xl border border-gray-200 bg-white p-1 text-xs font-semibold shadow-2xs dark:border-white/10 dark:bg-[#13131c]">
-            {(
-              [
-                { key: 'all', label: 'All Time' },
-                { key: 'today', label: 'Today' },
-                { key: 'week', label: '7 Days' },
-                { key: 'month', label: '30 Days' },
-              ] as const
-            ).map((item) => (
-              <button
-                key={item.key}
-                type="button"
-                onClick={() => setTimeRange(item.key)}
-                className={`cursor-pointer rounded-lg px-3 py-1.5 transition-all ${
-                  timeRange === item.key
-                    ? 'bg-brand-navy dark:bg-brand-gold dark:text-brand-navy font-bold text-white shadow-xs'
-                    : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
-                }`}
-              >
-                {item.label}
-              </button>
-            ))}
-          </div>
-
-          {/* Refresh Button */}
-          <button
-            type="button"
-            onClick={() => fetchDashboardData(true)}
-            disabled={isRefreshing}
-            className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-2xs transition-colors hover:bg-gray-50 dark:border-white/10 dark:bg-[#13131c] dark:text-gray-300 dark:hover:bg-white/5"
-            title="Refresh live metrics"
-          >
-            <RefreshCw
-              className={`h-3.5 w-3.5 ${isRefreshing ? 'text-brand-gold animate-spin' : ''}`}
-            />
-            <span className="hidden sm:inline">Refresh</span>
-          </button>
-
-          {/* Export CSV */}
-          {/* Export Dropdown Suite */}
-          <div className="relative" ref={exportMenuRef}>
-            <button
-              type="button"
-              onClick={() => setExportMenuOpen(!exportMenuOpen)}
-              className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex cursor-pointer items-center gap-1.5 rounded-xl border px-3 py-2 text-xs font-bold shadow-2xs transition-colors"
-              title="Export advisor report (Excel, PDF, CSV)"
-            >
-              <Download className="h-3.5 w-3.5" />
-              <span>Export Report</span>
-              <ChevronDown
-                className={`h-3 w-3 transition-transform ${exportMenuOpen ? 'rotate-180' : ''}`}
-              />
-            </button>
-
-            <AnimatePresence>
-              {exportMenuOpen && (
-                <motion.div
-                  initial={{ opacity: 0, y: 6, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  exit={{ opacity: 0, y: 6, scale: 0.95 }}
-                  transition={{ duration: 0.15 }}
-                  className="absolute top-full right-0 z-40 mt-1.5 w-48 rounded-2xl border border-gray-200 bg-white p-1.5 shadow-xl backdrop-blur-md dark:border-white/10 dark:bg-[#13131c]"
-                >
-                  <div className="px-2.5 py-1 text-[10px] font-bold tracking-wider text-gray-400 uppercase">
-                    Advisor Leaderboard
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setSelectedExportAdvisor('all');
-                      setIsExportModalOpen(true);
-                      setExportMenuOpen(false);
-                    }}
-                    className="bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-bold transition-colors"
-                  >
-                    <Download className="h-4 w-4" />
-                    <div className="text-left">
-                      <p className="leading-tight">Custom Export Studio...</p>
-                      <span className="text-[10px] font-normal opacity-80">
-                        By Advisor, Date & Status
-                      </span>
-                    </div>
-                  </button>
-                  <div className="my-1 border-t border-gray-100 dark:border-white/5" />
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportExcel();
-                      setExportMenuOpen(false);
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-emerald-50 hover:text-emerald-700 dark:text-gray-200 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-                  >
-                    <FileSpreadsheet className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                    <div className="text-left">
-                      <p className="leading-tight">Excel (.xlsx)</p>
-                      <span className="text-[10px] font-normal text-gray-400">
-                        Formatted spreadsheet
-                      </span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportPdf();
-                      setExportMenuOpen(false);
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-red-50 hover:text-red-700 dark:text-gray-200 dark:hover:bg-red-500/10 dark:hover:text-red-400"
-                  >
-                    <FileText className="h-4 w-4 text-red-500" />
-                    <div className="text-left">
-                      <p className="leading-tight">PDF Document</p>
-                      <span className="text-[10px] font-normal text-gray-400">
-                        Printable report
-                      </span>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={() => {
-                      handleExportCsv();
-                      setExportMenuOpen(false);
-                    }}
-                    className="flex w-full cursor-pointer items-center gap-2 rounded-xl px-2.5 py-2 text-xs font-semibold text-gray-700 transition-colors hover:bg-amber-50 hover:text-amber-700 dark:text-gray-200 dark:hover:bg-amber-500/10 dark:hover:text-amber-400"
-                  >
-                    <Download className="h-4 w-4 text-amber-500" />
-                    <div className="text-left">
-                      <p className="leading-tight">CSV Spreadsheet</p>
-                      <span className="text-[10px] font-normal text-gray-400">Universal .csv</span>
-                    </div>
-                  </button>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
+      <TelecallingDashboardToolbar
+        timeRange={timeRange}
+        setTimeRange={setTimeRange}
+        fetchDashboardData={fetchDashboardData}
+        isRefreshing={isRefreshing}
+        exportMenuRef={exportMenuRef}
+        exportMenuOpen={exportMenuOpen}
+        setExportMenuOpen={setExportMenuOpen}
+        setSelectedExportAdvisor={setSelectedExportAdvisor}
+        setIsExportModalOpen={setIsExportModalOpen}
+        handleExportExcel={handleExportExcel}
+        handleExportPdf={handleExportPdf}
+        handleExportCsv={handleExportCsv}
+      />
 
       {/* ── Unified Telemetry Cockpit Hero ── */}
-      <div className="rounded-3xl border border-gray-200 bg-white p-5 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0c0f18]">
-        {/* 6 High-Density Metric Columns */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-6">
-          {/* 1. Total Calls Handled */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-3.5 transition-colors dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-              <span className="text-[10px] font-bold tracking-wider uppercase">Total Calls</span>
-              <div className="rounded-lg bg-blue-500/10 p-1 text-blue-500">
-                <PhoneCall className="h-3.5 w-3.5" />
-              </div>
-            </div>
-            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-gray-900 tabular-nums dark:text-white">
-              {summary?.total_calls.toLocaleString() || '0'}
-            </div>
-            <div className="mt-1 text-[10px] text-gray-500">
-              <span>Volume Handled</span>
-            </div>
-          </div>
+      <TelecallingCockpitHero
+        summary={summary}
+        campaigns={campaigns}
+        lastUpdated={lastUpdated}
+        handleAdvisorLeadsClick={handleAdvisorLeadsClick}
+      />
 
-          {/* 2. Connected / Answered */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.03] p-3.5 transition-colors dark:border-emerald-500/20 dark:bg-emerald-500/[0.04]">
-            <div className="flex items-center justify-between text-emerald-600 dark:text-emerald-400">
-              <span className="text-[10px] font-bold tracking-wider uppercase">Answered Calls</span>
-              <div className="rounded-lg bg-emerald-500/15 p-1 text-emerald-500">
-                <PhoneForwarded className="h-3.5 w-3.5" />
-              </div>
-            </div>
-            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-emerald-600 tabular-nums dark:text-emerald-400">
-              {summary?.answered_calls.toLocaleString() || '0'}
-            </div>
-            <div className="mt-1 text-[10px] font-semibold text-emerald-600 dark:text-emerald-400">
-              {summary?.answer_rate || 0}% Connection Rate
-            </div>
-          </div>
-
-          {/* 3. Missed Calls */}
-          <div className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.03] p-3.5 transition-colors dark:border-rose-500/20 dark:bg-rose-500/[0.04]">
-            <div className="flex items-center justify-between text-rose-500 dark:text-rose-400">
-              <span className="text-[10px] font-bold tracking-wider uppercase">Missed Calls</span>
-              <div className="rounded-lg bg-rose-500/15 p-1 text-rose-500">
-                <PhoneOff className="h-3.5 w-3.5" />
-              </div>
-            </div>
-            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-rose-600 tabular-nums dark:text-rose-400">
-              {summary?.missed_calls.toLocaleString() || '0'}
-            </div>
-            <div className="mt-1 text-[10px] text-gray-500">
-              {summary && summary.total_calls > 0
-                ? Math.round((summary.missed_calls / summary.total_calls) * 100)
-                : 0}
-              % Unanswered
-            </div>
-          </div>
-
-          {/* 4. Total Talk Time */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-3.5 transition-colors dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-              <span className="text-[10px] font-bold tracking-wider uppercase">
-                Total Talk Time
-              </span>
-              <div className="rounded-lg bg-amber-500/10 p-1 text-amber-500">
-                <Clock className="h-3.5 w-3.5" />
-              </div>
-            </div>
-            <div className="dark:text-brand-gold mt-1.5 font-mono text-2xl font-bold tracking-tight text-amber-600 tabular-nums">
-              {formatSeconds(summary?.total_talk_time_sec || 0)}
-            </div>
-            <div className="mt-1 text-[10px] text-gray-500">
-              Avg {formatSeconds(summary?.avg_talk_time_sec || 0)}/call
-            </div>
-          </div>
-
-          {/* 5. Hot Leads Yield */}
-          <div className="border-brand-gold/30 bg-brand-gold/[0.04] dark:border-brand-gold/25 dark:bg-brand-gold/[0.04] rounded-2xl border p-3.5 transition-colors">
-            <div className="text-brand-gold flex items-center justify-between">
-              <span className="text-[10px] font-bold tracking-wider uppercase">Hot Leads</span>
-              <div className="bg-brand-gold/20 text-brand-gold rounded-lg p-1">
-                <Flame className="h-3.5 w-3.5" />
-              </div>
-            </div>
-            <div className="text-brand-navy dark:text-brand-gold mt-1.5 font-mono text-2xl font-bold tracking-tight tabular-nums">
-              {summary?.hot_leads.toLocaleString() || '0'}
-            </div>
-            <div className="text-brand-gold mt-1 text-[10px] font-medium">
-              {summary?.key1_count.toLocaleString() || 0} Key 1 Pressed
-            </div>
-          </div>
-
-          {/* 6. Active Advisors */}
-          <div className="rounded-2xl border border-gray-100 bg-gray-50/70 p-3.5 transition-colors dark:border-white/5 dark:bg-white/[0.02]">
-            <div className="flex items-center justify-between text-gray-500 dark:text-gray-400">
-              <span className="text-[10px] font-bold tracking-wider uppercase">Active Roster</span>
-              <div className="rounded-lg bg-indigo-500/10 p-1 text-indigo-500">
-                <Trophy className="h-3.5 w-3.5" />
-              </div>
-            </div>
-            <div className="mt-1.5 font-mono text-2xl font-bold tracking-tight text-gray-900 tabular-nums dark:text-white">
-              {summary?.active_advisors || 0}
-              <span className="text-xs font-normal text-gray-400">
-                /{summary?.total_roster_count || 0}
-              </span>
-            </div>
-            <div className="mt-1 text-[10px] text-emerald-600 dark:text-emerald-400">
-              100% Tracking Active
-            </div>
-          </div>
-        </div>
-
-        {/* Integrated Dial Momentum Strip */}
-        <div className="mt-4 flex flex-col gap-3 border-t border-gray-100 pt-3.5 lg:flex-row lg:items-center lg:justify-between dark:border-white/5">
-          {/* Dual Segmented Progress Bar */}
-          <div className="flex flex-1 items-center gap-3">
-            <span className="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">
-              Dial Pulse
-            </span>
-            <div className="h-2.5 flex-1 overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
-              <div className="flex h-full w-full">
-                <div
-                  className="bg-emerald-500 transition-all duration-700"
-                  style={{ width: `${summary?.answer_rate || 0}%` }}
-                  title={`${summary?.answer_rate || 0}% Connected`}
-                />
-                <div
-                  className="bg-rose-500/60 transition-all duration-700"
-                  style={{ width: `${100 - (summary?.answer_rate || 0)}%` }}
-                  title={`${100 - (summary?.answer_rate || 0)}% Missed/Unanswered`}
-                />
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-xs">
-              <span className="inline-flex items-center gap-1 font-bold text-emerald-600 dark:text-emerald-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-                {summary?.answer_rate || 0}% Connected
-              </span>
-              <span className="text-gray-300 dark:text-gray-600">•</span>
-              <span className="inline-flex items-center gap-1 font-bold text-amber-500">
-                <Flame className="h-3 w-3 fill-current" />
-                {summary && summary.total_calls > 0
-                  ? Math.round((summary.hot_leads / summary.total_calls) * 100)
-                  : 0}
-                % High Intent
-              </span>
-            </div>
-          </div>
-
-          {/* Active Campaign & Direct Link */}
-          <div className="flex flex-wrap items-center justify-between gap-3 text-xs lg:justify-end">
-            <span className="rounded-lg border border-gray-200 bg-gray-50 px-2.5 py-1 text-[11px] font-medium text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-300">
-              {campaigns[0]?.name || 'IVR Campaign'} &bull;{' '}
-              {campaigns[0]?.total_calls.toLocaleString() || summary?.total_calls.toLocaleString()}{' '}
-              calls
-              {lastUpdated && <span className="text-gray-400"> &bull; Sync {lastUpdated}</span>}
-            </span>
-            <button
-              type="button"
-              onClick={() => handleAdvisorLeadsClick('')}
-              className="text-brand-gold hover:text-brand-gold-light flex cursor-pointer items-center gap-1 font-bold"
-            >
-              <span>View All Leads &rarr;</span>
-            </button>
-          </div>
-        </div>
-      </div>
       {/* ── Advisor Performance Leaderboard Section ── */}
       <div className="space-y-4 rounded-3xl border border-gray-200 bg-white p-6 shadow-sm transition-colors duration-300 dark:border-white/5 dark:bg-[#0f0f16]">
         {/* Controls Bar */}
@@ -911,198 +572,16 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                 </div>
 
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {activeAdvisors.slice(0, 3).map((advisor, index) => {
-                    const rank = index + 1;
-                    const isGold = rank === 1;
-                    const isSilver = rank === 2;
-                    const isBronze = rank === 3;
-
-                    return (
-                      <motion.div
-                        key={advisor.advisor_id}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2, delay: index * 0.05 }}
-                        className={`group relative flex flex-col justify-between rounded-2xl border p-4.5 shadow-sm transition-all duration-200 hover:shadow-md ${
-                          isGold
-                            ? 'border-amber-400/50 bg-gradient-to-br from-amber-500/[0.08] via-amber-500/[0.02] to-transparent dark:border-amber-400/40 dark:from-amber-500/[0.08] dark:to-[#13131c]'
-                            : isSilver
-                              ? 'border-slate-300/50 bg-gradient-to-br from-slate-400/[0.07] via-slate-400/[0.02] to-transparent dark:border-slate-400/30 dark:from-slate-400/[0.06] dark:to-[#13131c]'
-                              : isBronze
-                                ? 'border-amber-700/50 bg-gradient-to-br from-amber-700/[0.07] via-amber-700/[0.02] to-transparent dark:border-amber-700/30 dark:from-amber-700/[0.06] dark:to-[#13131c]'
-                                : 'border-gray-200 bg-white dark:border-white/5 dark:bg-[#13131c]'
-                        }`}
-                      >
-                        <div>
-                          {/* Header: Rank Medal, Name, Role */}
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex min-w-0 items-center gap-2.5">
-                              {isGold ? (
-                                <span
-                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-400 to-amber-200 text-slate-900 shadow-md ring-1 ring-amber-400/40"
-                                  title="Rank 1 - Top Telecaller"
-                                >
-                                  <Trophy className="h-3.5 w-3.5 text-amber-950" />
-                                </span>
-                              ) : isSilver ? (
-                                <span
-                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-slate-200 to-slate-100 text-slate-800 shadow-md ring-1 ring-slate-300"
-                                  title="Rank 2"
-                                >
-                                  <Medal className="h-3.5 w-3.5 text-slate-700" />
-                                </span>
-                              ) : (
-                                <span
-                                  className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-gradient-to-tr from-amber-700 to-amber-600 text-white shadow-md ring-1 ring-amber-600"
-                                  title="Rank 3"
-                                >
-                                  <Medal className="h-3.5 w-3.5 text-amber-100" />
-                                </span>
-                              )}
-                              <div className="min-w-0">
-                                <h4 className="truncate text-sm font-bold text-gray-900 dark:text-white">
-                                  {advisor.advisor_name}
-                                </h4>
-                                <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                                  <span className="capitalize">{advisor.role || 'Advisor'}</span>
-                                  {advisor.is_active === false && (
-                                    <span className="py-0.2 rounded-md border border-red-500/20 bg-red-50 px-1 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
-                                      Disabled
-                                    </span>
-                                  )}
-                                  {advisor.phone && (
-                                    <>
-                                      <span>&bull;</span>
-                                      <span className="font-mono">{advisor.phone}</span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Answer Rate Badge */}
-                            {/* Answer Rate Status Capsule */}
-                            <div className="flex flex-col items-end gap-1">
-                              <div
-                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-2xs transition-colors ${
-                                  advisor.answer_rate >= 50
-                                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400'
-                                    : advisor.answer_rate >= 30
-                                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400'
-                                      : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
-                                }`}
-                              >
-                                <span
-                                  className={`h-1.5 w-1.5 rounded-full ${
-                                    advisor.answer_rate >= 50
-                                      ? 'animate-pulse bg-emerald-500'
-                                      : advisor.answer_rate >= 30
-                                        ? 'bg-amber-500'
-                                        : 'bg-gray-400'
-                                  }`}
-                                />
-                                <span>{advisor.answer_rate}% Ans</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
-                                <span className="font-bold text-gray-900 dark:text-white">
-                                  {advisor.answered_calls}
-                                </span>
-                                <span className="text-gray-400 dark:text-gray-600">/</span>
-                                <span>{advisor.total_calls} calls</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          {/* Connection Progress Bar */}
-                          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
-                            <div
-                              className="from-brand-gold h-full rounded-full bg-gradient-to-r to-emerald-500 transition-all duration-500"
-                              style={{ width: `${Math.min(advisor.answer_rate, 100)}%` }}
-                            />
-                          </div>
-
-                          {/* Key Telemetry Grid */}
-                          <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-gray-50/80 p-2.5 text-center text-xs dark:bg-white/[0.03]">
-                            <div>
-                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                                Talk Time
-                              </span>
-                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
-                                {formatSeconds(advisor.total_talk_time_sec)}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                                Avg / Call
-                              </span>
-                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
-                                {formatSeconds(advisor.avg_talk_time_sec)}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-brand-gold text-[10px] font-semibold uppercase">
-                                Hot Leads
-                              </span>
-                              <p className="text-brand-gold flex items-center justify-center gap-0.5 font-mono font-bold tabular-nums">
-                                <Flame className="h-3 w-3 fill-current" />
-                                {advisor.hot_leads}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Action Footer */}
-                        <div className="mt-4 flex items-center justify-between border-t border-gray-100 pt-3 dark:border-white/5">
-                          <button
-                            type="button"
-                            onClick={() => handleAdvisorLeadsClick(advisor.advisor_id)}
-                            className="text-brand-navy dark:text-brand-gold flex cursor-pointer items-center gap-1.5 text-xs font-bold hover:underline"
-                            title="Open filtered IVR leads table for this advisor"
-                          >
-                            <ExternalLink className="h-3.5 w-3.5" />
-                            <span>View Leads ({advisor.total_calls})</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedExportAdvisor(advisor.advisor_id);
-                              setIsExportModalOpen(true);
-                            }}
-                            className="hover:bg-brand-gold/10 hover:text-brand-gold rounded-lg p-1.5 text-gray-400 transition-colors"
-                            title={`Export ${advisor.advisor_name}'s leads`}
-                          >
-                            <Download className="h-3.5 w-3.5" />
-                          </button>
-
-                          <div className="flex items-center gap-1">
-                            {advisor.phone && (
-                              <>
-                                <a
-                                  href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                    `Hello ${advisor.advisor_name}, congratulations on your telecalling ranking! You have ${advisor.answered_calls} answered calls and ${advisor.hot_leads} hot leads.`
-                                  )}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-                                  title="Message on WhatsApp"
-                                >
-                                  <MessageCircle className="h-4 w-4" />
-                                </a>
-                                <a
-                                  href={`tel:${advisor.phone}`}
-                                  className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
-                                  title="Direct Call"
-                                >
-                                  <Phone className="h-4 w-4" />
-                                </a>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {activeAdvisors.slice(0, 3).map((advisor, index) => (
+                    <AdvisorPodiumCard
+                      key={advisor.advisor_id}
+                      advisor={advisor}
+                      index={index}
+                      handleAdvisorLeadsClick={handleAdvisorLeadsClick}
+                      setSelectedExportAdvisor={setSelectedExportAdvisor}
+                      setIsExportModalOpen={setIsExportModalOpen}
+                    />
+                  ))}
                 </div>
               </div>
             )}
@@ -1115,261 +594,31 @@ export function TelecallingDashboard({ token, onNavigateToLeads }: TelecallingDa
                 </h3>
 
                 <div className="grid grid-cols-1 gap-3.5 sm:grid-cols-2 lg:grid-cols-3">
-                  {activeAdvisors.slice(3).map((advisor, index) => {
-                    const rank = index + 4;
-
-                    return (
-                      <motion.div
-                        key={advisor.advisor_id}
-                        layout
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.2, delay: index * 0.03 }}
-                        className="group relative flex flex-col justify-between rounded-2xl border border-gray-200 bg-white p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-white/5 dark:bg-[#13131c] dark:hover:border-white/10"
-                      >
-                        <div>
-                          <div className="flex items-start justify-between gap-2">
-                            <div className="flex min-w-0 items-center gap-2.5">
-                              <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-gray-100 text-xs font-bold text-gray-600 dark:bg-white/10 dark:text-gray-300">
-                                {rank}
-                              </span>
-                              <div className="min-w-0">
-                                <h4 className="truncate text-sm font-semibold text-gray-900 dark:text-white">
-                                  {advisor.advisor_name}
-                                </h4>
-                                <div className="flex items-center gap-1.5 text-[11px] text-gray-400">
-                                  <span className="capitalize">{advisor.role || 'Advisor'}</span>
-                                  {advisor.is_active === false && (
-                                    <span className="py-0.2 rounded-md border border-red-500/20 bg-red-50 px-1 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
-                                      Disabled
-                                    </span>
-                                  )}
-                                  {advisor.phone && (
-                                    <>
-                                      <span>&bull;</span>
-                                      <span className="font-mono">{advisor.phone}</span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-
-                            {/* Answer Rate Status Capsule */}
-                            <div className="flex flex-col items-end gap-1">
-                              <div
-                                className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-0.5 text-xs font-bold shadow-2xs transition-colors ${
-                                  advisor.answer_rate >= 50
-                                    ? 'border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400'
-                                    : advisor.answer_rate >= 30
-                                      ? 'border-amber-500/30 bg-amber-500/10 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400'
-                                      : 'border-gray-200 bg-gray-100 text-gray-600 dark:border-white/10 dark:bg-white/5 dark:text-gray-400'
-                                }`}
-                              >
-                                <span
-                                  className={`h-1.5 w-1.5 rounded-full ${
-                                    advisor.answer_rate >= 50
-                                      ? 'animate-pulse bg-emerald-500'
-                                      : advisor.answer_rate >= 30
-                                        ? 'bg-amber-500'
-                                        : 'bg-gray-400'
-                                  }`}
-                                />
-                                <span>{advisor.answer_rate}% Ans</span>
-                              </div>
-                              <div className="flex items-center gap-1 text-[11px] text-gray-500 dark:text-gray-400">
-                                <span className="font-bold text-gray-900 dark:text-white">
-                                  {advisor.answered_calls}
-                                </span>
-                                <span className="text-gray-400 dark:text-gray-600">/</span>
-                                <span>{advisor.total_calls} calls</span>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className="mt-3 h-1.5 w-full overflow-hidden rounded-full bg-gray-100 dark:bg-white/5">
-                            <div
-                              className="from-brand-gold h-full rounded-full bg-gradient-to-r to-emerald-500 transition-all duration-500"
-                              style={{ width: `${Math.min(advisor.answer_rate, 100)}%` }}
-                            />
-                          </div>
-
-                          <div className="mt-3.5 grid grid-cols-3 gap-2 rounded-xl bg-gray-50/70 p-2 text-center text-xs dark:bg-white/[0.02]">
-                            <div>
-                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                                Talk Time
-                              </span>
-                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
-                                {formatSeconds(advisor.total_talk_time_sec)}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-[10px] font-semibold text-gray-400 uppercase">
-                                Avg / Call
-                              </span>
-                              <p className="font-mono font-bold text-gray-800 tabular-nums dark:text-gray-200">
-                                {formatSeconds(advisor.avg_talk_time_sec)}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-brand-gold text-[10px] font-semibold uppercase">
-                                Hot Leads
-                              </span>
-                              <p className="text-brand-gold flex items-center justify-center gap-0.5 font-mono font-bold tabular-nums">
-                                <Flame className="h-3 w-3 fill-current" />
-                                {advisor.hot_leads}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="mt-3.5 flex items-center justify-between border-t border-gray-100 pt-2.5 dark:border-white/5">
-                          <button
-                            type="button"
-                            onClick={() => handleAdvisorLeadsClick(advisor.advisor_id)}
-                            className="text-brand-navy dark:text-brand-gold flex cursor-pointer items-center gap-1 text-[11px] font-bold hover:underline"
-                            title="Open filtered IVR leads table for this advisor"
-                          >
-                            <ExternalLink className="h-3 w-3" />
-                            <span>View Leads ({advisor.total_calls})</span>
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setSelectedExportAdvisor(advisor.advisor_id);
-                              setIsExportModalOpen(true);
-                            }}
-                            className="hover:bg-brand-gold/10 hover:text-brand-gold rounded-lg p-1 text-gray-400 transition-colors"
-                            title={`Export ${advisor.advisor_name}'s leads`}
-                          >
-                            <Download className="h-3 w-3" />
-                          </button>
-
-                          <div className="flex items-center gap-1">
-                            {advisor.phone && (
-                              <>
-                                <a
-                                  href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                    `Hello ${advisor.advisor_name}, reviewing your telecalling performance: ${advisor.answered_calls} answered calls and ${advisor.hot_leads} hot leads.`
-                                  )}`}
-                                  target="_blank"
-                                  rel="noopener noreferrer"
-                                  className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-                                  title="Message on WhatsApp"
-                                >
-                                  <MessageCircle className="h-3.5 w-3.5" />
-                                </a>
-                                <a
-                                  href={`tel:${advisor.phone}`}
-                                  className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
-                                  title="Direct Call"
-                                >
-                                  <Phone className="h-3.5 w-3.5" />
-                                </a>
-                              </>
-                            )}
-                          </div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
+                  {activeAdvisors.slice(3).map((advisor, index) => (
+                    <AdvisorContenderCard
+                      key={advisor.advisor_id}
+                      advisor={advisor}
+                      index={index}
+                      handleAdvisorLeadsClick={handleAdvisorLeadsClick}
+                      setSelectedExportAdvisor={setSelectedExportAdvisor}
+                      setIsExportModalOpen={setIsExportModalOpen}
+                    />
+                  ))}
                 </div>
               </div>
             )}
 
             {/* ── Inactive Bench Drawer (0 Calls Recorded) ── */}
-            {benchAdvisors.length > 0 && (
-              <div className="mt-4 rounded-2xl border border-gray-200/70 bg-gray-50/50 p-4 transition-colors dark:border-white/5 dark:bg-white/[0.01]">
-                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                  <div className="flex items-center gap-2">
-                    <span className="flex h-5 w-5 items-center justify-center rounded-full bg-gray-200 text-[10px] font-bold text-gray-700 dark:bg-white/10 dark:text-gray-300">
-                      {benchAdvisors.length}
-                    </span>
-                    <span className="text-xs font-semibold text-gray-700 dark:text-gray-300">
-                      Inactive Telecallers On Bench (0 Calls Recorded)
-                    </span>
-                    <span className="hidden text-[11px] text-gray-400 sm:inline">
-                      &bull; Ready for next campaign assignment
-                    </span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setShowBench(!showBench)}
-                    className="text-brand-gold hover:text-brand-gold-light flex cursor-pointer items-center gap-1.5 text-xs font-bold"
-                  >
-                    <span>
-                      {showBench || isSearching
-                        ? 'Collapse Bench'
-                        : `Show Inactive Staff (${benchAdvisors.length})`}
-                    </span>
-                    <ChevronDown
-                      className={`h-3.5 w-3.5 transition-transform ${
-                        showBench || isSearching ? 'rotate-180' : ''
-                      }`}
-                    />
-                  </button>
-                </div>
-
-                {(showBench || isSearching) && (
-                  <div className="mt-3.5 grid grid-cols-1 gap-2.5 sm:grid-cols-2 lg:grid-cols-4">
-                    {benchAdvisors.map((advisor) => (
-                      <div
-                        key={advisor.advisor_id}
-                        className="flex items-center justify-between rounded-xl border border-gray-200/60 bg-white p-3 shadow-2xs transition-colors dark:border-white/5 dark:bg-[#13131c]"
-                      >
-                        <div className="min-w-0 pr-2">
-                          <p className="truncate text-xs font-semibold text-gray-900 dark:text-white">
-                            {advisor.advisor_name}
-                          </p>
-                          <div className="flex items-center gap-1.5 text-[10px] text-gray-400">
-                            <span className="capitalize">{advisor.role || 'Advisor'}</span>
-                            {advisor.is_active === false && (
-                              <span className="py-0.2 rounded-md border border-red-500/20 bg-red-50 px-1 text-[9px] font-semibold text-red-600 dark:border-red-400/20 dark:bg-red-500/10 dark:text-red-400">
-                                Disabled
-                              </span>
-                            )}
-                            {advisor.phone && (
-                              <>
-                                <span>&bull;</span>
-                                <span className="font-mono">{advisor.phone}</span>
-                              </>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-1">
-                          {advisor.phone && (
-                            <>
-                              <a
-                                href={`https://wa.me/91${advisor.phone.replace(/\D/g, '')}?text=${encodeURIComponent(
-                                  `Hello ${advisor.advisor_name}, checking your telecalling campaign assignment status.`
-                                )}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-emerald-50 hover:text-emerald-600 dark:hover:bg-emerald-500/10 dark:hover:text-emerald-400"
-                                title="Message on WhatsApp"
-                              >
-                                <MessageCircle className="h-3.5 w-3.5" />
-                              </a>
-                              <a
-                                href={`tel:${advisor.phone}`}
-                                className="rounded-lg p-1 text-gray-400 transition-colors hover:bg-blue-50 hover:text-blue-600 dark:hover:bg-blue-500/10 dark:hover:text-blue-400"
-                                title="Direct Call"
-                              >
-                                <Phone className="h-3.5 w-3.5" />
-                              </a>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
+            <TelecallingBenchDrawer
+              benchAdvisors={benchAdvisors}
+              showBench={showBench}
+              setShowBench={setShowBench}
+              isSearching={isSearching}
+            />
           </div>
         )}
       </div>
+
       {/* Export Studio Modal */}
       <ExportLeadsModal
         isOpen={isExportModalOpen}
