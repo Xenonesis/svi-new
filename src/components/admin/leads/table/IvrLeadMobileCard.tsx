@@ -7,12 +7,12 @@ import {
   Flame,
   Zap,
   Snowflake,
-  Volume2,
   CheckCircle2,
   XCircle,
   FileText,
 } from 'lucide-react';
 import { WhatsAppTemplateDropdown } from '../WhatsAppTemplateDropdown';
+import { IvrRecordingButton } from './IvrRecordingButton';
 
 interface IvrLeadMobileCardProps {
   record: IvrRecordItem;
@@ -30,8 +30,6 @@ interface IvrLeadMobileCardProps {
   onTemperatureChange: (recordId: string, phone: string, temp: 'hot' | 'warm' | 'cold') => void;
   employees: Employee[];
   onReassignAdvisor: (recordId: string, phone: string, advisorId: string) => void;
-  activeAudio: string | null;
-  toggleAudio: (url: string) => void;
   formatDuration: (seconds: number) => string;
 }
 
@@ -43,8 +41,6 @@ export function IvrLeadMobileCard({
   onTemperatureChange,
   employees,
   onReassignAdvisor,
-  activeAudio,
-  toggleAudio,
   formatDuration,
 }: IvrLeadMobileCardProps) {
   const isAnswered = record.dial_status === 'ANSWER';
@@ -147,16 +143,11 @@ export function IvrLeadMobileCard({
                       </span>
                       <span className="text-[10px] text-gray-400">({record.call_duration}s)</span>
                       {record.recording_url && (
-                        <a
-                          href={record.recording_url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+                        <IvrRecordingButton
+                          recordingUrl={record.recording_url}
+                          variant="pill"
                           title="Listen to Call Recording"
-                        >
-                          <Volume2 className="h-2.5 w-2.5" />
-                          <span>Audio</span>
-                        </a>
+                        />
                       )}
                     </div>
                     <div className="flex items-center gap-1.5">

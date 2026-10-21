@@ -15,11 +15,11 @@ import {
   FileText,
   Loader2,
   Flame,
-  Volume2,
 } from 'lucide-react';
 import type { LeadInteraction } from '@/src/lib/leads/leadInteractionsStore';
 import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 import { toast } from 'sonner';
+import { IvrRecordingButton } from './table/IvrRecordingButton';
 
 export type PipelineStage =
   'new' | 'contacted' | 'visit_scheduled' | 'visited' | 'negotiation' | 'booked' | 'lost';
@@ -290,16 +290,11 @@ export function LeadDrawer({
                       <span className="font-mono font-medium">+91 {phone}</span>
                     </div>
                     {recordingUrl && (
-                      <a
-                        href={recordingUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[11px] font-semibold text-amber-600 transition-colors hover:bg-amber-500/20 dark:text-amber-400"
+                      <IvrRecordingButton
+                        recordingUrl={recordingUrl}
+                        variant="pill"
                         title="Listen to IVR call recording (.wav)"
-                      >
-                        <Volume2 className="h-3 w-3" />
-                        <span>Call Recording</span>
-                      </a>
+                      />
                     )}
                   </div>
                 </div>

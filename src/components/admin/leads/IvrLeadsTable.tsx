@@ -102,28 +102,6 @@ export function IvrLeadsTable({
   } | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  // Audio Playback State
-  const [activeAudio, setActiveAudio] = useState<string | null>(null);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-
-  const toggleAudio = (url: string) => {
-    if (activeAudio === url) {
-      if (audioRef.current) {
-        audioRef.current.pause();
-        audioRef.current = null;
-      }
-      setActiveAudio(null);
-    } else {
-      if (audioRef.current) {
-        audioRef.current.pause();
-      }
-      const audio = new Audio(url);
-      audio.play();
-      audio.onended = () => setActiveAudio(null);
-      audioRef.current = audio;
-      setActiveAudio(url);
-    }
-  };
 
   const toggleSelectPhone = (phone: string) => {
     setSelectedPhones((prev) => {
@@ -428,8 +406,6 @@ export function IvrLeadsTable({
                 onTemperatureChange={onTemperatureChange}
                 employees={employees}
                 onReassignAdvisor={onReassignAdvisor}
-                activeAudio={activeAudio}
-                toggleAudio={toggleAudio}
                 formatDuration={formatDuration}
               />
             ))
@@ -548,8 +524,6 @@ export function IvrLeadsTable({
                     employees={employees}
                     onReassignAdvisor={onReassignAdvisor}
                     onTemperatureChange={onTemperatureChange}
-                    activeAudio={activeAudio}
-                    toggleAudio={toggleAudio}
                     formatDuration={formatDuration}
                   />
                 ))

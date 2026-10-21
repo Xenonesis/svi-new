@@ -7,12 +7,12 @@ import {
   Flame,
   Zap,
   Snowflake,
-  Volume2,
   CheckCircle2,
   XCircle,
   FileText,
 } from 'lucide-react';
 import { WhatsAppTemplateDropdown } from '../WhatsAppTemplateDropdown';
+import { IvrRecordingButton } from './IvrRecordingButton';
 
 interface IvrLeadDesktopRowProps {
   record: IvrRecordItem;
@@ -30,8 +30,6 @@ interface IvrLeadDesktopRowProps {
   employees: Employee[];
   onReassignAdvisor: (recordId: string, phone: string, advisorId: string) => void;
   onTemperatureChange: (recordId: string, phone: string, temp: 'hot' | 'warm' | 'cold') => void;
-  activeAudio: string | null;
-  toggleAudio: (url: string) => void;
   formatDuration: (seconds: number) => string;
 }
 
@@ -43,8 +41,6 @@ export function IvrLeadDesktopRow({
   employees,
   onReassignAdvisor,
   onTemperatureChange,
-  activeAudio,
-  toggleAudio,
   formatDuration,
 }: IvrLeadDesktopRowProps) {
   const isAnswered = record.dial_status === 'ANSWER';
@@ -120,15 +116,10 @@ export function IvrLeadDesktopRow({
                             </button>
 
                             {record.recording_url && (
-                              <a
-                                href={record.recording_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="rounded-md p-1 text-amber-500 transition-colors hover:bg-amber-500/10 hover:text-amber-600 dark:hover:bg-amber-500/20"
-                                title="Listen to Call Recording (.wav)"
-                              >
-                                <Volume2 className="h-3 w-3" />
-                              </a>
+                              <IvrRecordingButton
+                                recordingUrl={record.recording_url}
+                                variant="icon"
+                              />
                             )}
                           </div>
                         </div>
