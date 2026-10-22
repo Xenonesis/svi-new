@@ -1,7 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { isAllowedRecordingUrl } from '@/src/lib/leads/recordingProxy';
+import { CALL_RECORDINGS_BUCKET, deriveStoragePath } from '@/src/lib/leads/syncRecordingToStorage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -9,13 +11,14 @@ export const dynamic = 'force-dynamic';
 /**
  * Same-Origin IVR Recording Streaming Proxy
  *
- * GET /api/admin/leads/recording?url=<encoded_upstream_url>
+ * GET /api/admin/leads/recording?url=<encoded_upstream_url>&phone=<customer_phone>
  *
- * Requirements:
- * 1. Admin Authentication: Verifies caller has active admin profile (Bearer or cookie).
- * 2. SSRF Protection: Validates hostname against strict allowlist (49.50.77.194) and path prefix (/recordings/).
- * 3. Range Passthrough: Forwards HTTP Range headers from browser <audio> requests so scrub/seek works.
- * 4. Mixed-Content Elimination: Serves call recordings over same-origin HTTPS, preventing browser blocks.
+ * In-House Priority:
+ * 1. Checks if file already exists in private Supabase Storage `call-recordings`.
+ *    If present, downloads from in-house bucket directly (zero dependency on third-party).
+ * 2. If not yet in Supabase Storage, fetches from third-party telephony server,
+ *    and triggers asynchronous archival so next listen is 100% in-house.
+ * 3. Range Passthrough: Forwards HTTP Range headers from browser <audio> requests for timeline scrubbing.
  */
 export async function GET(request: NextRequest): Promise<NextResponse | Response> {
   try {
@@ -31,7 +34,73 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
       throw AppError.forbidden('Recording URL is not from an authorized telephony host');
     }
 
-    // Forward Range header from client so HTMLMediaElement seeking/scrubbing works smoothly
+    const customerPhone = request.nextUrl.searchParams.get('phone') || '';
+    const inHousePath = deriveStoragePath(customerPhone, targetUrl);
+
+    // 1. Check in-house Supabase Storage first
+    const pathParts = inHousePath.split('/');
+    const folder = pathParts.slice(0, -1).join('/');
+    const targetFile = pathParts[pathParts.length - 1];
+
+    let inHouseBlob: Blob | null = null;
+    try {
+      const { data: existingFiles } = await supabaseAdmin.storage
+        .from(CALL_RECORDINGS_BUCKET)
+        .list(folder, { search: targetFile, limit: 1 });
+
+      if (existingFiles && existingFiles.some((f) => f.name === targetFile)) {
+        const { data: downloadedBlob } = await supabaseAdmin.storage
+          .from(CALL_RECORDINGS_BUCKET)
+          .download(inHousePath);
+        if (downloadedBlob) {
+          inHouseBlob = downloadedBlob;
+        }
+      }
+    } catch {
+      // Fallback to upstream if storage check encounters temporary error
+    }
+
+    // 1A. Serve from In-House Storage if available
+    if (inHouseBlob) {
+      const buffer = Buffer.from(await inHouseBlob.arrayBuffer());
+      const totalSize = buffer.length;
+      const clientRange = request.headers.get('range');
+
+      const responseHeaders = new Headers();
+      responseHeaders.set('Content-Type', inHouseBlob.type || 'audio/x-wav');
+      responseHeaders.set('Accept-Ranges', 'bytes');
+      responseHeaders.set('Cache-Control', 'private, max-age=86400');
+      responseHeaders.set('X-Source', 'in-house-supabase-storage');
+
+      if (clientRange) {
+        // e.g. "bytes=0-1024" or "bytes=1024-"
+        const match = clientRange.match(/bytes=(\d+)-(\d*)/);
+        if (match) {
+          const start = parseInt(match[1], 10);
+          const end = match[2] ? parseInt(match[2], 10) : totalSize - 1;
+          const chunkStart = Math.min(start, totalSize - 1);
+          const chunkEnd = Math.min(end, totalSize - 1);
+          const chunkSize = chunkEnd - chunkStart + 1;
+
+          responseHeaders.set('Content-Range', `bytes ${chunkStart}-${chunkEnd}/${totalSize}`);
+          responseHeaders.set('Content-Length', String(chunkSize));
+
+          const slicedBuffer = buffer.subarray(chunkStart, chunkEnd + 1);
+          return new Response(slicedBuffer, {
+            status: 206,
+            headers: responseHeaders,
+          });
+        }
+      }
+
+      responseHeaders.set('Content-Length', String(totalSize));
+      return new Response(buffer, {
+        status: 200,
+        headers: responseHeaders,
+      });
+    }
+
+    // 2. Fallback: Stream from upstream telephony server
     const clientRange = request.headers.get('range');
     const upstreamHeaders: Record<string, string> = {};
     if (clientRange) {
@@ -53,9 +122,13 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
     }
 
     const responseHeaders = new Headers();
-    responseHeaders.set('Content-Type', upstreamResponse.headers.get('content-type') || 'audio/x-wav');
+    responseHeaders.set(
+      'Content-Type',
+      upstreamResponse.headers.get('content-type') || 'audio/x-wav'
+    );
     responseHeaders.set('Accept-Ranges', 'bytes');
     responseHeaders.set('Cache-Control', 'private, max-age=3600');
+    responseHeaders.set('X-Source', 'upstream-telephony-proxy');
 
     const contentLength = upstreamResponse.headers.get('content-length');
     if (contentLength) {

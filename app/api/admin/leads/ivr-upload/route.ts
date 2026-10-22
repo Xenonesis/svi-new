@@ -9,6 +9,7 @@ import {
   type AdvisorProfile,
   type ParsedIvrRecord,
 } from '@/src/lib/leads/ivrParser';
+import { syncRecordingToInHouseStorage } from '@/src/lib/leads/syncRecordingToStorage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -217,6 +218,28 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       if (upsertError) {
         console.warn('Chat leads IVR upsert warning chunk', i, upsertError.message);
       }
+    }
+
+    // 7. Fire-and-forget background sync: archive call recordings in-house to Supabase Storage
+    const recordingsToArchive = deduplicatedRecords.filter(
+      (r) => r.recording_url && r.recording_url.startsWith('http')
+    );
+    if (recordingsToArchive.length > 0) {
+      // Trigger background sync in small concurrent batches without delaying HTTP response
+      Promise.resolve().then(async () => {
+        try {
+          for (let i = 0; i < recordingsToArchive.length; i += 5) {
+            const batch = recordingsToArchive.slice(i, i + 5);
+            await Promise.allSettled(
+              batch.map((item) =>
+                syncRecordingToInHouseStorage(item.customer_phone, item.recording_url)
+              )
+            );
+          }
+        } catch (syncErr) {
+          console.warn('Background recording in-house archival notice:', syncErr);
+        }
+      });
     }
 
     const payload: UploadResponsePayload = {
