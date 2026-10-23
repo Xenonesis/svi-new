@@ -38,6 +38,12 @@ export interface SentEmail {
   subject: string;
   created_at: string;
   last_event: string;
+  status?: string;
+  delivered_at?: string | null;
+  first_opened_at?: string | null;
+  first_clicked_at?: string | null;
+  bounced_at?: string | null;
+  complained_at?: string | null;
   is_starred?: boolean;
   is_read?: boolean;
   is_archived?: boolean;

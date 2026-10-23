@@ -27,10 +27,12 @@ export function computeEmailHealthMetrics(
   emails: Array<{
     id?: string;
     status?: string | null;
+    last_event?: string | null;
     first_opened_at?: string | null;
     first_clicked_at?: string | null;
     bounced_at?: string | null;
     complained_at?: string | null;
+    delivered_at?: string | null;
   }>
 ): EmailHealthMetrics {
   const total = emails.length;
@@ -54,19 +56,27 @@ export function computeEmailHealthMetrics(
   let bounced = 0;
 
   for (const email of emails) {
-    const isDelivered =
-      email.status === 'delivered' ||
-      email.status === 'opened' ||
-      email.status === 'clicked' ||
-      Boolean(email.first_opened_at) ||
-      Boolean(email.first_clicked_at);
+    const rawEvent = (email.last_event || email.status || '').toLowerCase();
+
+    const isBounced =
+      rawEvent === 'bounced' ||
+      rawEvent === 'suppressed' ||
+      rawEvent === 'failed' ||
+      rawEvent === 'rejected' ||
+      Boolean(email.bounced_at) ||
+      Boolean(email.complained_at);
+
+    const isClicked = rawEvent === 'clicked' || Boolean(email.first_clicked_at);
+
+    const isOpened = isClicked || rawEvent === 'opened' || Boolean(email.first_opened_at);
+
+    const isDelivered = isOpened || rawEvent === 'delivered' || Boolean(email.delivered_at);
 
     if (isDelivered) delivered++;
-    if (email.first_opened_at || email.status === 'opened' || email.status === 'clicked') opened++;
-    if (email.first_clicked_at || email.status === 'clicked') clicked++;
-    if (email.status === 'bounced' || email.bounced_at || email.complained_at) bounced++;
+    if (isOpened) opened++;
+    if (isClicked) clicked++;
+    if (isBounced) bounced++;
   }
-
   const deliveredRate = `${((delivered / total) * 100).toFixed(1)}%`;
   const openedRate = delivered > 0 ? `${((opened / delivered) * 100).toFixed(1)}%` : '0.0%';
   const clickedRate = opened > 0 ? `${((clicked / opened) * 100).toFixed(1)}%` : '0.0%';

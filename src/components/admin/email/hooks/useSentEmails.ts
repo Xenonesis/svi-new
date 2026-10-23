@@ -428,7 +428,33 @@ export function useSentEmails(): UseSentEmailsReturn {
 
     // Status filter (multi)
     if (statusFilter.size > 0) {
-      list = list.filter((e) => statusFilter.has(e.last_event?.toLowerCase() || ''));
+      list = list.filter((e) => {
+        const ev = e.last_event?.toLowerCase() || '';
+        for (const sf of statusFilter) {
+          const target = sf.toLowerCase();
+          if (target === 'bounced') {
+            if (ev === 'bounced' || ev === 'suppressed' || ev === 'failed' || Boolean(e.bounced_at))
+              return true;
+          }
+          if (target === 'delivered') {
+            if (
+              ev === 'delivered' ||
+              ev === 'opened' ||
+              ev === 'clicked' ||
+              Boolean(e.delivered_at)
+            )
+              return true;
+          }
+          if (target === 'opened') {
+            if (ev === 'opened' || ev === 'clicked' || Boolean(e.first_opened_at)) return true;
+          }
+          if (target === 'clicked') {
+            if (ev === 'clicked' || Boolean(e.first_clicked_at)) return true;
+          }
+          if (ev === target) return true;
+        }
+        return false;
+      });
     }
 
     // Date range

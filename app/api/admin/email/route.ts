@@ -817,7 +817,7 @@ export async function GET(request: NextRequest) {
     let query = supabaseAdmin
       .from('email_messages')
       .select(
-        'id, resend_id, subject, from_email, to_emails, status, last_event, sent_at, created_at, metadata'
+        'id, resend_id, subject, from_email, to_emails, status, last_event, sent_at, created_at, metadata, delivered_at, first_opened_at, first_clicked_at, bounced_at, complained_at'
       )
       .order('created_at', { ascending: false });
 
@@ -898,6 +898,11 @@ export async function GET(request: NextRequest) {
       cc?: string[] | null;
       last_event?: string | null;
       status?: string | null;
+      delivered_at?: string | null;
+      first_opened_at?: string | null;
+      first_clicked_at?: string | null;
+      bounced_at?: string | null;
+      complained_at?: string | null;
       attachments?: unknown[];
       metadata?: {
         cc?: string[];
@@ -939,11 +944,18 @@ export async function GET(request: NextRequest) {
           to: resolvedTo,
           cc: resolvedCc,
           last_event: e.last_event || e.status || 'delivered',
+          status: e.status || e.last_event || 'delivered',
+          delivered_at: e.delivered_at || null,
+          first_opened_at: e.first_opened_at || null,
+          first_clicked_at: e.first_clicked_at || null,
+          bounced_at: e.bounced_at || null,
+          complained_at: e.complained_at || null,
           attachments: e.metadata?.attachments || e.attachments || undefined,
           is_scheduled: isScheduledOrigin,
           scheduled_at: scheduledAtFromMap,
         };
       });
+
     return NextResponse.json({
       emails: filteredEmails,
       hasMore,
