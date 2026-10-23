@@ -13,12 +13,12 @@ export interface CampaignSendResult {
   error?: string;
 }
 
-interface RecipientItem {
+export interface RecipientItem {
   email: string;
   name: string;
 }
 
-async function resolveRecipients(campaign: {
+export async function resolveRecipients(campaign: {
   recipient_group: string;
   custom_emails?: string[] | null;
 }): Promise<RecipientItem[]> {
@@ -27,6 +27,63 @@ async function resolveRecipients(campaign: {
       email: e.trim(),
       name: e.trim(),
     }));
+  }
+
+  if (campaign.recipient_group === 'lottery_winners') {
+    const { data } = await supabaseAdmin
+      .from('lottery_participants')
+      .select('name, email, is_winner')
+      .eq('is_winner', true)
+      .not('email', 'is', null);
+    return (data || [])
+      .filter((p: { email?: string | null }) => Boolean(p.email))
+      .map((p: { email: string; name?: string | null }) => ({
+        email: p.email.trim(),
+        name: p.name?.trim() || p.email.trim(),
+      }));
+  }
+
+  if (campaign.recipient_group === 'allotment_holders') {
+    const { data } = await supabaseAdmin
+      .from('allotments')
+      .select('client_name, client_email')
+      .not('client_email', 'is', null);
+    return (data || [])
+      .filter((p: { client_email?: string | null }) => Boolean(p.client_email))
+      .map((p: { client_email: string; client_name?: string | null }) => ({
+        email: p.client_email.trim(),
+        name: p.client_name?.trim() || p.client_email.trim(),
+      }));
+  }
+
+  if (campaign.recipient_group === 'workforce') {
+    const { data } = await supabaseAdmin
+      .from('profiles')
+      .select('full_name, email, role')
+      .not('email', 'is', null);
+    return (data || [])
+      .filter(
+        (p: { email?: string | null; role?: string | null }) =>
+          Boolean(p.email) && (p.role === 'employee' || p.role === 'admin')
+      )
+      .map((p: { email: string; full_name?: string | null }) => ({
+        email: p.email.trim(),
+        name: p.full_name?.trim() || p.email.trim(),
+      }));
+  }
+
+  if (campaign.recipient_group === 'hot_leads') {
+    const { data } = await supabaseAdmin
+      .from('chat_leads')
+      .select('full_name, email, temperature')
+      .eq('temperature', 'hot')
+      .not('email', 'is', null);
+    return (data || [])
+      .filter((p: { email?: string | null }) => Boolean(p.email))
+      .map((p: { email: string; full_name?: string | null }) => ({
+        email: p.email.trim(),
+        name: p.full_name?.trim() || p.email.trim(),
+      }));
   }
 
   if (campaign.recipient_group === 'lottery_participants') {

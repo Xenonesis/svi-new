@@ -8,9 +8,22 @@ import {
   type FocusEvent,
   type ClipboardEvent,
 } from 'react';
-import { X, AlertCircle, CheckCircle, Users, Sparkles } from 'lucide-react';
+import {
+  X,
+  AlertCircle,
+  CheckCircle,
+  Users,
+  Sparkles,
+  Trophy,
+  Building2,
+  Briefcase,
+  Flame,
+  Loader2,
+} from 'lucide-react';
+import { toast } from 'sonner';
+import { fetchContacts } from '../helpers';
 import { isValidEmail, detectEmailTypo } from '@/src/lib/utils/emailValidation';
-import type { Recipient } from '../types';
+import type { Recipient, Contact } from '../types';
 interface RecipientInputProps {
   recipients: Recipient[];
   onChange: (recipients: Recipient[]) => void;
@@ -28,8 +41,67 @@ export function RecipientInput({
 }: RecipientInputProps) {
   const [inputValue, setInputValue] = useState('');
   const [focusedIndex, setFocusedIndex] = useState<number | null>(null);
+  const [loadingSegment, setLoadingSegment] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const handleInjectSegment = useCallback(
+    async (segmentKey: 'winners' | 'allottees' | 'team' | 'hot_leads', label: string) => {
+      if (disabled) return;
+      setLoadingSegment(segmentKey);
+      try {
+        const allContacts = await fetchContacts();
+        let matched: Contact[] = [];
+
+        if (segmentKey === 'winners') {
+          matched = allContacts.filter((c) => c.segments?.includes('lucky_draw_winners'));
+        } else if (segmentKey === 'allottees') {
+          matched = allContacts.filter((c) => c.segments?.includes('allotment_done'));
+        } else if (segmentKey === 'team') {
+          matched = allContacts.filter((c) => c.role === 'employee' || c.role === 'admin');
+        } else if (segmentKey === 'hot_leads') {
+          matched = allContacts.filter(
+            (c) => c.segments?.includes('hot_calling_leads') || c.metadata?.temperature === 'hot'
+          );
+        }
+
+        if (matched.length === 0) {
+          toast.info(`No contacts found for segment: ${label}`);
+          return;
+        }
+
+        const existingEmails = new Set(recipients.map((r) => r.email.trim().toLowerCase()));
+        const newOnes: Recipient[] = [];
+
+        for (const c of matched) {
+          const primaryEmail = (c.real_email || c.email).trim();
+          const primaryLower = primaryEmail.toLowerCase();
+          if (primaryEmail && !existingEmails.has(primaryLower)) {
+            existingEmails.add(primaryLower);
+            newOnes.push({
+              email: primaryEmail,
+              name: c.full_name,
+              type: c.role as Recipient['type'],
+              valid: isValidEmail(primaryEmail),
+            });
+          }
+        }
+
+        if (newOnes.length === 0) {
+          toast.info(`All ${matched.length} ${label} contacts are already in recipients`);
+          return;
+        }
+
+        onChange([...recipients, ...newOnes]);
+        toast.success(`Injected ${newOnes.length} ${label} to recipients`);
+      } catch (err) {
+        console.error('Failed to inject segment:', err);
+        toast.error(`Failed to load ${label}`);
+      } finally {
+        setLoadingSegment(null);
+      }
+    },
+    [recipients, onChange, disabled]
+  );
   const addRecipient = useCallback(
     (raw: string) => {
       const email = raw.trim().replace(/,$/, '').trim();
@@ -196,6 +268,62 @@ export function RecipientInput({
             <span>+Contacts</span>
           </button>
         )}
+      </div>
+      {/* Quick ERP Segment Injection Pills */}
+      <div className="mt-1 flex flex-wrap items-center gap-1.5 pt-0.5">
+        <span className="text-[10px] font-semibold tracking-wider text-gray-400 uppercase">
+          Quick Segments:
+        </span>
+        {[
+          {
+            key: 'winners' as const,
+            label: 'Winners',
+            icon: Trophy,
+            color:
+              'border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-400 hover:bg-amber-500/20',
+          },
+          {
+            key: 'allottees' as const,
+            label: 'Allottees',
+            icon: Building2,
+            color:
+              'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20',
+          },
+          {
+            key: 'team' as const,
+            label: 'Team',
+            icon: Briefcase,
+            color:
+              'border-blue-500/30 bg-blue-500/10 text-blue-700 dark:text-blue-400 hover:bg-blue-500/20',
+          },
+          {
+            key: 'hot_leads' as const,
+            label: 'Hot Leads',
+            icon: Flame,
+            color:
+              'border-rose-500/30 bg-rose-500/10 text-rose-700 dark:text-rose-400 hover:bg-rose-500/20',
+          },
+        ].map((seg) => {
+          const Icon = seg.icon;
+          const isLoading = loadingSegment === seg.key;
+          return (
+            <button
+              key={seg.key}
+              type="button"
+              disabled={disabled || Boolean(loadingSegment)}
+              onClick={() => handleInjectSegment(seg.key, seg.label)}
+              className={`inline-flex items-center gap-1 rounded-md border px-2 py-0.5 text-[11px] font-medium transition-all disabled:opacity-50 ${seg.color}`}
+              title={`Quick inject ${seg.label} into recipients`}
+            >
+              {isLoading ? (
+                <Loader2 className="h-3 w-3 animate-spin" />
+              ) : (
+                <Icon className="h-3 w-3 shrink-0" />
+              )}
+              <span>+ {seg.label}</span>
+            </button>
+          );
+        })}
       </div>
       {invalidCount > 0 && (
         <div className="mt-0.5 flex items-center gap-1 text-[11px] text-red-500">

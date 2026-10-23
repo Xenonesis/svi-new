@@ -282,11 +282,20 @@ export interface ContactGroupMember {
   added_at: string;
 }
 
+export type RecipientGroup =
+  | 'all_users'
+  | 'lottery_participants'
+  | 'lottery_winners'
+  | 'allotment_holders'
+  | 'workforce'
+  | 'hot_leads'
+  | 'custom';
+
 export interface Campaign {
   id: string;
   title: string;
   subject: string;
-  recipient_group: 'all_users' | 'lottery_participants' | 'custom';
+  recipient_group: RecipientGroup;
   custom_emails: string[] | null;
   status: 'draft' | 'scheduled' | 'sent' | 'cancelled';
   scheduled_at: string | null;

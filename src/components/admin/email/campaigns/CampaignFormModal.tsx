@@ -18,11 +18,15 @@ import {
   Check,
   UserCheck,
   Sparkles,
+  Trophy,
+  Building2,
+  Briefcase,
+  Flame,
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { getToken, fetchContacts } from '../helpers';
 import { EMAIL_TEMPLATES } from '../constants';
-import type { Campaign, Contact } from '../types';
+import type { Campaign, Contact, RecipientGroup } from '../types';
 import { ContactPicker } from '../compose/ContactPicker';
 import { AIComposePopover } from '../compose/AIComposePopover';
 import { ScheduleDateTimePicker } from '../compose/ScheduleDateTimePicker';
@@ -47,9 +51,7 @@ export function CampaignFormModal({
   const [title, setTitle] = useState('');
   const [subject, setSubject] = useState('');
   const [bodyHtml, setBodyHtml] = useState('');
-  const [recipientGroup, setRecipientGroup] = useState<
-    'all_users' | 'lottery_participants' | 'custom'
-  >('all_users');
+  const [recipientGroup, setRecipientGroup] = useState<RecipientGroup>('all_users');
   const [customEmailsInput, setCustomEmailsInput] = useState('');
   const [scheduledAtInput, setScheduledAtInput] = useState('');
   const [reminderAtInput, setReminderAtInput] = useState('');
@@ -469,21 +471,46 @@ export function CampaignFormModal({
                   )}
                 </div>
 
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2.5">
                   {[
-                    { value: 'all_users' as const, label: 'All Users', icon: Users },
+                    { value: 'all_users' as const, label: 'All Users', icon: Users, badge: null },
+                    {
+                      value: 'lottery_winners' as const,
+                      label: 'Lottery Winners',
+                      icon: Trophy,
+                      badge: 'ERP 🏆',
+                    },
+                    {
+                      value: 'allotment_holders' as const,
+                      label: 'Allotment Holders',
+                      icon: Building2,
+                      badge: 'ERP 🏡',
+                    },
+                    {
+                      value: 'workforce' as const,
+                      label: 'Workforce / Team',
+                      icon: Briefcase,
+                      badge: 'ERP 💼',
+                    },
+                    {
+                      value: 'hot_leads' as const,
+                      label: 'Hot Leads',
+                      icon: Flame,
+                      badge: 'Hot 🔥',
+                    },
                     {
                       value: 'lottery_participants' as const,
                       label: 'Lottery Participants',
                       icon: Mail,
+                      badge: null,
                     },
-                    { value: 'custom' as const, label: 'Custom List', icon: FileText },
+                    { value: 'custom' as const, label: 'Custom List', icon: FileText, badge: null },
                   ].map((opt) => (
                     <label
                       key={opt.value}
-                      className={`flex cursor-pointer items-center gap-2 rounded-lg border px-3.5 py-2 text-xs font-medium transition-all ${
+                      className={`flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-medium transition-all ${
                         recipientGroup === opt.value
-                          ? 'border-brand-gold/40 bg-brand-gold/5 text-brand-gold shadow-sm'
+                          ? 'border-brand-gold/60 bg-brand-gold/10 text-brand-gold ring-brand-gold/30 shadow-sm ring-1'
                           : 'border-gray-200 text-gray-600 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400'
                       }`}
                     >
@@ -495,8 +522,13 @@ export function CampaignFormModal({
                         onChange={() => setRecipientGroup(opt.value)}
                         className="sr-only"
                       />
-                      <opt.icon className="h-3.5 w-3.5" />
-                      {opt.label}
+                      <opt.icon className="h-3.5 w-3.5 shrink-0" />
+                      <span>{opt.label}</span>
+                      {opt.badge && (
+                        <span className="bg-brand-gold/15 py-0.2 text-brand-gold ml-1 rounded px-1 text-[9px] font-bold">
+                          {opt.badge}
+                        </span>
+                      )}
                     </label>
                   ))}
                 </div>
