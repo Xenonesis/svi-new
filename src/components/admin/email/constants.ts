@@ -10,6 +10,8 @@ import {
   Ban,
   FileWarning,
   Receipt,
+  Building2,
+  Compass,
 } from 'lucide-react';
 import rawTemplates from '@/src/data/email-templates.json';
 import type { ElementType } from 'react';
@@ -26,8 +28,9 @@ const ICON_MAP: Record<string, ElementType> = {
   Ban,
   FileWarning,
   Receipt,
+  Building2,
+  Compass,
 };
-
 export const EMAIL_TEMPLATES = rawTemplates.map((tpl) => ({
   ...tpl,
   icon: ICON_MAP[tpl.icon] || FileText,
@@ -88,6 +91,24 @@ export const COMMON_TAGS: TagDef[] = [
     color: 'text-orange-700 dark:text-orange-300',
     bg: 'bg-orange-50 dark:bg-orange-500/10',
     border: 'border-orange-200 dark:border-orange-500/20',
+  },
+  {
+    name: 'Luxury Allotment',
+    color: 'text-amber-600 dark:text-amber-400',
+    bg: 'bg-amber-50 dark:bg-amber-500/10',
+    border: 'border-amber-300 dark:border-amber-500/25',
+  },
+  {
+    name: 'VIP Pass',
+    color: 'text-yellow-600 dark:text-yellow-400',
+    bg: 'bg-yellow-50 dark:bg-yellow-500/10',
+    border: 'border-yellow-300 dark:border-yellow-500/25',
+  },
+  {
+    name: 'Finance',
+    color: 'text-emerald-700 dark:text-emerald-300',
+    bg: 'bg-emerald-50 dark:bg-emerald-500/10',
+    border: 'border-emerald-200 dark:border-emerald-500/20',
   },
 ];
 
