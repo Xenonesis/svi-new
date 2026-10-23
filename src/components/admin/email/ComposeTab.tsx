@@ -31,6 +31,8 @@ import type {
 } from './types';
 import { isValidEmail } from '@/src/lib/utils/emailValidation';
 import { ContactPicker } from './compose/ContactPicker';
+import { ERPDocumentPickerModal } from './compose/ERPDocumentPickerModal';
+import type { ERPDocumentItem } from '@/app/api/admin/email/erp-documents/route';
 import { useAIEmail } from './hooks/useAIEmail';
 import { useEmailPrefill } from './hooks/useEmailPrefill';
 import { useEmailDraft } from './hooks/useEmailDraft';
@@ -252,8 +254,27 @@ export function ComposeTab({
     message: string;
   } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [erpModalOpen, setErpModalOpen] = useState(false);
   const { autoCompose, loading: aiLoading, suggestSubject, suggestFollowup } = useAIEmail();
 
+  const handleSelectERPDocument = useCallback(
+    (doc: ERPDocumentItem) => {
+      const cleanTitle = (doc.title || 'SVI-Document').replace(/[^a-zA-Z0-9_\- ]/g, '');
+      const attachmentItem: EmailAttachment = {
+        name: `${cleanTitle}.pdf`,
+        size: 24500,
+        url: `/api/admin/documents?id=${doc.id}&type=${doc.documentType}`,
+      };
+      setAttachments((prev) => [...prev, attachmentItem]);
+      toast.success(`Attached: ${doc.title}`);
+
+      if (toRecipients.length === 0 && doc.recipientEmail) {
+        setToRecipients([{ email: doc.recipientEmail, type: 'manual', valid: true }]);
+        toast.info(`Recipient auto-filled: ${doc.recipientEmail}`);
+      }
+    },
+    [toRecipients.length]
+  );
   // Callbacks to convert comma-separated strings (from draft/prefill) to Recipient[]
   const handleToChange = useCallback((val: string) => {
     const parsed = val
@@ -841,6 +862,7 @@ export function ComposeTab({
         <AttachmentList
           attachments={attachments}
           onRemove={(i) => setAttachments((prev) => prev.filter((_, idx) => idx !== i))}
+          onOpenERPDocuments={() => setErpModalOpen(true)}
         />
 
         {/* Template Banner */}
@@ -949,6 +971,7 @@ export function ComposeTab({
           onApplySubject={handleApplySubject}
           onFileSelect={handleFileSelect}
           onDiscardAll={discardAll}
+          onOpenERPDocuments={() => setErpModalOpen(true)}
         />
       </div>
 
@@ -967,6 +990,12 @@ export function ComposeTab({
               ? 'Select Contacts (BCC)'
               : 'Select Contacts (To)'
         }
+      />
+
+      <ERPDocumentPickerModal
+        open={erpModalOpen}
+        onClose={() => setErpModalOpen(false)}
+        onSelectDocument={handleSelectERPDocument}
       />
     </div>
   );

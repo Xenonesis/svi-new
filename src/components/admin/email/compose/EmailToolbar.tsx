@@ -9,6 +9,7 @@ import {
   Paperclip,
   Trash2,
   Clock,
+  FileText,
 } from 'lucide-react';
 import { TemplatePicker } from './TemplatePicker';
 
@@ -34,6 +35,7 @@ interface EmailToolbarProps {
   onApplySubject: (suggestion: string) => void;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onDiscardAll: () => void;
+  onOpenERPDocuments?: () => void;
 }
 
 export function EmailToolbar({
@@ -58,6 +60,7 @@ export function EmailToolbar({
   onApplySubject,
   onFileSelect,
   onDiscardAll,
+  onOpenERPDocuments,
 }: EmailToolbarProps) {
   return (
     <div className="flex flex-col items-stretch justify-between gap-4 border-t border-gray-100 px-4 py-4 sm:flex-row sm:items-center sm:gap-0 sm:px-6 dark:border-gray-800">
@@ -183,6 +186,17 @@ export function EmailToolbar({
           <Paperclip className="h-3.5 w-3.5" />
           <span className="hidden sm:inline">Attach</span>
         </button>
+        {onOpenERPDocuments && (
+          <button
+            type="button"
+            onClick={onOpenERPDocuments}
+            className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 flex items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold transition-all"
+            title="Attach Allotment, Receipt, or Offer Letter from ERP"
+          >
+            <FileText className="h-3.5 w-3.5" />
+            <span className="hidden sm:inline">+ ERP Document</span>
+          </button>
+        )}
         <input
           ref={fileInputRef}
           type="file"

@@ -1,12 +1,13 @@
 'use client';
 
 import { AnimatePresence, motion } from 'motion/react';
-import { FileIcon, X } from 'lucide-react';
+import { FileIcon, X, Plus } from 'lucide-react';
 import type { EmailAttachment } from '../types';
 
 interface AttachmentListProps {
   attachments: EmailAttachment[];
   onRemove: (index: number) => void;
+  onOpenERPDocuments?: () => void;
 }
 
 const formatFileSize = (bytes: number) => {
@@ -15,7 +16,7 @@ const formatFileSize = (bytes: number) => {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 };
 
-export function AttachmentList({ attachments, onRemove }: AttachmentListProps) {
+export function AttachmentList({ attachments, onRemove, onOpenERPDocuments }: AttachmentListProps) {
   return (
     <AnimatePresence>
       {attachments.length > 0 && (
@@ -49,6 +50,16 @@ export function AttachmentList({ attachments, onRemove }: AttachmentListProps) {
                 </button>
               </motion.div>
             ))}
+            {onOpenERPDocuments && (
+              <button
+                type="button"
+                onClick={onOpenERPDocuments}
+                className="border-brand-gold/40 bg-brand-gold/5 text-brand-gold hover:bg-brand-gold/15 flex items-center gap-1 rounded-lg border border-dashed px-2.5 py-1.5 text-xs font-semibold transition-all"
+              >
+                <Plus className="h-3 w-3" />
+                <span>+ ERP Document</span>
+              </button>
+            )}
           </div>
         </motion.div>
       )}
