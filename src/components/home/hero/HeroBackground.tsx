@@ -61,16 +61,5 @@ export default function HeroBackground({
     </>
   );
 
-  if (isMobile) {
-    return <div className="absolute inset-0 z-0 bg-slate-900">{inner}</div>;
-  }
-
-  return (
-    <motion.div
-      className="absolute inset-0 z-0 bg-slate-900"
-      style={{ y: backgroundY, scale: heroScale, willChange: 'transform' }}
-    >
-      {inner}
-    </motion.div>
-  );
+  return <div className="absolute inset-0 z-0 bg-slate-900">{inner}</div>;
 }

@@ -10,8 +10,12 @@ export const revalidate = 300;
 import HeroSection from '@/src/components/home/HeroSection';
 import { OrganizationSchema, WebSiteSchema } from '@/src/components/common/Schema';
 import HomeSections from '@/src/components/home/HomeSections';
-import { StaggerTestimonials } from '@/src/components/ui/stagger-testimonials';
-
+const StaggerTestimonials = dynamic(
+  () => import('@/src/components/ui/stagger-testimonials').then((mod) => mod.StaggerTestimonials),
+  {
+    loading: () => <div className="bg-brand-dark/20 h-64 w-full animate-pulse" />,
+  }
+);
 const HERO_IMAGES = [
   {
     src: '/images/hero1_new.webp',

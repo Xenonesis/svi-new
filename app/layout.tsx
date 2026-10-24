@@ -3,6 +3,7 @@ import './globals.css';
 import { COMPANY_NAME, SITE_NAME, SITE_URL, absoluteUrl } from '@/src/lib/seo';
 import { Outfit, Playfair_Display, Noto_Sans_Devanagari } from 'next/font/google';
 import Script from 'next/script';
+import dynamic from 'next/dynamic';
 import type { Metadata, Viewport } from 'next';
 import { getLocale } from 'next-intl/server';
 
@@ -10,7 +11,7 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { Toaster } from 'sonner';
 import PwaRegister from '@/src/components/PwaRegister';
-import PwaPushPrompt from '@/src/components/PwaPushPrompt';
+const PwaPushPrompt = dynamic(() => import('@/src/components/PwaPushPrompt'));
 import QueryProvider from '@/src/components/QueryProvider';
 import { ThemeScript } from '@/src/components/ThemeProvider';
 import { WebVitals } from '@/src/components/WebVitals';
@@ -18,14 +19,14 @@ import { WebVitals } from '@/src/components/WebVitals';
 const outfit = Outfit({
   subsets: ['latin'],
   variable: '--font-sans',
-  display: 'swap',
+  display: 'optional',
   preload: true,
 });
 
 const playfair = Playfair_Display({
   subsets: ['latin'],
   variable: '--font-serif',
-  display: 'swap',
+  display: 'optional',
   preload: true,
 });
 
@@ -33,7 +34,7 @@ const notoSansDevanagari = Noto_Sans_Devanagari({
   subsets: ['devanagari'],
   weight: ['400', '700'],
   variable: '--font-hindi',
-  display: 'swap',
+  display: 'optional',
 });
 
 export const metadata: Metadata = {
@@ -324,6 +325,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }}
           />
         )}
+        <script
+          type="speculationrules"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              prerender: [
+                {
+                  where: { href_matches: '/*' },
+                  eagerness: 'conservative',
+                },
+              ],
+            }),
+          }}
+        />
       </head>
       <body className={`${sansFontVariable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />

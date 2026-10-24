@@ -4,11 +4,10 @@ import dynamic from 'next/dynamic';
 
 import AboutSection from '@/src/components/home/AboutSection';
 import TrustAndBanks from '@/src/components/home/TrustAndBanks';
-import FeaturesSection from '@/src/components/home/FeaturesSection';
-import ProjectsSection from '@/src/components/home/ProjectsSection';
-import CorridorDiscovery from '@/src/components/home/CorridorDiscovery';
-import StatsCounterSection from '@/src/components/home/StatsCounterSection';
-
+const StatsCounterSection = dynamic(() => import('@/src/components/home/StatsCounterSection'));
+const FeaturesSection = dynamic(() => import('@/src/components/home/FeaturesSection'));
+const ProjectsSection = dynamic(() => import('@/src/components/home/ProjectsSection'));
+const CorridorDiscovery = dynamic(() => import('@/src/components/home/CorridorDiscovery'));
 // Below-the-fold dynamic imports to reduce initial main-thread script execution & bootup time
 const InteractiveCalculator = dynamic(() => import('@/src/components/home/InteractiveCalculator'), {
   loading: () => <div className="h-96 w-full animate-pulse bg-gray-100 dark:bg-gray-900" />,

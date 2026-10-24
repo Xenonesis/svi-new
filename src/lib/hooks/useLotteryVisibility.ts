@@ -45,10 +45,19 @@ export function useLotteryVisibility() {
       }
     };
 
-    fetchVisibility();
-    return () => {
-      cancelled = true;
-    };
+    if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+      const handle = window.requestIdleCallback(fetchVisibility, { timeout: 2500 });
+      return () => {
+        cancelled = true;
+        window.cancelIdleCallback(handle);
+      };
+    } else {
+      const timer = setTimeout(fetchVisibility, 1500);
+      return () => {
+        cancelled = true;
+        clearTimeout(timer);
+      };
+    }
   }, []);
 
   return { visible, loading };

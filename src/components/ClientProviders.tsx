@@ -47,7 +47,7 @@ function ThemeAwareBackground() {
     // Skip DotField canvas entirely on mobile/touch screens (no cursor interactions, saves CPU & canvas memory)
     if (typeof window !== 'undefined') {
       const isMobileOrTouch =
-        window.innerWidth < 768 ||
+        window.innerWidth < 1024 ||
         window.matchMedia('(pointer: coarse)').matches ||
         !window.matchMedia('(hover: hover)').matches;
       if (isMobileOrTouch) {

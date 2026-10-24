@@ -62,7 +62,7 @@ export function WebVitals() {
     // @react-three/fiber's internal render loop (not user code).
     // Awaiting R3F to migrate from Clock → Timer upstream.
     const originalWarn = console.warn;
-    console.warn = (...args: any[]) => {
+    console.warn = (...args: unknown[]) => {
       if (typeof args[0] === 'string' && args[0].includes('THREE.Clock')) return;
       originalWarn.apply(console, args);
     };

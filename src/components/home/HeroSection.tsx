@@ -36,11 +36,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
   // Static fallback motion values for mobile (no spring computation)
   const staticY = useMotionValue('0%');
   const staticScale = useMotionValue(1);
-  const staticOpacity = useMotionValue(1);
-
   // Direct GPU transforms without continuous main-thread spring integrator loops
   const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
   const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.03]);
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
@@ -81,9 +78,8 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         startTransition(() => {
           setCurrentHeroIndex((prev) => (prev + 1) % images.length);
         });
-      }, 6000);
-    }, 6000);
-
+      }, 8000);
+    }, 10000);
     return () => {
       clearTimeout(initialDelay);
       clearInterval(timer);
@@ -149,9 +145,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         onSelect={handleSelect}
       />
 
-      <HeroContent
-        heroOpacity={isTouchOrSmall || prefersReducedMotion ? staticOpacity : heroOpacity}
-      />
+      <HeroContent />
 
       <HeroStatCard />
     </section>

@@ -1,15 +1,20 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, MotionValue } from 'motion/react';
+import dynamic from 'next/dynamic';
+
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ArrowRight, Search, MapPin, Building, Banknote, FileDown } from 'lucide-react';
-import WhatsAppBrochureModal from '@/src/components/common/WhatsAppBrochureModal';
 import { useTranslations } from 'next-intl';
 
+const WhatsAppBrochureModal = dynamic(
+  () => import('@/src/components/common/WhatsAppBrochureModal'),
+  { ssr: false }
+);
+
 interface HeroContentProps {
-  heroOpacity: MotionValue<number>;
+  heroOpacity?: unknown;
 }
 
 export default function HeroContent({ heroOpacity }: HeroContentProps) {
@@ -26,16 +31,13 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
   };
 
   return (
-    <motion.div
-      className="z-30 container mx-auto flex w-full flex-col items-start px-4 text-left drop-shadow-2xl sm:px-8 md:px-16"
-      style={{ opacity: heroOpacity }}
-    >
+    <div className="z-30 container mx-auto flex w-full flex-col items-start px-4 text-left drop-shadow-2xl sm:px-8 md:px-16">
       <div className="w-full max-w-5xl">
         <span className="text-brand-gold animate-hero-1 mb-4 inline-block text-xs font-bold tracking-[0.2em] uppercase opacity-90 sm:mb-8 sm:text-base sm:tracking-[0.3em]">
           {t('badge')}
         </span>
 
-        <h1 className="animate-hero-2 mb-6 font-serif text-[2.4rem] leading-[1.2] text-white drop-shadow-lg min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl md:leading-[1.15]">
+        <h1 className="mb-6 font-serif text-[2.4rem] leading-[1.2] text-white drop-shadow-lg min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl md:leading-[1.15]">
           <span className="inline">{t('title')}</span> <br />
           <span className="text-brand-gold inline-block overflow-visible pt-1 pr-6 pb-2 italic drop-shadow-md">
             <span className="inline">{t('titleAccent')}</span>
@@ -191,11 +193,13 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
         </form>
       </div>
 
-      <WhatsAppBrochureModal
-        isOpen={brochureModalOpen}
-        onClose={() => setBrochureModalOpen(false)}
-        projectName="Shivani Vatika-11th"
-      />
-    </motion.div>
+      {brochureModalOpen && (
+        <WhatsAppBrochureModal
+          isOpen={brochureModalOpen}
+          onClose={() => setBrochureModalOpen(false)}
+          projectName="Shivani Vatika-11th"
+        />
+      )}
+    </div>
   );
 }
