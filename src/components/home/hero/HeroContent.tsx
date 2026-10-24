@@ -33,18 +33,18 @@ export default function HeroContent({ heroOpacity }: HeroContentProps) {
   return (
     <div className="z-30 container mx-auto flex w-full flex-col items-start px-4 text-left drop-shadow-2xl sm:px-8 md:px-16">
       <div className="w-full max-w-5xl">
-        <span className="text-brand-gold animate-hero-1 mb-4 inline-block text-xs font-bold tracking-[0.2em] uppercase opacity-90 sm:mb-8 sm:text-base sm:tracking-[0.3em]">
+        <span className="text-brand-gold animate-hero-1 max-md:animation-none mb-4 inline-block text-xs font-bold tracking-[0.2em] uppercase opacity-90 max-md:transform-none max-md:opacity-100 sm:mb-8 sm:text-base sm:tracking-[0.3em]">
           {t('badge')}
         </span>
 
-        <h1 className="mb-6 font-serif text-[2.4rem] leading-[1.2] text-white drop-shadow-lg min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl md:leading-[1.15]">
+        <h1 className="mb-6 font-serif text-[2.4rem] leading-[1.2] text-white drop-shadow-lg will-change-auto max-md:transform-none max-md:opacity-100 min-[380px]:text-5xl sm:mb-8 sm:text-6xl md:text-8xl md:leading-[1.15]">
           <span className="inline">{t('title')}</span> <br />
           <span className="text-brand-gold inline-block overflow-visible pt-1 pr-6 pb-2 italic drop-shadow-md">
             <span className="inline">{t('titleAccent')}</span>
           </span>
         </h1>
 
-        <p className="animate-hero-3 mb-8 max-w-xl text-sm leading-relaxed font-normal text-white/90 drop-shadow-md sm:mb-10 sm:text-base md:text-xl">
+        <p className="animate-hero-3 max-md:animation-none mb-8 max-w-xl text-sm leading-relaxed font-normal text-white/90 drop-shadow-md max-md:transform-none max-md:opacity-100 sm:mb-10 sm:text-base md:text-xl">
           {t('subtitle')}
         </p>
 
