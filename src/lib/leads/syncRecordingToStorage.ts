@@ -11,18 +11,38 @@ export interface StorageSyncResult {
 }
 
 /**
+ * Extracts an Indian 10-digit mobile number from an upstream recording filename if present.
+ * Example: `673_8954636641_2026-10-14 16:16:02.wav` -> `8954636641`
+ */
+export function extractPhoneFromUrl(upstreamUrl: string): string | null {
+  try {
+    const parsed = new URL(upstreamUrl);
+    const rawName = parsed.pathname.split('/').pop() || '';
+    const decoded = decodeURIComponent(rawName);
+    const match = decoded.match(/(?:^|[^0-9])([6-9]\d{9})(?:[^0-9]|$)/);
+    return match ? match[1] : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
  * Derives a clean, collision-free storage path for a recording file.
  * Format: `<year>/<month>/<customerPhone>_<cleanFilename>.wav`
  */
 export function deriveStoragePath(customerPhone: string, upstreamUrl: string): string {
-  const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10) || 'unknown';
-  let filename = 'recording.wav';
+  let cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
+  let filename: string;
   try {
     const parsed = new URL(upstreamUrl);
     const rawName = parsed.pathname.split('/').pop() || 'recording.wav';
     filename = decodeURIComponent(rawName).replace(/[^a-zA-Z0-9._-]/g, '_');
   } catch {
     filename = `rec_${Date.now()}.wav`;
+  }
+
+  if (!cleanPhone) {
+    cleanPhone = extractPhoneFromUrl(upstreamUrl) || 'unknown';
   }
 
   const now = new Date();
