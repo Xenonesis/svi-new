@@ -134,6 +134,8 @@ export interface Domain {
   created_at: string;
   region: string;
   records?: DnsRecord[];
+  open_tracking?: boolean;
+  click_tracking?: boolean;
 }
 
 export interface DnsRecord {

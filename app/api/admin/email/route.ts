@@ -363,13 +363,13 @@ export async function GET(request: NextRequest) {
 
           const events = eventRows || [];
           let sentAt: string | null = dbMsg.created_at || dbMsg.sent_at || null;
-          let deliveredAt: string | null = null;
-          let firstOpenedAt: string | null = null;
-          let firstClickedAt: string | null = null;
-          let bouncedAt: string | null = null;
-          let complainedAt: string | null = null;
-          let openCount = 0;
-          let clickCount = 0;
+          let deliveredAt: string | null = dbMsg.delivered_at || null;
+          let firstOpenedAt: string | null = dbMsg.first_opened_at || null;
+          let firstClickedAt: string | null = dbMsg.first_clicked_at || null;
+          let bouncedAt: string | null = dbMsg.bounced_at || null;
+          let complainedAt: string | null = dbMsg.complained_at || null;
+          let openCount = dbMsg.open_count || 0;
+          let clickCount = dbMsg.click_count || 0;
           const clickedUrls: string[] = [];
 
           for (const ev of events) {
@@ -389,6 +389,37 @@ export async function GET(request: NextRequest) {
             }
             if (ev.event_type === 'complained' || ev.event_type === 'email.complained') {
               if (!complainedAt) complainedAt = ev.occurred_at;
+            }
+          }
+
+          // Real-time fallback to Resend API if email hasn't shown opened yet
+          if (dbMsg.resend_id && !firstOpenedAt) {
+            try {
+              const check = await resend.emails.get(dbMsg.resend_id);
+              const liveEvent = check?.data?.last_event;
+              if (liveEvent === 'opened' || liveEvent === 'clicked') {
+                firstOpenedAt = firstOpenedAt || new Date().toISOString();
+                openCount = Math.max(openCount, 1);
+                dbMsg.last_event = liveEvent;
+                dbMsg.status = liveEvent;
+                if (liveEvent === 'clicked') {
+                  firstClickedAt = firstClickedAt || new Date().toISOString();
+                  clickCount = Math.max(clickCount, 1);
+                }
+                await supabaseAdmin
+                  .from('email_messages')
+                  .update({
+                    last_event: liveEvent,
+                    status: liveEvent,
+                    first_opened_at: firstOpenedAt,
+                    open_count: openCount,
+                    first_clicked_at: firstClickedAt,
+                    click_count: clickCount,
+                  })
+                  .eq('id', dbMsg.id);
+              }
+            } catch {
+              // Ignore non-fatal live check error
             }
           }
 

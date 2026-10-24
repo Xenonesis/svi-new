@@ -152,7 +152,7 @@ async function handleLifecycleEvent(payload: any) {
   const { data: existing } = await supabaseAdmin
     .from('email_messages')
     .select('*')
-    .eq('resend_id', emailId)
+    .or(`resend_id.eq.${emailId},id.eq.${emailId}`)
     .maybeSingle();
 
   const row: Record<string, any> = existing

@@ -170,6 +170,37 @@ export function DomainsTab() {
                   <span>{new Date(domain.created_at).toLocaleDateString('en-IN')}</span>
                 </div>
 
+                {/* Tracking Capabilities */}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-semibold ${
+                      domain.open_tracking
+                        ? 'bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-300'
+                        : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        domain.open_tracking ? 'animate-pulse bg-purple-500' : 'bg-gray-400'
+                      }`}
+                    />
+                    Open Tracking: {domain.open_tracking ? 'Active' : 'Off'}
+                  </span>
+                  <span
+                    className={`inline-flex items-center gap-1.5 rounded-md px-2 py-0.5 text-[10px] font-semibold ${
+                      domain.click_tracking
+                        ? 'bg-indigo-50 text-indigo-700 dark:bg-indigo-900/20 dark:text-indigo-300'
+                        : 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400'
+                    }`}
+                  >
+                    <span
+                      className={`h-1.5 w-1.5 rounded-full ${
+                        domain.click_tracking ? 'bg-indigo-500' : 'bg-gray-400'
+                      }`}
+                    />
+                    Click Tracking: {domain.click_tracking ? 'Active' : 'Off'}
+                  </span>
+                </div>
                 {/* DNS Records */}
                 {domain.records && domain.records.length > 0 && (
                   <div className="mt-4 space-y-2">
