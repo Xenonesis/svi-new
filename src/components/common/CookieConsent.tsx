@@ -54,6 +54,7 @@ export default function CookieConsent() {
             <p className="text-sm text-gray-700 dark:text-gray-300">{t('message')}</p>
             <Link
               href="/privacy-policy"
+              prefetch={false}
               className="dark:text-brand-gold mt-1 inline-block text-xs font-semibold text-amber-800 hover:underline"
             >
               {t('learnMore')}

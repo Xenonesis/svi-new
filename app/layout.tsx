@@ -326,19 +326,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             }}
           />
         )}
-        <script
-          type="speculationrules"
-          dangerouslySetInnerHTML={{
-            __html: JSON.stringify({
-              prerender: [
-                {
-                  where: { href_matches: '/*' },
-                  eagerness: 'conservative',
-                },
-              ],
-            }),
-          }}
-        />
       </head>
       <body className={`${sansFontVariable} ${playfair.variable}`} suppressHydrationWarning>
         <ThemeScript />
