@@ -9,14 +9,13 @@ import { getLocale } from 'next-intl/server';
 
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-const Toaster = dynamic(() => import('sonner').then((mod) => mod.Toaster), {
-  ssr: false,
-});
 import PwaRegister from '@/src/components/PwaRegister';
-const PwaPushPrompt = dynamic(() => import('@/src/components/PwaPushPrompt'));
 import QueryProvider from '@/src/components/QueryProvider';
 import { ThemeScript } from '@/src/components/ThemeProvider';
 import { WebVitals } from '@/src/components/WebVitals';
+
+const PwaPushPrompt = dynamic(() => import('@/src/components/PwaPushPrompt'));
+const Toaster = dynamic(() => import('sonner').then((mod) => mod.Toaster));
 
 const outfit = Outfit({
   subsets: ['latin'],
