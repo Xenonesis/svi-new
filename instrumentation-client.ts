@@ -1,5 +1,3 @@
-import * as Sentry from '@sentry/nextjs';
-
 const dsn = process.env.NEXT_PUBLIC_SENTRY_DSN;
 const isSentryActive = Boolean(
   dsn &&
@@ -7,14 +5,16 @@ const isSentryActive = Boolean(
   (process.env.SENTRY_AUTH_TOKEN || process.env.VERCEL)
 );
 
-if (isSentryActive) {
-  Sentry.init({
-    dsn,
-    enabled: true,
-    tracesSampleRate: 0.05,
-    integrations: [],
-    tunnel: '/monitoring',
+if (isSentryActive && typeof window !== 'undefined') {
+  import('@sentry/nextjs').then((Sentry) => {
+    Sentry.init({
+      dsn,
+      enabled: true,
+      tracesSampleRate: 0.05,
+      integrations: [],
+      tunnel: '/monitoring',
+    });
   });
 }
 
-export const onRouterTransitionStart = dsn ? Sentry.captureRouterTransitionStart : () => {};
+export const onRouterTransitionStart = () => {};

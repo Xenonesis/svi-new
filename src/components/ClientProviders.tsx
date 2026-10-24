@@ -10,7 +10,6 @@ import Header from '@/src/components/layout/Header';
 import { type ReactNode, useEffect, useState } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
-import ExitIntentPopup from '@/src/components/common/ExitIntentPopup';
 import { MobileConversionDock } from '@/src/components/layout/MobileConversionDock';
 
 const ChatLauncher = dynamic(() => import('@/src/components/home/ChatLauncher'), {
@@ -35,6 +34,9 @@ const PropertyComparisonModal = dynamic(
 );
 
 const DotField = dynamic(() => import('@/src/components/ui/DotField'), {
+  ssr: false,
+});
+const ExitIntentPopup = dynamic(() => import('@/src/components/common/ExitIntentPopup'), {
   ssr: false,
 });
 

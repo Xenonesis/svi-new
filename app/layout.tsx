@@ -9,7 +9,9 @@ import { getLocale } from 'next-intl/server';
 
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
-import { Toaster } from 'sonner';
+const Toaster = dynamic(() => import('sonner').then((mod) => mod.Toaster), {
+  ssr: false,
+});
 import PwaRegister from '@/src/components/PwaRegister';
 const PwaPushPrompt = dynamic(() => import('@/src/components/PwaPushPrompt'));
 import QueryProvider from '@/src/components/QueryProvider';
