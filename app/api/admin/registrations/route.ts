@@ -84,7 +84,12 @@ export async function GET(request: NextRequest) {
       );
     }
     if (project) query = query.eq('project', project);
-    if (advisor) query = query.eq('advisor_name', advisor);
+    if (advisor) {
+      const slug = advisor.toLowerCase().replace(/\s+/g, '-');
+      query = query.or(
+        `advisor_name.eq."${advisor}",advisor_name.eq."${slug}",advisor_name.ilike."%${advisor}%"`
+      );
+    }
     if (propertyType) query = query.eq('property_type', propertyType);
     if (propertySize) query = query.eq('property_size', propertySize);
     if (plotPreference) query = query.eq('plot_preference', plotPreference);

@@ -144,11 +144,7 @@ export function useRegistrations() {
   });
 
   const availableAdvisors = useMemo(() => {
-    const list = new Set<string>([
-      'Direct / SVI Official',
-      ...activeAdvisors,
-      ...(filterOptions.advisors || []),
-    ]);
+    const list = new Set<string>(['Direct / SVI Official', ...activeAdvisors]);
     return Array.from(list)
       .filter(Boolean)
       .sort((a, b) => {
@@ -156,7 +152,7 @@ export function useRegistrations() {
         if (b === 'Direct / SVI Official') return 1;
         return a.localeCompare(b);
       });
-  }, [activeAdvisors, filterOptions.advisors]);
+  }, [activeAdvisors]);
 
   // Fetch registrations data via React Query
   const {

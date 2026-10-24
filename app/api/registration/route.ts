@@ -494,10 +494,12 @@ const DIRECT_ADVISOR = 'Direct / SVI Official';
 
 const DEFAULT_ADVISORS = [
   DIRECT_ADVISOR,
-  'Ajeet Kumar',
-  'Sanjay Sharma',
-  'Pooja Singh',
-  'Vikram Rathore',
+  'Abhishek Kumar',
+  'Deepa Sharma',
+  'Manish Sharma',
+  'Muskan Varshney',
+  'Nitin Choudhary',
+  'Shikha Tomar',
 ];
 
 /** Active advisor display names from portal_settings → profiles. Empty list if unconfigured. */
@@ -517,19 +519,33 @@ async function getActiveAdvisorNames(): Promise<string[]> {
       !Array.isArray(settingData.value.ids) ||
       settingData.value.ids.length === 0
     ) {
-      return [];
+      // Fallback: fetch all active employee profiles
+      const { data: allActive } = await supabaseAdmin
+        .from('profiles')
+        .select('full_name')
+        .in('role', ['employee', 'admin'])
+        .or('is_active.is.null,is_active.eq.true')
+        .order('full_name', { ascending: true });
+
+      return Array.from(
+        new Set(
+          (allActive || [])
+            .map((p) => p.full_name?.trim())
+            .filter((name): name is string => Boolean(name && name.length > 0))
+        )
+      );
     }
 
     const advisorIds: string[] = settingData.value.ids;
     const { data: profiles, error: profilesError } = await supabaseAdmin
       .from('profiles')
       .select('full_name')
-      .in('id', advisorIds);
+      .in('id', advisorIds)
+      .or('is_active.is.null,is_active.eq.true');
 
     if (profilesError || !profiles || profiles.length === 0) {
       return [];
     }
-
     return Array.from(
       new Set(
         profiles

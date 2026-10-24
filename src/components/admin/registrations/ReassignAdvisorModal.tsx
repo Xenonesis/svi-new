@@ -20,12 +20,31 @@ export function ReassignAdvisorModal({
   onCancel,
   loading,
 }: ReassignAdvisorModalProps) {
+  function normalizeAdvisor(name?: string | null): string {
+    if (!name) return 'direct / svi official';
+    return name
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, ' ');
+  }
+
+  function resolveInitialAdvisor(current: string | null | undefined): string {
+    if (!current) return advisors[0] || 'Direct / SVI Official';
+    const exact = advisors.find((a) => a === current);
+    if (exact) return exact;
+    const normCurrent = normalizeAdvisor(current);
+    const matched = advisors.find((a) => normalizeAdvisor(a) === normCurrent);
+    if (matched) return matched;
+    return advisors[0] || 'Direct / SVI Official';
+  }
+
   const isBulk = targets.length > 1;
   const single = targets[0];
-  const initialAdvisor = single?.advisor_name || advisors[0] || 'Direct / SVI Official';
+  const initialAdvisor = isBulk
+    ? advisors[0] || 'Direct / SVI Official'
+    : resolveInitialAdvisor(single?.advisor_name);
 
   const [selectedAdvisor, setSelectedAdvisor] = useState(initialAdvisor);
-
   const handleSubmit = async (e: React.SyntheticEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!selectedAdvisor || loading) return;
@@ -89,7 +108,7 @@ export function ReassignAdvisorModal({
               <div className="mt-2.5 flex items-center gap-1.5 border-t border-gray-200/60 pt-2 text-[11px] dark:border-white/10">
                 <span className="text-gray-500">Current Advisor:</span>
                 <span className="font-semibold text-gray-700 dark:text-gray-300">
-                  {single.advisor_name || 'Direct / SVI Official'}
+                  {resolveInitialAdvisor(single.advisor_name)}
                 </span>
               </div>
             </div>

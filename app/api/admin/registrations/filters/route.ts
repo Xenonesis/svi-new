@@ -75,7 +75,14 @@ export async function GET(request: NextRequest) {
       {
         projects: unique((projects.data || []).map((r: { project: string | null }) => r.project)),
         advisors: unique(
-          (advisors.data || []).map((r: { advisor_name: string | null }) => r.advisor_name)
+          (advisors.data || []).map((r: { advisor_name: string | null }) => {
+            const raw = r.advisor_name?.trim();
+            if (!raw) return null;
+            return raw
+              .split(/[\s-]+/)
+              .map((w) => w.charAt(0).toUpperCase() + w.slice(1).toLowerCase())
+              .join(' ');
+          })
         ),
         propertyTypes: unique(
           (propTypes.data || []).map((r: { property_type: string | null }) => r.property_type)

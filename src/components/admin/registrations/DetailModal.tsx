@@ -39,16 +39,28 @@ export function DetailModal({
   onAdvisorChange,
 }: DetailModalProps) {
   const [isEditingAdvisor, setIsEditingAdvisor] = useState(false);
-  const [selectedAdvisor, setSelectedAdvisor] = useState(
-    reg.advisor_name || 'Direct / SVI Official'
-  );
+  const advisorsList = advisors.length > 0 ? advisors : ['Direct / SVI Official'];
+
+  function normalizeAdvisor(name?: string | null): string {
+    if (!name) return 'direct / svi official';
+    return name
+      .trim()
+      .toLowerCase()
+      .replace(/[\s-]+/g, ' ');
+  }
+
+  function resolveAdvisor(current?: string | null): string {
+    if (!current) return advisorsList[0] || 'Direct / SVI Official';
+    const exact = advisorsList.find((a) => a === current);
+    if (exact) return exact;
+    const normCurrent = normalizeAdvisor(current);
+    const matched = advisorsList.find((a) => normalizeAdvisor(a) === normCurrent);
+    if (matched) return matched;
+    return current;
+  }
+
+  const [selectedAdvisor, setSelectedAdvisor] = useState(resolveAdvisor(reg.advisor_name));
   const [savingAdvisor, setSavingAdvisor] = useState(false);
-
-  const advisorsList =
-    advisors.length > 0
-      ? advisors
-      : ['Direct / SVI Official', 'Ajeet Kumar', 'Sanjay Sharma', 'Pooja Singh', 'Vikram Rathore'];
-
   const handleSaveAdvisor = async () => {
     if (!onAdvisorChange || savingAdvisor) return;
     try {
@@ -266,7 +278,7 @@ export function DetailModal({
                   </div>
                 ) : (
                   <p className="truncate text-xs font-medium text-gray-800 sm:text-sm dark:text-gray-200">
-                    {reg.advisor_name || 'Direct / SVI Official'}
+                    {resolveAdvisor(reg.advisor_name)}
                   </p>
                 )}
               </div>
