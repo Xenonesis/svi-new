@@ -27,6 +27,8 @@
 @layer base {
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
+    max-width: 100vw;
   }
 
   /* Ensure Next.js devtools indicator stays above fixed footer docks, badges and banners */
@@ -71,7 +73,9 @@
   body {
     @apply bg-brand-bg text-brand-navy dark:bg-brand-dark-bg font-sans antialiased dark:text-gray-100;
     overflow-x: hidden;
+    max-width: 100vw;
     min-height: 100dvh;
+    position: relative;
   }
 
   /* Ensure page content doesn't hide behind the mobile sticky contact bar */

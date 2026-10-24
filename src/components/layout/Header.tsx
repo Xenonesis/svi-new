@@ -17,15 +17,16 @@ export default function Header() {
     const el = headerRef.current;
     if (!el) return;
 
+    let lastHeight = 0;
     const updateHeight = () => {
       if (!h.isScrolled) {
         const height = el.offsetHeight;
-        if (height > 0) {
+        if (height > 0 && Math.abs(height - lastHeight) >= 1) {
+          lastHeight = height;
           document.documentElement.style.setProperty('--header-height', `${height}px`);
         }
       }
     };
-
     updateHeight();
     const observer = new ResizeObserver(updateHeight);
     observer.observe(el);
@@ -37,12 +38,10 @@ export default function Header() {
   }, [h.isScrolled]);
   return (
     <>
-      <motion.header
+      <header
         ref={headerRef}
         suppressHydrationWarning
-        layout
-        transition={{ layout: { type: 'spring', bounce: 0, duration: 0.5 } }}
-        className={`fixed z-50 ${
+        className={`fixed z-50 transition-all duration-300 ease-out ${
           h.isScrolled
             ? 'top-0 right-0 left-0 rounded-none border-b border-white/10 bg-[#090d16]/90 px-4 py-3 backdrop-blur-xl max-xl:w-full xl:top-3 xl:left-1/2 xl:w-max xl:max-w-[96vw] xl:-translate-x-1/2 xl:rounded-full xl:border xl:border-slate-200/80 xl:bg-white/95 xl:px-8 xl:py-2.5 xl:shadow-[0_10px_35px_rgba(0,0,0,0.15)] dark:xl:border-white/15 dark:xl:bg-slate-950/95 dark:xl:shadow-[0_12px_40px_rgba(0,0,0,0.6)]'
             : 'top-0 right-0 left-0 w-full'
@@ -60,10 +59,8 @@ export default function Header() {
               : 'w-full'
           }
         >
-          <motion.div
-            layout
-            transition={{ layout: { type: 'spring', bounce: 0, duration: 0.5 } }}
-            className={`mx-auto flex items-center justify-between ${
+          <div
+            className={`mx-auto flex items-center justify-between transition-all duration-300 ${
               h.isScrolled
                 ? 'w-full gap-3 xl:justify-center xl:gap-5'
                 : 'container justify-between gap-4 xl:gap-8'
@@ -92,10 +89,10 @@ export default function Header() {
             <AnimatePresence mode="popLayout">
               {!h.isScrolled && (
                 <motion.div
-                  layout
                   initial={{ opacity: 0, width: 0, scale: 0.8 }}
                   animate={{ opacity: 1, width: 'auto', scale: 1 }}
                   exit={{ opacity: 0, width: 0, scale: 0.8 }}
+                  transition={{ duration: 0.25 }}
                   className="hidden overflow-hidden xl:block"
                 >
                   <Link
@@ -156,9 +153,9 @@ export default function Header() {
                 />
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
-      </motion.header>
+      </header>
     </>
   );
 }

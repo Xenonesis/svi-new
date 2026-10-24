@@ -22,13 +22,26 @@ export function useHeaderNavigation() {
   }, []);
 
   useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      // 10px threshold to trigger the header transition
-      setIsScrolled(window.scrollY > 10);
+      if (!ticking) {
+        ticking = true;
+        window.requestAnimationFrame(() => {
+          const y = window.scrollY;
+          // Hysteresis threshold: scroll down > 24px activates, scroll up < 8px deactivates
+          setIsScrolled((prev) => {
+            if (!prev && y > 24) return true;
+            if (prev && y < 8) return false;
+            return prev;
+          });
+          ticking = false;
+        });
+      }
     };
 
     // Check initial scroll position
-    handleScroll();
+    setIsScrolled(window.scrollY > 24);
 
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);

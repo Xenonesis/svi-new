@@ -17,12 +17,16 @@ export interface HeroImage {
 
 export default function HeroSection({ images }: { images: HeroImage[] }) {
   const heroRef = useRef<HTMLElement>(null);
-  const [isMobile, setIsMobile] = useState(false);
+  const [isTouchOrSmall, setIsTouchOrSmall] = useState(false);
 
   useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768);
+    const check = () =>
+      setIsTouchOrSmall(
+        window.innerWidth < 1024 ||
+          window.matchMedia('(pointer: coarse)').matches ||
+          !window.matchMedia('(hover: hover)').matches
+      );
     check();
-    // Only need to check once — parallax is removed on mobile
     window.addEventListener('resize', check, { passive: true });
     return () => window.removeEventListener('resize', check);
   }, []);
@@ -34,10 +38,10 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
   const staticScale = useMotionValue(1);
   const staticOpacity = useMotionValue(1);
 
-  const smoothScroll = useSpring(scrollYProgress, { stiffness: 60, damping: 20, restDelta: 0.01 });
-  const backgroundY = useTransform(smoothScroll, [0, 1], ['0%', '50%']);
-  const heroOpacity = useTransform(smoothScroll, [0, 0.8], [1, 0]);
-  const heroScale = useTransform(smoothScroll, [1, 0], [1, 1.05]);
+  // Direct GPU transforms without continuous main-thread spring integrator loops
+  const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const heroOpacity = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
+  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.03]);
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -64,10 +68,10 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
     setIsAutoPlaying(false);
     setCurrentHeroIndex(index);
   }, []);
-
   useEffect(() => {
-    // Disable background autoplay on mobile screens to preserve CPU, battery, and mobile bandwidth
-    if (isMobile || !isAutoPlaying || prefersReducedMotion) return;
+    const disableParallax = isTouchOrSmall || prefersReducedMotion;
+    // Disable background autoplay on mobile/touch screens to preserve CPU, battery, and mobile bandwidth
+    if (disableParallax || !isAutoPlaying) return;
     let timer: NodeJS.Timeout;
     const initialDelay = setTimeout(() => {
       startTransition(() => {
@@ -84,7 +88,7 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       clearTimeout(initialDelay);
       clearInterval(timer);
     };
-  }, [isMobile, isAutoPlaying, prefersReducedMotion, images.length]);
+  }, [isTouchOrSmall, isAutoPlaying, prefersReducedMotion, images.length]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -133,11 +137,10 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       <HeroBackground
         images={images}
         currentHeroIndex={currentHeroIndex}
-        backgroundY={isMobile ? staticY : backgroundY}
-        heroScale={isMobile ? staticScale : heroScale}
-        isMobile={isMobile}
+        backgroundY={isTouchOrSmall || prefersReducedMotion ? staticY : backgroundY}
+        heroScale={isTouchOrSmall || prefersReducedMotion ? staticScale : heroScale}
+        isMobile={isTouchOrSmall || prefersReducedMotion}
       />
-
       <HeroControls
         imagesCount={images.length}
         currentHeroIndex={currentHeroIndex}
@@ -146,7 +149,9 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
         onSelect={handleSelect}
       />
 
-      <HeroContent heroOpacity={isMobile ? staticOpacity : heroOpacity} />
+      <HeroContent
+        heroOpacity={isTouchOrSmall || prefersReducedMotion ? staticOpacity : heroOpacity}
+      />
 
       <HeroStatCard />
     </section>
