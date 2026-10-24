@@ -204,6 +204,10 @@ describe('usePortalAllotmentsAdmin', () => {
 
   it('handles allotment deletion when confirmed', async () => {
     const confirmSpy = vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const fetchSpy = vi.spyOn(globalThis, 'fetch').mockResolvedValue({
+      ok: true,
+      json: async () => ({ success: true }),
+    } as Response);
     const { result } = renderHook(() => usePortalAllotmentsAdmin());
 
     await act(async () => {
@@ -215,8 +219,12 @@ describe('usePortalAllotmentsAdmin', () => {
     });
 
     expect(confirmSpy).toHaveBeenCalled();
-    expect(mockDeleteEq).toHaveBeenCalledWith('id', 'allot-1');
+    expect(fetchSpy).toHaveBeenCalledWith(
+      expect.stringContaining('/api/admin/portal-allotments/manage?id=allot-1'),
+      expect.objectContaining({ method: 'DELETE' })
+    );
     confirmSpy.mockRestore();
+    fetchSpy.mockRestore();
   });
 
   it('calculates sales revenue stats and per-client financials correctly', async () => {
