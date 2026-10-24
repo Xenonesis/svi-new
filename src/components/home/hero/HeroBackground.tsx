@@ -7,16 +7,14 @@ import { HeroImage } from '../HeroSection';
 interface HeroBackgroundProps {
   images: HeroImage[];
   currentHeroIndex: number;
-  backgroundY: MotionValue<string>;
-  heroScale: MotionValue<number>;
+  backgroundY?: MotionValue<string>;
+  heroScale?: MotionValue<number>;
   isMobile?: boolean;
 }
 
 export default function HeroBackground({
   images,
   currentHeroIndex,
-  backgroundY,
-  heroScale,
   isMobile = false,
 }: HeroBackgroundProps) {
   const currentImage = images[currentHeroIndex] ||

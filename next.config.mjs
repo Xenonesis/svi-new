@@ -20,9 +20,10 @@ const withSerwist = withSerwistInit({
   disable: process.env.NODE_ENV === 'development',
 });
 
-const withBundleAnalyzer = (await import('@next/bundle-analyzer')).default({
-  enabled: process.env.ANALYZE === 'true',
-});
+const withBundleAnalyzer =
+  process.env.ANALYZE === 'true'
+    ? (await import('@next/bundle-analyzer')).default({ enabled: true })
+    : (/** @type {any} */ (cfg) => cfg);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {

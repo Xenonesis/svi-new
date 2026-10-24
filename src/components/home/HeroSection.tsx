@@ -1,6 +1,5 @@
 'use client';
 
-import { useScroll, useTransform, useSpring, useMotionValue } from 'motion/react';
 import { useRef, useState, useEffect, useCallback, useTransition } from 'react';
 import { useTranslations } from 'next-intl';
 
@@ -30,15 +29,6 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
     window.addEventListener('resize', check, { passive: true });
     return () => window.removeEventListener('resize', check);
   }, []);
-
-  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] });
-
-  // Static fallback motion values for mobile (no spring computation)
-  const staticY = useMotionValue('0%');
-  const staticScale = useMotionValue(1);
-  // Direct GPU transforms without continuous main-thread spring integrator loops
-  const backgroundY = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
-  const heroScale = useTransform(scrollYProgress, [0, 1], [1, 1.03]);
 
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
@@ -133,8 +123,6 @@ export default function HeroSection({ images }: { images: HeroImage[] }) {
       <HeroBackground
         images={images}
         currentHeroIndex={currentHeroIndex}
-        backgroundY={isTouchOrSmall || prefersReducedMotion ? staticY : backgroundY}
-        heroScale={isTouchOrSmall || prefersReducedMotion ? staticScale : heroScale}
         isMobile={isTouchOrSmall || prefersReducedMotion}
       />
       <HeroControls
