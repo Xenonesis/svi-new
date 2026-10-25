@@ -14,7 +14,11 @@ import {
   RotateCcw,
   Maximize2,
   Minimize2,
+  MessageCircle,
+  Phone,
 } from 'lucide-react';
+import { toast } from 'sonner';
+import { buildAllotmentWhatsAppLink } from '@/src/lib/utils/whatsappTemplates';
 import { AllotmentLetterPreview } from '@/src/components/admin/DocumentGenerator/AllotmentLetterPreview';
 import type { SavedAllotment, CompanyInfo } from './types';
 
@@ -40,6 +44,41 @@ export function AllotmentViewModal({
   const containerRef = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState<number>(100);
   const [isFullscreen, setIsFullscreen] = useState<boolean>(false);
+
+  const [phonePromptOpen, setPhonePromptOpen] = useState(false);
+  const [manualPhone, setManualPhone] = useState('');
+
+  const handleWhatsAppDispatch = () => {
+    const phoneCandidate =
+      (allotment?.form_data as Record<string, unknown> | undefined)?.clientPhone ||
+      (allotment?.form_data as Record<string, unknown> | undefined)?.applicantPhone ||
+      (allotment?.form_data as Record<string, unknown> | undefined)?.phone;
+
+    const targetPhone = String(phoneCandidate || '')
+      .replace(/\D/g, '')
+      .slice(-10);
+    if (targetPhone.length === 10) {
+      dispatchToWhatsApp(targetPhone);
+    } else {
+      setPhonePromptOpen(true);
+    }
+  };
+
+  const dispatchToWhatsApp = (phone: string) => {
+    if (!allotment) return;
+    const link = buildAllotmentWhatsAppLink(phone, {
+      clientName:
+        allotment.form_data?.applicantName || allotment.form_data?.clientName || 'Valued Customer',
+      unitNumber: allotment.form_data?.unitNumber,
+      projectName: allotment.form_data?.projectName,
+      area: allotment.form_data?.area,
+      advisorName: allotment.form_data?.advisorName,
+      ticketId: allotment.form_data?.ticketId,
+    });
+    window.open(link, '_blank', 'noopener,noreferrer');
+    toast.success(`WhatsApp opened for +91 ${phone}!`);
+    setPhonePromptOpen(false);
+  };
 
   const handleZoomIn = useCallback(() => setZoomLevel((z) => Math.min(180, z + 10)), []);
   const handleZoomOut = useCallback(() => setZoomLevel((z) => Math.max(50, z - 10)), []);
@@ -218,10 +257,9 @@ export function AllotmentViewModal({
                 style={zoomLevel !== 100 ? { zoom: `${zoomLevel}%` } : undefined}
                 className="mx-auto flex origin-top flex-col items-center will-change-transform"
               >
-                <div className="w-full max-w-3xl overflow-hidden rounded-xl bg-white shadow-2xl">
+                <div className="w-full overflow-hidden">
                   <AllotmentLetterPreview
                     id="modalAllotmentPreview"
-                    className="relative w-full bg-white p-4 font-sans text-xs leading-relaxed text-black sm:p-8 sm:text-[13px]"
                     formData={allotment.form_data}
                     companyInfo={companyInfo}
                   />
@@ -234,7 +272,15 @@ export function AllotmentViewModal({
               <h3 className="mb-3 text-sm font-bold text-gray-900 dark:text-white">
                 Download Options
               </h3>
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
+                <button
+                  type="button"
+                  onClick={handleWhatsAppDispatch}
+                  className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-green-600 py-3 text-sm font-semibold text-white shadow-md transition-all hover:from-emerald-700 hover:to-green-700 active:scale-95"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  Send WhatsApp
+                </button>
                 <button
                   type="button"
                   onClick={onDownloadPDF}
@@ -270,6 +316,59 @@ export function AllotmentViewModal({
                   Edit in Generator
                 </Link>
               </div>
+
+              {/* Phone Prompt Modal for WhatsApp Dispatch if phone is missing */}
+              {phonePromptOpen && (
+                <div className="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+                  <div className="w-full max-w-sm rounded-2xl border border-white/10 bg-[#0c0d14] p-5 text-white shadow-2xl">
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="flex items-center gap-2 text-sm font-bold text-white">
+                        <MessageCircle className="h-4 w-4 text-emerald-400" />
+                        WhatsApp Allotment Dispatch
+                      </h4>
+                      <button
+                        type="button"
+                        onClick={() => setPhonePromptOpen(false)}
+                        className="text-gray-400 hover:text-white"
+                      >
+                        <X className="h-4 w-4" />
+                      </button>
+                    </div>
+                    <p className="mb-3 text-xs text-gray-300">
+                      Enter the client&apos;s 10-digit mobile number to dispatch the official
+                      allotment confirmation:
+                    </p>
+                    <div className="mb-4 flex items-center rounded-xl border border-white/20 bg-white/5 px-3 py-2">
+                      <span className="font-mono text-xs text-gray-400">+91</span>
+                      <input
+                        type="tel"
+                        maxLength={10}
+                        placeholder="9876543210"
+                        value={manualPhone}
+                        onChange={(e) => setManualPhone(e.target.value.replace(/\D/g, ''))}
+                        className="ml-2 w-full bg-transparent font-mono text-sm text-white placeholder-gray-500 focus:outline-none"
+                      />
+                    </div>
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setPhonePromptOpen(false)}
+                        className="rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-400 hover:text-white"
+                      >
+                        Cancel
+                      </button>
+                      <button
+                        type="button"
+                        disabled={manualPhone.length !== 10}
+                        onClick={() => dispatchToWhatsApp(manualPhone)}
+                        className="rounded-lg bg-emerald-600 px-4 py-1.5 text-xs font-semibold text-white transition-all hover:bg-emerald-700 disabled:opacity-50"
+                      >
+                        Send Now
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>

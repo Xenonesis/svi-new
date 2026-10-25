@@ -57,9 +57,9 @@ export function AllotmentLetterPreviewContainer({
 
       <PreviewContainer previewId="allotmentPreview" hasPreview={preview}>
         <AllotmentLetterPreview
+          id="allotmentPreview"
           formData={formData}
           companyInfo={companyInfo}
-          className="relative bg-white p-8 font-sans text-[13px] leading-relaxed text-black"
         />
       </PreviewContainer>
 
