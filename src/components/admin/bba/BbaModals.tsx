@@ -12,9 +12,9 @@ import {
   RotateCcw,
 } from 'lucide-react';
 import { SavedBba } from '@/src/types/bba';
+import type { CompanyInfo } from '@/src/components/admin/DocumentGenerator/AllotmentLetterPreview';
 import BbaPreviewContent from '@/src/components/admin/DocumentGenerator/BbaPreviewContent';
 import BbaPreviewContentHindi from '@/src/components/admin/DocumentGenerator/BbaPreviewContentHindi';
-
 interface DeleteModalProps {
   deleteTarget: SavedBba | null;
   deleteLoading: boolean;
@@ -68,7 +68,7 @@ interface PreviewModalProps {
   selectedBba: SavedBba | null;
   pdfLoading: boolean;
   imageLoading: boolean;
-  companyInfo: any;
+  companyInfo: CompanyInfo;
   onClose: () => void;
   onDownloadPDF: () => void;
   onDownloadImage: () => void;

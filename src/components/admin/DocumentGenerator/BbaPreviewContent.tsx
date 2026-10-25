@@ -3,23 +3,80 @@ import BbaLegalPages from '../../../../app/admin/bba/BbaLegalPages';
 import { BbaPageFooter } from '../bba/legal/BbaPageFooter';
 import { getProjectCoverLocation } from '@/src/lib/utils/projectLocations';
 import { BBA_A4_PAGE_STYLE, BBA_A4_COVER_STYLE, BBA_A4_PAGE_CLASS } from '../bba/legal/bbaA4Styles';
+import { type CompanyInfo, DEFAULT_CORPORATE_ADDRESS } from './AllotmentLetterPreview';
 
-function BbaPreviewContent({ formData, companyInfo }: any) {
-  const getProjectLocation = (projectName: string) => getProjectCoverLocation(projectName, 'en');
+export interface BbaFormData {
+  salutation?: string;
+  clientName?: string;
+  aadharNumber?: string;
+  fatherName?: string;
+  age?: string | number;
+  address?: string;
+  addressLine1?: string;
+  addressLine2?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  ticketId?: string;
+  projectName?: string;
+  plotNo?: string;
+  unitNumber?: string;
+  area?: string | number;
+  bsp?: string | number;
+  plc?: string | number;
+  edc?: string | number;
+  paymentPlan?: string;
+  bookingDate?: string;
+  secondPaymentDays?: string | number;
+  advisorName?: string;
+  advisorNumber?: string;
+  advisorEmail?: string;
+  onBookingPaymentRef?: string;
+  onBookingAmount?: string | number;
+  within15DaysPaymentRef?: string;
+  within15DaysAmount?: string | number;
+  bookingPaymentPercent?: string | number;
+  showSecondInstalment?: string | boolean;
+  zeroPercentEmi?: string | boolean;
+  emiPercentage?: string | number;
+  edcInEmi?: string | boolean;
+  emiCount?: string | number;
+  emiStartDate?: string;
+  language?: string;
+  panNumber?: string;
+  mobileNo?: string;
+  mobileNumber?: string;
+  phone?: string;
+  email?: string;
+  nomineeName?: string;
+  nomineeRelation?: string;
+  nomineeAge?: string | number;
+  nomineeAddress?: string;
+}
+
+export interface BbaPreviewContentProps {
+  formData: BbaFormData;
+  companyInfo: CompanyInfo;
+}
+
+function BbaPreviewContent({ formData, companyInfo }: BbaPreviewContentProps) {
+  const getProjectLocation = (projectName?: string) =>
+    projectName ? getProjectCoverLocation(projectName, 'en') : '';
 
   const projectLocation = getProjectLocation(formData?.projectName);
 
-  const calculateTotalCost = (data: any) => {
-    const area = parseFloat(data?.area) || 0;
-    const bsp = parseFloat(data?.bsp) || 0;
-    const plc = parseFloat(data?.plc) || 0;
-    const edc = parseFloat(data?.edc) || 0;
+  const calculateTotalCost = (data?: BbaFormData) => {
+    const area = parseFloat(String(data?.area ?? '0')) || 0;
+    const bsp = parseFloat(String(data?.bsp ?? '0')) || 0;
+    const plc = parseFloat(String(data?.plc ?? '0')) || 0;
+    const edc = parseFloat(String(data?.edc ?? '0')) || 0;
     const base = area * bsp;
     const plcAmount = base * (plc / 100);
     return base + plcAmount + edc;
   };
 
   const totalCost = calculateTotalCost(formData);
+  const officeAddress = companyInfo?.company_address?.trim() || DEFAULT_CORPORATE_ADDRESS;
 
   const fmtInr = (num: number) =>
     `\u20b9${num.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
@@ -78,9 +135,7 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
               Cell: {companyInfo?.company_phone} | Email: {companyInfo?.company_email} | Web:{' '}
               {companyInfo?.company_website}
             </p>
-            <p className="text-[11.5px] leading-tight text-slate-600">
-              Office: {companyInfo?.company_address}
-            </p>
+            <p className="text-[11.5px] leading-tight text-slate-600">Office: {officeAddress}</p>
           </div>
           <div className="w-32 shrink-0">
             <img
@@ -238,7 +293,7 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
                   {formData?.paymentPlan} Months
                 </td>
                 <td className="border border-slate-200 px-3 py-2.5 text-right font-bold text-slate-900">
-                  {`\u20b9${parseFloat(formData?.bsp || '0').toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
+                  {`\u20b9${parseFloat(String(formData?.bsp ?? '0')).toLocaleString('en-IN', { minimumFractionDigits: 2 })}`}
                 </td>
                 <td className="border border-slate-200 px-3 py-2.5 text-right font-bold text-slate-900">
                   {formData?.plc ? `${formData.plc}%` : '0%'}
@@ -321,8 +376,73 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
         </div>
       </div>
       {/* Legal Pages (2-14) */}
-      <BbaLegalPages formData={formData} companyInfo={companyInfo} totalCost={totalCost} />
-
+      <BbaLegalPages
+        formData={{
+          clientName: formData?.clientName || '',
+          salutation: formData?.salutation,
+          address:
+            formData?.address ||
+            [
+              formData?.addressLine1,
+              formData?.addressLine2,
+              formData?.city,
+              formData?.state,
+              formData?.pincode,
+            ]
+              .filter(Boolean)
+              .join(', ') ||
+            '',
+          addressLine1: formData?.addressLine1,
+          addressLine2: formData?.addressLine2,
+          city: formData?.city,
+          state: formData?.state,
+          pincode: formData?.pincode,
+          projectName: formData?.projectName || '',
+          unitNumber: formData?.unitNumber || formData?.plotNo || '',
+          area: formData?.area ?? '0',
+          bsp: formData?.bsp,
+          plc: formData?.plc,
+          edc: formData?.edc,
+          paymentPlan: formData?.paymentPlan,
+          bookingDate: formData?.bookingDate,
+          fatherName: formData?.fatherName,
+          age: formData?.age,
+          bookingPaymentPercent:
+            formData?.bookingPaymentPercent !== undefined
+              ? String(formData.bookingPaymentPercent)
+              : undefined,
+          showSecondInstalment:
+            formData?.showSecondInstalment !== undefined
+              ? String(formData.showSecondInstalment)
+              : undefined,
+          zeroPercentEmi:
+            formData?.zeroPercentEmi !== undefined ? String(formData.zeroPercentEmi) : undefined,
+          emiPercentage:
+            formData?.emiPercentage !== undefined ? String(formData.emiPercentage) : undefined,
+          edcInEmi: formData?.edcInEmi !== undefined ? String(formData.edcInEmi) : undefined,
+          emiCount: formData?.emiCount !== undefined ? String(formData.emiCount) : undefined,
+          emiStartDate: formData?.emiStartDate,
+          panNumber: formData?.panNumber,
+          mobileNumber: formData?.mobileNumber || formData?.mobileNo || formData?.phone,
+          email: formData?.email,
+          nomineeName: formData?.nomineeName,
+          nomineeRelation: formData?.nomineeRelation,
+          nomineeAge: formData?.nomineeAge,
+          nomineeAddress: formData?.nomineeAddress,
+        }}
+        companyInfo={{
+          company_name: companyInfo?.company_name || 'Svi Infra Solutions Pvt. Ltd.',
+          company_address: officeAddress,
+          company_email: companyInfo?.company_email || 'info@sviinfrasolutions.com',
+          company_phone: companyInfo?.company_phone || '+91 9216014579',
+          company_website: companyInfo?.company_website || 'www.sviinfrasolutions.com',
+          bank_account_name: companyInfo?.bank_account_name,
+          bank_account_no: companyInfo?.bank_account_no,
+          bank_name: companyInfo?.bank_name,
+          bank_ifsc: companyInfo?.bank_ifsc,
+        }}
+        totalCost={totalCost}
+      />
       {/* Payment Schedule Table (Page 15 of 16) */}
       <div data-pdf-page="true" className={BBA_A4_PAGE_CLASS} style={BBA_A4_PAGE_STYLE}>
         <h3 className="mb-2 text-lg font-bold text-gray-800">Payment Schedule</h3>
@@ -352,18 +472,19 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
             </thead>
             <tbody>
               {(() => {
-                const bookingPercent = parseFloat(formData?.bookingPaymentPercent) || 10;
+                const bookingPercent =
+                  parseFloat(String(formData?.bookingPaymentPercent ?? '10')) || 10;
                 const showSecondInstalment = String(formData?.showSecondInstalment) === 'true';
                 const secondPercent = 20;
-                const secondPaymentDays = formData?.secondPaymentDays || '15';
+                const secondPaymentDays = String(formData?.secondPaymentDays ?? '15');
                 const emiCount =
                   formData?.emiCount === 'custom'
-                    ? parseInt(formData?.paymentPlan || '12')
-                    : parseInt(formData?.emiCount || '12');
+                    ? parseInt(String(formData?.paymentPlan ?? '12'))
+                    : parseInt(String(formData?.emiCount ?? '12'));
                 const zeroCost = String(formData?.zeroPercentEmi) === 'true';
                 const edcInEmi = String(formData?.edcInEmi) === 'true';
 
-                const edcAmount = parseFloat(formData?.edc) || 0;
+                const edcAmount = parseFloat(String(formData?.edc ?? '0')) || 0;
                 const baseCost = totalCost - edcAmount;
 
                 const initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
@@ -374,7 +495,7 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
                   : 100 - bookingPercent;
 
                 const emiPercentPerInstallment = formData?.emiPercentage
-                  ? parseFloat(formData?.emiPercentage)
+                  ? parseFloat(String(formData.emiPercentage))
                   : remainingPercent / emiCount;
 
                 const totalEmiAmount = edcInEmi
@@ -406,7 +527,7 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
                     <td className="border border-gray-400 p-2 font-bold">
                       Rs.{' '}
                       {formData?.onBookingAmount
-                        ? parseFloat(formData.onBookingAmount).toLocaleString('en-IN', {
+                        ? parseFloat(String(formData.onBookingAmount)).toLocaleString('en-IN', {
                             minimumFractionDigits: 2,
                           })
                         : initialPayment.toFixed(2)}
@@ -436,9 +557,12 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
                       <td className="border border-gray-400 p-2 font-bold">
                         Rs.{' '}
                         {formData?.within15DaysAmount
-                          ? parseFloat(formData.within15DaysAmount).toLocaleString('en-IN', {
-                              minimumFractionDigits: 2,
-                            })
+                          ? parseFloat(String(formData.within15DaysAmount)).toLocaleString(
+                              'en-IN',
+                              {
+                                minimumFractionDigits: 2,
+                              }
+                            )
                           : secondPayment.toFixed(2)}
                       </td>
                       <td className="border border-gray-400 p-2">
@@ -497,9 +621,10 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
         {/* Terms Box */}
         <div className="mb-6 rounded-lg border-l-4 border-amber-500 bg-slate-50 p-4 text-[12px] leading-relaxed text-slate-700">
           {(() => {
-            const bookingPercent = parseFloat(formData?.bookingPaymentPercent) || 10;
+            const bookingPercent =
+              parseFloat(String(formData?.bookingPaymentPercent ?? '10')) || 10;
             const edcInEmi = String(formData?.edcInEmi) === 'true';
-            const edcAmount = parseFloat(formData?.edc) || 0;
+            const edcAmount = parseFloat(String(formData?.edc ?? '0')) || 0;
             const baseCost = totalCost - edcAmount;
             const initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
 
@@ -524,7 +649,9 @@ function BbaPreviewContent({ formData, companyInfo }: any) {
                     {(() => {
                       if (!formData?.bookingDate) return '[Date]';
                       const d = new Date(formData.bookingDate);
-                      d.setDate(d.getDate() + parseInt(formData?.secondPaymentDays || '15'));
+                      d.setDate(
+                        d.getDate() + parseInt(String(formData?.secondPaymentDays ?? '15'))
+                      );
                       return d.toISOString().split('T')[0];
                     })()}
                     ).
