@@ -7,27 +7,13 @@ import { useTranslations } from 'next-intl';
 export default function BackToTop() {
   const t = useTranslations();
   const [isVisible, setIsVisible] = useState(false);
-  // const sentinelRef = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    const sentinel = document.createElement('div');
-    sentinel.style.position = 'absolute';
-    sentinel.style.top = '400px';
-    sentinel.style.left = '0';
-    sentinel.style.width = '1px';
-    sentinel.style.height = '1px';
-    document.body.appendChild(sentinel);
-
-    const observer = new IntersectionObserver(([entry]) => setIsVisible(!entry.isIntersecting), {
-      threshold: [0],
-      rootMargin: '0px 0px 0px 0px',
-    });
-    observer.observe(sentinel);
-
-    return () => {
-      observer.disconnect();
-      document.body.removeChild(sentinel);
+    const handleScroll = () => {
+      setIsVisible(window.scrollY > 400);
     };
+    handleScroll();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   const scrollToTop = useCallback(() => {

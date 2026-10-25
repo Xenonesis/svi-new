@@ -3,7 +3,6 @@
 import dynamic from 'next/dynamic';
 import Analytics from '@/src/components/common/Analytics';
 import BackToTop from '@/src/components/ui/BackToTop';
-import CookieConsent from '@/src/components/common/CookieConsent';
 import ErrorBoundary from '@/src/components/ui/ErrorBoundary';
 import { type ReactNode, useEffect, useState } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
@@ -36,6 +35,9 @@ const DotField = dynamic(() => import('@/src/components/ui/DotField'), {
   ssr: false,
 });
 const ExitIntentPopup = dynamic(() => import('@/src/components/common/ExitIntentPopup'), {
+  ssr: false,
+});
+const CookieConsent = dynamic(() => import('@/src/components/common/CookieConsent'), {
   ssr: false,
 });
 

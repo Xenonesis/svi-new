@@ -1,9 +1,20 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { useTranslations } from 'next-intl';
 
 export default function HeroStatCard() {
   const t = useTranslations('hero');
+  const [isDesktop, setIsDesktop] = useState(false);
+
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 1280);
+    const handleResize = () => setIsDesktop(window.innerWidth >= 1280);
+    window.addEventListener('resize', handleResize, { passive: true });
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  if (!isDesktop) return null;
 
   return (
     <>
