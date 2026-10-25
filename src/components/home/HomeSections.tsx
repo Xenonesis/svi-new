@@ -1,5 +1,3 @@
-'use client';
-
 import dynamic from 'next/dynamic';
 
 import AboutSection from '@/src/components/home/AboutSection';
@@ -18,8 +16,7 @@ const TimelineSection = dynamic(() => import('@/src/components/home/TimelineSect
 const CTASection = dynamic(() => import('@/src/components/home/CTASection'));
 const HomeFAQ = dynamic(() => import('@/src/components/home/HomeFAQ'));
 
-// Keep ssr:false for interactive-only components that rely on browser APIs
-const LotteryCTA = dynamic(() => import('@/src/components/lottery/LotteryCTA'), { ssr: false });
+const LotteryCTA = dynamic(() => import('@/src/components/lottery/LotteryCTA'));
 
 export default function HomeSections() {
   return (
