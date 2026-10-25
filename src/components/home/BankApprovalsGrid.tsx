@@ -1,5 +1,3 @@
-'use client';
-
 import {
   CalendarCheck,
   ShieldAlert,
@@ -9,7 +7,6 @@ import {
   CheckCircle2,
 } from 'lucide-react';
 import { useLocale } from 'next-intl';
-import AnimatedSection from '@/src/components/ui/AnimatedSection';
 
 const PAYMENT_ADVANTAGES = [
   {
@@ -54,7 +51,7 @@ export default function BankApprovalsGrid() {
   const isHindi = locale === 'hi';
 
   return (
-    <AnimatedSection type="fadeUp" delay={0.2}>
+    <div>
       <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-md md:p-8 dark:border-gray-800 dark:bg-gray-900">
         <div className="mb-6 text-center md:flex md:items-center md:justify-between md:text-left">
           <div>
@@ -101,6 +98,6 @@ export default function BankApprovalsGrid() {
           })}
         </div>
       </div>
-    </AnimatedSection>
+    </div>
   );
 }

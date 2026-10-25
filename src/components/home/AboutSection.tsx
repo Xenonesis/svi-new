@@ -1,7 +1,6 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
-import { motion } from 'motion/react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { CheckCircle, ArrowRight } from 'lucide-react';
@@ -75,19 +74,15 @@ export default function AboutSection() {
                 quality={70}
               />
             </div>
-            <motion.div
-              className="bg-brand-gold text-brand-navy absolute -bottom-5 -left-2 z-10 p-5 shadow-xl sm:-left-5"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true, margin: '150px' }}
-              transition={{ delay: 0.1, duration: 0.3 }}
+            <div
+              className="bg-brand-gold text-brand-navy absolute -bottom-5 -left-2 z-10 p-5 shadow-xl transition-all duration-300 sm:-left-5"
               suppressHydrationWarning
             >
               <div className="font-serif text-4xl leading-none font-bold">17+</div>
               <div className="mt-1 text-[10px] font-semibold tracking-wider uppercase">
                 {t('yearsLabel')}
               </div>
-            </motion.div>
+            </div>
           </AnimatedSection>
         </div>
       </div>

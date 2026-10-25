@@ -1,5 +1,3 @@
-'use client';
-
 import { ShieldCheck, Award, Building2, Landmark } from 'lucide-react';
 
 const TRUST_METRICS = [
