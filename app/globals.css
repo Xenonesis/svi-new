@@ -1539,4 +1539,17 @@ main > .page-transition > section {
   }
 }
 
+@keyframes kenburns {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.04);
+  }
+}
+
+.animate-kenburns {
+  animation: kenburns 9s linear forwards;
+}
+
 
