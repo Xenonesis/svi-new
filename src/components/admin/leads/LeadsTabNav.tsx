@@ -1,9 +1,10 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, PhoneCall, Globe, Users } from 'lucide-react';
+import { BarChart3, PhoneCall, Globe, Users, Clock, RotateCcw } from 'lucide-react';
 
-export type LeadsTabType = 'dashboard' | 'ivr' | 'chatbot' | 'all';
+export type LeadsTab = 'dashboard' | 'ivr' | 'queue' | 'redial' | 'chatbot' | 'all' | 'unassigned';
+export type LeadsTabType = LeadsTab;
 
 export interface LeadsTabNavProps {
   activeTab: LeadsTabType;
@@ -49,6 +50,21 @@ export function LeadsTabNav({
         <span>IVR Campaign Leads</span>
         <span className="bg-brand-gold/20 py-0.2 text-brand-gold rounded-full px-1.5 text-[10px] font-bold">
           {ivrTotalCount}
+        </span>
+      </button>
+      <button
+        type="button"
+        onClick={() => onTabChange('redial')}
+        className={`flex cursor-pointer items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold transition-all ${
+          activeTab === 'queue' || activeTab === 'redial'
+            ? 'bg-brand-navy dark:text-brand-navy text-white shadow-md dark:bg-white'
+            : 'text-gray-500 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-white'
+        }`}
+      >
+        <RotateCcw className="h-3.5 w-3.5 text-rose-500" />
+        <span>Smart Redial Queue</span>
+        <span className="rounded-full bg-rose-500/20 px-1.5 py-0.5 text-[9px] font-extrabold text-rose-600 dark:text-rose-400">
+          Action
         </span>
       </button>
 

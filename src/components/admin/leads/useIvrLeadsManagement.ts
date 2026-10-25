@@ -139,7 +139,7 @@ export function useIvrLeadsManagement(
         }) as IvrSummaryStats,
       };
     },
-    enabled: !!token && activeTab === 'ivr',
+    enabled: !!token && (activeTab === 'ivr' || activeTab === 'queue' || activeTab === 'redial'),
     staleTime: 1000 * 45,
     placeholderData: (previousData) => previousData,
   });

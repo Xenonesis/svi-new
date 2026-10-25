@@ -8,10 +8,11 @@ import { RefreshCw, UploadCloud } from 'lucide-react';
 import { IvrLeadsTable } from '@/src/components/admin/leads/IvrLeadsTable';
 import { IvrCsvUploadModal } from '@/src/components/admin/leads/IvrCsvUploadModal';
 import { TelecallingDashboard } from '@/src/components/admin/leads/TelecallingDashboard';
+import { SmartRedialQueue } from '@/src/components/admin/leads/SmartRedialQueue';
 import { useIvrLeadsManagement } from '@/src/components/admin/leads/useIvrLeadsManagement';
 import { IvrStatsKpiGrid } from '@/src/components/admin/leads/IvrStatsKpiGrid';
 import { LeadsTabNav } from '@/src/components/admin/leads/LeadsTabNav';
-import type { LeadsTabType } from '@/src/components/admin/leads/LeadsTabNav';
+import type { LeadsTab, LeadsTabType } from '@/src/components/admin/leads/LeadsTabNav';
 import dynamic from 'next/dynamic';
 const WorkforceLeadsTab = dynamic(
   () =>
@@ -35,10 +36,12 @@ export default function AdminLeadsPage() {
       if (
         tabParam === 'dashboard' ||
         tabParam === 'ivr' ||
+        tabParam === 'queue' ||
+        tabParam === 'redial' ||
         tabParam === 'chatbot' ||
         tabParam === 'all'
       ) {
-        setActiveTab(tabParam);
+        setActiveTab(tabParam as LeadsTabType);
       }
     }
   }, []);
@@ -148,6 +151,19 @@ export default function AdminLeadsPage() {
             }
             setActiveTab('ivr');
           }}
+        />
+      )}
+      {(activeTab === 'queue' || activeTab === 'redial') && (
+        <SmartRedialQueue
+          records={ivrRecords}
+          employees={employees}
+          loading={ivrLoading}
+          token={token || undefined}
+          onFilterChange={(f) => {
+            setIvrFilters((prev) => ({ ...prev, ...f }));
+            fetchIvrRecords(1, { ...ivrFilters, ...f });
+          }}
+          onRefresh={() => fetchIvrRecords(ivrPage, ivrFilters)}
         />
       )}
 
