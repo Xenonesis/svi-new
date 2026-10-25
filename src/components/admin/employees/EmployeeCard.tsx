@@ -101,6 +101,7 @@ interface EmployeeCardProps {
   onResetPassword: () => void;
   onViewPerformance: () => void;
   onToggleActive?: () => void;
+  onViewOfferLetter?: () => void;
 }
 
 export function EmployeeCard({
@@ -111,6 +112,7 @@ export function EmployeeCard({
   onResetPassword,
   onViewPerformance,
   onToggleActive,
+  onViewOfferLetter,
 }: EmployeeCardProps) {
   const [copiedId, setCopiedId] = useState(false);
   const [copiedEmail, setCopiedEmail] = useState(false);
@@ -432,6 +434,17 @@ export function EmployeeCard({
             <span>Payroll Dossier</span>
           </Link>
         </div>
+        {onViewOfferLetter && (
+          <button
+            type="button"
+            onClick={onViewOfferLetter}
+            className="flex w-full items-center justify-center gap-1.5 rounded-xl border border-indigo-500/30 bg-indigo-500/10 px-2.5 py-1.5 text-xs font-bold text-indigo-700 transition-all hover:bg-indigo-500/20 active:scale-98 dark:border-indigo-400/30 dark:bg-indigo-400/10 dark:text-indigo-300"
+            title="View Official Offer Letter Dossier"
+          >
+            <FileText size={13} className="text-indigo-500 dark:text-indigo-400" />
+            <span>Offer Letter Dossier</span>
+          </button>
+        )}
 
         {/* Secondary Actions Row */}
         <div className="flex flex-wrap items-center justify-between gap-2 pt-1">

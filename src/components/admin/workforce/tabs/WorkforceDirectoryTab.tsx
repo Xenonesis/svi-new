@@ -23,6 +23,7 @@ import {
   exportEmployeesToExcel,
 } from '@/src/components/admin/employees/exportEmployees';
 import type { EmployeeLiveStatus } from '@/src/lib/supabase/types';
+import { OfferLetterDossierModal } from '@/src/components/admin/workforce/OfferLetterDossierModal';
 
 interface WorkforceDirectoryTabProps {
   employees: Employee[];
@@ -35,6 +36,7 @@ interface WorkforceDirectoryTabProps {
   onResetPassword: (emp: Employee) => void;
   onViewPerformance: (emp: Employee) => void;
   onToggleActiveEmployee?: (emp: Employee) => void;
+  onViewOfferLetter?: (emp: Employee) => void;
 }
 
 export function WorkforceDirectoryTab({
@@ -48,6 +50,7 @@ export function WorkforceDirectoryTab({
   onResetPassword,
   onViewPerformance,
   onToggleActiveEmployee,
+  onViewOfferLetter,
 }: WorkforceDirectoryTabProps) {
   const [employeeSearch, setEmployeeSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<
@@ -56,6 +59,12 @@ export function WorkforceDirectoryTab({
   const [directorySort, setDirectorySort] = useState<'recent' | 'name' | 'status'>('recent');
   const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
   const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const [selectedOfferEmployee, setSelectedOfferEmployee] = useState<Employee | null>(null);
+
+  const handleViewOfferLetter = (emp: Employee) => {
+    onViewOfferLetter?.(emp);
+    setSelectedOfferEmployee(emp);
+  };
 
   // Status Counts for Directory Filter Chips
   const statusCounts = useMemo(() => {
@@ -381,6 +390,7 @@ export function WorkforceDirectoryTab({
           onResetPassword={onResetPassword}
           onViewPerformance={onViewPerformance}
           onToggleActive={onToggleActiveEmployee}
+          onViewOfferLetter={handleViewOfferLetter}
         />
       ) : filteredEmployees.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-gray-300 py-16 text-center dark:border-gray-700">
@@ -406,10 +416,18 @@ export function WorkforceDirectoryTab({
               onResetPassword={() => onResetPassword(emp)}
               onViewPerformance={() => onViewPerformance(emp)}
               onToggleActive={() => onToggleActiveEmployee?.(emp)}
+              onViewOfferLetter={() => handleViewOfferLetter(emp)}
             />
           ))}
         </div>
       )}
+
+      {/* Offer Letter Dossier Modal */}
+      <OfferLetterDossierModal
+        employee={selectedOfferEmployee}
+        isOpen={Boolean(selectedOfferEmployee)}
+        onClose={() => setSelectedOfferEmployee(null)}
+      />
     </div>
   );
 }

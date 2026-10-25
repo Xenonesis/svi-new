@@ -10,6 +10,8 @@ import {
 } from 'lucide-react';
 import type { Team } from '@/src/lib/supabase/types';
 
+import type { SavedOfferLetter } from '@/src/components/admin/OfferLetter/types';
+import type { Employee } from '@/src/components/admin/employees/EmployeeCard';
 export type WorkforceTab =
   'directory' | 'attendance' | 'approvals' | 'payroll' | 'leads' | 'reports' | 'settings';
 
@@ -47,3 +49,16 @@ export const GRID_STYLE = {
     'radial-gradient(circle at 1px 1px, rgba(212, 175, 55, 0.05) 1px, transparent 0)',
   backgroundSize: '24px 24px',
 };
+
+export interface OfferLetterDossierModalProps {
+  employee: Employee | null;
+  isOpen: boolean;
+  onClose: () => void;
+  token?: string | null;
+}
+
+export interface EmployeeOfferMatch {
+  offer: SavedOfferLetter;
+  matchReason: string;
+  score: number;
+}

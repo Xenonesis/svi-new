@@ -23,6 +23,7 @@ import {
   ToggleLeft,
   ShieldAlert,
   DollarSign,
+  FileText,
 } from 'lucide-react';
 import Link from 'next/link';
 import { toast } from 'sonner';
@@ -38,6 +39,7 @@ interface EmployeeTableViewProps {
   onResetPassword: (emp: Employee) => void;
   onViewPerformance: (emp: Employee) => void;
   onToggleActive?: (emp: Employee) => void;
+  onViewOfferLetter?: (emp: Employee) => void;
 }
 
 export function EmployeeTableView({
@@ -48,6 +50,7 @@ export function EmployeeTableView({
   onResetPassword,
   onViewPerformance,
   onToggleActive,
+  onViewOfferLetter,
 }: EmployeeTableViewProps) {
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
 
@@ -352,6 +355,17 @@ export function EmployeeTableView({
                         <BarChart3 size={12} />
                         <span>Performance</span>
                       </button>
+                      {onViewOfferLetter && (
+                        <button
+                          type="button"
+                          onClick={() => onViewOfferLetter(emp)}
+                          className="inline-flex items-center gap-1 rounded-lg border border-indigo-500/30 bg-indigo-500/10 px-2 py-1 text-[11px] font-semibold text-indigo-700 transition-colors hover:bg-indigo-500/20 active:scale-95 dark:border-indigo-400/30 dark:bg-indigo-400/10 dark:text-indigo-300"
+                          title="View Offer Letter Dossier"
+                        >
+                          <FileText size={12} />
+                          <span>Offer Letter</span>
+                        </button>
+                      )}
                       <Link
                         href={`/admin/workforce?tab=payroll&employeeId=${emp.id}`}
                         className="border-brand-gold/30 bg-brand-gold/10 text-brand-gold hover:bg-brand-gold/20 inline-flex items-center gap-1 rounded-lg border px-2 py-1 text-[11px] font-semibold transition-colors active:scale-95"
