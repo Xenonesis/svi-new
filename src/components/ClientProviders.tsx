@@ -5,8 +5,6 @@ import Analytics from '@/src/components/common/Analytics';
 import BackToTop from '@/src/components/ui/BackToTop';
 import CookieConsent from '@/src/components/common/CookieConsent';
 import ErrorBoundary from '@/src/components/ui/ErrorBoundary';
-import Footer from '@/src/components/layout/Footer';
-import Header from '@/src/components/layout/Header';
 import { type ReactNode, useEffect, useState } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
@@ -132,9 +130,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
       <ThemeProvider>
         <ThemeAwareBackground />
         <ScrollToTop />
-        <Header />
-        <main className="flex min-h-screen flex-grow flex-col overflow-x-hidden">{children}</main>
-        <Footer />
+        {children}
         <FloatingContact />
         <MobileConversionDock />
         <ChatLauncher />
