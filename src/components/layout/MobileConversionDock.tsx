@@ -1,10 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import dynamic from 'next/dynamic';
 import type { JSX } from 'react';
 import { usePathname } from 'next/navigation';
 import { Phone, MessageCircle, Car } from 'lucide-react';
-import { SiteVisitModal } from './SiteVisitModal';
+
+const SiteVisitModal = dynamic(() => import('./SiteVisitModal').then((m) => m.SiteVisitModal), {
+  ssr: false,
+});
 
 export function MobileConversionDock(): JSX.Element {
   const pathname = usePathname() || '';
@@ -67,11 +71,13 @@ export function MobileConversionDock(): JSX.Element {
       </nav>
 
       {/* Slide-Up Booking Modal */}
-      <SiteVisitModal
-        isOpen={isSiteVisitOpen}
-        onClose={() => setIsSiteVisitOpen(false)}
-        prefilledProject={projectName}
-      />
+      {isSiteVisitOpen && (
+        <SiteVisitModal
+          isOpen={isSiteVisitOpen}
+          onClose={() => setIsSiteVisitOpen(false)}
+          prefilledProject={projectName}
+        />
+      )}
     </>
   );
 }

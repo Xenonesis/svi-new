@@ -11,6 +11,7 @@ import { type ReactNode, useEffect, useState } from 'react';
 import ScrollToTop from '@/src/components/ui/ScrollToTop';
 import { ThemeProvider, useTheme } from '@/src/components/ThemeProvider';
 import { MobileConversionDock } from '@/src/components/layout/MobileConversionDock';
+import { useComparisonStore } from '@/src/stores/comparisonStore';
 
 const ChatLauncher = dynamic(() => import('@/src/components/home/ChatLauncher'), {
   ssr: false,
@@ -39,6 +40,18 @@ const DotField = dynamic(() => import('@/src/components/ui/DotField'), {
 const ExitIntentPopup = dynamic(() => import('@/src/components/common/ExitIntentPopup'), {
   ssr: false,
 });
+
+function PropertyComparisonWrapper() {
+  const count = useComparisonStore((s) => s.compareList.length);
+  const isOpen = useComparisonStore((s) => s.isOpen);
+  if (count === 0 && !isOpen) return null;
+  return (
+    <>
+      <PropertyComparisonTray />
+      <PropertyComparisonModal />
+    </>
+  );
+}
 
 function ThemeAwareBackground() {
   const { theme } = useTheme();
@@ -127,8 +140,7 @@ export default function ClientProviders({ children }: { children: ReactNode }) {
         <ChatLauncher />
         <BackToTop />
         <ExitIntentPopup />
-        <PropertyComparisonTray />
-        <PropertyComparisonModal />
+        <PropertyComparisonWrapper />
         <CookieConsent />
         <Analytics />
       </ThemeProvider>

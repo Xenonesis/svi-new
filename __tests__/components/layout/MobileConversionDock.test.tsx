@@ -27,10 +27,10 @@ describe('MobileConversionDock', () => {
     expect(waLink.getAttribute('href')).toContain('Shivani%20Vatika%2011th');
   });
 
-  it('opens SiteVisitModal when Free Cab Visit is clicked', () => {
+  it('opens SiteVisitModal when Free Cab Visit is clicked', async () => {
     render(<MobileConversionDock />);
     const cabBtn = screen.getByRole('button', { name: /free cab visit/i });
     fireEvent.click(cabBtn);
-    expect(screen.getByText(/schedule free site visit/i)).toBeInTheDocument();
+    expect(await screen.findByText(/schedule free site visit/i)).toBeInTheDocument();
   });
 });
