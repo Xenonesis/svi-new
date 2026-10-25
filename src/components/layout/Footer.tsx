@@ -1,9 +1,6 @@
-'use client';
-
-import { AnimatePresence, motion } from 'motion/react';
-import { ArrowUpRight, Mail, MapPin, Phone, Send } from 'lucide-react';
+import { ArrowUpRight, Mail, MapPin, Phone } from 'lucide-react';
 import { FacebookIcon, InstagramIcon } from '@/src/components/common/social-icons';
-import { memo, useCallback, useState } from 'react';
+import { FooterNewsletter } from '@/src/components/layout/FooterNewsletter';
 
 import Link from 'next/link';
 import Image from 'next/image';
@@ -11,22 +8,8 @@ import { useTranslations } from 'next-intl';
 
 const CURRENT_YEAR = new Date().getFullYear();
 
-const Footer = memo(function Footer() {
+export default function Footer() {
   const t = useTranslations();
-  const [email, setEmail] = useState('');
-  const [subscribed, setSubscribed] = useState(false);
-
-  const handleNewsletterSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      if (email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        setSubscribed(true);
-        setEmail('');
-        setTimeout(() => setSubscribed(false), 3000);
-      }
-    },
-    [email]
-  );
 
   return (
     <footer className="dark:bg-brand-dark-bg border-t border-gray-200 bg-white pt-10 pb-[max(5.5rem,calc(env(safe-area-inset-bottom,0px)+4.5rem))] sm:pt-16 sm:pb-12 dark:border-zinc-800">
@@ -63,16 +46,14 @@ const Footer = memo(function Footer() {
                   href: 'https://www.instagram.com/sviinfrasolution/?hl=en',
                 },
               ].map(({ icon, label, href }) => (
-                <motion.a
+                <a
                   key={label}
                   href={href}
                   aria-label={t('nav.followUs', { social: label })}
-                  whileHover={{ scale: 1.1, borderColor: '#d4af37', color: '#d4af37' }}
-                  whileTap={{ scale: 0.95 }}
-                  className="text-brand-navy flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 transition-colors dark:border-gray-700 dark:text-gray-200"
+                  className="text-brand-navy hover:border-brand-gold hover:text-brand-gold flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 transition-all duration-200 hover:scale-110 active:scale-95 dark:border-gray-700 dark:text-gray-200"
                 >
                   {icon}
-                </motion.a>
+                </a>
               ))}
             </div>
           </div>
@@ -314,53 +295,7 @@ const Footer = memo(function Footer() {
                 {t('footer.newsletterDesc')}
               </p>
             </div>
-            <form
-              onSubmit={handleNewsletterSubmit}
-              className="relative flex w-full flex-col gap-3 sm:w-auto sm:flex-row md:w-auto"
-              aria-label="Newsletter subscription"
-            >
-              <label htmlFor="newsletter-email" className="sr-only">
-                {t('footer.enterEmail')}
-              </label>
-              <input
-                id="newsletter-email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder={t('footer.enterEmail')}
-                aria-label={t('footer.enterEmail')}
-                className="text-brand-navy focus:border-brand-gold w-full border border-gray-200 bg-gray-50 px-4 py-3 text-sm transition-colors focus:outline-none sm:w-56 md:w-64 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                required
-              />
-              <motion.button
-                type="submit"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="bg-brand-gold text-brand-navy hover:bg-brand-navy hover:text-brand-gold border-brand-gold relative flex w-full items-center justify-center gap-2 overflow-hidden border px-6 py-3 text-xs font-bold tracking-widest uppercase transition-colors sm:w-auto"
-              >
-                <AnimatePresence mode="wait">
-                  {subscribed ? (
-                    <motion.span
-                      key="ok"
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0 }}
-                    >
-                      {t('footer.done')}
-                    </motion.span>
-                  ) : (
-                    <motion.span
-                      key="sub"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      className="flex items-center gap-2"
-                    >
-                      <Send size={14} /> {t('footer.subscribe')}
-                    </motion.span>
-                  )}
-                </AnimatePresence>
-              </motion.button>
-            </form>
+            <FooterNewsletter />
           </div>
         </div>
 
@@ -388,6 +323,4 @@ const Footer = memo(function Footer() {
       </div>
     </footer>
   );
-});
-
-export default Footer;
+}
