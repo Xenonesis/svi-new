@@ -185,6 +185,7 @@ const MobileNav = memo(function MobileNav({
                       >
                         <Link
                           href="/lottery"
+                          prefetch={false}
                           onClick={onClose}
                           className={`flex items-center gap-2 py-2.5 text-[clamp(15px,4vw,18px)] font-semibold tracking-wide transition-colors ${
                             currentPath === '/lottery'

@@ -123,7 +123,7 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
         {/* Primary Role Button */}
         <DashboardLink
           href={roleConfig.dashboardPath}
-          prefetch={isUnlocalized ? false : undefined}
+          prefetch={false}
           onClick={onClose}
           className={`flex w-full items-center justify-center gap-2 rounded-full py-2.5 text-center text-[clamp(12px,3.5vw,14px)] tracking-wider uppercase shadow-sm transition-all duration-200 ${roleConfig.primaryButtonClass}`}
         >
@@ -135,7 +135,7 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
         <div className="grid grid-cols-2 gap-2">
           <SettingsLink
             href={roleConfig.settingsPath}
-            prefetch={isUnlocalized ? false : undefined}
+            prefetch={false}
             onClick={onClose}
             className="flex items-center justify-center gap-1.5 rounded-full border border-slate-200 py-2 text-center text-xs font-semibold text-slate-700 transition-colors hover:bg-slate-100 dark:border-slate-800 dark:text-slate-300 dark:hover:bg-slate-800"
           >
@@ -161,6 +161,7 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
     <>
       <Link
         href="/login"
+        prefetch={false}
         onClick={onClose}
         className="border-brand-navy dark:border-brand-gold/45 text-brand-navy dark:text-brand-gold block w-full rounded-full border py-2.5 text-center text-[clamp(12px,3.5vw,14px)] font-semibold tracking-widest uppercase transition-colors hover:bg-gray-50 dark:hover:bg-zinc-900"
       >
@@ -168,6 +169,7 @@ export function MobileNavActions({ onClose }: MobileNavActionsProps) {
       </Link>
       <Link
         href="/registration"
+        prefetch={false}
         onClick={onClose}
         className="bg-brand-navy dark:bg-brand-gold dark:text-brand-navy block w-full rounded-full py-2.5 text-center text-[clamp(12px,3.5vw,14px)] font-semibold tracking-widest text-white uppercase"
       >

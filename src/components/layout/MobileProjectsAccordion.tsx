@@ -40,6 +40,7 @@ export function MobileProjectsAccordion({
         <div className="border-brand-gold/30 flex min-h-0 flex-col gap-2.5 border-l-2 pl-3.5">
           <Link
             href="/projects/current"
+            prefetch={false}
             onClick={onClose}
             className="hover:text-brand-gold flex items-center gap-2 py-2 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
           >
@@ -48,6 +49,7 @@ export function MobileProjectsAccordion({
           </Link>
           <Link
             href="/projects/completed"
+            prefetch={false}
             onClick={onClose}
             className="hover:text-brand-gold flex items-center gap-2 py-2 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
           >
@@ -56,6 +58,7 @@ export function MobileProjectsAccordion({
           </Link>
           <Link
             href="/plots-in-jaipur"
+            prefetch={false}
             onClick={onClose}
             className="hover:text-brand-gold flex items-center gap-2 py-2 text-[13.5px] font-medium text-gray-600 transition-colors min-[380px]:text-[14.5px] dark:text-gray-400"
           >

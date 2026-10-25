@@ -25,6 +25,7 @@ export function MobileDrawerHeader({
     <div className="absolute top-[max(1.25rem,env(safe-area-inset-top))] right-5 left-5 flex items-center justify-between gap-2">
       <Link
         href="/"
+        prefetch={false}
         onClick={onClose}
         className="inline-flex items-center rounded-xl transition-all duration-300 outline-none dark:bg-white dark:px-2.5 dark:py-1 dark:shadow-sm"
         aria-label="Svi Infra Solutions Pvt. Ltd."

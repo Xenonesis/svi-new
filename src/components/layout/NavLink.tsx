@@ -17,6 +17,7 @@ export function NavLink({ href, children, isActive, isHomeTransparent }: NavLink
   return (
     <Link
       href={href}
+      prefetch={false}
       className={`group relative py-1.5 font-medium whitespace-nowrap transition-colors duration-200 xl:py-2 ${
         isHi
           ? 'text-[13.5px] tracking-normal xl:text-[14px] 2xl:text-[15px]'
