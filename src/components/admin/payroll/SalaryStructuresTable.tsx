@@ -414,10 +414,11 @@ export function SalaryStructuresTable({
 
                         {/* Offer Target & Slab */}
                         <td className="px-4 py-4 text-center">
-                          {structure?.offer_target ? (
+                          {structure?.monthly_target || structure?.offer_target ? (
                             <div className="inline-flex flex-col items-center">
                               <span className="font-mono text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                                {structure.offer_target} {structure.offer_target_unit || 'Sq. Yd.'}
+                                {structure.monthly_target ?? structure.offer_target}{' '}
+                                {structure.target_unit || structure.offer_target_unit || 'Sq. Yd.'}
                               </span>
                               {structure.offer_slab && (
                                 <span className="mt-0.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-2 py-0.5 text-[9px] font-bold text-emerald-600 dark:text-emerald-300">
@@ -666,8 +667,8 @@ export function SalaryStructuresTable({
                                       <Target className="h-3.5 w-3.5 text-emerald-400" />
                                     </div>
                                     <div className="mt-1 font-mono text-lg font-black text-emerald-300">
-                                      {structure?.offer_target
-                                        ? `${structure.offer_target} ${structure.offer_target_unit || 'Sq. Yd.'}`
+                                      {structure?.monthly_target || structure?.offer_target
+                                        ? `${structure.monthly_target ?? structure.offer_target} ${structure.target_unit || structure.offer_target_unit || 'Sq. Yd.'}`
                                         : 'Standard'}
                                     </div>
                                     <span className="text-[10px] font-semibold text-emerald-400/90">

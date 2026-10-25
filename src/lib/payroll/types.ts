@@ -38,6 +38,8 @@ export interface SalaryStructure {
   offer_probation_period?: string | null;
   employee_phone?: string | null;
   employee_created_at?: string | null;
+  monthly_target?: number | null;
+  target_unit?: string | null;
 }
 
 export type PayrollStatus = 'draft' | 'processing' | 'approved' | 'paid' | 'completed';
