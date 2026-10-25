@@ -7,7 +7,7 @@ describe('supabaseImageLoader', () => {
       src: '/Shivani Vatika/shivani vatika7.webp',
       width: 640,
     });
-    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-640w.webp');
+    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-640w.avif');
     expect(result).not.toContain(' ');
   });
 
@@ -16,7 +16,7 @@ describe('supabaseImageLoader', () => {
       src: '/Shivani%20Vatika/shivani%20vatika7.webp',
       width: 320,
     });
-    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-320w.webp');
+    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-320w.avif');
     expect(result).not.toContain('%2520');
   });
   it('selects safe responsive variants for Shivani Vatika 11', () => {
@@ -24,7 +24,7 @@ describe('supabaseImageLoader', () => {
       src: '/Shivani Vatika 11/gate.png',
       width: 640,
     });
-    expect(result).toBe('/Shivani%20Vatika%2011/gate-640w.webp');
+    expect(result).toBe('/Shivani%20Vatika%2011/gate-640w.avif');
     expect(result).not.toContain(' ');
   });
   it('selects safe responsive variants for Shivani Vatika 11 webp source', () => {
@@ -32,7 +32,7 @@ describe('supabaseImageLoader', () => {
       src: '/Shivani Vatika 11/gate.webp',
       width: 640,
     });
-    expect(result).toBe('/Shivani%20Vatika%2011/gate-640w.webp');
+    expect(result).toBe('/Shivani%20Vatika%2011/gate-640w.avif');
     expect(result).not.toContain(' ');
   });
 
@@ -41,7 +41,7 @@ describe('supabaseImageLoader', () => {
       src: '/Shayam angan/shyam angan.jpg',
       width: 1024,
     });
-    expect(result).toBe('/Shayam%20angan/shyam%20angan-1024w.webp');
+    expect(result).toBe('/Shayam%20angan/shyam%20angan-1024w.avif');
     expect(result).not.toContain(' ');
   });
 
@@ -50,7 +50,7 @@ describe('supabaseImageLoader', () => {
       src: '/Shivani Vatika/shivani vatika7.webp',
       width: 1200,
     });
-    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-1024w.webp');
+    expect(result).toBe('/Shivani%20Vatika/shivani%20vatika7-1024w.avif');
   });
 
   it('falls back to full-size webp for ultra-wide requests (1920w)', () => {
@@ -67,35 +67,34 @@ describe('supabaseImageLoader', () => {
         src: '/images/hero1_new.png',
         width: 320,
       })
-    ).toBe('/images/hero1_new-320w.webp');
+    ).toBe('/images/hero1_new-320w.avif');
 
     expect(
       supabaseImageLoader({
         src: '/images/hero1_new.png',
         width: 640,
       })
-    ).toBe('/images/hero1_new-640w.webp');
+    ).toBe('/images/hero1_new-640w.avif');
     expect(
       supabaseImageLoader({
         src: '/images/hero1_new.png',
         width: 768,
       })
-    ).toBe('/images/hero1_new-640w.webp');
+    ).toBe('/images/hero1_new-640w.avif');
 
     expect(
       supabaseImageLoader({
         src: '/images/hero1_new.png',
         width: 1024,
       })
-    ).toBe('/images/hero1_new-1024w.webp');
+    ).toBe('/images/hero1_new-1024w.avif');
 
     expect(
       supabaseImageLoader({
         src: '/images/hero1_new.png',
         width: 1200,
       })
-    ).toBe('/images/hero1_new-1024w.webp');
-
+    ).toBe('/images/hero1_new-1024w.avif');
     expect(
       supabaseImageLoader({
         src: '/images/hero1_new.png',

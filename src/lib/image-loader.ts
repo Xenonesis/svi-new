@@ -73,13 +73,13 @@ export default function supabaseImageLoader({ src, width }: ImageLoaderParams): 
     // - width ≤ 1200px (tablet & desktop): serve 1024w (~120 KB)
     // - width > 1200px (ultra-wide/retina desktop): serve full-size WebP
     if (width <= 384) {
-      return encodeURI(`${basePath}-320w.webp`);
+      return encodeURI(`${basePath}-320w.avif`);
     }
     if (width <= 800) {
-      return encodeURI(`${basePath}-640w.webp`);
+      return encodeURI(`${basePath}-640w.avif`);
     }
     if (width <= 1200) {
-      return encodeURI(`${basePath}-1024w.webp`);
+      return encodeURI(`${basePath}-1024w.avif`);
     }
     return encodeURI(`${basePath}.webp?w=${width}`);
   }

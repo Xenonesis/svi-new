@@ -118,7 +118,9 @@ export default async function Home({ params }: Props) {
         <HomeSections />
       </Suspense>
       <Suspense fallback={<div className="bg-brand-dark/20 h-64 w-full animate-pulse" />}>
-        <StaggerTestimonials />
+        <div className="cv-auto">
+          <StaggerTestimonials />
+        </div>
       </Suspense>
     </div>
   );
