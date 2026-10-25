@@ -28,6 +28,41 @@ export interface IvrRecordItem {
   campaign_name: string;
   created_at: string;
   recording_url?: string | null;
+  has_recording?: boolean;
+  raw_payload?: {
+    recording_url?: string | null;
+    ai_intelligence?: {
+      summary?: string;
+      interest_level?: 'Hot' | 'Warm' | 'Cold' | 'Unqualified';
+      sentiment?: 'Positive' | 'Neutral' | 'Skeptical' | 'Negative';
+      intent?: string;
+      budget?: string | null;
+      property_interest?: string | null;
+      transcript?: string;
+      dialogue?: Array<{
+        speaker: 'Telecaller' | 'Customer';
+        text: string;
+        start_time?: number;
+      }>;
+      [key: string]: unknown;
+    } | null;
+    [key: string]: unknown;
+  } | null;
+  ai_intelligence?: {
+    summary?: string;
+    interest_level?: 'Hot' | 'Warm' | 'Cold' | 'Unqualified';
+    sentiment?: 'Positive' | 'Neutral' | 'Skeptical' | 'Negative';
+    intent?: string;
+    budget?: string | null;
+    property_interest?: string | null;
+    transcript?: string;
+    dialogue?: Array<{
+      speaker: 'Telecaller' | 'Customer';
+      text: string;
+      start_time?: number;
+    }>;
+    [key: string]: unknown;
+  } | null;
 }
 
 interface CachedSummary {
@@ -145,6 +180,8 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         qBuilder = qBuilder.or(
           'dial_status.eq.NOANSWER,and(call_duration.lt.20,pressed_key.neq.1)'
         );
+      } else if (temperature === 'ai') {
+        qBuilder = qBuilder.not('raw_payload->ai_intelligence', 'is', null);
       }
       if (pressedKey && pressedKey !== 'all') {
         if (pressedKey === 'none') {
@@ -328,7 +365,10 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
       pressed_key?: string | null;
       campaign_name?: string | null;
       created_at: string;
-      raw_payload?: { recording_url?: string } | null;
+      raw_payload?: {
+        recording_url?: string;
+        ai_intelligence?: IvrRecordItem['ai_intelligence'];
+      } | null;
     }
     const typedRows = rawRecords as unknown as DatabaseIvrRow[];
     const items: IvrRecordItem[] = typedRows.map((r) => {
@@ -352,6 +392,9 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
         campaign_name: r.campaign_name || 'General Campaign',
         created_at: r.created_at,
         recording_url: recordingUrl,
+        has_recording: Boolean(recordingUrl),
+        raw_payload: r.raw_payload ?? null,
+        ai_intelligence: r.raw_payload?.ai_intelligence ?? null,
       };
     });
 

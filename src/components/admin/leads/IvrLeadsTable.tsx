@@ -13,7 +13,8 @@ import {
 } from '@/src/lib/leads/exportIvrLeads';
 import { LeadDrawer } from './LeadDrawer';
 import { IvrAudioPlayerDock } from './IvrAudioPlayerDock';
-
+import { AiCallSummaryModal } from './AiCallSummaryModal';
+import type { CallIntelligence } from '@/src/lib/leads/callIntelligence';
 import { IvrLeadsFilterToolbar } from './table/IvrLeadsFilterToolbar';
 import { IvrLeadMobileCard } from './table/IvrLeadMobileCard';
 import { IvrLeadDesktopRow } from './table/IvrLeadDesktopRow';
@@ -25,7 +26,7 @@ export { IvrTableSkeletonRows };
 
 export interface IvrFilterState {
   dial_status: 'all' | 'ANSWER' | 'NOANSWER';
-  temperature: 'all' | 'hot' | 'warm' | 'cold';
+  temperature: 'all' | 'hot' | 'warm' | 'cold' | 'ai';
   advisor_id: string;
   q: string;
   pressed_key?: 'all' | '1' | 'none';
@@ -79,7 +80,7 @@ export function IvrLeadsTable({
 }: IvrLeadsTableProps) {
   const [searchTerm, setSearchTerm] = useState('');
   const [activeDialStatus, setActiveDialStatus] = useState<'all' | 'ANSWER' | 'NOANSWER'>('all');
-  const [activeTemp, setActiveTemp] = useState<'all' | 'hot' | 'warm' | 'cold'>('all');
+  const [activeTemp, setActiveTemp] = useState<'all' | 'hot' | 'warm' | 'cold' | 'ai'>('all');
   const [activeAdvisor, setActiveAdvisor] = useState<string>('all');
   const [activePressedKey, setActivePressedKey] = useState<'all' | '1' | 'none'>('all');
   const [activeDurationFilter, setActiveDurationFilter] = useState<
@@ -102,8 +103,21 @@ export function IvrLeadsTable({
     recordingUrl?: string | null;
   } | null>(null);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [aiSummaryModalRecordId, setAiSummaryModalRecordId] = useState<string | null>(null);
+  const [isAiModalOpen, setIsAiModalOpen] = useState(false);
 
+  const handleOpenAiSummary = useCallback((id: string) => {
+    setAiSummaryModalRecordId(id);
+    setIsAiModalOpen(true);
+  }, []);
 
+  const selectedAiRecord = records.find((r) => r.id === aiSummaryModalRecordId) || null;
+  const selectedAiRecordingUrl =
+    selectedAiRecord?.recording_url ??
+    (selectedAiRecord?.raw_payload?.recording_url as string | undefined) ??
+    null;
+  const selectedAiIntelligence = (selectedAiRecord?.raw_payload?.ai_intelligence ??
+    selectedAiRecord?.ai_intelligence) as unknown as CallIntelligence | undefined;
   const toggleSelectPhone = (phone: string) => {
     setSelectedPhones((prev) => {
       const next = new Set(prev);
@@ -266,8 +280,7 @@ export function IvrLeadsTable({
     setActiveDialStatus(status);
     onFilterChange({ dial_status: status });
   };
-
-  const handleTempClick = (temp: 'all' | 'hot' | 'warm' | 'cold') => {
+  const handleTempClick = (temp: 'all' | 'hot' | 'warm' | 'cold' | 'ai') => {
     setActiveTemp(temp);
     onFilterChange({ temperature: temp });
   };
@@ -408,6 +421,7 @@ export function IvrLeadsTable({
                 employees={employees}
                 onReassignAdvisor={onReassignAdvisor}
                 formatDuration={formatDuration}
+                onOpenAiSummary={handleOpenAiSummary}
               />
             ))
           )}
@@ -526,6 +540,7 @@ export function IvrLeadsTable({
                     onReassignAdvisor={onReassignAdvisor}
                     onTemperatureChange={onTemperatureChange}
                     formatDuration={formatDuration}
+                    onOpenAiSummary={handleOpenAiSummary}
                   />
                 ))
               )}
@@ -592,6 +607,20 @@ export function IvrLeadsTable({
           temperature: activeTemp !== 'all' ? activeTemp : undefined,
           advisor_id: activeAdvisor !== 'all' ? activeAdvisor : undefined,
         }}
+      />
+
+      {/* AI Call Intelligence Modal */}
+      <AiCallSummaryModal
+        isOpen={isAiModalOpen}
+        onClose={() => {
+          setIsAiModalOpen(false);
+          setAiSummaryModalRecordId(null);
+        }}
+        recordingUrl={selectedAiRecordingUrl}
+        customerPhone={selectedAiRecord?.customer_phone}
+        agentName={selectedAiRecord?.agent_name}
+        callRecordId={selectedAiRecord?.id ?? aiSummaryModalRecordId ?? undefined}
+        initialIntelligence={selectedAiIntelligence}
       />
 
       {/* Persistent Floating Audio Player Dock */}
