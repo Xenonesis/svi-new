@@ -1552,4 +1552,9 @@ main > .page-transition > section {
   animation: kenburns 9s linear forwards;
 }
 
+/* Core Web Vitals: Skip off-screen style & layout computation until scrolled into view */
+.cv-auto {
+  content-visibility: auto;
+  contain-intrinsic-size: 1px 700px;
+}
 

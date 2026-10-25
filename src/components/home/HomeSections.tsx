@@ -26,17 +26,39 @@ export default function HomeSections() {
     <>
       <TrustAndBanks />
       <AboutSection />
-      <StatsCounterSection />
-      <FeaturesSection />
-      <TimelineSection />
-      <ProjectsSection />
-      <CorridorDiscovery />
-      <InteractiveCalculator />
-      <LeadershipSection />
-      <HomeBlogs />
-      <LotteryCTA />
-      <HomeFAQ />
-      <CTASection />
+      <div className="cv-auto">
+        <StatsCounterSection />
+      </div>
+      <div className="cv-auto">
+        <FeaturesSection />
+      </div>
+      <div className="cv-auto">
+        <TimelineSection />
+      </div>
+      <div className="cv-auto">
+        <ProjectsSection />
+      </div>
+      <div className="cv-auto">
+        <CorridorDiscovery />
+      </div>
+      <div className="cv-auto">
+        <InteractiveCalculator />
+      </div>
+      <div className="cv-auto">
+        <LeadershipSection />
+      </div>
+      <div className="cv-auto">
+        <HomeBlogs />
+      </div>
+      <div className="cv-auto">
+        <LotteryCTA />
+      </div>
+      <div className="cv-auto">
+        <HomeFAQ />
+      </div>
+      <div className="cv-auto">
+        <CTASection />
+      </div>
     </>
   );
 }
