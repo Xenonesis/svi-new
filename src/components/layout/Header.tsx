@@ -6,7 +6,6 @@ import Image from 'next/image';
 import { Link } from '@/src/i18n/navigation';
 import { DesktopNav } from '@/src/components/layout/DesktopNav';
 import { MobileNav } from '@/src/components/layout/MobileNav';
-import { motion, AnimatePresence } from 'motion/react';
 import AnnouncementBar from '@/src/components/layout/AnnouncementBar';
 
 export default function Header() {
@@ -86,35 +85,29 @@ export default function Header() {
             </Link>
 
             {/* Desktop Logo (styled like mobile logo capsule) */}
-            <AnimatePresence mode="popLayout">
-              {!h.isScrolled && (
-                <motion.div
-                  initial={{ opacity: 0, width: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, width: 'auto', scale: 1 }}
-                  exit={{ opacity: 0, width: 0, scale: 0.8 }}
-                  transition={{ duration: 0.25 }}
-                  className="hidden overflow-hidden xl:block"
-                >
-                  <Link
-                    href="/"
-                    className={`group relative inline-flex shrink-0 items-center rounded-2xl bg-white px-3.5 py-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
-                      h.isHomeTransparent ? 'bg-white/95 backdrop-blur-md' : ''
-                    }`}
-                    aria-label="Svi Infra Solutions Pvt. Ltd."
-                  >
-                    <Image
-                      src="/logo.png"
-                      alt="Svi Infra Solutions Pvt. Ltd."
-                      width={282}
-                      height={83}
-                      quality={100}
-                      priority
-                      className="h-7 w-auto object-contain transition-all duration-300 sm:h-7.5"
-                    />
-                  </Link>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <div
+              className={`hidden overflow-hidden transition-all duration-300 xl:block ${
+                h.isScrolled ? 'max-w-0 opacity-0' : 'max-w-[300px] opacity-100'
+              }`}
+            >
+              <Link
+                href="/"
+                className={`group relative inline-flex shrink-0 items-center rounded-2xl bg-white px-3.5 py-1.5 shadow-sm ring-1 ring-black/5 transition-all duration-300 outline-none hover:scale-[1.02] active:scale-[0.98] xl:inline-flex ${
+                  h.isHomeTransparent ? 'bg-white/95 backdrop-blur-md' : ''
+                }`}
+                aria-label="Svi Infra Solutions Pvt. Ltd."
+              >
+                <Image
+                  src="/logo.png"
+                  alt="Svi Infra Solutions Pvt. Ltd."
+                  width={282}
+                  height={83}
+                  quality={100}
+                  priority
+                  className="h-7 w-auto object-contain transition-all duration-300 sm:h-7.5"
+                />
+              </Link>
+            </div>
 
             <div className="flex items-center justify-center">
               {/* Desktop Navigation */}

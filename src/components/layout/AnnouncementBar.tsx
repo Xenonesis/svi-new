@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
 import { ArrowRight, X } from 'lucide-react';
 import { Link } from '@/src/i18n/navigation';
 import { defaultAnnouncementConfig, type AnnouncementConfig } from '@/src/config/announcement';
@@ -51,10 +50,30 @@ export default function AnnouncementBar() {
       }
     };
 
-    loadDynamicSettings();
+    let idleId: number | undefined;
+    let timerId: NodeJS.Timeout | number | undefined;
+
+    if (typeof window !== 'undefined' && typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(
+        () => {
+          loadDynamicSettings();
+        },
+        { timeout: 2500 }
+      );
+    } else {
+      timerId = setTimeout(loadDynamicSettings, 2500);
+    }
 
     return () => {
       isMounted = false;
+      if (
+        idleId !== undefined &&
+        typeof window !== 'undefined' &&
+        typeof window.cancelIdleCallback === 'function'
+      ) {
+        window.cancelIdleCallback(idleId);
+      }
+      clearTimeout(timerId);
     };
   }, []);
 
@@ -72,77 +91,70 @@ export default function AnnouncementBar() {
   }
 
   return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.aside
-          initial={false}
-          animate={{ height: 'auto', opacity: 1 }}
-          transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          aria-label="Announcement"
-          className="relative z-50 w-full overflow-hidden border-b border-[#d4af37]/25 bg-[#070b14]/95 text-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
-        >
-          {/* Subtle luminous gold line */}
-          <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
+    <aside
+      aria-label="Announcement"
+      className="relative z-50 w-full overflow-hidden border-b border-[#d4af37]/25 bg-[#070b14]/95 text-slate-100 shadow-[0_4px_25px_rgba(0,0,0,0.5)] backdrop-blur-md"
+    >
+      {/* Subtle luminous gold line */}
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/50 to-transparent" />
 
-          <div className="relative mx-auto flex min-h-[38px] max-w-7xl items-center justify-between px-3 py-1.5 sm:px-6">
-            {/* Pulsing indicator dot / Star badge */}
-            <div className="flex flex-1 items-center justify-center gap-2 overflow-hidden text-center text-[11px] sm:text-xs md:gap-3 md:text-[13px]">
-              {config.badgeText && (
-                <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#d4af37]/35 bg-[#d4af37]/15 px-2.5 py-0.5 font-bold tracking-wider text-[#f5d77f] uppercase shadow-xs ring-1 ring-[#d4af37]/20 backdrop-blur-xs">
-                  <span className="relative flex h-1.5 w-1.5">
-                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d4af37] opacity-75" />
-                    <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
-                  </span>
-                  <span className="text-[10px] font-bold">{config.badgeText}</span>
-                </div>
-              )}
-
-              {/* Text content & Action Link */}
-              <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 font-medium tracking-wide text-slate-200">
-                <span className="max-w-[260px] truncate font-mono text-[11px] tracking-tight text-slate-200 uppercase sm:max-w-none sm:font-sans sm:text-xs sm:tracking-normal md:text-[13px]">
-                  {config.text}
-                </span>
-                <span className="hidden text-[#d4af37]/50 sm:inline">—</span>
-                {config.isExternal ? (
-                  <a
-                    href={config.actionUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="group inline-flex items-center gap-1.5 font-bold tracking-wider text-[#f5d77f] uppercase underline decoration-[#d4af37]/40 underline-offset-4 transition-all duration-200 hover:text-white hover:decoration-[#d4af37] hover:underline-offset-2"
-                  >
-                    <span>{config.actionText}</span>
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </a>
-                ) : (
-                  <Link
-                    href={config.actionUrl}
-                    className="group inline-flex items-center gap-1.5 font-bold tracking-wider text-[#f5d77f] uppercase underline decoration-[#d4af37]/40 underline-offset-4 transition-all duration-200 hover:text-white hover:decoration-[#d4af37] hover:underline-offset-2"
-                  >
-                    <span>{config.actionText}</span>
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
-                  </Link>
-                )}
-              </div>
+      <div className="relative mx-auto flex min-h-[38px] max-w-7xl items-center justify-between px-3 py-1.5 sm:px-6">
+        {/* Pulsing indicator dot / Star badge */}
+        <div className="flex flex-1 items-center justify-center gap-2 overflow-hidden text-center text-[11px] sm:text-xs md:gap-3 md:text-[13px]">
+          {config.badgeText && (
+            <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-[#d4af37]/35 bg-[#d4af37]/15 px-2.5 py-0.5 font-bold tracking-wider text-[#f5d77f] uppercase shadow-xs ring-1 ring-[#d4af37]/20 backdrop-blur-xs">
+              <span className="relative flex h-1.5 w-1.5">
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[#d4af37] opacity-75" />
+                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[#d4af37]" />
+              </span>
+              <span className="text-[10px] font-bold">{config.badgeText}</span>
             </div>
+          )}
 
-            {/* Dismiss button */}
-            {config.dismissible && (
-              <button
-                type="button"
-                onClick={handleDismiss}
-                className="ml-1 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-[#d4af37]/40 focus:outline-none"
-                aria-label="Dismiss announcement"
+          {/* Text content & Action Link */}
+          <div className="flex flex-wrap items-center justify-center gap-x-2 gap-y-0.5 font-medium tracking-wide text-slate-200">
+            <span className="max-w-[260px] truncate font-mono text-[11px] tracking-tight text-slate-200 uppercase sm:max-w-none sm:font-sans sm:text-xs sm:tracking-normal md:text-[13px]">
+              {config.text}
+            </span>
+            <span className="hidden text-[#d4af37]/50 sm:inline">—</span>
+            {config.isExternal ? (
+              <a
+                href={config.actionUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group inline-flex items-center gap-1.5 font-bold tracking-wider text-[#f5d77f] uppercase underline decoration-[#d4af37]/40 underline-offset-4 transition-all duration-200 hover:text-white hover:decoration-[#d4af37] hover:underline-offset-2"
               >
-                <span className="flex h-6 w-6 items-center justify-center rounded">
-                  <X className="h-3.5 w-3.5" />
-                </span>
-              </button>
+                <span>{config.actionText}</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </a>
+            ) : (
+              <Link
+                href={config.actionUrl}
+                className="group inline-flex items-center gap-1.5 font-bold tracking-wider text-[#f5d77f] uppercase underline decoration-[#d4af37]/40 underline-offset-4 transition-all duration-200 hover:text-white hover:decoration-[#d4af37] hover:underline-offset-2"
+              >
+                <span>{config.actionText}</span>
+                <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
             )}
           </div>
+        </div>
 
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/20 to-transparent" />
-        </motion.aside>
-      )}
-    </AnimatePresence>
+        {/* Dismiss button */}
+        {config.dismissible && (
+          <button
+            type="button"
+            onClick={handleDismiss}
+            className="ml-1 inline-flex min-h-[44px] min-w-[44px] shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-white/10 hover:text-white focus:ring-2 focus:ring-[#d4af37]/40 focus:outline-none"
+            aria-label="Dismiss announcement"
+          >
+            <span className="flex h-6 w-6 items-center justify-center rounded">
+              <X className="h-3.5 w-3.5" />
+            </span>
+          </button>
+        )}
+      </div>
+
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[1px] bg-gradient-to-r from-transparent via-[#d4af37]/20 to-transparent" />
+    </aside>
   );
 }
