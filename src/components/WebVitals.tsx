@@ -67,14 +67,31 @@ export function WebVitals() {
       originalWarn.apply(console, args);
     };
 
-    onLCP(sendToAnalytics);
-    onCLS(sendToAnalytics);
-    onINP(sendToAnalytics);
-    onTTFB(sendToAnalytics);
-    onFCP(sendToAnalytics);
+    const initVitals = () => {
+      onCLS(sendToAnalytics);
+      onINP(sendToAnalytics);
+      onLCP(sendToAnalytics);
+      onTTFB(sendToAnalytics);
+      onFCP(sendToAnalytics);
+    };
+
+    let cleanup: (() => void) | undefined;
+
+    if ('requestIdleCallback' in window) {
+      const handle = window.requestIdleCallback(initVitals, { timeout: 3000 });
+      cleanup = () => {
+        if ('cancelIdleCallback' in window) {
+          window.cancelIdleCallback(handle);
+        }
+      };
+    } else {
+      const timer = setTimeout(initVitals, 2000);
+      cleanup = () => clearTimeout(timer);
+    }
 
     return () => {
       console.warn = originalWarn;
+      cleanup?.();
     };
   }, []);
 

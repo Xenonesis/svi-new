@@ -35,6 +35,13 @@ export function FloatingContact() {
   const t = useTranslations('floatingContact');
   const pathname = usePathname();
 
+  // On mobile screens (< 768px), MobileConversionDock handles all conversions
+  // Skip rendering and animation listeners on mobile to preserve main-thread CPU
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    setIsDesktop(window.innerWidth >= 768);
+  }, []);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -108,7 +115,7 @@ export function FloatingContact() {
     }
   }, [pathname, projects, selectedProject]);
 
-  if (!isMounted) return null;
+  if (!isMounted || !isDesktop) return null;
 
   const handleCallClick = () => track('call_click');
   const handleWhatsAppClick = () => track('whatsapp_click');
