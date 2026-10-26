@@ -7,6 +7,7 @@ import {
   Flame,
   Zap,
   Snowflake,
+  Sparkles,
   SlidersHorizontal,
   Download,
   Calendar,
@@ -29,8 +30,8 @@ interface IvrLeadsFilterToolbarProps {
   handleAdvisorChange: (id: string) => void;
   activeDialStatus: 'all' | 'ANSWER' | 'NOANSWER';
   handleDialStatusClick: (status: 'all' | 'ANSWER' | 'NOANSWER') => void;
-  activeTemp: 'all' | 'hot' | 'warm' | 'cold';
-  handleTempClick: (temp: 'all' | 'hot' | 'warm' | 'cold') => void;
+  activeTemp: 'all' | 'hot' | 'warm' | 'cold' | 'ai';
+  handleTempClick: (temp: 'all' | 'hot' | 'warm' | 'cold' | 'ai') => void;
   showAdvancedFilters: boolean;
   setShowAdvancedFilters: (show: boolean | ((prev: boolean) => boolean)) => void;
   hasActiveAdvancedFilters: boolean;
@@ -102,7 +103,7 @@ export function IvrLeadsFilterToolbar({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search phone or advisor..."
-              className="focus:border-brand-gold focus:ring-2 focus:ring-brand-gold/30 dark:focus:border-brand-gold dark:focus:ring-brand-gold/30 w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2 pr-4 pl-9 text-xs text-gray-900 transition-all focus:bg-white focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-[#161D2C]"
+              className="focus:border-brand-gold focus:ring-brand-gold/30 dark:focus:border-brand-gold dark:focus:ring-brand-gold/30 w-full rounded-xl border border-gray-200 bg-gray-50/70 py-2 pr-4 pl-9 text-xs text-gray-900 transition-all focus:bg-white focus:ring-2 focus:outline-none dark:border-white/10 dark:bg-white/5 dark:text-white dark:focus:bg-[#161D2C]"
             />
           </form>
 
@@ -200,8 +201,18 @@ export function IvrLeadsFilterToolbar({
             >
               <Snowflake className="h-3 w-3" /> Cold
             </button>
+            <button
+              type="button"
+              onClick={() => handleTempClick('ai')}
+              className={`flex items-center gap-1 rounded-lg px-2.5 py-1 text-[11px] font-semibold transition-all ${
+                activeTemp === 'ai'
+                  ? 'bg-amber-100 font-bold text-amber-800 shadow-sm dark:bg-amber-500/20 dark:text-amber-300'
+                  : 'text-amber-600 hover:text-amber-700 dark:text-amber-400'
+              }`}
+            >
+              <Sparkles className="h-3 w-3 animate-pulse text-amber-500" /> AI Insights
+            </button>
           </div>
-          {/* Filters toggle button */}
           <button
             type="button"
             onClick={() => setShowAdvancedFilters(!showAdvancedFilters)}

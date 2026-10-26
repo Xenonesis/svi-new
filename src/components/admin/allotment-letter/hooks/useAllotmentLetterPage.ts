@@ -17,6 +17,10 @@ export interface AllotmentFormData {
   address: string;
   ticketId: string;
   aadharNumber: string;
+  panNumber?: string;
+  nomineeName?: string;
+  clientPhone?: string;
+  clientEmail?: string;
   fatherName: string;
   onBookingPaymentRef: string;
   within15DaysPaymentRef: string;
@@ -38,7 +42,18 @@ export interface AllotmentFormData {
   emiStartDate: string;
   zeroPercentEmi: string;
   bookingPaymentPercent: string;
+  bookingPaymentAmount?: string;
   showSecondInstalment: string;
+  planType?: 'emi' | 'one_time' | string;
+  chequeNumber?: string;
+  chequeDate?: string;
+  chequeBank?: string;
+  chequeBranch?: string;
+  chequeDrawer?: string;
+  remainingDueDate?: string;
+  remainingPaymentLabel?: string;
+  specialClause?: string;
+  customTermsText?: string;
 }
 
 export interface AllotmentCompanyInfo {
@@ -78,17 +93,37 @@ export function calculateFinancialValues(formData: {
   edc?: string | number;
   edcInEmi?: string | boolean;
   bookingPaymentPercent?: string | number;
+  bookingPaymentAmount?: string | number;
 }) {
   const totalCost = calculateTotalCost(formData);
   const edcAmount =
     typeof formData.edc === 'number' ? formData.edc : parseFloat(formData.edc || '') || 0;
   const edcInEmi = formData.edcInEmi === 'true' || formData.edcInEmi === true;
   const baseCost = totalCost - edcAmount;
-  const bookingPercent =
+  let bookingPercent =
     typeof formData.bookingPaymentPercent === 'number'
       ? formData.bookingPaymentPercent
       : parseFloat(String(formData.bookingPaymentPercent || '')) || 10;
-  const initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
+  let initialPayment = (edcInEmi ? baseCost : totalCost) * (bookingPercent / 100);
+
+  if (
+    formData.bookingPaymentAmount !== undefined &&
+    formData.bookingPaymentAmount !== '' &&
+    formData.bookingPaymentAmount !== null
+  ) {
+    const explicitAmt =
+      typeof formData.bookingPaymentAmount === 'number'
+        ? formData.bookingPaymentAmount
+        : parseFloat(String(formData.bookingPaymentAmount)) || 0;
+    if (explicitAmt > 0) {
+      initialPayment = explicitAmt;
+      if (totalCost > 0) {
+        bookingPercent = Number(
+          ((explicitAmt / (edcInEmi ? baseCost : totalCost)) * 100).toFixed(2)
+        );
+      }
+    }
+  }
 
   return {
     totalCost,
@@ -100,12 +135,16 @@ export function calculateFinancialValues(formData: {
   };
 }
 
-export const INITIAL_ALLOTMENT_FORM_DATA = {
+export const INITIAL_ALLOTMENT_FORM_DATA: AllotmentFormData = {
   clientName: '',
   salutation: 'Mr.',
   address: '',
   ticketId: '',
   aadharNumber: '',
+  panNumber: '',
+  nomineeName: '',
+  clientPhone: '',
+  clientEmail: '',
   fatherName: '',
   onBookingPaymentRef: '',
   within15DaysPaymentRef: '',
@@ -127,7 +166,18 @@ export const INITIAL_ALLOTMENT_FORM_DATA = {
   emiStartDate: '',
   zeroPercentEmi: 'false',
   bookingPaymentPercent: '10',
+  bookingPaymentAmount: '',
   showSecondInstalment: 'true',
+  planType: 'emi',
+  chequeNumber: '',
+  chequeDate: '',
+  chequeBank: '',
+  chequeBranch: '',
+  chequeDrawer: '',
+  remainingDueDate: '',
+  remainingPaymentLabel: 'Remaining Payment',
+  specialClause: '',
+  customTermsText: '',
 };
 
 export function useAllotmentLetterPage(tokenOverride?: string | null) {

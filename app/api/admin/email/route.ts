@@ -7,6 +7,7 @@ import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { mimeFromFilename, ensureAttachmentBucket } from '@/src/lib/email/attachments';
 import { syncInboundEmails } from '@/src/lib/email/inboundSync';
+import { validateEmailDeliverability } from '@/src/lib/email/deliverabilityShield';
 
 function getResend() {
   const apiKey = process.env.RESEND_API_KEY;
@@ -1124,9 +1125,21 @@ export async function POST(request: NextRequest) {
 
       const normalizedReplyTo = parseReplyTo(replyTo) || parseReplyTo(defaultReplyTo);
 
-      // Resend limits `to`/`cc`/`bcc` to 50 items each — batch if needed
-      const MAX_RESEND_RECIPIENTS = 50;
-      const toList = Array.isArray(to) ? to : [to];
+      // Deliverability validation (syntax, dead domains, previous bounces)
+      const rawToList = Array.isArray(to) ? to : [to];
+      const { valid: toList, blocked: blockedRecipients } =
+        await validateEmailDeliverability(rawToList);
+
+      if (toList.length === 0) {
+        return NextResponse.json(
+          {
+            error: 'All recipient addresses failed deliverability validation.',
+            blocked: blockedRecipients,
+          },
+          { status: 422 }
+        );
+      }
+
       const ccList = cc ? (Array.isArray(cc) ? cc : [cc]) : [];
       const bccList = bcc ? (Array.isArray(bcc) ? bcc : [bcc]) : [];
 
@@ -1260,69 +1273,128 @@ export async function POST(request: NextRequest) {
           scheduled: true,
         });
       }
+      const results: Array<{ id?: string; error?: string; to?: string }> = [];
 
-      const batchCount = Math.max(
-        Math.ceil(toList.length / MAX_RESEND_RECIPIENTS),
-        Math.ceil(ccList.length / MAX_RESEND_RECIPIENTS),
-        Math.ceil(bccList.length / MAX_RESEND_RECIPIENTS),
-        1
-      );
+      // ── PATH A: Individualized Batch Send (No attachments, multiple recipients) ──
+      if (!resendAttachments && toList.length > 1) {
+        const MAX_BATCH_SIZE = 100;
+        const batchChunks: string[][] = [];
+        for (let i = 0; i < toList.length; i += MAX_BATCH_SIZE) {
+          batchChunks.push(toList.slice(i, i + MAX_BATCH_SIZE));
+        }
 
-      const results = [];
-      for (let i = 0; i < batchCount; i++) {
-        const toChunk = toList.slice(i * MAX_RESEND_RECIPIENTS, (i + 1) * MAX_RESEND_RECIPIENTS);
-        const ccChunk = ccList.slice(i * MAX_RESEND_RECIPIENTS, (i + 1) * MAX_RESEND_RECIPIENTS);
-        const bccChunk = bccList.slice(i * MAX_RESEND_RECIPIENTS, (i + 1) * MAX_RESEND_RECIPIENTS);
+        for (let i = 0; i < batchChunks.length; i++) {
+          const chunk = batchChunks[i];
+          const batchItems = chunk.map((singleRecipient) => ({
+            from: fromAddress,
+            to: [singleRecipient],
+            subject,
+            html: html || undefined,
+            text: text || undefined,
+            replyTo: normalizedReplyTo,
+            headers: inReplyTo ? { 'In-Reply-To': inReplyTo, References: inReplyTo } : undefined,
+          }));
 
-        if (toChunk.length === 0 && ccChunk.length === 0 && bccChunk.length === 0) break;
+          try {
+            const { data: batchResult, error: batchError } = await resend.batch.send(batchItems, {
+              idempotencyKey: `batch-compose-${Date.now()}-${i}`,
+            });
 
-        try {
-          const { data: batchResult, error: batchError } = await resend.emails.send({
-            ...baseSendParams,
-            to: toChunk,
-            cc: ccChunk.length > 0 ? ccChunk : undefined,
-            bcc: bccChunk.length > 0 ? bccChunk : undefined,
-          });
-
-          if (batchError) {
-            results.push({ error: batchError.message, batch: i });
-          } else {
-            results.push({ id: batchResult?.id, batch: i });
-            // ── PERMANENT SENT EMAIL LOG IN SUPABASE ──
-            try {
-              await supabaseAdmin.from('email_messages').insert({
-                resend_id: batchResult?.id,
-                subject,
-                from_email: fromAddress,
-                to_emails: toChunk,
-                status: 'sent',
-                last_event: 'sent',
-                sent_at: new Date().toISOString(),
-                created_at: new Date().toISOString(),
-                metadata: {
-                  html: html || undefined,
-                  text: text || undefined,
-                  cc: ccChunk,
-                  bcc: bccChunk,
-                  reply_to: normalizedReplyTo,
-                  attachments: resendAttachments,
-                  source: 'compose',
-                },
-              });
-            } catch (persistErr) {
-              console.error('[EMAIL LOG] Failed to persist sent email in Supabase:', persistErr);
+            if (batchError) {
+              results.push({ error: batchError.message });
+            } else if (batchResult?.data && Array.isArray(batchResult.data)) {
+              for (let j = 0; j < chunk.length; j++) {
+                const item = batchResult.data[j];
+                const recipientEmail = chunk[j];
+                if (item?.id) {
+                  results.push({ id: item.id, to: recipientEmail });
+                  try {
+                    await supabaseAdmin.from('email_messages').insert({
+                      resend_id: item.id,
+                      subject,
+                      from_email: fromAddress,
+                      to_emails: [recipientEmail],
+                      status: 'sent',
+                      last_event: 'sent',
+                      sent_at: new Date().toISOString(),
+                      created_at: new Date().toISOString(),
+                      metadata: {
+                        html: html || undefined,
+                        text: text || undefined,
+                        reply_to: normalizedReplyTo,
+                        source: 'compose_batch',
+                      },
+                    });
+                  } catch (logErr) {
+                    console.error('[EMAIL LOG] Failed to log batch sent email:', logErr);
+                  }
+                }
+              }
             }
+          } catch (batchErr: unknown) {
+            results.push({
+              error: batchErr instanceof Error ? batchErr.message : 'Batch send failed',
+            });
           }
-        } catch (sendErr: unknown) {
-          const errMsg =
-            sendErr instanceof Error ? sendErr.message : 'Failed to send batch via Resend';
-          results.push({ error: errMsg, batch: i });
+        }
+      } else {
+        // ── PATH B: Single Email OR Multi-Recipient with Attachments (Private 1-by-1) ──
+        for (let i = 0; i < toList.length; i++) {
+          const singleRecipient = toList[i];
+          try {
+            const { data: sendData, error: sendError } = await resend.emails.send(
+              {
+                ...baseSendParams,
+                to: [singleRecipient],
+                cc: i === 0 && ccList.length > 0 ? ccList : undefined,
+                bcc: i === 0 && bccList.length > 0 ? bccList : undefined,
+              },
+              {
+                idempotencyKey: `send-${Date.now()}-${singleRecipient.replace(/[^a-zA-Z0-9]/g, '_')}`,
+              }
+            );
+
+            if (sendError) {
+              results.push({ error: sendError.message, to: singleRecipient });
+            } else if (sendData?.id) {
+              results.push({ id: sendData.id, to: singleRecipient });
+              try {
+                await supabaseAdmin.from('email_messages').insert({
+                  resend_id: sendData.id,
+                  subject,
+                  from_email: fromAddress,
+                  to_emails: [singleRecipient],
+                  status: 'sent',
+                  last_event: 'sent',
+                  sent_at: new Date().toISOString(),
+                  created_at: new Date().toISOString(),
+                  metadata: {
+                    html: html || undefined,
+                    text: text || undefined,
+                    cc: i === 0 ? ccList : undefined,
+                    bcc: i === 0 ? bccList : undefined,
+                    reply_to: normalizedReplyTo,
+                    attachments: resendAttachments,
+                    source: 'compose',
+                  },
+                });
+              } catch (logErr) {
+                console.error('[EMAIL LOG] Failed to log sent email:', logErr);
+              }
+            }
+          } catch (sendErr: unknown) {
+            results.push({
+              error: sendErr instanceof Error ? sendErr.message : 'Failed to send email',
+              to: singleRecipient,
+            });
+          }
         }
       }
+
       const errors = results.filter((r) => r.error);
       if (errors.length > 0 && errors.length === results.length) {
         return NextResponse.json(
-          { error: `All batches failed. First error: ${errors[0].error}` },
+          { error: `All sends failed. First error: ${errors[0].error}` },
           { status: 422 }
         );
       }
@@ -1394,6 +1466,7 @@ export async function POST(request: NextRequest) {
         id: firstSuccessId,
         batches: results.length,
         errors: errors.length > 0 ? errors : undefined,
+        blocked: blockedRecipients.length > 0 ? blockedRecipients : undefined,
       });
     }
 

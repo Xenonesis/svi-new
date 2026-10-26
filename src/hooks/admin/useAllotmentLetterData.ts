@@ -4,6 +4,10 @@ import { toast } from 'sonner';
 import { registerDynamicProjectLocations } from '@/src/lib/utils/projectLocations';
 import type { ActiveAllotmentOption } from '@/src/components/admin/allotment-shared/types';
 import { formatTicketId } from '@/src/lib/allotment/ticketUtils';
+import {
+  type AllotmentFormData,
+  INITIAL_ALLOTMENT_FORM_DATA,
+} from '@/src/components/admin/allotment-letter/hooks/useAllotmentLetterPage';
 export interface Advisor {
   full_name: string;
   phone: string | null;
@@ -34,36 +38,7 @@ export function useAllotmentLetterData(token: string | null) {
     bank_ifsc: 'IBKL0000894',
   });
 
-  const [formData, setFormData] = useState({
-    clientName: '',
-    salutation: 'Mr.',
-    address: '',
-    ticketId: '',
-    aadharNumber: '',
-    fatherName: '',
-    onBookingPaymentRef: '',
-    within15DaysPaymentRef: '',
-    projectName: 'Shyam Aangan',
-    unitNumber: '',
-    area: '',
-    bsp: '',
-    plc: '',
-    edc: '',
-    edcInEmi: 'false',
-    paymentPlan: '12',
-    bookingDate: '',
-    secondPaymentDays: '15',
-    advisorName: '',
-    advisorNumber: '',
-    advisorEmail: '',
-    emiCount: '12',
-    emiPercentage: '',
-    emiStartDate: '',
-    zeroPercentEmi: 'false',
-    bookingPaymentPercent: '10',
-    showSecondInstalment: 'true',
-  });
-
+  const [formData, setFormData] = useState<AllotmentFormData>(INITIAL_ALLOTMENT_FORM_DATA);
   const [isDraftLoaded, setIsDraftLoaded] = useState(false);
   const [preview, setPreview] = useState(false);
   const [documentId, setDocumentId] = useState<string | null>(null);
@@ -370,6 +345,10 @@ export function useAllotmentLetterData(token: string | null) {
         advisorNumber: fd.advisorNumber || '',
         advisorEmail: fd.advisorEmail || '',
         aadharNumber: fd.aadharNumber || '',
+        panNumber: fd.panNumber || '',
+        nomineeName: fd.nomineeName || '',
+        clientPhone: fd.clientPhone || '',
+        clientEmail: fd.clientEmail || '',
         fatherName: fd.fatherName || '',
         onBookingPaymentRef: fd.onBookingPaymentRef || '',
         within15DaysPaymentRef: fd.within15DaysPaymentRef || '',
@@ -378,9 +357,23 @@ export function useAllotmentLetterData(token: string | null) {
         emiStartDate: fd.emiStartDate || '',
         zeroPercentEmi: fd.zeroPercentEmi ? String(fd.zeroPercentEmi) : 'false',
         bookingPaymentPercent: fd.bookingPaymentPercent || '10',
+        bookingPaymentAmount: fd.bookingPaymentAmount || '',
         showSecondInstalment: fd.showSecondInstalment ? String(fd.showSecondInstalment) : 'true',
+        planType:
+          fd.planType ||
+          (String(fd.paymentPlan).toLowerCase().includes('one-time') || fd.paymentPlan === '1'
+            ? 'one_time'
+            : 'emi'),
+        chequeNumber: fd.chequeNumber || '',
+        chequeDate: fd.chequeDate || '',
+        chequeBank: fd.chequeBank || '',
+        chequeBranch: fd.chequeBranch || '',
+        chequeDrawer: fd.chequeDrawer || '',
+        remainingDueDate: fd.remainingDueDate || fd.emiStartDate || '',
+        remainingPaymentLabel: fd.remainingPaymentLabel || 'Remaining Payment',
+        specialClause: fd.specialClause || '',
+        customTermsText: fd.customTermsText || '',
       });
-
       setSelectedRecordId(targetId);
       setDocumentId(targetId);
       toast.success(`Loaded allotment record for "${clientName}"`);

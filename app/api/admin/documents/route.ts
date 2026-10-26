@@ -4,6 +4,7 @@ import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { getNextQuotationNumberFromDb } from '@/src/lib/quotation/quotationNumber';
 import { getNextReceiptNumberFromDb } from '@/src/lib/receipt/receiptNumber';
+import { syncReceiptToPaymentSchedule } from '@/src/lib/receipt/syncReceiptToSchedule';
 const VALID_DOC_TYPES = [
   'allotment_letter',
   'payment_receipt',
@@ -140,6 +141,25 @@ export async function POST(request: NextRequest) {
       .single();
 
     if (error) throw AppError.internal(error.message);
+
+    // Auto-sync payment receipt to allotment portal's payment_schedules
+    if (document_type === 'payment_receipt' && data) {
+      try {
+        const formData = (data.form_data as Record<string, unknown>) || {};
+        const meta = (data.metadata as Record<string, unknown>) || {};
+        await syncReceiptToPaymentSchedule(supabaseAdmin, {
+          receiptNo: (formData.receiptNo as string) || (meta.receipt_no as string) || '',
+          amount: (formData.amount as string | number) || (meta.amount as string | number) || 0,
+          date: (formData.date as string) || (data.created_at as string),
+          refId: (formData.refId as string) || (meta.ticket_id as string) || null,
+          userId: resolvedUserId,
+          plotNo: (formData.plotNo as string) || null,
+          isTrashed: false,
+        });
+      } catch (syncErr) {
+        console.error('[AUTO-SYNC-SCHEDULE] Failed:', syncErr);
+      }
+    }
 
     // Send email notification (non-blocking)
     if (user_id) {

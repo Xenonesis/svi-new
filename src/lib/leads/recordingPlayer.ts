@@ -7,6 +7,7 @@ import { buildRecordingProxyUrl } from './recordingProxy';
 export interface RecordingMeta {
   customerPhone?: string;
   agentName?: string;
+  callRecordId?: string;
 }
 
 export interface RecordingPlayerState {
@@ -121,10 +122,7 @@ export function togglePlayPause() {
  * Toggles inline audio playback for a given upstream recording URL.
  * Routes requests through the same-origin proxy to eliminate mixed-content and naked-IP issues.
  */
-export function toggleCallRecording(
-  rawUrl: string | null | undefined,
-  meta?: RecordingMeta
-) {
+export function toggleCallRecording(rawUrl: string | null | undefined, meta?: RecordingMeta) {
   if (!rawUrl) return;
 
   // 1. If currently playing this exact URL, pause and stop
@@ -137,7 +135,7 @@ export function toggleCallRecording(
   stopAllRecordings();
 
   // 3. Resolve proxy URL
-  const proxyUrl = buildRecordingProxyUrl(rawUrl);
+  const proxyUrl = buildRecordingProxyUrl(rawUrl, meta?.customerPhone);
   if (!proxyUrl) {
     toast.error('Unable to play recording: unauthorized or invalid audio URL');
     return;
@@ -155,7 +153,7 @@ export function toggleCallRecording(
 
   const audio = new Audio();
   activeAudioElement = audio;
-  audio.preload = 'auto';
+  audio.preload = 'metadata';
 
   audio.addEventListener('loadedmetadata', () => {
     if (activeAudioElement === audio) {

@@ -44,9 +44,18 @@ export function isAllowedRecordingUrl(rawUrl: string | null | undefined): boolea
 
 /**
  * Builds a same-origin proxy URL for streaming an IVR recording.
+ * Optionally attaches the customer phone to enable instantaneous 0-latency CDN resolution.
  * Returns null if the upstream URL is missing or not allowed.
  */
-export function buildRecordingProxyUrl(rawUrl: string | null | undefined): string | null {
+export function buildRecordingProxyUrl(
+  rawUrl: string | null | undefined,
+  customerPhone?: string | null
+): string | null {
   if (!rawUrl || !isAllowedRecordingUrl(rawUrl)) return null;
-  return `/api/admin/leads/recording?url=${encodeURIComponent(rawUrl)}`;
+  const base = `/api/admin/leads/recording?url=${encodeURIComponent(rawUrl)}`;
+  if (customerPhone) {
+    const clean = customerPhone.replace(/\D/g, '').slice(-10);
+    if (clean) return `${base}&phone=${encodeURIComponent(clean)}`;
+  }
+  return base;
 }

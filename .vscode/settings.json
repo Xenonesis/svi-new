@@ -3,8 +3,9 @@
     "chat.tools.terminal.autoApprove": {
         "npx next": true
     },
-    "Codegeex.Comment.LanguagePreference": "中文",
-    "Codegeex.Chat.LanguagePreference": "中文",
+    "Codegeex.Comment.LanguagePreference": "English",
+    "Codegeex.Chat.LanguagePreference": "English",
     "Codegeex.GenerationPreference": "automatic",
-    "Codegeex.CommitMessage.LanguagePreference": "中文"
+    "Codegeex.CommitMessage.LanguagePreference": "English",
+    "Codegeex.SidebarUI.LanguagePreference": "English"
 }

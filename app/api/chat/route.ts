@@ -92,6 +92,7 @@ LANGUAGE AUTO-DETECTION & RESPONSE (CRITICAL):
   const result = streamText({
     model: groq(AI_MODEL),
     system: systemPrompt,
+    maxOutputTokens: 1024,
     messages: await convertToModelMessages(messages),
     tools: {
       qualifyLead: tool({

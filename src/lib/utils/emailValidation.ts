@@ -45,6 +45,22 @@ const COMMON_DOMAIN_TYPOS: Record<string, string> = {
   'iclud.com': 'icloud.com',
 };
 
+// Known placeholder/dead domains that lack active MX records
+const NON_MX_DOMAINS: Record<string, true> = {
+  'sviinfra.com': true,
+  'example.com': true,
+  'test.com': true,
+  'fake.com': true,
+  'invalid.com': true,
+};
+
+export function isDeadOrNonMxDomain(email: string): boolean {
+  if (!email || typeof email !== 'string') return false;
+  const parts = email.trim().toLowerCase().split('@');
+  if (parts.length !== 2) return false;
+  return Boolean(NON_MX_DOMAINS[parts[1]]);
+}
+
 export interface EmailTypoSuggestion {
   original: string;
   suggested: string;

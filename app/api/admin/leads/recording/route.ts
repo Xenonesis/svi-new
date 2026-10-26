@@ -3,22 +3,29 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { isAllowedRecordingUrl } from '@/src/lib/leads/recordingProxy';
-import { CALL_RECORDINGS_BUCKET, deriveStoragePath } from '@/src/lib/leads/syncRecordingToStorage';
+import {
+  CALL_RECORDINGS_BUCKET,
+  deriveStoragePath,
+  extractPhoneFromUrl,
+  syncRecordingToInHouseStorage,
+} from '@/src/lib/leads/syncRecordingToStorage';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * Same-Origin IVR Recording Streaming Proxy
+ * Same-Origin IVR Recording Streaming Proxy & High-Speed CDN Gateway
  *
  * GET /api/admin/leads/recording?url=<encoded_upstream_url>&phone=<customer_phone>
  *
- * In-House Priority:
- * 1. Checks if file already exists in private Supabase Storage `call-recordings`.
- *    If present, downloads from in-house bucket directly (zero dependency on third-party).
- * 2. If not yet in Supabase Storage, fetches from third-party telephony server,
- *    and triggers asynchronous archival so next listen is 100% in-house.
- * 3. Range Passthrough: Forwards HTTP Range headers from browser <audio> requests for timeline scrubbing.
+ * High-Speed Pipeline:
+ * 1. Checks if file is archived in private Supabase Storage `call-recordings`.
+ *    If present, issues an instant 307 Temporary Redirect to a signed CDN URL.
+ *    The browser's HTML5 <audio> element streams directly from the global CDN edge
+ *    with native byte-range slicing (HTTP 206) and zero Node.js server RAM buffering.
+ * 2. If not yet in Supabase Storage, streams the response directly from the upstream
+ *    telephony server with Range passthrough, and schedules non-blocking background
+ *    archival to Supabase Storage so subsequent plays hit the CDN.
  */
 export async function GET(request: NextRequest): Promise<NextResponse | Response> {
   try {
@@ -34,70 +41,29 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
       throw AppError.forbidden('Recording URL is not from an authorized telephony host');
     }
 
-    const customerPhone = request.nextUrl.searchParams.get('phone') || '';
+    const customerPhone =
+      request.nextUrl.searchParams.get('phone') || extractPhoneFromUrl(targetUrl) || '';
     const inHousePath = deriveStoragePath(customerPhone, targetUrl);
 
-    // 1. Check in-house Supabase Storage first
-    const pathParts = inHousePath.split('/');
-    const folder = pathParts.slice(0, -1).join('/');
-    const targetFile = pathParts[pathParts.length - 1];
-
-    let inHouseBlob: Blob | null = null;
+    // 1. Fast path: In-house Supabase Storage CDN signed URL (Zero RAM buffering)
     try {
-      const { data: existingFiles } = await supabaseAdmin.storage
+      const { data: signedData, error: signedError } = await supabaseAdmin.storage
         .from(CALL_RECORDINGS_BUCKET)
-        .list(folder, { search: targetFile, limit: 1 });
+        .createSignedUrl(inHousePath, 86400); // 24hr expiration
 
-      if (existingFiles && existingFiles.some((f) => f.name === targetFile)) {
-        const { data: downloadedBlob } = await supabaseAdmin.storage
-          .from(CALL_RECORDINGS_BUCKET)
-          .download(inHousePath);
-        if (downloadedBlob) {
-          inHouseBlob = downloadedBlob;
-        }
+      if (!signedError && signedData?.signedUrl) {
+        const redirectHeaders = new Headers();
+        redirectHeaders.set('Location', signedData.signedUrl);
+        redirectHeaders.set('Cache-Control', 'private, max-age=86400');
+        redirectHeaders.set('X-Source', 'in-house-supabase-storage-cdn');
+
+        return new Response(null, {
+          status: 307,
+          headers: redirectHeaders,
+        });
       }
     } catch {
-      // Fallback to upstream if storage check encounters temporary error
-    }
-
-    // 1A. Serve from In-House Storage if available
-    if (inHouseBlob) {
-      const buffer = Buffer.from(await inHouseBlob.arrayBuffer());
-      const totalSize = buffer.length;
-      const clientRange = request.headers.get('range');
-
-      const responseHeaders = new Headers();
-      responseHeaders.set('Content-Type', inHouseBlob.type || 'audio/x-wav');
-      responseHeaders.set('Accept-Ranges', 'bytes');
-      responseHeaders.set('Cache-Control', 'private, max-age=86400');
-      responseHeaders.set('X-Source', 'in-house-supabase-storage');
-
-      if (clientRange) {
-        // e.g. "bytes=0-1024" or "bytes=1024-"
-        const match = clientRange.match(/bytes=(\d+)-(\d*)/);
-        if (match) {
-          const start = parseInt(match[1], 10);
-          const end = match[2] ? parseInt(match[2], 10) : totalSize - 1;
-          const chunkStart = Math.min(start, totalSize - 1);
-          const chunkEnd = Math.min(end, totalSize - 1);
-          const chunkSize = chunkEnd - chunkStart + 1;
-
-          responseHeaders.set('Content-Range', `bytes ${chunkStart}-${chunkEnd}/${totalSize}`);
-          responseHeaders.set('Content-Length', String(chunkSize));
-
-          const slicedBuffer = buffer.subarray(chunkStart, chunkEnd + 1);
-          return new Response(slicedBuffer, {
-            status: 206,
-            headers: responseHeaders,
-          });
-        }
-      }
-
-      responseHeaders.set('Content-Length', String(totalSize));
-      return new Response(buffer, {
-        status: 200,
-        headers: responseHeaders,
-      });
+      // Fall back to upstream telephony proxy if storage check encounters temporary error
     }
 
     // 2. Fallback: Stream from upstream telephony server
@@ -113,12 +79,15 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
     });
 
     if (!upstreamResponse.ok && upstreamResponse.status !== 206) {
-      if (upstreamResponse.status === 404) {
-        throw AppError.notFound('Call recording file not found on telephony server');
-      }
-      throw AppError.internal(
-        `Telephony audio server returned status ${upstreamResponse.status}`
+      return NextResponse.json(
+        { error: 'Failed to fetch recording from upstream telephony server' },
+        { status: upstreamResponse.status || 502 }
       );
+    }
+
+    // 3. Trigger asynchronous background archival so future plays hit the CDN
+    if (customerPhone) {
+      syncRecordingToInHouseStorage(customerPhone, targetUrl).catch(() => {});
     }
 
     const responseHeaders = new Headers();

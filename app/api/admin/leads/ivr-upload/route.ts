@@ -1,3 +1,4 @@
+import { setTimeout as sleep } from 'node:timers/promises';
 import { NextRequest, NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
@@ -10,7 +11,7 @@ import {
   type ParsedIvrRecord,
 } from '@/src/lib/leads/ivrParser';
 import { syncRecordingToInHouseStorage } from '@/src/lib/leads/syncRecordingToStorage';
-
+import { generateCallIntelligence } from '@/src/lib/leads/callIntelligence';
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
@@ -238,6 +239,36 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
           }
         } catch (syncErr) {
           console.warn('Background recording in-house archival notice:', syncErr);
+        }
+      });
+    }
+
+    // 8. Fire-and-forget background AI Call Intelligence Triage:
+    // Automatically analyzes qualified calls (Answered + Duration >= 25s OR Keypad 1) in simple Hinglish
+    const callsForAiTriage = deduplicatedRecords.filter(
+      (r) =>
+        r.recording_url &&
+        r.recording_url.startsWith('http') &&
+        r.dial_status === 'ANSWER' &&
+        ((r.call_duration && r.call_duration >= 25) || r.pressed_key === '1')
+    );
+
+    if (callsForAiTriage.length > 0) {
+      Promise.resolve().then(async () => {
+        try {
+          for (const item of callsForAiTriage) {
+            try {
+              await generateCallIntelligence({
+                customerPhone: item.customer_phone,
+                recordingUrl: item.recording_url as string,
+              });
+              await sleep(350);
+            } catch {
+              // continue to next call
+            }
+          }
+        } catch (aiErr) {
+          console.warn('Background auto AI triage notice:', aiErr);
         }
       });
     }

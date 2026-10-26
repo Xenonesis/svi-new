@@ -38,18 +38,20 @@ export type ContactInput = z.infer<typeof contactSchema>;
 
 // ─── Chat Message ──────────────────────────────────────────────────────────
 export const chatMessageSchema = z.object({
-  messages: z.array(
-    z.object({
-      id: z.string(),
-      role: z.enum(['user', 'assistant', 'system']),
-      parts: z.array(
-        z.object({
-          type: z.string(),
-          text: z.string().optional(),
-        })
-      ),
-    })
-  ),
+  messages: z
+    .array(
+      z.object({
+        id: z.string(),
+        role: z.enum(['user', 'assistant', 'system']),
+        parts: z.array(
+          z.object({
+            type: z.string(),
+            text: z.string().max(2000, 'Message text exceeds 2000 character limit').optional(),
+          })
+        ),
+      })
+    )
+    .max(30, 'Conversation history cannot exceed 30 messages'),
 });
 
 // ─── Grievance ─────────────────────────────────────────────────────────────

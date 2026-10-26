@@ -28,6 +28,8 @@ dist/
 # Local agent / test tool artifacts
 .omp/
 .vitest/
+.archive_progress.json
+.ai_triage_progress.json
 
 # OS files
 .DS_Store

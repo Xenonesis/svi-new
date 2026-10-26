@@ -1,6 +1,7 @@
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { Resend } from 'resend';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
+import { validateEmailDeliverability } from '@/src/lib/email/deliverabilityShield';
 
 const FROM_ADDRESS = 'SVI Infra <noreply@sviiinfrasolutions.com>';
 
@@ -119,36 +120,62 @@ async function sendBatched(
   resend: Resend,
   scheduledAt?: string | null
 ): Promise<number> {
-  const BATCH = 10;
-  let sent = 0;
   const isFutureSchedule = Boolean(scheduledAt && new Date(scheduledAt).getTime() > Date.now());
+  let sent = 0;
 
+  // Fast Path: Resend Atomic Batch API (up to 100 items per call)
+  if (!isFutureSchedule) {
+    const BATCH_SIZE = 100;
+    for (let i = 0; i < recipients.length; i += BATCH_SIZE) {
+      const batch = recipients.slice(i, i + BATCH_SIZE);
+      const batchItems = batch.map((r) => ({
+        from: FROM_ADDRESS,
+        to: [r.email],
+        subject,
+        html,
+      }));
+
+      try {
+        const { data, error } = await resend.batch.send(batchItems, {
+          idempotencyKey: `camp-batch-${Date.now()}-${i}`,
+        });
+
+        if (error) {
+          console.error(`[CAMPAIGN] Failed to send batch ${i}:`, error.message);
+        } else if (data?.data && Array.isArray(data.data)) {
+          sent += data.data.filter((d) => d?.id).length;
+        }
+      } catch (err: unknown) {
+        console.error(
+          `[CAMPAIGN] Error in batch ${i}:`,
+          err instanceof Error ? err.message : String(err)
+        );
+      }
+    }
+    return sent;
+  }
+
+  // Scheduled Path: Individual Scheduled Sends (Batch API does not support scheduledAt)
+  const BATCH = 10;
   for (let i = 0; i < recipients.length; i += BATCH) {
     const batch = recipients.slice(i, i + BATCH);
     await Promise.allSettled(
       batch.map(async (r) => {
         try {
-          const payload: {
-            from: string;
-            to: string[];
-            subject: string;
-            html: string;
-            scheduledAt?: string;
-          } = {
+          const payload = {
             from: FROM_ADDRESS,
             to: [r.email],
             subject,
             html,
+            scheduledAt: new Date(scheduledAt!).toISOString(),
           };
 
-          if (isFutureSchedule && scheduledAt) {
-            payload.scheduledAt = new Date(scheduledAt).toISOString();
-          }
-
-          const { data: emailData, error: sendErr } = await resend.emails.send(payload);
+          const { data: emailData, error: sendErr } = await resend.emails.send(payload, {
+            idempotencyKey: `camp-sched-${Date.now()}-${r.email.replace(/[^a-zA-Z0-9]/g, '_')}`,
+          });
           if (sendErr || !emailData?.id) {
             console.error(
-              `Failed to send/schedule campaign email to ${r.email}:`,
+              `Failed to schedule campaign email to ${r.email}:`,
               sendErr?.message || 'no id returned'
             );
           } else {
@@ -156,17 +183,12 @@ async function sendBatched(
           }
         } catch (err: unknown) {
           console.error(
-            `Failed to send/schedule campaign email to ${r.email}:`,
+            `Failed to schedule campaign email to ${r.email}:`,
             err instanceof Error ? err.message : String(err)
           );
         }
       })
     );
-    if (i + BATCH < recipients.length) {
-      const { promise, resolve } = Promise.withResolvers<void>();
-      setTimeout(resolve, 400);
-      await promise;
-    }
   }
   return sent;
 }
@@ -229,7 +251,18 @@ export async function executeCampaignSend(
   }
 
   const resend = new Resend(apiKey);
-  const recipients = await resolveRecipients(campaign);
+  const rawRecipients = await resolveRecipients(campaign);
+  const emailList = rawRecipients.map((r) => r.email);
+  const { valid: validEmails, blocked } = await validateEmailDeliverability(emailList);
+
+  if (blocked.length > 0) {
+    console.warn(
+      `[CAMPAIGN] Filtered out ${blocked.length} suppressed/dead emails from campaign ${campaignId}`
+    );
+  }
+
+  const validSet = new Set(validEmails);
+  const recipients = rawRecipients.filter((r) => validSet.has(r.email.trim().toLowerCase()));
 
   if (recipients.length === 0) {
     await supabaseAdmin.from('email_campaigns').update({ status: 'draft' }).eq('id', campaignId);

@@ -101,6 +101,36 @@ Aapko kitne gaj ka plot dekhna hai? Humein batayein hum accurate quotation share
     },
   },
 };
+export interface AllotmentWhatsAppParams {
+  clientName?: string;
+  unitNumber?: string;
+  projectName?: string;
+  area?: string;
+  advisorName?: string;
+  ticketId?: string;
+}
+
+export function buildAllotmentWhatsAppLink(phone: string, params: AllotmentWhatsAppParams): string {
+  const cleanPhone = phone.replace(/\D/g, '').slice(-10);
+  const fullPhone = `91${cleanPhone}`;
+  const greeting = params.clientName ? `Namaste ${params.clientName} ji,` : 'Namaste ji,';
+  const advisorSign = params.advisorName
+    ? `\n\n— *${params.advisorName}*\nSVI Infra Solutions`
+    : '\n\n— *SVI Infra Solutions*';
+
+  const text = `${greeting}
+
+Congratulations! SVI Infra Solutions ki taraf se aapki unit allotment book ho gayi hai.
+
+*Official Allotment Details:*
+• *Project:* ${params.projectName || 'Shivani Vatika'}
+• *Unit Number:* ${params.unitNumber || '-'}
+• *Plot Area:* ${params.area ? `${params.area} Sq. Yards` : '-'}
+${params.ticketId ? `• *Allotment ID:* ${params.ticketId}\n` : ''}
+Aapka official Allotment Letter document generate kar diya gaya hai. Agar aapko receipt ya payment plan se related koi jaankari chahiye toh humein reply karein.${advisorSign}`;
+
+  return `https://wa.me/${fullPhone}?text=${encodeURIComponent(text)}`;
+}
 
 /**
  * Builds a direct wa.me link with phone normalization and URL encoded message text

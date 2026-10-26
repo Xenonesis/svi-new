@@ -2,10 +2,10 @@ import { NextRequest } from 'next/server';
 import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { NotificationHelper } from '@/src/lib/supabase/notifications';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
+import { rateLimit } from '@/src/lib/api/rateLimit';
 import { validateBody } from '@/src/lib/api/validate';
 import { grievanceSchema } from '@/src/lib/api/schemas';
 import { created } from '@/src/lib/api/response';
-
 export const runtime = 'nodejs';
 
 function generateTicketId(): string {
@@ -15,6 +15,9 @@ function generateTicketId(): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const limited = await rateLimit(request, { limit: 3, windowSeconds: 60 });
+    if (limited) return limited;
+
     const body = await validateBody(request, grievanceSchema);
     const { name, email, phone, category, subject, description } = body;
     const ticketId = generateTicketId();

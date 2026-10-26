@@ -22,7 +22,11 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { fetchContacts } from '../helpers';
-import { isValidEmail, detectEmailTypo } from '@/src/lib/utils/emailValidation';
+import {
+  isValidEmail,
+  detectEmailTypo,
+  isDeadOrNonMxDomain,
+} from '@/src/lib/utils/emailValidation';
 import type { Recipient, Contact } from '../types';
 interface RecipientInputProps {
   recipients: Recipient[];
@@ -111,7 +115,13 @@ export function RecipientInput({
       const normalized = email.toLowerCase();
       if (recipients.some((r) => r.email.toLowerCase() === normalized)) return;
 
-      const valid = isValidEmail(email);
+      const isDeadDomain = isDeadOrNonMxDomain(email);
+      const valid = isValidEmail(email) && !isDeadDomain;
+      if (isDeadDomain) {
+        toast.error(
+          `Domain @${email.split('@')[1]} has no active mail server (MX). Delivery will fail.`
+        );
+      }
       onChange([...recipients, { email: email, type: 'manual', valid }]);
     },
     [recipients, onChange]
@@ -169,7 +179,8 @@ export function RecipientInput({
         if (!email) continue;
         const normalized = email.toLowerCase();
         if (updated.some((r) => r.email.toLowerCase() === normalized)) continue;
-        const valid = isValidEmail(email);
+        const isDeadDomain = isDeadOrNonMxDomain(email);
+        const valid = isValidEmail(email) && !isDeadDomain;
         updated.push({ email, type: 'manual' as const, valid });
       }
       onChange(updated);
