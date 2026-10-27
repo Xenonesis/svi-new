@@ -112,7 +112,17 @@ Database me total **45,553 calls** logged hain. Inme se answered calls ki audio 
   - **Total Attempted**: 630 calls
   - **Successfully Uploaded**: 566 recordings (**564.36 MB** stored in Supabase private bucket)
   - **404 Expired on Telephony Server**: 64 recordings (confirms urgency of in-house archival)
-- [ ] Run full background runner to archive remaining calls: `node scripts/archive_ivr_recordings.cjs --all --concurrency 4`.
+- [x] Run full background runner to archive remaining calls: `node scripts/archive_ivr_recordings.cjs --all --concurrency 4`.
+  - **Total Processed**: **10,433 calls** (100% complete ✅)
+  - **Successfully Uploaded**: **6,716 audio recordings** (**4.24 GB** stored in in-house Supabase `call-recordings` bucket)
+  - **Audio Compression & Transcoding Pipeline (100% Complete ✅)**:
+    - All **6,716 recordings** transcoded from raw uncompressed PCM WAV to **32 kbps mono MP3**.
+    - Storage footprint reduced from **4.28 GB** down to **1.07 GB** (**3.13 GB / 74.8% space saved**).
+    - Zero `.wav` files remaining in database (`raw_payload->>storage_path` ending with `.wav`: 0).
+    - Audio playback proxy (`/api/admin/leads/recording`) upgraded to dual-format resolution with instant 307 CDN redirect for `.mp3`.
+    - Real-time ingestion auto-transcoding enabled for future calls.
+  - **Expired on Telephony Server**: **3,717 calls** (permanently marked `expired_404` in database)
+  - **Pending Remaining**: **0** (Zero pending, 100% migrated!)
 
 ---
 

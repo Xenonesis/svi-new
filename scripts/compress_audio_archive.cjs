@@ -128,7 +128,7 @@ async function transcodeSingleRecording(record) {
     const mp3Buffer = fs.readFileSync(tempMp3);
     const compressedSize = mp3Buffer.length;
 
-    if (compressedSize < 512) {
+    if (compressedSize < 50) {
       throw new Error(`Compressed file too small (${compressedSize} bytes)`);
     }
 

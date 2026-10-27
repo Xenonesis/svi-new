@@ -30,7 +30,8 @@ dist/
 .vitest/
 .archive_progress.json
 .ai_triage_progress.json
-
+.transcode_progress.json
+.temp_transcode/
 # OS files
 .DS_Store
 *.log
