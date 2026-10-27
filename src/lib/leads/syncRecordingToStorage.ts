@@ -33,7 +33,8 @@ export function extractPhoneFromUrl(upstreamUrl: string): string | null {
 export function deriveStoragePath(
   customerPhone: string,
   upstreamUrl: string,
-  callDate?: string | Date | null
+  callDate?: string | Date | null,
+  format: 'mp3' | 'wav' = 'wav'
 ): string {
   let cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
   let filename: string;
@@ -41,10 +42,12 @@ export function deriveStoragePath(
     const parsed = new URL(upstreamUrl);
     const rawName = parsed.pathname.split('/').pop() || 'recording.wav';
     filename = decodeURIComponent(rawName).replace(/[^a-zA-Z0-9._-]/g, '_');
+    if (format === 'mp3') {
+      filename = filename.replace(/\.wav$/i, '.mp3');
+    }
   } catch {
-    filename = `rec_${Date.now()}.wav`;
+    filename = `rec_${Date.now()}.${format}`;
   }
-
   if (!cleanPhone) {
     cleanPhone = extractPhoneFromUrl(upstreamUrl) || 'unknown';
   }

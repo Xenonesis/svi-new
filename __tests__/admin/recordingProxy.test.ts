@@ -4,6 +4,7 @@ import {
   buildRecordingProxyUrl,
   RECORDING_PATH_PREFIX,
 } from '@/src/lib/leads/recordingProxy';
+import { deriveStoragePath } from '@/src/lib/leads/syncRecordingToStorage';
 
 describe('recordingProxy helpers', () => {
   const VALID_URL =
@@ -58,5 +59,21 @@ describe('recordingProxy helpers', () => {
   it('returns null proxy URL for invalid or rejected recordings', () => {
     expect(buildRecordingProxyUrl(null)).toBeNull();
     expect(buildRecordingProxyUrl('http://evil.com/file.wav')).toBeNull();
+  });
+});
+
+describe('deriveStoragePath dual-format', () => {
+  const url = 'http://49.50.77.194/recordings/answered/673_9891495316_2026-10-17%2014:19:19.wav';
+  const phone = '9891495316';
+  const date = '2026-10-17T08:49:10Z';
+
+  it('derives wav path by default', () => {
+    const path = deriveStoragePath(phone, url, date);
+    expect(path).toBe('2026/10/9891495316_673_9891495316_2026-10-17_14_19_19.wav');
+  });
+
+  it('derives mp3 path when specified', () => {
+    const path = deriveStoragePath(phone, url, date, 'mp3');
+    expect(path).toBe('2026/10/9891495316_673_9891495316_2026-10-17_14_19_19.mp3');
   });
 });

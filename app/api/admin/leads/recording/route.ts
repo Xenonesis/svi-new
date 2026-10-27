@@ -42,28 +42,48 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
     }
 
     const directStoragePath = request.nextUrl.searchParams.get('storage_path');
+    if (directStoragePath === 'expired_404') {
+      return NextResponse.json(
+        { error: 'Call recording has expired on the telephony server and is unavailable' },
+        { status: 404 }
+      );
+    }
+
     const customerPhone =
       request.nextUrl.searchParams.get('phone') || extractPhoneFromUrl(targetUrl) || '';
-    const inHousePath = directStoragePath || deriveStoragePath(customerPhone, targetUrl);
+    const basePath = directStoragePath || deriveStoragePath(customerPhone, targetUrl);
+
+    // Dual-format check: Test .mp3 first, then fallback to .wav
+    const candidates = [
+      basePath.replace(/\.wav$/i, '.mp3'),
+      basePath.endsWith('.wav') ? basePath : basePath.replace(/\.mp3$/i, '.wav'),
+    ];
+
     // 1. Fast path: In-house Supabase Storage CDN signed URL (Zero RAM buffering)
-    try {
-      const { data: signedData, error: signedError } = await supabaseAdmin.storage
-        .from(CALL_RECORDINGS_BUCKET)
-        .createSignedUrl(inHousePath, 86400); // 24hr expiration
+    for (const inHousePath of candidates) {
+      try {
+        const { data: signedData, error: signedError } = await supabaseAdmin.storage
+          .from(CALL_RECORDINGS_BUCKET)
+          .createSignedUrl(inHousePath, 86400); // 24hr expiration
 
-      if (!signedError && signedData?.signedUrl) {
-        const redirectHeaders = new Headers();
-        redirectHeaders.set('Location', signedData.signedUrl);
-        redirectHeaders.set('Cache-Control', 'private, max-age=86400');
-        redirectHeaders.set('X-Source', 'in-house-supabase-storage-cdn');
+        if (!signedError && signedData?.signedUrl) {
+          const redirectHeaders = new Headers();
+          redirectHeaders.set('Location', signedData.signedUrl);
+          redirectHeaders.set('Cache-Control', 'private, max-age=86400');
+          redirectHeaders.set('X-Source', 'in-house-supabase-storage-cdn');
+          redirectHeaders.set(
+            'X-Audio-Format',
+            inHousePath.endsWith('.mp3') ? 'audio/mpeg' : 'audio/wav'
+          );
 
-        return new Response(null, {
-          status: 307,
-          headers: redirectHeaders,
-        });
+          return new Response(null, {
+            status: 307,
+            headers: redirectHeaders,
+          });
+        }
+      } catch {
+        // Fall through to next candidate or upstream telephony proxy
       }
-    } catch {
-      // Fall back to upstream telephony proxy if storage check encounters temporary error
     }
 
     // 2. Fallback: Stream from upstream telephony server
