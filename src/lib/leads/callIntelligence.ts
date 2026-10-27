@@ -346,30 +346,35 @@ export async function generateCallIntelligence(params: {
   }
 
   // 2. Resolve audio buffer (In-House Supabase Storage first, fallback to upstream)
-  let audioBuffer: Buffer;
-  const storagePath = deriveStoragePath(customerPhone, recordingUrl);
-  const pathParts = storagePath.split('/');
-  const folder = pathParts.slice(0, -1).join('/');
-  const targetFile = pathParts[pathParts.length - 1];
+  let audioBuffer: Buffer | null = null;
+  let resolvedFilename = 'recording.mp3';
+  let resolvedMimeType = 'audio/mpeg';
 
-  const { data: existingFiles } = await supabaseAdmin.storage
-    .from(CALL_RECORDINGS_BUCKET)
-    .list(folder, { search: targetFile, limit: 1 });
+  const basePath = deriveStoragePath(customerPhone, recordingUrl);
+  const candidates = [
+    basePath.replace(/\.wav$/i, '.mp3'),
+    basePath.endsWith('.wav') ? basePath : basePath.replace(/\.mp3$/i, '.wav'),
+  ];
 
-  const isAlreadyInStorage = existingFiles && existingFiles.some((f) => f.name === targetFile);
+  for (const candidatePath of candidates) {
+    try {
+      const { data: fileData, error: downloadError } = await supabaseAdmin.storage
+        .from(CALL_RECORDINGS_BUCKET)
+        .download(candidatePath);
 
-  if (isAlreadyInStorage) {
-    const { data: fileData, error: downloadError } = await supabaseAdmin.storage
-      .from(CALL_RECORDINGS_BUCKET)
-      .download(storagePath);
-
-    if (downloadError || !fileData) {
-      throw new Error(`Failed to download audio from in-house storage: ${downloadError?.message}`);
+      if (!downloadError && fileData) {
+        const arrayBuf = await fileData.arrayBuffer();
+        audioBuffer = Buffer.from(arrayBuf);
+        resolvedFilename = candidatePath.split('/').pop() || 'recording.mp3';
+        resolvedMimeType = candidatePath.endsWith('.mp3') ? 'audio/mpeg' : 'audio/wav';
+        break;
+      }
+    } catch {
+      // Try next candidate
     }
+  }
 
-    const arrayBuf = await fileData.arrayBuffer();
-    audioBuffer = Buffer.from(arrayBuf);
-  } else {
+  if (!audioBuffer) {
     // Validate upstream URL
     if (!isAllowedRecordingUrl(recordingUrl)) {
       throw new Error('Recording URL is not from an authorized telephony host');
@@ -393,7 +398,7 @@ export async function generateCallIntelligence(params: {
   }
 
   // 3. Transcribe with Whisper
-  const transcription = await transcribeCallAudio(audioBuffer, targetFile);
+  const transcription = await transcribeCallAudio(audioBuffer, resolvedFilename, resolvedMimeType);
 
   // 4. Analyze with LLM
   const analysis = await analyzeCallTranscript(transcription.text, transcription.duration);

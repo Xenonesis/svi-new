@@ -2,11 +2,14 @@
  * Robust Historical Call Recording Archival Script (Third-Party -> In-House Supabase Storage)
  *
  * Features:
- *   - Concurrent workers (default: 3)
- *   - Persistent checkpointing (.archive_progress.json)
- *   - Auto-resume on restart
- *   - 15s download timeouts
- *   - Clean SIGINT/SIGTERM handling
+ *   - Concurrent workers (default: 4)
+ *   - In-memory bucket directory cache (zero redundant storage list roundtrips)
+ *   - Dynamic batching with Postgres `.is('raw_payload->>storage_path', null)` filter
+ *   - Deterministic storage paths: `<YYYY>/<MM>/<phone>_<filename>.wav`
+ *   - HTTP 404 permanent marking (`expired_404`) to prevent useless retries
+ *   - Persistent checkpointing (.archive_progress.json) & auto-resume
+ *   - 15s download timeouts with auto-retry
+ *   - Clean SIGINT/SIGTERM graceful pause
  *
  * Usage:
  *   node scripts/archive_ivr_recordings.cjs --limit 100
@@ -37,6 +40,28 @@ if (!supabaseUrl || !serviceRoleKey) {
 const supabase = createClient(supabaseUrl, serviceRoleKey);
 const BUCKET = 'call-recordings';
 const CHECKPOINT_FILE = path.resolve(__dirname, '../.archive_progress.json');
+
+// In-memory cache for folder listings: folderName -> Set of filenames
+const folderCache = new Map();
+
+async function getFolderFiles(folder) {
+  if (folderCache.has(folder)) {
+    return folderCache.get(folder);
+  }
+  const fileSet = new Set();
+  let offset = 0;
+  while (true) {
+    const { data, error } = await supabase.storage
+      .from(BUCKET)
+      .list(folder, { limit: 1000, offset });
+    if (error || !data || data.length === 0) break;
+    for (const f of data) fileSet.add(f.name);
+    if (data.length < 1000) break;
+    offset += 1000;
+  }
+  folderCache.set(folder, fileSet);
+  return fileSet;
+}
 
 function deriveStoragePath(customerPhone, upstreamUrl, callDate) {
   const cleanPhone = (customerPhone || '').replace(/\D/g, '').slice(-10) || 'unknown';
@@ -122,12 +147,9 @@ async function archiveSingleRecording(customerPhone, upstreamUrl, callDate) {
   const folder = pathParts.slice(0, -1).join('/');
   const targetFile = pathParts[pathParts.length - 1];
 
-  // 1. Check if already in bucket
-  const { data: existingFiles } = await supabase.storage
-    .from(BUCKET)
-    .list(folder, { search: targetFile, limit: 1 });
-
-  if (existingFiles && existingFiles.some((f) => f.name === targetFile)) {
+  // 1. Fast in-memory check if already in bucket
+  const files = await getFolderFiles(folder);
+  if (files.has(targetFile)) {
     return { status: 'skipped_exists', storagePath };
   }
 
@@ -152,14 +174,39 @@ async function archiveSingleRecording(customerPhone, upstreamUrl, callDate) {
   }
 
   const arrayBuffer = await res.arrayBuffer();
-  const buffer = Buffer.from(arrayBuffer);
-  const contentType = res.headers.get('content-type') || 'audio/x-wav';
+  let uploadBuffer = Buffer.from(arrayBuffer);
+  let finalPath = storagePath;
+  let finalContentType = res.headers.get('content-type') || 'audio/x-wav';
+
+  // Transcode to MP3 using ffmpeg if available
+  const tempDir = path.resolve(__dirname, '../.temp_transcode');
+  if (!fs.existsSync(tempDir)) fs.mkdirSync(tempDir, { recursive: true });
+  const inWav = path.join(tempDir, `in_${Date.now()}_${Math.random().toString(36).slice(2, 6)}.wav`);
+  const outMp3 = inWav.replace(/\.wav$/, '.mp3');
+
+  try {
+    fs.writeFileSync(inWav, uploadBuffer);
+    const { execSync } = require('child_process');
+    execSync(`ffmpeg -y -i "${inWav}" -codec:a libmp3lame -b:a 32k -ac 1 "${outMp3}"`, { stdio: 'pipe' });
+    if (fs.existsSync(outMp3) && fs.statSync(outMp3).size > 512) {
+      uploadBuffer = fs.readFileSync(outMp3);
+      finalPath = storagePath.replace(/\.wav$/i, '.mp3');
+      finalContentType = 'audio/mpeg';
+    }
+  } catch {
+    // If FFmpeg fails, fallback to uploading original WAV buffer
+  } finally {
+    try {
+      if (fs.existsSync(inWav)) fs.unlinkSync(inWav);
+      if (fs.existsSync(outMp3)) fs.unlinkSync(outMp3);
+    } catch {}
+  }
 
   // 3. Upload to Supabase bucket
   const { error: uploadError } = await supabase.storage
     .from(BUCKET)
-    .upload(storagePath, buffer, {
-      contentType,
+    .upload(finalPath, uploadBuffer, {
+      contentType: finalContentType,
       upsert: true,
     });
 
@@ -167,7 +214,10 @@ async function archiveSingleRecording(customerPhone, upstreamUrl, callDate) {
     throw uploadError;
   }
 
-  return { status: 'uploaded', storagePath, bytes: buffer.length };
+  // Update in-memory cache
+  files.add(finalPath.split('/').pop());
+
+  return { status: 'uploaded', storagePath: finalPath, bytes: uploadBuffer.length };
 }
 
 async function main() {
@@ -178,7 +228,7 @@ async function main() {
   const isReset = args.includes('--reset');
 
   const concurrencyIdx = args.indexOf('--concurrency');
-  const concurrency = concurrencyIdx >= 0 ? Math.max(1, parseInt(args[concurrencyIdx + 1], 10)) : 3;
+  const concurrency = concurrencyIdx >= 0 ? Math.max(1, parseInt(args[concurrencyIdx + 1], 10)) : 4;
 
   if (isReset) {
     if (fs.existsSync(CHECKPOINT_FILE)) {
@@ -189,9 +239,23 @@ async function main() {
 
   const state = loadCheckpoint();
   console.log(`=== In-House Call Recording Archival Worker ===`);
-  console.log(`Target: ${isAll ? 'ALL' : maxLimit} calls | Concurrency: ${concurrency}`);
+  console.log(`Target: ${isAll ? 'ALL Pending' : maxLimit} calls | Concurrency: ${concurrency}`);
+
+  // Fetch pending count directly from Postgres
+  const { count: pendingCount, error: countErr } = await supabase
+    .from('ivr_call_records')
+    .select('id', { count: 'exact', head: true })
+    .not('raw_payload->>recording_url', 'is', null)
+    .is('raw_payload->>storage_path', null);
+
+  if (countErr) {
+    console.error('Failed to get pending count:', countErr.message);
+  } else {
+    console.log(`Pending in Database needing archival: ${pendingCount}`);
+  }
+
   if (state.processedIds.size > 0) {
-    console.log(`Resuming from checkpoint: ${state.processedIds.size} already processed in previous runs.`);
+    console.log(`Resuming session: ${state.processedIds.size} total records recorded in checkpoint.`);
   }
 
   // Graceful shutdown handling
@@ -207,122 +271,146 @@ async function main() {
   process.on('SIGINT', handleExit);
   process.on('SIGTERM', handleExit);
 
-  // Fetch candidate records using range pagination (bypassing PostgREST 1000 row cap)
-  console.log('Fetching candidate call records from Supabase...');
-  const records = [];
-  const PAGE_SIZE = 1000;
-  let from = 0;
+  const BATCH_SIZE = 100;
+  let totalProcessedThisRun = 0;
   let hasMore = true;
 
-  while (hasMore) {
-    const to = from + PAGE_SIZE - 1;
-    const { data: chunk, error } = await supabase
-      .from('ivr_call_records')
-      .select('id, customer_phone, dial_time, created_at, raw_payload')
-      .not('raw_payload->>recording_url', 'is', null)
-      .order('created_at', { ascending: false })
-      .range(from, to);
+  while (hasMore && !isStopping) {
+    const fetchLimit = isAll ? BATCH_SIZE : Math.min(BATCH_SIZE, maxLimit - totalProcessedThisRun);
+    if (fetchLimit <= 0) break;
 
-    if (error) {
-      console.error('Failed to query records chunk:', error.message);
-      process.exit(1);
-    }
-
-    if (!chunk || chunk.length === 0) {
-      hasMore = false;
-    } else {
-      records.push(...chunk);
-      if (chunk.length < PAGE_SIZE || (!isAll && records.length >= maxLimit + state.processedIds.size)) {
-        hasMore = false;
-      } else {
-        from += PAGE_SIZE;
-      }
-    }
-  }
-
-  // Filter out records already in checkpoint
-  const pendingRecords = records.filter((r) => {
-    const url = r.raw_payload && r.raw_payload.recording_url;
-    return url && !state.processedIds.has(r.id);
-  });
-
-  const recordsToProcess = isAll ? pendingRecords : pendingRecords.slice(0, maxLimit);
-
-  console.log(`Total database candidates fetched: ${records.length}`);
-  console.log(`Eligible to process in this run: ${recordsToProcess.length}\n`);
-
-  if (recordsToProcess.length === 0) {
-    console.log('No pending recordings to archive. All records up to date!');
-    return;
-  }
-
-  let index = 0;
-  let saveCounter = 0;
-
-  async function processNext() {
-    if (index >= recordsToProcess.length || isStopping) return;
-
-    const r = recordsToProcess[index++];
-    const phone = r.customer_phone;
-    const url = r.raw_payload && r.raw_payload.recording_url;
-    const callDate = r.dial_time || r.created_at;
-
-    try {
-      const result = await archiveSingleRecording(phone, url, callDate);
-      state.processedIds.add(r.id);
-
-      // Persist storage_path to Supabase record
-      if (result.storagePath && (!r.raw_payload?.storage_path || r.raw_payload.storage_path !== result.storagePath)) {
-        await supabase
+    // Fetch batch of records where storage_path is still NULL (with retry for transient network drops)
+    let chunk = null;
+    let queryAttempts = 0;
+    while (queryAttempts < 10 && !isStopping) {
+      queryAttempts++;
+      try {
+        const { data, error } = await supabase
           .from('ivr_call_records')
-          .update({
-            raw_payload: {
-              ...(r.raw_payload || {}),
-              storage_path: result.storagePath,
-              archived_at: new Date().toISOString()
-            }
-          })
-          .eq('id', r.id);
-      }
+          .select('id, customer_phone, dial_time, created_at, raw_payload')
+          .not('raw_payload->>recording_url', 'is', null)
+          .is('raw_payload->>storage_path', null)
+          .order('created_at', { ascending: false })
+          .limit(fetchLimit);
 
-      if (result.status === 'uploaded') {
-        state.uploadedCount++;
-        state.totalBytes += result.bytes || 0;
-        console.log(`[${state.processedIds.size}/${records.length}] OK: ${phone} -> ${(result.bytes / 1024 / 1024).toFixed(2)} MB`);
-      } else {
-        state.skippedCount++;
-        console.log(`[${state.processedIds.size}/${records.length}] SKIP: ${phone} (Already in storage)`);
+        if (!error && data) {
+          chunk = data;
+          break;
+        }
+        const waitSec = Math.min(30, 2 * queryAttempts);
+        console.warn(`[Batch Query] Attempt ${queryAttempts}/10 failed (${error?.message || 'unknown'}). Retrying in ${waitSec}s...`);
+        await new Promise((r) => setTimeout(r, waitSec * 1000));
+      } catch (err) {
+        const waitSec = Math.min(30, 2 * queryAttempts);
+        console.warn(`[Batch Query] Attempt ${queryAttempts}/10 exception: ${err.message}. Retrying in ${waitSec}s...`);
+        await new Promise((r) => setTimeout(r, waitSec * 1000));
       }
-    } catch (err) {
-      state.errorCount++;
-      // Still mark ID as attempted so one broken URL doesn't stall the loop forever
-      state.processedIds.add(r.id);
-      console.warn(`[${state.processedIds.size}/${records.length}] FAIL: ${phone} (${err.message})`);
     }
 
-    saveCounter++;
-    if (saveCounter % 15 === 0) {
-      saveCheckpoint(state);
+    if (!chunk) {
+      console.error('Failed to query records after 10 attempts.');
+      break;
+    }
+    if (!chunk || chunk.length === 0) {
+      console.log('No more pending records found in database!');
+      hasMore = false;
+      break;
+    }
+
+    let chunkIndex = 0;
+    let saveCounter = 0;
+
+    async function processNext() {
+      if (chunkIndex >= chunk.length || isStopping) return;
+
+      const r = chunk[chunkIndex++];
+      const phone = r.customer_phone;
+      const url = r.raw_payload && r.raw_payload.recording_url;
+      const callDate = r.dial_time || r.created_at;
+
+      try {
+        const result = await archiveSingleRecording(phone, url, callDate);
+        state.processedIds.add(r.id);
+        totalProcessedThisRun++;
+
+        // Persist storage_path to Supabase record
+        if (result.storagePath) {
+          await supabase
+            .from('ivr_call_records')
+            .update({
+              raw_payload: {
+                ...(r.raw_payload || {}),
+                storage_path: result.storagePath,
+                archived_at: new Date().toISOString(),
+              },
+            })
+            .eq('id', r.id);
+        }
+
+        if (result.status === 'uploaded') {
+          state.uploadedCount++;
+          state.totalBytes += result.bytes || 0;
+          console.log(`[#${totalProcessedThisRun}] OK: ${phone} -> ${(result.bytes / 1024 / 1024).toFixed(2)} MB (${result.storagePath})`);
+        } else {
+          state.skippedCount++;
+          console.log(`[#${totalProcessedThisRun}] SKIP: ${phone} (Already in storage) -> ${result.storagePath}`);
+        }
+      } catch (err) {
+        state.errorCount++;
+        totalProcessedThisRun++;
+
+        const is404 = err.message && (err.message.includes('404') || err.message.includes('FetchFailed'));
+        if (is404) {
+          state.processedIds.add(r.id);
+          // Permanently mark in database as expired so it's excluded from future archival passes
+          await supabase
+            .from('ivr_call_records')
+            .update({
+              raw_payload: {
+                ...(r.raw_payload || {}),
+                storage_path: 'expired_404',
+                storage_error: 'HTTP 404 - Expired on Telephony Server',
+                archived_at: new Date().toISOString(),
+              },
+            })
+            .eq('id', r.id);
+          console.warn(`[#${totalProcessedThisRun}] EXPIRED (404): ${phone}`);
+        } else {
+          console.warn(`[#${totalProcessedThisRun}] RETRYABLE FAIL: ${phone} (${err.message})`);
+        }
+      }
+
+      saveCounter++;
+      if (saveCounter % 15 === 0) {
+        saveCheckpoint(state);
+      }
+    }
+
+    // Run chunk with concurrency pool
+    const pool = Array.from({ length: concurrency }, async () => {
+      while (chunkIndex < chunk.length && !isStopping) {
+        await processNext();
+      }
+    });
+
+    await Promise.all(pool);
+    saveCheckpoint(state);
+
+    if (!isAll && totalProcessedThisRun >= maxLimit) {
+      break;
     }
   }
 
-  // Concurrency Pool Runner
-  const pool = Array.from({ length: concurrency }, async () => {
-    while (index < recordsToProcess.length && !isStopping) {
-      await processNext();
-    }
-  });
-
-  await Promise.all(pool);
   saveCheckpoint(state);
 
   console.log('\n=======================================');
   console.log('Archival Migration Summary');
   console.log('=======================================');
-  console.log(`Total Attempted:   ${state.processedIds.size}`);
+  console.log(`Processed This Run:${totalProcessedThisRun}`);
+  console.log(`Total In Checkpoint:${state.processedIds.size}`);
   console.log(`Newly Uploaded:    ${state.uploadedCount} (${(state.totalBytes / 1024 / 1024).toFixed(2)} MB)`);
   console.log(`Already In Storage:${state.skippedCount}`);
-  console.log(`Failed / Inactive: ${state.errorCount}`);
+  console.log(`Failed / Expired:  ${state.errorCount}`);
   console.log('=======================================\n');
 }
 
