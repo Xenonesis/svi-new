@@ -75,7 +75,27 @@ export interface PaymentDueItem {
   contact_email?: string;
 }
 
-type TabType = 'alerts' | 'leads' | 'dues' | 'tasks' | 'sounds';
+export interface DataGapItem {
+  id: string;
+  category:
+    | 'missing_plot'
+    | 'missing_ticket'
+    | 'missing_advisor'
+    | 'missing_letter'
+    | 'incomplete_registration';
+  title: string;
+  description: string;
+  client_name: string;
+  ticket_id?: string;
+  phone?: string;
+  plot_number?: string;
+  action_url: string;
+  action_label: string;
+  severity: 'high' | 'medium' | 'low';
+  created_at: string;
+}
+
+type TabType = 'alerts' | 'leads' | 'dues' | 'gaps' | 'tasks' | 'sounds';
 
 export default function NotificationDropdown({ userId }: NotificationDropdownProps) {
   const router = useRouter();
@@ -90,6 +110,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
   const [revertingId, setRevertingId] = useState<string | null>(null);
   const [paymentDues, setPaymentDues] = useState<PaymentDueItem[]>([]);
   const [duesLoading, setDuesLoading] = useState(false);
+  const [dataGaps, setDataGaps] = useState<DataGapItem[]>([]);
   const [remindedDueIds, setRemindedDueIds] = useState<Set<string>>(new Set());
   const dropdownRef = useRef<HTMLDivElement>(null);
   // Close dropdown on click outside or Escape key
@@ -154,7 +175,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
   const fetchNotifications = async (showRefreshSpin = false) => {
     if (showRefreshSpin) setIsRefreshing(true);
     try {
-      const [notificationsRes, duesRes] = await Promise.all([
+      const [notificationsRes, duesRes, gapsRes] = await Promise.all([
         supabase
           .from('notifications')
           .select('id, user_id, title, message, type, is_read, action_url, metadata, created_at')
@@ -164,6 +185,9 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
         fetch('/api/admin/dues')
           .then((r) => (r.ok ? r.json() : { paymentDues: [] }))
           .catch(() => ({ paymentDues: [] })),
+        fetch('/api/admin/crm/data-gaps')
+          .then((r) => (r.ok ? r.json() : { dataGaps: [] }))
+          .catch(() => ({ dataGaps: [] })),
       ]);
 
       if (notificationsRes.error) throw notificationsRes.error;
@@ -172,6 +196,9 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
       setUnreadCount(notificationsRes.data?.filter((n) => !n.is_read).length || 0);
       if (duesRes && Array.isArray(duesRes.paymentDues)) {
         setPaymentDues(duesRes.paymentDues);
+      }
+      if (gapsRes && Array.isArray(gapsRes.dataGaps)) {
+        setDataGaps(gapsRes.dataGaps);
       }
     } catch (error) {
       console.error('Error fetching notifications & dues:', error);
@@ -519,7 +546,7 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
         aria-label="Notifications"
       >
         <Bell className="h-5 w-5" />
-        {unreadCount > 0 && (
+        {unreadCount > 0 ? (
           <motion.span
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
@@ -527,7 +554,16 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
           >
             {unreadCount > 9 ? '9+' : unreadCount}
           </motion.span>
-        )}
+        ) : dataGaps.length > 0 ? (
+          <motion.span
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            className="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full border border-white bg-amber-500 text-[9px] font-bold text-white dark:border-[#0d0d14]"
+            title={`${dataGaps.length} CRM data gaps require action`}
+          >
+            {dataGaps.length > 9 ? '9+' : dataGaps.length}
+          </motion.span>
+        ) : null}
       </button>
 
       {/* Dropdown Popover */}
@@ -663,6 +699,23 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                     </span>
                   ) : null}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => setActiveTab('gaps')}
+                  className={`flex flex-1 cursor-pointer items-center justify-center gap-1.5 rounded-lg py-1.5 text-xs font-semibold transition-all ${
+                    activeTab === 'gaps'
+                      ? 'bg-white text-gray-900 shadow-xs dark:bg-white/10 dark:text-white dark:shadow-none'
+                      : 'text-gray-500 hover:text-gray-900 dark:text-gray-400 dark:hover:text-white'
+                  }`}
+                >
+                  <AlertTriangle className="h-3.5 w-3.5" />
+                  <span>Gaps</span>
+                  {dataGaps.length > 0 && (
+                    <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-amber-500 px-1 text-[9px] font-bold text-white shadow-xs">
+                      {dataGaps.length}
+                    </span>
+                  )}
+                </button>
 
                 <button
                   type="button"
@@ -794,6 +847,96 @@ export default function NotificationDropdown({ userId }: NotificationDropdownPro
                             </div>
                           );
                         })}
+                      </div>
+                    )}
+                  </div>
+                ) : activeTab === 'gaps' ? (
+                  /* Data Health & Missing Information Radar View */
+                  <div className="space-y-2.5 p-3.5">
+                    <div className="flex items-center justify-between px-1 pb-1">
+                      <div className="flex items-center gap-2">
+                        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 p-1.5 text-amber-500">
+                          <AlertTriangle className="h-3.5 w-3.5" />
+                        </div>
+                        <div>
+                          <h4 className="text-xs font-semibold text-gray-900 dark:text-white">
+                            Data Health Radar
+                          </h4>
+                          <p className="text-[11px] text-gray-500 dark:text-gray-400">
+                            Missing plot, ticket or client records
+                          </p>
+                        </div>
+                      </div>
+                      {dataGaps.length > 0 && (
+                        <span className="rounded-md border border-amber-500/30 bg-amber-500/10 px-2 py-0.5 text-[10px] font-semibold text-amber-500 dark:text-amber-400">
+                          {dataGaps.length} Action{dataGaps.length > 1 ? 's' : ''} Needed
+                        </span>
+                      )}
+                    </div>
+
+                    {dataGaps.length === 0 ? (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <div className="mb-2.5 flex h-10 w-10 items-center justify-center rounded-2xl bg-emerald-500/10 text-emerald-500">
+                          <Check className="h-5 w-5" />
+                        </div>
+                        <p className="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          CRM Data 100% Complete!
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-gray-400 dark:text-gray-500">
+                          Zero unassigned plots, missing tickets or missing letters.
+                        </p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {dataGaps.map((gap) => (
+                          <div
+                            key={gap.id}
+                            className={`group flex items-start justify-between rounded-xl border p-3 text-xs transition-all ${
+                              gap.severity === 'high'
+                                ? 'border-amber-500/40 bg-amber-500/5 hover:bg-amber-500/10 dark:border-amber-500/30'
+                                : 'border-gray-200/80 bg-gray-50/50 hover:bg-gray-100/60 dark:border-white/5 dark:bg-white/[0.02] dark:hover:bg-white/[0.04]'
+                            }`}
+                          >
+                            <div className="min-w-0 pr-2">
+                              <div className="flex items-center gap-1.5 font-medium text-gray-900 dark:text-white">
+                                <span className="truncate">{gap.title}</span>
+                                {gap.severity === 'high' && (
+                                  <span className="flex shrink-0 items-center gap-0.5 rounded bg-rose-500/15 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-rose-500 uppercase dark:text-rose-400">
+                                    High Priority
+                                  </span>
+                                )}
+                              </div>
+                              <p className="mt-1 text-[11px] text-gray-600 dark:text-gray-400">
+                                {gap.description}
+                              </p>
+                              <div className="mt-2 flex flex-wrap items-center gap-2 text-[10px] text-gray-500 dark:text-gray-400">
+                                {gap.plot_number && (
+                                  <span className="rounded bg-gray-200/70 px-1.5 py-0.5 font-medium dark:bg-white/10">
+                                    Plot: {gap.plot_number}
+                                  </span>
+                                )}
+                                {gap.ticket_id && (
+                                  <span className="rounded bg-gray-200/70 px-1.5 py-0.5 font-medium dark:bg-white/10">
+                                    Ticket: {gap.ticket_id}
+                                  </span>
+                                )}
+                                {gap.phone && <span className="text-gray-400">📞 {gap.phone}</span>}
+                              </div>
+                            </div>
+
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setIsOpen(false);
+                                router.push(gap.action_url);
+                              }}
+                              className="border-brand-gold/40 bg-brand-gold/15 text-brand-gold hover:bg-brand-gold/25 inline-flex shrink-0 cursor-pointer items-center gap-1 rounded-lg border px-2.5 py-1.5 text-xs font-semibold whitespace-nowrap transition-colors"
+                            >
+                              <span>{gap.action_label}</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>

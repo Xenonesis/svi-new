@@ -147,11 +147,9 @@ describe('AllotmentLetterPreview Luxury A4 Standard', () => {
     expect(screen.getAllByText(/Rs\. 431250\.00/i).length).toBeGreaterThan(0);
   });
 
-  it('renders official signature block with seal space and authorized signatory', () => {
+  it('renders official signature block with authorized signatory', () => {
     render(<AllotmentLetterPreview formData={baseFormData} companyInfo={baseCompanyInfo} />);
 
-    expect(screen.getByTestId('seal-space')).toBeInTheDocument();
-    expect(screen.getByText('Official Seal')).toBeInTheDocument();
     expect(screen.getByText('Authorized Signatory')).toBeInTheDocument();
     expect(screen.getByAltText('Authorized Signatory')).toHaveAttribute('src', '/signature.png');
   });

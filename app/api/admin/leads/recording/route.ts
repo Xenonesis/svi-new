@@ -41,10 +41,10 @@ export async function GET(request: NextRequest): Promise<NextResponse | Response
       throw AppError.forbidden('Recording URL is not from an authorized telephony host');
     }
 
+    const directStoragePath = request.nextUrl.searchParams.get('storage_path');
     const customerPhone =
       request.nextUrl.searchParams.get('phone') || extractPhoneFromUrl(targetUrl) || '';
-    const inHousePath = deriveStoragePath(customerPhone, targetUrl);
-
+    const inHousePath = directStoragePath || deriveStoragePath(customerPhone, targetUrl);
     // 1. Fast path: In-house Supabase Storage CDN signed URL (Zero RAM buffering)
     try {
       const { data: signedData, error: signedError } = await supabaseAdmin.storage

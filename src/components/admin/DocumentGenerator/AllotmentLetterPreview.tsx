@@ -44,6 +44,9 @@ export interface AllotmentLetterFormData {
   panNumber?: string;
   secondPaymentDays?: string | number;
   emiPercentage?: string | number;
+  bookingPaymentLabel?: string;
+  bookingPaymentStatus?: 'paid' | 'pending' | string;
+  initialPaymentPaid?: boolean | string;
   remainingPaymentLabel?: string;
   specialClause?: string;
   customTermsText?: string;
@@ -187,6 +190,13 @@ export function AllotmentLetterPreview({
       ? formatDate(parseDate(formData.emiStartDate))
       : '-';
 
+  const isBookingPaid = Boolean(
+    formData.bookingPaymentStatus === 'paid' ||
+    formData.initialPaymentPaid === 'true' ||
+    formData.initialPaymentPaid === true ||
+    (formData.onBookingPaymentRef &&
+      /paid|receipt|realized|received/i.test(formData.onBookingPaymentRef))
+  );
   const secondPaymentDays =
     typeof formData.secondPaymentDays === 'number'
       ? formData.secondPaymentDays
@@ -197,10 +207,15 @@ export function AllotmentLetterPreview({
   const clientPhoneDisplay = formData.mobileNo || formData.clientPhone || '';
 
   const defaultContainerClass =
-    'relative min-h-[297mm] w-full max-w-[210mm] mx-auto bg-white shadow-2xl p-[18mm] sm:p-[20mm] text-[13px] leading-relaxed text-slate-900 print:shadow-none print:m-0 print:p-[15mm]';
+    'pdf-page relative min-h-[297mm] w-full max-w-[210mm] mx-auto bg-white shadow-2xl p-[18mm] sm:p-[20mm] text-[13px] leading-relaxed text-slate-900 print:shadow-none print:m-0 print:p-[15mm]';
 
   return (
-    <div id={id} className={className || defaultContainerClass} style={{ boxSizing: 'border-box' }}>
+    <div
+      id={id}
+      data-pdf-page="true"
+      className={className || defaultContainerClass}
+      style={{ boxSizing: 'border-box' }}
+    >
       {/* Security Background Watermark */}
       <div className="pointer-events-none absolute inset-0 z-0 flex items-center justify-center overflow-hidden select-none">
         <img
@@ -375,7 +390,22 @@ export function AllotmentLetterPreview({
                   {formData.bookingDate ? formatDate(parseDate(formData.bookingDate)) : '-'}
                 </td>
                 <td className="border border-gray-400 p-2 font-bold">
-                  <div>{isOneTime ? 'Booking Advance' : 'On Booking (First 3 Days)'}</div>
+                  <div className="flex items-center gap-1.5">
+                    <span>
+                      {formData.bookingPaymentLabel
+                        ? formData.bookingPaymentLabel
+                            .replace(/\s*\((?:paid\s*&\s*received|received\s*[&/]\s*paid)\)/i, '')
+                            .trim()
+                        : isOneTime
+                          ? 'Booking Advance'
+                          : 'On Booking (First 3 Days)'}
+                    </span>
+                    {isBookingPaid && (
+                      <span className="rounded bg-emerald-100 px-1.5 py-0.5 text-[9px] font-bold tracking-wide text-emerald-800 uppercase">
+                        Received
+                      </span>
+                    )}
+                  </div>
                   {(formData.onBookingPaymentRef ||
                     formData.chequeNumber ||
                     formData.chequeNo ||
@@ -499,11 +529,20 @@ export function AllotmentLetterPreview({
             </div>
           ) : isOneTime ? (
             <>
-              <p className="mb-2">
-                Please transfer the initial amount of {bookingPercentFormatted}% (Rs.{' '}
-                {initialPayment.toFixed(2)}) to confirm provisional allotment under{' '}
-                {formData.projectName || '[Project Name]'}.
-              </p>
+              {isBookingPaid ? (
+                <p className="mb-2">
+                  The initial booking advance of {bookingPercentFormatted}% (Rs.{' '}
+                  {initialPayment.toFixed(2)}) has already been successfully received and realized
+                  against official company receipts towards confirmation of provisional plot
+                  allotment under {formData.projectName || '[Project Name]'}.
+                </p>
+              ) : (
+                <p className="mb-2">
+                  Please transfer the initial amount of {bookingPercentFormatted}% (Rs.{' '}
+                  {initialPayment.toFixed(2)}) to confirm provisional allotment under{' '}
+                  {formData.projectName || '[Project Name]'}.
+                </p>
+              )}
               <p className="mb-2">
                 The remaining {remainingPercentInTerms}% (Rs.{' '}
                 {(totalCost - initialPayment).toFixed(2)}) must be paid in full on or before{' '}
@@ -511,9 +550,19 @@ export function AllotmentLetterPreview({
                 Registry / Agreement.
               </p>
               <p className="mb-2">
-                Note: Allotment under {formData.projectName || '[Project Name]'} will only be
-                confirmed upon receipt of the initial {bookingPercentFormatted}% (Rs.{' '}
-                {initialPayment.toFixed(2)}) by the due date.
+                {isBookingPaid ? (
+                  <>
+                    Note: Provisional plot allotment under{' '}
+                    {formData.projectName || '[Project Name]'} stands confirmed upon realization of
+                    the initial booking advance.
+                  </>
+                ) : (
+                  <>
+                    Note: Allotment under {formData.projectName || '[Project Name]'} will only be
+                    confirmed upon receipt of the initial {bookingPercentFormatted}% (Rs.{' '}
+                    {initialPayment.toFixed(2)}) by the due date.
+                  </>
+                )}
               </p>
               {formData.specialClause && (
                 <p className="mb-2 font-semibold text-red-600 not-italic">
@@ -603,7 +652,7 @@ export function AllotmentLetterPreview({
 
               {(formData.advisorName || formData.advisorNumber) && (
                 <p className="mt-4 text-xs text-gray-700">
-                  Your account manager is{' '}
+                  Your dedicated property advisor is{' '}
                   <span className="font-bold text-gray-900">{formData.advisorName || '-'}</span>
                   {formData.advisorNumber ? (
                     <>
@@ -629,14 +678,7 @@ export function AllotmentLetterPreview({
               <p className="mb-1 text-xs font-bold tracking-wider text-gray-700 uppercase">
                 For {companyInfo.company_name || 'SVI INFRA SOLUTIONS PVT. LTD.'}
               </p>
-              <div className="my-2 flex items-center justify-end gap-4">
-                {/* Official Stamp / Seal Space */}
-                <div
-                  data-testid="seal-space"
-                  className="flex h-16 w-16 items-center justify-center rounded-full border border-dashed border-gray-400 p-1 text-center text-[9px] font-semibold tracking-wider text-gray-400 uppercase"
-                >
-                  Official Seal
-                </div>
+              <div className="my-2 flex items-center justify-end">
                 {/* Signature image */}
                 <img
                   src="/signature.png"
@@ -648,7 +690,7 @@ export function AllotmentLetterPreview({
                 />
               </div>
               <p className="text-xs font-bold text-gray-900">Authorized Signatory</p>
-              <p className="text-[11px] text-gray-500">Official Signatory & Seal</p>
+              <p className="text-[11px] text-gray-500">Official Signatory</p>
             </div>
           </div>
         </div>

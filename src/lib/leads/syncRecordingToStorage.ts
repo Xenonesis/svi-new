@@ -30,7 +30,11 @@ export function extractPhoneFromUrl(upstreamUrl: string): string | null {
  * Derives a clean, collision-free storage path for a recording file.
  * Format: `<year>/<month>/<customerPhone>_<cleanFilename>.wav`
  */
-export function deriveStoragePath(customerPhone: string, upstreamUrl: string): string {
+export function deriveStoragePath(
+  customerPhone: string,
+  upstreamUrl: string,
+  callDate?: string | Date | null
+): string {
   let cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
   let filename: string;
   try {
@@ -45,6 +49,34 @@ export function deriveStoragePath(customerPhone: string, upstreamUrl: string): s
     cleanPhone = extractPhoneFromUrl(upstreamUrl) || 'unknown';
   }
 
+  // Priority 1: Explicit callDate if provided
+  if (callDate) {
+    try {
+      const d = new Date(callDate);
+      if (!isNaN(d.getTime())) {
+        const year = d.getFullYear();
+        const month = String(d.getMonth() + 1).padStart(2, '0');
+        return `${year}/${month}/${cleanPhone}_${filename}`;
+      }
+    } catch {
+      // Fall through to URL extraction
+    }
+  }
+
+  // Priority 2: Extract YYYY-MM from upstream URL or filename (e.g. 2026-10-14)
+  try {
+    const decoded = decodeURIComponent(upstreamUrl);
+    const dateMatch = decoded.match(/(202[0-9])[-_](0[1-9]|1[0-2])/);
+    if (dateMatch) {
+      const year = dateMatch[1];
+      const month = dateMatch[2];
+      return `${year}/${month}/${cleanPhone}_${filename}`;
+    }
+  } catch {
+    // Fall through to current date
+  }
+
+  // Priority 3: Fallback to current year/month
   const now = new Date();
   const year = now.getFullYear();
   const month = String(now.getMonth() + 1).padStart(2, '0');

@@ -5,6 +5,7 @@ import { rateLimit } from '@/src/lib/api/rateLimit';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { RegistrationSchema } from '@/src/lib/schemas/registration';
 import { verifyCaptchaToken, CAPTCHA_COOKIE } from '@/src/lib/captcha';
+import { getNextGlobalTicketId } from '@/src/lib/allotment/ticketUtils';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
@@ -231,31 +232,17 @@ export async function POST(request: NextRequest) {
     let data: any = null;
     let success = false;
     let attempts = 0;
-    const maxAttempts = 3;
+    const maxAttempts = 5;
 
     while (attempts < maxAttempts && !success) {
       attempts++;
-      const { data: existing, error: fetchError } = await supabaseAdmin
-        .from('registrations')
-        .select('submission_id')
-        .not('submission_id', 'is', null)
-        .order('submission_id', { ascending: false })
-        .limit(1);
-
-      if (fetchError) {
-        console.error('[Registration] fetchError:', fetchError);
+      let nextId: string;
+      try {
+        nextId = await getNextGlobalTicketId(supabaseAdmin);
+      } catch (err: unknown) {
+        console.error('[Registration] ID generation error:', err);
         throw AppError.internal('Database error during ID generation');
       }
-
-      let nextId = 'SVI2200';
-      if (existing && existing.length > 0 && existing[0].submission_id) {
-        const match = existing[0].submission_id.match(/^SVI(\d+)$/);
-        if (match) {
-          const nextNumeric = parseInt(match[1], 10) + 1;
-          nextId = `SVI${String(nextNumeric).padStart(Math.max(4, match[1].length), '0')}`;
-        }
-      }
-
       const { data: insertedData, error: insertError } = await supabaseAdmin
         .from('registrations')
         .insert({

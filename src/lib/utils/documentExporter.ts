@@ -64,12 +64,12 @@ export async function exportToPDF({
     // Let the browser finish layout
     await new Promise((r) => setTimeout(r, 200));
 
-    // ── Check if document specifies discrete pages ─────────────────────────
+    // ── Check if document specifies multiple discrete pages (e.g. BBA, Offer Letter) ─────
     const discretePages = Array.from(
       clone.querySelectorAll<HTMLElement>('[data-pdf-page="true"], .pdf-page, .offer-letter-page')
     );
 
-    if (discretePages.length > 0) {
+    if (discretePages.length > 1) {
       clone.style.padding = '0';
       clone.style.width = 'auto';
       clone.style.zoom = '1';
@@ -107,8 +107,8 @@ export async function exportToPDF({
         pageEl.style.margin = prevMargin;
 
         pdf.addImage(
-          pageCanvas.toDataURL('image/jpeg', 0.98),
-          'JPEG',
+          pageCanvas.toDataURL('image/png'),
+          'PNG',
           0,
           0,
           A4_W_MM,
@@ -140,6 +140,31 @@ export async function exportToPDF({
     const A4_H_MM = 297;
     const canvasW = canvas.width;
     const canvasH = canvas.height;
+
+    // Single-page fit check: if canvas aspect ratio fits on 1 A4 page (within 8% tolerance)
+    const a4Ratio = A4_H_MM / A4_W_MM; // ~1.4142857
+    const imgRatio = canvasH / canvasW;
+
+    if (imgRatio <= a4Ratio * 1.08) {
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4', compress: true });
+      const imgHeightMM = Math.min(A4_H_MM, (canvasH * A4_W_MM) / canvasW);
+      const topMarginMM = Math.max(0, (A4_H_MM - imgHeightMM) / 2);
+
+      pdf.addImage(
+        canvas.toDataURL('image/png'),
+        'PNG',
+        0,
+        topMarginMM,
+        A4_W_MM,
+        imgHeightMM,
+        undefined,
+        'FAST'
+      );
+
+      const out = filename.toLowerCase().endsWith('.pdf') ? filename : `${filename}.pdf`;
+      pdf.save(out);
+      return;
+    }
 
     // Height (in canvas px) that corresponds to one A4 page
     const pxPerPage = Math.floor(canvasW * (A4_H_MM / A4_W_MM));

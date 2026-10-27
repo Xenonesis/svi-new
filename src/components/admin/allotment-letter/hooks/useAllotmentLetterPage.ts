@@ -54,6 +54,9 @@ export interface AllotmentFormData {
   remainingPaymentLabel?: string;
   specialClause?: string;
   customTermsText?: string;
+  bookingPaymentLabel?: string;
+  bookingPaymentStatus?: 'paid' | 'pending' | string;
+  initialPaymentPaid?: boolean | string;
 }
 
 export interface AllotmentCompanyInfo {

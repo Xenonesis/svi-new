@@ -693,8 +693,9 @@ function BbaPreviewContent({ formData, companyInfo }: BbaPreviewContentProps) {
               {companyInfo?.bank_ifsc || 'IBKL0000894'}
             </p>
             <p className="mt-4">
-              Your account manager is <span className="font-bold">{formData?.advisorName}</span> and
-              will be reachable on <span className="font-bold">{formData?.advisorNumber}</span>
+              Your dedicated property advisor is{' '}
+              <span className="font-bold">{formData?.advisorName}</span> and will be reachable on{' '}
+              <span className="font-bold">{formData?.advisorNumber}</span>
               {formData?.advisorEmail ? (
                 <>
                   {' '}

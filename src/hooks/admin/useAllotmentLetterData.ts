@@ -327,6 +327,7 @@ export function useAllotmentLetterData(token: string | null) {
       setIsCustomSecondPaymentDays(!!isCustomDays);
 
       setFormData({
+        ...fd,
         clientName: fd.clientName || fd.name || '',
         salutation: fd.salutation || 'Mr.',
         address: fd.address || '',
@@ -358,6 +359,9 @@ export function useAllotmentLetterData(token: string | null) {
         zeroPercentEmi: fd.zeroPercentEmi ? String(fd.zeroPercentEmi) : 'false',
         bookingPaymentPercent: fd.bookingPaymentPercent || '10',
         bookingPaymentAmount: fd.bookingPaymentAmount || '',
+        bookingPaymentLabel: fd.bookingPaymentLabel || '',
+        bookingPaymentStatus: fd.bookingPaymentStatus || '',
+        initialPaymentPaid: fd.initialPaymentPaid || '',
         showSecondInstalment: fd.showSecondInstalment ? String(fd.showSecondInstalment) : 'true',
         planType:
           fd.planType ||
