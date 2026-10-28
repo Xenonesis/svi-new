@@ -49,6 +49,7 @@ export async function dispatchTelegramAlert(
     const response = await fetch(url, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(8000),
       body: JSON.stringify({
         chat_id: chatId,
         text,
@@ -208,6 +209,7 @@ export async function dispatchMultiChannelHotLead(
               Authorization: `Bearer ${resendApiKey}`,
               'Content-Type': 'application/json',
             },
+            signal: AbortSignal.timeout(8000),
             body: JSON.stringify({
               from: 'SVI Infra VIP Radar <noreply@sviinfrasolutions.com>',
               to: recipients.map((r) => r.email),
@@ -215,7 +217,6 @@ export async function dispatchMultiChannelHotLead(
               html,
             }),
           });
-          results.email = { success: res.ok, skipped: false };
         } catch (err: unknown) {
           results.email = {
             success: false,
@@ -236,6 +237,7 @@ export async function dispatchMultiChannelHotLead(
             const res = await fetch(webhookUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              signal: AbortSignal.timeout(8000),
               body: JSON.stringify({
                 type: 'vip_hot_lead',
                 leadId,
@@ -271,6 +273,7 @@ export async function dispatchMultiChannelHotLead(
             const res = await fetch(webhookUrl, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
+              signal: AbortSignal.timeout(8000),
               body: JSON.stringify({
                 type: 'customer_warmup',
                 customerPhone,

@@ -4,6 +4,10 @@ import React from 'react';
 import { AudioQuoteSeeker } from '../AudioQuoteSeeker';
 
 describe('AudioQuoteSeeker', () => {
+  afterEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('renders quote text and time offsets', () => {
     render(
       <AudioQuoteSeeker
