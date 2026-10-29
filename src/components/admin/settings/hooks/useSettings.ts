@@ -98,6 +98,15 @@ export function useSettings() {
   // ── Tab state ──
   const [activeTab, setActiveTab] = useState('overview');
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      if (tabParam) {
+        setActiveTab(tabParam);
+      }
+    }
+  }, []);
   // ── Form states ──
   const [profile, setProfile] = useState<Profile>({
     fullName: '',

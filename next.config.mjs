@@ -29,6 +29,12 @@ const withBundleAnalyzer =
 const nextConfig = {
   reactStrictMode: true,
   compress: true,
+  allowedDevOrigins: [
+    '10.178.146.105',
+    '10.178.146.105:3001',
+    'localhost:3001',
+    'localhost',
+  ],
   devIndicators: {
     position: 'bottom-right',
   },

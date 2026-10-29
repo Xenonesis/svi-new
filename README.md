@@ -6,14 +6,14 @@
 
 A premium real estate development platform — modern public website, full-featured admin portal, employee workspace, AI-powered chatbot, and an end-to-end document/email/lottery suite.
 
-[![Next.js](https://img.shields.io/badge/Next.js-16.3.4-black?logo=next.js&logoColor=white)](https://nextjs.org)
+[![Next.js](https://img.shields.io/badge/Next.js-16.4.2-black?logo=next.js&logoColor=white)](https://nextjs.org)
 [![React](https://img.shields.io/badge/React-19-149eca?logo=react&logoColor=white)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-6.0-3178c6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4.3-38bdf8?logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 [![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-3ecf8e?logo=supabase&logoColor=white)](https://supabase.com)
 [![License](https://img.shields.io/badge/license-Private-red)](#-license)
 
-[Features](#-features) • [Tech Stack](#-tech-stack) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Screenshots](#-screenshots) • [Deploy](#-deployment)
+[Features](#-features) • [Tech Stack](#-tech-stack) • [Quick Start](#-quick-start) • [Architecture](#-architecture) • [Deploy](#-deployment)
 
 </div>
 
@@ -28,8 +28,29 @@ A premium real estate development platform — modern public website, full-featu
   - [Employee Portal](#-employee-portal)
   - [Client Portal](#-client-portal)
   - [AI & Automation](#-ai--automation)
-- [🏗️ Tech Stack](#-tech-stack)
-- [🧱 Architecture](#-architecture)
+- [🔍 Key Implementation Patterns](#-key-implementation-patterns)
+- [📱 PWA Architecture](#-pwa-architecture)
+- [📧 Email Suite Deep Dive](#-email-suite-deep-dive)
+- [📄 Document Generation Pipeline](#-document-generation-pipeline)
+- [🌍 Internationalization (i18n)](#-internationalization-i18n)
+- [🔒 Security Architecture](#-security-architecture)
+- [⚡ Performance Optimization](#-performance-optimization)
+- [🧪 Testing Strategy](#-testing-strategy)
+- [🔀 Data Flow Examples](#-data-flow-examples)
+- [🌐 Environment-Specific Configuration](#-environment-specific-configuration)
+- [🗃️ State Management](#-state-management)
+- [🚩 Feature Flags](#-feature-flags)
+- [📊 Admin Dashboard Deep Dive](#-admin-dashboard-deep-dive)
+- [🔔 Notification System](#-notification-system)
+- [🎬 Motion & Animation](#-motion--animation)
+- [📈 Performance Monitoring](#-performance-monitoring)
+- [🧹 Database Maintenance](#-database-maintenance)
+- [📝 Blog System](#-blog-system)
+- [🧮 Financial Calculators](#-financial-calculators)
+- [📅 Site Visit Management](#-site-visit-management)
+- [🔄 Changelog](#-changelog)
+- [🐛 Common Debugging Techniques](#-common-debugging-techniques)
+- [🏗️ Architecture](#-architecture)
 - [🗂️ Project Structure](#-project-structure)
 - [🚀 Quick Start](#-quick-start)
 - [🔐 Environment Variables](#-environment-variables)
@@ -67,7 +88,7 @@ This repository hosts the company's full digital platform — a **public marketi
 | **Documents**     | Client-side jsPDF generation (BBA, invoices, allotment, offer letters)         |
 | **State**         | Zustand stores with `persist` middleware for theme & auth                      |
 | **UI**            | Tailwind v4, Motion animations, MapLibre GL maps, GSAP micro-interactions      |
-| **AI**            | Streaming Groq (Llama 4) chatbot + WhatsApp sales agent                        |
+| **AI**            | Streaming Groq (`openai/gpt-oss-120b`) chatbot + WhatsApp sales agent          |
 | **Email**         | Resend transactional + Tiptap-powered campaign editor                          |
 | **PWA**           | Service worker with push notifications, background sync, offline support       |
 | **Mobile**        | Capacitor Android builds for admin & employee apps                             |
@@ -81,9 +102,12 @@ This repository hosts the company's full digital platform — a **public marketi
 
 - **Progressive Web App (PWA)** — Installable with offline support, push notifications, background sync for forms, share target, window-controls-overlay
 - **Landing page** — Hero with Motion entrance animations, animated stats counter, scroll-triggered reveals
-- **Project showcase** — Current and completed projects with **MapLibre GL** interactive maps, dynamic project detail pages at `/projects/[slug]`
-- **Company pages** — About, Leadership (team profiles), Careers, Blog (`/[slug]` dynamic posts), Changelog (`/changelog` release timeline), Brochures (`/brochure`), Area pages (`/areas/[slug]`)
-- **AI Chatbot** — Floating streaming chat widget powered by **Groq Llama 4** via Vercel AI SDK, with lead capture, conversation logging, contextual suggestions, and voice input support. Location-aware for properties in Jaipur, Khatu Shyam, and Phulera Smart City
+- **Project showcase** — Current and completed projects with **MapLibre GL** interactive maps, dynamic project detail pages at `/projects/[slug]`, and a dual-view master plan (interactive + printable) for Shivani Vatika 11
+- **Company pages** — About, Leadership (team profiles), Careers, Blog (`/blog/[slug]`), Changelog (`/changelog` release timeline), Brochure (`/brochure/shivani-vatika-11`), Area index and pages (`/areas`, `/areas/[slug]`)
+- **Location landing pages** — SEO corridor hubs for Phulera, Jaipur, Jaipur-under-₹20-lakh, Khatu Shyam Ji, and Renwal railway station
+- **Registration 2** — Multi-step conversational registration wizard at `/registration2` with progressive profiling and instant lead capture
+- **Conversion dock** — Sticky mobile action dock (call / WhatsApp / site visit) plus a server-driven announcement bar (`/api/announcement`)
+- **AI Chatbot** — Floating streaming chat widget powered by **Groq `openai/gpt-oss-120b`** via Vercel AI SDK, with lead capture, conversation logging, contextual suggestions, and voice input support. Location-aware for properties in Jaipur, Khatu Shyam, and Phulera Smart City
 - **Lottery page** — Feature-flagged via `portal_settings.lottery_page_visible`; live draws, hall of fame, winner carousel
 - **Forms** — Contact, Registration, Grievance, Payment (with server-verified Captcha + Resend delivery)
 - **Calculators** — Interactive financial calculators for property buyers
@@ -113,7 +137,7 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Quotation generator** — `/admin/quotation` property price quotations with Indian number-to-words, GST breakdown, and PDF/image export
 - **Property management** — CRUD for real estate listings with image management
 - **Registration manager** — View, filter, assign advisors, analytics, filters
-- **Email suite** — Tiptap rich text composer, sent history with replies, **templates**, **domains**, **marketing campaigns**, **contact picker & contact groups**, deleted messages, **Resend usage dashboard**, AI-assisted email composition, scheduled emails, email drafts
+- **Email suite** — Tiptap rich text composer, luxury template gallery, sent history with replies, **templates**, **domains**, **marketing campaigns**, **audience segments**, **contact picker & contact groups**, deleted messages, **engagement HUD**, **Resend usage dashboard**, AI-assisted email composition, ERP document attachments, scheduled emails, email drafts
 - **WhatsApp management** — `/admin/whatsapp` conversation inbox, AI/human/paused mode, lead drawer, follow-up tracking, templates, and Meta Cloud API webhook handling
 - **Lottery management** — Schedule draws, upload participants, edit campaigns, bulk email, winner history, draw scheduling
 - **IVR management** — `/admin/ivr` call handling
@@ -121,7 +145,14 @@ This repository hosts the company's full digital platform — a **public marketi
 - **Settings** — Tabbed interface: Profile · Company · Appearance · Notifications · Security · Email · Properties · Logs
 - **Chat logs** — Conversation history for the AI chatbot with lead information
 - **Site visits** — Manage and track property site visit requests
-- **Employees** — Employee directory management with full CRUD, profile photos, and admin-side employee API (`/api/admin/employees`)
+- **Leads & telecalling** — Master leads hub at `/admin/leads`: telecalling dashboard, IVR campaign leads, smart redial queue, DTMF outcome filters, bulk actions, export studio, call-intelligence player (recordings + transcripts), and per-lead interaction timeline
+- **Payroll** — Salary structures with in-hand calculation, monthly payroll runs, per-item adjustments, payslip generation, and auto-sync with offer letters (`/admin/workforce?tab=payroll`)
+- **Workforce hub** — `/admin/workforce` consolidates directory, chat leads, attendance, approvals, payroll, reports, and policy settings in one tabbed surface
+- **Plots & allotments ERP** — `/admin/plots-allotments` schedule/receipt/dues ledger, plus `/admin/portal-allotments` approvals, candidate pipeline, and deal-value tools
+- **Executive dashboard** — `/admin/dashboard` KPI band backed by `/api/admin/dashboard/executive`
+- **CRM data health** — Data-gap radar (`/api/admin/crm/data-gaps`) surfacing incomplete lead and property records
+- **Hot-lead alerts** — Configurable multi-channel routing under Settings → Notifications (`/api/admin/settings/hot-lead-alerts`)
+- **Employees** — Employee directory management with full CRUD, profile photos, per-employee leads/tasks/logs/performance, and admin-side employee API (`/api/admin/employees`)
 - **System updates** — `/admin/updates` release timeline, categorized update stats, and upcoming operational roadmap
 
 ### 👥 Employee Portal
@@ -132,9 +163,10 @@ A dedicated staff workspace with its own auth boundary, dashboard, and work-trac
 - **Dashboard** at `/employee/dashboard` — punch terminal, assigned leads, priority tasks, site visits, quick shortcuts
 - **Attendance** at `/employee/attendance` — geofenced punch-in/out with shift guidelines, plus `/employee/attendance/history`
 - **Work tracking** at `/employee/work` — tabbed surface for tasks, leads, daily logs, and site visits
-- **Profile** at `/employee/profile` — digital staff ID card and workspace settings
+- **Payroll** at `/employee/payroll` — monthly payslips, salary breakdown, and download history
+- **Profile** at `/employee/profile` — digital staff ID card, workspace settings, and self-service password change
 - **Legacy route group** `/(employee)/attendance` retained for deep links
-- **Employee API** — `/api/employee/attendance/*` (punch-in/out, status, history, leaves, regularize) and `/api/employee/work/*` (dashboard, tasks, leads, logs, site-visits)
+- **Employee API** — `/api/employee/attendance/*` (punch-in/out, check-in, status, history, leaves, regularize), `/api/employee/payroll/*`, `/api/employee/profile/*`, and `/api/employee/work/*` (dashboard, tasks, leads, activities, logs, site-visits)
 
 ### 🏢 Client Portal
 
@@ -147,16 +179,22 @@ A dedicated staff workspace with its own auth boundary, dashboard, and work-trac
 
 ### 🤖 AI & Automation
 
-- **Streaming chatbot** (`/api/chat`) — Vercel AI SDK + `@ai-sdk/groq` (Llama 4) with lead capture
+- **Streaming chatbot** (`/api/chat`) — Vercel AI SDK + `@ai-sdk/groq` (`openai/gpt-oss-120b`) with lead capture
 - **WhatsApp sales agent** — Autonomous AI agent (`src/lib/whatsapp/`) with tool calling, opt-out handling, business-hours policy, Meta Cloud API webhook, and pg_cron scheduled follow-ups
 - **Admin chat logs** — Review conversations for support & compliance with lead data
 - **AI email composition** — AI-assisted email drafting in the admin email suite
-- **Cron endpoints** (`/api/cron/*`) — Scheduled task runners:
+- **Call intelligence** — Recorded-call ingestion, transcript-based summaries, and lead scoring surfaced in the admin telecalling dashboard
+- **Audio pipeline** — Client-side compression and streamed playback for call recordings and IVR assets
+- **Lead SLA escalation** — `/api/cron/lead-sla-escalation` flags breached response targets and notifies owners
+- **Hot-lead digest** — `/api/cron/hot-leads-digest` fans out high-intent leads across email, push, and WhatsApp
+- **Cron endpoints** (`/api/cron/*`) — Scheduled task runners (all `GET`, protected by `CRON_SECRET`):
   - Lottery draw execution
   - Campaign email processing
   - Scheduled email dispatch
   - Registration cleanup
   - WhatsApp follow-up scheduler
+  - Lead SLA escalation
+  - Hot-lead digest
 - **Push notifications** — VAPID-based web push notifications with subscription management
 
 ---
@@ -593,7 +631,7 @@ Admin schedules draw → POST /api/admin/lottery/schedule → saved in DB
 
 ```
 User types message → POST /api/chat → Vercel AI SDK stream
-  → @ai-sdk/groq (Llama 4) processes input with context
+  → @ai-sdk/groq (openai/gpt-oss-120b) processes input with context
   → Streams response back to UI
   → POST /api/chat/log saves conversation
   → POST /api/chat/leads captures lead info if provided
@@ -667,16 +705,14 @@ The actual `vercel.json` includes:
       "schedule": "0 0 * * *"
     },
     {
-      "path": "/api/cron/cleanup-registrations",
-      "schedule": "0 6 * * *"
-    },
-    {
       "path": "/api/cron/whatsapp",
       "schedule": "0 2 * * *"
     }
   ]
 }
 ```
+
+> `cleanup-registrations`, `lead-sla-escalation`, and `hot-leads-digest` are also cron-protected routes, but they are invoked from external schedulers (or manually) rather than this `vercel.json` block — see `src/lib/leads/hotLeadNotification.ts` for digest scheduling.
 
 ---
 
@@ -867,7 +903,7 @@ The project uses two animation libraries for distinct purposes:
 
 | Library  | Version   | Purpose                                                         |
 | -------- | --------- | --------------------------------------------------------------- |
-| `motion` | `^13.1.1` | React animations — entrances, scroll-reveal, layout transitions |
+| `motion` | `^14.3.0` | React animations — entrances, scroll-reveal, layout transitions |
 | `gsap`   | `^3.15.0` | High-performance particle/spotlight effects (`MagicBento`)      |
 
 ### Usage patterns
@@ -916,14 +952,16 @@ pnpm analyze
 
 ### Regular Maintenance Tasks
 
-| Task                     | Frequency      | Method                               |
-| ------------------------ | -------------- | ------------------------------------ |
-| Performance index review | Monthly        | `supabase/migrations/*` index files  |
-| Registration cleanup     | Daily          | `/api/cron/cleanup-registrations`    |
-| Campaign processing      | Daily midnight | `/api/cron/campaigns`                |
-| Scheduled email dispatch | Daily midnight | `/api/cron/process-scheduled-emails` |
-| Lottery draw execution   | Daily midnight | `/api/cron/lottery`                  |
-| WhatsApp follow-ups      | Daily 02:00    | `/api/cron/whatsapp`                 |
+| Task                     | Frequency             | Method                               |
+| ------------------------ | --------------------- | ------------------------------------ |
+| Performance index review | Monthly               | `supabase/migrations/*` index files  |
+| Registration cleanup     | Daily (external cron) | `/api/cron/cleanup-registrations`    |
+| Campaign processing      | Daily midnight        | `/api/cron/campaigns`                |
+| Scheduled email dispatch | Daily midnight        | `/api/cron/process-scheduled-emails` |
+| Lottery draw execution   | Daily midnight        | `/api/cron/lottery`                  |
+| WhatsApp follow-ups      | Daily 02:00           | `/api/cron/whatsapp`                 |
+| Lead SLA escalation      | Frequent (external)   | `/api/cron/lead-sla-escalation`      |
+| Hot-lead digest          | Daily per recipient   | `/api/cron/hot-leads-digest`         |
 
 ### Running Migrations
 
@@ -935,7 +973,7 @@ supabase db push
 
 # Manual SQL execution via Supabase Dashboard
 # Open SQL Editor and run migration files in supabase/migrations/ in timestamp order
-# The 64 migrations are already ordered; run all of them
+# The 100 migrations are already ordered; run all of them
 ```
 
 ---
@@ -1024,20 +1062,23 @@ The site visits page in admin allows:
 
 ## 🔄 Changelog
 
-The changelog is rendered at `/changelog` (public, bilingual) from `src/lib/changelog.ts` via `ChangelogTimeline` + `ReleaseMarkdown`. Backed by `GET /api/changelog`.
+The changelog is rendered at `/changelog` (public, bilingual) from `src/lib/changelog.ts` via `ChangelogTimeline` + `ReleaseMarkdown`. Entries are fetched live from GitHub Releases (`GITHUB_REPO`, optional `GITHUB_TOKEN`) and cached for 10 minutes, then served to clients via `GET /api/changelog`.
 
 ### Recent releases
 
-- **Employee workspace & work tracking** — full employee portal (dashboard, punch attendance, tasks, leads, daily logs, site visits, digital staff ID card) with `/api/employee/work/*` endpoints
-- **WhatsApp sales agent MVP** — autonomous AI agent with tool calling, opt-out list, business-hours policy, Meta Cloud API webhook, and pg_cron follow-up scheduler
-- **Quotation module** — quotation generator + records with GST breakdown and Indian number-to-words
-- **Email events & messages** — `email_messages`, `email_events`, `email_suppressions` tables for delivery tracking; read/archive/tags on inbox
-- **Hindi BBA legal documents** — full Hindi legal page set (`legal-hindi/`) with Hindi preview content and `language` toggle on the BBA generator
-- **Changelog page** — public release timeline with markdown rendering
-- **Email contact picker** — `ContactPicker` / `RecipientInput` with admin contact list + contact groups
-- **MoreDropdown** — nav "More" mega-menu
-- **IVR module** — admin IVR call management
-- **Sentry** — error monitoring with tunnel route `/monitoring`
+- **Payroll suite** — salary structures with in-hand calculation, monthly runs, per-item adjustments, payslip PDFs, and offer-letter auto-sync (`20261029_payroll_in_hand_support.sql`)
+- **Lead CRM & SLA tracking** — Master leads hub, telecalling dashboard, interaction timeline, bulk actions, and SLA breach escalation (`20261028_lead_sla_tracking.sql`)
+- **Hot-lead notifications** — multi-channel dispatcher (email / push / WhatsApp) with per-recipient schedules and daily digest cron
+- **Call intelligence & IVR sync** — recording ingestion, transcript summaries, DTMF outcome filters, smart redial queue, and total-data IVR sync
+- **Audio pipeline** — client-side compression with streamed playback for recordings and IVR assets
+- **Registration 2** — multi-step conversational registration flow with progressive profiling
+- **Email luxury suite** — template gallery, audience segments, engagement HUD, ERP document attachments, AI compose, and deliverability tooling
+- **Plots & allotments ERP** — schedule/receipt/dues ledger, portal allotment approvals, candidate pipeline, and deal-value tools
+- **Executive dashboard** — KPI band, CRM data-health radar, and workforce consolidation into `/admin/workforce`
+- **SEO / AEO expansion** — corridor hubs (`/areas`) plus Phulera, Jaipur, Jaipur-under-₹20-lakh, Khatu Shyam Ji, and Renwal landing pages
+- **Mobile performance** — Core Web Vitals work (zero-hydration islands, compressed media, LCP/INP tuning) and premium loading states
+- **Mobile builds** — Capacitor admin/employee flavor sync, release builds, and generated app assets
+- **Changelog page** — public release timeline rendered from GitHub Releases (`GET /api/changelog`)
 - **Dependency hardening** — `fast-uri` / `brace-expansion` overrides, Node engines pinned to `22.x`
 
 ### v0.1.0 (Initial)
@@ -1049,12 +1090,12 @@ Initial release with:
 - **Admin portal** — Dashboard, attendance, document generation (BBA, allotment, offer letter, payment plan, receipts), properties, registrations, email suite (compose, campaigns, templates, domains, AI), lottery management, notifications, settings, chat logs, employees, site visits
 - **Employee portal** — Login, dashboard, geofenced punch attendance, work tracking (tasks/leads/logs/site visits), digital staff ID card
 - **PWA** — Service worker, push notifications, background sync, share target, offline support
-- **AI chatbot** — Groq Llama 4 streaming chat with lead capture and conversation logging
+- **AI chatbot** — Groq streaming chat with lead capture and conversation logging
 - **Email system** — Resend integration, TipTap editor, campaigns, scheduled emails, drafts, inbound webhooks
 - **Document generation** — Client-side PDF/PNG via jsPDF + html2canvas-pro
 - **i18n** — English/Hindi with next-intl locale routing
 - **Authentication** — Supabase SSR; admin auth protected in-app, not by global middleware
-- **Database** — 64 timestamped migration files covering all features
+- **Database** — 100 timestamped migration files covering all features
 - **Testing** — Vitest unit/integration tests, Playwright e2e tests
 - **Tooling** — Husky, Commitlint, ESLint, Prettier, lint-staged
 
@@ -1092,12 +1133,16 @@ Initial release with:
 
 ---
 
+## 🧱 Tech Stack
+
+> Versions below mirror `package.json` — update both together.
+
 ### Core Framework
 
 | Layer      | Technology            | Version   | Why we chose it                          |
 | ---------- | --------------------- | --------- | ---------------------------------------- |
-| Framework  | **Next.js**           | `^16.3.2` | App Router, RSC, route handlers          |
-| UI library | **React**             | `^19.2.8` | Server Components, `use()` hook          |
+| Framework  | **Next.js**           | `^16.4.2` | App Router, RSC, route handlers          |
+| UI library | **React**             | `^19.3.1` | Server Components, `use()` hook          |
 | Language   | **TypeScript**        | `^6.0.2`  | Strict mode, end-to-end type safety      |
 | Bundler    | **Turbopack/Webpack** | bundled   | Turbopack dev/build, Webpack for analyze |
 
@@ -1106,13 +1151,13 @@ Initial release with:
 | Technology                 | Version                        | Purpose                               |
 | -------------------------- | ------------------------------ | ------------------------------------- |
 | **Tailwind CSS**           | `^4.3.3`                       | Utility-first CSS                     |
-| **Motion (Framer Motion)** | `^13.1.1`                      | Scroll-reveal & micro-interactions    |
+| **Motion (Framer Motion)** | `^14.3.0`                      | Scroll-reveal & micro-interactions    |
 | **GSAP**                   | `^3.15.0`                      | Particle effects (`MagicBento`)       |
-| **Lucide React**           | `^1.33.0`                      | Open-source icon set                  |
+| **Lucide React**           | `^1.58.0`                      | Open-source icon set                  |
 | **Recharts**               | `^3.10.1`                      | Composable charts for admin dashboard |
 | **Sonner**                 | `^2.0.8`                       | Toast notifications                   |
 | **canvas-confetti**        | `^1.9.4`                       | Confetti for lottery wins             |
-| **clsx / tailwind-merge**  | `^2.1.1` / `^3.6.0`            | Conditional class composition         |
+| **clsx / tailwind-merge**  | `^2.1.1` / `^3.7.0`            | Conditional class composition         |
 | **Radix UI**               | dialog, dropdown-menu, tooltip | Accessible headless UI primitives     |
 
 ### State, Data & Animation
@@ -1120,62 +1165,62 @@ Initial release with:
 | Technology               | Version    | Purpose                                                        |
 | ------------------------ | ---------- | -------------------------------------------------------------- |
 | **Zustand**              | `^5.0.15`  | Lightweight stores (`authStore`, `uiStore`, `comparisonStore`) |
-| **TanStack React Query** | `^5.101.4` | Server-state caching, optimistic updates                       |
-| **TanStack React Table** | `^9.1.2`   | Data tables for admin panels                                   |
+| **TanStack React Query** | `^5.104.3` | Server-state caching, optimistic updates                       |
+| **TanStack React Table** | `^9.3.1`   | Data tables for admin panels                                   |
 | **date-fns**             | `^4.4.0`   | Date formatting                                                |
 
 ### Backend, Auth & Database
 
 | Technology        | Version    | Purpose                                |
 | ----------------- | ---------- | -------------------------------------- |
-| **Supabase JS**   | `^2.112.3` | PostgreSQL + auth + storage + realtime |
-| **@supabase/ssr** | `^0.12.4`  | Cookie-based SSR sessions              |
-| **next-intl**     | `^4.13.7`  | Locale routing (en/hi) + translations  |
+| **Supabase JS**   | `^2.118.0` | PostgreSQL + auth + storage + realtime |
+| **@supabase/ssr** | `^0.12.7`  | Cookie-based SSR sessions              |
+| **next-intl**     | `^4.14.9`  | Locale routing (en/hi) + translations  |
 
 ### AI Providers
 
-| Technology        | Version   | Purpose                              |
-| ----------------- | --------- | ------------------------------------ |
-| **ai (Vercel)**   | `^7.0.77` | Streaming chat & generative UI       |
-| **@ai-sdk/groq**  | `^4.0.30` | Llama 4 inference                    |
-| **@ai-sdk/react** | `^4.0.80` | React hooks for AI SDK               |
-| **web-push**      | `^3.6.7`  | Server-side push notification sender |
+| Technology        | Version    | Purpose                                |
+| ----------------- | ---------- | -------------------------------------- |
+| **ai (Vercel)**   | `^7.0.142` | Streaming chat & generative UI         |
+| **@ai-sdk/groq**  | `^4.0.62`  | Groq inference (`openai/gpt-oss-120b`) |
+| **@ai-sdk/react** | `^4.0.146` | React hooks for AI SDK                 |
+| **web-push**      | `^3.6.7`   | Server-side push notification sender   |
 
 ### Documents, Forms & Email
 
 | Technology          | Version   | Purpose                                                          |
 | ------------------- | --------- | ---------------------------------------------------------------- |
 | **jsPDF**           | `^4.2.1`  | Client-side PDF generation                                       |
-| **html2canvas-pro** | `^2.3.9`  | HTML → canvas for PDF content                                    |
+| **html2canvas-pro** | `^2.5.2`  | HTML → canvas for PDF content                                    |
 | **html2pdf.js**     | `^0.14.0` | Alternative PDF generation library                               |
 | **canvg**           | `^4.0.3`  | SVG → canvas rasterization for PDF export                        |
 | **ExcelJS**         | `^4.4.0`  | Excel parsing & export                                           |
-| **Resend**          | `^6.22.0` | Transactional + marketing email                                  |
-| **TipTap**          | `^3.30.2` | Rich text editor (compose, link, image, color, highlight, align) |
+| **Resend**          | `^6.33.0` | Transactional + marketing email                                  |
+| **TipTap**          | `^3.32.0` | Rich text editor (compose, link, image, color, highlight, align) |
 | **heic-convert**    | `^2.1.0`  | HEIC → JPEG/PNG in browser                                       |
-| **sharp**           | `^0.35.3` | Build-time image optimization                                    |
-| **Zod**             | `^4.4.3`  | Schema validation for API payloads                               |
-| **maplibre-gl**     | `^6.5.0`  | Open-source vector map rendering (no API key)                    |
+| **sharp**           | `^0.35.5` | Build-time image optimization                                    |
+| **Zod**             | `^4.6.7`  | Schema validation for API payloads                               |
+| **maplibre-gl**     | `^6.14.0` | Open-source vector map rendering (no API key)                    |
 
-### Mobile & Analytics, Testing & Tooling
+### Mobile, Analytics, Testing & Tooling
 
 | Technology                  | Version                | Purpose                                 |
 | --------------------------- | ---------------------- | --------------------------------------- |
-| **@capacitor/core**         | `^8.5.0`               | Cross-platform native runtime (Android) |
-| **@serwist/next**           | `^9.5.12`              | Next.js service worker integration      |
-| **@serwist/sw**             | `^9.5.12`              | Service worker runtime                  |
-| **@sentry/nextjs**          | `^10.70.0`             | Error monitoring                        |
+| **@capacitor/core**         | `^8.5.3`               | Cross-platform native runtime (Android) |
+| **@serwist/next**           | `^9.5.13`              | Next.js service worker integration      |
+| **@serwist/sw**             | `^9.5.13`              | Service worker runtime                  |
+| **@sentry/nextjs**          | `^11.8.0`              | Error monitoring                        |
 | **@vercel/analytics**       | `^2.0.1`               | Page-view tracking                      |
 | **@vercel/speed-insights**  | `^2.0.0`               | Real-user Core Web Vitals               |
-| **web-vitals**              | `^6.1.1`               | Client-side vitals measurement          |
-| **Vitest** + **jsdom**      | `^4.1.11` / `^30.0.1`  | Unit & integration tests                |
-| **Playwright**              | `^1.62.1`              | End-to-end browser tests                |
-| **ESLint** (flat config)    | `^10.9.0`              | Type-aware linting                      |
-| **Prettier**                | `^3.9.6`               | Formatter + Tailwind class sort         |
-| **Husky** + **lint-staged** | `^9.1.7` / `^17.3.0`   | Git hooks                               |
-| **Commitlint**              | `^21.2.2`              | Conventional commit enforcement         |
-| **@next/bundle-analyzer**   | `^16.3.2`              | Bundle size inspection                  |
-| **tsx**                     | `^4.23.12`             | TypeScript execution for scripts        |
+| **web-vitals**              | `^6.2.3`               | Client-side vitals measurement          |
+| **Vitest** + **jsdom**      | `^5.0.5` / `^30.1.3`   | Unit & integration tests                |
+| **Playwright**              | `^1.64.1`              | End-to-end browser tests                |
+| **ESLint** (flat config)    | `^10.12.0`             | Type-aware linting                      |
+| **Prettier**                | `^3.9.10`              | Formatter + Tailwind class sort         |
+| **Husky** + **lint-staged** | `^9.1.7` / `^17.6.0`   | Git hooks                               |
+| **Commitlint**              | `^21.2.3`              | Conventional commit enforcement         |
+| **@next/bundle-analyzer**   | `^16.4.2`              | Bundle size inspection                  |
+| **tsx**                     | `^4.23.15`             | TypeScript execution for scripts        |
 | **Testing Library**         | React + DOM + jest-dom | Component testing utilities             |
 
 ---
@@ -1246,8 +1291,8 @@ svi-new/
 │   │   │   ├── admin/             #   /admin (locale-aware redirect)
 │   │   │   ├── blog/              #   /blog
 │   │   │   │   └── [slug]/        #   /blog/[slug] dynamic posts
-│   │   │   ├── areas/             #   /areas/[slug] area pages
-│   │   │   ├── brochure/          #   /brochure project brochures
+│   │   │   ├── areas/             #   /areas + /areas/[slug] area pages
+│   │   │   ├── brochure/          #   /brochure/shivani-vatika-11
 │   │   │   ├── calculators/       #   /calculators
 │   │   │   ├── careers/           #   /careers
 │   │   │   ├── changelog/         #   /changelog release notes
@@ -1259,6 +1304,11 @@ svi-new/
 │   │   │   ├── login/             #   /login (client portal)
 │   │   │   ├── lottery/           #   /lottery (feature-flagged)
 │   │   │   ├── payment/           #   /payment
+│   │   │   ├── plots-for-sale-in-phulera/            # SEO landing — Phulera
+│   │   │   ├── plots-for-sale-near-khatu-shyam-ji/   # SEO landing — Khatu Shyam Ji
+│   │   │   ├── plots-in-jaipur/                      # SEO landing — Jaipur
+│   │   │   ├── plots-in-jaipur-under-20-lakhs/       # SEO landing — budget plots
+│   │   │   ├── plots-near-renwal-railway-station/    # SEO landing — Renwal
 │   │   │   ├── portal/            #   Client portal (authenticated)
 │   │   │   │   ├── documents/     #     Client documents
 │   │   │   │   ├── payments/      #     Client payments
@@ -1270,6 +1320,7 @@ svi-new/
 │   │   │   │   ├── completed/     #     Completed projects
 │   │   │   │   └── [slug]/        #     Dynamic project detail
 │   │   │   ├── registration/      #   /registration
+│   │   │   ├── registration2/     #   /registration2 multi-step wizard
 │   │   │   ├── terms-conditions/  #   /terms
 │   │   │   ├── thank-you/         #   /thank-you
 │   │   │   ├── layout.tsx         #   Public layout (Header/Footer)
@@ -1286,7 +1337,9 @@ svi-new/
 │   │   ├── dashboard/             #   Analytics & KPIs
 │   │   ├── email/                 #   Email suite (compose, campaigns, templates...)
 │   │   ├── employees/             #   Employee directory management
-│   │   ├── ivr/                   #   IVR call management
+│   │   ├── ivr/                   #   IVR call management + recordings
+│   │   ├── leads/                 #   Master leads hub (telecalling, IVR, redial)
+│   │   │   └── dashboard/         #     Telecalling dashboard
 │   │   ├── lottery/               #   Lottery draw management
 │   │   ├── notifications/         #   Notification center
 │   │   ├── offer-letter/          #   Offer letter PDF
@@ -1294,6 +1347,8 @@ svi-new/
 │   │   ├── payment-plan/          #   Payment plan PDF
 │   │   ├── payment-receipt/       #   Payment receipt PDF
 │   │   ├── payment-receipts/      #   Payment receipt records
+│   │   ├── payroll/               #   Redirect → /admin/workforce?tab=payroll
+│   │   ├── plots-allotments/      #   Plot allotment ERP (schedules, receipts, dues)
 │   │   ├── portal-allotments/     #   Client-facing allotments
 │   │   ├── properties/            #   Property CRUD
 │   │   ├── quotation/             #   Quotation generator
@@ -1303,12 +1358,14 @@ svi-new/
 │   │   ├── site-visits/           #   Site visit management
 │   │   ├── updates/               #   System updates and roadmap
 │   │   ├── whatsapp/              #   WhatsApp inbox + AI sales agent controls
+│   │   ├── workforce/             #   Workforce hub (directory, attendance, payroll…)
 │   │   ├── layout.tsx             #   Admin layout (sidebar + header)
 │   │   └── page.tsx               #   Admin login
 │   ├── employee/                  # Employee workspace (staff portal)
 │   │   ├── attendance/            #   Punch attendance + history/
 │   │   ├── dashboard/             #   Staff dashboard (punch terminal, tasks, leads)
 │   │   ├── login/                 #   /employee/login
+│   │   ├── payroll/               #   Payslips + salary breakdown
 │   │   ├── profile/               #   Digital staff ID card + settings
 │   │   └── work/                  #   Tasks / leads / logs / site visits
 │   ├── (employee)/                # Employee route group (legacy deep links)
@@ -1332,18 +1389,28 @@ svi-new/
 │   │   │   ├── careers/           #     Careers endpoints
 │   │   │   ├── contacts/          #     Email contact picker source
 │   │   │   ├── contact-groups/    #     Email contact groups
+│   │   │   ├── crm/               #     CRM data-health radar
+│   │   │   ├── dashboard/         #     Executive KPI endpoints
 │   │   │   ├── documents/         #     Document CRUD
-│   │   │   ├── email/             #     Email sending + AI + status
-│   │   │   ├── employees/         #     Employee CRUD (+ [id])
+│   │   │   ├── dues/              #     Outstanding dues ledger
+│   │   │   ├── email/             #     Email sending + AI + status + templates
+│   │   │   ├── employees/         #     Employee CRUD (+ [id], leads, logs, tasks)
 │   │   │   ├── ivr/               #     IVR endpoints
-│   │   │   ├── lottery/           #     Draw + schedule management
+│   │   │   ├── leads/             #     Lead CRM, IVR upload, call intelligence
+│   │   │   ├── lottery/           #     Draw + participants + schedule
 │   │   │   ├── notifications/     #     Notification CRUD
+│   │   │   ├── payroll/           #     Salary structures + monthly runs
+│   │   │   ├── portal-allotments/ #     Approvals, candidates, deal value
 │   │   │   ├── properties/        #     Property CRUD
+│   │   │   ├── push/              #     Push send + subscribers
+│   │   │   ├── quotation/         #     Quotation number sequence
 │   │   │   ├── registrations/     #     Registration + analytics + filters
-│   │   │   ├── settings/          #     Portal settings
+│   │   │   ├── settings/          #     Portal settings + hot-lead alerts
+│   │   │   ├── translate/         #     Translation helper
 │   │   │   ├── users/             #     User CRUD
 │   │   │   └── whatsapp/          #     WhatsApp inbox management
 │   │   ├── changelog/             #   Release changelog data
+│   │   ├── announcement/          #   Active announcement banner
 │   │   ├── chat/                  #   Streaming AI chat
 │   │   │   ├── leads/             #     Lead capture
 │   │   │   └── log/               #     Conversation logging
@@ -1351,14 +1418,19 @@ svi-new/
 │   │   ├── cron/                  #   Scheduled tasks
 │   │   │   ├── campaigns/         #     Campaign processing
 │   │   │   ├── cleanup-registrations/ # Registration cleanup
+│   │   │   ├── hot-leads-digest/  #     Multi-channel hot-lead digest
+│   │   │   ├── lead-sla-escalation/ #   SLA breach escalation
 │   │   │   ├── lottery/           #     Draw execution
 │   │   │   ├── process-scheduled-emails/ # Scheduled email dispatch
 │   │   │   └── whatsapp/          #     WhatsApp follow-up scheduler
 │   │   ├── csrf-refresh/          #   CSRF token refresh
 │   │   ├── employee/              #   Employee endpoints
-│   │   │   ├── attendance/        #     punch-in/out, status, history, leaves, regularize
-│   │   │   └── work/              #     dashboard, tasks, leads, logs, site-visits
+│   │   │   ├── attendance/        #     punch-in/out, check-in, status, history, leaves, regularize
+│   │   │   ├── payroll/           #     payslips (+ [id]/payslip)
+│   │   │   ├── profile/           #     change-password
+│   │   │   └── work/              #     dashboard, tasks, leads, activities, logs, site-visits
 │   │   ├── grievance/             #   Grievance form
+│   │   ├── indexnow/              #   IndexNow search-engine ping
 │   │   ├── lottery/               #   Public lottery data
 │   │   │   └── schedule/          #     Schedule info
 │   │   ├── map-tiles/[z]/[x]/[y]/ #   MapLibre tile proxy
@@ -1370,7 +1442,6 @@ svi-new/
 │   │   │   ├── subscribe/         #     Subscribe
 │   │   │   └── unsubscribe/       #     Unsubscribe
 │   │   ├── registration/          #   User registration (+ captcha)
-│   │   ├── sentry-test/           #   Sentry test endpoint
 │   │   ├── site-visit/            #   Site visit requests
 │   │   ├── webhooks/              #   External integrations
 │   │   │   └── resend/            #     Resend webhooks
@@ -1493,6 +1564,10 @@ svi-new/
 │   ├── playwright.config.ts       # Playwright configuration
 │   ├── helpers/                   # Test helpers
 │   └── tests/                     # Test specs
+├── android/                       # Capacitor Android project
+├── build-apks/                    # Generated debug/release APKs
+├── release-apks/                  # Signed release artifacts
+├── docs/                          # Plans & engineering notes (docs/superpowers/plans)
 ├── public/
 │   ├── favicons/                  # Multi-size favicon set
 │   ├── icons/                     # App icons (192×192, 512×512)
@@ -1513,7 +1588,7 @@ svi-new/
 │   ├── offline.html               # Offline fallback page
 │   ├── sw.js                      # Service worker
 │   └── theme-init.js              # FOUC prevention script
-├── scripts/                       # Node/TS scripts
+├── scripts/                       # Node/TS scripts (60+ one-off ops & data tools)
 │   ├── add_indian_participants.ts
 │   ├── apply-groups-migration.ts
 │   ├── check-db-schema.ts
@@ -1544,7 +1619,7 @@ svi-new/
 │   ├── verify-email-features.ts
 │   └── verify-groups.ts
 ├── supabase/                      # Migrations & config
-│   ├── migrations/                # 64 timestamp-ordered SQL migrations
+│   ├── migrations/                # 100 timestamp-ordered SQL migrations
 │   ├── config.toml                # Supabase CLI config
 │   └── .temp/                     # Temporary migration artifacts
 ├── __tests__/                     # Vitest unit/integration tests
@@ -1625,6 +1700,7 @@ NEXT_PUBLIC_ANALYTICS_ID=""
 # ── Sentry ────────────────────────────────────────
 SENTRY_DSN=""
 NEXT_PUBLIC_SENTRY_DSN=""
+SENTRY_AUTH_TOKEN=""
 
 # ── Supabase ──────────────────────────────────────
 NEXT_PUBLIC_SUPABASE_URL="https://YOUR_PROJECT_REF.supabase.co"
@@ -1677,35 +1753,55 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 
 ## 📜 Available Scripts
 
-| Script                | Command                    | Purpose                   |
-| --------------------- | -------------------------- | ------------------------- |
-| `dev`                 | `pnpm dev`                 | Dev server on port 3001   |
-| `build`               | `pnpm build`               | Production build          |
-| `start`               | `pnpm start`               | Serve production build    |
-| `analyze`             | `pnpm analyze`             | Bundle analysis (webpack) |
-| `perf:bundle`         | `pnpm perf:bundle`         | Bundle analysis (default) |
-| `perf:dev`            | `pnpm perf:dev`            | Performance monitor       |
-| `typecheck`           | `pnpm typecheck`           | TypeScript type check     |
-| `lint`                | `pnpm lint`                | ESLint                    |
-| `lint:fix`            | `pnpm lint:fix`            | ESLint auto-fix           |
-| `format`              | `pnpm format`              | Prettier write            |
-| `format:check`        | `pnpm format:check`        | Prettier check            |
-| `editorconfig`        | `pnpm editorconfig`        | Editorconfig compliance   |
-| `test`                | `pnpm test`                | Unit/integration tests    |
-| `test:watch`          | `pnpm test:watch`          | Vitest watch mode         |
-| `test:e2e`            | `pnpm test:e2e`            | Playwright E2E tests      |
-| `test:e2e:ui`         | `pnpm test:e2e:ui`         | Playwright UI debugger    |
-| `test:e2e:debug`      | `pnpm test:e2e:debug`      | Playwright debug mode     |
-| `test:db-performance` | `pnpm test:db-performance` | Database performance      |
-| `optimize:images`     | `pnpm optimize:images`     | Image optimization        |
-| `generate-icons`      | `pnpm generate-icons`      | Regenerate app icons      |
-| `clean`               | `pnpm clean`               | Wipe `.next`              |
-| `prepare`             | `pnpm prepare`             | Install Husky hooks       |
-| `cap:sync`            | `pnpm cap:sync`            | Sync Capacitor            |
-| `cap:open:android`    | `pnpm cap:open:android`    | Open Android IDE          |
-| `cap:build:android`   | `pnpm cap:build:android`   | Build Android app         |
-| `cap:run:android`     | `pnpm cap:run:android`     | Run on Android device     |
-| `cap:assets`          | `pnpm cap:assets`          | Generate app assets       |
+| Script                | Command                                             | Purpose                             |
+| --------------------- | --------------------------------------------------- | ----------------------------------- |
+| `dev`                 | `next dev --turbopack --port 3001`                  | Turbopack dev server on port 3001   |
+| `dev:webpack`         | `next dev --webpack --port 3001`                    | Webpack dev server (fallback)       |
+| `prebuild`            | copy MapLibre assets + optimize images              | Runs automatically before `build`   |
+| `postinstall`         | `node scripts/copy-maplibre-assets.mjs`             | Copy MapLibre assets after install  |
+| `build`               | `tsc --noEmit && next build`                        | Typecheck + production build        |
+| `build:webpack`       | `tsc --noEmit && next build --webpack`              | Production build on Webpack         |
+| `start`               | `next start`                                        | Serve production build              |
+| `analyze`             | `ANALYZE=true next build --webpack`                 | Bundle analysis (webpack)           |
+| `perf:bundle`         | `cross-env ANALYZE=true next build`                 | Bundle analysis (default bundler)   |
+| `perf:dev`            | `node scripts/perf-monitor.mjs`                     | Performance monitor                 |
+| `typecheck`           | `tsc --noEmit`                                      | TypeScript type check               |
+| `prepush`             | `.husky/pre-push`                                   | Pre-push gate (typecheck + tests)   |
+| `test`                | `vitest run`                                        | Unit/integration tests              |
+| `test:watch`          | `vitest`                                            | Vitest watch mode                   |
+| `test:e2e`            | `playwright test --config=e2e/playwright.config.ts` | Playwright E2E tests                |
+| `test:e2e:ui`         | `playwright test --ui …`                            | Playwright UI debugger              |
+| `test:e2e:debug`      | `playwright test --debug …`                         | Playwright debug mode               |
+| `test:db-performance` | `tsx scripts/test-db-performance.ts`                | Database performance checks         |
+| `lint`                | `eslint . --cache …`                                | ESLint                              |
+| `lint:fix`            | `eslint . --fix --cache …`                          | ESLint auto-fix                     |
+| `format`              | `prettier --write .`                                | Prettier write                      |
+| `format:check`        | `prettier --check .`                                | Prettier check                      |
+| `editorconfig`        | `editorconfig-checker`                              | Editorconfig compliance             |
+| `prepare`             | `husky`                                             | Install Husky hooks                 |
+| `clean`               | `rm -rf .next`                                      | Wipe `.next`                        |
+| `optimize:images`     | `node scripts/optimize-images.mjs`                  | Image optimization                  |
+| `generate-icons`      | icons + OG image                                    | Regenerate app icons & OG image     |
+| `generate-og`         | `node scripts/generate-og-image.mjs`                | Regenerate OG image only            |
+| `cap:sync`            | `sync-capacitor-flavors.mjs` + `cap sync`           | Sync both Android flavors           |
+| `cap:open:android`    | `npx cap open android`                              | Open Android IDE                    |
+| `cap:build:android`   | `npx cap build android`                             | Build Android app                   |
+| `cap:run:android`     | `npx cap run android`                               | Run on Android device               |
+| `cap:employee:sync`   | `CAP_APP_TARGET=employee … cap sync`                | Sync employee flavor                |
+| `cap:employee:open`   | `CAP_APP_TARGET=employee … cap open`                | Open employee flavor in Android IDE |
+| `cap:employee:run`    | `CAP_APP_TARGET=employee … cap run`                 | Run employee flavor on device       |
+| `cap:employee:build`  | `gradlew assembleEmployeeRelease`                   | Build employee release APK/AAB      |
+| `cap:admin:sync`      | `CAP_APP_TARGET=admin … cap sync`                   | Sync admin flavor                   |
+| `cap:admin:open`      | `CAP_APP_TARGET=admin … cap open`                   | Open admin flavor in Android IDE    |
+| `cap:admin:run`       | `CAP_APP_TARGET=admin … cap run`                    | Run admin flavor on device          |
+| `cap:admin:build`     | `gradlew assembleAdminRelease`                      | Build admin release APK/AAB         |
+| `cap:assets`          | `npx @capacitor/assets generate --android`          | Generate Android icons/splash       |
+| `backup`              | `node scripts/export-supabase-backup.mjs`           | One-shot Supabase data export       |
+| `backup:task`         | `scripts/setup-daily-backup-task.ps1`               | Register Windows daily backup task  |
+| `backup:daemon`       | `node scripts/backup-daemon.mjs`                    | Long-running backup daemon          |
+| `gitnexus:analyze`    | `gitnexus analyze`                                  | Re-index the code knowledge graph   |
+| `gitnexus:status`     | `gitnexus status`                                   | Index freshness & stats             |
+| `gitnexus:clean`      | `gitnexus clean`                                    | Remove the local graph index        |
 
 ---
 
@@ -1713,38 +1809,46 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 
 ### Public (`/`, `/{locale}/`)
 
-| Route                 | Description                               |
-| --------------------- | ----------------------------------------- |
-| `/`                   | Landing page — hero, projects, AI chatbot |
-| `/about`              | Company history, mission, vision, values  |
-| `/areas/[slug]`       | Locality/area landing pages               |
-| `/blog`               | Market insights & company news            |
-| `/blog/[slug]`        | Dynamic blog posts                        |
-| `/brochure/[slug]`    | Project brochure pages                    |
-| `/calculators`        | Interactive financial calculators         |
-| `/careers`            | Job openings                              |
-| `/changelog`          | Release changelog timeline                |
-| `/contact`            | Inquiry form → Resend                     |
-| `/exclusive-offers`   | Special promotions & deals                |
-| `/faq`                | Data-driven FAQ accordion                 |
-| `/grievance`          | Complaint submission with tracking        |
-| `/leadership`         | Management team profiles                  |
-| `/login`              | Client portal login                       |
-| `/lottery`            | Feature-flagged lottery                   |
-| `/payment`            | Online payment portal                     |
-| `/portal/documents`   | Client document access                    |
-| `/portal/payments`    | Client payment history                    |
-| `/portal/properties`  | Client property overview                  |
-| `/portal/settings`    | Client profile settings                   |
-| `/privacy-policy`     | Data protection                           |
-| `/projects`           | Project listing                           |
-| `/projects/current`   | Ongoing developments                      |
-| `/projects/completed` | Delivered projects + MapLibre GL map      |
-| `/projects/[slug]`    | Dynamic project detail page               |
-| `/registration`       | New user registration                     |
-| `/terms-conditions`   | Terms of service                          |
-| `/thank-you`          | Post-submission confirmation              |
-| `/share`              | PWA share target handler                  |
+| Route                                 | Description                               |
+| ------------------------------------- | ----------------------------------------- |
+| `/`                                   | Landing page — hero, projects, AI chatbot |
+| `/about`                              | Company history, mission, vision, values  |
+| `/areas`                              | Coverage-area index                       |
+| `/areas/[slug]`                       | Locality/area landing pages               |
+| `/blog`                               | Market insights & company news            |
+| `/blog/[slug]`                        | Dynamic blog posts                        |
+| `/brochure/shivani-vatika-11`         | Shivani Vatika 11 digital brochure        |
+| `/calculators`                        | Interactive financial calculators         |
+| `/careers`                            | Job openings                              |
+| `/changelog`                          | Release changelog timeline                |
+| `/contact`                            | Inquiry form → Resend                     |
+| `/exclusive-offers`                   | Special promotions & deals                |
+| `/faq`                                | Data-driven FAQ accordion                 |
+| `/grievance`                          | Complaint submission with tracking        |
+| `/leadership`                         | Management team profiles                  |
+| `/login`                              | Client portal login                       |
+| `/lottery`                            | Feature-flagged lottery                   |
+| `/payment`                            | Online payment portal                     |
+| `/plots-for-sale-in-phulera`          | SEO landing — plots in Phulera            |
+| `/plots-for-sale-near-khatu-shyam-ji` | SEO landing — plots near Khatu Shyam Ji   |
+| `/plots-in-jaipur`                    | SEO landing — plots in Jaipur             |
+| `/plots-in-jaipur-under-20-lakhs`     | SEO landing — plots under ₹20 lakh        |
+| `/plots-near-renwal-railway-station`  | SEO landing — plots near Renwal station   |
+| `/portal`                             | Client portal home                        |
+| `/portal/documents`                   | Client document access                    |
+| `/portal/payments`                    | Client payment history                    |
+| `/portal/properties`                  | Client property overview                  |
+| `/portal/settings`                    | Client profile settings                   |
+| `/privacy-policy`                     | Data protection                           |
+| `/projects`                           | Project listing                           |
+| `/projects/current`                   | Ongoing developments                      |
+| `/projects/completed`                 | Delivered projects + MapLibre GL map      |
+| `/projects/[slug]`                    | Dynamic project detail page               |
+| `/registration`                       | New user registration                     |
+| `/registration2`                      | Multi-step conversational registration    |
+| `/terms-conditions`                   | Terms of service                          |
+| `/thank-you`                          | Post-submission confirmation              |
+| `/share`                              | PWA share target handler                  |
 
 ### Admin (in-app auth protected)
 
@@ -1752,16 +1856,18 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | ----------------------------- | ------------------------------------------------------------------------------------- |
 | `/admin`                      | Admin login                                                                           |
 | `/admin/dashboard`            | Analytics, KPIs, activity timeline                                                    |
-| `/admin/attendance`           | Check-in/out, reports, teams                                                          |
 | `/admin/allotment-letter`     | Allotment letter PDF                                                                  |
 | `/admin/allotment-records`    | Allotment records                                                                     |
+| `/admin/attendance`           | Check-in/out, reports, teams                                                          |
 | `/admin/bba`                  | Builder Buyer Agreement                                                               |
 | `/admin/bba-records`          | BBA records                                                                           |
 | `/admin/careers`              | Careers management                                                                    |
 | `/admin/chat-logs`            | AI chatbot conversation history                                                       |
 | `/admin/email`                | Compose, sent, templates, domains, campaigns                                          |
 | `/admin/employees`            | Employee directory management                                                         |
-| `/admin/ivr`                  | IVR call management                                                                   |
+| `/admin/ivr`                  | IVR call management, recordings, transcript sync                                      |
+| `/admin/leads`                | Master leads hub — telecalling dashboard, IVR, redial queue, chatbot, all/unassigned  |
+| `/admin/leads/dashboard`      | Telecalling dashboard — DTMF filters, export studio, call intelligence                |
 | `/admin/lottery`              | Draw management & scheduling                                                          |
 | `/admin/notifications`        | Notification center                                                                   |
 | `/admin/offer-letter`         | Offer letter PDF                                                                      |
@@ -1769,7 +1875,9 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/admin/payment-plan`         | Payment plan PDF                                                                      |
 | `/admin/payment-receipt`      | Payment receipt PDF                                                                   |
 | `/admin/payment-receipts`     | Payment receipt records                                                               |
-| `/admin/portal-allotments`    | Client-facing allotments                                                              |
+| `/admin/payroll`              | Redirects to `/admin/workforce?tab=payroll`                                           |
+| `/admin/plots-allotments`     | Plot allotment ERP table — schedules, receipts, dues                                  |
+| `/admin/portal-allotments`    | Client-facing allotments — approvals, candidates, deal value                          |
 | `/admin/properties`           | Property CRUD                                                                         |
 | `/admin/quotation`            | Quotation generator with GST breakdown and Indian words                               |
 | `/admin/quotation-records`    | Saved quotation records, filters, stats, PDF/image export, delete workflow            |
@@ -1778,6 +1886,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/admin/site-visits`          | Site visit management                                                                 |
 | `/admin/updates`              | System release timeline, categorized update stats, upcoming operational roadmap       |
 | `/admin/whatsapp`             | WhatsApp inbox, AI/human/paused mode, follow-ups, templates, lead drawer              |
+| `/admin/workforce`            | Workforce hub — directory, attendance, approvals, payroll, leads, reports, settings   |
 
 ### Employee
 
@@ -1788,6 +1897,7 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 | `/employee/attendance`         | Geofenced punch-in/out + shift guidelines          |
 | `/employee/attendance/history` | Attendance history                                 |
 | `/employee/work`               | Tasks / leads / daily logs / site visits tabs      |
+| `/employee/payroll`            | Payslips, salary breakdown, download history       |
 | `/employee/profile`            | Digital staff ID card + workspace settings         |
 | `/(employee)/attendance`       | Legacy route group for deep links                  |
 
@@ -1795,80 +1905,106 @@ Copy `.env.example` to `.env.local` and fill in real values. Server-side secrets
 
 #### Public
 
-| Route                                | Method   | Description              |
-| ------------------------------------ | -------- | ------------------------ |
-| `/api/chat`                          | POST     | Streaming AI chat        |
-| `/api/changelog`                     | GET      | Release changelog data   |
-| `/api/chat/leads`                    | POST     | Chat lead capture        |
-| `/api/chat/log`                      | POST     | Conversation logging     |
-| `/api/contact`                       | POST     | Contact form             |
-| `/api/cron/campaigns`                | POST     | Campaign processing      |
-| `/api/cron/cleanup-registrations`    | POST     | Registration cleanup     |
-| `/api/cron/lottery`                  | POST     | Draw execution           |
-| `/api/cron/process-scheduled-emails` | POST     | Scheduled email dispatch |
-| `/api/cron/whatsapp`                 | POST     | WhatsApp follow-ups      |
-| `/api/csrf-refresh`                  | GET      | CSRF token refresh       |
-| `/api/grievance`                     | POST     | Grievance form           |
-| `/api/lottery/schedule`              | GET      | Lottery schedule         |
-| `/api/map-tiles/[z]/[x]/[y]`         | GET      | MapLibre tile proxy      |
-| `/api/monitoring`                    | POST     | Sentry tunnel route      |
-| `/api/nearby-places`                 | GET      | Nearby places data       |
-| `/api/project-images`                | GET      | Image serving            |
-| `/api/properties`                    | GET      | Public listings          |
-| `/api/push/subscribe`                | POST     | Push subscription        |
-| `/api/push/unsubscribe`              | POST     | Push unsubscription      |
-| `/api/registration`                  | POST     | User registration        |
-| `/api/registration/captcha`          | GET      | Captcha challenge        |
-| `/api/site-visit`                    | POST     | Site visit request       |
-| `/api/webhooks/resend/incoming`      | POST     | Inbound email webhook    |
-| `/api/whatsapp/webhook`              | GET/POST | Meta Cloud API webhook   |
+| Route                                | Method   | Description                 |
+| ------------------------------------ | -------- | --------------------------- |
+| `/api/announcement`                  | GET      | Active announcement banner  |
+| `/api/changelog`                     | GET      | Release changelog data      |
+| `/api/chat`                          | POST     | Streaming AI chat           |
+| `/api/chat/leads`                    | POST     | Chat lead capture           |
+| `/api/chat/log`                      | POST     | Conversation logging        |
+| `/api/contact`                       | POST     | Contact form                |
+| `/api/cron/campaigns`                | GET      | Campaign processing         |
+| `/api/cron/cleanup-registrations`    | GET      | Registration cleanup        |
+| `/api/cron/hot-leads-digest`         | GET      | Multi-channel hot-lead push |
+| `/api/cron/lead-sla-escalation`      | GET      | Lead SLA breach escalation  |
+| `/api/cron/lottery`                  | GET      | Draw execution              |
+| `/api/cron/process-scheduled-emails` | GET      | Scheduled email dispatch    |
+| `/api/cron/whatsapp`                 | GET      | WhatsApp follow-ups         |
+| `/api/csrf-refresh`                  | GET      | CSRF token refresh          |
+| `/api/grievance`                     | POST     | Grievance form              |
+| `/api/indexnow`                      | GET/POST | IndexNow / sitemap ping     |
+| `/api/lottery/schedule`              | GET      | Lottery schedule            |
+| `/api/map-tiles/[z]/[x]/[y]`         | GET      | MapLibre tile proxy         |
+| `/api/monitoring`                    | POST     | Sentry tunnel route         |
+| `/api/nearby-places`                 | GET      | Nearby places data          |
+| `/api/project-images`                | GET      | Image serving               |
+| `/api/properties`                    | GET      | Public listings             |
+| `/api/push/subscribe`                | POST     | Push subscription           |
+| `/api/push/unsubscribe`              | POST     | Push unsubscription         |
+| `/api/registration`                  | POST     | User registration           |
+| `/api/registration/captcha`          | GET      | Captcha challenge           |
+| `/api/site-visit`                    | POST     | Site visit request          |
+| `/api/webhooks/resend/incoming`      | POST     | Inbound email webhook       |
+| `/api/whatsapp/webhook`              | GET/POST | Meta Cloud API webhook      |
 
 #### Employee
 
-| Route                                 | Method   | Description                       |
-| ------------------------------------- | -------- | --------------------------------- |
-| `/api/employee/attendance/punch-in`   | POST     | Geofenced punch-in                |
-| `/api/employee/attendance/punch-out`  | POST     | Punch-out with work log           |
-| `/api/employee/attendance/status`     | GET      | Current attendance status         |
-| `/api/employee/attendance/history`    | GET      | Attendance history                |
-| `/api/employee/attendance/leaves`     | GET      | Leave records                     |
-| `/api/employee/attendance/regularize` | POST     | Attendance regularization request |
-| `/api/employee/work/dashboard`        | GET      | Work dashboard metrics            |
-| `/api/employee/work/tasks`            | GET      | Assigned tasks                    |
-| `/api/employee/work/leads`            | GET      | Assigned leads                    |
-| `/api/employee/work/logs`             | GET/POST | Daily work logs                   |
-| `/api/employee/work/site-visits`      | GET      | Assigned site visits              |
+| Route                                      | Method   | Description                       |
+| ------------------------------------------ | -------- | --------------------------------- |
+| `/api/employee/attendance/check-in`        | POST     | Quick punch-in shortcut           |
+| `/api/employee/attendance/punch-in`        | POST     | Geofenced punch-in                |
+| `/api/employee/attendance/punch-out`       | POST     | Punch-out with work log           |
+| `/api/employee/attendance/status`          | GET      | Current attendance status         |
+| `/api/employee/attendance/history`         | GET      | Attendance history                |
+| `/api/employee/attendance/leaves`          | GET      | Leave records                     |
+| `/api/employee/attendance/regularize`      | POST     | Attendance regularization request |
+| `/api/employee/payroll`                    | GET      | Monthly payslips & salary summary |
+| `/api/employee/payroll/[id]/payslip`       | GET      | Download a payslip PDF            |
+| `/api/employee/profile/change-password`    | POST     | Self-service password change      |
+| `/api/employee/work/dashboard`             | GET      | Work dashboard metrics            |
+| `/api/employee/work/tasks`                 | GET      | Assigned tasks                    |
+| `/api/employee/work/leads`                 | GET      | Assigned leads                    |
+| `/api/employee/work/leads/[id]/activities` | GET      | Lead interaction timeline         |
+| `/api/employee/work/logs`                  | GET/POST | Daily work logs                   |
+| `/api/employee/work/site-visits`           | GET      | Assigned site visits              |
 
 #### Admin
 
-| Route                                                      | Description             |
-| ---------------------------------------------------------- | ----------------------- |
-| `/api/admin/activities`                                    | Activity log CRUD       |
-| `/api/admin/analytics`                                     | Analytics endpoints     |
-| `/api/admin/attendance/records` (+ `/pending`)             | Attendance records      |
-| `/api/admin/attendance/analytics`                          | Attendance analytics    |
-| `/api/admin/attendance/report`                             | Attendance reports      |
-| `/api/admin/attendance/approve`                            | Attendance approvals    |
-| `/api/admin/attendance/live`                               | Live attendance feed    |
-| `/api/admin/attendance/locations`                          | Geofence locations      |
-| `/api/admin/attendance/settings`                           | Attendance settings     |
-| `/api/admin/attendance/teams` (+ `/[id]/members/[userId]`) | Team management         |
-| `/api/admin/bba`                                           | BBA management          |
-| `/api/admin/campaigns` (+ `/[id]`, `/[id]/send`)           | Email campaigns         |
-| `/api/admin/careers`                                       | Careers CRUD            |
-| `/api/admin/contacts`                                      | Contact list for picker |
-| `/api/admin/contact-groups` (+ `/[id]`)                    | Contact groups          |
-| `/api/admin/documents` (+ `[id]`)                          | Document CRUD           |
-| `/api/admin/email` (+ `/ai`, `/status`)                    | Email sending + AI      |
-| `/api/admin/employees` (+ `[id]`)                          | Employee CRUD           |
-| `/api/admin/ivr`                                           | IVR endpoints           |
-| `/api/admin/lottery` (+ `/draw`, `/schedule`)              | Draw management         |
-| `/api/admin/notifications` (+ `[id]`)                      | Notification CRUD       |
-| `/api/admin/properties`                                    | Property CRUD           |
-| `/api/admin/registrations` (+ `/analytics`, `/filters`)    | Registration management |
-| `/api/admin/settings`                                      | Portal settings         |
-| `/api/admin/users` (+ `[id]`)                              | User CRUD               |
-| `/api/admin/whatsapp`                                      | WhatsApp inbox mgmt     |
+| Route                                                                                                                                                  | Description                             |
+| ------------------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------- |
+| `/api/admin/activities`                                                                                                                                | Activity log CRUD                       |
+| `/api/admin/analytics`                                                                                                                                 | Analytics endpoints                     |
+| `/api/admin/attendance/analytics`                                                                                                                      | Attendance analytics                    |
+| `/api/admin/attendance/approve`                                                                                                                        | Attendance approvals                    |
+| `/api/admin/attendance/leaves` (+ `/[id]`)                                                                                                             | Leave requests                          |
+| `/api/admin/attendance/live`                                                                                                                           | Live attendance feed                    |
+| `/api/admin/attendance/locations` (+ `/[id]`)                                                                                                          | Geofence locations                      |
+| `/api/admin/attendance/records` (+ `/pending`)                                                                                                         | Attendance records                      |
+| `/api/admin/attendance/regularizations` (+ `/[id]`)                                                                                                    | Regularization requests                 |
+| `/api/admin/attendance/report`                                                                                                                         | Attendance reports                      |
+| `/api/admin/attendance/settings`                                                                                                                       | Attendance settings                     |
+| `/api/admin/attendance/teams` (+ `/[id]`, `/[id]/members`, `/[id]/members/[userId]`)                                                                   | Team management                         |
+| `/api/admin/campaigns` (+ `/[id]`, `/[id]/send`)                                                                                                       | Email campaigns                         |
+| `/api/admin/careers`                                                                                                                                   | Careers CRUD                            |
+| `/api/admin/contact-groups` (+ `/[id]`, `/[id]/members`)                                                                                               | Contact groups                          |
+| `/api/admin/contacts`                                                                                                                                  | Contact list for picker                 |
+| `/api/admin/crm/data-gaps`                                                                                                                             | CRM data-health radar                   |
+| `/api/admin/dashboard/executive`                                                                                                                       | Executive KPI dashboard                 |
+| `/api/admin/documents` (+ `/[id]`)                                                                                                                     | Document CRUD                           |
+| `/api/admin/dues`                                                                                                                                      | Outstanding dues ledger                 |
+| `/api/admin/email` (+ `/ai`, `/status`, `/templates`, `/erp-documents`)                                                                                | Email send, AI compose, ERP attachments |
+| `/api/admin/employees` (+ `/[id]`, `/[id]/leads`, `/[id]/logs`, `/[id]/performance`, `/[id]/tasks`)                                                    | Employee CRUD & performance             |
+| `/api/admin/ivr`                                                                                                                                       | IVR endpoints                           |
+| `/api/admin/leads` (+ `/[phone]`, `/[phone]/interactions`, `/bulk`, `/call-intelligence`, `/ivr-records`, `/ivr-upload`, `/performance`, `/recording`) | Lead CRM, telephony & call intelligence |
+| `/api/admin/lottery/draw`                                                                                                                              | Lottery draw execution                  |
+| `/api/admin/lottery/participants`                                                                                                                      | Lottery participants                    |
+| `/api/admin/lottery/schedule`                                                                                                                          | Lottery schedules                       |
+| `/api/admin/notifications` (+ `/[id]`)                                                                                                                 | Notification CRUD                       |
+| `/api/admin/payroll/salary-structures`                                                                                                                 | Salary structures (in-hand model)       |
+| `/api/admin/payroll/monthly` (+ `/[id]`, `/[id]/item/[itemId]`, `/[id]/toggle-download`, `/calculate`)                                                 | Monthly payroll runs                    |
+| `/api/admin/portal-allotments/approve`                                                                                                                 | Client allotment approvals              |
+| `/api/admin/portal-allotments/candidates`                                                                                                              | Allotment candidates                    |
+| `/api/admin/portal-allotments/deal-value`                                                                                                              | Deal value computation                  |
+| `/api/admin/portal-allotments/manage`                                                                                                                  | Allotment management                    |
+| `/api/admin/properties`                                                                                                                                | Property CRUD                           |
+| `/api/admin/push/send`                                                                                                                                 | Send push notification                  |
+| `/api/admin/push/subscribers`                                                                                                                          | Push subscriber list                    |
+| `/api/admin/quotation/next-number`                                                                                                                     | Quotation number sequence               |
+| `/api/admin/registrations` (+ `/analytics`, `/filters`)                                                                                                | Registration management                 |
+| `/api/admin/settings` (+ `/hot-lead-alerts`)                                                                                                           | Portal settings & alert routing         |
+| `/api/admin/translate`                                                                                                                                 | Bulk translation helper                 |
+| `/api/admin/users` (+ `/[id]`, `/check-unique`)                                                                                                        | User CRUD                               |
+| `/api/admin/whatsapp`                                                                                                                                  | WhatsApp inbox mgmt                     |
 
 ---
 
@@ -2040,22 +2176,25 @@ supabase db push
 
 ### Key migration files (`supabase/migrations/`)
 
-| File                                           | Purpose                 |
-| ---------------------------------------------- | ----------------------- |
-| `20260520120000_forms_tables.sql`              | Form submission tables  |
-| `20260520130000_attendance_tables.sql`         | Attendance tables       |
-| `20260522130000_create_portal_settings.sql`    | Portal settings         |
-| `20260528150000_create_lotteries_table.sql`    | Lottery system          |
-| `20260529140000_create_properties_table.sql`   | Properties table        |
-| `20260609000001_create_chat_leads.sql`         | Chat leads table        |
-| `20260609000002_create_chat_logs.sql`          | Chat logs table         |
-| `20260611000000_customer_portal_tables.sql`    | Customer portal tables  |
-| `20260611110000_create_scheduled_emails.sql`   | Scheduled emails        |
-| `20260621054522_create_email_drafts.sql`       | Email drafts            |
-| `20260628000001_create_push_subscriptions.sql` | Push subscriptions      |
-| `20260706000000_create_careers_table.sql`      | Careers/jobs table      |
-| `20260711130000_create_assets_bucket.sql`      | Storage bucket setup    |
-| `20260802000003_fix_contact_groups_rls.sql`    | Latest security/RLS fix |
+| File                                                 | Purpose                  |
+| ---------------------------------------------------- | ------------------------ |
+| `20260520120000_forms_tables.sql`                    | Form submission tables   |
+| `20260520130000_attendance_tables.sql`               | Attendance tables        |
+| `20260522130000_create_portal_settings.sql`          | Portal settings          |
+| `20260528150000_create_lotteries_table.sql`          | Lottery system           |
+| `20260529140000_create_properties_table.sql`         | Properties table         |
+| `20260609000001_create_chat_leads.sql`               | Chat leads table         |
+| `20260609000002_create_chat_logs.sql`                | Chat logs table          |
+| `20260611000000_customer_portal_tables.sql`          | Customer portal tables   |
+| `20260611110000_create_scheduled_emails.sql`         | Scheduled emails         |
+| `20260621054522_create_email_drafts.sql`             | Email drafts             |
+| `20260628000001_create_push_subscriptions.sql`       | Push subscriptions       |
+| `20260706000000_create_careers_table.sql`            | Careers/jobs table       |
+| `20260711130000_create_assets_bucket.sql`            | Storage bucket setup     |
+| `20260916_real_estate_crm_suite.sql`                 | CRM suite tables         |
+| `20260923010000_leads_hub_high_performance_rpcs.sql` | Leads hub RPCs           |
+| `20261028_lead_sla_tracking.sql`                     | Lead SLA tracking        |
+| `20261029_payroll_in_hand_support.sql`               | Latest — payroll in-hand |
 
 ---
 
@@ -2191,25 +2330,24 @@ git push origin main    # auto-deploys via GitHub integration
 
 ## 🤝 Third-Party Integrations
 
-| Service                   | Usage                                                         |
-| ------------------------- | ------------------------------------------------------------- |
-| **Groq (Llama 4)**        | Streaming chatbot via Vercel AI SDK                           |
-| **Google Gemini**         | Server-side content generation                                |
-| **MapLibre GL**           | Open-source project location maps (no API key)                |
-| **Resend**                | Transactional email + marketing campaigns + domain mgmt       |
-| **TipTap**                | Rich text editor for email composer                           |
-| **Vercel Analytics**      | Privacy-friendly traffic tracking                             |
-| **Vercel Speed Insights** | Real-user Core Web Vitals (LCP, INP, CLS)                     |
-| **Supabase Realtime**     | WebSocket updates for notifications & activity feed           |
-| **ExcelJS**               | Excel parsing & export                                        |
-| **Sonner**                | Toast notifications                                           |
-| **web-push**              | Server-side push notification sending (VAPID)                 |
-| **canvas-confetti**       | Lottery win celebrations                                      |
-| **Zod**                   | API payload validation                                        |
-| **Radix UI**              | Accessible headless UI primitives (dialog, dropdown, tooltip) |
-| **TanStack React Table**  | Data table management for admin panels                        |
-| **html2pdf.js**           | Alternative PDF generation                                    |
-| **heic-convert**          | HEIC image format conversion in browser                       |
+| Service                          | Usage                                                         |
+| -------------------------------- | ------------------------------------------------------------- |
+| **Groq (`openai/gpt-oss-120b`)** | Streaming chatbot via Vercel AI SDK                           |
+| **MapLibre GL**                  | Open-source project location maps (no API key)                |
+| **Resend**                       | Transactional email + marketing campaigns + domain mgmt       |
+| **TipTap**                       | Rich text editor for email composer                           |
+| **Vercel Analytics**             | Privacy-friendly traffic tracking                             |
+| **Vercel Speed Insights**        | Real-user Core Web Vitals (LCP, INP, CLS)                     |
+| **Supabase Realtime**            | WebSocket updates for notifications & activity feed           |
+| **ExcelJS**                      | Excel parsing & export                                        |
+| **Sonner**                       | Toast notifications                                           |
+| **web-push**                     | Server-side push notification sending (VAPID)                 |
+| **canvas-confetti**              | Lottery win celebrations                                      |
+| **Zod**                          | API payload validation                                        |
+| **Radix UI**                     | Accessible headless UI primitives (dialog, dropdown, tooltip) |
+| **TanStack React Table**         | Data table management for admin panels                        |
+| **html2pdf.js**                  | Alternative PDF generation                                    |
+| **heic-convert**                 | HEIC image format conversion in browser                       |
 
 ---
 

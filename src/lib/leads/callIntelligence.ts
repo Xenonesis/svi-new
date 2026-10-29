@@ -5,6 +5,7 @@ import {
   deriveStoragePath,
   syncRecordingToInHouseStorage,
 } from '@/src/lib/leads/syncRecordingToStorage';
+import { dispatchHotLeadAlert } from '@/src/lib/leads/hotLeadNotification';
 export interface QualityScorecard {
   pitch_clarity: number; // 1-10
   objection_handling: number; // 1-10
@@ -332,16 +333,24 @@ export async function generateCallIntelligence(params: {
   const { customerPhone, recordingUrl, callRecordId, forceRefresh } = params;
 
   // 1. Check existing cached intelligence in DB
-  if (!forceRefresh && callRecordId) {
+  let directStoragePath: string | null = null;
+  if (callRecordId) {
     const { data: existingRecord } = await supabaseAdmin
       .from('ivr_call_records')
       .select('id, raw_payload')
       .eq('id', callRecordId)
       .single();
 
-    const cached = existingRecord?.raw_payload?.ai_intelligence as CallIntelligence | undefined;
-    if (cached && cached.summary && cached.transcript) {
-      return cached;
+    if (!forceRefresh) {
+      const cached = existingRecord?.raw_payload?.ai_intelligence as CallIntelligence | undefined;
+      if (cached && cached.summary && cached.transcript) {
+        return cached;
+      }
+    }
+
+    const sp = existingRecord?.raw_payload?.storage_path;
+    if (sp && sp !== 'expired_404') {
+      directStoragePath = sp;
     }
   }
 
@@ -351,10 +360,12 @@ export async function generateCallIntelligence(params: {
   let resolvedMimeType = 'audio/mpeg';
 
   const basePath = deriveStoragePath(customerPhone, recordingUrl);
-  const candidates = [
-    basePath.replace(/\.wav$/i, '.mp3'),
-    basePath.endsWith('.wav') ? basePath : basePath.replace(/\.mp3$/i, '.wav'),
-  ];
+  const candidates: string[] = [];
+  if (directStoragePath) {
+    candidates.push(directStoragePath);
+  }
+  candidates.push(basePath.replace(/\.wav$/i, '.mp3'));
+  candidates.push(basePath.endsWith('.wav') ? basePath : basePath.replace(/\.mp3$/i, '.wav'));
 
   for (const candidatePath of candidates) {
     try {
@@ -450,13 +461,23 @@ export async function generateCallIntelligence(params: {
         .from('ivr_call_records')
         .update({ raw_payload: updatedPayload })
         .eq('id', targetRecordId);
-      // If Hot lead, sync temperature to chat_leads
+      // If Hot lead, sync temperature to chat_leads and dispatch VIP alerts
       if (intelligence.interest_level === 'Hot' && customerPhone) {
         const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
         await supabaseAdmin
           .from('chat_leads')
           .update({ temperature: 'hot' })
           .ilike('phone', `%${cleanPhone}%`);
+
+        // Dispatch instant VIP Hot Lead Alerts (Email + In-App Notification)
+        dispatchHotLeadAlert({
+          customerPhone,
+          intelligence,
+          duration: intelligence.duration,
+          callRecordId: targetRecordId,
+        }).catch((alertErr) => {
+          console.warn('Failed to dispatch instant hot lead alert:', alertErr);
+        });
       }
     } catch (saveError) {
       console.warn('Failed to cache call intelligence into database:', saveError);

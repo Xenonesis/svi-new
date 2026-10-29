@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, PhoneCall, Globe, Users, Clock, RotateCcw } from 'lucide-react';
+import Link from 'next/link';
+import { BarChart3, PhoneCall, Globe, Users, Clock, RotateCcw, Flame } from 'lucide-react';
 
 export type LeadsTab = 'dashboard' | 'ivr' | 'queue' | 'redial' | 'chatbot' | 'all' | 'unassigned';
 export type LeadsTabType = LeadsTab;
@@ -97,6 +98,17 @@ export function LeadsTabNav({
         <Users className="h-3.5 w-3.5" />
         <span>All Consolidated Pipeline</span>
       </button>
+
+      <div className="ml-auto flex items-center">
+        <Link
+          href="/admin/settings?tab=notifications"
+          className="flex items-center gap-1.5 rounded-xl border border-amber-500/30 bg-amber-500/10 px-3 py-1.5 text-xs font-bold text-amber-600 transition-all hover:bg-amber-500/20 active:scale-95 dark:text-amber-400"
+          title="Manage who receives instant email & in-app alerts on Hot Leads"
+        >
+          <Flame className="h-3.5 w-3.5 text-amber-500 dark:text-amber-400" />
+          <span>Hot Lead Alerts</span>
+        </Link>
+      </div>
     </div>
   );
 }

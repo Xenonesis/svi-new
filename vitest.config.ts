@@ -17,6 +17,8 @@ export default defineConfig({
       'tests/**/*.test.tsx',
       'src/**/*.test.ts',
       'src/**/*.test.tsx',
+      'app/**/*.test.ts',
+      'app/**/*.test.tsx',
     ],
   },
   resolve: {
