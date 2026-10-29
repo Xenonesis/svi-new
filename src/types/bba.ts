@@ -2,6 +2,8 @@ export interface SavedBba {
   id: string;
   document_type: string;
   status: string;
+  pdf_url?: string | null;
+  metadata?: Record<string, unknown> | null;
   created_at: string;
   form_data: {
     salutation: string;

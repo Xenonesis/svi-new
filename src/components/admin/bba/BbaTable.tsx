@@ -1,5 +1,5 @@
 import { motion } from 'motion/react';
-import { Eye, FileText, Mail, Trash2, Search, Calendar, Globe, Phone } from 'lucide-react';
+import { Eye, FileText, Mail, Trash2, Search, Calendar, Globe, Phone, Lock } from 'lucide-react';
 import Link from 'next/link';
 import { SkeletonBlock } from '@/src/components/ui/DynamicSkeleton';
 import { SavedBba } from '@/src/types/bba';
@@ -156,8 +156,18 @@ export default function BbaTable({
                       {getInitials(record.form_data?.clientName)}
                     </span>
                     <div className="min-w-0">
-                      <div className="truncate font-semibold text-gray-900 capitalize dark:text-white">
-                        {record.form_data?.clientName || 'N/A'}
+                      <div className="flex items-center gap-1.5 truncate font-semibold text-gray-900 capitalize dark:text-white">
+                        <span>{record.form_data?.clientName || 'N/A'}</span>
+                        {(Boolean(record.metadata?.is_locked) ||
+                          Boolean(record.form_data?.is_locked)) && (
+                          <span
+                            className="inline-flex items-center gap-1 rounded border border-amber-500/20 bg-amber-500/10 px-1.5 py-0.5 text-[9px] font-bold tracking-wider text-amber-600 uppercase dark:text-amber-400"
+                            title="Legally Executed Agreement (Locked)"
+                          >
+                            <Lock className="h-2.5 w-2.5" />
+                            Locked
+                          </span>
+                        )}
                       </div>
                       <div className="flex items-center gap-2 font-mono text-[10px] text-gray-400 dark:text-gray-500">
                         {record.form_data?.phone ? (
@@ -215,22 +225,44 @@ export default function BbaTable({
                 {/* Actions */}
                 <td className="px-4 py-3 text-right align-middle">
                   <div className="flex items-center justify-end gap-1.5">
-                    <button
-                      onClick={() => onSelectBba(record)}
-                      className="hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-amber-500/30 hover:bg-amber-500/10 active:scale-95"
-                      title="View & Print Builder-Buyer Agreement"
-                      aria-label="View & Print"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </button>
-                    <Link
-                      href={`/admin/bba?templateId=${record.id}`}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
-                      title="Use as Template"
-                      aria-label="Use as Template"
-                    >
-                      <FileText className="h-4 w-4" />
-                    </Link>
+                    {record.pdf_url ? (
+                      <a
+                        href={record.pdf_url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-amber-500 transition-all hover:border-amber-500/30 hover:bg-amber-500/10 active:scale-95"
+                        title="View Final Signed BBA (PDF)"
+                        aria-label="View Signed PDF"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => onSelectBba(record)}
+                        className="hover:text-brand-gold flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-amber-500/30 hover:bg-amber-500/10 active:scale-95"
+                        title="View & Print Builder-Buyer Agreement"
+                        aria-label="View & Print"
+                      >
+                        <Eye className="h-4 w-4" />
+                      </button>
+                    )}
+                    {Boolean(record.metadata?.is_locked) || Boolean(record.form_data?.is_locked) ? (
+                      <span
+                        className="flex h-8 w-8 cursor-not-allowed items-center justify-center rounded-lg text-gray-300 opacity-40 dark:text-gray-600"
+                        title="Locked: Final executed agreement cannot be modified"
+                      >
+                        <Lock className="h-3.5 w-3.5" />
+                      </span>
+                    ) : (
+                      <Link
+                        href={`/admin/bba?templateId=${record.id}`}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-blue-500/30 hover:bg-blue-500/10 hover:text-blue-500 active:scale-95"
+                        title="Use as Template"
+                        aria-label="Use as Template"
+                      >
+                        <FileText className="h-4 w-4" />
+                      </Link>
+                    )}
                     <button
                       onClick={() => {
                         sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));
@@ -242,14 +274,18 @@ export default function BbaTable({
                     >
                       <Mail className="h-4 w-4" />
                     </button>
-                    <button
-                      onClick={() => onDeleteBba(record)}
-                      className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
-                      title="Delete BBA Record"
-                      aria-label="Delete Record"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {!(
+                      Boolean(record.metadata?.is_locked) || Boolean(record.form_data?.is_locked)
+                    ) && (
+                      <button
+                        onClick={() => onDeleteBba(record)}
+                        className="flex h-8 w-8 items-center justify-center rounded-lg border border-transparent text-gray-400 transition-all hover:scale-105 hover:border-rose-500/30 hover:bg-rose-500/10 hover:text-rose-500 active:scale-95"
+                        title="Delete BBA Record"
+                        aria-label="Delete Record"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    )}
                   </div>
                 </td>
               </motion.tr>

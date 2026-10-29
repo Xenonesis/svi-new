@@ -1,7 +1,14 @@
 export interface SavedAllotment {
   id: string;
-  document_type: string;
   status: string;
+  pdf_url?: string | null;
+  metadata?: {
+    bba_url?: string;
+    bba_document_id?: string;
+    bba_status?: string;
+    bba_locked?: boolean;
+    [key: string]: unknown;
+  } | null;
   created_at: string;
   form_data: {
     clientName: string;
@@ -25,6 +32,17 @@ export interface SavedAllotment {
     fatherName?: string;
     onBookingPaymentRef?: string;
     within15DaysPaymentRef?: string;
+    bba_url?: string;
+    refundStatus?: string;
+    notes?: string;
+    remarks?: string;
+    phone?: string;
+    mobile?: string;
+    contactNumber?: string;
+    clientPhone?: string;
+    email?: string;
+    clientEmail?: string;
+    [key: string]: unknown;
   };
 }
 

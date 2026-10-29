@@ -202,13 +202,9 @@ export function AllotmentTable({
                   : { date: '—', time: '' };
                 const isHighlighted = highlightedId === record.id;
                 const isRefundDone =
-                  (record.form_data as Record<string, any>)?.refundStatus === 'Refund Done' ||
-                  (record.form_data as Record<string, any>)?.notes
-                    ?.toLowerCase()
-                    .includes('refund') ||
-                  (record.form_data as Record<string, any>)?.remarks
-                    ?.toLowerCase()
-                    .includes('refund');
+                  record.form_data?.refundStatus === 'Refund Done' ||
+                  record.form_data?.notes?.toLowerCase().includes('refund') ||
+                  record.form_data?.remarks?.toLowerCase().includes('refund');
 
                 const displayName =
                   record.form_data?.applicantName || record.form_data?.clientName || 'N/A';
@@ -216,15 +212,14 @@ export function AllotmentTable({
                   ? record.form_data.ticketId.trim().toLowerCase()
                   : '';
                 const contactFromMap = rawTicketId ? CLIENT_CONTACT_MAP[rawTicketId] : undefined;
-                const formDataAny = (record.form_data || {}) as Record<string, string | undefined>;
+                const fd = record.form_data;
                 const clientPhone =
-                  formDataAny.phone ||
-                  formDataAny.mobile ||
-                  formDataAny.contactNumber ||
-                  formDataAny.clientPhone ||
+                  fd?.phone ||
+                  fd?.mobile ||
+                  fd?.contactNumber ||
+                  fd?.clientPhone ||
                   contactFromMap?.phone;
-                const clientEmail =
-                  formDataAny.email || formDataAny.clientEmail || contactFromMap?.email;
+                const clientEmail = fd?.email || fd?.clientEmail || contactFromMap?.email;
 
                 return (
                   <motion.tr
@@ -397,14 +392,27 @@ export function AllotmentTable({
                         >
                           <FileText className="h-3.5 w-3.5" />
                         </Link>
-                        <Link
-                          href={`/admin/bba?allotmentId=${record.id}`}
-                          className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-amber-400/50 dark:hover:bg-amber-400/15 dark:hover:text-amber-400"
-                          title="Create BBA from Allotment"
-                          aria-label="Create BBA"
-                        >
-                          <Building2 className="h-3.5 w-3.5" />
-                        </Link>
+                        {record.metadata?.bba_url || record.form_data?.bba_url ? (
+                          <a
+                            href={record.metadata?.bba_url || record.form_data?.bba_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-amber-500/50 bg-amber-500/10 text-amber-600 shadow-2xs transition-all hover:scale-105 hover:bg-amber-500/20 active:scale-95 dark:text-amber-400"
+                            title="View Final Signed BBA Agreement (PDF)"
+                            aria-label="View Signed BBA"
+                          >
+                            <Building2 className="h-3.5 w-3.5" />
+                          </a>
+                        ) : (
+                          <Link
+                            href={`/admin/bba?allotmentId=${record.id}`}
+                            className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-200/80 bg-white text-gray-500 shadow-2xs transition-all hover:scale-105 hover:border-amber-500/50 hover:bg-amber-500/10 hover:text-amber-500 active:scale-95 dark:border-white/10 dark:bg-white/5 dark:text-gray-400 dark:hover:border-amber-400/50 dark:hover:bg-amber-400/15 dark:hover:text-amber-400"
+                            title="Create BBA from Allotment"
+                            aria-label="Create BBA"
+                          >
+                            <Building2 className="h-3.5 w-3.5" />
+                          </Link>
+                        )}
                         <button
                           onClick={() => {
                             sessionStorage.setItem('emailPrefillRecord', JSON.stringify(record));

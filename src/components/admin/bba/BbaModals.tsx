@@ -10,6 +10,8 @@ import {
   ZoomIn,
   ZoomOut,
   RotateCcw,
+  Lock,
+  ExternalLink,
 } from 'lucide-react';
 import { SavedBba } from '@/src/types/bba';
 import type { CompanyInfo } from '@/src/components/admin/DocumentGenerator/AllotmentLetterPreview';
@@ -303,6 +305,18 @@ export function BbaPreviewModal({
         <div className="border-t border-gray-100 bg-gray-50/50 p-4 sm:p-5 dark:border-white/8 dark:bg-white/[0.02]">
           <h3 className="mb-3 text-sm font-bold text-gray-900 dark:text-white">Download Options</h3>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {selectedBba.pdf_url && (
+              <a
+                href={selectedBba.pdf_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 rounded-xl bg-amber-600 py-3 text-sm font-semibold text-white shadow-md transition-all hover:bg-amber-700 sm:col-span-2"
+              >
+                <Lock className="h-4 w-4" />
+                <ExternalLink className="h-4 w-4" />
+                View & Download Final Executed BBA (Signed PDF)
+              </a>
+            )}
             <button
               onClick={onDownloadPDF}
               disabled={pdfLoading}

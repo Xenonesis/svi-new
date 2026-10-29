@@ -2,7 +2,7 @@ import React from 'react';
 import { FormField, FormSelect } from '@/src/components/admin/DocumentGenerator/Shared';
 import { ActiveAllotmentTicketDropdown } from '@/src/components/admin/allotment-shared/ActiveAllotmentTicketDropdown';
 import type { ActiveAllotmentOption } from '@/src/components/admin/allotment-shared/types';
-import { RefreshCw, Plus, Loader2, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Plus, Loader2, AlertTriangle, Lock } from 'lucide-react';
 import Link from 'next/link';
 interface BBAFormProps {
   formData: any;
@@ -59,6 +59,28 @@ export function BBAForm({
 }: BBAFormProps) {
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {formData.is_locked && (
+        <div className="mb-6 rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-amber-900 shadow-sm dark:text-amber-200">
+          <div className="flex items-center gap-2 text-sm font-bold">
+            <Lock className="h-4 w-4 text-amber-500" />
+            Legally Executed & Locked Agreement
+          </div>
+          <p className="mt-1 text-xs text-amber-800 dark:text-amber-300">
+            This Builder-Buyer Agreement has been executed with the client and locked against
+            further edits.
+          </p>
+          {formData.pdf_url && (
+            <a
+              href={formData.pdf_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-3 inline-flex items-center gap-1.5 rounded-lg bg-amber-500 px-3 py-1.5 text-xs font-semibold text-gray-950 shadow-xs transition-all hover:bg-amber-400"
+            >
+              View Signed Original PDF
+            </a>
+          )}
+        </div>
+      )}
       <div className="border-brand-gold/20 bg-brand-gold/5 mb-6 rounded-xl border p-4">
         <p className="text-brand-gold mb-3 text-[10px] font-bold tracking-widest uppercase">
           Document Settings
@@ -521,6 +543,7 @@ export function BBAForm({
           <button
             type="button"
             onClick={(e) => {
+              if (formData.is_locked) return;
               const form = e.currentTarget.form;
               if (form && !form.checkValidity()) {
                 form.reportValidity();
@@ -529,15 +552,27 @@ export function BBAForm({
               if (handleUpdateExisting) handleUpdateExisting(e);
               else if (handleSubmit) handleSubmit(e);
             }}
-            disabled={isSubmitting}
-            className="bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all disabled:cursor-not-allowed disabled:opacity-50"
+            disabled={isSubmitting || Boolean(formData.is_locked)}
+            className={`flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg py-3.5 text-xs font-bold tracking-widest uppercase shadow-lg transition-all ${
+              formData.is_locked
+                ? 'cursor-not-allowed bg-gray-200 text-gray-500 opacity-60 dark:bg-white/10 dark:text-gray-400'
+                : 'bg-brand-gold hover:bg-brand-gold-light text-brand-navy glow-gold disabled:cursor-not-allowed disabled:opacity-50'
+            }`}
+            title={
+              formData.is_locked ? 'Locked: Final executed agreement cannot be modified' : undefined
+            }
           >
-            {isSubmitting ? (
+            {formData.is_locked ? (
+              <>
+                <Lock className="h-4 w-4" />
+                Locked Agreement (Final)
+              </>
+            ) : isSubmitting ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
               <RefreshCw className="h-4 w-4" />
             )}
-            Update Existing BBA
+            {!formData.is_locked && 'Update Existing BBA'}
           </button>
           <button
             type="button"
