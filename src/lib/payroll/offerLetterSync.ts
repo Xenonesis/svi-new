@@ -7,6 +7,7 @@ export interface OfferLetterDetails {
   mobileNo: string;
   designation: string;
   salaryCtc: number;
+  salaryType: 'in_hand' | 'ctc';
   target: number;
   targetUnit: string;
   offerSlab: string;
@@ -151,6 +152,7 @@ export async function getEmployeeOfferLetterMap(): Promise<Map<string, OfferLett
         mobileNo: fd.mobileNo || prof.phone,
         designation: fd.designation || prof.department || '',
         salaryCtc: parseFloat(fd.salaryCtc) || 0,
+        salaryType: String(fd.salaryType || '').toLowerCase() === 'in_hand' ? 'in_hand' : 'ctc',
         target: parseFloat(fd.target) || 0,
         targetUnit: fd.targetUnit || 'Sq. Yd.',
         offerSlab: fd.offerSlab || '',
@@ -187,15 +189,17 @@ export async function autoSyncOfferLettersToStructures(
   const toUpsert = [];
 
   for (const [userId, offer] of offerMap.entries()) {
+    const isInHand = offer.salaryType === 'in_hand';
     if (!existingUserIds.has(userId) && offer.salaryCtc > 0) {
       const base = offer.salaryCtc;
-      const basic = Math.round(base * 0.5); // 50% Basic
-      const hra = Math.round(base * 0.3); // 30% HRA
-      const special = Math.max(0, base - (basic + hra)); // 20% Special
+      const basic = Math.round(base * 0.5);
+      const hra = Math.round(base * 0.3);
+      const special = Math.max(0, base - (basic + hra));
 
       toUpsert.push({
         user_id: userId,
         base_salary: base,
+        salary_type: isInHand ? 'in_hand' : 'ctc',
         basic_pay: basic,
         hra: hra,
         special_allowance: special,
@@ -203,7 +207,7 @@ export async function autoSyncOfferLettersToStructures(
         medical_allowance: 0,
         pf_deduction: 0,
         esi_deduction: 0,
-        professional_tax: 200,
+        professional_tax: isInHand ? 0 : 200,
         tds: 0,
         is_active: true,
       });

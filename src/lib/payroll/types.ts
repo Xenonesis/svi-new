@@ -2,6 +2,7 @@ export interface SalaryStructure {
   id: string;
   user_id: string;
   base_salary: number;
+  salary_type?: 'in_hand' | 'ctc';
   basic_pay: number;
   hra: number;
   special_allowance: number;
@@ -93,6 +94,7 @@ export interface PayrollItem {
   medical_allowance: number;
   gross_earnings: number;
 
+  salary_type?: 'in_hand' | 'ctc';
   // Deductions & Adjustments
   lop_deduction: number;
   pf_deduction: number;

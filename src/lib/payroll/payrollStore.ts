@@ -75,6 +75,7 @@ export const payrollStore = {
           id: s.id,
           user_id: s.user_id,
           base_salary: Number(s.base_salary || 0),
+          salary_type: (s.salary_type || offer?.salaryType || 'ctc') as 'in_hand' | 'ctc',
           basic_pay: Number(s.basic_pay || 0),
           hra: Number(s.hra || 0),
           special_allowance: Number(s.special_allowance || 0),
@@ -144,17 +145,19 @@ export const payrollStore = {
         const hra = Math.round(base * 0.3);
         const special = Math.max(0, base - (basic + hra));
 
+        const isInHand = offer.salaryType === 'in_hand';
         const { data: created, error: createErr } = await supabaseAdmin
           .from('employee_salary_structures')
           .upsert(
             {
               user_id: userId,
               base_salary: base,
+              salary_type: isInHand ? 'in_hand' : 'ctc',
               basic_pay: basic,
               hra: hra,
               special_allowance: special,
               conveyance_allowance: offer.conveyanceAllowanceAmount || 0,
-              professional_tax: 200,
+              professional_tax: isInHand ? 0 : 200,
               is_active: true,
             },
             { onConflict: 'user_id' }
@@ -178,6 +181,7 @@ export const payrollStore = {
         id: data.id,
         user_id: data.user_id,
         base_salary: Number(data.base_salary || 0),
+        salary_type: (data.salary_type || offer?.salaryType || 'ctc') as 'in_hand' | 'ctc',
         basic_pay: Number(data.basic_pay || 0),
         hra: Number(data.hra || 0),
         special_allowance: Number(data.special_allowance || 0),
@@ -235,6 +239,7 @@ export const payrollStore = {
 
     const record = {
       user_id: payload.user_id,
+      salary_type: payload.salary_type || 'ctc',
       base_salary: base,
       basic_pay: basic,
       hra: hra,
@@ -243,7 +248,9 @@ export const payrollStore = {
       medical_allowance: Number(payload.medical_allowance || 0),
       pf_deduction: Number(payload.pf_deduction || 0),
       esi_deduction: Number(payload.esi_deduction || 0),
-      professional_tax: Number(payload.professional_tax ?? 200),
+      professional_tax: Number(
+        payload.professional_tax ?? (payload.salary_type === 'in_hand' ? 0 : 200)
+      ),
       tds: Number(payload.tds || 0),
       bank_name: payload.bank_name || null,
       account_number: payload.account_number || null,
@@ -399,6 +406,8 @@ export const payrollStore = {
           offer_target_unit: offerMap.get(item.user_id)?.targetUnit || null,
           offer_slab: offerMap.get(item.user_id)?.offerSlab || null,
 
+          salary_type: (item.salary_type || offerMap.get(item.user_id)?.salaryType || 'ctc') as
+            'in_hand' | 'ctc',
           total_month_days: item.total_month_days,
           working_days: item.working_days,
           present_days: Number(item.present_days || 0),
@@ -531,17 +540,18 @@ export const payrollStore = {
       const lopDays = Math.max(0, Number((workingDays - effectiveDays).toFixed(1)));
       const absentDays = att.absent || lopDays;
 
+      const salaryType = struct.salary_type || 'ctc';
+      const isInHand = salaryType === 'in_hand';
       const baseSalary = struct.base_salary;
       const grossEarnings = baseSalary;
 
-      // LOP deduction formula: (Gross / Total Days) * LOP Days
       const perDaySalary = daysInMonth > 0 ? grossEarnings / daysInMonth : 0;
       const lopDeduction = Math.round(perDaySalary * lopDays);
 
-      const pf = struct.pf_deduction;
-      const esi = struct.esi_deduction;
-      const pt = struct.professional_tax;
-      const tds = struct.tds;
+      const pf = isInHand ? 0 : struct.pf_deduction;
+      const esi = isInHand ? 0 : struct.esi_deduction;
+      const pt = isInHand ? 0 : struct.professional_tax;
+      const tds = isInHand ? 0 : struct.tds;
 
       const itemDeductions = lopDeduction + pf + esi + pt + tds;
       const netSalary = Math.max(0, Math.round(grossEarnings - itemDeductions));
@@ -566,6 +576,7 @@ export const payrollStore = {
         lop_days: lopDays,
 
         base_salary: baseSalary,
+        salary_type: salaryType,
         basic_pay: struct.basic_pay,
         hra: struct.hra,
         special_allowance: struct.special_allowance,

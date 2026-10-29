@@ -370,6 +370,15 @@ export function MonthlyPayrollRunView({ token, onViewPayslip }: MonthlyPayrollRu
                         </div>
                         <div className="text-[11px] text-gray-500">{item.employee_email}</div>
                         <div className="mt-1 flex flex-wrap items-center gap-1.5">
+                          {item.salary_type === 'in_hand' ? (
+                            <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 uppercase dark:text-emerald-400">
+                              In-Hand
+                            </span>
+                          ) : (
+                            <span className="rounded border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-bold text-blue-600 uppercase dark:text-blue-400">
+                              CTC
+                            </span>
+                          )}
                           {item.employee_department && (
                             <span className="inline-block rounded-md bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-600 dark:bg-white/10 dark:text-gray-300">
                               {item.employee_department}

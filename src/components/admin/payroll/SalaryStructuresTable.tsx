@@ -400,9 +400,20 @@ export function SalaryStructuresTable({
                         <td className="px-4 py-4 text-right">
                           {structure ? (
                             <div>
-                              <span className="font-mono text-sm font-bold text-gray-900 dark:text-white">
-                                {formatINR(structure.base_salary)}
-                              </span>
+                              <div className="flex items-center justify-end gap-1.5">
+                                <span className="font-mono text-sm font-bold text-gray-900 dark:text-white">
+                                  {formatINR(structure.base_salary)}
+                                </span>
+                                {structure.salary_type === 'in_hand' ? (
+                                  <span className="rounded border border-emerald-500/20 bg-emerald-500/10 px-1.5 py-0.5 text-[9px] font-bold text-emerald-600 uppercase dark:text-emerald-400">
+                                    In-Hand
+                                  </span>
+                                ) : (
+                                  <span className="rounded border border-blue-500/20 bg-blue-500/10 px-1.5 py-0.5 text-[9px] font-bold text-blue-600 uppercase dark:text-blue-400">
+                                    CTC
+                                  </span>
+                                )}
+                              </div>
                               <span className="block text-[10px] font-medium text-gray-500 dark:text-gray-400">
                                 / month
                               </span>

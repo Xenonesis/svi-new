@@ -151,6 +151,7 @@ export function SalaryStructureModal({
 }: SalaryStructureModalProps) {
   const [selectedUserId, setSelectedUserId] = useState('');
   const [baseSalary, setBaseSalary] = useState('');
+  const [salaryType, setSalaryType] = useState<'in_hand' | 'ctc'>('ctc');
   const [basicPay, setBasicPay] = useState('');
   const [hra, setHra] = useState('');
   const [specialAllowance, setSpecialAllowance] = useState('');
@@ -182,6 +183,7 @@ export function SalaryStructureModal({
     if (initialData) {
       setSelectedUserId(initialData.user_id);
       setBaseSalary(initialData.base_salary ? String(initialData.base_salary) : '');
+      setSalaryType(initialData.salary_type || 'ctc');
       setBasicPay(initialData.basic_pay ? String(initialData.basic_pay) : '');
       setHra(initialData.hra ? String(initialData.hra) : '');
       setSpecialAllowance(
@@ -226,6 +228,7 @@ export function SalaryStructureModal({
     const fallbackId = defaultEmployeeId || employees[0]?.id || '';
     setSelectedUserId(fallbackId);
     setBaseSalary('25000');
+    setSalaryType('ctc');
     applyStandardBreakdown(25000, 40);
     setMonthlyTarget('');
     setTargetUnit('Sq. Yd.');
@@ -414,7 +417,10 @@ export function SalaryStructureModal({
     setSpecialAllowance(String(parsed.specialAllowance));
     setConveyanceAllowance(String(parsed.conveyanceAllowance));
     setMedicalAllowance('0');
-    setProfessionalTax('200');
+    const offerSalaryType =
+      String(activeMatchedOffer.salaryType || '').toLowerCase() === 'in_hand' ? 'in_hand' : 'ctc';
+    setSalaryType(offerSalaryType);
+    setProfessionalTax(offerSalaryType === 'in_hand' ? '0' : '200');
 
     if (parsed.monthlyTarget > 0) {
       setMonthlyTarget(String(parsed.monthlyTarget));
@@ -479,6 +485,7 @@ export function SalaryStructureModal({
         body: JSON.stringify({
           user_id: selectedUserId,
           base_salary: numBase,
+          salary_type: salaryType,
           basic_pay: numBasic,
           hra: numHra,
           special_allowance: numSpecial,
@@ -698,10 +705,44 @@ export function SalaryStructureModal({
 
               {/* Base Gross Salary with Auto-Breakdown Presets */}
               <div className="border-brand-gold/30 bg-brand-gold/5 rounded-2xl border p-5">
-                <div className="flex items-center justify-between">
-                  <label className="text-brand-gold text-xs font-bold tracking-wider uppercase">
-                    Monthly Base CTC / Gross Pay (₹) *
-                  </label>
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-brand-gold text-xs font-bold tracking-wider uppercase">
+                      {salaryType === 'in_hand'
+                        ? 'Monthly In-Hand Pay (₹) *'
+                        : 'Monthly Base CTC / Gross Pay (₹) *'}
+                    </label>
+                    <div className="inline-flex rounded-lg border border-gray-200 bg-gray-100 p-0.5 dark:border-white/10 dark:bg-white/5">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSalaryType('in_hand');
+                          setProfessionalTax('0');
+                        }}
+                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition-all ${
+                          salaryType === 'in_hand'
+                            ? 'bg-emerald-600 text-white shadow-xs'
+                            : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                      >
+                        In-Hand
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSalaryType('ctc');
+                          setProfessionalTax('200');
+                        }}
+                        className={`rounded-md px-2 py-0.5 text-[10px] font-bold transition-all ${
+                          salaryType === 'ctc'
+                            ? 'bg-brand-navy dark:bg-brand-gold text-white shadow-xs dark:text-gray-950'
+                            : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'
+                        }`}
+                      >
+                        CTC
+                      </button>
+                    </div>
+                  </div>
                   <div className="flex items-center gap-2">
                     <button
                       type="button"
