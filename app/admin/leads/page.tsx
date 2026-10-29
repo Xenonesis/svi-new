@@ -13,6 +13,7 @@ import { useIvrLeadsManagement } from '@/src/components/admin/leads/useIvrLeadsM
 import { IvrStatsKpiGrid } from '@/src/components/admin/leads/IvrStatsKpiGrid';
 import { LeadsTabNav } from '@/src/components/admin/leads/LeadsTabNav';
 import type { LeadsTab, LeadsTabType } from '@/src/components/admin/leads/LeadsTabNav';
+import { LiveTriageRadarBanner } from '@/src/components/admin/leads/LiveTriageRadarBanner';
 import dynamic from 'next/dynamic';
 const WorkforceLeadsTab = dynamic(
   () =>
@@ -132,6 +133,13 @@ export default function AdminLeadsPage() {
           </button>
         </div>
       </div>
+      <LiveTriageRadarBanner
+        token={token}
+        onFilterHotLeads={() => {
+          setActiveTab('ivr');
+          handleFilterChange({ temperature: 'hot' });
+        }}
+      />
 
       {/* Main Tabs Navigation */}
       <LeadsTabNav
