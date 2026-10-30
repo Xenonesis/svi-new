@@ -1,21 +1,17 @@
 'use client';
 
-import {
-  AlertCircle,
-  CheckCircle2,
-  FileText,
-  Clock,
-  CheckCheck,
-  Download,
-  FileSpreadsheet,
-  X,
-  UserCheck,
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
+import type { ReactElement } from 'react';
 import { useQuery } from '@tanstack/react-query';
+import dynamic from 'next/dynamic';
 import { GRID_STYLE } from '@/src/components/admin/registrations/types';
 import { useRegistrations } from '@/src/components/admin/registrations/useRegistrations';
-import dynamic from 'next/dynamic';
+import { RegistrationsHeader } from '@/src/components/admin/registrations/RegistrationsHeader';
+import { RegistrationsToolbar } from '@/src/components/admin/registrations/RegistrationsToolbar';
+import { FilterPanel } from '@/src/components/admin/registrations/FilterPanel';
+import { RegistrationTable } from '@/src/components/admin/registrations/RegistrationTable';
+import { RegistrationsModals } from '@/src/components/admin/registrations/RegistrationsModals';
+import { RegistrationsFloatingDock } from '@/src/components/admin/registrations/RegistrationsFloatingDock';
+
 const RegistrationAnalytics = dynamic(
   () =>
     import('@/src/components/admin/registrations/RegistrationAnalytics').then(
@@ -28,32 +24,27 @@ const RegistrationAnalytics = dynamic(
     ),
   }
 );
-import { RegistrationsToolbar } from '@/src/components/admin/registrations/RegistrationsToolbar';
-import { FilterPanel } from '@/src/components/admin/registrations/FilterPanel';
-import { RegistrationTable } from '@/src/components/admin/registrations/RegistrationTable';
-import { DetailModal } from '@/src/components/admin/registrations/DetailModal';
-import { DeleteConfirmModal } from '@/src/components/admin/registrations/DeleteConfirmModal';
-import { ReassignAdvisorModal } from '@/src/components/admin/registrations/ReassignAdvisorModal';
-import { AdvisorSettingsModal } from '@/src/components/admin/modals/AdvisorSettingsModal';
 
-export default function AdminRegistrations() {
+interface RegistrationAnalyticsResponse {
+  statusDistribution: { name: string; value: number; color: string }[];
+}
+
+export default function AdminRegistrations(): ReactElement {
   const h = useRegistrations();
 
-  // Fetch analytics for the quick-stat cards (pending + approved)
-  const { data: analyticsData, isLoading: analyticsLoading } = useQuery<{
-    statusDistribution: { name: string; value: number; color: string }[];
-  }>({
-    queryKey: ['registrationAnalytics', h.token],
-    queryFn: async () => {
-      const res = await fetch('/api/admin/registrations/analytics', {
-        headers: { Authorization: `Bearer ${h.token}` },
-      });
-      if (!res.ok) throw new Error('Failed to fetch analytics');
-      return res.json();
-    },
-    enabled: !!h.token,
-    staleTime: 30_000,
-  });
+  const { data: analyticsData, isLoading: analyticsLoading } =
+    useQuery<RegistrationAnalyticsResponse>({
+      queryKey: ['registrationAnalytics', h.token],
+      queryFn: async () => {
+        const res = await fetch('/api/admin/registrations/analytics', {
+          headers: { Authorization: `Bearer ${h.token}` },
+        });
+        if (!res.ok) throw new Error('Failed to fetch analytics');
+        return res.json();
+      },
+      enabled: !!h.token,
+      staleTime: 30_000,
+    });
 
   const pendingCount =
     analyticsData?.statusDistribution.find((s) => s.name === 'Pending')?.value ?? '—';
@@ -69,111 +60,18 @@ export default function AdminRegistrations() {
       </div>
 
       <div className="relative z-10 mx-auto w-full max-w-7xl">
-        {/* Header */}
-        <div className="mb-10">
-          <h1 className="text-brand-navy mb-2 font-serif text-4xl tracking-tight dark:text-white">
-            Property{' '}
-            <span
-              className="text-gradient-gold animate-bg-pan inline-block pr-2.5 italic"
-              style={{
-                backgroundSize: '200% 200%',
-                backgroundImage:
-                  'linear-gradient(135deg, #d4af37, #f0d080, #b08f36, #dec070, #d4af37)',
-              }}
-            >
-              Registrations
-            </span>
-          </h1>
-          <p className="text-xs tracking-wide text-gray-600 dark:text-gray-400">
-            View and manage all property registration submissions.
-          </p>
-        </div>
+        <RegistrationsHeader
+          total={h.total}
+          loading={h.loading}
+          analyticsLoading={analyticsLoading}
+          pendingCount={pendingCount}
+          approvedCount={approvedCount}
+          onFilterPending={() => h.updateFilter('status', 'Pending')}
+          onFilterApproved={() => h.updateFilter('status', 'Approved')}
+        />
 
-        {/* Stats */}
-        <div className="mb-8 grid grid-cols-1 gap-6 sm:grid-cols-3">
-          {/* Total */}
-          <div className="dark:border-brand-gold/15 dark:bg-brand-dark-surface/65 relative overflow-hidden rounded-xl border border-gray-200 bg-white/80 p-5 shadow-lg backdrop-blur-xl">
-            <div className="via-brand-gold/50 absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent to-transparent" />
-            <div className="mb-3 flex items-center justify-between">
-              <div className="bg-brand-gold/10 border-brand-gold/25 flex h-11 w-11 items-center justify-center rounded-lg border">
-                <FileText className="text-brand-gold h-5 w-5" />
-              </div>
-            </div>
-            {h.loading ? (
-              <div className="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
-            ) : (
-              <p className="text-brand-navy text-3xl font-bold tracking-tight dark:text-white">
-                {h.total}
-              </p>
-            )}
-            <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-              Total Registrations
-            </p>
-          </div>
-
-          {/* Pending */}
-          <div
-            role="button"
-            tabIndex={0}
-            title="Show pending registrations"
-            onClick={() => h.updateFilter('status', 'Pending')}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') h.updateFilter('status', 'Pending');
-            }}
-            className="hover-lift-sm btn-tactile dark:bg-brand-dark-surface/65 relative cursor-pointer overflow-hidden rounded-xl border border-amber-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-amber-500/20"
-          >
-            <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-amber-400/50 to-transparent" />
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-amber-200/60 bg-amber-50 dark:border-amber-500/20 dark:bg-amber-900/20">
-                <Clock className="h-5 w-5 text-amber-500" />
-              </div>
-            </div>
-            {analyticsLoading ? (
-              <div className="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
-            ) : (
-              <p className="text-3xl font-bold tracking-tight text-amber-600 dark:text-amber-400">
-                {pendingCount}
-              </p>
-            )}
-            <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-              Pending Review
-            </p>
-          </div>
-
-          {/* Approved */}
-          <div
-            role="button"
-            tabIndex={0}
-            title="Show approved registrations"
-            onClick={() => h.updateFilter('status', 'Approved')}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') h.updateFilter('status', 'Approved');
-            }}
-            className="hover-lift-sm btn-tactile dark:bg-brand-dark-surface/65 relative cursor-pointer overflow-hidden rounded-xl border border-emerald-200/60 bg-white/80 p-5 shadow-lg backdrop-blur-xl dark:border-emerald-500/20"
-          >
-            <div className="absolute top-0 right-0 left-0 h-[2px] bg-gradient-to-r from-transparent via-emerald-400/50 to-transparent" />
-            <div className="mb-3 flex items-center justify-between">
-              <div className="flex h-11 w-11 items-center justify-center rounded-lg border border-emerald-200/60 bg-emerald-50 dark:border-emerald-500/20 dark:bg-emerald-900/20">
-                <CheckCheck className="h-5 w-5 text-emerald-500" />
-              </div>
-            </div>
-            {analyticsLoading ? (
-              <div className="h-8 w-16 animate-pulse rounded bg-gray-200 dark:bg-white/10" />
-            ) : (
-              <p className="text-3xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
-                {approvedCount}
-              </p>
-            )}
-            <p className="mt-1 text-[10px] font-semibold tracking-wider text-gray-500 uppercase">
-              Approved
-            </p>
-          </div>
-        </div>
-
-        {/* Analytics Command Center */}
         <RegistrationAnalytics token={h.token} />
 
-        {/* Toolbar */}
         <RegistrationsToolbar
           search={h.search}
           sortBy={h.sortBy}
@@ -199,7 +97,6 @@ export default function AdminRegistrations() {
           onManageAdvisors={() => h.setShowAdvisorSettings(true)}
         />
 
-        {/* Filter panel — handles its own open/close animation via show prop */}
         <FilterPanel
           show={h.showFilters}
           filters={h.filters}
@@ -209,7 +106,6 @@ export default function AdminRegistrations() {
           onClearFilters={h.clearFilters}
         />
 
-        {/* Table */}
         <RegistrationTable
           registrations={h.registrations}
           loading={h.loading}
@@ -234,108 +130,38 @@ export default function AdminRegistrations() {
         />
       </div>
 
-      {/* Modals */}
-      <AnimatePresence>
-        {h.selectedReg && (
-          <DetailModal
-            reg={h.selectedReg}
-            onClose={() => h.setSelectedReg(null)}
-            onStatusChange={h.handleStatusChange}
-            onDelete={(r) => {
-              h.setSelectedReg(null);
-              h.setDeleteTarget(r);
-            }}
-            advisors={h.availableAdvisors}
-            onAdvisorChange={h.handleUpdateSingleAdvisor}
-          />
-        )}
-        {h.deleteTarget && (
-          <DeleteConfirmModal
-            reg={h.deleteTarget}
-            onConfirm={h.handleDelete}
-            onCancel={() => h.setDeleteTarget(null)}
-            loading={h.deleteLoading}
-          />
-        )}
-        {h.reassignTargets && (
-          <ReassignAdvisorModal
-            targets={h.reassignTargets}
-            advisors={h.availableAdvisors}
-            onConfirm={h.handleConfirmReassign}
-            onCancel={h.handleCloseReassign}
-            loading={h.reassignLoading}
-          />
-        )}
-        {h.showAdvisorSettings && (
-          <AdvisorSettingsModal
-            token={h.token}
-            showToast={h.showToast}
-            onClose={() => h.setShowAdvisorSettings(false)}
-          />
-        )}
-      </AnimatePresence>
+      <RegistrationsModals
+        selectedReg={h.selectedReg}
+        deleteTarget={h.deleteTarget}
+        reassignTargets={h.reassignTargets}
+        showAdvisorSettings={h.showAdvisorSettings}
+        availableAdvisors={h.availableAdvisors}
+        token={h.token}
+        deleteLoading={h.deleteLoading}
+        reassignLoading={h.reassignLoading}
+        onCloseDetail={() => h.setSelectedReg(null)}
+        onStatusChange={h.handleStatusChange}
+        onDeleteFromDetail={(r) => {
+          h.setSelectedReg(null);
+          h.setDeleteTarget(r);
+        }}
+        onAdvisorChange={h.handleUpdateSingleAdvisor}
+        onConfirmDelete={h.handleDelete}
+        onCancelDelete={() => h.setDeleteTarget(null)}
+        onConfirmReassign={h.handleConfirmReassign}
+        onCancelReassign={h.handleCloseReassign}
+        onCloseAdvisorSettings={() => h.setShowAdvisorSettings(false)}
+        showToast={h.showToast}
+      />
 
-      {/* Floating Bulk Action Dock for Selected Registrations */}
-      <AnimatePresence>
-        {h.selectedCount > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 30 }}
-            className="border-brand-gold/30 bg-brand-navy/95 fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 flex-wrap items-center gap-3 rounded-2xl border px-5 py-3 text-white shadow-2xl backdrop-blur-md"
-          >
-            <div className="flex items-center gap-2 border-r border-white/10 pr-3">
-              <span className="bg-brand-gold text-brand-navy flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold">
-                {h.selectedCount}
-              </span>
-              <span className="text-xs font-semibold">Registrations Selected</span>
-            </div>
-
-            {/* Reassign Advisor Button */}
-            <button
-              type="button"
-              onClick={() => h.handleOpenReassign(h.selectedRegistrations)}
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-amber-500/40 bg-amber-600/30 px-3 py-1.5 text-xs font-semibold text-amber-300 transition-all hover:bg-amber-600/40 hover:text-white"
-              title="Reassign selected registrations to advisor"
-            >
-              <UserCheck className="h-3.5 w-3.5 text-amber-400" />
-              <span>Reassign Advisor</span>
-            </button>
-            {/* Export Excel Button */}
-            <button
-              type="button"
-              onClick={h.handleExportSelectedExcel}
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-500/40 bg-emerald-600/30 px-3 py-1.5 text-xs font-semibold text-emerald-300 transition-all hover:bg-emerald-600/40 hover:text-white"
-              title="Export selected registrations to Excel"
-            >
-              <FileSpreadsheet className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Excel (.xlsx)</span>
-            </button>
-
-            {/* Export CSV Button */}
-            <button
-              type="button"
-              onClick={h.handleExportSelectedCsv}
-              className="flex cursor-pointer items-center gap-1.5 rounded-xl border border-white/20 bg-white/10 px-3 py-1.5 text-xs font-semibold text-gray-200 transition-all hover:bg-white/20 hover:text-white"
-              title="Export selected registrations to CSV"
-            >
-              <Download className="text-brand-gold h-3.5 w-3.5" />
-              <span>CSV (.csv)</span>
-            </button>
-
-            {/* Deselect / Clear Selection Button */}
-            <button
-              type="button"
-              onClick={h.clearSelection}
-              className="flex cursor-pointer items-center gap-1 rounded-xl px-2 py-1.5 text-xs text-gray-400 transition-colors hover:bg-white/5 hover:text-white"
-              title="Clear selection"
-            >
-              <X className="h-3.5 w-3.5" />
-              <span className="text-[11px]">Clear</span>
-            </button>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <RegistrationsFloatingDock
+        selectedCount={h.selectedCount}
+        selectedRegistrations={h.selectedRegistrations}
+        onReassign={h.handleOpenReassign}
+        onExportExcel={h.handleExportSelectedExcel}
+        onExportCsv={h.handleExportSelectedCsv}
+        onClearSelection={h.clearSelection}
+      />
     </div>
   );
 }
