@@ -334,27 +334,146 @@ async function dispatchHotLeadAlertInScript(record, intelligence) {
     const uniqueEmails = Array.from(new Set(activeEmails));
     if (resendApiKey && uniqueEmails.length > 0) {
       const cleanPhone = (customer_phone || '').replace(/\D/g, '').slice(-10);
-      const waUrl = `https://wa.me/91${cleanPhone}`;
-      const crmUrl = `https://sviiinfrasolutions.com/admin/leads?tab=ivr&search=${cleanPhone}`;
+      const waGreeting = `Namaste Sir/Ma'am, SVI Infra Solutions se baat kar rahe hain. Aapne Khatu Shyam Ji / Shivani Vatika township ke baare me inquiry ki thi. Kya hum aapki visit schedule kar dein?`;
+      const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(waGreeting)}`;
+      const crmUrl = `https://sviinfrasolutions.com/admin/leads?tab=ivr&search=${cleanPhone}`;
 
-      const html = `<!DOCTYPE html><html><body style="background:#080b11;color:#f8fafc;font-family:sans-serif;padding:20px;">
-<div style="max-width:600px;margin:auto;background:#111622;border:1px solid #d4af37;border-radius:12px;padding:24px;">
-  <div style="font-size:11px;color:#d4af37;text-transform:uppercase;font-weight:bold;">SVI Infra VIP Radar</div>
-  <h2 style="color:#ffffff;margin:8px 0 16px;">🔥 High-Priority Hot Lead Detected</h2>
-  <div style="background:#161f30;padding:12px 16px;border-radius:8px;margin-bottom:16px;">
-    <div><strong>Customer:</strong> +91 ${customer_phone}</div>
-    <div><strong>Intent:</strong> ${intelligence.intent}</div>
-    <div><strong>Budget:</strong> ${intelligence.budget || 'Open / Enquired'}</div>
-    <div><strong>Duration:</strong> ${call_duration || 0}s</div>
-  </div>
-  <div style="margin-bottom:16px;"><strong>Summary:</strong><br><p style="color:#cbd5e1;background:#0c1018;padding:12px;border-radius:6px;">"${intelligence.summary}"</p></div>
-  <div style="margin-bottom:20px;"><strong>Action:</strong><br><p style="color:#38bdf8;">${intelligence.recommended_action}</p></div>
-  <div>
-    <a href="tel:+91${cleanPhone}" style="display:block;background:#d4af37;color:#080b11;text-decoration:none;padding:12px;text-align:center;border-radius:6px;font-weight:bold;margin-bottom:10px;">📞 Call Client Now (+91 ${customer_phone})</a>
-    <a href="${waUrl}" style="display:block;background:#25d366;color:#ffffff;text-decoration:none;padding:10px;text-align:center;border-radius:6px;font-weight:bold;margin-bottom:10px;">💬 Chat on WhatsApp</a>
-    <a href="${crmUrl}" style="display:block;color:#94a3b8;text-align:center;font-size:12px;">Open Lead in Admin CRM →</a>
-  </div>
-</div></body></html>`;
+      const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>VIP Hot Lead Alert - SVI Infra Solutions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 30px 15px;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);">
+          
+          <tr>
+            <td height="5" style="background: linear-gradient(90deg, #d4af37 0%, #f6e05e 50%, #d4af37 100%);"></td>
+          </tr>
+
+          <tr>
+            <td style="padding: 28px 32px 20px 32px; border-bottom: 1px solid #f1f5f9;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td>
+                    <div style="display: inline-block; background-color: #fef3c7; border: 1px solid #fde68a; color: #b45309; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 10px; border-radius: 6px;">
+                      ⚡ SVI INFRA • VIP VOICE RADAR
+                    </div>
+                    <div style="font-size: 24px; font-weight: 800; color: #0f172a; margin-top: 10px; letter-spacing: -0.5px; line-height: 1.25;">
+                      🔥 High-Priority Hot Lead Detected
+                    </div>
+                  </td>
+                  <td align="right" valign="top">
+                    <span style="display: inline-block; background-color: #fee2e2; border: 1px solid #fca5a5; color: #b91c1c; font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; letter-spacing: 0.8px;">
+                      IMMEDIATE ACTION
+                    </span>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 24px 32px 18px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 18px 22px;">
+                <tr>
+                  <td width="50%" valign="top" style="padding-bottom: 16px;">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">Customer Contact</div>
+                    <div style="font-size: 19px; font-weight: 800; color: #0f172a; margin-top: 4px; font-family: -apple-system, BlinkMacSystemFont, monospace;">
+                      <a href="tel:+91${cleanPhone}" style="color: #0f172a; text-decoration: none;">+91 ${cleanPhone}</a>
+                    </div>
+                  </td>
+                  <td width="50%" valign="top" style="padding-bottom: 16px;">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">Primary Intent</div>
+                    <div style="font-size: 15px; font-weight: 800; color: #0284c7; margin-top: 4px;">
+                      ${intelligence.intent}
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td width="50%" valign="top">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">Estimated Budget</div>
+                    <div style="font-size: 15px; font-weight: 800; color: #b45309; margin-top: 4px;">
+                      ${intelligence.budget || 'Open / Quotation Requested'}
+                    </div>
+                  </td>
+                  <td width="50%" valign="top">
+                    <div style="font-size: 11px; text-transform: uppercase; color: #64748b; font-weight: 700; letter-spacing: 0.5px;">Call Duration</div>
+                    <div style="font-size: 15px; font-weight: 700; color: #334155; margin-top: 4px;">
+                      ${call_duration || 0}s
+                    </div>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 32px 18px 32px;">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #475569; margin-bottom: 8px;">
+                📝 AI Call Synopsis (Hinglish)
+              </div>
+              <div style="background-color: #fdfbf7; border-left: 4px solid #d4af37; border-top: 1px solid #fef3c7; border-right: 1px solid #fef3c7; border-bottom: 1px solid #fef3c7; padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 14px; line-height: 1.6; color: #334155;">
+                "${intelligence.summary}"
+              </div>
+
+              <div style="margin-top: 14px; background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 14px 18px;">
+                <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.8px; color: #166534;">
+                  🎯 Recommended Action
+                </div>
+                <div style="font-size: 14px; font-weight: 700; color: #15803d; margin-top: 4px; line-height: 1.5;">
+                  ${intelligence.recommended_action || 'WhatsApp par location map, brochure bhejo aur site visit confirm karo'}
+                </div>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 32px 28px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td width="48%" align="center">
+                    <a href="tel:+91${cleanPhone}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #d4af37 0%, #c59b27 100%); color: #080b11; text-align: center; padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);">
+                      📞 Call Client Now (+91 ${cleanPhone})
+                    </a>
+                  </td>
+                  <td width="4%"></td>
+                  <td width="48%" align="center">
+                    <a href="${waUrl}" style="display: block; width: 100%; box-sizing: border-box; background: #25d366; color: #ffffff; text-align: center; padding: 14px 18px; border-radius: 10px; font-size: 14px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);">
+                      💬 Chat on WhatsApp
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3" align="center" style="padding-top: 16px;">
+                    <a href="${crmUrl}" style="color: #475569; font-size: 12px; font-weight: 700; text-decoration: underline;">
+                      Open Lead in Admin CRM (sviinfrasolutions.com) →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="background-color: #f8fafc; padding: 18px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+              <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.6;">
+                Confidential Internal Transmission • SVI Infra Solutions Telephony Intelligence Suite<br>
+                Official Domain: <strong>sviinfrasolutions.com</strong> • Block E-220, Sector 63, Noida, UP 201309
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>`;
 
       for (const email of uniqueEmails) {
         const res = await fetch('https://api.resend.com/emails', {

@@ -11,9 +11,6 @@ import {
   type LeadInterestFilter,
 } from './hotLeadNotificationTypes';
 
-/**
- * Fetches current hot lead notification settings from portal_settings table.
- */
 export async function getHotLeadNotificationSettings(): Promise<HotLeadNotificationSettings> {
   try {
     const { data, error } = await supabaseAdmin
@@ -89,9 +86,6 @@ export async function getHotLeadNotificationSettings(): Promise<HotLeadNotificat
   }
 }
 
-/**
- * Persists hot lead notification settings to portal_settings table.
- */
 export async function updateHotLeadNotificationSettings(
   settings: HotLeadNotificationSettings
 ): Promise<void> {
@@ -107,9 +101,6 @@ export async function updateHotLeadNotificationSettings(
   }
 }
 
-/**
- * Builds Obsidian / Gold luxury branded HTML email for instant Hot Lead Alert.
- */
 export function buildHotLeadAlertEmailHtml(params: {
   customerPhone: string;
   intelligence: CallIntelligence;
@@ -118,12 +109,12 @@ export function buildHotLeadAlertEmailHtml(params: {
 }): { html: string; text: string } {
   const { customerPhone, intelligence, duration = 0, callRecordId } = params;
   const cleanPhone = customerPhone.replace(/\D/g, '').slice(-10);
-  const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(
-    `Namaste Sir/Ma'am, SVI Infra Solutions se baat kar rahe hain. Aapne Khatu Shyam Ji / Shivani Vatika township ke baare me inquiry ki thi. Kya hum aapki visit schedule kar dein?`
-  )}`;
+  const formattedPhone = `+91 ${cleanPhone}`;
+  const waGreeting = `Namaste Sir/Ma'am, SVI Infra Solutions se baat kar rahe hain. Aapne Khatu Shyam Ji / Shivani Vatika township ke baare me inquiry ki thi. Kya hum aapki visit schedule kar dein?`;
+  const waUrl = `https://wa.me/91${cleanPhone}?text=${encodeURIComponent(waGreeting)}`;
   const crmUrl = callRecordId
-    ? `https://sviiinfrasolutions.com/admin/leads?tab=ivr&callId=${callRecordId}`
-    : `https://sviiinfrasolutions.com/admin/leads?tab=ivr&search=${cleanPhone}`;
+    ? `https://sviinfrasolutions.com/admin/leads?tab=ivr&callId=${callRecordId}`
+    : `https://sviinfrasolutions.com/admin/leads?tab=ivr&search=${cleanPhone}`;
 
   const html = `<!DOCTYPE html>
 <html lang="en">
@@ -132,33 +123,30 @@ export function buildHotLeadAlertEmailHtml(params: {
   <title>VIP Hot Lead Alert - SVI Infra Solutions</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 </head>
-<body style="margin: 0; padding: 0; background-color: #080b11; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f8fafc;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #080b11; padding: 30px 15px;">
+<body style="margin: 0; padding: 0; background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f4f6f9; padding: 36px 16px;">
     <tr>
       <td align="center">
-        <!-- Container -->
-        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #111622; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);">
+        <table role="presentation" width="600" cellspacing="0" cellpadding="0" style="max-width: 600px; width: 100%; background-color: #ffffff; border: 1px solid #e5e9f0; border-radius: 16px; overflow: hidden; box-shadow: 0 12px 36px rgba(15, 23, 42, 0.07), 0 2px 6px rgba(15, 23, 42, 0.04);">
           
-          <!-- Gold Accent Bar -->
           <tr>
-            <td height="4" style="background: linear-gradient(90deg, #d4af37 0%, #f0d080 50%, #d4af37 100%);"></td>
+            <td height="5" style="background: linear-gradient(90deg, #d4af37 0%, #f6e05e 50%, #d4af37 100%);"></td>
           </tr>
 
-          <!-- Header -->
           <tr>
-            <td style="padding: 28px 32px 20px 32px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
+            <td style="padding: 28px 32px 22px 32px; border-bottom: 1px solid #f1f5f9;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td>
-                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #d4af37;">
-                      ⚡ High-Speed Voice AI Radar
+                  <td valign="middle">
+                    <div style="display: inline-block; background-color: #fef3c7; border: 1px solid #fde68a; color: #92400e; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.2px; padding: 3px 8px; border-radius: 4px;">
+                      ⚡ SVI VIP VOICE RADAR
                     </div>
-                    <div style="font-size: 24px; font-weight: 800; color: #ffffff; margin-top: 6px; letter-spacing: -0.5px;">
-                      🔥 Instant VIP Hot Lead Alert
+                    <div style="font-size: 21px; font-weight: 800; color: #0f172a; margin-top: 8px; letter-spacing: -0.4px; line-height: 1.25;">
+                      🔥 High-Priority Hot Lead
                     </div>
                   </td>
-                  <td align="right" valign="top">
-                    <span style="display: inline-block; background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.4); color: #fca5a5; font-size: 11px; font-weight: 800; text-transform: uppercase; padding: 5px 12px; border-radius: 20px; letter-spacing: 1px;">
+                  <td align="right" valign="top" style="width: 130px;">
+                    <span style="display: inline-block; background-color: #fee2e2; border: 1px solid #fecaca; color: #991b1b; font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 4px 10px; border-radius: 14px; letter-spacing: 0.5px; white-space: nowrap;">
                       ACTION REQUIRED
                     </span>
                   </td>
@@ -167,85 +155,106 @@ export function buildHotLeadAlertEmailHtml(params: {
             </td>
           </tr>
 
-          <!-- Lead Core Dossier Card -->
           <tr>
-            <td style="padding: 24px 32px;">
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; padding: 20px;">
+            <td style="padding: 24px 32px 18px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
                 <tr>
-                  <td width="50%" valign="top" style="padding-bottom: 14px;">
-                    <span style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px;">Customer Contact</span>
-                    <div style="font-size: 18px; font-weight: 800; color: #f8fafc; margin-top: 4px; font-family: monospace;">
-                      +91 ${customerPhone}
+                  <td width="50%" valign="top" style="padding: 16px 20px; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
+                    <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 800; letter-spacing: 0.8px;">Customer Phone</div>
+                    <div style="font-size: 17px; font-weight: 800; color: #0f172a; margin-top: 4px; font-family: -apple-system, BlinkMacSystemFont, monospace;">
+                      <a href="tel:+91${cleanPhone}" style="color: #0f172a; text-decoration: none;">${formattedPhone}</a>
                     </div>
                   </td>
-                  <td width="50%" valign="top" style="padding-bottom: 14px;">
-                    <span style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px;">Primary Intent</span>
-                    <div style="font-size: 15px; font-weight: 700; color: #38bdf8; margin-top: 4px;">
-                      ${intelligence.intent}
+                  <td width="50%" valign="top" style="padding: 16px 20px; border-bottom: 1px solid #e2e8f0;">
+                    <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 800; letter-spacing: 0.8px;">Primary Intent</div>
+                    <div style="font-size: 14px; font-weight: 800; color: #0284c7; margin-top: 4px;">
+                      ${intelligence.intent || 'Site Visit Requested'}
                     </div>
                   </td>
                 </tr>
                 <tr>
-                  <td width="50%" valign="top">
-                    <span style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px;">Estimated Budget</span>
-                    <div style="font-size: 15px; font-weight: 700; color: #d4af37; margin-top: 4px;">
-                      ${intelligence.budget || 'Open / Quotation Requested'}
+                  <td width="50%" valign="top" style="padding: 16px 20px; border-right: 1px solid #e2e8f0;">
+                    <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 800; letter-spacing: 0.8px;">Estimated Budget</div>
+                    <div style="font-size: 15px; font-weight: 800; color: #b45309; margin-top: 4px;">
+                      ${intelligence.budget || 'Open / Discussion'}
                     </div>
                   </td>
-                  <td width="50%" valign="top">
-                    <span style="font-size: 11px; text-transform: uppercase; color: #94a3b8; font-weight: 600; letter-spacing: 0.5px;">Property Requirement</span>
-                    <div style="font-size: 14px; font-weight: 600; color: #e2e8f0; margin-top: 4px;">
-                      ${intelligence.property_interest || 'Plots near Khatu Shyam / Ring Road'}
+                  <td width="50%" valign="top" style="padding: 16px 20px;">
+                    <div style="font-size: 10px; text-transform: uppercase; color: #64748b; font-weight: 800; letter-spacing: 0.8px;">Call Duration</div>
+                    <div style="font-size: 15px; font-weight: 800; color: #334155; margin-top: 4px;">
+                      ${duration}s
                     </div>
+                  </td>
+                </tr>
+                ${
+                  intelligence.property_interest
+                    ? `
+                <tr>
+                  <td colspan="2" style="padding: 12px 20px; background-color: #f1f5f9; border-top: 1px solid #e2e8f0;">
+                    <span style="font-size: 10px; text-transform: uppercase; color: #475569; font-weight: 800; letter-spacing: 0.6px;">Property Requirement: </span>
+                    <span style="font-size: 13px; font-weight: 700; color: #0f172a;">${intelligence.property_interest}</span>
+                  </td>
+                </tr>`
+                    : ''
+                }
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 0 32px 20px 32px;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #ffffff; border: 1px solid #e2e8f0; border-left: 4px solid #d4af37; border-radius: 10px; overflow: hidden; box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);">
+                <tr>
+                  <td style="padding: 16px 20px 14px 20px;">
+                    <div style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #64748b; margin-bottom: 6px;">
+                      🎙️ Voice AI Call Synopsis (Hinglish)
+                    </div>
+                    <div style="font-size: 14px; line-height: 1.6; color: #334155; font-style: italic;">
+                      "${intelligence.summary}"
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 20px 14px 20px; border-top: 1px dashed #e2e8f0; background-color: #fafbfc;">
+                    <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
+                      <tr>
+                        <td valign="top" style="width: 20px; padding-top: 1px;">
+                          <span style="font-size: 13px;">🎯</span>
+                        </td>
+                        <td valign="top" style="padding-left: 8px;">
+                          <span style="font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: #166534;">Recommended Next Step: </span>
+                          <span style="font-size: 13px; font-weight: 700; color: #15803d;">${intelligence.recommended_action || 'WhatsApp par location map, brochure bhejo aur site visit confirm karo'}</span>
+                        </td>
+                      </tr>
+                    </table>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
-          <!-- Hinglish Summary & Action Plan -->
-          <tr>
-            <td style="padding: 0 32px 24px 32px;">
-              <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #cbd5e1; margin-bottom: 8px;">
-                📝 AI Call Synopsis (Hinglish)
-              </div>
-              <div style="background-color: #0c1018; border-left: 3px solid #d4af37; padding: 14px 18px; border-radius: 0 8px 8px 0; font-size: 14px; line-height: 1.6; color: #e2e8f0;">
-                "${intelligence.summary}"
-              </div>
-
-              <!-- Recommended Action -->
-              <div style="margin-top: 16px; background: rgba(56, 189, 248, 0.08); border: 1px solid rgba(56, 189, 248, 0.25); border-radius: 8px; padding: 14px 18px;">
-                <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #38bdf8;">
-                  🎯 Recommended Telecaller SOP Action
-                </div>
-                <div style="font-size: 14px; font-weight: 600; color: #f0f9ff; margin-top: 4px; line-height: 1.5;">
-                  ${intelligence.recommended_action}
-                </div>
-              </div>
-            </td>
-          </tr>
-
-          <!-- Direct 1-Click Action Buttons -->
           <tr>
             <td style="padding: 0 32px 28px 32px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td width="48%" align="center">
-                    <a href="tel:+91${cleanPhone}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #d4af37 0%, #b38f2a 100%); color: #080b11; text-align: center; padding: 13px 18px; border-radius: 10px; font-size: 14px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);">
-                      📞 Call Client Now
+                  <td width="48%" align="center" valign="top">
+                    <a href="tel:+91${cleanPhone}" style="display: block; width: 100%; box-sizing: border-box; background: linear-gradient(135deg, #d4af37 0%, #b8860b 100%); color: #080b11; text-align: center; padding: 13px 14px; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 14px rgba(212, 175, 55, 0.35);">
+                      <div style="font-size: 14px; font-weight: 800; line-height: 1.2;">📞 Call Client</div>
+                      <div style="font-size: 11px; font-weight: 700; color: #1e293b; margin-top: 2px; font-family: monospace;">${formattedPhone}</div>
                     </a>
                   </td>
                   <td width="4%"></td>
-                  <td width="48%" align="center">
-                    <a href="${waUrl}" style="display: block; width: 100%; box-sizing: border-box; background: #25d366; color: #ffffff; text-align: center; padding: 13px 18px; border-radius: 10px; font-size: 14px; font-weight: 800; text-decoration: none; box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);">
-                      💬 Chat on WhatsApp
+                  <td width="48%" align="center" valign="top">
+                    <a href="${waUrl}" style="display: block; width: 100%; box-sizing: border-box; background: #25d366; color: #ffffff; text-align: center; padding: 13px 14px; border-radius: 10px; text-decoration: none; box-shadow: 0 4px 14px rgba(37, 211, 102, 0.25);">
+                      <div style="font-size: 14px; font-weight: 800; line-height: 1.2;">💬 Chat on WhatsApp</div>
+                      <div style="font-size: 11px; font-weight: 700; color: #f0fdf4; margin-top: 2px;">Instant Follow-up</div>
                     </a>
                   </td>
                 </tr>
                 <tr>
-                  <td colspan="3" align="center" style="padding-top: 14px;">
-                    <a href="${crmUrl}" style="color: #94a3b8; font-size: 12px; font-weight: 600; text-decoration: underline;">
-                      Open Full Call Dossier in SVI Admin Leads Hub →
+                  <td colspan="3" align="center" style="padding-top: 18px;">
+                    <a href="${crmUrl}" style="display: inline-block; color: #475569; font-size: 12px; font-weight: 700; text-decoration: none; border-bottom: 1px dashed #94a3b8; padding-bottom: 2px;">
+                      Open Lead Dossier in Admin CRM →
                     </a>
                   </td>
                 </tr>
@@ -253,12 +262,11 @@ export function buildHotLeadAlertEmailHtml(params: {
             </td>
           </tr>
 
-          <!-- Footer -->
           <tr>
-            <td style="background-color: #0a0e17; padding: 18px 32px; border-top: 1px solid rgba(255, 255, 255, 0.06); text-align: center;">
-              <p style="margin: 0; font-size: 11px; color: #64748b; line-height: 1.5;">
+            <td style="background-color: #f8fafc; padding: 18px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+              <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.6;">
                 Confidential Internal Transmission • SVI Infra Solutions Telephony Intelligence Suite<br>
-                To adjust notification preferences or recipients, visit <strong>Admin Settings → Notifications</strong>.
+                Official Domain: <strong>sviinfrasolutions.com</strong> • Block E-220, Sector 63, Noida, UP 201309
               </p>
             </td>
           </tr>
@@ -293,9 +301,6 @@ SVI Infra Solutions Telephony Intelligence Suite`;
   return { html, text };
 }
 
-/**
- * Builds Obsidian / Gold luxury branded HTML email for Daily Lead Intelligence Digest.
- */
 export function buildDailyDigestEmailHtml(params: {
   dateStr: string;
   recipientName: string;
@@ -322,35 +327,34 @@ export function buildDailyDigestEmailHtml(params: {
       const badgeColor = isHot ? '#fca5a5' : '#fcd34d';
 
       return `
-      <tr>
-        <td style="padding: 16px 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.08); background-color: ${idx % 2 === 0 ? 'rgba(15, 23, 42, 0.6)' : 'rgba(11, 17, 30, 0.6)'};">
+        <td style="padding: 16px 20px; border-bottom: 1px solid #f1f5f9; background-color: ${idx % 2 === 0 ? '#ffffff' : '#f8fafc'};">
           <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
             <tr>
               <td>
-                <span style="display: inline-block; background: ${badgeBg}; border: 1px solid ${badgeBorder}; color: ${badgeColor}; font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 2px 8px; border-radius: 12px; margin-bottom: 6px;">
+                <span style="display: inline-block; background: ${isHot ? '#fee2e2' : '#fef3c7'}; border: 1px solid ${isHot ? '#fca5a5' : '#fde68a'}; color: ${isHot ? '#b91c1c' : '#b45309'}; font-size: 10px; font-weight: 800; text-transform: uppercase; padding: 3px 8px; border-radius: 6px; margin-bottom: 6px;">
                   ${isHot ? '🔥 HOT' : '☀️ WARM'} • ${item.intelligence.intent}
                 </span>
-                <div style="font-size: 16px; font-weight: 800; color: #ffffff; font-family: monospace;">
+                <div style="font-size: 16px; font-weight: 800; color: #0f172a; font-family: -apple-system, BlinkMacSystemFont, monospace;">
                   +91 ${item.customerPhone}
                 </div>
-                <div style="font-size: 12px; color: #d4af37; font-weight: 600; margin-top: 2px;">
+                <div style="font-size: 12px; color: #b45309; font-weight: 700; margin-top: 2px;">
                   ${item.intelligence.budget ? `Budget: ${item.intelligence.budget}` : 'Budget Open'} • ${item.intelligence.property_interest || 'Plots near Khatu Shyam'}
                 </div>
-                <div style="font-size: 13px; color: #cbd5e1; margin-top: 8px; line-height: 1.5;">
+                <div style="font-size: 13px; color: #334155; margin-top: 8px; line-height: 1.5;">
                   "${item.intelligence.summary}"
                 </div>
-                <div style="font-size: 12px; color: #38bdf8; font-weight: 600; margin-top: 6px;">
+                <div style="font-size: 12px; color: #0369a1; font-weight: 700; margin-top: 6px;">
                   🎯 Action: ${item.intelligence.recommended_action}
                 </div>
               </td>
               <td align="right" valign="top" style="width: 140px; padding-left: 12px;">
-                <a href="tel:+91${cleanPhone}" style="display: block; background: #d4af37; color: #080b11; text-align: center; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; margin-bottom: 6px;">
+                <a href="tel:+91${cleanPhone}" style="display: block; background: linear-gradient(135deg, #d4af37 0%, #c59b27 100%); color: #080b11; text-align: center; padding: 8px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(212, 175, 55, 0.25);">
                   📞 Call
                 </a>
-                <a href="https://wa.me/91${cleanPhone}" style="display: block; background: #25d366; color: #ffffff; text-align: center; padding: 7px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; margin-bottom: 6px;">
+                <a href="https://wa.me/91${cleanPhone}" style="display: block; background: #25d366; color: #ffffff; text-align: center; padding: 7px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; text-decoration: none; margin-bottom: 6px; box-shadow: 0 2px 6px rgba(37, 211, 102, 0.2);">
                   💬 WhatsApp
                 </a>
-                <a href="https://sviiinfrasolutions.com/admin/leads?tab=ivr&search=${cleanPhone}" style="display: block; color: #94a3b8; font-size: 10px; text-align: center; text-decoration: underline;">
+                <a href="https://sviinfrasolutions.com/admin/leads?tab=ivr&search=${cleanPhone}" style="display: block; color: #475569; font-size: 11px; font-weight: 700; text-align: center; text-decoration: underline;">
                   View Dossier →
                 </a>
               </td>
@@ -368,75 +372,69 @@ export function buildDailyDigestEmailHtml(params: {
   <meta charset="utf-8">
   <title>Daily Lead Intelligence Digest - SVI Infra</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-</head>
-<body style="margin: 0; padding: 0; background-color: #080b11; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #f8fafc;">
-  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #080b11; padding: 30px 15px;">
+<body style="margin: 0; padding: 0; background-color: #f1f5f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; color: #0f172a; -webkit-font-smoothing: antialiased;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #f1f5f9; padding: 30px 15px;">
     <tr>
       <td align="center">
-        <table role="presentation" width="650" cellspacing="0" cellpadding="0" style="max-width: 650px; width: 100%; background-color: #111622; border: 1px solid rgba(212, 175, 55, 0.4); border-radius: 16px; overflow: hidden; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);">
+        <table role="presentation" width="650" cellspacing="0" cellpadding="0" style="max-width: 650px; width: 100%; background-color: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);">
           
-          <!-- Top Accent Bar -->
           <tr>
-            <td height="4" style="background: linear-gradient(90deg, #d4af37 0%, #f0d080 50%, #d4af37 100%);"></td>
+            <td height="5" style="background: linear-gradient(90deg, #d4af37 0%, #f6e05e 50%, #d4af37 100%);"></td>
           </tr>
 
-          <!-- Header -->
           <tr>
-            <td style="padding: 28px 32px 20px 32px; border-bottom: 1px solid rgba(255, 255, 255, 0.08);">
-              <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #d4af37;">
-                🌅 SVI Infra Executive Daily Digest
+            <td style="padding: 28px 32px 20px 32px; border-bottom: 1px solid #f1f5f9;">
+              <div style="display: inline-block; background-color: #fef3c7; border: 1px solid #fde68a; color: #b45309; font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; padding: 4px 10px; border-radius: 6px;">
+                🌅 SVI INFRA • EXECUTIVE DAILY DIGEST
               </div>
-              <div style="font-size: 22px; font-weight: 800; color: #ffffff; margin-top: 6px;">
+              <div style="font-size: 22px; font-weight: 800; color: #0f172a; margin-top: 10px; letter-spacing: -0.5px;">
                 High-Intent Lead Intelligence Summary
               </div>
-              <div style="font-size: 13px; color: #94a3b8; margin-top: 4px;">
+              <div style="font-size: 13px; color: #64748b; margin-top: 4px;">
                 Prepared for <strong>${recipientName}</strong> • Date: ${dateStr}
               </div>
             </td>
           </tr>
 
-          <!-- Metric Cards Bar -->
           <tr>
             <td style="padding: 20px 32px;">
               <table role="presentation" width="100%" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td width="31%" style="background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 10px; padding: 14px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: 800; color: #f87171;">${hotLeads.length}</div>
-                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #fca5a5; margin-top: 2px;">🔥 Hot Leads</div>
+                  <td width="31%" style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 800; color: #b91c1c;">${hotLeads.length}</div>
+                    <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #991b1b; margin-top: 2px;">🔥 Hot Leads</div>
                   </td>
                   <td width="3%"></td>
-                  <td width="31%" style="background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); border-radius: 10px; padding: 14px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: 800; color: #fbbf24;">${warmLeads.length}</div>
-                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #fde68a; margin-top: 2px;">☀️ Warm Leads</div>
+                  <td width="31%" style="background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 800; color: #b45309;">${warmLeads.length}</div>
+                    <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #92400e; margin-top: 2px;">☀️ Warm Leads</div>
                   </td>
                   <td width="3%"></td>
-                  <td width="32%" style="background: rgba(56, 189, 248, 0.1); border: 1px solid rgba(56, 189, 248, 0.3); border-radius: 10px; padding: 14px; text-align: center;">
-                    <div style="font-size: 24px; font-weight: 800; color: #38bdf8;">${siteVisitsCount}</div>
-                    <div style="font-size: 11px; font-weight: 700; text-transform: uppercase; color: #bae6fd; margin-top: 2px;">📍 Site Visits</div>
+                  <td width="32%" style="background: #f0f9ff; border: 1px solid #bae6fd; border-radius: 10px; padding: 14px; text-align: center;">
+                    <div style="font-size: 24px; font-weight: 800; color: #0284c7;">${siteVisitsCount}</div>
+                    <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #0369a1; margin-top: 2px;">📍 Site Visits</div>
                   </td>
                 </tr>
               </table>
             </td>
           </tr>
 
-          <!-- Lead Records Table -->
           <tr>
             <td style="padding: 0 32px 24px 32px;">
-              <div style="font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #cbd5e1; margin-bottom: 10px;">
+              <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; color: #475569; margin-bottom: 10px;">
                 📋 Prioritized Lead Roster (${leads.length} Leads)
               </div>
-              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 12px; overflow: hidden;">
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;">
                 ${leadsHtmlRows}
               </table>
             </td>
           </tr>
 
-          <!-- Footer -->
           <tr>
-            <td style="background-color: #0a0e17; padding: 18px 32px; border-top: 1px solid rgba(255, 255, 255, 0.06); text-align: center;">
-              <p style="margin: 0; font-size: 11px; color: #64748b; line-height: 1.5;">
+            <td style="background-color: #f8fafc; padding: 18px 32px; border-top: 1px solid #e2e8f0; text-align: center;">
+              <p style="margin: 0; font-size: 11px; color: #94a3b8; line-height: 1.6;">
                 SVI Infra Solutions • Daily Automated Intelligence Transmission<br>
-                To change your delivery timing (e.g. 7:00 PM, 8:00 PM) or frequency, visit <strong>Admin Settings → Notifications</strong>.
+                Official Domain: <strong>sviinfrasolutions.com</strong> • Block E-220, Sector 63, Noida, UP 201309
               </p>
             </td>
           </tr>
@@ -465,10 +463,6 @@ Action: ${l.intelligence.recommended_action}
   return { html, text };
 }
 
-/**
- * Dispatches instant Hot Lead notifications across all configured channels.
- * Respects per-recipient `delivery_mode` ('instant' or 'both') and `lead_tier`.
- */
 export async function dispatchHotLeadAlert(params: {
   customerPhone: string;
   intelligence: CallIntelligence;
@@ -477,7 +471,6 @@ export async function dispatchHotLeadAlert(params: {
 }): Promise<{ emailedCount: number; inAppCreated: boolean }> {
   const { customerPhone, intelligence, duration, callRecordId } = params;
 
-  // 1. Fetch current settings
   const settings = await getHotLeadNotificationSettings();
   if (!settings.enabled) {
     return { emailedCount: 0, inAppCreated: false };
@@ -486,7 +479,6 @@ export async function dispatchHotLeadAlert(params: {
   let inAppCreated = false;
   let emailedCount = 0;
 
-  // 2. In-App Notification (Supabase `notifications` table)
   if (settings.channels.in_app) {
     try {
       const cleanPhone = (customerPhone || '').replace(/\D/g, '').slice(-10);
@@ -513,7 +505,6 @@ export async function dispatchHotLeadAlert(params: {
     }
   }
 
-  // 3. Email Dispatch via Resend (Per-Email Filtering)
   const eligibleRecipients = settings.recipients.filter((r) => {
     if (!r.email || !r.email.includes('@')) return false;
     const mode = r.delivery_mode || 'both';
@@ -554,7 +545,7 @@ export async function dispatchHotLeadAlert(params: {
         const resData = await res.json();
         if (res.ok && resData.id) {
           emailedCount++;
-          // Log to email_messages table
+
           await supabaseAdmin.from('email_messages').insert([
             {
               resend_id: resData.id,
@@ -581,23 +572,109 @@ export async function dispatchHotLeadAlert(params: {
       }
     }
   }
+  try {
+    const cleanPhone = (customerPhone || '').replace(/\D/g, '').slice(-10);
+    if (cleanPhone) {
+      const nowIso = new Date().toISOString();
+      const dateFormatted = new Date().toLocaleDateString('en-IN', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+      });
+      const reasonText = `Reason: ${intelligence.intent || 'High Interest'}. Budget: ${intelligence.budget || 'Not specified'}. Call Duration: ${duration || 0}s. Summary: ${intelligence.summary}`;
+
+      const { data: existingLeads } = await supabaseAdmin
+        .from('chat_leads')
+        .select('id, name, notes, phone')
+        .ilike('phone', `%${cleanPhone}%`)
+        .limit(1);
+
+      let leadId: string | null = null;
+      if (existingLeads && existingLeads.length > 0) {
+        const current = existingLeads[0];
+        leadId = current.id;
+        const updatedNotes =
+          (current.notes ? current.notes + '\n\n' : '') +
+          `[Updated by AI on ${dateFormatted}] ${reasonText}`;
+        await supabaseAdmin
+          .from('chat_leads')
+          .update({
+            temperature: 'hot',
+            summary: intelligence.summary,
+            budget: intelligence.budget || undefined,
+            project_interest: intelligence.property_interest || undefined,
+            notes: updatedNotes,
+            updated_at: nowIso,
+          })
+          .eq('id', leadId);
+
+        await supabaseAdmin.from('lead_activities').insert([
+          {
+            lead_id: leadId,
+            employee_id: null,
+            employee_name: 'Voice AI Triage Engine',
+            activity_type: 'note_added',
+            title: 'Updated by AI: Hot Lead Identified',
+            notes: reasonText,
+            created_at: nowIso,
+          },
+        ]);
+      } else {
+        const { data: newLead } = await supabaseAdmin
+          .from('chat_leads')
+          .insert([
+            {
+              name: `Customer +91${cleanPhone}`,
+              phone: `+91${cleanPhone}`,
+              normalized_phone: `+91${cleanPhone}`,
+              source: 'ivr',
+              temperature: 'hot',
+              summary: intelligence.summary,
+              budget: intelligence.budget || null,
+              project_interest: intelligence.property_interest || null,
+              qualification_status: 'qualified',
+              lifecycle_status: 'lead',
+              lead_created_by: 'Voice AI Triage Engine',
+              notes: `[Created & Updated by AI on ${dateFormatted}] ${reasonText}`,
+              created_at: nowIso,
+              updated_at: nowIso,
+            },
+          ])
+          .select('id')
+          .single();
+
+        if (newLead?.id) {
+          leadId = newLead.id;
+          await supabaseAdmin.from('lead_activities').insert([
+            {
+              lead_id: leadId,
+              employee_id: null,
+              employee_name: 'Voice AI Triage Engine',
+              activity_type: 'lead_created',
+              title: 'Lead Created & Updated by AI: Hot Lead',
+              notes: reasonText,
+              created_at: nowIso,
+            },
+          ]);
+        }
+      }
+    }
+  } catch (chatSyncErr) {
+    console.warn('Failed to sync hot lead to chat_leads and lead_activities:', chatSyncErr);
+  }
 
   return { emailedCount, inAppCreated };
 }
 
-/**
- * Dispatches Daily Digest to recipients scheduled for current time or for a test email.
- */
 export async function dispatchDailyDigest(params?: {
   targetEmail?: string;
-  currentHourTime?: string; // e.g. '19:30'
+  currentHourTime?: string;
 }): Promise<{ dispatchedCount: number; leadCount: number }> {
   const settings = await getHotLeadNotificationSettings();
   if (!settings.enabled && !params?.targetEmail) {
     return { dispatchedCount: 0, leadCount: 0 };
   }
 
-  // 1. Fetch triaged leads with Hot or Warm status
   const { data: records, error } = await supabaseAdmin
     .from('ivr_call_records')
     .select('id, customer_phone, call_duration, created_at, raw_payload')
@@ -609,7 +686,6 @@ export async function dispatchDailyDigest(params?: {
     return { dispatchedCount: 0, leadCount: 0 };
   }
 
-  // Filter Hot and Warm leads
   interface RawRecord {
     id: string;
     customer_phone: string;
@@ -635,7 +711,6 @@ export async function dispatchDailyDigest(params?: {
     return { dispatchedCount: 0, leadCount: 0 };
   }
 
-  // 2. Identify eligible recipients
   let targetRecipients = settings.recipients.filter((r) => {
     if (!r.email || !r.email.includes('@')) return false;
     const mode = r.delivery_mode || 'both';
@@ -679,12 +754,11 @@ export async function dispatchDailyDigest(params?: {
   });
 
   for (const recipient of targetRecipients) {
-    // Filter leads based on recipient's lead_tier
     const leadsForRecipient = validLeads.filter((l) => {
       if (recipient.lead_tier === 'hot_only') {
         return l.intelligence.interest_level === 'Hot';
       }
-      return true; // hot_and_warm
+      return true;
     });
 
     if (leadsForRecipient.length === 0) continue;
