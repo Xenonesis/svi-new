@@ -1,5 +1,38 @@
 import { SavedReceipt } from '@/src/components/admin/payment-receipts/ReceiptTypes';
 
+export type ReceiptPaymentStatus = 'paid' | 'pending' | 'bounced';
+
+export function getReceiptPaymentStatus(r: SavedReceipt): ReceiptPaymentStatus {
+  if (r.metadata?.is_trashed) return 'bounced';
+  const rawStatus = String(
+    r.form_data?.paymentStatus || r.metadata?.payment_status || ''
+  ).toLowerCase();
+  if (rawStatus === 'bounced') return 'bounced';
+  if (rawStatus === 'pending' || rawStatus === 'pending_clearance' || rawStatus === 'unpaid') {
+    return 'pending';
+  }
+  if (r.form_data?.isPaid === false) return 'pending';
+  if (r.status === 'draft' && (r.metadata?.pdc || rawStatus.includes('pending'))) {
+    return 'pending';
+  }
+  const ref = (r.form_data?.paymentRef || '').toLowerCase();
+  const method = (r.form_data?.paymentMethod || '').toLowerCase();
+  if ((ref.includes('pdc') || method.includes('pdc')) && r.status === 'draft') {
+    return 'pending';
+  }
+  return 'paid';
+}
+
+export function isReceiptPDC(r: SavedReceipt): boolean {
+  if (r.metadata?.pdc) return true;
+  const method = String(r.form_data?.paymentMethod || '').toLowerCase();
+  const ref = String(r.form_data?.paymentRef || '').toLowerCase();
+  const status = String(
+    r.form_data?.paymentStatus || r.metadata?.payment_status || ''
+  ).toLowerCase();
+  return method.includes('pdc') || ref.includes('pdc') || status.includes('pending');
+}
+
 export interface CustomerLedgerSummary {
   normalizedRefId: string;
   displayRefId: string;
@@ -8,6 +41,7 @@ export interface CustomerLedgerSummary {
   plotSize: string;
   receiptsCount: number;
   totalPaid: number;
+  totalPdcPending?: number;
   agreedDealValue: number;
   balanceDue: number;
   percentCompleted: number;
@@ -23,6 +57,7 @@ export interface CustomerLedgerDetail {
   plotSize: string;
   receipts: SavedReceipt[];
   totalPaid: number;
+  totalPdcPending?: number;
   agreedDealValue: number;
   balanceDue: number;
   percentCompleted: number;
@@ -47,6 +82,7 @@ export function groupReceiptsByRefId(
       plotSize: string;
       receipts: SavedReceipt[];
       totalPaid: number;
+      totalPdcPending: number;
       lastDate: string;
     }
   > = {};
@@ -63,11 +99,17 @@ export function groupReceiptsByRefId(
         plotSize: r.form_data?.plotSize || '',
         receipts: [],
         totalPaid: 0,
+        totalPdcPending: 0,
         lastDate: r.form_data?.date || r.created_at || '',
       };
     }
     const amount = parseFloat(r.form_data?.amount || '0') || 0;
-    map[norm].totalPaid += amount;
+    const status = getReceiptPaymentStatus(r);
+    if (status === 'paid') {
+      map[norm].totalPaid += amount;
+    } else if (status === 'pending') {
+      map[norm].totalPdcPending += amount;
+    }
     map[norm].receipts.push(r);
     const currDate = r.form_data?.date || r.created_at || '';
     if (currDate > map[norm].lastDate) {
@@ -91,6 +133,7 @@ export function groupReceiptsByRefId(
       plotSize: data.plotSize,
       receiptsCount: data.receipts.length,
       totalPaid: data.totalPaid,
+      totalPdcPending: data.totalPdcPending,
       agreedDealValue: dealVal,
       balanceDue: balance,
       percentCompleted: Math.round(pct * 100) / 100,
@@ -120,13 +163,20 @@ export function calculateLedgerStatement(
     .sort((a, b) => {
       const dateA = new Date(a.form_data?.date || a.created_at).getTime();
       const dateB = new Date(b.form_data?.date || b.created_at).getTime();
-      return dateA - dateB; // chronological order
+      return dateA - dateB;
     });
 
-  const totalPaid = matched.reduce(
-    (sum, r) => sum + (parseFloat(r.form_data?.amount || '0') || 0),
-    0
-  );
+  let totalPaid = 0;
+  let totalPdcPending = 0;
+  matched.forEach((r) => {
+    const amt = parseFloat(r.form_data?.amount || '0') || 0;
+    const status = getReceiptPaymentStatus(r);
+    if (status === 'paid') {
+      totalPaid += amt;
+    } else if (status === 'pending') {
+      totalPdcPending += amt;
+    }
+  });
   const balance = agreedDealValue > 0 ? Math.max(0, agreedDealValue - totalPaid) : 0;
   const pct = agreedDealValue > 0 ? Math.min(100, (totalPaid / agreedDealValue) * 100) : 0;
   const primary = matched[0];
@@ -148,6 +198,7 @@ export function calculateLedgerStatement(
     plotSize: finalPlotSize,
     receipts: matched,
     totalPaid,
+    totalPdcPending,
     agreedDealValue,
     balanceDue: balance,
     percentCompleted: Math.round(pct * 100) / 100,

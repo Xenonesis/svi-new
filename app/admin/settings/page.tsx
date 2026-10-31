@@ -10,6 +10,7 @@ import {
   Mail,
   Paintbrush,
   Shield,
+  Sparkles,
   User,
 } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
@@ -24,6 +25,7 @@ import { AppearanceTab } from '@/src/components/admin/settings/AppearanceTab';
 import { EmailTab } from '@/src/components/admin/settings/EmailTab';
 import { LogsTab } from '@/src/components/admin/settings/LogsTab';
 import { AnnouncementTab } from '@/src/components/admin/settings/AnnouncementTab';
+import { FestiveOfferTab } from '@/src/components/admin/settings/FestiveOfferTab';
 import { useSettings } from '@/src/components/admin/settings/hooks/useSettings';
 
 const TABS = [
@@ -36,6 +38,7 @@ const TABS = [
   { id: 'security', label: 'Security', icon: Shield },
   { id: 'appearance', label: 'Appearance', icon: Paintbrush },
   { id: 'announcement', label: 'Announcement Bar', icon: Megaphone },
+  { id: 'festiveOffer', label: 'Diwali Offer Spotlight', icon: Sparkles },
   { id: 'logs', label: 'Activity Logs', icon: History },
 ];
 
@@ -200,6 +203,7 @@ export default function AdminSettings() {
                     />
                   )}
                   {s.activeTab === 'announcement' && <AnnouncementTab />}
+                  {s.activeTab === 'festiveOffer' && <FestiveOfferTab />}
                   {s.activeTab === 'properties' && (
                     <PropertiesTab
                       token={s.token}

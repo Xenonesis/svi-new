@@ -1,8 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
   getNextReceiptNumber,
+  getNextReceiptNumberFromDb,
+  verifyAndAssignUniqueReceiptNumber,
   isValidReceiptNumber,
-  BASE_RECEIPT_NUMBER,
+  type ReceiptDatabaseClient,
 } from '@/src/lib/receipt/receiptNumber';
 
 describe('receiptNumber utility', () => {
@@ -10,6 +12,9 @@ describe('receiptNumber utility', () => {
     expect(getNextReceiptNumber([])).toBe('2056');
     expect(getNextReceiptNumber(null)).toBe('2056');
     expect(getNextReceiptNumber(undefined)).toBe('2056');
+  });
+  it('skips permanently reserved receipt number 2999', () => {
+    expect(getNextReceiptNumber([{ form_data: { receiptNo: '2998' } }])).toBe('3000');
   });
 
   it('calculates the next sequential receipt number from existing records', () => {
@@ -22,6 +27,15 @@ describe('receiptNumber utility', () => {
     expect(getNextReceiptNumber(receipts)).toBe('2095');
   });
 
+  it('skips receipts marked as trashed in metadata', () => {
+    const receipts = [
+      { form_data: { receiptNo: '2056' } },
+      { form_data: { receiptNo: '2094' }, metadata: { is_trashed: true } },
+      { form_data: { receiptNo: '2060' } },
+    ];
+    expect(getNextReceiptNumber(receipts)).toBe('2061');
+  });
+
   it('handles unordered receipt lists and calculates max + 1', () => {
     const receipts = [
       { form_data: { receiptNo: '2094' } },
@@ -32,8 +46,6 @@ describe('receiptNumber utility', () => {
   });
 
   it('handles gaps caused by deleted receipts without number collisions', () => {
-    // If receipts 2056 and 2094 exist (e.g. 2080 was deleted), length is 2,
-    // but next number MUST still be 2095 (not 2056 + 2 = 2058).
     const receipts = [{ form_data: { receiptNo: '2056' } }, { form_data: { receiptNo: '2094' } }];
     expect(getNextReceiptNumber(receipts)).toBe('2095');
   });
@@ -63,5 +75,111 @@ describe('receiptNumber utility', () => {
     expect(isValidReceiptNumber(undefined)).toBe(false);
     expect(isValidReceiptNumber(-5)).toBe(false);
     expect(isValidReceiptNumber('0')).toBe(false);
+  });
+
+  it('fetches and calculates next receipt number from database client', async () => {
+    const mockSupabase = {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            limit: async () => ({
+              data: [{ form_data: { receiptNo: '2100' } }, { form_data: { receiptNo: '2105' } }],
+              error: null,
+            }),
+            filter: async () => ({
+              data: [],
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    } as unknown as ReceiptDatabaseClient;
+
+    const nextNo = await getNextReceiptNumberFromDb(mockSupabase);
+    expect(nextNo).toBe('2106');
+  });
+
+  it('accepts requested receipt number when no active collision exists', async () => {
+    const mockSupabase = {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            limit: async () => ({
+              data: [],
+              error: null,
+            }),
+            filter: async () => ({
+              data: [],
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    } as unknown as ReceiptDatabaseClient;
+
+    const result = await verifyAndAssignUniqueReceiptNumber(mockSupabase, '2148');
+    expect(result).toBe('2148');
+  });
+
+  it('re-allocates next sequence when requested number collides with an active receipt', async () => {
+    const mockSupabase = {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            filter: async () => ({
+              data: [{ id: 'doc-1', metadata: {} }],
+              error: null,
+            }),
+            limit: async () => ({
+              data: [{ form_data: { receiptNo: '2140' } }, { form_data: { receiptNo: '2147' } }],
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    } as unknown as ReceiptDatabaseClient;
+
+    const result = await verifyAndAssignUniqueReceiptNumber(mockSupabase, '2147');
+    expect(result).toBe('2148');
+  });
+
+  it('allows reusing a number if previous matching record was trashed', async () => {
+    const mockSupabase = {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            filter: async () => ({
+              data: [{ id: 'doc-trashed', metadata: { is_trashed: true } }],
+              error: null,
+            }),
+            limit: async () => ({
+              data: [],
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    } as unknown as ReceiptDatabaseClient;
+
+    const result = await verifyAndAssignUniqueReceiptNumber(mockSupabase, '2148');
+    expect(result).toBe('2148');
+  });
+  it('never assigns permanently reserved receipt number 2999', async () => {
+    const mockSupabase = {
+      from: () => ({
+        select: () => ({
+          eq: () => ({
+            filter: async () => ({ data: [], error: null }),
+            limit: async () => ({
+              data: [{ form_data: { receiptNo: '2998' } }],
+              error: null,
+            }),
+          }),
+        }),
+      }),
+    } as unknown as ReceiptDatabaseClient;
+
+    const result = await verifyAndAssignUniqueReceiptNumber(mockSupabase, '2999');
+    expect(result).toBe('3000');
   });
 });

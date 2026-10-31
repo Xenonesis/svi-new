@@ -84,6 +84,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
           refId: (formData.refId as string) || (meta.ticket_id as string) || null,
           userId: data.user_id,
           plotNo: (formData.plotNo as string) || null,
+          name: (formData.name as string) || (meta.client_name as string) || null,
           isTrashed: Boolean(meta.is_trashed),
         });
       } catch (syncErr) {
@@ -165,6 +166,7 @@ export async function DELETE(
           refId: (formData.refId as string) || (meta.ticket_id as string) || null,
           userId: deleted.user_id,
           plotNo: (formData.plotNo as string) || null,
+          name: (formData.name as string) || (meta.client_name as string) || null,
           isTrashed: true,
         });
       } catch (syncErr) {

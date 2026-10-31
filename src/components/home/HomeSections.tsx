@@ -15,9 +15,10 @@ const HomeBlogs = dynamic(() => import('@/src/components/home/HomeBlogs'));
 const TimelineSection = dynamic(() => import('@/src/components/home/TimelineSection'));
 const CTASection = dynamic(() => import('@/src/components/home/CTASection'));
 const HomeFAQ = dynamic(() => import('@/src/components/home/HomeFAQ'));
-
+const ExclusiveOfferSpotlight = dynamic(
+  () => import('@/src/components/home/ExclusiveOfferSpotlight')
+);
 const LotteryCTA = dynamic(() => import('@/src/components/lottery/LotteryCTA'));
-
 export default function HomeSections() {
   return (
     <>
@@ -31,6 +32,9 @@ export default function HomeSections() {
       </div>
       <div className="cv-auto">
         <TimelineSection />
+      </div>
+      <div className="cv-auto">
+        <ExclusiveOfferSpotlight />
       </div>
       <div className="cv-auto">
         <ProjectsSection />

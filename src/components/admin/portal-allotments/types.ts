@@ -4,6 +4,7 @@ export interface ProfileSummary {
   email: string | null;
   phone?: string | null;
   real_email?: string | null;
+  role?: string | null;
 }
 
 export interface PropertySummary {

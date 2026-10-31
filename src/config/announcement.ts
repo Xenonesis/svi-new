@@ -10,10 +10,10 @@ export interface AnnouncementConfig {
 
 export const defaultAnnouncementConfig: AnnouncementConfig = {
   enabled: true,
-  badgeText: 'NEW',
-  text: 'EXCLUSIVE RESIDENTIAL & COMMERCIAL PLOTS AVAILABLE AT PRIME LOCATIONS',
-  actionText: 'EXPLORE PROPERTIES',
-  actionUrl: '/projects/current',
+  badgeText: 'DIWALI SPECIAL 🪔',
+  text: 'SHIVANI VATIKA 11TH: FREE SCOOTY ON PLOT REGISTRY & EXCITING GIFTS',
+  actionText: 'CLAIM OFFER',
+  actionUrl: '/exclusive-offers',
   isExternal: false,
   dismissible: true,
 };

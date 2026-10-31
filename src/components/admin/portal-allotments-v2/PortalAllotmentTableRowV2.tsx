@@ -133,8 +133,14 @@ export function PortalAllotmentTableRowV2({
   const effectivePreference = plotPreference || (isParkOnly ? 'park' : '');
   const propertyName = allotment.properties?.name || 'Assigned Property';
   const area = allotment.metadata?.area ?? allotment.area;
+  const metaClient = (allotment.metadata?.client_name || allotment.metadata?.clientName) as
+    string | undefined;
+  const isStaffProfile =
+    allotment.profiles?.role === 'admin' || allotment.profiles?.role === 'employee';
   const clientName =
-    allotment.profiles?.full_name || (allotment.metadata?.client_name as string) || 'Client';
+    isStaffProfile && metaClient
+      ? metaClient
+      : allotment.profiles?.full_name || metaClient || 'Client';
   const clientPhone =
     (allotment.metadata?.client_phone as string) || (allotment.metadata?.phone as string);
   const clientEmail =

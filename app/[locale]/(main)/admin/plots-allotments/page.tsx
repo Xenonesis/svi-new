@@ -16,12 +16,17 @@ import {
   PlotsAllotmentsHeaderV2,
   PlotsAllotmentsTabsV2,
 } from '@/src/components/admin/portal-allotments-v2';
-import { exportAllotmentsToCSV } from '@/src/components/admin/portal-allotments/exportAllotmentsToCSV';
+import {
+  exportAllotmentsToCSV,
+  exportAllotmentsToExcel,
+  exportAllotmentsToPDF,
+} from '@/src/lib/allotment/allotmentExportService';
 
 export default function PlotsAllotmentsPage(): ReactElement {
   const t = useTranslations('pages.adminPortalAllotments');
   const [isBulkWhatsAppOpen, setIsBulkWhatsAppOpen] = useState(false);
   const [tabOverride, setTabOverride] = useState<'pending' | 'active' | null>('active');
+  const [isExporting, setIsExporting] = useState<boolean>(false);
 
   const {
     activeTab: hookActiveTab,
@@ -100,8 +105,28 @@ export default function PlotsAllotmentsPage(): ReactElement {
     hookSetActiveTab(tab);
   };
 
-  const handleExportSelected = (): void => {
-    exportAllotmentsToCSV(selectedAllotments, getAllotmentFinancials);
+  const handleExportSelected = async (format: 'csv' | 'excel' | 'pdf'): Promise<void> => {
+    if (selectedAllotments.length === 0) return;
+    setIsExporting(true);
+    try {
+      if (format === 'csv') {
+        exportAllotmentsToCSV(selectedAllotments, getAllotmentFinancials, allLedgerReceipts);
+      } else if (format === 'excel') {
+        await exportAllotmentsToExcel({
+          allotments: selectedAllotments,
+          allReceipts: allLedgerReceipts,
+          getAllotmentFinancials,
+        });
+      } else if (format === 'pdf') {
+        await exportAllotmentsToPDF({
+          allotments: selectedAllotments,
+          allReceipts: allLedgerReceipts,
+          getAllotmentFinancials,
+        });
+      }
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   return (
@@ -174,6 +199,7 @@ export default function PlotsAllotmentsPage(): ReactElement {
           isAllSelected={isAllSelected}
           isSomeSelected={isSomeSelected}
           onExportSelected={handleExportSelected}
+          isExporting={isExporting}
         />
       )}
 
@@ -183,6 +209,7 @@ export default function PlotsAllotmentsPage(): ReactElement {
           selectedTotalBalance={selectedTotalBalance}
           onOpenBulkWhatsApp={() => setIsBulkWhatsAppOpen(true)}
           onExportSelected={handleExportSelected}
+          isExporting={isExporting}
           onClearSelection={clearSelection}
         />
       )}

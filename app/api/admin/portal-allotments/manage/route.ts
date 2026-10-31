@@ -17,8 +17,11 @@ interface ManageAllotmentPayload {
 }
 
 interface PaymentStatusPayload {
-  paymentId: string;
+  paymentId?: string;
+  receiptId?: string;
+  receiptNo?: string;
   status: 'paid' | 'pending';
+  reason?: string;
 }
 
 export async function GET(request: NextRequest) {
@@ -358,27 +361,83 @@ export async function PATCH(request: NextRequest) {
     if (!admin) throw AppError.unauthorized();
 
     const body = (await request.json().catch(() => null)) as PaymentStatusPayload | null;
-    if (!body || !body.paymentId || !body.status) {
-      throw AppError.badRequest('paymentId and status are required');
+    if (!body || (!body.paymentId && !body.receiptId && !body.receiptNo) || !body.status) {
+      throw AppError.badRequest('paymentId, receiptId, or receiptNo, and status are required');
     }
 
-    const { paymentId, status } = body;
+    const { paymentId, receiptId, receiptNo, status, reason } = body;
     const paidDate = status === 'paid' ? new Date().toISOString().split('T')[0] : null;
 
-    const { data, error } = await supabaseAdmin
-      .from('payment_schedules')
-      .update({
+    let targetScheduleId = paymentId;
+    let targetReceiptNo = receiptNo;
+
+    if (receiptId) {
+      const { data: recDoc } = await supabaseAdmin
+        .from('documents')
+        .select('*')
+        .eq('id', receiptId)
+        .maybeSingle();
+
+      if (recDoc) {
+        const docFormData = (recDoc.form_data as Record<string, unknown>) || {};
+        targetReceiptNo = targetReceiptNo || (docFormData.receiptNo as string);
+        const newFormData = {
+          ...docFormData,
+          paymentStatus: status,
+          isPaid: status === 'paid',
+        };
+        const docMeta = (recDoc.metadata as Record<string, unknown>) || {};
+        const newMeta = {
+          ...docMeta,
+          payment_status: status === 'paid' ? 'cleared' : 'pending_clearance',
+          revert_reason: status === 'pending' ? reason || 'Reverted to pending' : undefined,
+        };
+        await supabaseAdmin
+          .from('documents')
+          .update({
+            status: status === 'paid' ? 'completed' : 'draft',
+            form_data: newFormData,
+            metadata: newMeta,
+            updated_at: new Date().toISOString(),
+          })
+          .eq('id', receiptId);
+      }
+    }
+
+    if (!targetScheduleId && targetReceiptNo) {
+      const { data: matchedSched } = await supabaseAdmin
+        .from('payment_schedules')
+        .select('id')
+        .ilike('title', `%#${targetReceiptNo}%`)
+        .maybeSingle();
+
+      if (matchedSched) {
+        targetScheduleId = matchedSched.id;
+      }
+    }
+
+    let updatedPayment = null;
+    if (targetScheduleId) {
+      const updateFields: Record<string, unknown> = {
         status,
         paid_date: paidDate,
         updated_at: new Date().toISOString(),
-      })
-      .eq('id', paymentId)
-      .select()
-      .single();
+      };
+      if (status === 'pending' && reason) {
+        updateFields.notes = reason;
+      }
+      const { data, error } = await supabaseAdmin
+        .from('payment_schedules')
+        .update(updateFields)
+        .eq('id', targetScheduleId)
+        .select()
+        .single();
 
-    if (error) throw error;
+      if (error) throw error;
+      updatedPayment = data;
+    }
 
-    return NextResponse.json({ success: true, payment: data });
+    return NextResponse.json({ success: true, payment: updatedPayment });
   } catch (err: unknown) {
     return handleApiError(err);
   }

@@ -3,6 +3,7 @@ import {
   normalizeRefId,
   groupReceiptsByRefId,
   calculateLedgerStatement,
+  getReceiptPaymentStatus,
 } from '@/src/lib/receipt/receiptLedger';
 import { SavedReceipt } from '@/src/components/admin/payment-receipts/ReceiptTypes';
 
@@ -85,5 +86,42 @@ describe('receiptLedger engine', () => {
     expect(detail.totalPaid).toBe(25000);
     expect(detail.balanceDue).toBe(0);
     expect(detail.percentCompleted).toBe(0);
+  });
+
+  it('correctly classifies PDC and pending receipts and excludes them from totalPaid', () => {
+    const pdcReceipt: SavedReceipt = {
+      id: '3',
+      document_type: 'payment_receipt',
+      status: 'draft',
+      created_at: '2026-10-30T10:00:00Z',
+      form_data: {
+        receiptNo: '2147',
+        date: '2026-10-30',
+        salutation: 'Ms.',
+        name: 'Krishna',
+        refId: 'SVI2255',
+        amount: '238000',
+        amountWords: 'Two Lakh Thirty Eight Thousand',
+        paymentRef: 'pdc Cheque No.: 33077290',
+        drawnOn: 'HDFC',
+        plotNo: '15',
+        plotSize: '130',
+        account: 'Savings',
+        paymentMethod: 'Cheque',
+        paymentStatus: 'pending',
+      },
+      metadata: {
+        pdc: true,
+        payment_status: 'pending_clearance',
+      },
+    };
+
+    expect(getReceiptPaymentStatus(pdcReceipt)).toBe('pending');
+    expect(getReceiptPaymentStatus(mockReceipts[0])).toBe('paid');
+
+    const detail = calculateLedgerStatement('SVI2255', [pdcReceipt], 845000);
+    expect(detail.totalPaid).toBe(0);
+    expect(detail.totalPdcPending).toBe(238000);
+    expect(detail.balanceDue).toBe(845000);
   });
 });

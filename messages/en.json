@@ -401,8 +401,8 @@
       "title": "Plots in Jaipur & Gated Townships",
       "description": "Buy verified residential plots in Jaipur from SVI Infra. Premier gated townships across Khatu Shyam Highway, Nayla, Renwal & Phulera from ₹7,500/sq. yd."
     },
-    "exclusiveOffers": {
-      "title": "Exclusive Offers",
+    "oldExclusiveOffers": {
+      "title": "Channel Partner & Broker Offers",
       "subtitle": "Special Deals & Benefits",
       "heading": "Earn More, Grow Together",
       "description": "Premium plots. Prime locations. Assured growth.",
@@ -436,6 +436,21 @@
       "locationsTitle": "Strategic Locations Across",
       "locationsList": "Jaipur – Yamuna Expressway – Greater Noida",
       "callWhatsapp": "Call / WhatsApp"
+    },
+    "exclusiveOffers": {
+      "title": "Shivani Vatika 11th - Diwali Special Offer",
+      "subtitle": "Free Scooty & Exciting Gifts on Plot Registry",
+      "heading": "This Diwali, Apne Dream Plot Ka Plan Banayein!",
+      "description": "Special Diwali Offer on Shivani Vatika 11th near Khatu Shyam Ji, Rajasthan. Free Scooty on Plot Registry with Exciting Gifts! Enquiries welcome from Delhi & Noida.",
+      "badge": "Special Diwali Offer 2026",
+      "location": "Near Khatu Shyam Ji, Rajasthan",
+      "bumperOfferTitle": "Plot Ki Registry Par FREE SCOOTY",
+      "bumperOfferDesc": "Register your plot during this festive season and take home a brand new Scooty along with exciting gifts!",
+      "delhiNcrWelcome": "Delhi NCR, especially Delhi & Noida buyers welcome. Free AC Cab Site Visit available.",
+      "callNow": "Call Helpline",
+      "whatsappUs": "Chat on WhatsApp",
+      "bookSiteVisit": "Book Free Site Visit",
+      "claimOffer": "Claim Diwali Offer"
     },
     "about": {
       "title": "About SVI Infra Solutions",
@@ -1045,6 +1060,14 @@
           "description": "Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha, offering 230 residential plots with prime connectivity and modern infrastructure.",
           "fullDescription": "Shivani Vatika 11th is a well-planned residential project spread over 11.5 bigha (approx. 30,480 sq. yds.), developed with clear documentation and trust for buyers. The township offers 230 residential plots ranging from 80 sq. yds. to 250 sq. yds., giving families the flexibility to choose according to their needs. Designed with modern infrastructure and essential facilities.",
           "status": "Ongoing"
+        },
+        "shivaniVatika13th": {
+          "title": "Shivani Vatika 13th",
+          "location": "Sambhar–Phulera, Rajasthan",
+          "type": "Premium Residential Plots",
+          "description": "Exclusive boutique township offering 60 premium demarcated residential plots, 30 ft internal roads, landscaped park, and temple in Sambhar-Phulera.",
+          "fullDescription": "Shivani Vatika 13th is an exclusive 60-plot premium residential gated community situated in the high-growth Sambhar-Phulera growth corridor of Rajasthan. Offering well-demarcated plots, 30 ft wide internal roads, landscaped central park, serene community temple, and transparent registry with mutation. With a flexible ₹9,999/month installment payment plan for 40 months and close proximity to Phulera Junction and the DMIC Logistics Corridor, it represents the ideal opportunity for high-growth investment and tranquil family living.",
+          "status": "Booking Open"
         },
         "shyamAangan": {
           "title": "Shyam Aangan",

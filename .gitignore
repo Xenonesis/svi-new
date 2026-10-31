@@ -52,6 +52,12 @@ supabase/.temp/
 vitest.config.ts.timestamp-*
 
 
+# Local backups and audit artifacts
+*_backup*.json
+lighthouse-*.json
+daily_summaries.json
+CALL_LOGS.csv
+
 # Misc
 nul
 refactor.md

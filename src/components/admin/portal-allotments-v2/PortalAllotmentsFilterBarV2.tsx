@@ -1,9 +1,20 @@
 'use client';
 
 import React from 'react';
-import { Search, X, RotateCcw, LayoutList, LayoutGrid, Download, ChevronDown } from 'lucide-react';
+import {
+  Search,
+  X,
+  RotateCcw,
+  LayoutList,
+  LayoutGrid,
+  Download,
+  ChevronDown,
+  FileSpreadsheet,
+  FileText,
+  Loader2,
+} from 'lucide-react';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import type { PaymentStatusFilter, SaleModeFilter } from '../portal-allotments/types';
-
 export interface PortalAllotmentsFilterBarV2Props {
   searchTerm: string;
   onSearchChange: (value: string) => void;
@@ -23,7 +34,8 @@ export interface PortalAllotmentsFilterBarV2Props {
   viewMode?: 'table' | 'cards';
   onViewModeChange?: (mode: 'table' | 'cards') => void;
   selectedCount?: number;
-  onExportSelected?: () => void;
+  onExportSelected?: (format: 'csv' | 'excel' | 'pdf') => void | Promise<void>;
+  isExporting?: boolean;
 }
 
 export function PortalAllotmentsFilterBarV2({
@@ -46,6 +58,7 @@ export function PortalAllotmentsFilterBarV2({
   onViewModeChange,
   selectedCount = 0,
   onExportSelected,
+  isExporting = false,
 }: PortalAllotmentsFilterBarV2Props): React.JSX.Element {
   const handlePropertyChange = onPropertyChange || (() => {});
   const handlePaymentStatusChange = onPaymentStatusChange || (() => {});
@@ -170,14 +183,82 @@ export function PortalAllotmentsFilterBarV2({
         {/* Right: Actions & View Switcher */}
         <div className="flex items-center gap-2">
           {selectedCount > 0 && onExportSelected && (
-            <button
-              type="button"
-              onClick={onExportSelected}
-              className="dark:border-brand-gold dark:bg-brand-gold dark:hover:bg-brand-gold/90 inline-flex items-center gap-1.5 border border-slate-900 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-slate-800 dark:text-black"
-            >
-              <Download className="h-3 w-3" />
-              <span>Export ({selectedCount})</span>
-            </button>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button
+                  type="button"
+                  disabled={isExporting}
+                  className="dark:border-brand-gold dark:bg-brand-gold dark:hover:bg-brand-gold/90 inline-flex cursor-pointer items-center gap-1.5 border border-slate-900 bg-slate-900 px-3 py-1.5 text-xs font-semibold text-white transition-colors hover:bg-slate-800 disabled:opacity-50 dark:text-black"
+                >
+                  {isExporting ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : (
+                    <Download className="h-3 w-3" />
+                  )}
+                  <span>Export ({selectedCount})</span>
+                  <ChevronDown className="h-3 w-3 opacity-70" />
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content
+                  align="end"
+                  sideOffset={6}
+                  className="animate-in fade-in zoom-in-95 z-50 min-w-[240px] rounded-xl border border-gray-200 bg-white/95 p-1.5 shadow-xl backdrop-blur-xl dark:border-white/10 dark:bg-[#0c1626]/95"
+                >
+                  <DropdownMenu.Label className="px-2.5 py-1.5 text-[10px] font-semibold tracking-wider text-gray-500 uppercase dark:text-gray-400">
+                    Export Format ({selectedCount} Selected)
+                  </DropdownMenu.Label>
+                  <DropdownMenu.Item
+                    onClick={() => onExportSelected('excel')}
+                    className="group flex cursor-pointer items-start gap-2.5 rounded-lg px-2.5 py-2 text-xs outline-none select-none hover:bg-gray-100 dark:hover:bg-white/10"
+                  >
+                    <div className="mt-0.5 rounded-md border border-emerald-500/30 bg-emerald-500/10 p-1 text-emerald-600 dark:text-emerald-400">
+                      <FileSpreadsheet className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">
+                        Official Excel (.xlsx)
+                      </span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                        SVI logo, formulas & payment ledgers
+                      </span>
+                    </div>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    onClick={() => onExportSelected('pdf')}
+                    className="group flex cursor-pointer items-start gap-2.5 rounded-lg px-2.5 py-2 text-xs outline-none select-none hover:bg-gray-100 dark:hover:bg-white/10"
+                  >
+                    <div className="mt-0.5 rounded-md border border-amber-500/30 bg-amber-500/10 p-1 text-amber-600 dark:text-amber-400">
+                      <FileText className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">
+                        Official PDF Dossier
+                      </span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                        Printable statement with corporate logo
+                      </span>
+                    </div>
+                  </DropdownMenu.Item>
+                  <DropdownMenu.Item
+                    onClick={() => onExportSelected('csv')}
+                    className="group flex cursor-pointer items-start gap-2.5 rounded-lg px-2.5 py-2 text-xs outline-none select-none hover:bg-gray-100 dark:hover:bg-white/10"
+                  >
+                    <div className="mt-0.5 rounded-md border border-blue-500/30 bg-blue-500/10 p-1 text-blue-600 dark:text-blue-400">
+                      <Download className="h-3.5 w-3.5" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-semibold text-gray-800 dark:text-gray-100">
+                        Data CSV (.csv)
+                      </span>
+                      <span className="text-[10px] text-gray-500 dark:text-gray-400">
+                        Raw table data for spreadsheets
+                      </span>
+                    </div>
+                  </DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
           )}
 
           {onViewModeChange && (

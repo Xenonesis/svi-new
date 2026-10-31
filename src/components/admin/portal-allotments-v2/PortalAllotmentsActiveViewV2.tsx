@@ -59,7 +59,8 @@ export interface PortalAllotmentsActiveViewV2Props {
   onToggleSelectAll?: () => void;
   isAllSelected?: boolean;
   isSomeSelected?: boolean;
-  onExportSelected?: () => void;
+  onExportSelected?: (format: 'csv' | 'excel' | 'pdf') => void | Promise<void>;
+  isExporting?: boolean;
 }
 
 export function PortalAllotmentsActiveViewV2({
@@ -104,6 +105,7 @@ export function PortalAllotmentsActiveViewV2({
   isAllSelected,
   isSomeSelected,
   onExportSelected,
+  isExporting = false,
 }: PortalAllotmentsActiveViewV2Props): React.JSX.Element {
   const [viewMode, setViewMode] = useState<'table' | 'cards'>('table');
 
@@ -159,6 +161,7 @@ export function PortalAllotmentsActiveViewV2({
         onViewModeChange={setViewMode}
         selectedCount={selectedIds?.size || 0}
         onExportSelected={onExportSelected}
+        isExporting={isExporting}
       />
 
       {/* 2. Main Data Presentation */}

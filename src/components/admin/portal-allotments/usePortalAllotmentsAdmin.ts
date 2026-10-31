@@ -18,7 +18,7 @@ import type {
   SortDirection,
 } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
-import { normalizeRefId } from '@/src/lib/receipt/receiptLedger';
+import { normalizeRefId, getReceiptPaymentStatus } from '@/src/lib/receipt/receiptLedger';
 import { formatTicketId } from '@/src/lib/allotment/ticketUtils';
 import { exportToPDF, exportToImage } from '@/src/lib/utils/documentExporter';
 
@@ -52,10 +52,9 @@ export function getAllotmentFinancials(
   const dealValue =
     typeof explicitDealVal === 'number' && explicitDealVal > 0 ? explicitDealVal : totalCostVal;
 
-  const receiptsTotal = (allotment.receipts || []).reduce(
-    (sum, r) => sum + (parseFloat(r.form_data?.amount || '0') || 0),
-    0
-  );
+  const receiptsTotal = (allotment.receipts || [])
+    .filter((r) => getReceiptPaymentStatus(r) === 'paid')
+    .reduce((sum, r) => sum + (parseFloat(r.form_data?.amount || '0') || 0), 0);
 
   const schedulesTotal = (allotment.payment_schedules || [])
     .filter((p) => p.status === 'paid')
@@ -248,7 +247,7 @@ export function usePortalAllotmentsAdmin() {
         supabase
           .from('allotments')
           .select(
-            '*, profiles:user_id(id, full_name, email, phone, real_email), properties:property_id(id, name), payment_schedules(*)'
+            '*, profiles:user_id(id, full_name, email, phone, real_email, role), properties:property_id(id, name), payment_schedules(*)'
           )
           .order('created_at', { ascending: false }),
         supabase.from('profiles').select('id, full_name, email, role').order('full_name'),
@@ -412,22 +411,49 @@ export function usePortalAllotmentsAdmin() {
           return false;
         });
         const regClient = ticketToClientInfo[normTicket];
+        const metaClientName = (a.metadata?.client_name || a.metadata?.clientName) as
+          string | undefined;
+        const isStaffProfile = a.profiles?.role === 'admin' || a.profiles?.role === 'employee';
         const enrichedProfile: ProfileSummary | null = a.profiles
           ? {
               ...a.profiles,
-              email: a.profiles.email || regClient?.email || null,
-              phone: a.profiles.phone || regClient?.phone || null,
-              real_email: a.profiles.real_email || regClient?.email || null,
+              full_name:
+                isStaffProfile && metaClientName
+                  ? metaClientName
+                  : a.profiles.full_name || metaClientName || regClient?.name || null,
+              email:
+                (isStaffProfile && (a.metadata?.client_email as string)) ||
+                a.profiles.email ||
+                regClient?.email ||
+                null,
+              phone:
+                (isStaffProfile && (a.metadata?.client_phone as string)) ||
+                a.profiles.phone ||
+                regClient?.phone ||
+                null,
+              real_email:
+                (isStaffProfile && (a.metadata?.client_email as string)) ||
+                a.profiles.real_email ||
+                regClient?.email ||
+                null,
             }
           : regClient
             ? {
                 id: a.user_id || `temp-${normTicket}`,
-                full_name: regClient.name || (a.metadata?.client_name as string) || null,
-                email: regClient.email || null,
-                phone: regClient.phone || null,
-                real_email: regClient.email || null,
+                full_name: regClient.name || metaClientName || null,
+                email: regClient.email || (a.metadata?.client_email as string) || null,
+                phone: regClient.phone || (a.metadata?.client_phone as string) || null,
+                real_email: regClient.email || (a.metadata?.client_email as string) || null,
               }
-            : null;
+            : metaClientName
+              ? {
+                  id: a.user_id || `temp-${normTicket}`,
+                  full_name: metaClientName,
+                  email: (a.metadata?.client_email as string) || null,
+                  phone: (a.metadata?.client_phone as string) || null,
+                  real_email: (a.metadata?.client_email as string) || null,
+                }
+              : null;
 
         return {
           ...a,
@@ -782,7 +808,11 @@ export function usePortalAllotmentsAdmin() {
     }
   };
 
-  const togglePaymentStatus = async (paymentId: string, currentStatus: string) => {
+  const togglePaymentStatus = async (
+    targetId: string,
+    currentStatus: string,
+    options?: { isReceipt?: boolean; receiptNo?: string; reason?: string }
+  ) => {
     const newStatus = currentStatus === 'paid' ? 'pending' : 'paid';
     try {
       const sessionRes = await supabase?.auth?.getSession?.();
@@ -794,13 +824,23 @@ export function usePortalAllotmentsAdmin() {
         headers['Authorization'] = `Bearer ${token}`;
       }
 
+      const payload: Record<string, unknown> = {
+        status: newStatus,
+      };
+      if (options?.isReceipt) {
+        payload.receiptId = targetId;
+        if (options.receiptNo) payload.receiptNo = options.receiptNo;
+      } else {
+        payload.paymentId = targetId;
+      }
+      if (options?.reason) {
+        payload.reason = options.reason;
+      }
+
       const res = await fetch('/api/admin/portal-allotments/manage', {
         method: 'PATCH',
         headers,
-        body: JSON.stringify({
-          paymentId,
-          status: newStatus,
-        }),
+        body: JSON.stringify(payload),
       });
 
       if (!res.ok) {
@@ -888,7 +928,16 @@ export function usePortalAllotmentsAdmin() {
     if (term) {
       result = result.filter((a) => {
         const pName = a.profiles?.full_name?.toLowerCase() || '';
+        const metaName = String(
+          a.metadata?.client_name ||
+            a.metadata?.clientName ||
+            a.metadata?.applicant_name ||
+            a.metadata?.applicantName ||
+            ''
+        ).toLowerCase();
         const pEmail = a.profiles?.email?.toLowerCase() || '';
+        const metaEmail = String(a.metadata?.client_email || a.metadata?.email || '').toLowerCase();
+        const metaPhone = String(a.metadata?.client_phone || a.metadata?.phone || '').toLowerCase();
         const propName = a.properties?.name?.toLowerCase() || '';
         const unit = (a.unit_no || a.unit_number || '').toLowerCase();
         const rawTicket = String(
@@ -912,7 +961,10 @@ export function usePortalAllotmentsAdmin() {
           isMissingMatch ||
           isRefundMatch ||
           pName.includes(term) ||
+          metaName.includes(term) ||
           pEmail.includes(term) ||
+          metaEmail.includes(term) ||
+          metaPhone.includes(term) ||
           propName.includes(term) ||
           unit.includes(term) ||
           rawTicket.includes(term) ||

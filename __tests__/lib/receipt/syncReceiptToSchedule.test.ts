@@ -187,4 +187,119 @@ describe('syncReceiptToPaymentSchedule', () => {
     expect(res.action).toBe('deleted');
     expect(deleteMock).toHaveBeenCalled();
   });
+  it('matches exact ticket_id instead of false-positive unit suffix match', async () => {
+    const allotUnit5 = {
+      id: 'allot-plot-5',
+      user_id: 'user-rani',
+      unit_no: '5',
+      metadata: { ticket_id: 'PL2078', client_name: 'Rani Bhatnagar' },
+    };
+    const allotUnit15 = {
+      id: 'allot-plot-15',
+      user_id: 'user-krishna',
+      unit_no: '15',
+      metadata: { ticket_id: 'SVI2255', client_name: 'Krishna' },
+    };
+
+    mockSupabase = {
+      from: vi.fn((table: string) => {
+        if (table === 'allotments') {
+          return {
+            select: vi.fn().mockResolvedValue({
+              data: [allotUnit5, allotUnit15],
+              error: null,
+            }),
+          };
+        }
+        if (table === 'payment_schedules') {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                ilike: vi.fn().mockResolvedValue({
+                  data: [],
+                  error: null,
+                }),
+              }),
+            }),
+            insert: vi.fn().mockReturnValue({
+              select: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({
+                  data: { id: 'sched-krishna-2145' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        return {};
+      }),
+    } as unknown as SupabaseClient;
+
+    const res = await syncReceiptToPaymentSchedule(mockSupabase, {
+      receiptNo: '2145',
+      amount: 500000,
+      date: '2026-10-30',
+      refId: 'SVI2255',
+      plotNo: '15',
+    });
+
+    expect(res.synced).toBe(true);
+    expect(res.action).toBe('inserted');
+    expect(res.allotmentId).toBe('allot-plot-15');
+  });
+
+  it('falls back to plotNo and name matching safely', async () => {
+    const allotUnit3 = {
+      id: 'allot-plot-3',
+      user_id: 'user-anil',
+      unit_no: '3',
+      metadata: { ticket_id: 'SVI2257', client_name: 'Anil Kumar' },
+    };
+
+    mockSupabase = {
+      from: vi.fn((table: string) => {
+        if (table === 'allotments') {
+          return {
+            select: vi.fn().mockResolvedValue({
+              data: [allotUnit3],
+              error: null,
+            }),
+          };
+        }
+        if (table === 'payment_schedules') {
+          return {
+            select: vi.fn().mockReturnValue({
+              eq: vi.fn().mockReturnValue({
+                ilike: vi.fn().mockResolvedValue({
+                  data: [],
+                  error: null,
+                }),
+              }),
+            }),
+            insert: vi.fn().mockReturnValue({
+              select: vi.fn().mockReturnValue({
+                single: vi.fn().mockResolvedValue({
+                  data: { id: 'sched-anil-2141' },
+                  error: null,
+                }),
+              }),
+            }),
+          };
+        }
+        return {};
+      }),
+    } as unknown as SupabaseClient;
+
+    const res = await syncReceiptToPaymentSchedule(mockSupabase, {
+      receiptNo: '2141',
+      amount: 500,
+      date: '2026-10-27',
+      refId: 'SVI2257',
+      name: 'Anil Kumar',
+    });
+
+    expect(res.synced).toBe(true);
+    expect(res.action).toBe('inserted');
+    expect(res.allotmentId).toBe('allot-plot-3');
+  });
 });

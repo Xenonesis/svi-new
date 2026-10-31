@@ -26,7 +26,12 @@ import {
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { SavedReceipt } from './ReceiptTypes';
-import { calculateLedgerStatement, normalizeRefId } from '@/src/lib/receipt/receiptLedger';
+import {
+  calculateLedgerStatement,
+  normalizeRefId,
+  getReceiptPaymentStatus,
+  isReceiptPDC,
+} from '@/src/lib/receipt/receiptLedger';
 import { downloadReceiptsCsv } from '@/src/lib/receipt/receiptCsvExport';
 import { exportStatementExcel, exportStatementPdf } from '@/src/lib/receipt/statementExporter';
 import { StatementPdfTemplate } from './StatementPdfTemplate';
@@ -602,21 +607,31 @@ export function ReceiptLedgerDrawer({
               )}
 
               {/* Financial Summary Cards */}
-              <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-                {/* Total Received */}
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
                 <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/5 p-4 dark:bg-emerald-500/10">
                   <span className="text-[11px] font-semibold text-emerald-600 uppercase dark:text-emerald-400">
-                    Total Received
+                    Realized Received
                   </span>
                   <div className="mt-1 font-mono text-lg font-bold text-emerald-700 dark:text-emerald-300">
                     {formatCurrency(ledger.totalPaid)}
                   </div>
                   <span className="text-[10px] text-emerald-600/80 dark:text-emerald-400/80">
-                    {ledger.receipts.length} transaction{ledger.receipts.length === 1 ? '' : 's'}
+                    Cleared bank funds
                   </span>
                 </div>
 
-                {/* Agreed Plot Value */}
+                <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 dark:bg-amber-500/10">
+                  <span className="text-[11px] font-semibold text-amber-600 uppercase dark:text-amber-400">
+                    PDC in Hand
+                  </span>
+                  <div className="mt-1 font-mono text-lg font-bold text-amber-700 dark:text-amber-300">
+                    {formatCurrency(ledger.totalPdcPending || 0)}
+                  </div>
+                  <span className="text-[10px] text-amber-600/80 dark:text-amber-400/80">
+                    Pending bank clearance
+                  </span>
+                </div>
+
                 <div className="rounded-xl border border-blue-500/20 bg-blue-500/5 p-4 dark:bg-blue-500/10">
                   <div className="flex items-center justify-between">
                     <span className="text-[11px] font-semibold text-blue-600 uppercase dark:text-blue-400">
@@ -642,7 +657,6 @@ export function ReceiptLedgerDrawer({
                   </span>
                 </div>
 
-                {/* Balance Due */}
                 <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 dark:bg-amber-500/10">
                   <span className="text-[11px] font-semibold text-amber-600 uppercase dark:text-amber-400">
                     Balance Due
@@ -878,6 +892,7 @@ export function ReceiptLedgerDrawer({
                           <th className="px-3.5 py-2.5">Date</th>
                           <th className="px-3.5 py-2.5">Receipt No</th>
                           <th className="px-3.5 py-2.5">Method</th>
+                          <th className="px-3.5 py-2.5 text-center">Status</th>
                           <th className="px-3.5 py-2.5 text-right">Amount</th>
                           <th className="px-3.5 py-2.5 text-right">Action</th>
                         </tr>
@@ -887,7 +902,9 @@ export function ReceiptLedgerDrawer({
                           const amt = parseFloat(r.form_data?.amount || '0') || 0;
                           const rNo = r.form_data?.receiptNo || 'N/A';
                           const isCopied = copiedReceiptNo === rNo;
-
+                          const rStatus = getReceiptPaymentStatus(r);
+                          const isPaid = rStatus === 'paid';
+                          const isPdc = isReceiptPDC(r);
                           return (
                             <tr
                               key={r.id}
@@ -913,6 +930,19 @@ export function ReceiptLedgerDrawer({
                               </td>
                               <td className="px-3.5 py-2.5 text-[11px] text-gray-600 dark:text-gray-300">
                                 {r.form_data?.paymentMethod || 'UPI'}
+                              </td>
+                              <td className="px-3.5 py-2.5 text-center">
+                                <span
+                                  className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold ${
+                                    isPaid
+                                      ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
+                                      : isPdc
+                                        ? 'border border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400'
+                                        : 'border border-rose-500/30 bg-rose-500/10 text-rose-600 dark:text-rose-400'
+                                  }`}
+                                >
+                                  {isPaid ? 'Paid' : isPdc ? 'PDC Pending' : 'Unpaid'}
+                                </span>
                               </td>
                               <td className="px-3.5 py-2.5 text-right font-mono font-bold text-gray-900 dark:text-white">
                                 {formatCurrency(amt)}

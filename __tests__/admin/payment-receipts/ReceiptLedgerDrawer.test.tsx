@@ -52,7 +52,7 @@ describe('ReceiptLedgerDrawer', () => {
 
     expect(screen.getByText(/Ref ID: SVI2051/i)).toBeDefined();
     expect(screen.getAllByText(/Piyush Sharma/i).length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText('Total Received')).toBeDefined();
+    expect(screen.getByText(/Received/i)).toBeDefined();
     expect(screen.getByText('Agreed Plot Value')).toBeDefined();
     expect(screen.getByText('Balance Due')).toBeDefined();
   });

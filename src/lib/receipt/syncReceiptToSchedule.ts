@@ -7,7 +7,9 @@ export interface SyncReceiptParams {
   refId?: string | null;
   userId?: string | null;
   plotNo?: string | null;
+  name?: string | null;
   isTrashed?: boolean;
+  status?: 'paid' | 'pending';
 }
 
 export interface SyncReceiptResult {
@@ -18,10 +20,6 @@ export interface SyncReceiptResult {
   error?: string;
 }
 
-/**
- * Normalizes ticket/ref identifiers for flexible matching.
- * e.g. "SVI-2236" -> "svi2236", "Plot 41" -> "41"
- */
 function cleanRef(val?: string | null): string {
   if (!val) return '';
   return String(val)
@@ -29,15 +27,21 @@ function cleanRef(val?: string | null): string {
     .replace(/[^a-z0-9]/g, '');
 }
 
-/**
- * Automatically synchronizes a payment receipt from the documents table
- * into the allotment portal's payment_schedules ledger table.
- */
+function isUnitMatch(unitNo?: string | null, target?: string | null): boolean {
+  const u = cleanRef(unitNo);
+  const t = cleanRef(target);
+  if (!u || !t) return false;
+  if (u === t) return true;
+  if (t === `plot${u}` || t === `unit${u}`) return true;
+  if (u === `plot${t}` || u === `unit${t}`) return true;
+  return false;
+}
+
 export async function syncReceiptToPaymentSchedule(
   supabase: SupabaseClient,
   params: SyncReceiptParams
 ): Promise<SyncReceiptResult> {
-  const { receiptNo, amount, date, refId, userId, plotNo, isTrashed } = params;
+  const { receiptNo, amount, date, refId, plotNo, name, isTrashed } = params;
 
   const cleanReceiptNo = String(receiptNo || '').trim();
   const numAmount =
@@ -53,7 +57,6 @@ export async function syncReceiptToPaymentSchedule(
   const effectiveDate = date ? String(date).split('T')[0] : new Date().toISOString().split('T')[0];
 
   try {
-    // 1. Find matching allotment
     let matchingAllotment: {
       id: string;
       user_id: string;
@@ -61,52 +64,39 @@ export async function syncReceiptToPaymentSchedule(
       metadata?: Record<string, unknown>;
     } | null = null;
 
-    // Strategy A: Match by ticket_id in metadata
-    if (refId) {
-      const cleanInputRef = cleanRef(refId);
-      const { data: allots } = await supabase
-        .from('allotments')
-        .select('id, user_id, unit_no, metadata');
+    const { data: allots } = await supabase
+      .from('allotments')
+      .select('id, user_id, unit_no, metadata');
 
-      if (allots && allots.length > 0) {
+    const cleanInputRef = cleanRef(refId);
+
+    if (cleanInputRef && allots && allots.length > 0) {
+      matchingAllotment =
+        allots.find((a) => {
+          const tId =
+            cleanRef(a.metadata?.ticket_id as string) || cleanRef(a.metadata?.ticketId as string);
+          return Boolean(tId && tId === cleanInputRef);
+        }) || null;
+    }
+
+    if (!matchingAllotment && (plotNo || refId) && allots && allots.length > 0) {
+      const targetPlot = cleanRef(plotNo) || cleanRef(refId);
+      matchingAllotment = allots.find((a) => isUnitMatch(a.unit_no, targetPlot)) || null;
+    }
+
+    if (!matchingAllotment && name && allots && allots.length > 0) {
+      const cleanTargetName = cleanRef(name);
+      if (cleanTargetName) {
         matchingAllotment =
           allots.find((a) => {
-            const tId =
-              cleanRef(a.metadata?.ticket_id as string) || cleanRef(a.metadata?.ticketId as string);
-            if (tId && tId === cleanInputRef) return true;
-            // Also check if ref matches unit_no (e.g. "A-41" or "41")
-            const cleanUnit = cleanRef(a.unit_no);
-            if (cleanUnit && (cleanUnit === cleanInputRef || cleanInputRef.endsWith(cleanUnit)))
-              return true;
-            return false;
+            const clientName = cleanRef(a.metadata?.client_name as string);
+            return Boolean(
+              clientName &&
+              (clientName === cleanTargetName ||
+                cleanTargetName.includes(clientName) ||
+                clientName.includes(cleanTargetName))
+            );
           }) || null;
-      }
-    }
-
-    // Strategy B: Match by user_id
-    if (!matchingAllotment && userId) {
-      const { data: allotByUser } = await supabase
-        .from('allotments')
-        .select('id, user_id, unit_no, metadata')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      if (allotByUser) {
-        matchingAllotment = allotByUser;
-      }
-    }
-
-    // Strategy C: Match by plotNo
-    if (!matchingAllotment && plotNo) {
-      const cleanPlot = cleanRef(plotNo);
-      const { data: allotByPlot } = await supabase
-        .from('allotments')
-        .select('id, user_id, unit_no, metadata');
-
-      if (allotByPlot) {
-        matchingAllotment = allotByPlot.find((a) => cleanRef(a.unit_no) === cleanPlot) || null;
       }
     }
 
@@ -114,7 +104,6 @@ export async function syncReceiptToPaymentSchedule(
       return { synced: false, action: 'skipped', error: 'No matching allotment found for receipt' };
     }
 
-    // 2. Check if a schedule with this receipt title already exists for this allotment
     const { data: existingSchedules } = await supabase
       .from('payment_schedules')
       .select('id, title, amount')
@@ -124,7 +113,6 @@ export async function syncReceiptToPaymentSchedule(
     const existing =
       existingSchedules && existingSchedules.length > 0 ? existingSchedules[0] : null;
 
-    // If trashed/deleted, remove schedule or skip
     if (isTrashed) {
       if (existing) {
         await supabase.from('payment_schedules').delete().eq('id', existing.id);
@@ -138,16 +126,18 @@ export async function syncReceiptToPaymentSchedule(
       return { synced: true, action: 'skipped', allotmentId: matchingAllotment.id };
     }
 
-    // 3. Upsert into payment_schedules
+    const effectiveStatus = params.status || 'paid';
+    const schedulePaidDate = effectiveStatus === 'paid' ? effectiveDate : null;
+
     if (existing) {
       const { data: updated, error: updateErr } = await supabase
         .from('payment_schedules')
         .update({
           title: receiptTitle,
           amount: numAmount,
-          paid_date: effectiveDate,
+          paid_date: schedulePaidDate,
           due_date: effectiveDate,
-          status: 'paid',
+          status: effectiveStatus,
         })
         .eq('id', existing.id)
         .select('id')
@@ -170,8 +160,8 @@ export async function syncReceiptToPaymentSchedule(
           title: receiptTitle,
           amount: numAmount,
           due_date: effectiveDate,
-          paid_date: effectiveDate,
-          status: 'paid',
+          paid_date: schedulePaidDate,
+          status: effectiveStatus,
         })
         .select('id')
         .single();

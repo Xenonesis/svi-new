@@ -3,7 +3,7 @@ import { supabaseAdmin } from '@/src/lib/supabase/admin';
 import { verifyAdmin } from '@/src/lib/supabase/verifyAdmin';
 import { AppError, handleApiError } from '@/src/lib/api/errors';
 import { getNextQuotationNumberFromDb } from '@/src/lib/quotation/quotationNumber';
-import { getNextReceiptNumberFromDb } from '@/src/lib/receipt/receiptNumber';
+import { verifyAndAssignUniqueReceiptNumber } from '@/src/lib/receipt/receiptNumber';
 import { syncReceiptToPaymentSchedule } from '@/src/lib/receipt/syncReceiptToSchedule';
 const VALID_DOC_TYPES = [
   'allotment_letter',
@@ -100,29 +100,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (document_type === 'payment_receipt') {
-      const rawReceiptNo = form_data?.receiptNo ? String(form_data.receiptNo).trim() : '';
-
-      // Check if rawReceiptNo is already taken by an active payment receipt
-      let isTaken = false;
-      if (rawReceiptNo) {
-        const { data: existingReceipt } = await supabaseAdmin
-          .from('documents')
-          .select('id')
-          .eq('document_type', 'payment_receipt')
-          .filter('form_data->>receiptNo', 'eq', rawReceiptNo)
-          .is('metadata->is_trashed', null)
-          .maybeSingle();
-
-        isTaken = !!existingReceipt;
-      }
-
-      // If unset, empty, or duplicate number, auto-generate sequential number from DB
-      if (!rawReceiptNo || isTaken) {
-        const generatedNo = await getNextReceiptNumberFromDb(supabaseAdmin);
-        finalFormData = { ...form_data, receiptNo: generatedNo };
-      } else {
-        finalFormData = { ...form_data, receiptNo: rawReceiptNo };
-      }
+      const assignedNo = await verifyAndAssignUniqueReceiptNumber(
+        supabaseAdmin,
+        form_data?.receiptNo
+      );
+      finalFormData = { ...form_data, receiptNo: assignedNo };
     }
 
     const { data, error } = await supabaseAdmin
@@ -154,6 +136,7 @@ export async function POST(request: NextRequest) {
           refId: (formData.refId as string) || (meta.ticket_id as string) || null,
           userId: resolvedUserId,
           plotNo: (formData.plotNo as string) || null,
+          name: (formData.name as string) || (meta.client_name as string) || null,
           isTrashed: false,
         });
       } catch (syncErr) {

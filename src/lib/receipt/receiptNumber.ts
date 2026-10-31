@@ -1,29 +1,34 @@
-/**
- * Utility functions for generating and validating payment receipt numbers.
- * The baseline receipt number sequence begins at 2056.
- */
+import type { SupabaseClient } from '@supabase/supabase-js';
+
+const RESERVED_RECEIPT_NUMBERS = new Set([2999]);
 
 export const BASE_RECEIPT_NUMBER = 2056;
+
 export interface ReceiptLike {
   form_data?: {
     receiptNo?: string | number | null;
     [key: string]: unknown;
   } | null;
+  metadata?: {
+    is_trashed?: boolean | null;
+    [key: string]: unknown;
+  } | null;
   [key: string]: unknown;
 }
 
-/**
- * Calculates the next sequential receipt number based on existing receipt documents.
- * Scans for the maximum valid numeric receipt number (minimum base 2055) and adds 1.
- */
+export type ReceiptDatabaseClient = Pick<SupabaseClient, 'from'>;
+
 export function getNextReceiptNumber(receipts?: ReceiptLike[] | null): string {
   if (!receipts || !Array.isArray(receipts) || receipts.length === 0) {
     return String(BASE_RECEIPT_NUMBER);
   }
 
-  let maxNumber = BASE_RECEIPT_NUMBER - 1; // 2055
+  let maxNumber = BASE_RECEIPT_NUMBER - 1;
 
   for (const item of receipts) {
+    if (item?.metadata?.is_trashed === true) {
+      continue;
+    }
     const rawNo = item?.form_data?.receiptNo;
     if (rawNo !== undefined && rawNo !== null) {
       const parsed = parseInt(String(rawNo).trim(), 10);
@@ -33,30 +38,57 @@ export function getNextReceiptNumber(receipts?: ReceiptLike[] | null): string {
     }
   }
 
-  return String(maxNumber + 1);
+  let nextNumber = maxNumber + 1;
+  while (RESERVED_RECEIPT_NUMBERS.has(nextNumber)) {
+    nextNumber += 1;
+  }
+  return String(nextNumber);
 }
-/**
- * Queries the database to calculate and return the next unique payment receipt number.
- */
-export async function getNextReceiptNumberFromDb(supabaseClient: {
-  from: (table: string) => any;
-}): Promise<string> {
-  const { data, error } = await supabaseClient
-    .from('documents')
-    .select('form_data')
-    .eq('document_type', 'payment_receipt')
-    .limit(5000);
 
-  if (error || !data) {
+export async function getNextReceiptNumberFromDb(
+  supabaseClient: ReceiptDatabaseClient
+): Promise<string> {
+  const res = await supabaseClient
+    .from('documents')
+    .select('form_data, metadata')
+    .eq('document_type', 'payment_receipt')
+    .limit(10000);
+
+  const rawData = res?.data;
+  if (!Array.isArray(rawData) || rawData.length === 0) {
     return String(BASE_RECEIPT_NUMBER);
   }
 
-  return getNextReceiptNumber(data as ReceiptLike[]);
+  return getNextReceiptNumber(rawData as ReceiptLike[]);
 }
 
-/**
- * Validates if a given receipt number is a valid positive integer string/number.
- */
+export async function verifyAndAssignUniqueReceiptNumber(
+  supabaseClient: ReceiptDatabaseClient,
+  requestedReceiptNo?: string | number | null
+): Promise<string> {
+  const rawNo = requestedReceiptNo ? String(requestedReceiptNo).trim() : '';
+
+  if (rawNo && isValidReceiptNumber(rawNo) && !RESERVED_RECEIPT_NUMBERS.has(Number(rawNo))) {
+    const res = await supabaseClient
+      .from('documents')
+      .select('id, metadata')
+      .eq('document_type', 'payment_receipt')
+      .filter('form_data->>receiptNo', 'eq', rawNo);
+
+    const existingList = Array.isArray(res?.data)
+      ? (res.data as Array<{ id: string; metadata?: { is_trashed?: boolean | null } | null }>)
+      : [];
+
+    const isTaken = existingList.some((doc) => doc?.metadata?.is_trashed !== true);
+
+    if (!isTaken) {
+      return rawNo;
+    }
+  }
+
+  return await getNextReceiptNumberFromDb(supabaseClient);
+}
+
 export function isValidReceiptNumber(receiptNo?: string | number | null): boolean {
   if (receiptNo === undefined || receiptNo === null) return false;
   const str = String(receiptNo).trim();

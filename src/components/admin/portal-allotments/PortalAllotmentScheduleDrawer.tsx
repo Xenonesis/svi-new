@@ -21,14 +21,23 @@ import { toast } from 'sonner';
 import { useTranslations } from 'next-intl';
 import type { AllotmentRecord, PaymentScheduleItem } from './types';
 import type { SavedReceipt } from '../payment-receipts/ReceiptTypes';
+import { getReceiptPaymentStatus, isReceiptPDC } from '@/src/lib/receipt/receiptLedger';
 
 export interface PortalAllotmentScheduleDrawerProps {
   isExpanded: boolean;
   allotment?: AllotmentRecord;
   paymentSchedules?: PaymentScheduleItem[];
   receipts?: SavedReceipt[];
-  onToggleStatus?: (paymentId: string, currentStatus: string) => Promise<void> | void;
-  onTogglePaymentStatus?: (paymentId: string, currentStatus: string) => Promise<void> | void;
+  onToggleStatus?: (
+    paymentId: string,
+    currentStatus: string,
+    options?: { isReceipt?: boolean; receiptNo?: string; reason?: string }
+  ) => Promise<void> | void;
+  onTogglePaymentStatus?: (
+    paymentId: string,
+    currentStatus: string,
+    options?: { isReceipt?: boolean; receiptNo?: string; reason?: string }
+  ) => Promise<void> | void;
   onSelectReceipt?: (receipt: SavedReceipt) => void;
   onShareWhatsApp?: (receipt: SavedReceipt) => void;
   onOpenLedger?: (allotment?: AllotmentRecord | string) => void;
@@ -48,6 +57,14 @@ export function PortalAllotmentScheduleDrawer({
   const t = useTranslations('pages.adminPortalAllotments');
   const handleToggle = onToggleStatus || onTogglePaymentStatus;
   const [copiedKey, setCopiedKey] = useState<string | null>(null);
+  const [revertConfirmTarget, setRevertConfirmTarget] = useState<{
+    id: string;
+    receiptNo?: string;
+    amount: string | number;
+    clientName: string;
+    isReceipt: boolean;
+  } | null>(null);
+  const [revertReason, setRevertReason] = useState<string>('PDC Cheque not cleared yet');
 
   const handleCopy = (text: string, key: string, e: React.MouseEvent) => {
     e.stopPropagation();
@@ -95,14 +112,11 @@ export function PortalAllotmentScheduleDrawer({
     }
   };
 
-  // Combine or select display rows:
-  // If we have actual SavedReceipts, use them.
-  // Also include any payment_schedules that are not covered by receipts.
   const hasReceipts = receipts && receipts.length > 0;
   const hasSchedules = paymentSchedules && paymentSchedules.length > 0;
 
   const totalPaidCount = hasReceipts
-    ? receipts.length
+    ? receipts.filter((r) => getReceiptPaymentStatus(r) === 'paid').length
     : paymentSchedules.filter((p) => p.status === 'paid').length;
   const totalItemsCount = hasReceipts ? receipts.length : paymentSchedules.length;
 
@@ -135,7 +149,6 @@ export function PortalAllotmentScheduleDrawer({
           className="overflow-hidden"
         >
           <div className="mt-6 rounded-2xl border border-gray-200/80 bg-slate-900 p-5 shadow-2xl backdrop-blur-xl dark:border-white/10 dark:bg-[#0c1626]">
-            {/* Header with Title and Counts */}
             <div className="mb-4 flex flex-wrap items-center justify-between gap-3 border-b border-white/10 pb-3">
               <div className="flex items-center gap-2">
                 <ReceiptIcon className="text-brand-gold h-4 w-4" />
@@ -194,7 +207,6 @@ export function PortalAllotmentScheduleDrawer({
               </div>
             </div>
 
-            {/* If no receipts and no schedules */}
             {!hasReceipts && !hasSchedules ? (
               <p className="py-8 text-center text-sm text-gray-400">{t('noPaymentSchedules')}</p>
             ) : (
@@ -210,6 +222,7 @@ export function PortalAllotmentScheduleDrawer({
                         { label: 'AMOUNT', align: 'text-right' },
                         { label: 'METHOD', align: 'text-center' },
                         { label: 'PLOT INFO', align: 'text-left' },
+                        { label: 'STATUS', align: 'text-center' },
                         { label: 'ACTIONS', align: 'text-right' },
                       ].map((h) => (
                         <th
@@ -222,7 +235,6 @@ export function PortalAllotmentScheduleDrawer({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-white/5">
-                    {/* Render matching official SavedReceipts if available */}
                     {hasReceipts &&
                       receipts.map((receipt) => {
                         const receiptNo = receipt.form_data?.receiptNo;
@@ -245,13 +257,14 @@ export function PortalAllotmentScheduleDrawer({
 
                         const isCopiedReceipt = receiptNo && copiedKey === `rec-${receipt.id}`;
                         const isCopiedRef = refId && copiedKey === `ref-${receipt.id}`;
-
+                        const receiptStatus = getReceiptPaymentStatus(receipt);
+                        const isPaid = receiptStatus === 'paid';
+                        const isPdc = isReceiptPDC(receipt);
                         return (
                           <tr
                             key={receipt.id}
                             className="group transition-colors hover:bg-white/[0.03]"
                           >
-                            {/* Receipt No */}
                             <td className="px-4 py-3 align-middle">
                               {receiptNo ? (
                                 <button
@@ -272,7 +285,6 @@ export function PortalAllotmentScheduleDrawer({
                               )}
                             </td>
 
-                            {/* Ref ID */}
                             <td className="px-4 py-3 align-middle">
                               <div className="inline-flex items-center gap-1">
                                 <span className="inline-flex items-center rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] font-bold text-sky-400">
@@ -293,7 +305,6 @@ export function PortalAllotmentScheduleDrawer({
                               </div>
                             </td>
 
-                            {/* Client Name */}
                             <td className="px-4 py-3 align-middle">
                               <div className="min-w-0">
                                 <div className="truncate font-semibold text-white capitalize">
@@ -307,7 +318,6 @@ export function PortalAllotmentScheduleDrawer({
                               </div>
                             </td>
 
-                            {/* Date */}
                             <td className="px-4 py-3 align-middle whitespace-nowrap">
                               <div className="flex items-center gap-1.5">
                                 <Calendar className="h-3.5 w-3.5 text-gray-400" />
@@ -317,12 +327,10 @@ export function PortalAllotmentScheduleDrawer({
                               </div>
                             </td>
 
-                            {/* Amount */}
                             <td className="px-4 py-3 text-right align-middle font-mono text-xs font-bold text-white tabular-nums">
                               {formattedAmount}
                             </td>
 
-                            {/* Method */}
                             <td className="px-4 py-3 text-center align-middle">
                               <span
                                 className={`inline-flex items-center gap-1 rounded-full border px-2.5 py-0.5 text-[10px] font-bold whitespace-nowrap uppercase ${getMethodBadgeStyle(
@@ -334,7 +342,6 @@ export function PortalAllotmentScheduleDrawer({
                               </span>
                             </td>
 
-                            {/* Plot Info */}
                             <td className="px-4 py-3 align-middle">
                               <div className="flex flex-wrap items-center gap-1.5">
                                 <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[10px] font-bold text-gray-200">
@@ -347,8 +354,71 @@ export function PortalAllotmentScheduleDrawer({
                                 )}
                               </div>
                             </td>
+                            <td className="px-4 py-3 text-center align-middle">
+                              {handleToggle ? (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (isPaid) {
+                                      setRevertConfirmTarget({
+                                        id: receipt.id,
+                                        receiptNo: receiptNo || undefined,
+                                        amount: receipt.form_data?.amount || 0,
+                                        clientName,
+                                        isReceipt: true,
+                                      });
+                                    } else {
+                                      handleToggle(receipt.id, 'pending', {
+                                        isReceipt: true,
+                                        receiptNo: receiptNo || undefined,
+                                      });
+                                    }
+                                  }}
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold transition-all hover:scale-105 active:scale-95 ${
+                                    isPaid
+                                      ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                                      : isPdc
+                                        ? 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                                        : 'border border-rose-500/40 bg-rose-500/20 text-rose-300 hover:bg-rose-500/30'
+                                  }`}
+                                  title={
+                                    isPaid
+                                      ? 'Click to revert payment status'
+                                      : 'Click to mark as cleared / paid'
+                                  }
+                                >
+                                  {isPaid ? (
+                                    <>
+                                      <CheckCircle className="h-3 w-3" />
+                                      <span>Paid</span>
+                                    </>
+                                  ) : isPdc ? (
+                                    <>
+                                      <Clock className="h-3 w-3" />
+                                      <span>PDC Pending</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Clock className="h-3 w-3" />
+                                      <span>Unpaid</span>
+                                    </>
+                                  )}
+                                </button>
+                              ) : (
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                                    isPaid
+                                      ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-300'
+                                      : isPdc
+                                        ? 'border border-amber-500/40 bg-amber-500/20 text-amber-300'
+                                        : 'border border-rose-500/40 bg-rose-500/20 text-rose-300'
+                                  }`}
+                                >
+                                  {isPaid ? 'Paid' : isPdc ? 'PDC Pending' : 'Unpaid'}
+                                </span>
+                              )}
+                            </td>
 
-                            {/* Actions */}
                             <td className="px-4 py-3 text-right align-middle">
                               <div className="flex items-center justify-end gap-1">
                                 {onSelectReceipt && (
@@ -403,7 +473,6 @@ export function PortalAllotmentScheduleDrawer({
                         );
                       })}
 
-                    {/* If no official receipts exist yet, or to show payment schedules in the exact same format */}
                     {!hasReceipts &&
                       paymentSchedules.map((payment, idx) => {
                         const milestoneTitle =
@@ -425,21 +494,18 @@ export function PortalAllotmentScheduleDrawer({
                             key={payment.id}
                             className="group transition-colors hover:bg-white/[0.03]"
                           >
-                            {/* Receipt / Schedule No */}
                             <td className="px-4 py-3 align-middle">
                               <span className="border-brand-gold/30 bg-brand-gold/10 inline-flex items-center gap-1 rounded-lg border px-2.5 py-1 font-mono text-[11px] font-bold text-amber-400">
                                 #{idx + 1}
                               </span>
                             </td>
 
-                            {/* Ref ID */}
                             <td className="px-4 py-3 align-middle">
                               <span className="inline-flex items-center rounded-lg border border-sky-500/30 bg-sky-500/10 px-2 py-1 font-mono text-[11px] font-bold text-sky-400">
                                 {fallbackRefId}
                               </span>
                             </td>
 
-                            {/* Client Name & Milestone */}
                             <td className="px-4 py-3 align-middle">
                               <div className="min-w-0">
                                 <div className="truncate font-semibold text-white capitalize">
@@ -451,7 +517,6 @@ export function PortalAllotmentScheduleDrawer({
                               </div>
                             </td>
 
-                            {/* Date */}
                             <td className="px-4 py-3 align-middle whitespace-nowrap">
                               <div className="flex items-center gap-1.5">
                                 <Calendar className="h-3.5 w-3.5 text-gray-400" />
@@ -461,12 +526,10 @@ export function PortalAllotmentScheduleDrawer({
                               </div>
                             </td>
 
-                            {/* Amount */}
                             <td className="px-4 py-3 text-right align-middle font-mono text-xs font-bold text-white tabular-nums">
                               {formattedAmount}
                             </td>
 
-                            {/* Method / Schedule Type */}
                             <td className="px-4 py-3 text-center align-middle">
                               <span className="inline-flex items-center gap-1 rounded-full border border-slate-500/30 bg-slate-500/10 px-2.5 py-0.5 text-[10px] font-bold text-slate-300 uppercase">
                                 <CreditCard className="h-2.5 w-2.5 opacity-70" />
@@ -474,7 +537,6 @@ export function PortalAllotmentScheduleDrawer({
                               </span>
                             </td>
 
-                            {/* Plot Info */}
                             <td className="px-4 py-3 align-middle">
                               <div className="flex flex-wrap items-center gap-1.5">
                                 <span className="rounded-md border border-white/10 bg-white/5 px-2 py-0.5 font-mono text-[10px] font-bold text-gray-200">
@@ -488,37 +550,130 @@ export function PortalAllotmentScheduleDrawer({
                               </div>
                             </td>
 
-                            {/* Actions: Toggle Status */}
-                            <td className="px-4 py-3 text-right align-middle">
-                              <div className="flex items-center justify-end gap-1.5">
-                                {handleToggle && (
-                                  <button
-                                    type="button"
-                                    onClick={() => handleToggle(payment.id, payment.status)}
-                                    className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-bold transition-all hover:scale-105 active:scale-95 ${
-                                      isPaid
-                                        ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
-                                        : 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
-                                    }`}
-                                  >
-                                    {isPaid ? (
-                                      <>
-                                        <CheckCircle className="h-3.5 w-3.5" /> {t('paid')}
-                                      </>
-                                    ) : (
-                                      <>
-                                        <Clock className="h-3.5 w-3.5" /> {t('pending')}
-                                      </>
-                                    )}
-                                  </button>
-                                )}
-                              </div>
+                            <td className="px-4 py-3 text-center align-middle">
+                              {handleToggle ? (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    if (isPaid) {
+                                      setRevertConfirmTarget({
+                                        id: payment.id,
+                                        amount: payment.amount,
+                                        clientName: fallbackClientName,
+                                        isReceipt: false,
+                                      });
+                                    } else {
+                                      handleToggle(payment.id, payment.status);
+                                    }
+                                  }}
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold transition-all hover:scale-105 active:scale-95 ${
+                                    isPaid
+                                      ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-300 hover:bg-emerald-500/30'
+                                      : 'border border-amber-500/40 bg-amber-500/20 text-amber-300 hover:bg-amber-500/30'
+                                  }`}
+                                >
+                                  {isPaid ? (
+                                    <>
+                                      <CheckCircle className="h-3 w-3" />
+                                      <span>{t('paid')}</span>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <Clock className="h-3 w-3" />
+                                      <span>{t('pending')}</span>
+                                    </>
+                                  )}
+                                </button>
+                              ) : (
+                                <span
+                                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-bold ${
+                                    isPaid
+                                      ? 'border border-emerald-500/40 bg-emerald-500/20 text-emerald-300'
+                                      : 'border border-amber-500/40 bg-amber-500/20 text-amber-300'
+                                  }`}
+                                >
+                                  {isPaid ? t('paid') : t('pending')}
+                                </span>
+                              )}
                             </td>
+                            <td className="px-4 py-3 text-right align-middle text-gray-500">—</td>
                           </tr>
                         );
                       })}
                   </tbody>
                 </table>
+              </div>
+            )}
+            {revertConfirmTarget && (
+              <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm">
+                <div className="w-full max-w-md rounded-2xl border border-amber-500/30 bg-[#0c1626] p-6 shadow-2xl">
+                  <div className="flex items-center gap-3">
+                    <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-500/20 text-amber-400">
+                      <Clock className="h-5 w-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-serif text-base font-bold text-white">
+                        Revert Payment to Pending / Unpaid
+                      </h3>
+                      <p className="text-xs text-gray-400">
+                        {revertConfirmTarget.receiptNo
+                          ? `Receipt #${revertConfirmTarget.receiptNo}`
+                          : 'Payment Milestone'}{' '}
+                        (₹{Number(revertConfirmTarget.amount).toLocaleString('en-IN')}) for{' '}
+                        {revertConfirmTarget.clientName}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="mt-4 rounded-xl border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+                    <strong>Warning:</strong> Reverting this verified payment will mark it unpaid
+                    and increase the customer's balance due in their ledger.
+                  </div>
+                  <div className="mt-4 space-y-1.5">
+                    <label className="block text-xs font-semibold text-gray-300">
+                      Reason for Reverting
+                    </label>
+                    <select
+                      value={revertReason}
+                      onChange={(e) => setRevertReason(e.target.value)}
+                      className="w-full rounded-lg border border-white/10 bg-slate-800 px-3 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                    >
+                      <option value="PDC Cheque not cleared yet">PDC Cheque not cleared yet</option>
+                      <option value="Cheque Bounced / Dishonored">
+                        Cheque Bounced / Dishonored
+                      </option>
+                      <option value="Operator Data Entry Error">Operator Data Entry Error</option>
+                      <option value="Payment Recalled / Chargeback">
+                        Payment Recalled / Chargeback
+                      </option>
+                    </select>
+                  </div>
+                  <div className="mt-6 flex items-center justify-end gap-2.5">
+                    <button
+                      type="button"
+                      onClick={() => setRevertConfirmTarget(null)}
+                      className="rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-gray-300 hover:bg-white/10"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={async () => {
+                        const target = revertConfirmTarget;
+                        setRevertConfirmTarget(null);
+                        if (handleToggle) {
+                          await handleToggle(target.id, 'paid', {
+                            isReceipt: target.isReceipt,
+                            receiptNo: target.receiptNo,
+                            reason: revertReason,
+                          });
+                        }
+                      }}
+                      className="rounded-lg border border-rose-500/40 bg-rose-600 px-4 py-2 text-xs font-bold text-white hover:bg-rose-500"
+                    >
+                      Confirm Revert to Unpaid
+                    </button>
+                  </div>
+                </div>
               </div>
             )}
           </div>

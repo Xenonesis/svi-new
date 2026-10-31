@@ -57,65 +57,6 @@ export function PortalAllotmentTableRow({
 }: PortalAllotmentTableRowProps) {
   const [showClientPopover, setShowClientPopover] = useState(false);
 
-  const renderClientPopover = () => {
-    if (!showClientPopover) return null;
-    return (
-      <div className="absolute top-full left-0 z-30 mt-1.5 w-72 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-xl shadow-black/20 backdrop-blur-xl dark:border-white/[0.1] dark:bg-[#161D2C]">
-        <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.08]">
-          <span className="text-xs font-bold text-slate-900 dark:text-white">
-            Client Portfolio Details
-          </span>
-          <button
-            type="button"
-            onClick={() => setShowClientPopover(false)}
-            aria-label="Close client details"
-            className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/[0.06] dark:hover:text-slate-200"
-          >
-            <X className="h-3.5 w-3.5" />
-          </button>
-        </div>
-        <div className="mt-2.5 space-y-2">
-          <div className="text-xs font-semibold text-slate-900 dark:text-white">
-            {allotment.profiles?.full_name || 'Client'}
-          </div>
-          {clientAddress && (
-            <div className="flex items-start gap-1.5 text-[11px] break-words text-slate-600 dark:text-slate-300">
-              <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
-              <span className="break-words">{clientAddress}</span>
-            </div>
-          )}
-          {clientEmail && (
-            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
-              <Mail className="h-3 w-3 shrink-0 text-sky-500" />
-              <a href={`mailto:${clientEmail}`} className="truncate hover:underline">
-                {clientEmail}
-              </a>
-            </div>
-          )}
-          {clientPhone && (
-            <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
-              <Phone className="h-3 w-3 shrink-0 text-emerald-500" />
-              <a href={`tel:${clientPhone}`} className="hover:underline">
-                {clientPhone}
-              </a>
-            </div>
-          )}
-          {advisorName && (
-            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
-              <Users className="h-3 w-3 shrink-0 text-blue-500" />
-              <span>{advisorName}</span>
-            </div>
-          )}
-          <div className="pt-1">
-            <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-slate-300">
-              ID: {ticketId || (isRefundDone ? 'Refunded' : 'Missing')}
-            </span>
-          </div>
-        </div>
-      </div>
-    );
-  };
-
   const t = useTranslations('pages.adminPortalAllotments');
 
   const unitNumber =
@@ -144,6 +85,14 @@ export function PortalAllotmentTableRow({
     (allotment.metadata?.advisor_name as string) ||
     (allotment.metadata?.advisorName as string);
 
+  const metaClient = (allotment.metadata?.client_name || allotment.metadata?.clientName) as
+    string | undefined;
+  const isStaffProfile =
+    allotment.profiles?.role === 'admin' || allotment.profiles?.role === 'employee';
+  const clientName =
+    isStaffProfile && metaClient
+      ? metaClient
+      : allotment.profiles?.full_name || metaClient || 'Client';
   const clientPhone =
     (allotment.metadata?.client_phone as string) || allotment.profiles?.phone || '';
   const clientEmail =
@@ -207,6 +156,62 @@ export function PortalAllotmentTableRow({
     (allotment.metadata?.notes as string)?.toLowerCase().includes('refund') ||
     (allotment.metadata?.remarks as string)?.toLowerCase().includes('refund')
   );
+  const renderClientPopover = () => {
+    if (!showClientPopover) return null;
+    return (
+      <div className="absolute top-full left-0 z-30 mt-1.5 w-72 rounded-2xl border border-slate-200 bg-white p-4 text-left shadow-xl shadow-black/20 backdrop-blur-xl dark:border-white/[0.1] dark:bg-[#161D2C]">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-2 dark:border-white/[0.08]">
+          <span className="text-xs font-bold text-slate-900 dark:text-white">
+            Client Portfolio Details
+          </span>
+          <button
+            type="button"
+            onClick={() => setShowClientPopover(false)}
+            aria-label="Close client details"
+            className="rounded-lg p-1 text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-600 dark:hover:bg-white/[0.06] dark:hover:text-slate-200"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+        <div className="mt-2.5 space-y-2">
+          <div className="text-xs font-semibold text-slate-900 dark:text-white">{clientName}</div>
+          {clientAddress && (
+            <div className="flex items-start gap-1.5 text-[11px] break-words text-slate-600 dark:text-slate-300">
+              <MapPin className="mt-0.5 h-3 w-3 shrink-0 text-amber-500" />
+              <span className="break-words">{clientAddress}</span>
+            </div>
+          )}
+          {clientEmail && (
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
+              <Mail className="h-3 w-3 shrink-0 text-sky-500" />
+              <a href={`mailto:${clientEmail}`} className="truncate hover:underline">
+                {clientEmail}
+              </a>
+            </div>
+          )}
+          {clientPhone && (
+            <div className="flex items-center gap-1.5 font-mono text-[11px] text-slate-600 dark:text-slate-300">
+              <Phone className="h-3 w-3 shrink-0 text-emerald-500" />
+              <a href={`tel:${clientPhone}`} className="hover:underline">
+                {clientPhone}
+              </a>
+            </div>
+          )}
+          {advisorName && (
+            <div className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
+              <Users className="h-3 w-3 shrink-0 text-blue-500" />
+              <span>{advisorName}</span>
+            </div>
+          )}
+          <div className="pt-1">
+            <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-slate-100 px-2 py-0.5 font-mono text-[10px] font-semibold text-slate-600 dark:border-white/[0.08] dark:bg-white/[0.04] dark:text-slate-300">
+              ID: {ticketId || (isRefundDone ? 'Refunded' : 'Missing')}
+            </span>
+          </div>
+        </div>
+      </div>
+    );
+  };
 
   // Table Row Presentation (Desktop & High-density ERP View)
   if (variant === 'table-row') {
@@ -301,7 +306,7 @@ export function PortalAllotmentTableRow({
             <div className="flex max-w-[200px] flex-col gap-0.5">
               <div className="relative flex items-center gap-1">
                 <span className="truncate text-xs font-bold text-slate-900 dark:text-white">
-                  {allotment.profiles?.full_name || 'Client'}
+                  {clientName}
                 </span>
                 <button
                   type="button"
@@ -582,10 +587,10 @@ export function PortalAllotmentTableRow({
             <div className="relative mt-1.5">
               <div className="flex items-center gap-1.5">
                 <h3 className="truncate text-sm font-bold text-slate-900 sm:text-base dark:text-white">
-                  {allotment.profiles?.full_name || 'Client'}
-                  {allotment.profiles?.email && (
+                  {clientName}
+                  {clientEmail && (
                     <span className="ml-1.5 text-xs font-normal text-slate-400">
-                      ({allotment.profiles?.email})
+                      ({clientEmail})
                     </span>
                   )}
                 </h3>
